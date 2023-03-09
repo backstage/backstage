@@ -5,18 +5,9 @@ import React from 'react';
 
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
+import { truncateDescription } from '@site/src/util/truncateDescription';
 
 //#region Plugin data import
-const maxDescLength = 160;
-
-const truncatePluginDescription = (pluginData: IPluginData) =>
-  pluginData.description.length > maxDescLength
-    ? {
-        ...pluginData,
-        description: pluginData.description.slice(0, maxDescLength) + '...',
-      }
-    : pluginData;
-
 const pluginsContext = require.context(
   '../../../../microsite/data/plugins',
   false,
@@ -29,7 +20,7 @@ const plugins = pluginsContext.keys().reduce(
 
     acum[
       pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins'
-    ].push(truncatePluginDescription(pluginData));
+    ].push(truncateDescription(pluginData));
 
     return acum;
   },

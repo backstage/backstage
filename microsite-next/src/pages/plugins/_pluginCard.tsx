@@ -1,4 +1,5 @@
 import Link from '@docusaurus/Link';
+import { SimpleCard } from '@site/src/components/simpleCard/simpleCard';
 import React from 'react';
 
 export interface IPluginData {
@@ -23,32 +24,30 @@ export const PluginCard = ({
   iconUrl,
   title,
 }: IPluginData) => (
-  <div className="card">
-    <div className="card__header">
-      <img src={iconUrl || defaultIconUrl} alt={title} />
+  <SimpleCard
+    header={
+      <>
+        <img src={iconUrl || defaultIconUrl} alt={title} />
 
-      <h3>{title}</h3>
+        <h3>{title}</h3>
 
-      <p className="PluginCardAuthor">
-        by <a href={authorUrl}>{author}</a>
-      </p>
+        <p className="PluginCardAuthor">
+          by <a href={authorUrl}>{author}</a>
+        </p>
 
-      <span className="button button--sm button--outline button--primary">
-        {category}
-      </span>
-    </div>
-
-    <div className="card__body">
-      <p>{description}</p>
-    </div>
-
-    <div className="card__footer">
+        <span className="button button--sm button--outline button--primary">
+          {category}
+        </span>
+      </>
+    }
+    body={<p>{description}</p>}
+    footer={
       <Link
         to={documentation}
         className="button button--outline button--primary button--block"
       >
         Explore
       </Link>
-    </div>
-  </div>
+    }
+  />
 );
