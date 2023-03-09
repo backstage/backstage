@@ -186,9 +186,7 @@ export const SearchModal = (props: SearchModalProps) => {
     >
       {open && (
         <SearchContextProvider inheritParentContextIfAvailable>
-          {(children && children({ toggleModal })) ?? (
-            <Modal />
-          )}
+          {(children && children({ toggleModal })) ?? <Modal />}
         </SearchContextProvider>
       )}
     </Dialog>
