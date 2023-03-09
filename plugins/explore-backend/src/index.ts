@@ -28,17 +28,27 @@ export * from './tools';
  */
 export { exampleTools } from './example/exampleTools';
 
-/**
- * @deprecated
- * import from @backstage/plugin-search-backend-module-explore instead
- */
-export { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
+import { ToolDocumentCollatorFactory as _ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
+import type {
+  ToolDocument as _ToolDocument,
+  ToolDocumentCollatorFactoryOptions as _ToolDocumentCollatorFactoryOptions,
+} from '@backstage/plugin-search-backend-module-explore';
 
 /**
  * @deprecated
  * import from @backstage/plugin-search-backend-module-explore instead
  */
-export type {
-  ToolDocument,
-  ToolDocumentCollatorFactoryOptions,
-} from '@backstage/plugin-search-backend-module-explore';
+export const ToolDocumentCollatorFactory = _ToolDocumentCollatorFactory;
+
+/**
+ * @deprecated
+ * import from @backstage/plugin-search-backend-module-explore instead
+ */
+export type ToolDocument = _ToolDocument;
+
+/**
+ * @deprecated
+ * import from @backstage/plugin-search-backend-module-explore instead
+ */
+export type ToolDocumentCollatorFactoryOptions =
+  _ToolDocumentCollatorFactoryOptions;

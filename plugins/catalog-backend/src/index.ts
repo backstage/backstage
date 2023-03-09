@@ -37,7 +37,30 @@ import {
  * @deprecated
  * import from @backstage/search-backend-module-catalog instead
  */
-export type {
-  DefaultCatalogCollatorFactoryOptions,
-  CatalogCollatorEntityTransformer,
+export const DefaultCatalogCollatorFactory = _DefaultCatalogCollatorFactory;
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-catalog instead
+ */
+export const defaultCatalogCollatorEntityTransformer =
+  _defaultCatalogCollatorEntityTransformer;
+
+import type {
+  DefaultCatalogCollatorFactoryOptions as _DefaultCatalogCollatorFactoryOptions,
+  CatalogCollatorEntityTransformer as _CatalogCollatorEntityTransformer,
 } from '@backstage/plugin-search-backend-module-catalog';
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-catalog instead
+ */
+export type DefaultCatalogCollatorFactoryOptions =
+  _DefaultCatalogCollatorFactoryOptions;
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-catalog instead
+ */
+export type CatalogCollatorEntityTransformer =
+  _CatalogCollatorEntityTransformer;

@@ -20,14 +20,17 @@
 export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 export type { TechDocsCollatorOptions } from './DefaultTechDocsCollator';
 
-/**
- * @deprecated
- * import from @backstage/search-backend-module-techdocs instead
- */
-export type { TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
+import { DefaultTechDocsCollatorFactory as _DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
+import type { TechDocsCollatorFactoryOptions as _TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
 
 /**
  * @deprecated
  * import from @backstage/search-backend-module-techdocs instead
  */
-export { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
+export type TechDocsCollatorFactoryOptions = _TechDocsCollatorFactoryOptions;
+
+/**
+ * @deprecated
+ * import from @backstage/search-backend-module-techdocs instead
+ */
+export const DefaultTechDocsCollatorFactory = _DefaultTechDocsCollatorFactory;
