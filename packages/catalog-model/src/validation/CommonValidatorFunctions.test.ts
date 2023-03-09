@@ -155,6 +155,7 @@ describe('CommonValidatorFunctions', () => {
     ['-a-b', false],
     ['a-b-', false],
     ['a--b', false],
+    ['xn--c6h', true],
     ['a_b', false],
     [`${'a'.repeat(63)}`, true],
     [`${'a'.repeat(64)}`, false],
