@@ -21,9 +21,26 @@ import * as pulumi from '@pulumi/pulumi';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../../../lib/tasks';
+import { Output } from '@pulumi/pulumi';
+
+function parseEnvironmentVariables(envStrings: string[]) {
+  const environmentVariables: Record<string, Output<string>> = {};
+  for (const str of envStrings) {
+    const [key] = str.split('=', 1);
+    const value = str.slice(key.length + 1);
+    if (!key || str[key.length] !== '=') {
+      throw new Error(
+        `Invalid option '${str}', must be of the format <key>=<value>`,
+      );
+    }
+    environmentVariables[key] = pulumi.secret(value).apply(output => output);
+  }
+  return environmentVariables;
+}
 
 export const AWSProgram = (opts: OptionValues) => {
   return async () => {
+    const providedEnvironmentVariables = parseEnvironmentVariables(opts.env);
     const repository = new awsx.ecr.Repository(`${opts.stack}`, {
       name: opts.stack,
     });
@@ -79,20 +96,6 @@ export const AWSProgram = (opts: OptionValues) => {
       ),
     });
 
-    let environmentVariables: Record<string, string> = {};
-    if (opts.env) {
-      environmentVariables = Object.assign(
-        {},
-        ...opts.env.map((e: string) => {
-          const [key, value] = e.split('=');
-          if (!value) {
-            throw new Error(`Environment variable ${key} has no value`);
-          }
-          return { [key]: pulumi.secret(value).apply(output => output) };
-        }),
-      );
-    }
-
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
@@ -107,7 +110,7 @@ export const AWSProgram = (opts: OptionValues) => {
             },
             environment: {
               BACKSTAGE_HOST: containerService.url,
-              ...environmentVariables,
+              ...providedEnvironmentVariables,
             },
           },
         ],

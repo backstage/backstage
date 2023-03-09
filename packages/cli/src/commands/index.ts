@@ -251,7 +251,7 @@ export function registerDeployCommand(program: Command) {
     .option(
       '--env <name>=<value>',
       'Pass in environment variables to use at run time',
-      (opt, arr: string[]) => [...arr, opt],
+      (env, arr: string[]) => [...arr, env],
       [],
     )
     .action(lazy(() => import('./deploy/aws').then(m => m.default)));
