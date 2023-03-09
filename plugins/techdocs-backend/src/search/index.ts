@@ -24,13 +24,13 @@ import { DefaultTechDocsCollatorFactory as _DefaultTechDocsCollatorFactory } fro
 import type { TechDocsCollatorFactoryOptions as _TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
 
 /**
- * @deprecated
- * import from @backstage/search-backend-module-techdocs instead
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-techdocs` instead
  */
 export type TechDocsCollatorFactoryOptions = _TechDocsCollatorFactoryOptions;
 
 /**
- * @deprecated
- * import from @backstage/search-backend-module-techdocs instead
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-techdocs` instead
  */
 export const DefaultTechDocsCollatorFactory = _DefaultTechDocsCollatorFactory;

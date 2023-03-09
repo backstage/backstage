@@ -11,13 +11,6 @@ import { SearchEngine } from '@backstage/plugin-search-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
 
-// @alpha
-export type IndexServiceBuildOptions = {
-  searchEngine: SearchEngine;
-  collators: RegisterCollatorParameters[];
-  decorators: RegisterDecoratorParameters[];
-};
-
 // @public
 export interface RegisterCollatorParameters {
   factory: DocumentCollatorFactory;
@@ -52,11 +45,18 @@ export const searchIndexRegistryExtensionPoint: ExtensionPoint<SearchIndexRegist
 // @alpha
 export interface SearchIndexService {
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
-  start(options: IndexServiceBuildOptions): Promise<void>;
+  start(options: SearchIndexServiceStartOptions): Promise<void>;
 }
 
 // @alpha
 export const searchIndexServiceRef: ServiceRef<SearchIndexService, 'plugin'>;
+
+// @alpha
+export type SearchIndexServiceStartOptions = {
+  searchEngine: SearchEngine;
+  collators: RegisterCollatorParameters[];
+  decorators: RegisterDecoratorParameters[];
+};
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -6,7 +6,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
+import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
@@ -17,7 +17,7 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
-import { TechDocsCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-techdocs';
+import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
 import * as winston from 'winston';
@@ -45,7 +45,8 @@ export class DefaultTechDocsCollator {
   readonly visibilityPermission: Permission;
 }
 
-export { DefaultTechDocsCollatorFactory };
+// @public @deprecated (undocumented)
+export const DefaultTechDocsCollatorFactory: typeof DefaultTechDocsCollatorFactory_2;
 
 // @public
 export interface DocsBuildStrategy {
@@ -90,7 +91,8 @@ export type ShouldBuildParameters = {
   entity: Entity;
 };
 
-export { TechDocsCollatorFactoryOptions };
+// @public @deprecated (undocumented)
+export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
 
 // @public
 export type TechDocsCollatorOptions = {

@@ -35,20 +35,20 @@ import type {
 } from '@backstage/plugin-search-backend-module-explore';
 
 /**
- * @deprecated
- * import from @backstage/plugin-search-backend-module-explore instead
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-explore` instead
  */
 export const ToolDocumentCollatorFactory = _ToolDocumentCollatorFactory;
 
 /**
- * @deprecated
- * import from @backstage/plugin-search-backend-module-explore instead
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-explore` instead
  */
 export type ToolDocument = _ToolDocument;
 
 /**
- * @deprecated
- * import from @backstage/plugin-search-backend-module-explore instead
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-explore` instead
  */
 export type ToolDocumentCollatorFactoryOptions =
   _ToolDocumentCollatorFactoryOptions;

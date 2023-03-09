@@ -11,7 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
+import type { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor as CatalogProcessor_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorCache as CatalogProcessorCache_2 } from '@backstage/plugin-catalog-node';
@@ -24,15 +24,9 @@ import { CatalogProcessorRefreshKeysResult as CatalogProcessorRefreshKeysResult_
 import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
-<<<<<<< HEAD
+import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
+import type { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
-import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-=======
-import { defaultCatalogCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-catalog';
-import { DefaultCatalogCollatorFactory } from '@backstage/plugin-search-backend-module-catalog';
-import { DefaultCatalogCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-catalog';
-import { DeferredEntity } from '@backstage/plugin-catalog-node';
->>>>>>> 56a45401d3d (feat(search): create search collator modules)
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
@@ -52,11 +46,6 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-<<<<<<< HEAD
-import { Readable } from 'stream';
-=======
-import { processingResult } from '@backstage/plugin-catalog-node';
->>>>>>> 56a45401d3d (feat(search): create search collator modules)
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -172,7 +161,9 @@ export class CatalogBuilder {
   useLegacySingleProcessorValidation(): this;
 }
 
-export { CatalogCollatorEntityTransformer };
+// @public @deprecated (undocumented)
+export type CatalogCollatorEntityTransformer =
+  CatalogCollatorEntityTransformer_2;
 
 // @public (undocumented)
 export type CatalogEnvironment = {
@@ -295,11 +286,15 @@ export class DefaultCatalogCollator {
   readonly visibilityPermission: Permission;
 }
 
-export { defaultCatalogCollatorEntityTransformer };
+// @public @deprecated (undocumented)
+export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer_2;
 
-export { DefaultCatalogCollatorFactory };
+// @public @deprecated (undocumented)
+export const DefaultCatalogCollatorFactory: typeof DefaultCatalogCollatorFactory_2;
 
-export { DefaultCatalogCollatorFactoryOptions };
+// @public @deprecated (undocumented)
+export type DefaultCatalogCollatorFactoryOptions =
+  DefaultCatalogCollatorFactoryOptions_2;
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;

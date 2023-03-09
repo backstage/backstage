@@ -4,47 +4,8 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { SearchQuery } from '@backstage/plugin-search-common';
-
-// @public
-export type ElasticSearchConcreteQuery = {
-  documentTypes?: string[];
-  elasticSearchQuery: Object;
-  pageSize: number;
-};
-
-// @public
-export type ElasticSearchCustomIndexTemplate = {
-  name: string;
-  body: ElasticSearchCustomIndexTemplateBody;
-};
-
-// @public
-export type ElasticSearchCustomIndexTemplateBody = {
-  index_patterns: string[];
-  composed_of?: string[];
-  template?: Record<string, any>;
-};
-
-// @public (undocumented)
-export type ElasticSearchHighlightConfig = {
-  fragmentDelimiter: string;
-  fragmentSize: number;
-  numFragments: number;
-  preTag: string;
-  postTag: string;
-};
-
-// @public
-export type ElasticSearchQueryTranslator = (
-  query: SearchQuery,
-  options?: ElasticSearchQueryTranslatorOptions,
-) => ElasticSearchConcreteQuery;
-
-// @public
-export type ElasticSearchQueryTranslatorOptions = {
-  highlightOptions?: ElasticSearchHighlightConfig;
-};
+import { ElasticSearchCustomIndexTemplate } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ElasticSearchQueryTranslator } from '@backstage/plugin-search-backend-module-elasticsearch';
 
 // @alpha
 export const searchModuleElasticsearchEngine: (

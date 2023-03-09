@@ -8,9 +8,9 @@ import express from 'express';
 import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
 import { GetExploreToolsResponse } from '@backstage/plugin-explore-common';
 import { Logger } from 'winston';
-import { ToolDocument } from '@backstage/plugin-search-backend-module-explore';
-import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
-import { ToolDocumentCollatorFactoryOptions } from '@backstage/plugin-search-backend-module-explore';
+import type { ToolDocument as ToolDocument_2 } from '@backstage/plugin-search-backend-module-explore';
+import { ToolDocumentCollatorFactory as ToolDocumentCollatorFactory_2 } from '@backstage/plugin-search-backend-module-explore';
+import type { ToolDocumentCollatorFactoryOptions as ToolDocumentCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-explore';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -36,9 +36,13 @@ export class StaticExploreToolProvider implements ExploreToolProvider {
   getTools(request: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
 }
 
-export { ToolDocument };
+// @public @deprecated (undocumented)
+export type ToolDocument = ToolDocument_2;
 
-export { ToolDocumentCollatorFactory };
+// @public @deprecated (undocumented)
+export const ToolDocumentCollatorFactory: typeof ToolDocumentCollatorFactory_2;
 
-export { ToolDocumentCollatorFactoryOptions };
+// @public @deprecated (undocumented)
+export type ToolDocumentCollatorFactoryOptions =
+  ToolDocumentCollatorFactoryOptions_2;
 ```
