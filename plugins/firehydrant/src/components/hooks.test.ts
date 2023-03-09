@@ -19,7 +19,11 @@ import { isFireHydrantAvailable, getFireHydrantServiceName } from './hooks';
 describe('firehydrant-hooks-isFireHydrantAvailable', () => {
   it('should find an annotation', () => {
     const e: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
       metadata: {
+        namespace: 'default',
+        name: 'test-fh-name',
         annotations: {
           'firehydrant.com/service-name': 'test-fh-name',
         },
@@ -30,7 +34,12 @@ describe('firehydrant-hooks-isFireHydrantAvailable', () => {
 
   it('should not find an annotation', () => {
     const e: Entity = {
-      metadata: {},
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'test-fh-name',
+      },
     };
     expect(isFireHydrantAvailable(e)).toEqual(false);
   });
@@ -40,6 +49,7 @@ describe('firehydrant-hooks-getFireHydrantServiceName', () => {
   it('should return annotation service name', () => {
     const expected = 'test-fh-name';
     const e: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         namespace: 'default',
@@ -55,6 +65,7 @@ describe('firehydrant-hooks-getFireHydrantServiceName', () => {
   it('should return generated service name', () => {
     const expected = 'Component:default/test-fh-name';
     const e: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         namespace: 'default',
