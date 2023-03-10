@@ -82,7 +82,7 @@ export default async function createPlugin(
 
 ### Implementing an `EventSubscriber` class
 
-More complex solutions might warrent the creation of a class that implements the `EventSubscriber` interface. e.g.
+More complex solutions might need the creation of a class that implements the `EventSubscriber` interface. e.g.
 
 ```typescript jsx
 import { EventSubscriber } from "./EventSubscriber";
