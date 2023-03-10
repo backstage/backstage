@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -19,4 +20,7 @@ export const firehydrantPlugin: BackstagePlugin<
   {},
   {}
 >;
+
+// @public (undocumented)
+export const isFireHydrantAvailable: (entity: Entity) => boolean;
 ```

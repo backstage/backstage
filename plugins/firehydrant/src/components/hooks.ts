@@ -17,6 +17,7 @@ import { Entity } from '@backstage/catalog-model';
 
 export const FIREHYDRANT_SERVICE_NAME_ANNOTATION =
   'firehydrant.com/service-name';
+/** @public */
 export const isFireHydrantAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[FIREHYDRANT_SERVICE_NAME_ANNOTATION]);
 export const getFireHydrantServiceName = (entity: Entity) =>
