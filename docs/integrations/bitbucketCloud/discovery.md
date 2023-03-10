@@ -72,30 +72,29 @@ Additionally, you need to decide how you want to receive events from external so
 Set up your provider
 
 ```diff
-// packages/backend/src/plugins/catalogEventBasedProviders.ts
-+import { CatalogClient } from '@backstage/catalog-client';
+// packages/backend/src/plugins/catalog.ts
+ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 +import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
- import { EntityProvider } from '@backstage/plugin-catalog-node';
- import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+ import { Router } from 'express';
  import { PluginEnvironment } from '../types';
 
- export default async function createCatalogEventBasedProviders(
--  _: PluginEnvironment,
-+  env: PluginEnvironment,
- ): Promise<Array<EntityProvider & EventSubscriber>> {
-   const providers: Array<
-     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-   > = [];
--  // add your event-based entity providers here
-+  providers.push(
-+    BitbucketCloudEntityProvider.fromConfig(env.config, {
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+   builder.addProcessor(new ScaffolderEntitiesProcessor());
++  const bitBucketProvider = BitbucketCloudEntityProvider.fromConfig(env.config, {
 +      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
 +      logger: env.logger,
 +      scheduler: env.scheduler,
 +      tokenManager: env.tokenManager,
-+    }),
-+  );
-   return providers.flat();
++    });
++  env.eventBroker.subscribe(bitBucketProvider);
++  builder.addEntityProvider(bitBucketProvider);
+   const { processingEngine, router } = await builder.build();
+   await processingEngine.start();
+   return router;
  }
 ```
 

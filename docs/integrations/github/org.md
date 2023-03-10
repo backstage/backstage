@@ -75,21 +75,19 @@ Additionally, you need to decide how you want to receive events from external so
 Set up your provider
 
 ```diff
-// packages/backend/src/plugins/catalogEventBasedProviders.ts
+// packages/backend/src/plugins/catalog.ts
+ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 +import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
- import { EntityProvider } from '@backstage/plugin-catalog-node';
- import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+ import { Router } from 'express';
  import { PluginEnvironment } from '../types';
- export default async function createCatalogEventBasedProviders(
--  _: PluginEnvironment,
-+  env: PluginEnvironment,
- ): Promise<Array<EntityProvider & EventSubscriber>> {
-   const providers: Array<
-     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-   > = [];
--  // add your event-based entity providers here
-+  providers.push(
-+    GithubOrgEntityProvider.fromConfig(env.config, {
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+   builder.addProcessor(new ScaffolderEntitiesProcessor());
++  const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
 +      id: 'production',
 +      orgUrl: 'https://github.com/backstage',
 +      logger: env.logger,
@@ -97,9 +95,11 @@ Set up your provider
 +        frequency: { minutes: 60 },
 +        timeout: { minutes: 15 },
 +      }),
-+    }),
-+  );
-   return providers.flat();
++  env.eventBroker.subscribe(githubOrgProvider);
++  builder.addEntityProvider(githubOrgProvider);
+   const { processingEngine, router } = await builder.build();
+   await processingEngine.start();
+   return router;
  }
 ```
 

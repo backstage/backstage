@@ -68,21 +68,19 @@ Additionally, you need to decide how you want to receive events from external so
 Set up your provider
 
 ```diff
-// packages/backend/src/plugins/catalogEventBasedProviders.ts
+// packages/backend/src/plugins/catalog.ts
+ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 +import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
- import { EntityProvider } from '@backstage/plugin-catalog-node';
- import { EventSubscriber } from '@backstage/plugin-events-node';
+ import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+ import { Router } from 'express';
  import { PluginEnvironment } from '../types';
- export default async function createCatalogEventBasedProviders(
--  _: PluginEnvironment,
-+  env: PluginEnvironment,
- ): Promise<Array<EntityProvider & EventSubscriber>> {
-   const providers: Array<
-     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-   > = [];
--  // add your event-based entity providers here
-+  providers.push(
-+    GithubEntityProvider.fromConfig(env.config, {
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+   builder.addProcessor(new ScaffolderEntitiesProcessor());
++  const githubProvider = GithubEntityProvider.fromConfig(env.config, {
 +       logger: env.logger,
 +       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
 +       schedule: env.scheduler.createScheduledTaskRunner({
@@ -91,9 +89,12 @@ Set up your provider
 +       }),
 +       // optional: alternatively, use schedule
 +       scheduler: env.scheduler,
-+    }),
-+  );
-   return providers.flat();
++    });
++  env.eventBroker.subscribe(githubProvider);
++  builder.addEntityProvider(demoProvider);
+   const { processingEngine, router } = await builder.build();
+   await processingEngine.start();
+   return router;
  }
 ```
 
