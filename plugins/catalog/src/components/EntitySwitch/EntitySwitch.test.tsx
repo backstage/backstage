@@ -173,6 +173,42 @@ describe('EntitySwitch', () => {
     expect(screen.getByText('C')).toBeInTheDocument();
   });
 
+  it('should render nothing if no default case is set for multiple matches', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={isKind('system')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>B</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should render nothing if no default case is set for default', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={isKind('system')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>B</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
   it('should switch with async condition that is true', async () => {
     const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 

@@ -7,7 +7,7 @@
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
-import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
+import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import type { DurationObjectUnits } from 'luxon';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';

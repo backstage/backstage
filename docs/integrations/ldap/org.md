@@ -35,28 +35,33 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-ldap
 Update the catalog plugin initialization in your backend to add the provider and
 schedule it:
 
-```diff
- // packages/backend/src/plugins/catalog.ts
-+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
 
-+  // The target parameter below needs to match the ldap.providers.target
-+  // value specified in your app-config.
-+  builder.addEntityProvider(
-+    LdapOrgEntityProvider.fromConfig(env.config, {
-+      id: 'our-ldap-master',
-+      target: 'ldaps://ds.example.net',
-+      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 60 },
-+        timeout: { minutes: 15 },
-+      }),
-+    }),
-+  );
+  /* highlight-add-start */
+  // The target parameter below needs to match the ldap.providers.target
+  // value specified in your app-config.
+  builder.addEntityProvider(
+    LdapOrgEntityProvider.fromConfig(env.config, {
+      id: 'our-ldap-master',
+      target: 'ldaps://ds.example.net',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 After this, you also have to add some configuration in your app-config that
@@ -345,8 +350,7 @@ frequency with which they are refreshed, separately from other processors.
 The `LdapOrgReaderProcessor` is not registered by default, so you have to
 register it in the catalog plugin:
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
+```typescript title="packages/backend/src/plugins/catalog.ts"
 builder.addProcessor(
   LdapOrgReaderProcessor.fromConfig(env.config, {
     logger: env.logger,

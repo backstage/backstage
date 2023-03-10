@@ -17,7 +17,7 @@
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,

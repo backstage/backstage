@@ -20,7 +20,7 @@ import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {

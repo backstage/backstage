@@ -21,7 +21,7 @@ import {
   TaskRunner,
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
