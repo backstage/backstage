@@ -197,9 +197,9 @@ You will need to change the import for `FieldValidation` to point at the new `re
 
 ```ts
 /* highlight-remove-next-line */
-- import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/core';
 /* highlight-add-next-line */
-+ import { FieldValidation } from '@rjsf/utils;
+import { FieldValidation } from '@rjsf/utils;
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
 export const entityNamePickerValidation = (
