@@ -94,8 +94,11 @@ export async function loadBackendConfig(options: {
         console.info(
           `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
         );
-
-        config.setConfig(ConfigReader.fromConfigs(newConfigs));
+        const configsToMerge = [...newConfigs];
+        if (options.additionalConfigs) {
+          configsToMerge.push(...options.additionalConfigs);
+        }
+        config.setConfig(ConfigReader.fromConfigs(configsToMerge));
       },
       stopSignal: new Promise(resolve => {
         if (currentCancelFunc) {
@@ -115,10 +118,11 @@ export async function loadBackendConfig(options: {
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
+  const finalAppConfigs = [...appConfigs];
   if (options.additionalConfigs) {
-    appConfigs.push(...options.additionalConfigs);
+    finalAppConfigs.push(...options.additionalConfigs);
   }
-  config.setConfig(ConfigReader.fromConfigs(appConfigs));
+  config.setConfig(ConfigReader.fromConfigs(finalAppConfigs));
 
   return { config };
 }
