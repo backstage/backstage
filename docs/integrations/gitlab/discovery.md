@@ -42,9 +42,7 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-
+```ts title="packages/backend/src/plugins/catalog.ts"
 import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
 const builder = await CatalogBuilder.create(env);
@@ -91,17 +89,22 @@ The target is composed of three parts:
 Finally, you will have to add the processor in the catalog initialization code
 of your backend.
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  builder.addProcessor(
-+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
-+  );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addProcessor(
+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.

@@ -35,9 +35,9 @@
       "getting-started/create-an-app",
       "getting-started/running-backstage-locally",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "App configuration",
-        "ids": [
+        "items": [
           "getting-started/configure-app-with-plugins",
           "getting-started/app-custom-theme",
           "getting-started/homepage"
@@ -46,13 +46,14 @@
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
       "getting-started/contributors",
+      "getting-started/getting-involved",
       "getting-started/project-structure"
     ],
     "Local Development": [
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "CLI",
-        "ids": [
+        "items": [
           "local-dev/cli-overview",
           "local-dev/cli-build-system",
           "local-dev/cli-commands"
@@ -62,9 +63,9 @@
     ],
     "Core Features": [
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Software Catalog",
-        "ids": [
+        "items": [
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/life-of-an-entity",
           "features/software-catalog/configuration",
@@ -81,9 +82,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Kubernetes",
-        "ids": [
+        "items": [
           "features/kubernetes/overview",
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
@@ -93,9 +94,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Software Templates",
-        "ids": [
+        "items": [
           "features/software-templates/software-templates-index",
           "features/software-templates/configuration",
           "features/software-templates/adding-templates",
@@ -110,9 +111,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Backstage Search",
-        "ids": [
+        "items": [
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
@@ -122,9 +123,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "TechDocs",
-        "ids": [
+        "items": [
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
@@ -144,55 +145,55 @@
     "Integrations": [
       "integrations/index",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "AWS S3",
-        "ids": [
+        "items": [
           "integrations/aws-s3/locations",
           "integrations/aws-s3/discovery"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Azure",
-        "ids": [
+        "items": [
           "integrations/azure/locations",
           "integrations/azure/discovery",
           "integrations/azure/org"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Bitbucket Cloud",
-        "ids": [
+        "items": [
           "integrations/bitbucketCloud/locations",
           "integrations/bitbucketCloud/discovery"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Bitbucket Server",
-        "ids": [
+        "items": [
           "integrations/bitbucketServer/locations",
           "integrations/bitbucketServer/discovery"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Datadog",
-        "ids": ["integrations/datadog-rum/installation"]
+        "items": ["integrations/datadog-rum/installation"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Gerrit",
-        "ids": [
+        "items": [
           "integrations/gerrit/locations",
           "integrations/gerrit/discovery"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "GitHub",
-        "ids": [
+        "items": [
           "integrations/github/locations",
           "integrations/github/discovery",
           "integrations/github/org",
@@ -200,28 +201,28 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "GitLab",
-        "ids": [
+        "items": [
           "integrations/gitlab/locations",
           "integrations/gitlab/discovery",
           "integrations/gitlab/org"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Gitea",
-        "ids": ["integrations/gitea/locations"]
+        "items": ["integrations/gitea/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Google GCS",
-        "ids": ["integrations/google-cloud-storage/locations"]
+        "items": ["integrations/google-cloud-storage/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "LDAP",
-        "ids": ["integrations/ldap/org"]
+        "items": ["integrations/ldap/org"]
       }
     ],
     "Plugins": [
@@ -237,9 +238,9 @@
       "plugins/analytics",
       "plugins/feature-flags",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Backends and APIs",
-        "ids": [
+        "items": [
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
@@ -247,14 +248,14 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Testing",
-        "ids": ["plugins/testing"]
+        "items": ["plugins/testing"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Publishing",
-        "ids": [
+        "items": [
           "plugins/publish-private",
           "plugins/add-to-marketplace",
           "plugins/observability"
@@ -270,9 +271,9 @@
     "Auth and identity": [
       "auth/index",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Included providers",
-        "ids": [
+        "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
           "auth/bitbucket/provider",
@@ -302,9 +303,9 @@
       "permissions/frontend-integration",
       "permissions/custom-rules",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Tutorial: using Permissions in your plugin",
-        "ids": [
+        "items": [
           "permissions/plugin-authors/01-setup",
           "permissions/plugin-authors/02-adding-a-basic-permission-check",
           "permissions/plugin-authors/03-adding-a-resource-permission-check",
@@ -328,14 +329,14 @@
     ],
     "API Reference": [
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Guides",
-        "ids": ["api/utility-apis"]
+        "items": ["api/utility-apis"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "API Reference",
-        "ids": ["reference/index"]
+        "items": ["reference/index"]
       },
       "api/deprecations"
     ],
@@ -370,9 +371,9 @@
     "Experimental Backend System": [
       "backend-system/index",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Architecture",
-        "ids": [
+        "items": [
           "backend-system/architecture/index",
           "backend-system/architecture/services",
           "backend-system/architecture/plugins",
@@ -382,26 +383,26 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Building Backends",
-        "ids": [
+        "items": [
           "backend-system/building-backends/index",
           "backend-system/building-backends/migrating"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Building Plugins & Modules",
-        "ids": [
+        "items": [
           "backend-system/building-plugins-and-modules/index",
           "backend-system/building-plugins-and-modules/testing",
           "backend-system/building-plugins-and-modules/migrating"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Core Services",
-        "ids": ["backend-system/core-services/index"]
+        "items": ["backend-system/core-services/index"]
       }
     ]
   }

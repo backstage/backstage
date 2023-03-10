@@ -52,7 +52,7 @@ module.exports = {
           sidebarPath: 'sidebars.json',
         },
         blog: {
-          path: '../microsite/blog',
+          path: 'blog',
         },
         theme: {
           customCss: 'src/css/customTheme.css',
@@ -264,6 +264,29 @@ module.exports = {
         indexName: 'crawler_Backstage Docusaurus 2',
         appId: 'JCMFNHCHI8',
         searchParameters: {},
+      },
+      prism: {
+        magicComments: [
+          // Extend the default highlight class name
+          {
+            className: 'theme-code-block-highlighted-line',
+            line: 'highlight-next-line',
+            block: { start: 'highlight-start', end: 'highlight-end' },
+          },
+          {
+            className: 'code-block-add-line',
+            line: 'highlight-add-next-line',
+            block: { start: 'highlight-add-start', end: 'highlight-add-end' },
+          },
+          {
+            className: 'code-block-remove-line',
+            line: 'highlight-remove-next-line',
+            block: {
+              start: 'highlight-remove-start',
+              end: 'highlight-remove-end',
+            },
+          },
+        ],
       },
     },
 };

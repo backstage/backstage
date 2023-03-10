@@ -9,7 +9,7 @@ import { truncateDescription } from '@site/src/util/truncateDescription';
 
 //#region Plugin data import
 const pluginsContext = require.context(
-  '../../../../microsite/data/plugins',
+  '../../../data/plugins',
   false,
   /\.ya?ml/,
 );

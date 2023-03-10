@@ -12,27 +12,29 @@ However, there are some cases where the integrator needs to supplement the polic
 
 If your Backstage permission policy may return a `DENY` for users requesting the `catalogEntityCreatePermission`, it may make sense, for example, to remove access to the `/catalog-import` page entirely:
 
-```diff
-// packages/app/src/App.tsx
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-start */
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+/* highlight-add-end */
 
-...
-
-+ import { RequirePermission } from '@backstage/plugin-permission-react';
-+ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-
-...
-
--     <Route path="/catalog-import" element={<CatalogImportPage />} />
-+     <Route
-+       path="/catalog-import"
-+       element={
-+         <RequirePermission permission={catalogEntityCreatePermission}>
-+           <CatalogImportPage />
-+         </RequirePermission>
-+       }
-+     />
-...
-
+const routes = (
+  <FlatRoutes>
+    {/* highlight-remove-next-line */}
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    {/* highlight-add-start */}
+    <Route
+      path="/catalog-import"
+      element={
+        <RequirePermission permission={catalogEntityCreatePermission}>
+          <CatalogImportPage />
+        </RequirePermission>
+      }
+    />
+    {/* highlight-add-end */}
+    {/* ... */}
+  </FlatRoutes>
+);
 ```
 
 With this change, users who are denied the `catalogEntityCreatePermission` should now be unable to access the `/catalog-import` page.
