@@ -44,5 +44,25 @@ export interface Config {
      * The version of the K/V API. Defaults to `2`.
      */
     kvVersion?: 1 | 2;
+
+    /**
+     * The list type for K/V API v2. Defaults to `metadata`.
+     */
+    listType?: 'metadata' | 'subkeys';
+
+    /**
+     * The authentication method. Defaults to `token`.
+     */
+    authMethod?: 'token' | 'approle';
+
+    /**
+     * The role id for authentication method `approle`.
+     */
+    authRoleId?: string;
+
+    /**
+     * The secret id for authentication method `approle`.
+     */
+    authSecretId?: string;
   };
 }

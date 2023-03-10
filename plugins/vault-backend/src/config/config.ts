@@ -46,6 +46,26 @@ export interface VaultConfig {
    * The version of the K/V API. Defaults to `2`.
    */
   kvVersion: number;
+
+  /**
+   * The list type for K/V API v2. Defaults to `metadata`.
+   */
+  listType: string;
+
+  /**
+   * The authentication method. Defaults to `token`.
+   */
+  authMethod: string;
+
+  /**
+   * The role id for authentication method `approle`.
+   */
+  authRoleId?: string;
+
+  /**
+   * The secret id for authentication method `approle`.
+   */
+  authSecretId?: string;
 }
 
 /**
@@ -62,5 +82,9 @@ export function getVaultConfig(config: Config): VaultConfig {
     token: config.getString('vault.token'),
     kvVersion: config.getOptionalNumber('vault.kvVersion') ?? 2,
     secretEngine: config.getOptionalString('vault.secretEngine') ?? 'secrets',
+    listType: config.getOptionalString('vault.listType') ?? 'metadata',
+    authMethod: config.getOptionalString('vault.authMethod') ?? 'token',
+    authRoleId: config.getOptionalString('vault.authRoleId') ?? '',
+    authSecretId: config.getOptionalString('vault.authSecretId') ?? '',
   };
 }

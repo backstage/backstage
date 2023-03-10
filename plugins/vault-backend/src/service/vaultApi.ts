@@ -27,6 +27,7 @@ import { getVaultConfig, VaultConfig } from '../config';
 export type VaultSecretList = {
   data: {
     keys: string[];
+    subkeys: string[];
   };
 };
 
@@ -87,18 +88,26 @@ export class VaultClient implements VaultApi {
     path: string,
     query: { [key in string]: any },
     method: string = 'GET',
+    body: string | undefined = undefined,
   ): Promise<T> {
     const url = new URL(path, this.vaultConfig.baseUrl);
-    const response = await fetch(
-      `${url.toString()}?${new URLSearchParams(query).toString()}`,
-      {
-        method,
-        headers: {
-          Accept: 'application/json',
-          'X-Vault-Token': this.vaultConfig.token,
-        },
-      },
-    );
+    let fullUrl = url.toString();
+    if (query) {
+      fullUrl += `?${new URLSearchParams(query).toString()}`;
+    }
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    };
+    if (this.vaultConfig.token !== 'none') {
+      // Only set token header, if we have one (approle auth must not send one)
+      headers['X-Vault-Token'] = this.vaultConfig.token;
+    }
+    const response = await fetch(fullUrl, {
+      method,
+      headers: headers,
+      body: body,
+    });
+
     if (response.ok) {
       return (await response.json()) as T;
     } else if (response.status === 404) {
@@ -115,48 +124,109 @@ export class VaultClient implements VaultApi {
     return `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
+  async processMetadataResponse(
+    result: VaultSecretList,
+    secretPath: string,
+  ): Promise<VaultSecret[]> {
+    const secrets: VaultSecret[] = [];
+    result.data.keys.map(async secret => {
+      if (secret.endsWith('/')) {
+        secrets.push(
+          ...(await this.limit(() =>
+            this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
+          )),
+        );
+      } else {
+        const vaultUrl = this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
+        secrets.push({
+          name: secret,
+          path: secretPath,
+          editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
+          showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+        });
+      }
+    });
+    return secrets;
+  }
+
+  async processSubkeysResponse(
+    result: VaultSecretList,
+    secretPath: string,
+  ): Promise<VaultSecret[]> {
+    const secrets: VaultSecret[] = [];
+    for (const key of Object.keys(result.data.subkeys)) {
+      const vaultUrl = this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
+      secrets.push({
+        name: key,
+        path: '',
+        editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}`,
+        showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}`,
+      });
+    }
+    return secrets;
+  }
+
   async listSecrets(secretPath: string): Promise<VaultSecret[]> {
+    const listType = this.vaultConfig.listType;
     const listUrl =
       this.vaultConfig.kvVersion === 2
-        ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
+        ? `v1/${this.vaultConfig.secretEngine}/${listType}/${secretPath}`
         : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
-    const result = await this.limit(() =>
-      this.callApi<VaultSecretList>(listUrl, { list: true }),
-    );
+    let secrets: VaultSecret[] = [];
 
-    const secrets: VaultSecret[] = [];
+    // Check, if initial token should be fetched:
+    if (this.vaultConfig.token === 'none') {
+      await this.renewToken();
+    }
 
-    await Promise.all(
-      result.data.keys.map(async secret => {
-        if (secret.endsWith('/')) {
-          secrets.push(
-            ...(await this.limit(() =>
-              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
-            )),
-          );
-        } else {
-          const vaultUrl =
-            this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
-          secrets.push({
-            name: secret,
-            path: secretPath,
-            editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
-          });
-        }
-      }),
-    );
+    if (listType === 'metadata') {
+      await Promise.all(
+        (secrets = await this.processMetadataResponse(
+          await this.limit(() =>
+            this.callApi<VaultSecretList>(listUrl, { list: true }),
+          ),
+          secretPath,
+        )),
+      );
+    } else if (listType === 'subkeys') {
+      await Promise.all(
+        (secrets = await this.processSubkeysResponse(
+          await this.limit(() => this.callApi<VaultSecretList>(listUrl, {})),
+          secretPath,
+        )),
+      );
+    }
 
     return secrets;
   }
 
-  async renewToken(): Promise<void> {
+  async newAppRoleToken(): Promise<string> {
+    const result = await this.callApi<RenewTokenResponse>(
+      'v1/auth/approle/login',
+      {},
+      'POST',
+      JSON.stringify({
+        role_id: this.vaultConfig.authRoleId,
+        secret_id: this.vaultConfig.authSecretId,
+      }),
+    );
+    return result.auth.client_token;
+  }
+
+  async newStandardToken(): Promise<string> {
     const result = await this.callApi<RenewTokenResponse>(
       'v1/auth/token/renew-self',
       {},
       'POST',
     );
+    return result.auth.client_token;
+  }
 
-    this.vaultConfig.token = result.auth.client_token;
+  async renewToken(): Promise<void> {
+    if (this.vaultConfig.authMethod === 'approle') {
+      this.vaultConfig.token = await this.newAppRoleToken();
+    } else if (this.vaultConfig.authMethod === 'token') {
+      this.vaultConfig.token = await this.newStandardToken();
+    }
   }
 }
