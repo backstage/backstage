@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { bitbucketCloudEventRouterEventsModule } from './service/BitbucketCloudEventRouterEventsModule';
+export { eventsModuleBitbucketCloudEventRouter } from './service/eventsModuleBitbucketCloudEventRouter';

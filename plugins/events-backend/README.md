@@ -250,9 +250,9 @@ import { eventsExtensionPoint } from '@backstage/plugin-events-node';
 
 // [...]
 
-export const yourModuleEventsModule = createBackendModule({
+export const eventsModuleYourFeature = createBackendModule({
   pluginId: 'events',
-  moduleId: 'yourModule',
+  moduleId: 'yourFeature',
   register(env) {
     // [...]
     env.registerInit({

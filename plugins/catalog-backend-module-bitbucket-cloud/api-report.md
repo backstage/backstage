@@ -5,8 +5,8 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { EntityProvider } from '@backstage/plugin-catalog-backend';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
 import { EventSubscriber } from '@backstage/plugin-events-node';

@@ -82,19 +82,24 @@ RUN yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
 
 Additionally, `yarn config` has been reworked from being able to store any arbitrary key-value pairs to only supporting a handful of predefined pairs. Previously, we would set our preferred `python3` interpreter to work around [any issues related to node-gyp](https://github.com/backstage/backstage/issues/11583) so we need to provide an appropriate substitute.
 
-```diff
+```Dockerfile
 FROM node:16-bullseye-slim
 
-+# Set Python interpreter for `node-gyp` to use
-+ENV PYTHON /usr/bin/python3
+# highlight-add-start
+# Set Python interpreter for `node-gyp` to use
+ENV PYTHON /usr/bin/python3
+# highlight-add-end
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
--   rm -rf /var/lib/apt/lists/* && \
--   yarn config set python /usr/bin/python3
-+   rm -rf /var/lib/apt/lists/*
+    # highlight-remove-start
+    rm -rf /var/lib/apt/lists/* && \
+    yarn config set python /usr/bin/python3
+    # highlight-remove-end
+    # highlight-add-next-line
+    rm -rf /var/lib/apt/lists/*
 ```
 
 You'll want to make sure that the `PYTHON` environment variable is declared relatively early, before any instances of `Yarn` are invoked as `node-gyp` is indirectly triggered by some modules during installation.

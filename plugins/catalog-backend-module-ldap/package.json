@@ -36,7 +36,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/ldapjs": "^2.2.0",
     "ldapjs": "^2.2.0",

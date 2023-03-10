@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { gerritEventRouterEventsModule } from './service/GerritEventRouterEventsModule';
+export { eventsModuleGerritEventRouter } from './service/eventsModuleGerritEventRouter';

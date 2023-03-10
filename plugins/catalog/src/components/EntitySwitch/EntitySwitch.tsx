@@ -169,7 +169,7 @@ function AsyncEntitySwitch({
 }
 
 function getDefaultChildren(results: SwitchCaseResult[]) {
-  return results.filter(r => r.if === undefined)[0].children ?? null;
+  return results.filter(r => r.if === undefined)[0]?.children ?? null;
 }
 
 EntitySwitch.Case = EntitySwitchCaseComponent;

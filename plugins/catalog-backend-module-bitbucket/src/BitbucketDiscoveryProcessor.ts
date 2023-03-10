@@ -28,7 +28,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import {
   BitbucketRepository,

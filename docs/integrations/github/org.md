@@ -36,36 +36,41 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 Update the catalog plugin initialization in your backend to add the provider and
 schedule it:
 
-```diff
- // packages/backend/src/plugins/catalog.ts
-+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
 
-+  // The org URL below needs to match a configured integrations.github entry
-+  // specified in your app-config.
-+  builder.addEntityProvider(
-+    GithubOrgEntityProvider.fromConfig(env.config, {
-+      id: 'production',
-+      orgUrl: 'https://github.com/backstage',
-+      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 60 },
-+        timeout: { minutes: 15 },
-+      }),
-+    }),
-+  );
+  /* highlight-add-start */
+  // The org URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      orgUrl: 'https://github.com/backstage',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Installation with Events Support
 
 Please follow the installation instructions at
 
-- https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md
-- https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
 
 Additionally, you need to decide how you want to receive events from external sources like
 
@@ -74,33 +79,35 @@ Additionally, you need to decide how you want to receive events from external so
 
 Set up your provider
 
-```diff
-// packages/backend/src/plugins/catalog.ts
- import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
- import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
- import { Router } from 'express';
- import { PluginEnvironment } from '../types';
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-next-line */
+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-   builder.addProcessor(new ScaffolderEntitiesProcessor());
-+  const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
-+      id: 'production',
-+      orgUrl: 'https://github.com/backstage',
-+      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 60 },
-+        timeout: { minutes: 15 },
-+      }),
-+  env.eventBroker.subscribe(githubOrgProvider);
-+  builder.addEntityProvider(githubOrgProvider);
-   const { processingEngine, router } = await builder.build();
-   await processingEngine.start();
-   return router;
- }
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      orgUrl: 'https://github.com/backstage',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+  env.eventBroker.subscribe(githubOrgProvider);
+  builder.addEntityProvider(githubOrgProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
 ```
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
@@ -193,8 +200,7 @@ async (user, ctx): Promise<UserEntity | undefined> => {
 Once you have imported the emails you can resolve users in your sign-in in
 resolver using the catalog entity search via email
 
-```typescript
-// packages/backend/src/plugins/auth.ts
+```typescript title="packages/backend/src/plugins/auth.ts"
 ctx.signInWithCatalogUser({
   filter: {
     kind: ['User'],
@@ -223,10 +229,9 @@ install and register it in the catalog plugin:
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 ```
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
+```typescript title="packages/backend/src/plugins/catalog.ts"
 import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-github';
-// ...
+
 builder.addProcessor(
   GithubOrgReaderProcessor.fromConfig(env.config, { logger: env.logger }),
 );

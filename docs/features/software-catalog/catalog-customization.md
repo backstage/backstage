@@ -142,21 +142,22 @@ export const EntitySecurityTierPicker = () => {
 
 Now we can add the component to `CustomCatalogPage`:
 
-```diff
+```tsx
 export const CustomCatalogPage = ({
   columns,
   actions,
   initiallySelectedFilter = 'owned',
 }: CatalogPageProps) => {
   return (
-    ...
+    {/* ... */}
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
-+             <EntitySecurityTierPicker />
+              {/* highlight-add-next-line */}
+              <EntitySecurityTierPicker />
               <EntityTagPicker />
             <CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
@@ -164,21 +165,26 @@ export const CustomCatalogPage = ({
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>
-    ...
+    {/* ... */}
 };
 ```
 
 Finally, we can apply our new `CustomCatalogPage`.
 
-```diff
-# packages/app/src/App.tsx
+```tsx title="packages/app/src/App.tsx"
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
--    <Route path="/catalog" element={<CatalogIndexPage />} />
-+    <Route path="/catalog" element={<CatalogIndexPage />}>
-+      <CustomCatalogPage />
-+    </Route>
+    {/* highlight-remove-next-line */}
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    {/* highlight-add-start */}
+    <Route path="/catalog" element={<CatalogIndexPage />}>
+      <CustomCatalogPage />
+    </Route>
+    {/* highlight-add-end */}
+    {/* ... */}
+  </FlatRoutes>
+);
 ```
 
 The same method can be used to customize the _default_ filters with a different
