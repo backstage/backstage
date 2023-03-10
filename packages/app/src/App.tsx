@@ -109,6 +109,7 @@ import { PlaylistIndexPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
+import { AppRatingPopUp } from '@backstage/plugin-entity-feedback';
 
 const app = createApp({
   apis,
@@ -293,5 +294,6 @@ export default app.createRoot(
     <AppRouter>
       <Root>{routes}</Root>
     </AppRouter>
+    <AppRatingPopUp title="Rate Backstage" chance={100} />
   </>,
 );

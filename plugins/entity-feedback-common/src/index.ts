@@ -32,6 +32,14 @@ export interface Rating {
 /**
  * @public
  */
+export interface AppRating {
+  rating: number;
+  userRef: string;
+}
+
+/**
+ * @public
+ */
 export interface FeedbackResponse {
   entityRef: string;
   response?: string;

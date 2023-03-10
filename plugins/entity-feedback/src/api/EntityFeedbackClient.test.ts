@@ -172,4 +172,33 @@ describe('EntityFeedbackClient', () => {
     const response = await client.getResponses('component:default/service');
     expect(response).toEqual(responses);
   });
+
+  it('recordAppRating', async () => {
+    expect.assertions(1);
+
+    server.use(
+      rest.post(`${mockBaseUrl}/app-ratings`, (req, res) => {
+        expect(req.body).toEqual({ rating: 4 });
+        return res();
+      }),
+    );
+
+    await client.recordAppRating(4);
+  });
+
+  it('getAppRatings', async () => {
+    const ratings = [
+      { userRef: 'user:default/foo', rating: 5 },
+      { userRef: 'user:default/bar', rating: 3 },
+    ];
+
+    server.use(
+      rest.get(`${mockBaseUrl}/app-ratings`, (_, res, ctx) =>
+        res(ctx.json(ratings)),
+      ),
+    );
+
+    const response = await client.getAppRatings();
+    expect(response).toEqual(ratings);
+  });
 });

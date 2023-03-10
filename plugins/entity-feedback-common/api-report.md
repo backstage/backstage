@@ -4,6 +4,14 @@
 
 ```ts
 // @public (undocumented)
+export interface AppRating {
+  // (undocumented)
+  rating: number;
+  // (undocumented)
+  userRef: string;
+}
+
+// @public (undocumented)
 export interface EntityRatingsData {
   // (undocumented)
   entityRef: string;

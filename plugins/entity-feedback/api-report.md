@@ -6,20 +6,52 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AppRating } from '@backstage/plugin-entity-feedback-common';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CSSProperties } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityRatingsData } from '@backstage/plugin-entity-feedback-common';
 import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { Rating } from '@backstage/plugin-entity-feedback-common';
+import { RatingProps } from '@material-ui/lab';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public (undocumented)
+export const AppRatingButton: (
+  props: AppRatingButtonProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type AppRatingButtonProps = RatingProps & {
+  thankContent?: JSX.Element;
+  thanksTimeout?: number;
+  title?: string;
+};
+
+// @public (undocumented)
+export const AppRatingCard: (props: {
+  showRatingButton?: boolean | undefined;
+  ratingButtonProps?: AppRatingButtonProps | undefined;
+}) => JSX.Element | null;
+
+// @public (undocumented)
+export const AppRatingPopUp: (props: AppRatingPopupProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type AppRatingPopupProps = AppRatingButtonProps & {
+  style?: CSSProperties | undefined;
+  chance?: number;
+};
 
 // @public (undocumented)
 export interface EntityFeedbackApi {
   // (undocumented)
   getAllRatings(): Promise<EntityRatingsData[]>;
+  // (undocumented)
+  getAppRatings(): Promise<AppRating[]>;
   // (undocumented)
   getOwnedRatings(ownerRef: string): Promise<EntityRatingsData[]>;
   // (undocumented)
@@ -28,6 +60,8 @@ export interface EntityFeedbackApi {
   getResponses(
     entityRef: string,
   ): Promise<Omit<FeedbackResponse, 'entityRef'>[]>;
+  // (undocumented)
+  recordAppRating(rating: number): Promise<void>;
   // (undocumented)
   recordRating(entityRef: string, rating: string): Promise<void>;
   // (undocumented)
@@ -46,6 +80,8 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
   // (undocumented)
   getAllRatings(): Promise<EntityRatingsData[]>;
   // (undocumented)
+  getAppRatings(): Promise<AppRating[]>;
+  // (undocumented)
   getOwnedRatings(ownerRef: string): Promise<EntityRatingsData[]>;
   // (undocumented)
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
@@ -53,6 +89,8 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
   getResponses(
     entityRef: string,
   ): Promise<Omit<FeedbackResponse, 'entityRef'>[]>;
+  // (undocumented)
+  recordAppRating(rating: number): Promise<void>;
   // (undocumented)
   recordRating(entityRef: string, rating: string): Promise<void>;
   // (undocumented)

@@ -210,6 +210,33 @@ export async function createRouter(
     res.json(responses.filter(r => accessibleEntityRefs.includes(r.userRef)));
   });
 
+  router.get('/app-ratings', async (_, res) => {
+    const ratings = await dbHandler.getAppRatings();
+    res.status(200).json(ratings);
+  });
+
+  router.post('/app-ratings', async (req, res) => {
+    const user = await identity.getIdentity({ request: req });
+    const rating = req.body.rating;
+    if (!rating) {
+      res.status(400).end();
+      return;
+    }
+
+    const ratingNum = Number(rating);
+    if (isNaN(ratingNum)) {
+      res.status(400).end();
+      return;
+    }
+
+    await dbHandler.recordAppRating({
+      rating: ratingNum,
+      userRef: user?.identity.userEntityRef ?? 'user:default/guest',
+    });
+
+    res.status(201).end();
+  });
+
   router.use(errorHandler());
   return router;
 }

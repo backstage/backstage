@@ -17,6 +17,7 @@
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
+  AppRating,
   EntityRatingsData,
   FeedbackResponse,
   Rating,
@@ -132,5 +133,31 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
     }
 
     return resp.json();
+  }
+
+  async getAppRatings(): Promise<AppRating[]> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
+    const resp = await this.fetchApi.fetch(`${baseUrl}/app-ratings`, {
+      method: 'GET',
+    });
+
+    if (!resp.ok) {
+      throw await ResponseError.fromResponse(resp);
+    }
+
+    return resp.json();
+  }
+
+  async recordAppRating(rating: number) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
+    const resp = await this.fetchApi.fetch(`${baseUrl}/app-ratings`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify({ rating }),
+    });
+
+    if (!resp.ok) {
+      throw await ResponseError.fromResponse(resp);
+    }
   }
 }

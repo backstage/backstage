@@ -304,6 +304,47 @@ describe('DatabaseHandler', () => {
           ]),
         );
       });
+
+      it('getAllAppRatings', async () => {
+        await knex('app_ratings').insert([
+          {
+            user_ref: 'user:default/foo',
+            rating: 3,
+          },
+          {
+            user_ref: 'user:default/foo',
+            rating: 5,
+          },
+          {
+            user_ref: 'user:default/bar',
+            rating: 2,
+          },
+          {
+            user_ref: 'user:default/foo',
+            rating: 5,
+          },
+        ]);
+
+        const entities = await dbHandler.getAppRatings();
+        expect(entities.length).toEqual(4);
+      });
+
+      it('recordAppRating', async () => {
+        const newRating = {
+          userRef: 'user:default/me',
+          rating: 4,
+        };
+
+        await dbHandler.recordAppRating(newRating);
+
+        const ratings = await knex('app_ratings').select();
+        expect(ratings.length).toEqual(1);
+        expect(ratings[0]).toEqual({
+          user_ref: newRating.userRef,
+          rating: newRating.rating,
+          timestamp: expect.anything(),
+        });
+      });
     },
     60000,
   );

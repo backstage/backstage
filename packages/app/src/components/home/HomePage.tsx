@@ -28,6 +28,7 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
+import { AppRatingCard } from '@backstage/plugin-entity-feedback';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
@@ -120,6 +121,9 @@ export const homePage = (
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageStarredEntities />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <AppRatingCard showRatingButton />
         </Grid>
       </Grid>
     </Content>

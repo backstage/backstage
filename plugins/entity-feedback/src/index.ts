@@ -27,6 +27,8 @@ export type {
   FeedbackResponseTableProps,
   StarredRatingButtonsProps,
   StarredRatingsTableProps,
+  AppRatingButtonProps,
+  AppRatingPopupProps,
 } from './components';
 export * from './plugin';
 export * from './api';

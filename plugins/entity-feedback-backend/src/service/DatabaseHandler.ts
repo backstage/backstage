@@ -16,6 +16,7 @@
 
 import { resolvePackagePath } from '@backstage/backend-common';
 import {
+  AppRating,
   FeedbackResponse,
   Rating,
 } from '@backstage/plugin-entity-feedback-common';
@@ -160,5 +161,21 @@ export class DatabaseHandler {
       comments: response.comments,
       consent: Boolean(response.consent),
     }));
+  }
+
+  async getAppRatings(): Promise<AppRating[]> {
+    return (
+      await this.database('app_ratings').select('rating').select('user_ref')
+    ).map(({ rating, user_ref }) => ({
+      rating: Number(rating),
+      userRef: user_ref,
+    }));
+  }
+
+  async recordAppRating(rating: AppRating) {
+    await this.database('app_ratings').insert({
+      rating: rating.rating,
+      user_ref: rating.userRef,
+    });
   }
 }

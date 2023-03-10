@@ -2,7 +2,8 @@
 
 Welcome to the entity-feedback plugin!
 
-This plugin allows you give and view feedback on entities available in the Backstage catalog.
+This plugin allows you to give and view feedback on entities available in the Backstage catalog.
+It also allows you to rate the application itself.
 
 ## Features
 
@@ -33,6 +34,16 @@ This plugin allows you give and view feedback on entities available in the Backs
 #### Star breakdowns
 
 ![Starred rating table example](./docs/starred-rating-table.png)
+
+### Rate application
+
+#### Rating pop up
+
+![Rating popup example](./docs/rating-popup.png)
+
+#### Ratings card
+
+![Rating card example](./docs/rating-card.png)
 
 ## Setup
 

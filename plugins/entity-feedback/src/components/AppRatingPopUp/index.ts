@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  EntityFeedbackResponse,
-  FeedbackResponseDialogProps,
-} from './FeedbackResponseDialog';
-export type { FeedbackResponseTableProps } from './FeedbackResponseTable';
-export type { LikeDislikeButtonsProps } from './LikeDislikeButtons';
-export type { LikeDislikeRatingsTableProps } from './LikeDislikeRatingsTable';
-export type { StarredRatingButtonsProps } from './StarredRatingButtons';
-export type { StarredRatingsTableProps } from './StarredRatingsTable';
-export type { AppRatingButtonProps } from './AppRatingButton';
-export type { AppRatingPopupProps } from './AppRatingPopUp';
+export * from './AppRatingPopUp';

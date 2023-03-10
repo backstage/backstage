@@ -210,3 +210,44 @@ export const StarredRatingsTable = entityFeedbackPlugin.provide(
     },
   }),
 );
+
+/**
+ * @public
+ */
+export const AppRatingButton = entityFeedbackPlugin.provide(
+  createComponentExtension({
+    name: 'AppRatingButton',
+    component: {
+      lazy: () =>
+        import('./components/AppRatingButton/AppRatingButton').then(
+          m => m.AppRatingButton,
+        ),
+    },
+  }),
+);
+
+/**
+ * @public
+ */
+export const AppRatingPopUp = entityFeedbackPlugin.provide(
+  createComponentExtension({
+    name: 'AppRatingPopUp',
+    component: {
+      lazy: () =>
+        import('./components/AppRatingPopUp/AppRatingPopUp').then(
+          m => m.AppRatingPopUp,
+        ),
+    },
+  }),
+);
+
+/** @public */
+export const AppRatingCard = entityFeedbackPlugin.provide(
+  createComponentExtension({
+    name: 'AppRatingCard',
+    component: {
+      lazy: () =>
+        import('./components/AppRatingCard').then(m => m.AppRatingCard),
+    },
+  }),
+);
