@@ -91,7 +91,7 @@ export class CommonValidatorFunctions {
       typeof value === 'string' &&
       value.length >= 1 &&
       value.length <= 63 &&
-      /^(?!\-)[a-z0-9\-]*[a-z0-9]$/.test(value)
+      /^[a-z0-9]+(?:\-+[a-z0-9]+)*$/.test(value)
     );
   }
 
