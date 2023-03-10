@@ -8620,7 +8620,7 @@ __metadata:
     "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@google-cloud/storage": ^6.0.0
-    "@trendyol-js/openstack-swift-sdk": ^0.0.5
+    "@trendyol-js/openstack-swift-sdk": ^0.0.6
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.5
     "@types/js-yaml": ^4.0.0
@@ -14177,15 +14177,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trendyol-js/openstack-swift-sdk@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "@trendyol-js/openstack-swift-sdk@npm:0.0.5"
+"@trendyol-js/openstack-swift-sdk@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@trendyol-js/openstack-swift-sdk@npm:0.0.6"
   dependencies:
     agentkeepalive: ^4.1.4
     axios: ^0.21.1
     axios-cached-dns-resolve: 0.5.2
-    file-type: 16.5.3
-  checksum: 35a3c705aa9b3daa44bef590a8aad4ceda89106ca3368b0d1b574be5aa1f064d42fb0c26e0570481e57be2ad3296d416e27ad37303a3d95d2d65f3df0b2446df
+    file-type: ^16.5.4
+  checksum: 999a1afa5f0dc2b1f41c1c13104f68d147c488b7ee5836581cc5acb485b9e963fb822177b6996a901339a06a9900dd8ff78ed7fd8b1d29f2c2f7809c5c54c62a
   languageName: node
   linkType: hard
 
@@ -23447,14 +23447,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-type@npm:16.5.3":
-  version: 16.5.3
-  resolution: "file-type@npm:16.5.3"
+"file-type@npm:^16.5.4":
+  version: 16.5.4
+  resolution: "file-type@npm:16.5.4"
   dependencies:
     readable-web-to-node-stream: ^3.0.0
     strtok3: ^6.2.4
     token-types: ^4.1.1
-  checksum: 38a4443d0f7b9b3de8a44a1d75d441f9ddb544a1adbf22ec7bc07d135452c3464000c64daa51220ffec6a38ceec7565a1290337bd81aab2e6273c79db5ed9ef3
+  checksum: d983c0f36491c57fcb6cc70fcb02c36d6b53f312a15053263e1924e28ca8314adf0db32170801ad777f09432c32155f31715ceaee66310947731588120d7ec27
   languageName: node
   linkType: hard
 
