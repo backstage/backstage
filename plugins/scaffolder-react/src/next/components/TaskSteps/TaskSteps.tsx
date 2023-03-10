@@ -78,6 +78,7 @@ export const TaskSteps = (props: TaskStepsProps) => {
                   <MuiStepLabel
                     StepIconProps={stepIconProps}
                     StepIconComponent={StepIcon}
+                    data-testid="step-label"
                   >
                     <Box>{step.name}</Box>
                     {!isSkipped && <StepTime step={step} />}

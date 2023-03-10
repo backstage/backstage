@@ -61,4 +61,55 @@ describe('TaskSteps', () => {
       expect(getByText(step.name)).toBeInTheDocument();
     }
   });
+  it('should only show timer for in progress, failed, and completed steps', async () => {
+    const steps = [
+      {
+        id: '1',
+        name: 'Fail',
+        status: 'failed' as ScaffolderTaskStatus,
+
+        startedAt: Date.now().toLocaleString(),
+        endedAt: Date.now().toLocaleString(),
+        action: 'action1',
+      },
+      {
+        id: '2',
+        name: 'Process',
+        status: 'processing' as ScaffolderTaskStatus,
+        startedAt: Date.now().toLocaleString(),
+        action: 'action2',
+      },
+      {
+        id: '3',
+        name: 'Complete',
+        status: 'completed' as ScaffolderTaskStatus,
+        startedAt: Date.now().toLocaleString(),
+        endedAt: Date.now().toLocaleString(),
+        action: 'action3',
+      },
+      {
+        id: '4',
+        name: 'Skip',
+        status: 'skipped' as ScaffolderTaskStatus,
+        startedAt: Date.now().toLocaleString(),
+        action: 'action4',
+      },
+      {
+        id: '5',
+        name: 'Not Started',
+        status: 'open' as ScaffolderTaskStatus,
+        action: 'action5',
+      },
+    ];
+
+    const screen = await renderInTestApp(<TaskSteps steps={steps} />);
+    const stepLabels = await screen.findAllByTestId('step-label');
+    expect(stepLabels.length).toBe(steps.length);
+    for (let i = 0; i < steps.length; i++) {
+      expect(stepLabels[i].textContent?.startsWith(steps[i].name)).toBe(true);
+      expect(stepLabels[i].textContent?.endsWith('seconds')).toBe(
+        steps[i].status !== 'skipped' && !!steps[i].startedAt,
+      );
+    }
+  });
 });
