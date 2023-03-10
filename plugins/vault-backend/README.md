@@ -65,12 +65,16 @@ To get started, first you need a running instance of Vault. You can follow [this
    vault:
      baseUrl: http://your-internal-vault-url.svc
      publicUrl: https://your-vault-url.example.com
-     token: <VAULT_TOKEN>
+     token: <VAULT_TOKEN> # Required for authMethod 'token'. Set to 'none' for authMethod 'approle'.
      secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'
      kvVersion: <kv-version> # Optional. The K/V version that your instance is using. The available options are '1' or '2'
+     listType: metadata # Optional, values: metadata | subkeys, default: metadata
+     authMethod: token # Optional, values: token | approle, default: token
+     authRoleId: <VAULT_ROLEID> # Required for authMethod 'approle'
+     authSecretId: <VAULT_SECRETID> # Required for authMethod 'approle'
    ```
 
-4. Get a `VAULT_TOKEN` with **LIST** permissions, as it's enough for the plugin. You can check [this tutorial](https://learn.hashicorp.com/tutorials/vault/tokens) for more info.
+4. Get a `VAULT_TOKEN` with **LIST** permissions, as it's enough for the plugin, when using the `token` authentication method. You can check [this tutorial](https://learn.hashicorp.com/tutorials/vault/tokens) for more info. For the authentication method `approle` follow [this tutorial](https://developer.hashicorp.com/vault/docs/auth/approle) to get the values for `authRoleId` and `authSecretId`.
 
 5. If you also want to use the `renew` functionality, you need to attach the following block to your custom policy, so that Backstage can perform a token-renew:
    ```
