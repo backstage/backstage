@@ -63,7 +63,7 @@ describe('firehydrant-hooks-getFireHydrantServiceName', () => {
   });
 
   it('should return generated service name', () => {
-    const expected = 'Component:default/test-fh-name';
+    const expected = 'component:default/test-fh-name';
     const e: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
