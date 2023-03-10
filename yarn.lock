@@ -4949,7 +4949,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
@@ -4980,7 +4979,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
@@ -5007,7 +5005,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
@@ -5031,7 +5028,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
@@ -5054,7 +5050,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
     lodash: ^4.17.21
@@ -5077,7 +5073,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/fs-extra": ^9.0.1
     fs-extra: 10.1.0
@@ -5135,7 +5130,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
@@ -5188,7 +5182,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/ldapjs": ^2.2.0
     "@types/lodash": ^4.14.151
@@ -5211,7 +5205,6 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@microsoft/microsoft-graph-types": ^2.6.0
     "@types/lodash": ^4.14.151

@@ -51,7 +51,6 @@
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "@types/node-fetch": "^2.5.12",

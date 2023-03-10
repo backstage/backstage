@@ -8,6 +8,7 @@
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 
 // @public (undocumented)
@@ -141,6 +142,15 @@ export type EntityRelationSpec = {
 
 // @public @deprecated
 export type LocationSpec = LocationSpec_2;
+
+// @public
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec_2;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1;
+
+// @public
+export function locationSpecToMetadataName(location: LocationSpec_2): string;
 
 // @public
 export const processingResult: Readonly<{

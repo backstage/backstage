@@ -21,7 +21,7 @@ import {
   TaskRunner,
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { CodeSearchResultItem } from '../lib';
 import { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
 import { codeSearch } from '../lib';

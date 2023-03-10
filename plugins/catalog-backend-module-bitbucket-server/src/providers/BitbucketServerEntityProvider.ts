@@ -25,7 +25,7 @@ import {
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';

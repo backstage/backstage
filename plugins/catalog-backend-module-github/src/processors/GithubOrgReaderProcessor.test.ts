@@ -20,7 +20,7 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 
