@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
+import React, { ReactNode, useCallback, useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   createVersionedContext,

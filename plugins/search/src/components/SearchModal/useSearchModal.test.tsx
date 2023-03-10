@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useSearchModal } from './useSearchModal';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 
 describe('useSearchModal', () => {
   it.each([
@@ -78,5 +79,22 @@ describe('useSearchModal', () => {
       open: true,
       hidden: true,
     });
+  });
+
+  it('should hide when location changes', () => {
+    const history = createMemoryHistory({ initialEntries: ['/'] });
+
+    const rendered = renderHook(() => useSearchModal(true), {
+      wrapper: ({ children }) => (
+        <Router location={history.location} navigator={history}>
+          {children}
+        </Router>
+      ),
+    });
+
+    expect(rendered.result.current.state.hidden).toBe(false);
+    act(() => history.push('/new/path'));
+    rendered.rerender();
+    expect(rendered.result.current.state.hidden).toBe(true);
   });
 });
