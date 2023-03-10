@@ -212,14 +212,13 @@ backstage-cli new --select plugin --option id=foo
 ```
 
 This command is typically added as script in the root `package.json` to be
-executed with `yarn backstage-create`, using options that are appropriate for
-the organization that owns the app repo. For example you may have it set up like
-this:
+executed with `yarn new`, using options that are appropriate for the organization
+that owns the app repo. For example you may have it set up like this:
 
 ```json
 {
   "scripts": {
-    "backstage-create": "backstage-cli create --scope internal --no-private --npm-registry https://acme.org/npm"
+    "new": "backstage-cli new --scope internal --no-private --npm-registry https://acme.org/npm"
   }
 }
 ```
