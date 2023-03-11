@@ -81,9 +81,7 @@ export const createConfluenceToMarkdownAction = (options: {
       let productArray: string[][] = [];
 
       ctx.logger.info(`Fetching the mkdocs.yml catalog from ${repoUrl}`);
-      ctx.logger.info(confluenceUrls);
-      const params = new URL(confluenceUrls[0]);
-      ctx.logger.info(params.searchParams);
+
       // This grabs the files from Github
       const repoFileDir = `${dirPath}/${parsedRepoUrl.filepath}`;
       await fetchPlainAction.handler({
@@ -99,9 +97,6 @@ export const createConfluenceToMarkdownAction = (options: {
 
         const { spacekey, title, titleWithSpaces } =
           await createConfluenceVariables(confluenceUrl);
-        ctx.logger.info(spacekey);
-        ctx.logger.info(title);
-        ctx.logger.info(titleWithSpaces);
 
         // This calls confluence to get the page html and page id
         const getConfluenceDoc = await fetchConfluence(
