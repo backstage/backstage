@@ -31,17 +31,33 @@ describe('VaultApi', () => {
       token: '1234567890',
     },
   });
+  const subkeysConfig = new ConfigReader({
+    vault: {
+      baseUrl: mockBaseUrl,
+      token: '1234567890',
+      listType: 'subkeys',
+    },
+  });
+  const approleConfig = new ConfigReader({
+    vault: {
+      baseUrl: mockBaseUrl,
+      token: 'none',
+      authMethod: 'approle',
+      authRoleId: 'abcdefghijklm',
+      authSecretId: 'nopqrstuvwxyz',
+    },
+  });
 
   const mockListResult: VaultSecretList = {
     data: {
       keys: ['secret::one', 'secret::two'],
-      subkeys: [],
+      subkeys: {},
     },
   };
   const mockListResultEmpty: VaultSecretList = {
     data: {
       keys: [],
-      subkeys: [],
+      subkeys: {},
     },
   };
 
@@ -60,6 +76,30 @@ describe('VaultApi', () => {
     },
   ];
 
+  const mockListSubkeysResult: VaultSecretList = {
+    data: {
+      keys: [],
+      subkeys: {
+        subkey_one: null,
+        subkey_two: null,
+      },
+    },
+  };
+  const mockSecretsSubkeysResult: VaultSecret[] = [
+    {
+      name: 'subkey_one',
+      path: 'test/success/', // NOTE: The trailing slash fixes wrong UI display behavior
+      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success`,
+      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success`,
+    },
+    {
+      name: 'subkey_two',
+      path: 'test/success/', // NOTE: The trailing slash fixes wrong UI display behavior
+      editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success`,
+      showUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/show/test/success`,
+    },
+  ];
+
   const setupHandlers = () => {
     server.use(
       rest.get(
@@ -74,29 +114,64 @@ describe('VaultApi', () => {
           return res(ctx.json(mockListResultEmpty));
         },
       ),
+      rest.get(
+        `${mockBaseUrl}/v1/secrets/subkeys/test/success`,
+        (_, res, ctx) => {
+          return res(ctx.json(mockListSubkeysResult));
+        },
+      ),
+      rest.get(
+        `${mockBaseUrl}/v1/secrets/subkeys/test/error`,
+        (_, res, ctx) => {
+          return res(ctx.json(mockListResultEmpty));
+        },
+      ),
       rest.post(`${mockBaseUrl}/v1/auth/token/renew-self`, (_, res, ctx) => {
         return res(ctx.json({ auth: { client_token: '0987654321' } }));
+      }),
+      rest.post(`${mockBaseUrl}/v1/auth/approle/login`, (_, res, ctx) => {
+        return res(ctx.json({ auth: { client_token: '0123456789abcdef' } }));
       }),
     );
   };
 
-  it('should return secrets', async () => {
+  it('should return secrets for metadata list type', async () => {
     setupHandlers();
     const api = new VaultClient({ config });
     const secrets = await api.listSecrets('test/success');
     expect(secrets).toEqual(mockSecretsResult);
   });
 
-  it('should return empty secret list', async () => {
+  it('should return empty secret list for metadata list type', async () => {
     setupHandlers();
     const api = new VaultClient({ config });
     const secrets = await api.listSecrets('test/error');
     expect(secrets).toEqual([]);
   });
 
-  it('should return success token renew', async () => {
+  it('should return secrets for subkeys list type', async () => {
+    setupHandlers();
+    const api = new VaultClient({ config: subkeysConfig });
+    const secrets = await api.listSecrets('test/success');
+    expect(secrets).toEqual(mockSecretsSubkeysResult);
+  });
+
+  it('should return empty secret list for subkeys list type', async () => {
+    setupHandlers();
+    const api = new VaultClient({ config: subkeysConfig });
+    const secrets = await api.listSecrets('test/error');
+    expect(secrets).toEqual([]);
+  });
+
+  it('should return success token renew for token auth method', async () => {
     setupHandlers();
     const api = new VaultClient({ config });
+    expect(await api.renewToken()).toBe(undefined);
+  });
+
+  it('should return success token renew for approle auth method', async () => {
+    setupHandlers();
+    const api = new VaultClient({ config: approleConfig });
     expect(await api.renewToken()).toBe(undefined);
   });
 
