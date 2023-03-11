@@ -1,0 +1,49 @@
+{
+  "name": "@backstage/plugin-scaffolder-backend-module-confluence-to-markdowwn",
+  "description": "The confluence-to-markdowwn module for @backstage/plugin-scaffolder-backend",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "help": "backstage-cli help"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.1.0",
+    "git-url-parse": "^13.1.0",
+    "node-fetch": "2.6.7",
+    "node-html-markdown": "^1.3.0",
+    "yaml": "^2.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "mock-fs": "^5.2.0",
+    "os": "^0.1.2"
+  },
+  "files": [
+    "dist"
+  ]
+}
