@@ -1,6 +1,6 @@
 # Project Areas
 
-The Backstage project is divided into several project areas, each covering particular parts of the project. The main driver for each area is ownership of code in the main Backstage repository, as well as other repositories in the Backstage GitHub organization. Each area has a set of maintainers and repository content that they own. There may be no overlap in ownership between areas, which is defined as multiple owners for a single line in the GitHub code owners file. Each area is represented by a team in the Backstage GitHub organization. Apart from certain project-wide concerns, such as the release process, each area is self-governing and chooses their own ways of working. Project areas may also have special interest groups (SIGs) related to their area, but this is not required.
+The Backstage project is divided into several project areas, each covering particular parts of the project. The main driver for each area is ownership of code in the main Backstage repository, as well as other repositories in the Backstage GitHub organization. Each area has a set of maintainers and repository content that they own. There may be no overlap in ownership between areas, which means that any given line in the GitHub code owners file should have only one owner specified. Each area is represented by a team in the Backstage GitHub organization. Apart from certain project-wide concerns, such as the release process, each area is self-governing and chooses their own ways of working. Project areas may also have special interest groups (SIGs) related to their area, but this is not required.
 
 The project areas as well as their maintainers are listed in the [OWNERS.md](./OWNERS.md) file.
 
@@ -41,11 +41,11 @@ A Contributor contributes directly to the project and adds value to it. Contribu
 - Report and sometimes resolve issues
 - Occasionally submit PRs
 - Contribute to the documentation
-- Show up at meetings, takes notes
+- Show up at meetings, take notes
 - Answer questions from other community members
 - Submit feedback on issues and PRs
 - Test releases and patches and submit reviews
-- Run or helps run events
+- Run or help run events
 - Promote the project in public
 
 ## Organization Member
@@ -71,7 +71,7 @@ An Organization Member must meet the responsibilities and has the requirements o
 
 ### Becoming an Organization Member
 
-Open an issue towards https://github.com/backstage/community using the [org membership request template](#TODO).
+Open an issue towards [the community repository](https://github.com/backstage/community) using the [org membership request template](#TODO).
 
 ### Privileges
 
@@ -79,9 +79,9 @@ Open an issue towards https://github.com/backstage/community using the [org memb
 
 ## Plugin Maintainer
 
-A Plugin Maintainer is responsible for maintaining an individual Backstage plugin or module. This includes reviewing contributions and respond to issues towards an individual plugin, as well as keeping the plugin up to date.
+A Plugin Maintainer is responsible for maintaining an individual Backstage plugin or module. This includes reviewing contributions and responding to issues towards an individual plugin, as well as keeping the plugin up to date.
 
-Plugin Maintainer is a lightweight form of ownership that is primarily reflected though code owners of the plugin packages in the [CODEOWNERS.md](./.github/CODEOWNERS) file. Each plugin can have one or more maintainers. If a plugin becomes a significant part of the Backstage ecosystem, it may be promoted to be a distinct project area instead.
+Plugin Maintainer is a lightweight form of ownership that is primarily reflected though code owners of the plugin packages in the [CODEOWNERS](./.github/CODEOWNERS) file. Each plugin can have one or more maintainers. If a plugin becomes a significant part of the Backstage ecosystem, it may be promoted to be a distinct project area instead.
 
 A Plugin Maintainer has all the rights and responsibilities of an Organization Member.
 
@@ -90,7 +90,7 @@ A Plugin Maintainer has all the rights and responsibilities of an Organization M
 - Review the majority of PRs towards the plugin
 - Respond to GitHub issues related to the plugin
 - Keep the plugin up-to-date with Backstage libraries and other dependencies
-- Follow the [reviewing guide](https://github.com/backstage/backstage/blob/master/REVIEWING.md)
+- Follow the [reviewing guide](REVIEWING.md)
 
 ### Requirements
 
@@ -117,7 +117,7 @@ A Project Area Maintainer has all the rights and responsibilities of an Organiza
 ### Responsibilities
 
 - Review PRs towards their project area. Project area maintainers are expected to review at least 20 PRs per year, or the majority of all PRs towards the area
-- Follow the [reviewing guide](https://github.com/backstage/backstage/blob/master/REVIEWING.md)
+- Follow the [reviewing guide](REVIEWING.md)
 - Triage and respond to issues related to their project area
 - Mentor new project area maintainers
 - Write refactoring PRs
@@ -142,7 +142,7 @@ A Project Area Maintainer has all the rights and responsibilities of an Organiza
 
 If you are interested in becoming a project area maintainer, reach out to the existing maintainers for that area. If you wish to become a maintainer for a new area, reach out to the core maintainers.
 
-Any current project area maintainer or core maintainer may nominate a new project area maintainer by opening a PR towards the [OWNERS.md](https://github.com/backstage/backstage/blob/master/OWNERS.md) file. A majority of the project area maintainers for that area must approve the PR. If there are no existing maintainers for that area, the PR must be approved by a majority of the core maintainers.
+Any current project area maintainer or core maintainer may nominate a new project area maintainer by opening a PR towards the [OWNERS.md](OWNERS.md) file. A majority of the project area maintainers for that area must approve the PR. If there are no existing maintainers for that area, the PR must be approved by a majority of the core maintainers.
 
 ## Core Maintainer
 
@@ -178,7 +178,7 @@ A Core Maintainer have all the rights and responsibilities of a Project Area Mai
 
 ### Becoming a Core Maintainer
 
-Any core maintainer or end user sponsor may nominate a new core maintainer by opening a PR towards the [OWNERS.md](https://github.com/backstage/backstage/blob/master/OWNERS.md) file. Core maintainers must be approved by a majority of the existing core maintainers and end user sponsors.
+Any core maintainer or end user sponsor may nominate a new core maintainer by opening a PR towards the [OWNERS.md](OWNERS.md) file. Core maintainers must be approved by a majority of the existing core maintainers and end user sponsors.
 
 ## End User Sponsors
 
@@ -207,7 +207,7 @@ In all cases in this document where voting is mentioned, the voting process is a
 
 ## Inactivity
 
-It is important for contributors to be and stay active to set an example and show commitment to the project. Inactivity is harmful to the project as it may lead to unexpected delays, contributor attrition, and a lost of trust in the project.
+It is important for contributors to be and stay active to set an example and show commitment to the project. Inactivity is harmful to the project as it may lead to unexpected delays, contributor attrition, and a loss of trust in the project.
 
 Inactivity is measured by periods of no contributions for longer than:
 
