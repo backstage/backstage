@@ -27,7 +27,7 @@ import { getVaultConfig, VaultConfig } from '../config';
 export type VaultSecretList = {
   data: {
     keys: string[];
-    subkeys: string[];
+    subkeys: { [key: string]: any };
   };
 };
 
@@ -92,7 +92,7 @@ export class VaultClient implements VaultApi {
   ): Promise<T> {
     const url = new URL(path, this.vaultConfig.baseUrl);
     let fullUrl = url.toString();
-    if (query) {
+    if (Object.keys(query).length > 0) {
       fullUrl += `?${new URLSearchParams(query).toString()}`;
     }
     const headers: Record<string, string> = {
@@ -158,7 +158,7 @@ export class VaultClient implements VaultApi {
       const vaultUrl = this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
       secrets.push({
         name: key,
-        path: '',
+        path: `${secretPath}/`, // NOTE: The trailing slash fixes wrong UI display behavior
         editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}`,
         showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}`,
       });
