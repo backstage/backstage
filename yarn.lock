@@ -17562,14 +17562,14 @@ __metadata:
   linkType: hard
 
 "aws-sdk-client-mock-jest@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "aws-sdk-client-mock-jest@npm:2.1.0"
+  version: 2.1.1
+  resolution: "aws-sdk-client-mock-jest@npm:2.1.1"
   dependencies:
     "@types/jest": ^28.1.3
     tslib: ^2.1.0
   peerDependencies:
-    aws-sdk-client-mock: 2.1.0
-  checksum: 567e2084d71c90f71e5bfa82f2a4b592fec5ea818cb4edf3586f922454cee4fec1403d4161d3d91a3db3ccebe1db5babe069754d76204c7f6986ab71bafb1084
+    aws-sdk-client-mock: 2.1.1
+  checksum: 4b5ca96bbcaa60ea3ea947821c7ff1f073c1342a12ce5c778b70832bdcc6106e10591e98e09b22c5b0d83dfc6fe554e8a08d5df5cf067a7eaadb804087b891ed
   languageName: node
   linkType: hard
 
