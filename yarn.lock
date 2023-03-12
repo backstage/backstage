@@ -14262,11 +14262,11 @@ __metadata:
   linkType: hard
 
 "@types/archiver@npm:^5.1.0, @types/archiver@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "@types/archiver@npm:5.3.1"
+  version: 5.3.2
+  resolution: "@types/archiver@npm:5.3.2"
   dependencies:
-    "@types/glob": "*"
-  checksum: 1c6babc7f50acf5bf7fa3d5fa76bb68702e4463e6a412d259cdddff611dbbb9832ea4b2f41d675fd95ac1aa8b087daa882423073e41db9e296f14d41f2ea88e6
+    "@types/readdir-glob": "*"
+  checksum: 9db5b4fdc1740fa07d08340ed827598cc6eda97406ac18a06a158670c7124d4120650a3b9cd660e9e39b42f033cf8f052566da32681e8ad91163473df88a3c4c
   languageName: node
   linkType: hard
 
@@ -15685,6 +15685,15 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: a51b98dd87838d161278fdf9dd78e6a4ff8c018f406d6647f77963e144fb52a8beee40c89fd0e7e840eaeaa8bd9fe2f34519410540b1a52d43a6f8b4d2fbce33
+  languageName: node
+  linkType: hard
+
+"@types/readdir-glob@npm:*":
+  version: 1.1.0
+  resolution: "@types/readdir-glob@npm:1.1.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 98cabfac6beddd3aeb3624e05d57b8dd1354431e436e9e795aaf74ddf2f1c23342d7b8df7586cc3d1374ceeee0d7975638fae97cb1739572d8a4067ebebb91d9
   languageName: node
   linkType: hard
 
