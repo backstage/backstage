@@ -22,11 +22,48 @@ import { JsonValue } from '@backstage/types';
  * @public
  */
 export type Check = {
+  /**
+   * Unique identifier of the check
+   *
+   * Used to identify which checks to use when running checks.
+   */
   id: string;
+
+  /**
+   * Type identifier for the check.
+   * Can be used to determine storage options, logical routing to correct FactChecker implementation
+   * or to help frontend render correct component types based on this
+   */
   type: string;
+
+  /**
+   * Human readable name of the check, may be displayed in the UI
+   */
   name: string;
+
+  /**
+   * Human readable description of the check, may be displayed in the UI
+   */
   description: string;
+
+  /**
+   * A collection of string referencing fact rows that a check will be run against.
+   *
+   * References the fact container, aka fact retriever itself which may or may not contain multiple individual facts and values
+   */
   factIds: string[];
+
+  /**
+   * Metadata to be returned in case a check has been successfully evaluated
+   * Can contain links, description texts or other actionable items
+   */
+  successMetadata?: Record<string, any>;
+
+  /**
+   * Metadata to be returned in case a check evaluation has ended in failure
+   * Can contain links, description texts or other actionable items
+   */
+  failureMetadata?: Record<string, any>;
 };
 
 /**
