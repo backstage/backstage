@@ -30,13 +30,7 @@ export function resolveCodeOwner(
   const { filepath } = parseGitUrl(catalogInfoFileUrl);
   const match = codeowners.matchFile(filepath, codeOwnerEntries);
 
-  if (!match) {
-    throw new Error(
-      `There is no matching entry for path: ${filepath} in the CODEOWNERS file`,
-    );
-  }
-
-  return normalizeCodeOwner(match.owners[0]);
+  return match ? normalizeCodeOwner(match.owners[0]) : undefined;
 }
 
 export function normalizeCodeOwner(owner: string) {
