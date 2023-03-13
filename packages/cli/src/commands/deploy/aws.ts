@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import * as pulumi from '@pulumi/pulumi';
+import inquirer from 'inquirer';
 
 import { OptionValues } from 'commander';
 import { AWSProgram } from './programs';
@@ -67,6 +68,7 @@ export default async (opts: OptionValues) => {
     stackName: opts.stack,
     projectName: opts.stack,
     program: AWSProgram(opts),
+    workDir: paths.targetRoot,
   };
 
   const stack = await pulumi.automation.LocalWorkspace.createOrSelectStack(
@@ -85,10 +87,29 @@ export default async (opts: OptionValues) => {
   Task.log('refresh complete');
 
   if (opts.destroy) {
-    Task.log(`Destroying ${opts.destroy} stack`);
-    await stack.destroy({ onOutput: Task.log });
+    const answer = await inquirer.prompt({
+      type: 'confirm',
+      name: 'result',
+      message: `You are about to delete all the resources from ${opts.stack}, are you sure you want to continue`,
+    });
+    if (answer.result) {
+      Task.log(`Destroying ${opts.stack} stack`);
+      await stack.destroy({ onOutput: Task.log });
+      Task.log('Destroy process complete');
+    } else {
+      Task.log('Destroy process cancelled');
+    }
+    process.exit(0);
   }
 
   Task.log(`updating stack...`);
-  await stack.up({ onOutput: Task.log });
+
+  const upRes = await stack.up({ onOutput: Task.log });
+  Task.log(
+    `update summary: \n${JSON.stringify(
+      upRes.summary.resourceChanges,
+      null,
+      4,
+    )}`,
+  );
 };

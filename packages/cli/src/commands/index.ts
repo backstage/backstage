@@ -246,7 +246,7 @@ export function registerDeployCommand(program: Command) {
       false,
     )
     .option('--stack <name>', 'name of the stack', 'backstage')
-    .option('--destroy <stack>', 'name of the stack to destroy')
+    .option('--destroy', 'name of the stack to destroy', false)
     .option('--region <region>', 'region of your aws console', 'us-east-1')
     .option(
       '--env <name>=<value>',

@@ -33,6 +33,7 @@ export const AWSProgram = (opts: OptionValues) => {
     );
     const repository = new awsx.ecr.Repository(`${opts.stack}`, {
       name: opts.stack,
+      forceDelete: true,
     });
 
     const image = new awsx.ecr.Image(`${opts.stack}-image`, {
