@@ -325,7 +325,7 @@ export class KubernetesFanOutHandler {
           (item.resources !== undefined &&
             item.resources.length >= 1 &&
             item.resources.some(
-              fr => fr.resources && fr.resources.length >= 1,
+              fr => fr.resources?.length >= 1,
             )),
       ),
     };
