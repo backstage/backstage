@@ -95,4 +95,15 @@ export class AzureSitesApi {
     }
     return { items: items };
   }
+
+  async validateSite(annotationName: string, siteName: string) {
+    const azureSites = await this.list({
+      name: annotationName,
+    });
+    for (const site of azureSites.items) {
+      if (site.name === siteName) return true;
+    }
+
+    return false;
+  }
 }

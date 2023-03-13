@@ -54,6 +54,7 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.get('/list/:name', async (request, response) => {
+    logger.debug('fetching azure sites');
     const { name } = request.params;
     response.json(
       await azureSitesApi.list({
@@ -70,14 +71,13 @@ export async function createRouter(
       );
       const entity = request.body.entity;
       const resourceRef = stringifyEntityRef(entity);
-      const matchAnnotation = name.match(
-        new RegExp(
-          entity.metadata.annotation?.[AZURE_WEB_SITE_NAME_ANNOTATION],
-        ),
-      );
 
-      if (!matchAnnotation) {
-        throw new NotAllowedError('Annotation Mismatched');
+      const annotationName =
+        entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
+      if (await azureSitesApi.validateSite(annotationName, name)) {
+        throw new NotAllowedError(
+          'Site name mismatched with entity annocation',
+        );
       }
 
       const decision = (
@@ -111,14 +111,13 @@ export async function createRouter(
       );
       const entity = request.body.entity;
       const resourceRef = stringifyEntityRef(entity);
-      const matchAnnotation = name.match(
-        new RegExp(
-          entity.metadata.annotation?.[AZURE_WEB_SITE_NAME_ANNOTATION],
-        ),
-      );
 
-      if (!matchAnnotation) {
-        throw new NotAllowedError('Annotation Mismatched');
+      const annotationName =
+        entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
+      if (await azureSitesApi.validateSite(annotationName, name)) {
+        throw new NotAllowedError(
+          'Site name mismatched with entity annocation',
+        );
       }
 
       const decision = (

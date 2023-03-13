@@ -22,6 +22,8 @@ export class AzureSitesApi {
   start(request: AzureSiteStartStopRequest): Promise<void>;
   // (undocumented)
   stop(request: AzureSiteStartStopRequest): Promise<void>;
+  // (undocumented)
+  validateSite(annotationName: string, siteName: string): Promise<boolean>;
 }
 
 // @public (undocumented)
