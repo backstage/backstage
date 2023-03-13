@@ -63,6 +63,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
         files.push({
           path: this.stream[i].path,
           content: () => getRawBody(this.stream[i].data),
+          lastModifiedAt: this.stream[i]?.lastModifiedAt,
         });
       }
     }
