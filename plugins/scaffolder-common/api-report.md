@@ -40,7 +40,7 @@ export interface TaskStep {
 // @public
 export interface TemplateEntityStepV1beta3 extends JsonObject {
   // (undocumented)
-  'backstage:permissions'?: TemplateSpecValuesMetadata;
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
   // (undocumented)
   action: string;
   // (undocumented)
@@ -59,7 +59,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   kind: 'Template';
   spec: {
     type: string;
-    parameters?: TemplateParameter | TemplateParameter[];
+    parameters?: TemplateParameterV1beta3 | TemplateParameterV1beta3[];
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
@@ -81,13 +81,13 @@ export type TemplateInfo = {
 };
 
 // @public
-export interface TemplateParameter extends JsonObject {
+export interface TemplateParameterV1beta3 extends JsonObject {
   // (undocumented)
-  'backstage:permissions'?: TemplateSpecValuesMetadata;
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
 }
 
 // @public
-export interface TemplateSpecValuesMetadata extends JsonObject {
+export interface TemplatePermissionsV1beta3 extends JsonObject {
   // (undocumented)
   tags?: string[];
 }
