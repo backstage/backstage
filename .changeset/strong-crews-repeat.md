@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-shortcuts': minor
+'@backstage/plugin-shortcuts': patch
 ---
 
 Allow external links to be added as shortcuts
