@@ -99,7 +99,7 @@ export default async (opts: OptionValues) => {
     } else {
       Task.log('Destroy process cancelled');
     }
-    process.exit(0);
+    return;
   }
 
   Task.log(`updating stack...`);
