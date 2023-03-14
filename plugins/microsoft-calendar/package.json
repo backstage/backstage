@@ -13,10 +13,24 @@
     "role": "frontend-plugin"
   },
   "author": {
-    "name": "Abhay Soni",
-    "email": "abhaysoni.developer@gmail.com",
-    "url": "https://github.com/Abhay-soni-developer"
+    "name": "Statusneo",
+    "email": "reach@statusneo.com",
+    "url": "https://statusneo.com/"
   },
+  "contributors": [
+    {
+      "email": "abhaysoni.developer@gmail.com",
+      "url": "https://github.com/Abhay-soni-developer",
+      "name": "abhaysoni"
+    }
+  ],
+  "maintainers": [
+    {
+      "email": "abhaysoni.developer@gmail.com",
+      "url": "https://github.com/Abhay-soni-developer",
+      "name": "abhaysoni"
+    }
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
