@@ -17,13 +17,7 @@
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-import {
-  Content,
-  ContentHeader,
-  Header,
-  Page,
-  SupportButton,
-} from '@backstage/core-components';
+import { Content, Header, Page } from '@backstage/core-components';
 import {
   EntityKindPicker,
   EntityListProvider,
@@ -33,16 +27,16 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { CategoryPicker } from './CategoryPicker';
-import { RegisterExistingButton } from './RegisterExistingButton';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
-import { registerComponentRouteRef } from '../../routes';
 import { ContextMenu } from './ContextMenu';
+import { TemplateListContentHeader } from './TemplateListContentHeader';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
+  TemplatePageHeaderComponent?: typeof Header;
+  TemplateListContentHeaderComponent?: React.ComponentType<{}>;
   groups?: TemplateGroupFilter[];
   contextMenu?: {
     editor?: boolean;
@@ -67,8 +61,12 @@ const createGroupsWithOther = (
 ];
 
 export const TemplateListPage = (props: TemplateListPageProps) => {
-  const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const { TemplateCardComponent, groups: givenGroups = [] } = props;
+  const {
+    TemplateCardComponent,
+    TemplatePageHeaderComponent = Header,
+    TemplateListContentHeaderComponent = TemplateListContentHeader,
+    groups: givenGroups = [],
+  } = props;
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups)
@@ -77,26 +75,15 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   return (
     <EntityListProvider>
       <Page themeId="website">
-        <Header
+        <TemplatePageHeaderComponent
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
         >
           <ContextMenu {...props.contextMenu} />
-        </Header>
+        </TemplatePageHeaderComponent>
         <Content>
-          <ContentHeader title="Available Templates">
-            <RegisterExistingButton
-              title="Register Existing Component"
-              to={registerComponentLink && registerComponentLink()}
-            />
-            <SupportButton>
-              Create new software components using standard templates. Different
-              templates create different kinds of components (services,
-              websites, documentation, ...).
-            </SupportButton>
-          </ContentHeader>
-
+          <TemplateListContentHeaderComponent />
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntitySearchBar />
