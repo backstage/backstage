@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
-/**
- * A Backstage plugin that integrates towards FireHydrant
- *
- * @packageDocumentation
- */
-
-export {
-  firehydrantPlugin,
-  FirehydrantCard,
-  isFireHydrantAvailable,
-} from './plugin';
+export const FIREHYDRANT_SERVICE_NAME_ANNOTATION =
+  'firehydrant.com/service-name';
+/** @public */
+export const isFireHydrantAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[FIREHYDRANT_SERVICE_NAME_ANNOTATION]);
+export const getFireHydrantServiceName = (entity: Entity) =>
+  entity?.metadata.annotations?.[FIREHYDRANT_SERVICE_NAME_ANNOTATION] ??
+  stringifyEntityRef(entity);
