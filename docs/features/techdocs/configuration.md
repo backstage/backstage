@@ -37,6 +37,11 @@ techdocs:
 
     pullImage: true
 
+    # (Optional) techdocs.generator.defaultEditUri can be used to set a value that will be used by default for all generated techdocs that do not have an edit_uri value in the mkdocs.yml file.
+    # if {docs_dir} is included in the string, the docs_dir provided in a mkdocs.yml will be used in this position if it exists otherwise it will default to 'docs'.
+
+    defaultEditUri: 'edit/main/{docs_dir}'
+
     mkdocs:
       # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
       # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
