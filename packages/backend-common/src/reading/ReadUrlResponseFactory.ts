@@ -61,6 +61,7 @@ export class ReadUrlResponseFactory {
         return stream;
       },
       etag: options?.etag,
+      lastModifiedAt: options?.lastModifiedAt,
     };
   }
 

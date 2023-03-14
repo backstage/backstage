@@ -297,23 +297,26 @@ describe('AwsS3UrlReader', () => {
           ),
         ),
         ETag: '123abc',
+        LastModified: new Date('2020-01-01T00:00:00Z'),
       });
     });
 
     it('returns contents of an object in a bucket via buffer', async () => {
-      const { buffer, etag } = await reader.readUrl(
+      const { buffer, etag, lastModifiedAt } = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
       expect(etag).toBe('123abc');
+      expect(lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
       const response = await buffer();
       expect(response.toString().trim()).toBe('site_name: Test');
     });
 
     it('returns contents of an object in a bucket via stream', async () => {
-      const { buffer, etag } = await reader.readUrl(
+      const { buffer, etag, lastModifiedAt } = await reader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
       expect(etag).toBe('123abc');
+      expect(lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
       const response = await buffer();
       expect(response.toString().trim()).toBe('site_name: Test');
     });
@@ -397,6 +400,41 @@ describe('AwsS3UrlReader', () => {
           'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
           {
             etag: '123abc',
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('readUrl with lastModifiedAfter', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      s3Client.reset();
+      const t = new S3ServiceException({
+        name: '304',
+        $fault: 'client',
+        $metadata: { httpStatusCode: 304 },
+      });
+      s3Client.on(GetObjectCommand).rejects(t);
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      await expect(
+        reader.readUrl!(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+          {
+            lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
           },
         ),
       ).rejects.toThrow(NotModifiedError);

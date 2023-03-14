@@ -184,7 +184,7 @@ describe('GitlabUrlReader', () => {
       treeResponseFactory,
     });
 
-    it('should throw NotModified on HTTP 304', async () => {
+    it('should throw NotModified on HTTP 304 from etag', async () => {
       worker.use(
         rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
@@ -205,13 +205,44 @@ describe('GitlabUrlReader', () => {
       ).rejects.toThrow(NotModifiedError);
     });
 
-    it('should return etag in response', async () => {
+    it('should throw NotModified on HTTP 304 from lastModifiedAt', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+          res(ctx.status(200), ctx.json({ id: 12345 })),
+        ),
+        rest.get('*', (req, res, ctx) => {
+          expect(req.headers.get('If-Modified-Since')).toBe(
+            new Date('2019 12 31 23:59:59 GMT').toUTCString(),
+          );
+          return res(ctx.status(304));
+        }),
+      );
+
+      await expect(
+        reader.readUrl!(
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+          {
+            lastModifiedAfter: new Date('2019 12 31 23:59:59 GMT'),
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should return etag and last-modified in response', async () => {
       worker.use(
         rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
         rest.get('*', (_req, res, ctx) => {
-          return res(ctx.status(200), ctx.set('ETag', '999'), ctx.body('foo'));
+          return res(
+            ctx.status(200),
+            ctx.set('ETag', '999'),
+            ctx.set(
+              'Last-Modified',
+              new Date('2020 01 01 00:0:00 GMT').toUTCString(),
+            ),
+            ctx.body('foo'),
+          );
         }),
       );
 
@@ -219,6 +250,7 @@ describe('GitlabUrlReader', () => {
         'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
       );
       expect(result.etag).toBe('999');
+      expect(result.lastModifiedAt).toEqual(new Date('2020 01 01 00:0:00 GMT'));
       const content = await result.buffer();
       expect(content.toString()).toBe('foo');
     });
