@@ -92,38 +92,50 @@ export class GitLabClient {
   }
 
   async getGroupMembers(groupPath: string): Promise<number[]> {
-    const response: GitLabGroupMembersResponse = await fetch(
-      `${this.config.baseUrl}/api/graphql`,
-      {
-        method: 'POST',
-        headers: {
-          ...getGitLabRequestOptions(this.config).headers,
-          ['Content-Type']: 'application/json',
-        },
-        body: JSON.stringify({
-          variables: { group: groupPath },
-          query: `query($group: ID!) {
-          group(fullPath: $group) {
-            groupMembers(first: 10, relations: [DIRECT]) {
-              nodes {
-                user {
-                  id
+    const memberIds = [];
+    let hasNextPage: boolean = false;
+    let endCursor: string | null = null;
+    do {
+      const response: GitLabGroupMembersResponse = await fetch(
+        `${this.config.baseUrl}/api/graphql`,
+        {
+          method: 'POST',
+          headers: {
+            ...getGitLabRequestOptions(this.config).headers,
+            ['Content-Type']: 'application/json',
+          },
+          body: JSON.stringify({
+            variables: { group: groupPath, endCursor },
+            query: `query($group: ID!, $endCursor: String) {
+              group(fullPath: $group) {
+                groupMembers(first: 100, relations: [DIRECT], after: $endCursor) {
+                  nodes {
+                    user {
+                      id
+                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
                 }
               }
-            }
-          }
-        }`,
-        }),
-      },
-    ).then(r => r.json());
-    if (response.errors) {
-      throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
-    }
-
-    return response.data.group.groupMembers.nodes.map(
-      (node: { user: { id: string } }) =>
-        Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
-    );
+            }`,
+          }),
+        },
+      ).then(r => r.json());
+      if (response.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
+      }
+      memberIds.push(
+        ...response.data.group.groupMembers.nodes.map(
+          (node: { user: { id: string } }) =>
+            Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+        ),
+      );
+      ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
+    } while (hasNextPage);
+    return memberIds;
   }
 
   /**

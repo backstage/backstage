@@ -409,6 +409,10 @@ describe('GitLabClient', () => {
                 group: {
                   groupMembers: {
                     nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+                    pageInfo: {
+                      endCursor: 'end',
+                      hasNextPage: false,
+                    },
                   },
                 },
               }),
@@ -445,6 +449,38 @@ describe('GitLabClient', () => {
       await expect(() => client.getGroupMembers('group1')).rejects.toThrow(
         'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
       );
+    });
+
+    it('traverses multi-page results', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((req, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: req.variables.endCursor
+                      ? [{ user: { id: 'gid://gitlab/User/2' } }]
+                      : [{ user: { id: 'gid://gitlab/User/1' } }],
+                    pageInfo: {
+                      endCursor: req.variables.endCursor ? 'end' : 'next',
+                      hasNextPage: !req.variables.endCursor,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const members = await client.getGroupMembers('group1');
+
+      expect(members).toEqual([1, 2]);
     });
   });
 });

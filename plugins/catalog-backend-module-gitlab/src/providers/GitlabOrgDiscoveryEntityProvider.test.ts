@@ -329,6 +329,10 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                     req.variables.group === 'group1/group2'
                       ? [{ user: { id: 'gid://gitlab/User/1' } }]
                       : [],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
                 },
               },
             }),
