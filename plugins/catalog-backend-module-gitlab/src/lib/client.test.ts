@@ -18,10 +18,10 @@ import { ConfigReader } from '@backstage/config';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
-import { rest } from 'msw';
+import { graphql, rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
 import { GitLabClient, paginated } from './client';
-import { GitLabUser } from './types';
+import { GitLabGroup, GitLabUser } from './types';
 
 const server = setupServer();
 setupRequestMockHandlers(server);
@@ -31,6 +31,7 @@ const MOCK_CONFIG = readGitLabIntegrationConfig(
     host: 'example.com',
     token: 'test-token',
     apiBaseUrl: 'https://example.com/api/v4',
+    baseUrl: 'https://example.com',
   }),
 );
 const FAKE_PAGED_ENDPOINT = `/some-endpoint`;
@@ -338,6 +339,7 @@ describe('GitLabClient', () => {
       },
     ]);
   });
+
   it('listGroups gets all groups in the instance', async () => {
     server.use(
       rest.get(`${MOCK_CONFIG.apiBaseUrl}/groups`, (_, res, ctx) =>
@@ -394,6 +396,32 @@ describe('GitLabClient', () => {
         parent_id: null,
       },
     ]);
+  });
+
+  it('getGroupMembers gets member IDs', async () => {
+    server.use(
+      graphql
+        .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+        .operation((_, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                groupMembers: {
+                  nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+                },
+              },
+            }),
+          ),
+        ),
+    );
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const members = await client.getGroupMembers('group1');
+
+    expect(members).toEqual([1]);
   });
 });
 

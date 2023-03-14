@@ -20,7 +20,7 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
-import { GitLabGroup, GitLabMembership, GitLabUser } from './types';
+import { GitLabGroup, GitLabGroupMembersResponse, GitLabUser } from './types';
 
 export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
@@ -91,30 +91,37 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
-  async getUserMemberships(userId: number): Promise<GitLabMembership[]> {
-    const endpoint: string = `/users/${encodeURIComponent(userId)}/memberships`;
-    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
-    request.searchParams.append('per_page', '100');
+  async getGroupMembers(groupPath: string): Promise<number[]> {
+    const response: GitLabGroupMembersResponse = await fetch(
+      `${this.config.baseUrl}/api/graphql`,
+      {
+        method: 'POST',
+        headers: {
+          ...getGitLabRequestOptions(this.config).headers,
+          ['Content-Type']: 'application/json',
+        },
+        body: JSON.stringify({
+          variables: { group: groupPath },
+          query: `query($group: ID!) {
+          group(fullPath: $group) {
+            groupMembers(first: 10, relations: [DIRECT]) {
+              nodes {
+                user {
+                  id
+                }
+              }
+            }
+          }
+        }`,
+        }),
+      },
+    ).then(r => r.json());
+    this.logger.debug(`got GraphQL response: ${JSON.stringify(response)}`);
 
-    const response = await fetch(request.toString(), {
-      headers: getGitLabRequestOptions(this.config).headers,
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      if (response.status >= 500) {
-        this.logger.debug(
-          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-            response.status
-          } - ${response.statusText}`,
-        );
-      }
-      return [];
-    }
-
-    return response.json().then(items => {
-      return items as GitLabMembership[];
-    });
+    return response.data.group.groupMembers.nodes.map(
+      (node: { user: { id: string } }) =>
+        Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+    );
   }
 
   /**
