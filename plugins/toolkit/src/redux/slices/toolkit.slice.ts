@@ -26,7 +26,7 @@ export const getMyToolkits = createAsyncThunk(
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
-    return response.json() as IToolkit[];
+    return response.json();
   },
 );
 
@@ -38,7 +38,7 @@ export const getToolkits = createAsyncThunk(
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
-    return response.json() as IToolkit[];
+    return response.json();
   },
 );
 

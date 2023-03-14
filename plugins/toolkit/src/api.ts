@@ -24,16 +24,24 @@ export const toolkitApiRef = createApiRef<ToolkitApi>({
   id: 'toolkit',
 });
 
+export interface ToolkitTypo {
+  id?: number;
+  owner?: string;
+  logo?: string;
+  title?: string;
+  url?: string;
+  type?: string;
+}
 export interface ToolkitApi {
-  createToolkit(body: any): Promise<any>;
-  updateToolkit(body: any, id: number): Promise<any>;
-  deleteOwnToolkit(id: number): Promise<any>;
-  getToolkitById(id: number): Promise<any>;
-  getMyToolkits(): Promise<any>;
-  getYourToolkits(): Promise<any>;
-  getToolkits(): Promise<any>;
-  addToolkits(body: any): Promise<any>;
-  removeToolkit(toolkit: number): Promise<any>;
+  createToolkit(body: ToolkitTypo): Promise<Response>;
+  updateToolkit(body: ToolkitTypo, id: number): Promise<Response>;
+  deleteOwnToolkit(id: number): Promise<Response>;
+  getToolkitById(id: number): Promise<Response>;
+  getMyToolkits(): Promise<Response>;
+  getYourToolkits(): Promise<Response>;
+  getToolkits(): Promise<Response>;
+  addToolkits(body: { toolkits: number[] }): Promise<Response>;
+  removeToolkit(toolkit: number): Promise<Response>;
 }
 
 export class ToolkitClient implements ToolkitApi {
@@ -49,22 +57,22 @@ export class ToolkitClient implements ToolkitApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async getYourToolkits(): Promise<any> {
+  async getYourToolkits(): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/yourToolkits`);
   }
 
-  async getMyToolkits(): Promise<any> {
+  async getMyToolkits(): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/myToolkits`);
   }
 
-  async getToolkits(): Promise<any> {
+  async getToolkits(): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/getToolkits`);
   }
 
-  async createToolkit(body: any): Promise<any> {
+  async createToolkit(body: ToolkitTypo): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/create`, {
       method: 'POST',
@@ -75,13 +83,13 @@ export class ToolkitClient implements ToolkitApi {
       body: JSON.stringify(body),
     });
   }
-  async deleteOwnToolkit(id: number): Promise<any> {
+  async deleteOwnToolkit(id: number): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/delete/${id}`, {
       method: 'DELETE',
     });
   }
-  async addToolkits(body: number[]): Promise<any> {
+  async addToolkits(body: { toolkits: number[] }): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/add`, {
       method: 'POST',
@@ -92,17 +100,17 @@ export class ToolkitClient implements ToolkitApi {
       body: JSON.stringify(body),
     });
   }
-  async getToolkitById(id: number): Promise<any> {
+  async getToolkitById(id: number): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/${id}`);
   }
-  async removeToolkit(toolkit: number): Promise<any> {
+  async removeToolkit(toolkit: number): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/remove/${toolkit}`, {
       method: 'DELETE',
     });
   }
-  async updateToolkit(body: any, id: number): Promise<any> {
+  async updateToolkit(body: ToolkitTypo, id: number): Promise<Response> {
     const baseUrl = await this.discoveryApi.getBaseUrl('toolkit');
     return await this.fetchApi.fetch(`${baseUrl}/update/${id}`, {
       method: 'PUT',
