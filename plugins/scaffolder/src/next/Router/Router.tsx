@@ -59,6 +59,8 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplatePageHeaderComponent?: React.ComponentType<{}>;
+    TemplateListContentHeaderComponent?: React.ComponentType<{}>;
   };
   groups?: TemplateGroupFilter[];
   // todo(blam): rename this to formProps
@@ -84,6 +86,8 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       TemplateCardComponent,
       TemplateOutputsComponent,
       TaskPageComponent = OngoingTask,
+      TemplatePageHeaderComponent,
+      TemplateListContentHeaderComponent,
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
@@ -111,6 +115,10 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             groups={props.groups}
+            TemplatePageHeaderComponent={TemplatePageHeaderComponent}
+            TemplateListContentHeaderComponent={
+              TemplateListContentHeaderComponent
+            }
           />
         }
       />
@@ -122,6 +130,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               FormProps={props.FormProps}
+              TemplatePageHeaderComponent={TemplatePageHeaderComponent}
             />
           </SecretsContextProvider>
         }
