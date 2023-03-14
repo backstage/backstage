@@ -16,8 +16,8 @@
 
 import inquirer from 'inquirer';
 import { Task } from '../../../lib/tasks';
-import { github, Answers as GitHubAnswers } from './github';
-import { gitlab, Answers as GitLabAnswers } from './gitlab';
+import { github, Answers as GitHubAnswers } from './providers/github';
+import { gitlab, Answers as GitLabAnswers } from './providers/gitlab';
 
 export { type GitHubAnswers, type GitLabAnswers };
 

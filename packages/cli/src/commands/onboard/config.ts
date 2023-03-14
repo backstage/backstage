@@ -22,15 +22,24 @@ const readYaml = async (file: string) => {
 };
 
 export const updateConfigFile = async <T>(file: string, config: T) => {
-  const content = fs.existsSync(file)
-    ? { ...(await readYaml(file)), ...config }
-    : { ...config };
+  const staticContent =
+    '# Backstage override configuration for your local development environment \n';
 
-  return await fs.writeFile(
-    file,
-    yaml.stringify(content, {
-      indent: 2,
-    }),
-    'utf8',
-  );
+  const content = fs.existsSync(file)
+    ? yaml.stringify(
+        { ...(await readYaml(file)), ...config },
+        {
+          indent: 2,
+        },
+      )
+    : staticContent.concat(
+        yaml.stringify(
+          { ...config },
+          {
+            indent: 2,
+          },
+        ),
+      );
+
+  return await fs.writeFile(file, content, 'utf8');
 };
