@@ -20,6 +20,7 @@ import {
   isKind,
   isNamespace,
   isResourceType,
+  isEntityWith,
 } from './conditions';
 
 const kubernetesClusterResource: Entity = {
@@ -62,6 +63,13 @@ const notComponent: Entity = {
   kind: 'not-component',
   metadata: { name: 'aService' },
   spec: { type: 'service' },
+};
+
+const missingSpecType: Entity = {
+  apiVersion: '',
+  kind: 'another-type',
+  metadata: { name: 'anEntity' },
+  spec: {},
 };
 
 const apiKind: Entity = {
@@ -122,6 +130,17 @@ describe('isComponentType', () => {
 
     expect(checkEntity(serviceComponent)).toBeTruthy();
     expect(checkEntity(websiteComponent)).toBeTruthy();
+  });
+});
+
+describe('isEntityWith', () => {
+  it('allows for a kind-only check (empty type array)', () => {
+    const checkEntity = isEntityWith({kind: 'api', type: []});
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
+  it('handles missing spec.type field', () => {
+    const checkEntity = isEntityWith({kind: 'another-type', type: 'service'});
+    expect(checkEntity(missingSpecType)).not.toBeTruthy();
   });
 });
 

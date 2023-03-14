@@ -480,7 +480,7 @@ function isKind(kind: string) {
 ```
 
 The `@backstage/catalog` plugin provides a couple of built-in conditions,
-`isKind`, `isComponentType`, and `isNamespace`.
+`isKind`, `isComponentType`, `isResourceType`, `isEntityWith`, and `isNamespace`.
 
 In addition to the `EntitySwitch` component, the catalog plugin also exports a
 new `EntityLayout` component. It is a tweaked version and replacement for the

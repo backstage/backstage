@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  ResourceEntity,
-  Entity,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+
+export interface EntityPredicates {
+  kind: string | string[];
+  type?: string | string[];
+}
 
 function strCmp(a: string | undefined, b: string | undefined): boolean {
   return Boolean(
@@ -37,7 +38,7 @@ function strCmpAll(value: string | undefined, cmpValues: string | string[]) {
  * @public
  */
 export function isKind(kinds: string | string[]) {
-  return (entity: Entity) => strCmpAll(entity.kind, kinds);
+  return isEntityWith({kind: kinds});
 }
 
 /**
@@ -45,13 +46,7 @@ export function isKind(kinds: string | string[]) {
  * @public
  */
 export function isComponentType(types: string | string[]) {
-  return (entity: Entity) => {
-    if (!strCmp(entity.kind, 'component')) {
-      return false;
-    }
-    const componentEntity = entity as ComponentEntity;
-    return strCmpAll(componentEntity.spec.type, types);
-  };
+  return isEntityWith({ kind: 'component', type: types });
 }
 
 /**
@@ -59,14 +54,32 @@ export function isComponentType(types: string | string[]) {
  * @public
  */
 export function isResourceType(types: string | string[]) {
+  return isEntityWith({ kind: 'resource', type: types });
+}
+
+/**
+ *
+ * For use in EntitySwitch.Case. Matches if the entity is the specified kind and type (if present).
+ * @public
+ */
+export function isEntityWith(predicate: EntityPredicates) {
   return (entity: Entity) => {
-    if (!strCmp(entity.kind, 'resource')) {
+    if (!strCmpAll(entity.kind, predicate.kind)) {
       return false;
     }
-    const resourceEntity = entity as ResourceEntity;
-    return strCmpAll(resourceEntity.spec.type, types);
+
+    if (!predicate.type || (Array.isArray(predicate.type) && predicate.type.length === 0)) {
+      // there's no type check, return true
+      return true;
+    } else if (typeof entity.spec?.type !== 'string') {
+      // we'll reject any entity's with some non-string (including undefined/null) spec.type value
+      return false;
+    }
+
+    return strCmpAll(entity.spec.type, predicate.type);
   };
 }
+
 
 /**
  * For use in EntitySwitch.Case. Matches if the entity is in a given namespace.
