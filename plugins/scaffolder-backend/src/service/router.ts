@@ -32,6 +32,8 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  TemplateParameterV1beta3,
+  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -60,16 +62,30 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  PermissionEvaluator,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
+  PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderTemplateRules } from './rules';
 
-const isAuthorized = createConditionAuthorizer(
-  Object.values(scaffolderTemplateRules),
-);
+/**
+ * ScaffolderPermissionRuleInput
+ *
+ * @public
+ */
+export type ScaffolderPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParameterV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 
 /**
  * RouterOptions
@@ -98,6 +114,7 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissionApi?: PermissionEvaluator;
+  customPermissionRules?: ScaffolderPermissionRuleInput[];
   identity?: IdentityApi;
 }
 
@@ -192,6 +209,7 @@ export async function createRouter(
     additionalTemplateFilters,
     additionalTemplateGlobals,
     permissionApi,
+    customPermissionRules,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -268,10 +286,21 @@ export async function createRouter(
     additionalTemplateGlobals,
   });
 
+  const permissionRules: ScaffolderPermissionRuleInput[] = Object.values(
+    scaffolderTemplateRules,
+  );
+  if (customPermissionRules) {
+    permissionRules.push(...customPermissionRules);
+  }
+
+  const isAuthorized = createConditionAuthorizer(
+    Object.values(permissionRules),
+  );
+
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
     permissions: scaffolderPermissions,
-    rules: Object.values(scaffolderTemplateRules),
+    rules: permissionRules,
   });
 
   router.use(permissionIntegrationRouter);
