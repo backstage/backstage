@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-scaffolder-backend-module-confluence-to-markdowwn",
+  "name": "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown",
   "description": "The confluence-to-markdowwn module for @backstage/plugin-scaffolder-backend",
   "version": "0.0.0",
   "main": "src/index.ts",

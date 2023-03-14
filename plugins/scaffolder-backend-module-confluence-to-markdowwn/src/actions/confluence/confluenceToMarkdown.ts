@@ -72,7 +72,7 @@ export const createConfluenceToMarkdownAction = (options: {
     },
     async handler(ctx) {
       const { confluenceUrls, repoUrl } = ctx.input;
-      const parsedRepoUrl = parseGitUrl(`${repoUrl}`);
+      const parsedRepoUrl = parseGitUrl(repoUrl);
       const filePathToMkdocs = parsedRepoUrl.filepath.substring(
         0,
         parsedRepoUrl.filepath.lastIndexOf('/') + 1,
