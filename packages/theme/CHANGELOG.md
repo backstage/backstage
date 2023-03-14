@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.18
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
 ## 0.2.18-next.0
 
 ### Patch Changes

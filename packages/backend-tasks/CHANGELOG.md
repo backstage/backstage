@@ -1,5 +1,21 @@
 # @backstage/backend-tasks
 
+## 0.5.0
+
+### Minor Changes
+
+- 1578276708a: add functionality to get descriptions from the scheduler for triggering
+
+### Patch Changes
+
+- f0685193efa: Added the adapted query to mysql and sqlite3 databases to not returning warning on logs
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.5.0-next.2
 
 ### Minor Changes

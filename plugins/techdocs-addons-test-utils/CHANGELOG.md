@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.11
+
+### Patch Changes
+
+- 2b00d8a225c: Fix bug/problem with test helper
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-techdocs-react@1.1.4
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/plugin-techdocs@1.6.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/test-utils@1.2.6
+  - @backstage/core-app-api@1.6.0
+  - @backstage/integration-react@1.1.11
+  - @backstage/theme@0.2.18
+
 ## 1.0.11-next.2
 
 ### Patch Changes
