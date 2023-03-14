@@ -398,30 +398,54 @@ describe('GitLabClient', () => {
     ]);
   });
 
-  it('getGroupMembers gets member IDs', async () => {
-    server.use(
-      graphql
-        .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
-        .operation((_, res, ctx) =>
-          res(
-            ctx.data({
-              group: {
-                groupMembers: {
-                  nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+  describe('getGroupMembers', () => {
+    it('gets member IDs', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+                  },
                 },
-              },
-            }),
+              }),
+            ),
           ),
-        ),
-    );
-    const client = new GitLabClient({
-      config: MOCK_CONFIG,
-      logger: getVoidLogger(),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const members = await client.getGroupMembers('group1');
+
+      expect(members).toEqual([1]);
     });
 
-    const members = await client.getGroupMembers('group1');
+    it('rejects when GraphQL returns errors', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.errors([
+                { message: 'Unexpected end of document', locations: [] },
+              ]),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
 
-    expect(members).toEqual([1]);
+      await expect(() => client.getGroupMembers('group1')).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
   });
 });
 

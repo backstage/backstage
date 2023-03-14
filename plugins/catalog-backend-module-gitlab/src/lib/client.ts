@@ -116,7 +116,9 @@ export class GitLabClient {
         }),
       },
     ).then(r => r.json());
-    this.logger.debug(`got GraphQL response: ${JSON.stringify(response)}`);
+    if (response.errors) {
+      throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
+    }
 
     return response.data.group.groupMembers.nodes.map(
       (node: { user: { id: string } }) =>
