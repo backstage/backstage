@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.12
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
 ## 0.1.12-next.0
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.11
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 37cf85fb85c: Fixed bug in IssueLink component where the URL was not generated properly when the repository was located inside a Gitlab subgroup
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-techdocs-react@1.1.4
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/integration-react@1.1.11
+  - @backstage/integration@1.4.3
+  - @backstage/theme@0.2.18
+
 ## 1.0.11-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.4
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 8adfda60ae1: Updated dependency `jss` to `~10.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/version-bridge@1.0.3
+
 ## 1.1.4-next.2
 
 ### Patch Changes
