@@ -257,7 +257,7 @@ components:
           items:
             allOf:
               - $ref: '#/components/schemas/Entity'
-            nullable: true
+              - type: 'null'
           description: |-
             The list of entities, in the same order as the refs in the request. Entries
             that are null signify that no entity existed with that ref.
@@ -455,8 +455,9 @@ components:
             field empty; which would currently make it owned by X" where X is taken from the
             codeowners file.
         value:
-          type: string
-          nullable: true
+          type:
+            - string
+            - 'null'
         state:
           type: string
           enum:

@@ -306,12 +306,14 @@ export default {
           items: {
             type: 'array',
             items: {
-              allOf: [
+              anyOf: [
                 {
                   $ref: '#/components/schemas/Entity',
                 },
+                {
+                  type: 'null',
+                },
               ],
-              nullable: true,
             },
             description:
               'The list of entities, in the same order as the refs in the request. Entries\nthat are null signify that no entity existed with that ref.',
