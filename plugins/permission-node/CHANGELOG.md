@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-node
 
+## 0.7.6
+
+### Patch Changes
+
+- 27a103ca07b: Changed the `createPermissionIntegrationRouter` API to allow `getResources`, `resourceType` and `rules` to be optional
+- 37e9215c793: Update the service-to-service auth docs URL in error message.
+  ``
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+
 ## 0.7.6-next.2
 
 ### Patch Changes

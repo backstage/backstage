@@ -199,9 +199,11 @@ export class CatalogClient implements CatalogApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    const { items } = await response.json();
+    const { items } = (await response.json()) as {
+      items: Array<Entity | null>;
+    };
 
-    return { items };
+    return { items: items.map(i => i ?? undefined) };
   }
 
   /**

@@ -1,5 +1,15 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.22
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.22-next.2
 
 ### Patch Changes

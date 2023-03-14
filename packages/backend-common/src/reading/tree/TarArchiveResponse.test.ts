@@ -45,10 +45,12 @@ describe('TarArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: undefined,
       },
       {
         path: 'docs/index.md',
         content: expect.any(Function),
+        lastModifiedAt: undefined,
       },
     ]);
     const contents = await Promise.all(files.map(f => f.content()));
@@ -70,6 +72,7 @@ describe('TarArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: undefined,
       },
     ]);
     const content = await files[0].content();
@@ -93,10 +96,12 @@ describe('TarArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: undefined,
       },
       {
         path: 'docs/index.md',
         content: expect.any(Function),
+        lastModifiedAt: undefined,
       },
     ]);
     const contents = await Promise.all(files.map(f => f.content()));

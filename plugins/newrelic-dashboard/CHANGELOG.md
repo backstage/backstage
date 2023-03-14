@@ -1,5 +1,17 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.2.9
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+
 ## 0.2.9-next.2
 
 ### Patch Changes

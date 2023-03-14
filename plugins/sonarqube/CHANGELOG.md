@@ -1,5 +1,22 @@
 # @backstage/plugin-sonarqube
 
+## 0.6.5
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 8ae65a0bc1d: Moved imports from `/alpha` to main public exports.
+- d3d624e8e8d: Show a more appropriate icon if there are no code smells and/or vulnerabilities.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-sonarqube-react@0.1.4
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+
 ## 0.6.5-next.2
 
 ### Patch Changes

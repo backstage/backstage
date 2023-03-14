@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
 ## 1.2.6-next.1
 
 ### Patch Changes

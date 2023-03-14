@@ -36,10 +36,26 @@ const examples = [
       ],
     }),
   },
+  {
+    description: 'Fetch multiple entities by referencse',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'fetchMultiple',
+          name: 'Fetch catalog entities',
+          input: {
+            entityRefs: ['component:default/name'],
+          },
+        },
+      ],
+    }),
+  },
 ];
 
 /**
- * Returns entity from the catalog by entity reference.
+ * Returns entity or entities from the catalog by entity reference(s).
+ *
  * @public
  */
 export function createFetchCatalogEntityAction(options: {
@@ -47,13 +63,17 @@ export function createFetchCatalogEntityAction(options: {
 }) {
   const { catalogClient } = options;
 
-  return createTemplateAction<{ entityRef: string; optional?: boolean }>({
+  return createTemplateAction<{
+    entityRef?: string;
+    entityRefs?: string[];
+    optional?: boolean;
+  }>({
     id,
-    description: 'Returns entity from the catalog by entity reference',
+    description:
+      'Returns entity or entities from the catalog by entity reference(s)',
     examples,
     schema: {
       input: {
-        required: ['entityRef'],
         type: 'object',
         properties: {
           entityRef: {
@@ -61,10 +81,15 @@ export function createFetchCatalogEntityAction(options: {
             title: 'Entity reference',
             description: 'Entity reference of the entity to get',
           },
+          entityRefs: {
+            type: 'array',
+            title: 'Entity references',
+            description: 'Entity references of the entities to get',
+          },
           optional: {
             title: 'Optional',
             description:
-              'Permit the entity to optionally exist. Default: false',
+              'Allow the entity or entities to optionally exist. Default: false',
             type: 'boolean',
           },
         },
@@ -76,29 +101,55 @@ export function createFetchCatalogEntityAction(options: {
             title: 'Entity found by the entity reference',
             type: 'object',
             description:
-              'Object containing same values used in the Entity schema.',
+              'Object containing same values used in the Entity schema. Only when used with `entityRef` parameter.',
+          },
+          entities: {
+            title: 'Entities found by the entity references',
+            type: 'array',
+            items: { type: 'object' },
+            description:
+              'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
           },
         },
       },
     },
     async handler(ctx) {
-      const { entityRef, optional } = ctx.input;
-      let entity;
-      try {
-        entity = await catalogClient.getEntityByRef(entityRef, {
+      const { entityRef, entityRefs, optional } = ctx.input;
+      if (!entityRef && !entityRefs) {
+        if (optional) {
+          return;
+        }
+        throw new Error('Missing entity reference or references');
+      }
+
+      if (entityRef) {
+        const entity = await catalogClient.getEntityByRef(entityRef, {
           token: ctx.secrets?.backstageToken,
         });
-      } catch (e) {
-        if (!optional) {
-          throw e;
+
+        if (!entity && !optional) {
+          throw new Error(`Entity ${entityRef} not found`);
         }
+        ctx.output('entity', entity ?? null);
       }
 
-      if (!entity && !optional) {
-        throw new Error(`Entity ${entityRef} not found`);
-      }
+      if (entityRefs) {
+        const entities = await catalogClient.getEntitiesByRefs(
+          { entityRefs },
+          {
+            token: ctx.secrets?.backstageToken,
+          },
+        );
 
-      ctx.output('entity', entity ?? null);
+        const finalEntities = entities.items.map((e, i) => {
+          if (!e && !optional) {
+            throw new Error(`Entity ${entityRefs[i]} not found`);
+          }
+          return e ?? null;
+        });
+
+        ctx.output('entities', finalEntities);
+      }
     },
   });
 }
