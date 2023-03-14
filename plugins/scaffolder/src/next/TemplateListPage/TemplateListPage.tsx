@@ -17,7 +17,7 @@
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-import { Content, Header, Page } from '@backstage/core-components';
+import { Content, Page } from '@backstage/core-components';
 import {
   EntityKindPicker,
   EntityListProvider,
@@ -30,12 +30,13 @@ import { CategoryPicker } from './CategoryPicker';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { ContextMenu } from './ContextMenu';
 import { TemplateListContentHeader } from './TemplateListContentHeader';
+import { TemplatePageHeader } from '../TemplatePageHeader';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
-  TemplatePageHeaderComponent?: typeof Header;
+  TemplatePageHeaderComponent?: React.ComponentType<{}>;
   TemplateListContentHeaderComponent?: React.ComponentType<{}>;
   groups?: TemplateGroupFilter[];
   contextMenu?: {
@@ -63,7 +64,7 @@ const createGroupsWithOther = (
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const {
     TemplateCardComponent,
-    TemplatePageHeaderComponent = Header,
+    TemplatePageHeaderComponent = TemplatePageHeader,
     TemplateListContentHeaderComponent = TemplateListContentHeader,
     groups: givenGroups = [],
   } = props;
@@ -75,11 +76,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   return (
     <EntityListProvider>
       <Page themeId="website">
-        <TemplatePageHeaderComponent
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
-        >
+        <TemplatePageHeaderComponent>
           <ContextMenu {...props.contextMenu} />
         </TemplatePageHeaderComponent>
         <Content>

@@ -33,20 +33,23 @@ import {
   NextFieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
-import { Header, Page } from '@backstage/core-components';
+import { Page } from '@backstage/core-components';
 import {
   nextRouteRef,
   nextScaffolderTaskRouteRef,
   nextSelectedTemplateRouteRef,
 } from '../routes';
+import { TemplatePageHeader } from '../TemplatePageHeader';
 
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   FormProps?: FormProps;
+  TemplatePageHeaderComponent?: React.ComponentType<{}>;
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+  const { TemplatePageHeaderComponent = TemplatePageHeader } = props;
   const rootRef = useRouteRef(nextRouteRef);
   const taskRoute = useRouteRef(nextScaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
@@ -77,11 +80,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
-        <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
-        />
+        <TemplatePageHeaderComponent />
         <Workflow
           namespace={namespace}
           templateName={templateName}
