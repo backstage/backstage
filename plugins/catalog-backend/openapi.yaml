@@ -255,7 +255,7 @@ components:
         items:
           type: array
           items:
-            allOf:
+            anyOf:
               - $ref: '#/components/schemas/Entity'
               - type: 'null'
           description: |-
