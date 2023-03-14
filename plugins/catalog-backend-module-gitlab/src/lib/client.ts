@@ -78,16 +78,11 @@ export class GitLabClient {
   async listUsers(
     options?: UserListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
-    let requestOptions = options;
-
-    if (!requestOptions) {
-      requestOptions = {};
-    }
-
-    requestOptions.without_project_bots = true;
-    requestOptions.exclude_internal = true;
-
-    return this.pagedRequest(`/users?`, requestOptions);
+    return this.pagedRequest(`/users?`, {
+      ...options,
+      without_project_bots: true,
+      exclude_internal: true,
+    });
   }
 
   async listGroups(
