@@ -194,7 +194,7 @@ export const toolkitSlice: Slice<IToolkitState> = createSlice({
     [getMyToolkits.fulfilled.type]: (state, action) => {
       state.myToolkits.loading = false;
       state.myToolkits.error = '';
-      state.myToolkits.list = action?.payload || [];
+      state.myToolkits.list = action?.payload?.data || [];
     },
     [getToolkits.pending.type]: state => {
       state.toolkits.loading = true;
@@ -207,7 +207,7 @@ export const toolkitSlice: Slice<IToolkitState> = createSlice({
     [getToolkits.fulfilled.type]: (state, action) => {
       state.toolkits.loading = false;
       state.toolkits.error = '';
-      state.toolkits.list = action?.payload || [];
+      state.toolkits.list = action?.payload?.data || [];
     },
     [createTool.pending.type || updateTool.pending.type]: state => {
       state.create.loading = true;

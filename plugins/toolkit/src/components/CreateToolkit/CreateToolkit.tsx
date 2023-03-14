@@ -132,8 +132,8 @@ export const CreateToolkit: React.FC<TCreateToolkit> = ({
   const getToolkit = async (toolId: number) => {
     const res = await toolkitApi.getToolkitById(toolId);
     if (res.ok) {
-      const data = await res.json();
-      setFormData({ ...data });
+      const res_json = await res.json();
+      setFormData({ ...res_json?.data });
     }
   };
 

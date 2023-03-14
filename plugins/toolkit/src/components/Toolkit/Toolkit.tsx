@@ -73,7 +73,7 @@ const Toolkit: React.FC<TToolkitMode> = ({ mode }) => {
       });
     });
     if (mode === 'write') {
-      link_arr.push({
+      link_arr?.push({
         key: 'Add',
         label: 'Add',
         icon: (

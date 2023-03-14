@@ -180,38 +180,39 @@ export const DenseTable = ({
       dispatch(removeTool({ toolkit, toolkitApi }));
     };
 
-    const res = list?.map((toolkit, index) => {
-      const isChecked =
-        checkable && toolkit?.toolkit
-          ? selectedTools?.includes(toolkit?.toolkit)
-          : false;
-      return {
-        select: (
-          <>
-            {checkable && onCheck && (
-              <CheckBox
-                onCheck={() => onCheck(Number(toolkit?.toolkit))}
-                isChecked={isChecked || false}
-              />
-            )}
-          </>
-        ),
-        logo: <LogoImage key={index} src={toolkit.logo || logo} />,
-        title: `${toolkit.title}`,
-        url: toolkit.url,
-        type: toolkit.type,
-        owner: toolkit.owner,
-        action: (
-          <ActionButton
-            owner={toolkit.owner || ''}
-            currentUser={user}
-            onRemove={() => onRemove(toolkit.id as number)}
-            onEdit={() => onEdit(toolkit.id as number)}
-            onDeleteClick={() => onDelete(toolkit.id as number)}
-          />
-        ),
-      } as any;
-    });
+    const res =
+      list?.map((toolkit, index) => {
+        const isChecked =
+          checkable && toolkit?.toolkit
+            ? selectedTools?.includes(toolkit?.toolkit)
+            : false;
+        return {
+          select: (
+            <>
+              {checkable && onCheck && (
+                <CheckBox
+                  onCheck={() => onCheck(Number(toolkit?.toolkit))}
+                  isChecked={isChecked || false}
+                />
+              )}
+            </>
+          ),
+          logo: <LogoImage key={index} src={toolkit.logo || logo} />,
+          title: `${toolkit.title}`,
+          url: toolkit.url,
+          type: toolkit.type,
+          owner: toolkit.owner,
+          action: (
+            <ActionButton
+              owner={toolkit.owner || ''}
+              currentUser={user}
+              onRemove={() => onRemove(toolkit.id as number)}
+              onEdit={() => onEdit(toolkit.id as number)}
+              onDeleteClick={() => onDelete(toolkit.id as number)}
+            />
+          ),
+        } as any;
+      }) || [];
 
     setData([...res]);
   }, [list, selectedTools, checkable, dispatch, toolkitApi, onCheck, user]);

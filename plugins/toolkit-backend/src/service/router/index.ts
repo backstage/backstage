@@ -21,12 +21,37 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { databaseConnection } from '../DatabaseHandler';
-import ToolkitRoute from './toolkit';
+
+/**
+ * @internal
+ */
+export type Toolkit = {
+  id?: number;
+  owner?: string;
+  logo?: string;
+  title?: string;
+  url?: string;
+  type?: string;
+  toolkits?: number[];
+  toolkit?: number;
+};
+
+/**
+ * @internal
+ */
+export type User = {
+  identity: {
+    type: string;
+    userEntityRef: string;
+    ownershipEntityRefs: string[];
+  };
+};
 
 /**
  *
- * RouterOptions to construct Toolkit endpoints
  * @public
+ * RouterOptions to construct Toolkit endpoints
+ *
  */
 export interface RouterOptions {
   /**
@@ -64,27 +89,274 @@ export async function createRouter(
     process.exit(1);
   });
 
+  const DEFAULT_USER = {
+    identity: {
+      type: 'guest',
+      userEntityRef: 'user:default/guest',
+      ownershipEntityRefs: ['user:default/guest'],
+    },
+  };
+
   const router = Router({ mergeParams: true });
-  router.use(async (req: any, _, next) => {
-    const user = identity && (await identity.getIdentity({ request: req }));
-    req.user = user || {
-      identity: {
-        type: 'guest',
-        userEntityRef: 'user:default/guest',
-        ownershipEntityRefs: ['user:default/guest'],
-      },
-    };
-    req.dbClient = dbClient;
-    next();
-  });
   router.use(express.json());
-  router.use('/', ToolkitRoute);
 
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.json({ status: 'ok' });
+  /**
+   *
+   * @public
+   *
+   */
+  router.get('/myToolkits', async (req, res) => {
+    try {
+      const client = dbClient;
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      const condition: any = {
+        'toolkit_item.user': userId,
+      };
+
+      const data = await client('toolkit_item')
+        .where(condition)
+        .innerJoin('toolkit', 'toolkit.id', 'toolkit_item.toolkit');
+      res.status(200).json({ data: data || [] });
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
   });
 
+  /**
+   *
+   * This API is used to get user toolkits created by the user.
+   * @public
+   *
+   */
+  router.get('/getToolkits', async (req, res: any) => {
+    try {
+      const client = dbClient;
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      let toolOfUser = await client('toolkit_item')
+        .where({ 'toolkit_item.user': userId })
+        .select('toolkit');
+      toolOfUser = toolOfUser.map(({ toolkit }) => toolkit);
+
+      const data = await client('toolkit_item')
+        .whereNot({ 'toolkit_item.user': userId, 'toolkit.type': 'private' })
+        .whereNotIn('toolkit.id', toolOfUser)
+        .innerJoin('toolkit', 'toolkit.id', 'toolkit_item.toolkit');
+      res.status(200).json({ data: data || [] });
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   * This api is used to create a toolkit.
+   *
+   */
+  router.post('/create', async (req, res) => {
+    try {
+      const client = dbClient;
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      req.body.owner = userId;
+      const toolkit = await client
+        .insert(req.body)
+        .into('toolkit')
+        .returning('id');
+      if (toolkit.length) {
+        const { id } = toolkit[0];
+        await client
+          .insert({
+            toolkit: id,
+            isPrivate: req.body.type === 'private',
+            user: req.body.owner,
+          })
+          .into('toolkit_item');
+        res.status(200).send('Created');
+      } else {
+        res.status(400).send('Something went wrong');
+      }
+    } catch (error: any) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   * This API is used to update the own toolkit
+   *
+   */
+  router.put('/update/:id', async (req, res) => {
+    try {
+      const client = dbClient;
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      req.body.owner = userId;
+      const { logo, title, url, type } = req.body;
+      const toolkit = await client('toolkit')
+        .update({
+          title,
+          logo,
+          url,
+          type,
+        })
+        .where({ id: req.params.id });
+      if (toolkit) {
+        if (type === 'private') {
+          await client('toolkit_item')
+            .where({ toolkit: req.params.id })
+            .whereNot({ user: user.identity.userEntityRef })
+            .delete();
+        }
+        res.status(200).send('Updated');
+      } else {
+        res.status(400).send('Something went wrong');
+      }
+    } catch (error: any) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   *
+   */
+  router.get('/:id', async (req, res) => {
+    try {
+      const client = dbClient;
+      const data = await client('toolkit').where({ id: req.params.id }).first();
+      res.status(200).json({ data: data || [] });
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   *
+   */
+  router.post('/add', async (req, res) => {
+    try {
+      const client = dbClient;
+      const { toolkits } = req.body;
+
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      const toolkitData: any[] = [];
+
+      if (toolkits) {
+        const previousData = await client('toolkit_item')
+          .where({ userId })
+          .select('toolkit');
+
+        const checkIsExists: Toolkit[] = await client('toolkit')
+          .whereIn('id', toolkits)
+          .where({ type: 'public' });
+
+        toolkits.forEach((_id: number) => {
+          const checkPrev = previousData.find(({ toolkit }) => toolkit === _id);
+          const checkExists = checkIsExists.find(({ id }) => id === _id);
+          if (!checkPrev && checkExists) {
+            toolkitData.push({
+              toolkit: checkExists.id,
+              isPrivate: false,
+              user: userId,
+            });
+          }
+        });
+      }
+      if (toolkitData?.length) {
+        await client.insert([...toolkitData]).into('toolkit_item');
+        res.send('Toolkits added successfully');
+      } else {
+        res.send('No Toolkits founded or already exists');
+      }
+    } catch (error: any) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   *
+   */
+  router.delete('/delete/:id', async (req, res) => {
+    try {
+      const client = dbClient;
+
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      const data = await client('toolkit')
+        .where({ id: req.params.id, owner: userId })
+        .delete();
+
+      if (data) {
+        res.status(200).send('Deleted Successfully');
+      } else {
+        res.status(400).send('Invalid request');
+      }
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   *
+   */
+  router.delete('/remove/:toolkit', async (req, res) => {
+    try {
+      const client = dbClient;
+
+      const user =
+        (identity && (await identity.getIdentity({ request: req }))) ||
+        DEFAULT_USER;
+      const userId = user?.identity?.userEntityRef;
+
+      const { toolkit } = req.params;
+      const data = await client('toolkit_item')
+        .where({ toolkit, userId })
+        .delete();
+      if (data) {
+        res.status(200).send('Removed Successfully');
+      } else {
+        res.status(400).send('Invalid request');
+      }
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
+  });
+
+  /**
+   *
+   * @public
+   *
+   */
   router.get('*', async (_, response) => {
     logger.info('404!');
     response.status(404).json({ message: 'Page Not Found!' });

@@ -34,7 +34,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
   });
-
+  console.log('---------Database Connected-------');
   let service = createServiceBuilder(module)
     .setPort(options.port)
     .addRouter('/toolkit', router);
