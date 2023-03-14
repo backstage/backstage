@@ -116,6 +116,7 @@ export class TechdocsGenerator implements GeneratorBase {
         childLogger,
         parsedLocationAnnotation,
         this.scmIntegrations,
+        this.options.defaultEditUri,
       );
     }
 
@@ -244,6 +245,9 @@ export function readGeneratorConfig(
     ),
     defaultPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.defaultPlugins',
+    ),
+    defaultEditUri: config.getOptionalString(
+      'techdocs.generator.defaultEditUri',
     ),
   };
 }

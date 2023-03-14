@@ -215,6 +215,7 @@ describe('helpers', () => {
         mockLogger,
         parsedLocationAnnotation,
         scmIntegrations,
+        undefined,
       );
 
       const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
@@ -235,6 +236,7 @@ describe('helpers', () => {
         mockLogger,
         parsedLocationAnnotation,
         scmIntegrations,
+        undefined,
       );
 
       const updatedMkdocsYml = await fs.readFile(
@@ -260,6 +262,7 @@ describe('helpers', () => {
         mockLogger,
         parsedLocationAnnotation,
         scmIntegrations,
+        undefined,
       );
 
       const updatedMkdocsYml = await fs.readFile(
@@ -285,6 +288,7 @@ describe('helpers', () => {
         mockLogger,
         parsedLocationAnnotation,
         scmIntegrations,
+        undefined,
       );
 
       const updatedMkdocsYml = await fs.readFile(
@@ -310,6 +314,7 @@ describe('helpers', () => {
         mockLogger,
         parsedLocationAnnotation,
         scmIntegrations,
+        undefined,
       );
 
       const updatedMkdocsYml = await fs.readFile(
@@ -321,6 +326,49 @@ describe('helpers', () => {
       );
       expect(updatedMkdocsYml.toString()).not.toContain('edit_uri');
       expect(updatedMkdocsYml.toString()).not.toContain('repo_url');
+    });
+
+    it('should add edit_uri with the value defaultEditUri to mkdocs.yml', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/backstage/backstage',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+        'edit/test/docs',
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+
+      expect(updatedMkdocsYml.toString()).toContain('edit_uri: edit/test/docs');
+    });
+
+    it('should not override existing edit_uri with defaultEditUri in mkdocs.yml', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/neworg/newrepo',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_edit_uri.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+        'edit/test/docs',
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_edit_uri.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'edit_uri: https://github.com/backstage/backstage/edit/main/docs',
+      );
+      expect(updatedMkdocsYml.toString()).not.toContain('edit/test/docs');
     });
   });
 
