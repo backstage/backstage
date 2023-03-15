@@ -285,6 +285,7 @@ export type EntityRefLinkProps = {
   defaultKind?: string;
   title?: string;
   children?: React_2.ReactNode;
+  usePeekAheadPopover?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 // @public
@@ -301,12 +302,14 @@ export type EntityRefLinksProps<
       entityRefs: TRef[];
       fetchEntities?: false;
       getTitle?(entity: TRef): string | undefined;
+      usePeekAheadPopover?: boolean;
     }
   | {
       defaultKind?: string;
       entityRefs: TRef[];
       fetchEntities: true;
       getTitle(entity: Entity): string | undefined;
+      usePeekAheadPopover?: boolean;
     }
 ) &
   Omit<LinkProps, 'to'>;
