@@ -57,13 +57,13 @@ export type Check = {
    * Metadata to be returned in case a check has been successfully evaluated
    * Can contain links, description texts or other actionable items
    */
-  successMetadata?: Record<string, any>;
+  successMetadata?: Record<string, unknown>;
 
   /**
    * Metadata to be returned in case a check evaluation has ended in failure
    * Can contain links, description texts or other actionable items
    */
-  failureMetadata?: Record<string, any>;
+  failureMetadata?: Record<string, unknown>;
 };
 
 /**
