@@ -47,6 +47,15 @@ components:
       required: false
       schema:
         type: string
+        minLength: 1
+    after:
+      name: after
+      in: query
+      description: Pointer to the previous page of results.
+      required: false
+      schema:
+        type: string
+        minLength: 1
     fields:
       name: fields
       in: query
@@ -54,6 +63,21 @@ components:
       required: false
       schema:
         type: string
+    filter:
+      name: filter
+      in: query
+      description: Filter for just the entities defined by this filter.
+      required: false
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      description: Number of records to skip in the query page.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
     limit:
       name: limit
       in: query
@@ -74,7 +98,6 @@ components:
           items:
             type: string
           description: A two-item tuple of [field, order].
-
       explode: true
       style: form
   requestBodies: {}
@@ -620,31 +643,11 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: query
-          name: filter
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: fields
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: offset
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: limit
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: after
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/after'
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
@@ -669,11 +672,7 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: path
-          name: uid
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/uid'
   /entities/by-name/{kind}/{namespace}/{name}:
     get:
       operationId: GetEntityByName
@@ -722,11 +721,7 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: query
-          name: fields
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/fields'
       requestBody:
         required: true
         content:
@@ -797,11 +792,7 @@ paths:
           required: true
           schema:
             type: string
-        - in: query
-          name: filter
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/filter'
   /locations:
     post:
       operationId: CreateLocation

@@ -737,6 +737,12 @@ export default {
         ],
         parameters: [
           {
+            $ref: '#/components/parameters/fields',
+          },
+          {
+            $ref: '#/components/parameters/limit',
+          },
+          {
             in: 'query',
             name: 'filter',
             required: false,
@@ -746,23 +752,7 @@ export default {
           },
           {
             in: 'query',
-            name: 'fields',
-            required: false,
-            schema: {
-              type: 'string',
-            },
-          },
-          {
-            in: 'query',
             name: 'offset',
-            required: false,
-            schema: {
-              type: 'string',
-            },
-          },
-          {
-            in: 'query',
-            name: 'limit',
             required: false,
             schema: {
               type: 'string',
