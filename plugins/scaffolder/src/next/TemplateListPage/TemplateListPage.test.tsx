@@ -27,6 +27,7 @@ import {
 import React from 'react';
 import { nextRouteRef } from '../routes';
 import { TemplateListPage } from './TemplateListPage';
+import { ContentHeader, Header } from '@backstage/core-components';
 
 describe('TemplateListPage', () => {
   const mockCatalogApi = {
@@ -112,6 +113,65 @@ describe('TemplateListPage', () => {
     );
 
     expect(getByText('Categories')).toBeInTheDocument();
+  });
+
+  it('should render the passed in TemplateListContentHeader', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage
+          TemplateListContentHeaderComponent={() => {
+            return <ContentHeader title="My Custom Content Header Title" />;
+          }}
+        />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': nextRouteRef } },
+    );
+
+    expect(getByText('My Custom Content Header Title')).toBeInTheDocument();
+  });
+
+  it('should render the passed in TemplatePageHeader', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage
+          TemplatePageHeaderComponent={() => {
+            return (
+              <Header
+                title="My Custom Header Title"
+                pageTitleOverride="My Custom Header Title"
+                subtitle="My Custom Subtitle"
+              />
+            );
+          }}
+        />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': nextRouteRef } },
+    );
+
+    expect(getByText('My Custom Header Title')).toBeInTheDocument();
+    expect(getByText('My Custom Subtitle')).toBeInTheDocument();
   });
 
   // eslint-disable-next-line jest/no-disabled-tests

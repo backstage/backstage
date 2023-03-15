@@ -30,6 +30,7 @@ import {
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
 import { nextRouteRef } from '../routes';
+import { Header } from '@backstage/core-components';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -117,5 +118,35 @@ describe('TemplateWizardPage', () => {
       subject: 'expected-name',
       context: { entityRef: 'template:default/test' },
     });
+  });
+
+  it('should render the passed in TemplatePageHeader', async () => {
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SecretsContextProvider>
+          <TemplateWizardPage
+            customFieldExtensions={[]}
+            TemplatePageHeaderComponent={() => {
+              return (
+                <Header
+                  title="My Custom Header Title"
+                  pageTitleOverride="My Custom Header Title"
+                  subtitle="My Custom Subtitle"
+                />
+              );
+            }}
+          />
+          ,
+        </SecretsContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': nextRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('My Custom Header Title')).toBeInTheDocument();
+    expect(getByText('My Custom Subtitle')).toBeInTheDocument();
   });
 });
