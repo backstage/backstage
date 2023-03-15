@@ -122,7 +122,7 @@ module.exports = {
           },
           {
             from: '/getting-involved',
-            to: '/docs/getting-started/getting-involved'
+            to: '/docs/getting-started/getting-involved',
           },
         ],
       },
