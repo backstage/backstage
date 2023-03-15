@@ -1,0 +1,15 @@
+title: Statusneo Github Plugin
+author: Statusneo
+authorUrl: https://statusneo.com/
+category: GitHub
+description: |
+  This plugin integrates with github and brings the logged in user data. 
+  It contains actions table and pull request table.
+documentation: https://statusneo.com/23468-2/
+iconUrl: /img/github-statusneo.png
+npmPackageName: '@statusneo/backstage-plugin-github'
+tags:
+  - GitHub
+  - Monitoring
+  - Productivity
+addedDate: '2023-02-15'
