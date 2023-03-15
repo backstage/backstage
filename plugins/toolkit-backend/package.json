@@ -20,6 +20,9 @@
   "contributors": [
     "Shubham Kumar <shubhamkaurav72@gmail.com>"
   ],
+  "maintainers": [
+    "Shubham Kumar <shubhamkaurav72@gmail.com>"
+  ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
