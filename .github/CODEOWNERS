@@ -62,7 +62,7 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/kafka-backend                              @backstage/maintainers @nirga @andrewthauer
 /plugins/kubernetes                                 @backstage/maintainers @backstage/warpspeed
 /plugins/kubernetes-*                               @backstage/maintainers @backstage/warpspeed
-/plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer @statusNeo
+/plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer @NishkarshRaj
 /plugins/newrelic-dashboard                         @backstage/maintainers @mufaddal7
 /plugins/playlist                                   @backstage/maintainers @kuangp
 /plugins/playlist-*                                 @backstage/maintainers @kuangp
