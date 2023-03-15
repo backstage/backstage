@@ -7,11 +7,11 @@ description: |
   The plugin integrates with your Microsoft Calendar.
   It displays all your calendars and events in it. 
 documentation: https://statusneo.com/23392-2
-iconUrl: img/statusneo-logo.jpeg
+iconUrl: /img/outlook-statusneo.png
 npmPackageName: '@backstage/plugin-microsoft-calendar'
 tags:
   - Microsoft
   - calendar
   - StatusNeo
   - Management
-addedDate: '2023-03-015'
+addedDate: '2023-03-15'
