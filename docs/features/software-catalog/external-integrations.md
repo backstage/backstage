@@ -506,8 +506,11 @@ import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
 } from '@backstage/plugin-catalog-node';
+
+import {
+  LocationSpec
+} from "@backstage/plugin-catalog-common"
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
