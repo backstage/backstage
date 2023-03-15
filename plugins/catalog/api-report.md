@@ -434,11 +434,6 @@ export function isComponentType(
 ): (entity: Entity) => boolean;
 
 // @public
-export function isResourceType(
-  types: string | string[],
-): (entity: Entity) => boolean;
-
-// @public
 export function isKind(kinds: string | string[]): (entity: Entity) => boolean;
 
 // @public
@@ -448,6 +443,11 @@ export function isNamespace(
 
 // @public
 export function isOrphan(entity: Entity): boolean;
+
+// @public
+export function isResourceType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {
