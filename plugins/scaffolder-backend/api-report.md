@@ -507,7 +507,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   sourcePath?: string | undefined;
   targetPath?: string | undefined;
   token?: string | undefined;
-  commitAction?: 'update' | 'create' | 'delete' | undefined;
+  commitAction?: 'update' | 'delete' | 'create' | undefined;
   projectid?: string | undefined;
   removeSourceBranch?: boolean | undefined;
   assignee?: string | undefined;
