@@ -56,6 +56,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",

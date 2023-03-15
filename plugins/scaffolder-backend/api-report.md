@@ -7,8 +7,8 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Duration } from 'luxon';
@@ -20,7 +20,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
