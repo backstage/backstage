@@ -74,6 +74,17 @@ export default {
         required: false,
         schema: {
           type: 'string',
+          minLength: 1,
+        },
+      },
+      after: {
+        name: 'after',
+        in: 'query',
+        description: 'Pointer to the previous page of results.',
+        required: false,
+        schema: {
+          type: 'string',
+          minLength: 1,
         },
       },
       fields: {
@@ -83,6 +94,25 @@ export default {
         required: false,
         schema: {
           type: 'string',
+        },
+      },
+      filter: {
+        name: 'filter',
+        in: 'query',
+        description: 'Filter for just the entities defined by this filter.',
+        required: false,
+        schema: {
+          type: 'string',
+        },
+      },
+      offset: {
+        name: 'offset',
+        in: 'query',
+        description: 'Number of records to skip in the query page.',
+        required: false,
+        schema: {
+          type: 'integer',
+          minimum: 1,
         },
       },
       limit: {
@@ -743,28 +773,13 @@ export default {
             $ref: '#/components/parameters/limit',
           },
           {
-            in: 'query',
-            name: 'filter',
-            required: false,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/filter',
           },
           {
-            in: 'query',
-            name: 'offset',
-            required: false,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/offset',
           },
           {
-            in: 'query',
-            name: 'after',
-            required: false,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/after',
           },
         ],
       },
@@ -811,12 +826,7 @@ export default {
         ],
         parameters: [
           {
-            in: 'path',
-            name: 'uid',
-            required: true,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/uid',
           },
         ],
       },
@@ -912,12 +922,7 @@ export default {
         ],
         parameters: [
           {
-            in: 'query',
-            name: 'fields',
-            required: false,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/fields',
           },
         ],
         requestBody: {
@@ -1039,12 +1044,7 @@ export default {
             },
           },
           {
-            in: 'query',
-            name: 'filter',
-            required: false,
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/filter',
           },
         ],
       },
