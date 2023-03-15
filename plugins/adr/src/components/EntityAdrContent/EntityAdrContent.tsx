@@ -122,7 +122,7 @@ const AdrListContainer = (props: {
               component={Link}
               key={idx}
               selected={selectedAdr === adr.path}
-              to={`${rootLink()}?record=${adr.name}`}
+              to={`${rootLink()}?record=${adr.path}`}
             >
               <ListItemText
                 primary={adr.title ?? adr?.name.replace(/\.md$/, '')}
@@ -175,7 +175,7 @@ export const EntityAdrContent = (props: {
   }, [entity, scmIntegrations]);
 
   const selectedAdr =
-    adrList.find(adr => adr.name === searchParams.get('record'))?.path ?? '';
+    adrList.find(adr => adr.path === searchParams.get('record'))?.path ?? '';
 
   const adrSubDirectoryFunc = (adr: AdrFileInfo) => {
     return adr.path.split('/').slice(0, -1).join('/');
@@ -183,7 +183,7 @@ export const EntityAdrContent = (props: {
 
   useEffect(() => {
     if (adrList.length && !selectedAdr) {
-      searchParams.set('record', adrList[0].name);
+      searchParams.set('record', adrList[0].path);
       setSearchParams(searchParams, { replace: true });
     }
   });
@@ -197,8 +197,8 @@ export const EntityAdrContent = (props: {
       (item: AdrFileInfo) =>
         item.type === 'file' &&
         (filePathFilterFn
-          ? filePathFilterFn(item.name)
-          : madrFilePathFilter(item.name)),
+          ? filePathFilterFn(item.path)
+          : madrFilePathFilter(item.path)),
     );
 
     setAdrList(adrs);

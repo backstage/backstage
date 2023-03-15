@@ -77,7 +77,7 @@ export type AdrFilePathFilterFn = (path: string) => boolean;
  * @public
  */
 export const madrFilePathFilter: AdrFilePathFilterFn = (path: string) =>
-  /^\d{4}-.+\.md$/.test(path);
+  /^(?>.+\/)?\d{4}-.+\.md$/.test(path);
 
 /**
  * ADR indexable document interface
