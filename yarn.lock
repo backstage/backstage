@@ -9755,28 +9755,28 @@ __metadata:
   linkType: hard
 
 "@gitbeaker/browser@npm:^35.6.0":
-  version: 35.8.0
-  resolution: "@gitbeaker/browser@npm:35.8.0"
+  version: 35.8.1
+  resolution: "@gitbeaker/browser@npm:35.8.1"
   dependencies:
-    "@gitbeaker/core": ^35.8.0
-    "@gitbeaker/requester-utils": ^35.8.0
+    "@gitbeaker/core": ^35.8.1
+    "@gitbeaker/requester-utils": ^35.8.1
     delay: ^5.0.0
     ky: 0.28.7
-  checksum: 23fa14d64661108c03a5d141123037aebb68e257d84e26bd8f6241df65a0958eaa79b8b491e0f08159e325cdc3244f79b2426dedcc2354ad106316ea499415ac
+  checksum: 8a76322cfd19da3d691fb08c7ebc79971da02cfb950841578523f20de02cb5e2dcf9741eca048dfa17d6a9620eb4884c9a29d84a230ba9c8d18fc528deb830cd
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0":
-  version: 35.8.0
-  resolution: "@gitbeaker/core@npm:35.8.0"
+"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0, @gitbeaker/core@npm:^35.8.1":
+  version: 35.8.1
+  resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
-    "@gitbeaker/requester-utils": ^35.8.0
+    "@gitbeaker/requester-utils": ^35.8.1
     form-data: ^4.0.0
     li: ^1.3.0
     mime: ^3.0.0
     query-string: ^7.0.0
     xcase: ^2.0.1
-  checksum: b894e1ac86dc8ac85f2db51d83d392899c10bb555b2448900f502ffeb49d9f36c1063c7151128ca96951ac472c11be6320584c4bec873501e96607bd7c25a37b
+  checksum: 8fc7b8d32a2162b70fd8e8ec4e019a3654da3fd1bcb7204b5030e8c9b4af52f4e7addafcd5503042e31dd4e4e3bdd7f8245dd963c77427d4471ab2e331266cf7
   languageName: node
   linkType: hard
 
@@ -9793,14 +9793,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^35.8.0":
-  version: 35.8.0
-  resolution: "@gitbeaker/requester-utils@npm:35.8.0"
+"@gitbeaker/requester-utils@npm:^35.8.0, @gitbeaker/requester-utils@npm:^35.8.1":
+  version: 35.8.1
+  resolution: "@gitbeaker/requester-utils@npm:35.8.1"
   dependencies:
     form-data: ^4.0.0
     qs: ^6.10.1
     xcase: ^2.0.1
-  checksum: 6bd49b821fb6f262c6306c06fc4812f41902c864a7d941b0d112381b352f680e50ebd6180840e21a89d761427cb1326d9829b74c98c95bf9fa2a5d53872a400a
+  checksum: c3c94ad90dab481887380f5bcff0416c1e1eee935fc3ca4f12d8db83d85c5f0d47f7f35cee6f2b05491bda99c03fb7eb88b849c986822eae3b1bfc26641ec899
   languageName: node
   linkType: hard
 
