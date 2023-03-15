@@ -120,6 +120,10 @@ module.exports = {
             from: '/docs/features/search/search-overview',
             to: '/docs/features/search/',
           },
+          {
+            from: '/getting-involved',
+            to: '/docs/getting-started/getting-involved'
+          },
         ],
       },
     ],
