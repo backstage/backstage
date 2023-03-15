@@ -35,7 +35,7 @@ export const PluginCard = ({
           by <a href={authorUrl}>{author}</a>
         </p>
 
-        <span className="button button--sm button--outline button--primary">
+        <span className="badge badge--secondary fit-content">
           {category}
         </span>
       </>
