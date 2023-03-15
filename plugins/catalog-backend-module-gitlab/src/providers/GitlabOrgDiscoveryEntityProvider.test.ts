@@ -23,7 +23,7 @@ import {
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { rest } from 'msw';
+import { graphql, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
 
@@ -318,20 +318,26 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
         ];
         return res(ctx.json(response));
       }),
-      rest.get(
-        `https://api.gitlab.example/api/v4/users/1/memberships`,
-        (_req, res, ctx) => {
-          const response = [
-            {
-              source_id: 2,
-              source_name: 'Group 2',
-              source_type: 'Namespace',
-              access_level: 50,
-            },
-          ];
-          return res(ctx.json(response));
-        },
-      ),
+      graphql
+        .link('https://test-gitlab/api/graphql')
+        .operation(async (req, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                groupMembers: {
+                  nodes:
+                    req.variables.group === 'group1/group2'
+                      ? [{ user: { id: 'gid://gitlab/User/1' } }]
+                      : [],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
+                },
+              },
+            }),
+          ),
+        ),
     );
 
     await provider.connect(entityProviderConnection);
