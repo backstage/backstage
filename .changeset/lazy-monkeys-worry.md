@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-insights': minor
+'@backstage/plugin-tech-insights': patch
 ---
 
-The Check class now includes the failureMetadata and successMetadata as returned by the runChecks call.
+The `Check` type now optionally includes the `failureMetadata` and `successMetadata` as returned by the `runChecks` call.
