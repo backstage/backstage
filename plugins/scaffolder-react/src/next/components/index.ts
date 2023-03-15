@@ -20,3 +20,5 @@ export * from './TemplateGroup';
 export * from './Workflow';
 export * from './TemplateOutputs';
 export * from './Form';
+export * from './TaskSteps';
+export * from './TaskLogStream';

@@ -50,40 +50,42 @@ export const createValidator = (
       for (const [key, propData] of Object.entries(formData)) {
         const propValidation = errors[key];
 
-        const propSchemaProps = schemaProps[key];
-        if (isObject(propData)) {
-          if (isObject(propSchemaProps)) {
-            validate(
-              propSchemaProps,
-              propData as JsonObject,
-              propValidation as FormValidation,
-            );
+        const doValidate = (item: JsonValue | undefined) => {
+          if (item && isObject(item)) {
+            const fieldName = item['ui:field'] as string;
+            if (fieldName && typeof validators[fieldName] === 'function') {
+              validators[fieldName]!(
+                propData as JsonObject[],
+                propValidation,
+                context,
+              );
+            }
           }
+        };
+
+        const propSchemaProps = schemaProps[key];
+        if (isObject(propData) && isObject(propSchemaProps)) {
+          validate(
+            propSchemaProps,
+            propData as JsonObject,
+            propValidation as FormValidation,
+          );
         } else if (isArray(propData)) {
           if (isObject(propSchemaProps)) {
             const { items } = propSchemaProps;
             if (isObject(items)) {
-              const fieldName = items['ui:field'] as string;
-              if (fieldName && typeof validators[fieldName] === 'function') {
-                validators[fieldName]!(
-                  propData as JsonObject[],
-                  propValidation,
-                  context,
-                );
+              if (items.type === 'object') {
+                const properties = (items?.properties ?? []) as JsonObject[];
+                for (const [, value] of Object.entries(properties)) {
+                  doValidate(value);
+                }
+              } else {
+                doValidate(items);
               }
             }
           }
         } else {
-          const fieldName =
-            isObject(propSchemaProps) &&
-            (propSchemaProps['ui:field'] as string);
-          if (fieldName && typeof validators[fieldName] === 'function') {
-            validators[fieldName]!(
-              propData as JsonValue,
-              propValidation,
-              context,
-            );
-          }
+          doValidate(propSchemaProps);
         }
       }
     } else if (customObject) {

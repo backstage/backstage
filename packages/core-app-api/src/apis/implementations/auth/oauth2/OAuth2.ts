@@ -153,7 +153,10 @@ export default class OAuth2
   }
 
   async getIdToken(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
+    const session = await this.sessionManager.getSession({
+      ...options,
+      scopes: new Set(['openid']),
+    });
     return session?.providerInfo.idToken ?? '';
   }
 

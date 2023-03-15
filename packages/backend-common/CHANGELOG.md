@@ -1,5 +1,87 @@
 # @backstage/backend-common
 
+## 0.18.3
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- c1ee073a82b: Added `lastModifiedAt` field on `UrlReaderService` responses and a `lastModifiedAfter` option to `UrlReaderService.readUrl`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config-loader@1.1.9
+  - @backstage/integration@1.4.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-dev-utils@0.1.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.18.3-next.0
 
 ### Patch Changes

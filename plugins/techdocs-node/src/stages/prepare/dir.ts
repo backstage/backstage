@@ -46,9 +46,9 @@ export class DirectoryPreparer implements PreparerBase {
    */
   static fromConfig(
     config: Config,
-    { logger, reader }: PreparerConfig,
+    options: PreparerConfig,
   ): DirectoryPreparer {
-    return new DirectoryPreparer(config, logger, reader);
+    return new DirectoryPreparer(config, options.logger, options.reader);
   }
 
   private constructor(

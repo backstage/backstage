@@ -204,11 +204,9 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
  * @param props - see {@link TechDocsShadowDomProps}.
  * @public
  */
-export const TechDocsShadowDom = ({
-  element,
-  onAppend,
-  children,
-}: TechDocsShadowDomProps) => {
+export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
+  const { element, onAppend, children } = props;
+
   const [jss, setJss] = useState(
     create({
       ...jssPreset(),

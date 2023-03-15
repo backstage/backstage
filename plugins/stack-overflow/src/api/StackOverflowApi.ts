@@ -20,10 +20,16 @@ import {
   StackOverflowQuestionsRequestParams,
 } from '../types';
 
+/**
+ * @public
+ */
 export const stackOverflowApiRef = createApiRef<StackOverflowApi>({
   id: 'plugin.stackoverflow.service',
 });
 
+/**
+ * @public
+ */
 export type StackOverflowApi = {
   listQuestions(options?: {
     requestParams: StackOverflowQuestionsRequestParams;

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { githubEventRouterEventsModule } from './service/GithubEventRouterEventsModule';
-export { githubWebhookEventsModule } from './service/GithubWebhookEventsModule';
+export { eventsModuleGithubEventRouter } from './service/eventsModuleGithubEventRouter';
+export { eventsModuleGithubWebhook } from './service/eventsModuleGithubWebhook';

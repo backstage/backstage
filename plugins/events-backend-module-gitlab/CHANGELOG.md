@@ -1,5 +1,34 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.5
+
+### Patch Changes
+
+- a5de745ac17: Renamed `gitlabEventRouterEventsModule` to `eventsModuleGitlabEventRouter` and `gitlabWebhookEventsModule` to `eventsModuleGitlabWebhook` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/plugin-events-node@0.2.4
+  - @backstage/config@1.0.7
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-events-node@0.2.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-events-node@0.2.4-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes

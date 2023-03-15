@@ -19,7 +19,7 @@ import {
   HomePageCompanyLogo,
   HomePageStarredEntities,
   TemplateBackstageLogo,
-  TemplateBackstageLogoIcon
+  TemplateBackstageLogoIcon,
 } from '@backstage/plugin-home';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
@@ -31,12 +31,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
+import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
 import {
-  HomePageSearchBar,
-  searchPlugin,
-} from '@backstage/plugin-search';
-import { searchApiRef, SearchContextProvider } from '@backstage/plugin-search-react';
-import { HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
+  searchApiRef,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
+import { stackOverflowApiRef, HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 
@@ -79,6 +79,25 @@ const mockCatalogApi = {
   getEntities: async () => ({ items: entities }),
 };
 
+const mockStackOverflowApi = {
+  listQuestions: async () => [
+    {
+      title: 'Customizing Spotify backstage UI',
+      link: 'stackoverflow.question/1',
+      answer_count: 0,
+      tags: ['backstage'],
+      owner: { 'some owner': 'name' },
+    },
+    {
+      title: 'Customizing Spotify backstage UI',
+      link: 'stackoverflow.question/1',
+      answer_count: 0,
+      tags: ['backstage'],
+      owner: { 'some owner': 'name' },
+    },
+  ],
+};
+
 const starredEntitiesApi = new MockStarredEntitiesApi();
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity-2');
@@ -93,6 +112,7 @@ export default {
         <>
           <TestApiProvider
             apis={[
+              [stackOverflowApiRef, mockStackOverflowApi],
               [catalogApiRef, mockCatalogApi],
               [starredEntitiesApiRef, starredEntitiesApi],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],

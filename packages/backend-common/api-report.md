@@ -6,7 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import aws from 'aws-sdk';
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -67,9 +67,9 @@ import { Writable } from 'stream';
 // @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
+    credsManager: AwsCredentialsManager,
     integration: AwsS3Integration,
     deps: {
-      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
@@ -301,6 +301,7 @@ export class FetchUrlReader implements UrlReader {
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
+  lastModifiedAt?: Date;
 }>;
 
 // @public
@@ -635,6 +636,7 @@ export class ReadUrlResponseFactory {
 // @public
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public

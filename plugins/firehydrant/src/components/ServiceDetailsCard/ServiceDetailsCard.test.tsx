@@ -30,7 +30,9 @@ const apis = TestApiRegistry.from([fireHydrantApiRef, mockFireHydrantApi]);
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
-    return { entity: { metadata: { name: 'service-example' } } };
+    return {
+      entity: { kind: 'Component', metadata: { name: 'service-example' } },
+    };
   },
 }));
 

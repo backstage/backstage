@@ -24,8 +24,53 @@ passed as `input` to the function.
 In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
 new action.
 
-```ts
-import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
+```ts title="With Zod"
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import fs from 'fs-extra';
+import { z } from 'zod';
+
+export const createNewFileAction = () => {
+  return createTemplateAction({
+    id: 'mycompany:create-file',
+    schema: {
+      input: z.object({
+        contents: z.string().describe('The contents of the file'),
+        filename: z
+          .string()
+          .describe('The filename of the file that will be created'),
+      }),
+    },
+
+    async handler(ctx) {
+      await fs.outputFile(
+        `${ctx.workspacePath}/${ctx.input.filename}`,
+        ctx.input.contents,
+      );
+    },
+  });
+};
+```
+
+So let's break this down. The `createNewFileAction` is a function that returns a
+`createTemplateAction`, and it's a good place to pass in dependencies which
+close over the `TemplateAction`. Take a look at our
+[built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
+for reference.
+
+The `createTemplateAction` takes an object which specifies the following:
+
+- `id` - a unique ID for your custom action. We encourage you to namespace these
+  in some way so that they won't collide with future built-in actions that we
+  may ship with the `scaffolder-backend` plugin.
+- `schema.input` - A `zod` or JSON schema object for input values to your function
+- `schema.output` - A `zod` or JSON schema object for values which are output from the
+  function using `ctx.output`
+- `handler` - the actual code which is run part of the action, with a context
+
+You can also choose to define your custom action using JSON schema instead of `zod`:
+
+```ts title="With JSON Schema"
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 
 export const createNewFileAction = () => {
@@ -59,27 +104,6 @@ export const createNewFileAction = () => {
 };
 ```
 
-So let's break this down. The `createNewFileAction` is a function that returns a
-`createTemplateAction`, and it's a good place to pass in dependencies which
-close over the `TemplateAction`. Take a look at our
-[built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
-for reference.
-
-We set the type generic to `{ contents: string, filename: string }` which is
-there to set the type on the handler `ctx` `inputs` property so we get good type
-checking. This could be generated from the next part of this guide, the `input`
-schema, but it's not supported right now. Feel free to contribute 🚀 👍.
-
-The `createTemplateAction` takes an object which specifies the following:
-
-- `id` - a unique ID for your custom action. We encourage you to namespace these
-  in some way so that they won't collide with future built-in actions that we
-  may ship with the `scaffolder-backend` plugin.
-- `schema.input` - A JSON schema for input values to your function
-- `schema.output` - A JSON schema for values which are outputted from the
-  function using `ctx.output`
-- `handler` - the actual code which is run part of the action, with a context
-
 ### The context object
 
 When the action `handler` is called, we provide you a `context` as the only
@@ -89,10 +113,10 @@ argument. It looks like the following:
 - `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
-- `ctx.input` - an object which should match the JSON schema provided in the
+- `ctx.input` - an object which should match the `zod` or JSON schema provided in the
   `schema.input` part of the action definition
 - `ctx.output` - a function which you can call to set outputs that match the
-  JSON schema in `schema.output` for ex. `ctx.output('downloadUrl', something)`
+  JSON schema or `zod` in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`
 - `createTemporaryDirectory` a function to call to give you a temporary
   directory somewhere on the runner so you can store some files there rather
   than polluting the `workspacePath`

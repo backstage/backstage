@@ -100,10 +100,12 @@ describe('createAsyncValidators', () => {
       expect.objectContaining({
         schema: {
           type: 'string',
+          pattern: 'lols',
+        },
+        uiSchema: {
           'ui:options': {
             bob: true,
           },
-          pattern: 'lols',
           'ui:field': 'NameField',
         },
       }),
@@ -115,7 +117,6 @@ describe('createAsyncValidators', () => {
       expect.objectContaining({
         schema: {
           type: 'object',
-          'ui:field': 'AddressField',
           properties: {
             street: {
               type: 'string',
@@ -124,6 +125,11 @@ describe('createAsyncValidators', () => {
               type: 'string',
             },
           },
+        },
+        uiSchema: {
+          'ui:field': 'AddressField',
+          street: {},
+          postcode: {},
         },
       }),
     );
@@ -399,5 +405,40 @@ describe('createAsyncValidators', () => {
     });
 
     expect(validators.TagField).not.toHaveBeenCalled();
+  });
+
+  it('should call validator for array object property from a custom field extension', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        links: {
+          title: 'Links',
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['url', 'title', 'icon'],
+            properties: {
+              url: {
+                title: 'url',
+                description: 'url',
+                type: 'object',
+                'ui:field': 'CustomLinkField',
+              },
+            },
+          },
+        },
+      },
+    };
+    const validators = { CustomLinkField: jest.fn() };
+
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      links: [{ url: 'http://my-url.spotify.com' }],
+    });
+
+    expect(validators.CustomLinkField).toHaveBeenCalled();
   });
 });

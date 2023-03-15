@@ -186,7 +186,7 @@ async function prepareExportsEntryPoints(
     return undefined;
   }
   const distFiles = await fs.readdir(distPath);
-  const outputExports = {} as Record<string, Record<string, string>>;
+  const outputExports = {} as Record<string, string | Record<string, string>>;
 
   const compatibilityWriters = new Array<
     (targetDir: string) => Promise<void>
@@ -195,6 +195,7 @@ async function prepareExportsEntryPoints(
   const entryPoints = readEntryPoints(pkg);
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
+      outputExports[entryPoint.mount] = entryPoint.path;
       continue;
     }
     const exp = {} as Record<string, string>;

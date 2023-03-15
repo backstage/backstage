@@ -26,9 +26,9 @@ type Props = CSS.Properties & {
 export type LifecycleClassKey = 'alpha' | 'beta';
 
 const useStyles = makeStyles(
-  {
+  theme => ({
     alpha: {
-      color: '#ffffff',
+      color: theme.palette.common.white,
       fontFamily: 'serif',
       fontWeight: 'normal',
       fontStyle: 'italic',
@@ -39,7 +39,7 @@ const useStyles = makeStyles(
       fontWeight: 'normal',
       fontStyle: 'italic',
     },
-  },
+  }),
   { name: 'BackstageLifecycle' },
 );
 

@@ -41,6 +41,7 @@ import {
   UrlReader,
 } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket v1 and v2 APIs, such
@@ -96,7 +97,7 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const { etag, signal } = options ?? {};
+    const { etag, lastModifiedAfter, signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
     const requestOptions = getBitbucketRequestOptions(this.integration.config);
 
@@ -106,6 +107,9 @@ export class BitbucketUrlReader implements UrlReader {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
+          ...(lastModifiedAfter && {
+            'If-Modified-Since': lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -126,6 +130,9 @@ export class BitbucketUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -195,6 +202,7 @@ export class BitbucketUrlReader implements UrlReader {
           base: url,
         }),
         content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
       })),
     };
   }

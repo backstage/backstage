@@ -47,7 +47,8 @@ export const actionFactories = {
     isStarredEntity: Function,
     toggleStarredEntity: Function,
   ) {
-    return ({ entity }: DocsTableRow) => {
+    return (row: DocsTableRow) => {
+      const entity = row.entity;
       const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },

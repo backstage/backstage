@@ -31,18 +31,16 @@ Once the package has been installed, you need to import the plugin in your app.
 In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 
-// ...
-
 const AppRoutes = () => {
   <FlatRoutes>
-    // ... other plugin routes
+    {/* ... other plugin routes */}
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
@@ -58,20 +56,20 @@ It would be nice to decorate your pages with something else... Having a link tha
 
 With the [TechDocs Addon framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these Addons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` Addon in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
 
-```diff
+```tsx
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-+ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-
-// ...
+/* highlight-add-start */
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+/* highlight-add-end */
 
 const AppRoutes = () => {
   <FlatRoutes>
-    // ... other plugin routes
+    {/* ... other plugin routes */}
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
@@ -79,9 +77,11 @@ const AppRoutes = () => {
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
     >
-+     <TechDocsAddons>
-+       <ReportIssue />
-+     </TechDocsAddons>
+      {/* highlight-add-start */}
+      <TechDocsAddons>
+        <ReportIssue />
+      </TechDocsAddons>
+      {/* highlight-add-end */}
     </Route>
   </FlatRoutes>;
 };

@@ -17,7 +17,7 @@
 import {
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { BitbucketServerClient } from '../lib';

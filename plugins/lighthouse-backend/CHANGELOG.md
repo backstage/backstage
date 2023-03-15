@@ -1,5 +1,42 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.1.1
+
+### Patch Changes
+
+- 46829bc2f0e: Update README.md; typo with plugin name & removed unneeded "import { Router } from 'express';"
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-lighthouse-common@0.1.1
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 46829bc2f0e: Update README.md; typo with plugin name & removed unneeded "import { Router } from 'express';"
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-lighthouse-common@0.1.1-next.0
+
 ## 0.1.1-next.0
 
 ### Patch Changes

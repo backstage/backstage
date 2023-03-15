@@ -24,42 +24,42 @@ import {
   UNDER_MAINTENANCE,
 } from '../../types';
 
-const OperationalChip = withStyles({
+const OperationalChip = withStyles(theme => ({
   root: {
     backgroundColor: '#388E3D',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
-const UnderMaintenanceChip = withStyles({
+const UnderMaintenanceChip = withStyles(theme => ({
   root: {
     backgroundColor: '#616161',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
-const DegradedChip = withStyles({
+}))(Chip);
+const DegradedChip = withStyles(theme => ({
   root: {
     backgroundColor: '#FBC02D',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
-const PartialOutageChip = withStyles({
+}))(Chip);
+const PartialOutageChip = withStyles(theme => ({
   root: {
     backgroundColor: '#F57C02',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
-const MajorOutageChip = withStyles({
+}))(Chip);
+const MajorOutageChip = withStyles(theme => ({
   root: {
     backgroundColor: '#D22F2E',
-    color: 'white',
+    color: theme.palette.common.white,
     margin: 0,
   },
-})(Chip);
+}))(Chip);
 
 const serviceStatusLabels = {
   [OPERATIONAL]: 'Operational',

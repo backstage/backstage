@@ -56,7 +56,7 @@ type RenewTokenResponse = {
  */
 export interface VaultApi {
   /**
-   * Returns the URL to acces the Vault UI with the defined config.
+   * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;
   /**

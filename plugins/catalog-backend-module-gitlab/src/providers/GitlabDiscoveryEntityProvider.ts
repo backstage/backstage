@@ -22,7 +22,7 @@ import {
   EntityProviderConnection,
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {

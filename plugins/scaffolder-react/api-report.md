@@ -17,10 +17,6 @@ import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { ScaffolderTask as ScaffolderTask_2 } from '@backstage/plugin-scaffolder-react';
-import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-react';
-import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-react';
-import { Step as Step_2 } from '@backstage/plugin-scaffolder-react';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
@@ -237,6 +233,14 @@ export interface ScaffolderScaffoldResponse {
 }
 
 // @public
+export type ScaffolderStep = {
+  id: string;
+  status: ScaffolderTaskStatus;
+  endedAt?: string;
+  startedAt?: string;
+};
+
+// @public
 export interface ScaffolderStreamLogsOptions {
   // (undocumented)
   after?: number;
@@ -277,41 +281,9 @@ export interface ScaffolderUseTemplateSecrets {
 }
 
 // @public
-export const SecretsContextProvider: ({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
-
-// @public
-export type Step = {
-  id: string;
-  status: ScaffolderTaskStatus_2;
-  endedAt?: string;
-  startedAt?: string;
-};
-
-// @public (undocumented)
-export interface StepperProps {
-  // (undocumented)
-  activeStep?: number;
-  // (undocumented)
-  steps: (TaskStep & Step_2)[];
-}
-
-// @public
-export const TaskBorder: (props: {
-  isComplete: boolean;
-  isError: boolean;
-}) => JSX.Element;
-
-// @public
-export const TaskLogStream: (props: {
-  logs: {
-    [k: string]: string[];
-  };
-}) => JSX.Element;
-
-// @public
-export const TaskSteps: (props: StepperProps) => JSX.Element;
+export const SecretsContextProvider: (
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
 
 // @public
 export type TaskStream = {
@@ -321,11 +293,11 @@ export type TaskStream = {
     [stepId in string]: string[];
   };
   completed: boolean;
-  task?: ScaffolderTask_2;
+  task?: ScaffolderTask;
   steps: {
-    [stepId in string]: Step;
+    [stepId in string]: ScaffolderStep;
   };
-  output?: ScaffolderTaskOutput_2;
+  output?: ScaffolderTaskOutput;
 };
 
 // @public

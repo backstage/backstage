@@ -60,12 +60,20 @@ sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
 installed in `packages/app/src/App.tsx` like this:
 
-```diff
-+import { ProxiedSignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { ProxiedSignInPage } from '@backstage/core-components';
 
- const app = createApp({
-   components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="azure-easyauth" />,
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <ProxiedSignInPage {...props} provider="azure-easyauth" />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.

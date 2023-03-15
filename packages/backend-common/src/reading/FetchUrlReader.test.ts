@@ -45,6 +45,21 @@ describe('FetchUrlReader', () => {
           );
         }
 
+        if (
+          req.headers.get('if-modified-since') &&
+          new Date(req.headers.get('if-modified-since') ?? '') <
+            new Date('2021-01-01T00:00:00Z')
+        ) {
+          return res(
+            ctx.status(304),
+            ctx.set('Content-Type', 'text/plain'),
+            ctx.set(
+              'last-modified',
+              new Date('2021-01-01T00:00:00Z').toUTCString(),
+            ),
+          );
+        }
+
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'text/plain'),
@@ -192,10 +207,18 @@ describe('FetchUrlReader', () => {
   });
 
   describe('readUrl', () => {
-    it('should throw NotModified if server responds with 304', async () => {
+    it('should throw NotModified if server responds with 304 from etag', async () => {
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/some-resource', {
           etag: 'foo',
+        }),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/some-resource', {
+          lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
         }),
       ).rejects.toThrow(NotModifiedError);
     });

@@ -1,5 +1,64 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.2.6
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 90469c02c8c: Renamed `githubEntityProviderCatalogModule` to `catalogModuleGithubEntityProvider` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-events-node@0.2.4
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/plugin-events-node@0.2.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-events-node@0.2.4-next.1
+
 ## 0.2.6-next.0
 
 ### Patch Changes

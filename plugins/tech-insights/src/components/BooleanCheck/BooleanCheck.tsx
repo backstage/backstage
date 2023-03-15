@@ -22,8 +22,8 @@ import { CheckResult } from '@backstage/plugin-tech-insights-common';
 /**
  * @public
  */
-export const BooleanCheck = ({ checkResult }: { checkResult: CheckResult }) => {
-  return !!checkResult.result ? (
+export const BooleanCheck = (props: { checkResult: CheckResult }) => {
+  return !!props.checkResult.result ? (
     <CheckCircleOutline color="primary" />
   ) : (
     <ErrorOutlineIcon color="error" />

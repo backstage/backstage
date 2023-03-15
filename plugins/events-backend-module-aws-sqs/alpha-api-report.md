@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const awsSqsConsumingEventPublisherEventsModule: () => BackendFeature;
+export const eventsModuleAwsSqsConsumingEventPublisher: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

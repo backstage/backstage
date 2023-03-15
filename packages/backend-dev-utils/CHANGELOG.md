@@ -1,5 +1,17 @@
 # @backstage/backend-dev-utils
 
+## 0.1.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
 ## 0.1.0
 
 ### Minor Changes
