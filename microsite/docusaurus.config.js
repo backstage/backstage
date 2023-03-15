@@ -158,7 +158,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.11.0',
+            to: 'docs/releases/v1.12.0',
             label: 'Releases',
             position: 'left',
           },
