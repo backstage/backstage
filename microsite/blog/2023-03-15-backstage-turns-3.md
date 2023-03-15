@@ -5,6 +5,8 @@ authorURL: https://github.com/benjdlambert
 authorImageURL: https://avatars.githubusercontent.com/u/3645856?v=4
 ---
 
+![backstage turns 3 header image](assets/2023-03-15/birthday.gif)
+
 **tl;dr** Spotify released Backstage into open source three years ago today. Since then, the community has grown by leaps and bounds to stretch across the globe (and the Discord server!). Now that Backstage is a threenager, the growing pains are real. So, on this birthday, we want to cover our collective efforts to make it easier to adopt and contribute to Backstage.
 
 <!--truncate-->
