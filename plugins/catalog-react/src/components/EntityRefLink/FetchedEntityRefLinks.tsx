@@ -105,7 +105,7 @@ export function FetchedEntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
-              usePeekAheadPopover
+              usePeekAheadPopover={usePeekAheadPopover}
               title={getTitle(r as Entity)}
             />
           </React.Fragment>

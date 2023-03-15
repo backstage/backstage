@@ -68,7 +68,7 @@ export function EntityRefLinks<
         defaultKind={defaultKind}
         entityRefs={entityRefs}
         getTitle={getTitle}
-        usePeekAheadPopover
+        usePeekAheadPopover={usePeekAheadPopover}
       />
     );
   }
@@ -83,7 +83,7 @@ export function EntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
-              usePeekAheadPopover
+              usePeekAheadPopover={usePeekAheadPopover}
               title={getTitle ? getTitle(r) : undefined}
             />
           </React.Fragment>
