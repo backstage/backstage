@@ -15,7 +15,26 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { isComponentType, isKind, isNamespace } from './conditions';
+import {
+  isComponentType,
+  isKind,
+  isNamespace,
+  isResourceType,
+} from './conditions';
+
+const kubernetesClusterResource: Entity = {
+  apiVersion: '',
+  kind: 'resource',
+  metadata: { name: 'aKubernetesCluster' },
+  spec: { type: 'kubernetes-cluster' },
+};
+
+const databaseResource: Entity = {
+  apiVersion: '',
+  kind: 'resource',
+  metadata: { name: 'aDatabase' },
+  spec: { type: 'database' },
+};
 
 const serviceComponent: Entity = {
   apiVersion: '',
@@ -58,6 +77,26 @@ const bNamespace: Entity = {
   metadata: { name: 'aService', namespace: 'b' },
   spec: { type: 'service' },
 };
+
+describe('isResourceType', () => {
+  it('should false on non component kinds', () => {
+    const checkEntity = isResourceType('service');
+
+    expect(checkEntity(notComponent)).not.toBeTruthy();
+  });
+  it('should check for the intended type', () => {
+    const checkEntity = isResourceType('kubernetes-cluster');
+
+    expect(checkEntity(databaseResource)).not.toBeTruthy();
+    expect(checkEntity(kubernetesClusterResource)).toBeTruthy();
+  });
+  it('should check for multiple types', () => {
+    const checkEntity = isResourceType(['database', 'kubernetes-cluster']);
+
+    expect(checkEntity(databaseResource)).toBeTruthy();
+    expect(checkEntity(kubernetesClusterResource)).toBeTruthy();
+  });
+});
 
 describe('isComponentType', () => {
   it('should false on non component kinds', () => {
