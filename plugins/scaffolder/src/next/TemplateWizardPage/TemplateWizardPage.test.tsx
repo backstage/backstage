@@ -41,6 +41,7 @@ jest.mock('react-router-dom', () => {
 });
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
+  cancelTask: jest.fn(),
   scaffold: jest.fn(),
   getTemplateParameterSchema: jest.fn(),
   getIntegrationsList: jest.fn(),

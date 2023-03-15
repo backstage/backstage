@@ -30,7 +30,7 @@ import {
 } from './catalog';
 
 import { TemplateFilter, TemplateGlobal } from '../../../lib';
-import { createDebugLogAction } from './debug';
+import { createDebugLogAction, createWaitAction } from './debug';
 import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
 import {
   createFilesystemDeleteAction,
@@ -159,6 +159,7 @@ export const createBuiltinActions = (
       config,
     }),
     createDebugLogAction(),
+    createWaitAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
     createFetchCatalogEntityAction({ catalogClient }),
     createCatalogWriteAction(),

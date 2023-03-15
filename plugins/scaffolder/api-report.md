@@ -360,6 +360,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
+  cancelTask(taskId: string): Promise<void>;
+  // (undocumented)
   dryRun(
     options: ScaffolderDryRunOptions_2,
   ): Promise<ScaffolderDryRunResponse_2>;

@@ -11,9 +11,11 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -529,6 +531,11 @@ export const createTemplateAction: <
 ) => TemplateAction_2<TActionInput>;
 
 // @public
+export function createWaitAction(options?: {
+  maxWaitTime?: Duration | HumanDuration;
+}): TemplateAction_2<HumanDuration>;
+
+// @public
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
@@ -550,6 +557,14 @@ export interface CurrentClaimedTask {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
+  // (undocumented)
+  cancelTask(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -695,6 +710,8 @@ export type SerializedTaskEvent = {
 // @public
 export interface TaskBroker {
   // (undocumented)
+  cancel?(taskId: string): Promise<void>;
+  // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
   dispatch(
@@ -732,6 +749,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
+  cancelSignal: AbortSignal;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -750,16 +769,19 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log';
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get cancelSignal(): AbortSignal;
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
+    abortSignal: AbortSignal,
     logger: Logger,
   ): TaskManager;
   // (undocumented)
@@ -781,14 +803,16 @@ export type TaskSecrets = TaskSecrets_2;
 
 // @public
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public
 export interface TaskStore {
+  // (undocumented)
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)

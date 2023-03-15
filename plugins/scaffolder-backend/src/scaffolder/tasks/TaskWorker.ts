@@ -21,10 +21,7 @@ import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import {
-  TemplateFilter,
-  TemplateGlobal,
-} from '../../lib/templating/SecureTemplater';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
 
 /**
  * TaskWorkerOptions
