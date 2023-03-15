@@ -20,7 +20,10 @@ import { makeFieldSchemaFromZod } from '../utils';
  * @public
  */
 export const entityQueryFilterExpressionSchema = z.record(
-  z.string().or(z.array(z.string())),
+  z
+    .string()
+    .or(z.object({ exists: z.boolean().optional() }))
+    .or(z.array(z.string())),
 );
 
 /**
@@ -74,3 +77,10 @@ export type EntityPickerUiOptions =
 export type EntityPickerProps = typeof EntityPickerFieldSchema.type;
 
 export const EntityPickerSchema = EntityPickerFieldSchema.schema;
+
+export type EntityPickerFilterQuery = z.TypeOf<
+  typeof entityQueryFilterExpressionSchema
+>;
+
+export type EntityPickerFilterQueryValue =
+  EntityPickerFilterQuery[keyof EntityPickerFilterQuery];
