@@ -19,6 +19,7 @@ import {
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
   parseEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
@@ -26,6 +27,7 @@ import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
+import { EntityPeekAheadPopover } from '../EntityPeekAheadPopover';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -37,6 +39,7 @@ export type EntityRefLinkProps = {
   defaultKind?: string;
   title?: string;
   children?: React.ReactNode;
+  usePeekAheadPopover?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -46,7 +49,14 @@ export type EntityRefLinkProps = {
  */
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
-    const { entityRef, defaultKind, title, children, ...linkProps } = props;
+    const {
+      entityRef,
+      usePeekAheadPopover = false,
+      defaultKind,
+      title,
+      children,
+      ...linkProps
+    } = props;
     const entityRoute = useRouteRef(entityRouteRef);
 
     let kind;
@@ -84,10 +94,20 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       </Link>
     );
 
-    return title ? (
-      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
-    ) : (
-      link
-    );
+    if (usePeekAheadPopover) {
+      return (
+        <EntityPeekAheadPopover
+          entityRef={stringifyEntityRef({ name, namespace, kind })}
+        >
+          {link}
+        </EntityPeekAheadPopover>
+      );
+    }
+
+    if (title) {
+      return <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>;
+    }
+
+    return link;
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;

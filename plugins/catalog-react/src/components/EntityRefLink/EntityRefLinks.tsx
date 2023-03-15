@@ -32,12 +32,14 @@ export type EntityRefLinksProps<
       entityRefs: TRef[];
       fetchEntities?: false;
       getTitle?(entity: TRef): string | undefined;
+      usePeekAheadPopover?: boolean;
     }
   | {
       defaultKind?: string;
       entityRefs: TRef[];
       fetchEntities: true;
       getTitle(entity: Entity): string | undefined;
+      usePeekAheadPopover?: boolean;
     }
 ) &
   Omit<LinkProps, 'to'>;
@@ -50,8 +52,14 @@ export type EntityRefLinksProps<
 export function EntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
 >(props: EntityRefLinksProps<TRef>) {
-  const { entityRefs, defaultKind, fetchEntities, getTitle, ...linkProps } =
-    props;
+  const {
+    entityRefs,
+    usePeekAheadPopover = false,
+    defaultKind,
+    fetchEntities,
+    getTitle,
+    ...linkProps
+  } = props;
 
   if (fetchEntities) {
     return (
@@ -60,6 +68,7 @@ export function EntityRefLinks<
         defaultKind={defaultKind}
         entityRefs={entityRefs}
         getTitle={getTitle}
+        usePeekAheadPopover
       />
     );
   }
@@ -74,6 +83,7 @@ export function EntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
+              usePeekAheadPopover
               title={getTitle ? getTitle(r) : undefined}
             />
           </React.Fragment>

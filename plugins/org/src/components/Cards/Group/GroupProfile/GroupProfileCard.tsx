@@ -81,7 +81,7 @@ export const GroupProfileCard = (props: {
   }
 
   const {
-    metadata: { name, description, annotations, links },
+    metadata: { name, title, description, annotations, links },
     spec: { profile },
   } = group;
 
@@ -99,7 +99,7 @@ export const GroupProfileCard = (props: {
   const entityMetadataEditUrl =
     group.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  const displayName = profile?.displayName ?? name;
+  const displayName = profile?.displayName ?? title ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
   const infoCardAction = entityMetadataEditUrl ? (
     <IconButton
@@ -166,6 +166,7 @@ export const GroupProfileCard = (props: {
                   parentRelations.length ? (
                     <EntityRefLinks
                       entityRefs={parentRelations}
+                      usePeekAheadPopover
                       defaultKind="Group"
                     />
                   ) : (
@@ -186,6 +187,7 @@ export const GroupProfileCard = (props: {
                   childRelations.length ? (
                     <EntityRefLinks
                       entityRefs={childRelations}
+                      usePeekAheadPopover
                       defaultKind="Group"
                     />
                   ) : (

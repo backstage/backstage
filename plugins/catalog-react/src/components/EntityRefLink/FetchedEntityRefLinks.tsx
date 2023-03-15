@@ -36,6 +36,7 @@ export type FetchedEntityRefLinksProps<
   defaultKind?: string;
   entityRefs: TRef[];
   getTitle(entity: Entity): string | undefined;
+  usePeekAheadPopover?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -47,7 +48,13 @@ export type FetchedEntityRefLinksProps<
 export function FetchedEntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
 >(props: FetchedEntityRefLinksProps<TRef>) {
-  const { entityRefs, defaultKind, getTitle, ...linkProps } = props;
+  const {
+    entityRefs,
+    usePeekAheadPopover = false,
+    defaultKind,
+    getTitle,
+    ...linkProps
+  } = props;
 
   const catalogApi = useApi(catalogApiRef);
 
@@ -98,6 +105,7 @@ export function FetchedEntityRefLinks<
               {...linkProps}
               defaultKind={defaultKind}
               entityRef={r}
+              usePeekAheadPopover
               title={getTitle(r as Entity)}
             />
           </React.Fragment>
