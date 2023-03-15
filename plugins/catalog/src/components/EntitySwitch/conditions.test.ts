@@ -24,16 +24,23 @@ import {
 
 const kubernetesClusterResource: Entity = {
   apiVersion: '',
-  kind: 'resource',
+  kind: 'Resource',
   metadata: { name: 'aKubernetesCluster' },
   spec: { type: 'kubernetes-cluster' },
 };
 
 const databaseResource: Entity = {
   apiVersion: '',
-  kind: 'resource',
+  kind: 'Resource',
   metadata: { name: 'aDatabase' },
   spec: { type: 'database' },
+};
+
+const notResource: Entity = {
+  apiVersion: '',
+  kind: 'not-Resource',
+  metadata: { name: 'aService' },
+  spec: { type: 'service' },
 };
 
 const serviceComponent: Entity = {
@@ -79,10 +86,10 @@ const bNamespace: Entity = {
 };
 
 describe('isResourceType', () => {
-  it('should false on non component kinds', () => {
-    const checkEntity = isResourceType('service');
+  it('should false on non resource kinds', () => {
+    const checkEntity = isResourceType('kubernetes-cluster');
 
-    expect(checkEntity(notComponent)).not.toBeTruthy();
+    expect(checkEntity(notResource)).not.toBeTruthy();
   });
   it('should check for the intended type', () => {
     const checkEntity = isResourceType('kubernetes-cluster');
