@@ -7,7 +7,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
-export const createGitlabProjectAccessToken: (options: {
+export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
   repoUrl: string;
@@ -19,7 +19,7 @@ export const createGitlabProjectAccessToken: (options: {
 }>;
 
 // @public
-export const createGitlabProjectDeployToken: (options: {
+export const createGitlabProjectDeployTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
   repoUrl: string;
@@ -31,7 +31,7 @@ export const createGitlabProjectDeployToken: (options: {
 }>;
 
 // @public
-export const createGitlabProjectVariable: (options: {
+export const createGitlabProjectVariableAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
   repoUrl: string;

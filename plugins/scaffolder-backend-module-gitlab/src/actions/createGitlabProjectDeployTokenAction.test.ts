@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createGitlabProjectDeployToken } from './createProjectDeployToken';
+import { createGitlabProjectDeployTokenAction } from './createGitlabProjectDeployTokenAction';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -51,7 +51,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  const action = createGitlabProjectDeployToken({ integrations });
+  const action = createGitlabProjectDeployTokenAction({ integrations });
   const mockContext = {
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',

@@ -20,9 +20,9 @@ Configure the action:
 // packages/backend/src/plugins/scaffolder.ts
 
 import {
-  createGitlabProjectVariable,
-  createGitlabProjectAccessToken,
-  createGitlabProjectDeployToken,
+  createGitlabProjectAccessTokenAction,
+  createGitlabProjectAccessTokenAction,
+  createGitlabProjectDeployTokenAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -36,13 +36,13 @@ const builtInActions = createBuiltinActions({
 // Add Gitlab Actions
 const actions = [
   ...builtInActions,
-  createGitlabProjectVariable({
+  createGitlabProjectAccessTokenAction({
     integrations: integrations,
   }),
-  createGitlabProjectAccessToken({
+  createGitlabProjectAccessTokenAction({
     integrations: integrations,
   }),
-  createGitlabProjectDeployToken({
+  createGitlabProjectDeployTokenAction({
     integrations: integrations,
   }),
 ];
@@ -116,7 +116,7 @@ spec:
 
     - id: gitlab-deploy-token
       name: Create Deploy Token
-      action: gitlab:create-project-deploy-token
+      action: gitlab:pdt:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish'].output.projectId }}"
@@ -126,7 +126,7 @@ spec:
 
     - id: gitlab-access-token
       name: Gitlab Access Token
-      action: gitlab:create-project-access-token
+      action: gitlab:pat:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish-manifest'].output.projectId }}"
@@ -136,7 +136,7 @@ spec:
 
     - id: gitlab-project-variable
       name: Manifest CI/CD Variable
-      action: gitlab:create-project-variable
+      action: gitlab:pv:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish'].output.projectId }}"

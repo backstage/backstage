@@ -25,7 +25,7 @@ import { Gitlab } from '@gitbeaker/node';
  * @param options - Templating configuration.
  * @public
  */
-export const createGitlabProjectVariable = (options: {
+export const createGitlabProjectVariableAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
@@ -41,7 +41,7 @@ export const createGitlabProjectVariable = (options: {
     environmentScope: string;
     token?: string;
   }>({
-    id: 'gitlab:create-project-variable',
+    id: 'gitlab:pv:create',
     schema: {
       input: {
         required: [

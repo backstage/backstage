@@ -15,16 +15,19 @@
  */
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { Gitlab } from '@gitbeaker/node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
 import { getToken } from '../util';
+import { InputError } from '@backstage/errors';
 
 /**
- * Creates a `gitlab:create-project-access-token` Scaffolder action.
+ * Creates a `gitlab:create-project-deploy-token` Scaffolder action.
  *
  * @param options - Templating configuration.
  * @public
  */
-export const createGitlabProjectAccessToken = (options: {
+export const createGitlabProjectDeployTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
@@ -32,11 +35,11 @@ export const createGitlabProjectAccessToken = (options: {
     repoUrl: string;
     projectId: string | number;
     name: string;
-    accessLevel: number;
+    username: string;
     scopes: string[];
     token?: string;
   }>({
-    id: 'gitlab:create-project-access-token',
+    id: 'gitlab:pdt:create',
     schema: {
       input: {
         required: ['projectId', 'repoUrl'],
@@ -54,9 +57,9 @@ export const createGitlabProjectAccessToken = (options: {
             title: 'Deploy Token Name',
             type: 'string',
           },
-          accessLevel: {
-            title: 'Access Level of the Token',
-            type: 'number',
+          username: {
+            title: 'Deploy Token Username',
+            type: 'string',
           },
           scopes: {
             title: 'Scopes',
@@ -72,8 +75,12 @@ export const createGitlabProjectAccessToken = (options: {
       output: {
         type: 'object',
         properties: {
-          access_token: {
-            title: 'Access Token',
+          deploy_token: {
+            title: 'Deploy Token',
+            type: 'string',
+          },
+          user: {
+            title: 'User',
             type: 'string',
           },
         },
@@ -81,32 +88,33 @@ export const createGitlabProjectAccessToken = (options: {
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { repoUrl, projectId, name, accessLevel, scopes } = ctx.input;
+      const { repoUrl, projectId, name, username, scopes } = ctx.input;
       const { token, integrationConfig } = getToken(
         repoUrl,
         ctx.input.token,
         integrations,
       );
 
-      const response = await fetch(
-        `${integrationConfig.config.baseUrl}/api/v4/projects/${projectId}/access_tokens`,
+      const api = new Gitlab({
+        host: integrationConfig.config.baseUrl,
+        token: token,
+      });
+
+      const deployToken = await api.ProjectDeployTokens.add(
+        projectId,
+        name,
+        scopes as DeployTokenScope[],
         {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'PRIVATE-TOKEN': token,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: name,
-            scopes: scopes,
-            access_level: accessLevel,
-          }),
+          username: username,
         },
       );
 
-      const result = await response.json();
+      if (!deployToken.hasOwnProperty('token')) {
+        throw new InputError(`No deploy_token given from gitlab instance`);
+      }
 
-      ctx.output('access_token', result.token);
+      ctx.output('deploy_token', deployToken.token as string);
+      ctx.output('user', deployToken.username);
     },
   });
 };

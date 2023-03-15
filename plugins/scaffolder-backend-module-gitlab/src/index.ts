@@ -19,6 +19,6 @@
  * @packageDocumentation
  */
 
-export * from './actions/createProjectDeployToken';
-export * from './actions/createProjectAccessToken';
-export * from './actions/createProjectVariable';
+export * from './actions/createGitlabProjectDeployTokenAction';
+export * from './actions/createGitlabProjectAccessTokenAction';
+export * from './actions/createGitlabProjectVariableAction';
