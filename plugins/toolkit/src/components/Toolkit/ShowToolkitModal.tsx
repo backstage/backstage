@@ -60,31 +60,31 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [Open, setOpen] = useState(false);
-  const [selectedTools, setSelectedTools]: any = useState([]);
+  const [selectedToolkits, setSelectedToolkits]: any = useState([]);
 
   useEffect(() => {
-    setSelectedTools([]);
+    setSelectedToolkits([]);
   }, [toolkits]);
   const closeModal = () => {
     onClose();
     setOpen(false);
-    setSelectedTools([]);
+    setSelectedToolkits([]);
   };
 
   const onCheck = (id: number) => {
-    if (!selectedTools.includes(id)) {
-      setSelectedTools([...selectedTools, id]);
+    if (!selectedToolkits.includes(id)) {
+      setSelectedToolkits([...selectedToolkits, id]);
     } else {
-      setSelectedTools(selectedTools.filter((item: any) => item !== id));
+      setSelectedToolkits(selectedToolkits.filter((item: any) => item !== id));
     }
   };
   const onAddTool = () => {
-    dispatch(addTool({ toolkitApi, toolkits: selectedTools }));
+    dispatch(addTool({ toolkitApi, toolkits: selectedToolkits }));
     onClose();
   };
   const closeSelf = () => {
     setOpen(false);
-    setSelectedTools([]);
+    setSelectedToolkits([]);
     onClose();
   };
   return (
@@ -117,7 +117,7 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
               Create Own toolkit
             </Button>
             <Button
-              disabled={selectedTools.length === 0 || !selectedTools}
+              disabled={selectedToolkits.length === 0 || !selectedToolkits}
               color="primary"
               onClick={onAddTool}
               variant="contained"
@@ -129,9 +129,8 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
           </ButtonGroup>
           <InfoCard>
             <ToolkitList
-              // eslint-disable-next-line react/jsx-boolean-value
-              checkable={true}
-              selectedTools={selectedTools}
+              checkable
+              selectedToolkits={selectedToolkits}
               onCheck={onCheck}
             />
           </InfoCard>

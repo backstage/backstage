@@ -37,7 +37,6 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   createTool,
   resetCreateSuccess,
-  updateTool,
 } from '../../redux/slices/toolkit.slice';
 import { IToolkit } from '../../interfaces/interface';
 import { RootState } from '../../redux/store';
@@ -162,22 +161,7 @@ export const CreateToolkit: React.FC<TCreateToolkit> = ({
     e.preventDefault();
     if (!formErr.logo && !formErr.title && !formErr.url) {
       if (formData.title && formData.url) {
-        if (id) {
-          dispatch(
-            updateTool({
-              body: {
-                logo: formData.logo,
-                title: formData.title,
-                url: formData.url,
-                type: formData.type,
-              },
-              id,
-              toolkitApi,
-            }),
-          );
-        } else {
-          dispatch(createTool({ body: formData, toolkitApi }));
-        }
+        dispatch(createTool({ body: formData, toolkitApi }));
         onClose();
       } else {
         formErr.title = formData.title ? '' : `Title can't be empty`;

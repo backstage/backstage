@@ -59,21 +59,6 @@ export const createTool = createAsyncThunk(
     return response.text();
   },
 );
-export const updateTool = createAsyncThunk(
-  'toolkit/update',
-  async (data: ICreateData, api) => {
-    const response = await data.toolkitApi.updateToolkit(
-      data.body,
-      data.id || 0,
-    );
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-    api.dispatch(getMyToolkits(data.toolkitApi));
-
-    return response.text();
-  },
-);
 type IDeleteTool = {
   id: number;
   toolkitApi: ToolkitApi;
@@ -99,23 +84,6 @@ export const addTool = createAsyncThunk(
   'toolkit/add',
   async ({ toolkitApi, toolkits }: IAddTool, api) => {
     const response = await toolkitApi.addToolkits({ toolkits });
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-    api.dispatch(getMyToolkits(toolkitApi));
-    api.dispatch(getToolkits(toolkitApi));
-    return response.text();
-  },
-);
-
-type IRemoveTool = {
-  toolkit: number;
-  toolkitApi: ToolkitApi;
-};
-export const removeTool = createAsyncThunk(
-  'toolkit/remove',
-  async ({ toolkit, toolkitApi }: IRemoveTool, api) => {
-    const response = await toolkitApi.removeToolkit(toolkit);
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
@@ -175,7 +143,7 @@ export const toolkitSlice: Slice<IToolkitState> = createSlice({
     toggleCreateAlert: state => {
       state.create.showAlert = !state.create.showAlert;
     },
-    toggleYourToolkitAlert: state => {
+    toggleToolkitAlert: state => {
       state.toolkits.showAlert = !state.toolkits.showAlert;
     },
     resetCreateSuccess: state => {
@@ -209,20 +177,17 @@ export const toolkitSlice: Slice<IToolkitState> = createSlice({
       state.toolkits.error = '';
       state.toolkits.list = action?.payload?.data || [];
     },
-    [createTool.pending.type || updateTool.pending.type]: state => {
+    [createTool.pending.type]: state => {
       state.create.loading = true;
       state.create.error = '';
       state.create.success = false;
     },
-    [createTool.rejected.type || updateTool.rejected.type]: (state, action) => {
+    [createTool.rejected.type]: (state, action) => {
       state.create.loading = false;
       state.create.error = action.error.message;
       state.create.success = false;
     },
-    [createTool.fulfilled.type || updateTool.fulfilled.type]: (
-      state,
-      action,
-    ) => {
+    [createTool.fulfilled.type]: (state, action) => {
       state.create.loading = false;
       state.create.error = '';
       state.create.success = true;
@@ -260,28 +225,12 @@ export const toolkitSlice: Slice<IToolkitState> = createSlice({
       state.delete.success = true;
       state.delete.message = action?.payload || '';
     },
-    [removeTool.pending.type]: state => {
-      state.delete.loading = true;
-      state.delete.error = '';
-      state.delete.success = false;
-    },
-    [removeTool.rejected.type]: (state, action) => {
-      state.delete.loading = false;
-      state.delete.error = action.error.message;
-      state.delete.success = false;
-    },
-    [removeTool.fulfilled.type]: (state, action) => {
-      state.delete.loading = false;
-      state.delete.error = '';
-      state.delete.success = true;
-      state.delete.message = action?.payload || '';
-    },
   },
 });
 export const {
   toggleModal,
   toggleCreateAlert,
-  toggleYourToolkitAlert,
+  toggleToolkitAlert,
   resetCreateSuccess,
 } = toolkitSlice.actions;
 export default toolkitSlice.reducer;

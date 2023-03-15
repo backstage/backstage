@@ -25,43 +25,27 @@ export interface IToolkit {
   owner?: string;
   actions?: any;
 }
+export type Toolkits = {
+  list: IToolkit[];
+  error: string;
+  message: string;
+  loading: boolean;
+  showAlert: boolean;
+};
+export type ToolkitAction = {
+  error: string;
+  message: string;
+  loading: boolean;
+  showAlert: boolean;
+  success: boolean;
+};
 export interface IToolkitState {
   showModal: boolean;
-  myToolkits: {
-    list: IToolkit[];
-    error: string;
-    message: string;
-    loading: boolean;
-    showAlert: boolean;
-  };
-  toolkits: {
-    list: IToolkit[];
-    error: string;
-    message: string;
-    loading: boolean;
-    showAlert: boolean;
-  };
-  create: {
-    error: string;
-    message: string;
-    loading: boolean;
-    showAlert: boolean;
-    success: boolean;
-  };
-  add: {
-    error: string;
-    message: string;
-    loading: boolean;
-    showAlert: boolean;
-    success: boolean;
-  };
-  delete: {
-    error: string;
-    message: string;
-    loading: boolean;
-    showAlert: boolean;
-    success: boolean;
-  };
+  myToolkits: Toolkits;
+  toolkits: Toolkits;
+  create: ToolkitAction;
+  add: ToolkitAction;
+  delete: ToolkitAction;
   toolkit: IToolkit | {};
 }
 export type TToolkitMode = {
@@ -75,8 +59,4 @@ export interface ITool {
 }
 export type TActionButton = {
   onDeleteClick: () => void;
-  onEdit: () => void;
-  owner: string;
-  currentUser: string;
-  onRemove: () => void;
 };

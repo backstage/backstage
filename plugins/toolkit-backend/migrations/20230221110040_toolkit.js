@@ -26,17 +26,6 @@ exports.up = async function (knex) {
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
   });
-  await knex.schema.createTable('toolkit_item', table => {
-    table.increments('id').primary().unsigned().unique();
-    table
-      .integer('toolkit')
-      .references('id')
-      .inTable('toolkit')
-      .notNullable()
-      .onDelete('CASCADE');
-    table.boolean('isPrivate').notNullable().defaultTo(false);
-    table.string('user').notNullable();
-  });
 };
 
 /**

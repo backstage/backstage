@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -28,12 +27,10 @@ import { toolkitApiRef } from '../../api';
 import {
   deleteTool,
   getToolkits,
-  toggleYourToolkitAlert,
-  removeTool,
+  toggleToolkitAlert,
 } from '../../redux/slices/toolkit.slice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { RootState } from '../../redux/store';
-import { CreateToolkit } from '../CreateToolkit';
 import logo from '../../assets/images/backstage_icon-1.jpg';
 
 const useStyles = makeStyles({
@@ -47,7 +44,7 @@ const useStyles = makeStyles({
 type DenseTableProps = {
   checkable: boolean;
   onCheck?: (id: number) => void;
-  selectedTools?: number[];
+  selectedToolkits?: number[];
 };
 interface IListData {
   list: IToolkit[];
@@ -65,31 +62,13 @@ export const CheckBox = ({ onCheck, isChecked }: TCheckBox) => {
   return <Checkbox onClick={onCheck} checked={isChecked} />;
 };
 
-export const ActionButton: React.FC<TActionButton> = ({
-  onDeleteClick,
-  onEdit,
-  owner,
-  currentUser,
-  onRemove,
-}) => {
+export const ActionButton: React.FC<TActionButton> = ({ onDeleteClick }) => {
   return (
-    <>
-      <IconButton
-        color="primary"
-        disabled={owner !== currentUser}
-        onClick={() => owner === currentUser && onEdit()}
-      >
-        <EditIcon />
+    <Tooltip title="Delete">
+      <IconButton color="secondary" onClick={onDeleteClick}>
+        <DeleteIcon />
       </IconButton>
-      <Tooltip title={owner !== currentUser ? 'Remove' : 'Delete'}>
-        <IconButton
-          color="secondary"
-          onClick={() => (owner !== currentUser ? onRemove() : onDeleteClick())}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
-    </>
+    </Tooltip>
   );
 };
 
@@ -104,15 +83,13 @@ export const LogoImage = React.memo(function LogoImage({ src }: TLogoImage) {
 
 export const DenseTable = ({
   onCheck,
-  selectedTools,
+  selectedToolkits,
   checkable,
 }: DenseTableProps) => {
   const toolkitApi = useApi(toolkitApiRef);
   const identity = useApi(identityApiRef);
 
   const dispatch = useAppDispatch();
-  const [showEdit, setShowEdit] = useState<boolean>(false);
-  const [editId, setEditId] = useState<number>(0);
   const [user, setUser] = useState('');
   const { toolkits, myToolkits } = useAppSelector(
     (state: RootState) => state.toolkit,
@@ -171,27 +148,18 @@ export const DenseTable = ({
       dispatch(deleteTool({ toolkitApi, id }));
     };
 
-    const onEdit = (id: number) => {
-      setShowEdit(true);
-      setEditId(id);
-    };
-
-    const onRemove = (toolkit: number) => {
-      dispatch(removeTool({ toolkit, toolkitApi }));
-    };
-
     const res =
       list?.map((toolkit, index) => {
         const isChecked =
-          checkable && toolkit?.toolkit
-            ? selectedTools?.includes(toolkit?.toolkit)
+          checkable && toolkit?.id
+            ? selectedToolkits?.includes(toolkit?.id)
             : false;
         return {
           select: (
             <>
               {checkable && onCheck && (
                 <CheckBox
-                  onCheck={() => onCheck(Number(toolkit?.toolkit))}
+                  onCheck={() => onCheck(Number(toolkit?.id))}
                   isChecked={isChecked || false}
                 />
               )}
@@ -204,10 +172,6 @@ export const DenseTable = ({
           owner: toolkit.owner,
           action: (
             <ActionButton
-              owner={toolkit.owner || ''}
-              currentUser={user}
-              onRemove={() => onRemove(toolkit.id as number)}
-              onEdit={() => onEdit(toolkit.id as number)}
               onDeleteClick={() => onDelete(toolkit.id as number)}
             />
           ),
@@ -215,14 +179,10 @@ export const DenseTable = ({
       }) || [];
 
     setData([...res]);
-  }, [list, selectedTools, checkable, dispatch, toolkitApi, onCheck, user]);
+  }, [list, selectedToolkits, checkable, dispatch, toolkitApi, onCheck, user]);
 
-  const onEditClose = () => {
-    setShowEdit(false);
-    setEditId(0);
-  };
   const closeAlert = () => {
-    dispatch(toggleYourToolkitAlert(!showEdit));
+    dispatch(toggleToolkitAlert(true));
   };
 
   if (loading) {
@@ -250,13 +210,14 @@ export const DenseTable = ({
       ) : (
         ''
       )}
-      {showEdit ? (
-        <CreateToolkit id={editId} show={showEdit} onClose={onEditClose} />
-      ) : (
-        ''
-      )}
       <Table
-        options={{ search: false, paging: false, toolbar: false }}
+        options={{
+          search: true,
+          paging: true,
+          toolbar: true,
+          pageSize: 10,
+          sorting: true,
+        }}
         columns={columns}
         data={data || []}
       />
@@ -266,17 +227,17 @@ export const DenseTable = ({
 
 export const ToolkitList = ({
   checkable,
-  selectedTools,
+  selectedToolkits,
   onCheck,
 }: {
   checkable: boolean;
-  selectedTools?: number[];
+  selectedToolkits?: number[];
   onCheck?: (id: number) => void;
 }) => {
   return (
     <DenseTable
       checkable={checkable}
-      selectedTools={selectedTools}
+      selectedToolkits={selectedToolkits}
       onCheck={onCheck}
     />
   );
