@@ -1,0 +1,17 @@
+---
+title: Microsoft Calendar
+author: StatusNeo
+authorUrl: https://statusneo.com/
+category: Productivity
+description: |
+  The plugin integrates with your Microsoft Calendar.
+  It displays all your calendars and events in it. 
+documentation: https://statusneo.com/23392-2
+iconUrl: img/statusneo-logo.jpeg
+npmPackageName: '@backstage/plugin-microsoft-calendar'
+tags:
+  - Microsoft
+  - calendar
+  - StatusNeo
+  - Management
+addedDate: '2023-03-015'
