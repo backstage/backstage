@@ -135,11 +135,11 @@ describe('isComponentType', () => {
 
 describe('isEntityWith', () => {
   it('allows for a kind-only check (empty type array)', () => {
-    const checkEntity = isEntityWith({kind: 'api', type: []});
+    const checkEntity = isEntityWith({ kind: 'api', type: [] });
     expect(checkEntity(apiKind)).toBeTruthy();
   });
   it('handles missing spec.type field', () => {
-    const checkEntity = isEntityWith({kind: 'another-type', type: 'service'});
+    const checkEntity = isEntityWith({ kind: 'another-type', type: 'service' });
     expect(checkEntity(missingSpecType)).not.toBeTruthy();
   });
 });

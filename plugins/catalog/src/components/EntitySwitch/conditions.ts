@@ -38,7 +38,7 @@ function strCmpAll(value: string | undefined, cmpValues: string | string[]) {
  * @public
  */
 export function isKind(kinds: string | string[]) {
-  return isEntityWith({kind: kinds});
+  return isEntityWith({ kind: kinds });
 }
 
 /**
@@ -68,7 +68,10 @@ export function isEntityWith(predicate: EntityPredicates) {
       return false;
     }
 
-    if (!predicate.type || (Array.isArray(predicate.type) && predicate.type.length === 0)) {
+    if (
+      !predicate.type ||
+      (Array.isArray(predicate.type) && predicate.type.length === 0)
+    ) {
       // there's no type check, return true
       return true;
     } else if (typeof entity.spec?.type !== 'string') {
@@ -79,7 +82,6 @@ export function isEntityWith(predicate: EntityPredicates) {
     return strCmpAll(entity.spec.type, predicate.type);
   };
 }
-
 
 /**
  * For use in EntitySwitch.Case. Matches if the entity is in a given namespace.
