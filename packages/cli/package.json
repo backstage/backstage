@@ -106,6 +106,7 @@
     "node-libs-browser": "^2.2.1",
     "npm-packlist": "^5.0.0",
     "ora": "^5.3.0",
+    "p-limit": "^3.0.2",
     "postcss": "^8.1.0",
     "process": "^0.11.10",
     "react-dev-utils": "^12.0.0-next.60",

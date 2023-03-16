@@ -25,6 +25,7 @@ import { PackageGraph } from '../../lib/monorepo';
 import { cloneDeep } from 'lodash';
 import Parser from '@apidevtools/swagger-parser';
 import { detectRoleFromPackage } from '../../lib/role';
+import pLimit from 'p-limit';
 
 const SUPPORTED_ROLES = [
   'backend',
@@ -35,14 +36,15 @@ const SUPPORTED_ROLES = [
 
 async function verify(
   directoryPath: string,
-  { checkRole }: { checkRole: boolean },
+  config: { checkRole: boolean } = { checkRole: false },
 ) {
+  const { checkRole } = config ?? {};
   if (checkRole) {
     const role = detectRoleFromPackage(
       await fs.readJson(resolve(directoryPath, 'package.json')),
     );
 
-    if (!SUPPORTED_ROLES.some(r => r === role)) {
+    if (!role || !SUPPORTED_ROLES.includes(role)) {
       console.log(chalk.red(`Unsupported role ${role}`));
       process.exit(1);
     }
@@ -61,14 +63,16 @@ async function verify(
     throw new Error('No `schema/openapi.ts` file found.');
   }
   const schema = await import(join(directoryPath, 'schema/openapi'));
-  if (schema.default) {
-    if (!isEqual(schema.default, yaml)) {
-      throw new Error(
-        '`openapi.yaml` and `schema/openapi.ts` do not match. Please run `yarn build:openapi` to generate the `schema/openapi.ts` file from the `openapi.yaml` file.',
-      );
-    }
-  } else {
+  if (!schema.default) {
     throw new Error('`schemas/openapi.ts` needs to have a default export.');
+  }
+  if (!isEqual(schema.default, yaml)) {
+    throw new Error(
+      `\`openapi.yaml\` and \`schema/openapi.ts\` do not match. Please run \`yarn --cwd ${relativePath(
+        paths.targetRoot,
+        directoryPath,
+      )} schema:openapi:generate\` to regenerate \`schema/openapi.ts\`.`,
+    );
   }
 }
 
@@ -84,28 +88,31 @@ export async function command() {
 
 export async function bulkCommand(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
+  const limit = pLimit(5);
 
   const resultsList = await Promise.all(
-    packages.map(async pkg => {
-      let resultText = '';
-      try {
-        await verify(pkg.dir, { checkRole: false });
-      } catch (err) {
-        resultText = err.message;
-      }
+    packages.map(pkg =>
+      limit(async () => {
+        let resultText = '';
+        try {
+          await verify(pkg.dir);
+        } catch (err) {
+          resultText = err.message;
+        }
 
-      return {
-        relativeDir: relativePath(paths.targetRoot, pkg.dir),
-        resultText,
-      };
-    }),
+        return {
+          relativeDir: relativePath(paths.targetRoot, pkg.dir),
+          resultText,
+        };
+      }),
+    ),
   );
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
     if (resultText) {
       console.log();
-      console.log(chalk.red(`Lint failed in ${relativeDir}:`));
+      console.log(chalk.red(`OpenAPI validation failed in ${relativeDir}:`));
       console.log(resultText.trimStart());
 
       failed = true;

@@ -88,6 +88,13 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
 
   command
+    .command('schema:openapi:generate')
+    .description(
+      'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
+    )
+    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+
+  command
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .option(

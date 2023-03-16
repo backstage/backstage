@@ -17,25 +17,81 @@
 import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
 import YAML from 'js-yaml';
+import chalk from 'chalk';
+import { resolve } from 'path';
+import { PackageGraph } from '../../lib/monorepo';
+import pLimit from 'p-limit';
+import { relative as relativePath } from 'path';
+
+async function generate(
+  directoryPath: string,
+  config?: { skipMissingYamlFile: boolean },
+) {
+  const { skipMissingYamlFile } = config ?? {};
+  const openapiPath = resolve(directoryPath, 'openapi.yaml');
+  if (!(await fs.pathExists(openapiPath))) {
+    if (skipMissingYamlFile) {
+      return;
+    }
+    throw new Error('Could not find openapi.yaml in root of directory.');
+  }
+  const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
+
+  // For now, we're not adding a header or linting after pasting.
+  await fs.writeFile(
+    resolve(directoryPath, 'schema/openapi.ts'),
+    `export default ${JSON.stringify(yaml, null, 2)} as const`,
+  );
+}
 
 export async function command() {
-  const openapiPath = paths.resolveTarget('openapi.yaml');
-  if (!(await fs.pathExists(openapiPath))) {
-    console.warn('Could not find openapi.yaml in root of directory.');
+  try {
+    await generate(paths.resolveTarget('.'));
+    console.log(chalk.green('OpenAPI files successfully generated.'));
+  } catch (err) {
+    console.error(chalk.red(err.message));
     process.exit(1);
   }
-  try {
-    const yaml = YAML.load(
-      await fs.readFile(paths.resolveTarget('openapi.yaml'), 'utf8'),
-    );
+}
 
-    // For now, we're not adding a header or linting after pasting.
-    await fs.writeFile(
-      paths.resolveTarget('schema/openapi.ts'),
-      `export default ${JSON.stringify(yaml, null, 2)} as const`,
-    );
-  } catch (err) {
-    console.error(err);
+export async function bulkCommand(): Promise<void> {
+  const packages = await PackageGraph.listTargetPackages();
+  const limit = pLimit(5);
+
+  const resultsList = await Promise.all(
+    packages.map(pkg =>
+      limit(async () => {
+        let resultText = '';
+        try {
+          await generate(pkg.dir, { skipMissingYamlFile: true });
+        } catch (err) {
+          resultText = err.message;
+        }
+
+        return {
+          relativeDir: relativePath(paths.targetRoot, pkg.dir),
+          resultText,
+        };
+      }),
+    ),
+  );
+
+  let failed = false;
+  for (const { relativeDir, resultText } of resultsList) {
+    if (resultText) {
+      console.log();
+      console.log(
+        chalk.red(
+          `OpenAPI yaml to Typescript generation failed in ${relativeDir}:`,
+        ),
+      );
+      console.log(resultText.trimStart());
+
+      failed = true;
+    }
+  }
+
+  if (failed) {
     process.exit(1);
   }
 }
