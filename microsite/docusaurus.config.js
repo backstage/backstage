@@ -55,7 +55,7 @@ module.exports = {
           path: 'blog',
         },
         theme: {
-          customCss: 'src/css/customTheme.css',
+          customCss: 'src/theme/customTheme.scss',
         },
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
