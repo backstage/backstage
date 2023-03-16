@@ -13,9 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './common';
-export * from './express';
-export * from './requests';
-export * from './responses';
-export * from './immutable';
-export * from './params';
+
+import type { RequiredDoc } from './common';
+import type { DocRequestMatcher } from './express';
+
+/**
+ * @public
+ */
+export namespace core {
+  /**
+   * @internal
+   */
+  export type Spec = RequiredDoc;
+
+  /**
+   * @internal
+   */
+  export type RequestMatcher<
+    Doc extends RequiredDoc,
+    T,
+    Method extends
+      | 'all'
+      | 'get'
+      | 'post'
+      | 'put'
+      | 'delete'
+      | 'patch'
+      | 'options'
+      | 'head',
+  > = DocRequestMatcher<Doc, T, Method>;
+}

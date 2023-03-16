@@ -20,18 +20,9 @@ import { RequestBodyToJsonSchema } from './requests';
 import { ResponseBodyToJsonSchema } from './responses';
 
 /**
- * Pulled from the express library.
- * @public
- */
-export interface ParsedQs {
-  [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
-}
-
-/**
  * Typed express request handler.
- * @public
  */
-export type DocRequestHandler<
+type DocRequestHandler<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
@@ -45,9 +36,8 @@ export type DocRequestHandler<
 
 /**
  * Typed express error handler / request handler union type.
- * @public
  */
-export type DocRequestHandlerParams<
+type DocRequestHandlerParams<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
@@ -61,7 +51,6 @@ export type DocRequestHandlerParams<
 
 /**
  * Superset of the express router path matcher that enforces typed request and response bodies.
- * @public
  */
 export interface DocRequestMatcher<
   Doc extends RequiredDoc,

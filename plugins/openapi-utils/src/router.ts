@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 import { Router } from 'express';
-import { RequiredDoc, DocRequestMatcher } from './types';
+import { core } from './types';
 
 /**
  * Typed Express router based on an OpenAPI 3.1 spec.
  * @public
  */
-export interface ApiRouter<Doc extends RequiredDoc> extends Router {
-  get: DocRequestMatcher<Doc, this, 'get'>;
+export interface ApiRouter<Doc extends core.Spec> extends Router {
+  get: core.RequestMatcher<Doc, this, 'get'>;
 
-  post: DocRequestMatcher<Doc, this, 'post'>;
+  post: core.RequestMatcher<Doc, this, 'post'>;
 
-  all: DocRequestMatcher<Doc, this, 'all'>;
+  all: core.RequestMatcher<Doc, this, 'all'>;
 
-  put: DocRequestMatcher<Doc, this, 'put'>;
+  put: core.RequestMatcher<Doc, this, 'put'>;
 
-  delete: DocRequestMatcher<Doc, this, 'delete'>;
+  delete: core.RequestMatcher<Doc, this, 'delete'>;
 
-  patch: DocRequestMatcher<Doc, this, 'patch'>;
+  patch: core.RequestMatcher<Doc, this, 'patch'>;
 
-  options: DocRequestMatcher<Doc, this, 'options'>;
+  options: core.RequestMatcher<Doc, this, 'options'>;
 
-  head: DocRequestMatcher<Doc, this, 'head'>;
+  head: core.RequestMatcher<Doc, this, 'head'>;
 }

@@ -35,10 +35,7 @@ import {
   ImmutableRequestBodyObject,
 } from './immutable';
 
-/**
- * @public
- */
-export type RequestBody<
+type RequestBody<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -56,10 +53,7 @@ export type RequestBody<
     : never
   : DocOperation<Doc, Path, Method>['requestBody'];
 
-/**
- * @public
- */
-export type RequestBodySchema<
+type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends DocPathMethod<Doc, Path>,
@@ -73,7 +67,6 @@ export type RequestBodySchema<
 
 /**
  * Transform the OpenAPI request body schema to a typesafe JSON schema.
- * @public
  */
 export type RequestBodyToJsonSchema<
   Doc extends RequiredDoc,

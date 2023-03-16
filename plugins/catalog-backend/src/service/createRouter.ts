@@ -50,7 +50,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { ApiRouter } from '@backstage/backend-openapi-utils';
+import type { ApiRouter } from '@backstage/backend-openapi-utils';
 import spec from '../../schema/openapi';
 
 /**

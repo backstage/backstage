@@ -33,10 +33,7 @@ import type {
 } from './common';
 import { ImmutableReferenceObject, ImmutableResponseObject } from './immutable';
 
-/**
- * @public
- */
-export type Response<
+type Response<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
@@ -55,10 +52,7 @@ export type Response<
     : never
   : DocOperation<Doc, Path, Method>['responses'][StatusCode];
 
-/**
- * @public
- */
-export type Responses<
+type Responses<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
@@ -71,18 +65,12 @@ export type Responses<
   >;
 };
 
-/**
- * @public
- */
-export type ResponseSchema<
+type ResponseSchema<
   Doc extends RequiredDoc,
   Object extends ImmutableResponseObject,
 > = ObjectWithContentSchema<Doc, Object>;
 
-/**
- * @public
- */
-export type ResponseSchemas<
+type ResponseSchemas<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends DocPathMethod<Doc, Path>,
@@ -101,7 +89,6 @@ export type ResponseSchemas<
 
 /**
  * Transform the OpenAPI request body schema to a typesafe JSON schema.
- * @public
  */
 export type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,

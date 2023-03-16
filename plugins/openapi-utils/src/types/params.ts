@@ -37,10 +37,7 @@ import {
 } from './common';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 
-/**
- * @public
- */
-export type DocParameter<
+type DocParameter<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -59,10 +56,7 @@ export type DocParameter<
     : never
   : DocOperation<Doc, Path, Method>['parameters'][Parameter];
 
-/**
- * @public
- */
-export type DocParameters<
+type DocParameters<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -76,10 +70,7 @@ export type DocParameters<
     }
   : never;
 
-/**
- * @public
- */
-export type ResolveDocParameterSchema<
+type ResolveDocParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
 > = Schema extends ImmutableReferenceObject
@@ -88,10 +79,7 @@ export type ResolveDocParameterSchema<
     : never
   : Schema;
 
-/**
- * @public
- */
-export type ParameterSchema<
+type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
 > = ResolveDocParameterSchema<Doc, Schema> extends infer R
@@ -102,10 +90,7 @@ export type ParameterSchema<
     : never
   : never;
 
-/**
- * @public
- */
-export type MapToSchema<
+type MapToSchema<
   Doc extends RequiredDoc,
   T extends Record<string, ImmutableParameterObject>,
 > = {
@@ -114,10 +99,7 @@ export type MapToSchema<
     : never;
 };
 
-/**
- * @public
- */
-export type ParametersSchema<
+type ParametersSchema<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
@@ -134,36 +116,24 @@ export type ParametersSchema<
     >
   : never;
 
-/**
- * @public
- */
 export type HeaderSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
 
-/**
- * @public
- */
 export type CookieSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
 
-/**
- * @public
- */
 export type PathSchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
 
-/**
- * @public
- */
 export type QuerySchema<
   Doc extends RequiredDoc,
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
