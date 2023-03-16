@@ -28,7 +28,7 @@
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.57",
     "react-hook-form": "^7.12.2",
     "react-use": "^17.2.4",
