@@ -323,7 +323,14 @@
       "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/heroku"
+      "deployment/heroku",
+      {
+        "type": "category",
+        "label": "Pulumi",
+        "items": [
+          "deployment/pulumi/aws"
+        ]
+      }
     ],
     "Designing for Backstage": [
       "dls/design",

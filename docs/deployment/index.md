@@ -32,6 +32,10 @@ requires the first two steps.
 There is also a contrib guide to deploying Backstage with
 [AWS Fargate and Aurora PostgreSQL](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-fargate-deployment.md).
 
+In addition, we also have tutorials on how to deploy Backstage on a specific cloud provider:
+
+- [AWS Lightsail](pulumi/aws.md)
+
 Please consider contributing other deployment guides if you get Backstage set up
 on common infrastructure, it would be a great benefit to the community.
 
