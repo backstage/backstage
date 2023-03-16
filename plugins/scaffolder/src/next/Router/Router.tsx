@@ -15,7 +15,7 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
-import { TemplateListPage } from '../TemplateListPage';
+import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
 import { TemplateWizardPage } from '../TemplateWizardPage';
 import {
   NextFieldExtensionOptions,
@@ -59,6 +59,7 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -85,6 +86,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       TemplateCardComponent,
       TemplateOutputsComponent,
       TaskPageComponent = OngoingTask,
+      TemplateListPageComponent = TemplateListPage,
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
@@ -108,7 +110,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       <Route
         path="/"
         element={
-          <TemplateListPage
+          <TemplateListPageComponent
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             groups={props.groups}
