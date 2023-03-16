@@ -123,7 +123,7 @@ export const TechDocsReaderPageProvider = memo(
       return techdocsApi.getEntityMetadata(entityRef);
     }, [entityRef]);
 
-    const metadata = useAsyncRetry(() => {
+    const metadata = useAsyncRetry(async () => {
       return techdocsApi.getTechDocsMetadata(entityRef);
     }, [entityRef]);
 
@@ -136,12 +136,18 @@ export const TechDocsReaderPageProvider = memo(
     );
 
     useEffect(() => {
-      if (shadowRoot && !metadata.loading && !metadata.value) {
+      if (shadowRoot && !metadata.value && !metadata.loading) {
         metadata.retry();
       }
-    }, [metadata, shadowRoot]);
+    }, [
+      metadata.value,
+      metadata.loading,
+      shadowRoot,
+      metadata.retry,
+      metadata,
+    ]);
 
-    const value = {
+    const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
