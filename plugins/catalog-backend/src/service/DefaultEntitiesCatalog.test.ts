@@ -1120,6 +1120,64 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should filter the text results when sortOrder is not provided, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const names = ['lion', 'cat', 'atcatss', 'dog', 'dogcat', 'aa', 's'];
+        const entities: Entity[] = names.map(name =>
+          // Need a stable search since default filtering is by uid, and those get generated on the fly
+          //  during the test case.
+          entityFrom(name, { uid: name }),
+        );
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something else' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const filter = {
+          key: 'spec.should_include_this',
+        };
+
+        const request: QueryEntitiesInitialRequest = {
+          filter,
+          limit: 100,
+          fullTextFilter: { term: 'cAt ', fields: ['metadata.name'] },
+        };
+        const response = await catalog.queryEntities(request);
+        expect(response.items).toEqual([
+          entityFrom('atcatss', { uid: 'atcatss' }),
+          entityFrom('cat', { uid: 'cat' }),
+          entityFrom('dogcat', { uid: 'dogcat' }),
+        ]);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(3);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should include totalItems and empty entities in the response in case limit is zero, %p',
       async databaseId => {
         await createDatabase(databaseId);

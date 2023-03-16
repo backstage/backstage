@@ -51,6 +51,7 @@ import {
 } from '../database/tables';
 
 import { Stitcher } from '../stitching/Stitcher';
+import { parseFullTextFilterFields } from './request/parseFullTextFilterFields';
 
 import {
   isQueryEntitiesCursorRequest,
@@ -382,11 +383,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
     if (normalizedFullTextFilterTerm) {
-      dbQuery.andWhereRaw(
-        'value like ?',
-        `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-      );
+      const matchQuery = db<DbSearchRow>('search')
+        .select('search.entity_id')
+        .whereIn('key', textFilterFields)
+        .andWhere(function keyFilter() {
+          this.andWhereRaw(
+            'value like ?',
+            `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+          );
+        });
+      dbQuery.andWhere('search.entity_id', 'in', matchQuery);
     }
 
     const countQuery = dbQuery.clone();
