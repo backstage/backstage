@@ -68,7 +68,7 @@ export interface Config {
            * @visibility secret
            */
           clientSecret: string;
-          callbackUrl: string;
+          callbackUrl?: string;
         };
       };
       github?: {
