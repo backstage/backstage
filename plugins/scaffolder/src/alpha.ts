@@ -16,7 +16,14 @@
 
 export { NextScaffolderPage } from './plugin';
 export {
+  TemplateGroups,
   type TemplateGroupFilter,
+  type TemplateGroupsProps,
   type NextRouterProps,
   type FormProps,
+  CategoryPicker,
+  RegisterExistingButton,
+  type RegisterExistingButtonProps,
+  ContextMenu,
 } from './next';
+export { registerComponentRouteRef } from './routes';
