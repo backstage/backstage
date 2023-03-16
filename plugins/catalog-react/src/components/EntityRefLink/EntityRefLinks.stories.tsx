@@ -16,9 +16,28 @@
 
 import React, { ComponentType } from 'react';
 import { EntityRefLinks, EntityRefLinksProps } from './EntityRefLinks';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '../../routes';
+import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
+
+const mockCatalogApi = {
+  getEntityByRef: async (entityRef: string) => {
+    if (entityRef === 'component:default/playback') {
+      return {
+        kind: 'Component',
+        metadata: {
+          name: 'playback',
+          namespace: 'default',
+          description: 'Details about the playback service',
+        },
+      };
+    }
+
+    return undefined;
+  },
+};
 
 const defaultArgs = {
   entityRefs: ['component:default/playback', 'user:default/fname.lname'],
@@ -28,11 +47,18 @@ export default {
   title: 'Catalog /EntityRefLinks',
   decorators: [
     (Story: ComponentType<{}>) =>
-      wrapInTestApp(<Story />, {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
+      wrapInTestApp(
+        <TestApiProvider
+          apis={[[catalogApiRef, mockCatalogApi as any as CatalogApi]]}
+        >
+          <Story />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
         },
-      }),
+      ),
   ],
 };
 
@@ -40,3 +66,11 @@ export const Default = (
   args: EntityRefLinksProps<string | CompoundEntityRef>,
 ) => <EntityRefLinks {...args} />;
 Default.args = defaultArgs;
+
+export const WithPeekAheadPopover = (
+  args: EntityRefLinksProps<string | CompoundEntityRef>,
+) => <EntityRefLinks {...args} />;
+WithPeekAheadPopover.args = {
+  entityRefs: ['component:default/playback', 'user:default/fname.lname'],
+  usePeekAheadPopover: true,
+};

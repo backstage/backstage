@@ -66,7 +66,9 @@ const CardTitle = (props: { title: string }) => (
 export const GroupProfileCard = (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  usePeekAheadPopover?: boolean;
 }) => {
+  const { variant, showLinks, usePeekAheadPopover = false } = props;
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
@@ -120,7 +122,7 @@ export const GroupProfileCard = (props: {
     <InfoCard
       title={<CardTitle title={displayName} />}
       subheader={description}
-      variant={props.variant}
+      variant={variant}
       action={
         <>
           {allowRefresh && (
@@ -166,7 +168,7 @@ export const GroupProfileCard = (props: {
                   parentRelations.length ? (
                     <EntityRefLinks
                       entityRefs={parentRelations}
-                      usePeekAheadPopover
+                      usePeekAheadPopover={usePeekAheadPopover}
                       defaultKind="Group"
                     />
                   ) : (
@@ -197,7 +199,7 @@ export const GroupProfileCard = (props: {
                 secondary="Child Groups"
               />
             </ListItem>
-            {props?.showLinks && <LinksGroup links={links} />}
+            {showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>

@@ -58,6 +58,26 @@ const defaultEntity: GroupEntity = {
 
 const catalogApi: Partial<CatalogApi> = {
   async refreshEntity() {},
+  async getEntityByRef(entityRef: string) {
+    if (entityRef === 'group:default/department-a') {
+      const dummyGroup: GroupEntity = {
+        spec: {
+          children: [],
+          type: 'department',
+        },
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'department-a',
+          namespace: 'default',
+          description: 'Department A',
+        },
+      };
+      return dummyGroup;
+    }
+
+    return undefined;
+  },
 };
 
 export const Default = () => (
@@ -119,11 +139,51 @@ const extraDetailsEntity: GroupEntity = {
   relations: [dummyDepartment],
 };
 
+const groupWithTitle: GroupEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Group',
+  metadata: {
+    name: 'team-a',
+    description: 'Team A description',
+    title: 'Team A title',
+  },
+  spec: {
+    profile: {
+      email: 'team-a@example.com',
+      picture:
+        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+    },
+    type: 'group',
+    children: [],
+  },
+  relations: [dummyDepartment],
+};
+
 export const ExtraDetails = () => (
   <EntityProvider entity={extraDetailsEntity}>
     <Grid container spacing={4}>
       <Grid item xs={12} md={4}>
         <GroupProfileCard variant="gridItem" showLinks />
+      </Grid>
+    </Grid>
+  </EntityProvider>
+);
+
+export const UsePeekAheadPopover = () => (
+  <EntityProvider entity={defaultEntity}>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <GroupProfileCard variant="gridItem" showLinks usePeekAheadPopover />
+      </Grid>
+    </Grid>
+  </EntityProvider>
+);
+
+export const UseGroupTitle = () => (
+  <EntityProvider entity={groupWithTitle}>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <GroupProfileCard variant="gridItem" showLinks usePeekAheadPopover />
       </Grid>
     </Grid>
   </EntityProvider>
