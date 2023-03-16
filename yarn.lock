@@ -19626,11 +19626,11 @@ __metadata:
   linkType: hard
 
 "cron@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "cron@npm:2.2.0"
+  version: 2.3.0
+  resolution: "cron@npm:2.3.0"
   dependencies:
     luxon: ^3.2.1
-  checksum: 53905d0f55e052742cf4fed34598a4ebfc311f4f9143c90384225bb4376fa639cd12f485cbf5d3dca00db377bf5117f27a1cae405f15e4745d1f69808e4fb9ac
+  checksum: 70b220f3fc4b6bcd594f7f2c690bbf7a3a03b0e081eb0119f8e3ca21635f2da07d89e038d561d4c0742c8b0dd04977f25e307d0608455ef9f527a556b2da92fc
   languageName: node
   linkType: hard
 
