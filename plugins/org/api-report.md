@@ -14,6 +14,7 @@ import { InfoCardVariants } from '@backstage/core-components';
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
   showLinks?: boolean | undefined;
+  usePeekAheadPopover?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -40,6 +41,7 @@ export const EntityUserProfileCard: (props: {
 export const GroupProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  usePeekAheadPopover?: boolean;
 }) => JSX.Element;
 
 // @public (undocumented)
