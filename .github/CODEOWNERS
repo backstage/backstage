@@ -13,6 +13,7 @@ yarn.lock                                           @backstage/maintainers @back
 /docs/features/search                               @backstage/techdocs-core
 /docs/features/techdocs                             @backstage/techdocs-core
 /docs/plugins/integrating-search-into-plugins.md    @backstage/techdocs-core
+/packages/cli/src/commands/onboard                  @backstage/sharks
 /packages/techdocs-cli                              @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/techdocs-core
 /plugins/adr                                        @backstage/maintainers @kuangp
