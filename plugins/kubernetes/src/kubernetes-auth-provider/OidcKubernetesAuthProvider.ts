@@ -30,7 +30,7 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const authToken: string = await this.authProvider.getIdToken();
+    const authToken: string = await this.getBearerToken();
     const auth = { ...requestBody.auth };
     if (auth.oidc) {
       auth.oidc[this.providerName] = authToken;

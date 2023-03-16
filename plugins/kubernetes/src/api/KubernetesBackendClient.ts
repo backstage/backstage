@@ -74,6 +74,23 @@ export class KubernetesBackendClient implements KubernetesApi {
     return this.handleResponse(response);
   }
 
+  private async getCluster(
+    clusterName: string,
+  ): Promise<{ name: string; authProvider: string }> {
+    const cluster = await this.getClusters().then(clusters =>
+      clusters.find(c => c.name === clusterName),
+    );
+    if (!cluster) {
+      throw new NotFoundError(`Cluster ${clusterName} not found`);
+    }
+
+    return cluster;
+  }
+
+  private async getBearerToken(authProvider: string): Promise<string> {
+    return await this.kubernetesAuthProvidersApi.getBearerToken(authProvider);
+  }
+
   async getObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse> {
@@ -105,7 +122,6 @@ export class KubernetesBackendClient implements KubernetesApi {
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
     const { token: idToken } = await this.identityApi.getCredentials();
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
-
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -116,67 +132,31 @@ export class KubernetesBackendClient implements KubernetesApi {
     return (await this.handleResponse(response)).items;
   }
 
-  async proxy(
-    clusterName: string,
-    path: string,
-    init?: RequestInit,
-  ): Promise<Response> {
-    const { authProvider } = await this.getCluster(clusterName);
-    const token = await this.getBearerToken(authProvider);
+  async proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response> {
+    const { authProvider } = await this.getCluster(options.clusterName);
+    const k8sToken = await this.getBearerToken(authProvider);
+    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
+      options.path
+    }`;
+    const identityResponse = await this.identityApi.getCredentials();
+    const headers = identityResponse.token
+      ? {
+          ...options.init?.headers,
+          [`Backstage-Kubernetes-Cluster`]: options.clusterName,
+          [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+          Authorization: `Bearer ${identityResponse.token}`,
+        }
+      : {
+          ...options.init?.headers,
+          [`Backstage-Kubernetes-Cluster`]: options.clusterName,
+          [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+        };
+    const response = await fetch(url, { ...options.init, headers });
 
-    const url = `${await this.discoveryApi.getBaseUrl(
-      'kubernetes',
-    )}/proxy${path}`;
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      ...init?.headers,
-      [`X-Kubernetes-Cluster`]: clusterName,
-    };
-    const response = await fetch(url, { ...init, headers });
     return this.handleResponse(response);
-  }
-
-  private async getCluster(
-    clusterName: string,
-  ): Promise<{ name: string; authProvider: string }> {
-    const cluster = await this.getClusters().then(clusters =>
-      clusters.find(c => c.name === clusterName),
-    );
-    if (!cluster) {
-      throw new NotFoundError(`Cluster ${clusterName} not found`);
-    }
-    return cluster;
-  }
-
-  private async getBearerToken(authProvider: string): Promise<string> {
-    // const { auth } =
-    //   await this.kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-    //     authProvider,
-    //     {
-    //       entity: {
-    //         apiVersion: 'v1',
-    //         kind: 'Pods',
-    //         metadata: {
-    //           name: 'podName',
-    //           annotations: {
-    //             'backstage.io/kubernetes-label-selector': 'k8s-app=kube-dns',
-    //           },
-    //         },
-    //       },
-    //     },
-    //   );
-    return await this.kubernetesAuthProvidersApi.getBearerToken(authProvider);
-
-    // if (auth) {
-    //   if (authProvider === 'google' && auth.google) {
-    //     return auth.google;
-    //   } else if (authProvider.startsWith('oidc.') && auth.oidc) {
-    //     const oidcTokenProvider = authProvider.replace(/^oidc\./, '');
-    //     return auth.oidc[oidcTokenProvider];
-    //   } else {
-    //     throw new Error(`invalid auth provider '${authProvider}'`);
-    //   }
-    // }
-    // return '';
   }
 }

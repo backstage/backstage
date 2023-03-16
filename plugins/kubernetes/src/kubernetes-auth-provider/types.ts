@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  KubernetesRequestAuth,
-  KubernetesRequestBody,
-} from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 export interface KubernetesAuthProvider {

@@ -184,6 +184,8 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getBearerToken(): Promise<string>;
 }
 
 // Warning: (ae-missing-release-tag) "GroupedResponses" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -259,6 +261,12 @@ export interface KubernetesApi {
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -281,6 +289,8 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getBearerToken(authProvider: string): Promise<string>;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesAuthProvidersApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -292,6 +302,8 @@ export interface KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getBearerToken(authProvider: string): Promise<string>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesAuthProvidersApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -306,6 +318,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   });
   // (undocumented)
   getClusters(): Promise<
@@ -326,6 +339,12 @@ export class KubernetesBackendClient implements KubernetesApi {
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesContentProps" needs to be exported by the entry point index.d.ts
@@ -416,6 +435,8 @@ export class ServerSideKubernetesAuthProvider
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getBearerToken(): Promise<string>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ServicesAccordionsProps" needs to be exported by the entry point index.d.ts

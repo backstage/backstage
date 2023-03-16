@@ -28,9 +28,7 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const googleAuthToken: string = await this.authProvider.getAccessToken(
-      'https://www.googleapis.com/auth/cloud-platform',
-    );
+    const googleAuthToken: string = await this.getBearerToken();
     if ('auth' in requestBody) {
       requestBody.auth!.google = googleAuthToken;
     } else {
