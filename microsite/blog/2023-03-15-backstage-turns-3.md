@@ -17,7 +17,7 @@ Happy birthday, Backstage! Three years ago, Spotify released its homegrown devel
 
 It's cliché at this point — because we’ve said it a million times — but no one could have predicted what came next.
 
-In three short years, Backstage has grown to a Cloud Native Computing Foundation Incubating project, with more than 900 adopters and 1000+ contributors worldwide. Companies like CVS Health, Siemens, LinkedIn, REI, Vodafone, and Lego are building out their own developer portals from the Backstage framework and bringing their learnings to the project
+In three short years, Backstage has grown to a Cloud Native Computing Foundation Incubating project, with more than 900 adopters and 1000+ contributors worldwide. Companies like CVS Health, Siemens, LinkedIn, REI, Vodafone, and Lego are building out their own developer portals from the Backstage framework and bringing their learnings to the project.
 
 A few more stats we love to see (mainly coming from the [project repo](https://github.com/backstage/backstage)):
 
@@ -33,7 +33,10 @@ But, without a doubt, the best thing about the Backstage project is the people i
 
 Don’t take our word for it! Take a look at this birthday video we put together with a few community members.
 
-[VIDEO HERE]
+<div style={{ position: 'relative', overflow: 'hidden', width: '100%', paddingTop: '56.25%'}}>
+  <iframe style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }} src="https://www.youtube.com/embed/rllOa_MfEWw" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
+  </iframe>
+</div>
 
 ## The growing pains are real
 
