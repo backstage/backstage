@@ -17,7 +17,7 @@
 import { entityKindSchemaValidator } from '@backstage/catalog-model';
 import type {
   TemplateEntityV1beta3,
-  TemplateParameterV1beta3,
+  TemplateParametersV1beta3,
 } from './TemplateEntityV1beta3';
 import schema from './Template.v1beta3.schema.json';
 
@@ -163,12 +163,12 @@ describe('templateEntityV1beta3Validator', () => {
   });
 
   it('rejects parameters with wrong backstage:permissions', async () => {
-    (entity.spec.parameters as TemplateParameterV1beta3)[
+    (entity.spec.parameters as TemplateParametersV1beta3)[
       'backstage:permissions'
     ]!.tags = true as unknown as [];
     expect(() => validator(entity)).toThrow(/must be array/);
 
-    (entity.spec.parameters as TemplateParameterV1beta3)[
+    (entity.spec.parameters as TemplateParametersV1beta3)[
       'backstage:permissions'
     ] = true as {};
     expect(() => validator(entity)).toThrow(/must be object/);

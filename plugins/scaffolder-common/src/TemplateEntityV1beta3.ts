@@ -50,7 +50,7 @@ export interface TemplateEntityV1beta3 extends Entity {
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.
      */
-    parameters?: TemplateParameterV1beta3 | TemplateParameterV1beta3[];
+    parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
@@ -86,7 +86,7 @@ export interface TemplateEntityStepV1beta3 extends JsonObject {
  *
  * @public
  */
-export interface TemplateParameterV1beta3 extends JsonObject {
+export interface TemplateParametersV1beta3 extends JsonObject {
   'backstage:permissions'?: TemplatePermissionsV1beta3;
 }
 

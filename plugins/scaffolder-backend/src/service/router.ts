@@ -32,7 +32,7 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  TemplateParameterV1beta3,
+  TemplateParametersV1beta3,
   TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
@@ -81,7 +81,7 @@ import { scaffolderTemplateRules } from './rules';
 export type ScaffolderPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParameterV1beta3,
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams
