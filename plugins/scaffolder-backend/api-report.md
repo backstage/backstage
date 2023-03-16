@@ -38,7 +38,7 @@ import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateParameterV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 import { ZodType } from 'zod';
@@ -687,7 +687,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
 export type ScaffolderPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParameterV1beta3,
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams

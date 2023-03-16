@@ -59,7 +59,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   kind: 'Template';
   spec: {
     type: string;
-    parameters?: TemplateParameterV1beta3 | TemplateParameterV1beta3[];
+    parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
@@ -81,7 +81,7 @@ export type TemplateInfo = {
 };
 
 // @public
-export interface TemplateParameterV1beta3 extends JsonObject {
+export interface TemplateParametersV1beta3 extends JsonObject {
   // (undocumented)
   'backstage:permissions'?: TemplatePermissionsV1beta3;
 }

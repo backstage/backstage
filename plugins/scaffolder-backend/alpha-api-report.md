@@ -16,7 +16,7 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-backend';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-backend';
-import { TemplateParameterV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @alpha
 export const catalogModuleTemplateKind: () => BackendFeature;
@@ -32,7 +32,7 @@ export const createScaffolderConditionalDecision: (
 // @alpha
 export const scaffolderConditions: Conditions<{
   hasTag: PermissionRule<
-    TemplateParameterV1beta3 | TemplateEntityStepV1beta3,
+    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
     {},
     'scaffolder-template',
     {
