@@ -15,10 +15,13 @@ export function createFetchRailsAction(options: {
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
   allowedImageNames?: string[];
-}): TemplateAction<{
-  url: string;
-  targetPath?: string | undefined;
-  values: JsonObject;
-  imageName?: string | undefined;
-}>;
+}): TemplateAction<
+  {
+    url: string;
+    targetPath?: string | undefined;
+    values: JsonObject;
+    imageName?: string | undefined;
+  },
+  undefined
+>;
 ```

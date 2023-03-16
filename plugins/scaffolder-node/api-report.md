@@ -16,13 +16,19 @@ import { Writable } from 'stream';
 import { z } from 'zod';
 
 // @public
-export type ActionContext<TActionInput extends JsonObject> = {
+export type ActionContext<
+  TActionInput extends JsonObject,
+  TActionOutput extends JsonObject | undefined = undefined,
+> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  output(name: string, value: JsonValue): void;
+  output<KEY extends keyof TActionOutput>(
+    name: TActionOutput extends undefined ? string : KEY,
+    value: TActionOutput extends undefined ? JsonValue : TActionOutput[KEY],
+  ): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
@@ -41,9 +47,12 @@ export const createTemplateAction: <
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TParams,
+  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn_1>
+    ? IReturn_1
+    : undefined,
 >(
   action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
-) => TemplateAction<TActionInput>;
+) => TemplateAction<TActionInput, TActionOutput>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -60,7 +69,10 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<TActionInput = unknown> = {
+export type TemplateAction<
+  TActionInput = unknown,
+  TActionOutput = undefined,
+> = {
   id: string;
   description?: string;
   examples?: {
@@ -72,7 +84,7 @@ export type TemplateAction<TActionInput = unknown> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 // @public (undocumented)
@@ -92,6 +104,13 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+  handler: (
+    ctx: ActionContext<
+      TActionInput,
+      TOutputSchema extends z.ZodType<any, any, infer IReturn>
+        ? IReturn
+        : undefined
+    >,
+  ) => Promise<void>;
 };
 ```

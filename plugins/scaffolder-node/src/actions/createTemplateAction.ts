@@ -33,7 +33,14 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+  handler: (
+    ctx: ActionContext<
+      TActionInput,
+      TOutputSchema extends z.ZodType<any, any, infer IReturn>
+        ? IReturn
+        : undefined
+    >,
+  ) => Promise<void>;
 };
 
 /**
@@ -48,9 +55,12 @@ export const createTemplateAction = <
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TParams,
+  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn>
+    ? IReturn
+    : undefined,
 >(
   action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
-): TemplateAction<TActionInput> => {
+): TemplateAction<TActionInput, TActionOutput> => {
   const inputSchema =
     action.schema?.input && 'safeParseAsync' in action.schema.input
       ? zodToJsonSchema(action.schema.input)
@@ -61,7 +71,7 @@ export const createTemplateAction = <
       ? zodToJsonSchema(action.schema.output)
       : action.schema?.output;
 
-  const templateAction = {
+  return {
     ...action,
     schema: {
       ...action.schema,
@@ -69,6 +79,4 @@ export const createTemplateAction = <
       output: outputSchema,
     },
   };
-
-  return templateAction;
 };

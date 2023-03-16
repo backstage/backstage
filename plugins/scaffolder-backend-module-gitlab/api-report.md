@@ -9,40 +9,49 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 // @public
 export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
-}) => TemplateAction<{
-  repoUrl: string;
-  projectId: string | number;
-  name: string;
-  accessLevel: number;
-  scopes: string[];
-  token?: string | undefined;
-}>;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: string | number;
+    name: string;
+    accessLevel: number;
+    scopes: string[];
+    token?: string | undefined;
+  },
+  undefined
+>;
 
 // @public
 export const createGitlabProjectDeployTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
-}) => TemplateAction<{
-  repoUrl: string;
-  projectId: string | number;
-  name: string;
-  username: string;
-  scopes: string[];
-  token?: string | undefined;
-}>;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: string | number;
+    name: string;
+    username: string;
+    scopes: string[];
+    token?: string | undefined;
+  },
+  undefined
+>;
 
 // @public
 export const createGitlabProjectVariableAction: (options: {
   integrations: ScmIntegrationRegistry;
-}) => TemplateAction<{
-  repoUrl: string;
-  projectId: string | number;
-  key: string;
-  value: string;
-  variableType: string;
-  variableProtected: boolean;
-  masked: boolean;
-  raw: boolean;
-  environmentScope: string;
-  token?: string | undefined;
-}>;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: string | number;
+    key: string;
+    value: string;
+    variableType: string;
+    variableProtected: boolean;
+    masked: boolean;
+    raw: boolean;
+    environmentScope: string;
+    token?: string | undefined;
+  },
+  undefined
+>;
 ```
