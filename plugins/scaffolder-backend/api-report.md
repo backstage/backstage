@@ -642,8 +642,6 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  customPermissionRules?: ScaffolderPermissionRuleInput[];
-  // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
   identity?: IdentityApi;
@@ -653,6 +651,8 @@ export interface RouterOptions {
   permissionApi?: PermissionEvaluator;
   // (undocumented)
   reader: UrlReader;
+  // (undocumented)
+  rules?: TemplatePermissionRuleInput[];
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
@@ -682,16 +682,6 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   // (undocumented)
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
-
-// @public
-export type ScaffolderPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  TParams
->;
 
 // @public
 export type SerializedTask = {
@@ -908,4 +898,14 @@ export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// @public (undocumented)
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 ```
