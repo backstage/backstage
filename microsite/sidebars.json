@@ -327,9 +327,7 @@
       {
         "type": "category",
         "label": "Pulumi",
-        "items": [
-          "deployment/pulumi/aws"
-        ]
+        "items": ["deployment/pulumi/aws"]
       }
     ],
     "Designing for Backstage": [
