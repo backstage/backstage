@@ -65,7 +65,7 @@ An Organization Member must meet the responsibilities and has the requirements o
   - Accepted PRs
   - Helpful PR reviews
   - Resolving GitHub issues
-  - Or some equivalent combination or contributions to the project
+  - Or some equivalent contributions to the project.
 - Must have been contributing for at least 3 months
 - Or is the member of a team that owns a project area, in which case the above requirements do not apply and the member is instead vetted by the project area maintainers.
 
