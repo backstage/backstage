@@ -37,7 +37,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/types": "workspace:^",
-    "apollo-server": "^3.0.0",
+    "@apollo/server": "^4.0.0",
     "graphql": "^16.0.0",
     "graphql-modules": "^2.0.0",
     "graphql-tag": "^2.11.0",
