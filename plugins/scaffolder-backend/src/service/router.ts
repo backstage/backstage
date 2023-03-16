@@ -74,11 +74,10 @@ import {
 import { scaffolderTemplateRules } from './rules';
 
 /**
- * ScaffolderPermissionRuleInput
  *
  * @public
  */
-export type ScaffolderPermissionRuleInput<
+export type TemplatePermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -114,7 +113,7 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissionApi?: PermissionEvaluator;
-  customPermissionRules?: ScaffolderPermissionRuleInput[];
+  rules?: TemplatePermissionRuleInput[];
   identity?: IdentityApi;
 }
 
@@ -210,7 +209,7 @@ export async function createRouter(
     additionalTemplateFilters,
     additionalTemplateGlobals,
     permissionApi,
-    customPermissionRules,
+    rules,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -286,21 +285,20 @@ export async function createRouter(
     additionalTemplateGlobals,
   });
 
-  const permissionRules: ScaffolderPermissionRuleInput[] = Object.values(
+  const templateRules: TemplatePermissionRuleInput[] = Object.values(
     scaffolderTemplateRules,
   );
-  if (customPermissionRules) {
-    permissionRules.push(...customPermissionRules);
+
+  if (rules) {
+    templateRules.push(...rules);
   }
 
-  const isAuthorized = createConditionAuthorizer(
-    Object.values(permissionRules),
-  );
+  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
     permissions: scaffolderPermissions,
-    rules: permissionRules,
+    rules: templateRules,
   });
 
   router.use(permissionIntegrationRouter);
