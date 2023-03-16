@@ -22,9 +22,5 @@ export type {
   TemplateGroupsProps,
 } from './TemplateGroups';
 
-export { CategoryPicker } from './CategoryPicker';
-
 export { RegisterExistingButton } from './RegisterExistingButton';
 export type { RegisterExistingButtonProps } from './RegisterExistingButton';
-
-export { ContextMenu } from './ContextMenu';

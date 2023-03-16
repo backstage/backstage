@@ -19,6 +19,9 @@ import {
   createSubRouteRef,
 } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export const registerComponentRouteRef = createExternalRouteRef({
   id: 'register-component',
   optional: true,

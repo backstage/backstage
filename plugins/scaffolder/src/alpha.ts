@@ -21,9 +21,9 @@ export {
   type TemplateGroupsProps,
   type NextRouterProps,
   type FormProps,
-  CategoryPicker,
   RegisterExistingButton,
   type RegisterExistingButtonProps,
-  ContextMenu,
+  type TemplateListPageProps,
+  type TemplateWizardPageProps,
 } from './next';
 export { registerComponentRouteRef } from './routes';

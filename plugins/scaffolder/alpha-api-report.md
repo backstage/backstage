@@ -5,8 +5,12 @@
 ```ts
 /// <reference types="react" />
 
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { LinkProps } from 'react-router-dom';
+import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
@@ -28,6 +32,8 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React_2.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
+    TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -44,10 +50,59 @@ export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
 
+// @public (undocumented)
+export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
+
+// @alpha
+export const RegisterExistingButton: (
+  props: RegisterExistingButtonProps,
+) => JSX.Element | null;
+
+// @alpha
+export type RegisterExistingButtonProps = {
+  title: string;
+} & Partial<Pick<LinkProps, 'to'>>;
+
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
   title?: React_2.ReactNode;
   filter: (entity: TemplateEntityV1beta3) => boolean;
+};
+
+// @alpha (undocumented)
+export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
+
+// @alpha (undocumented)
+export interface TemplateGroupsProps {
+  // (undocumented)
+  groups: TemplateGroupFilter[];
+  // (undocumented)
+  TemplateCardComponent?: React_2.ComponentType<{
+    template: TemplateEntityV1beta3;
+  }>;
+  // (undocumented)
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+}
+
+// @alpha (undocumented)
+export type TemplateListPageProps = {
+  TemplateCardComponent?: React_2.ComponentType<{
+    template: TemplateEntityV1beta3;
+  }>;
+  groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+  };
+};
+
+// @alpha (undocumented)
+export type TemplateWizardPageProps = {
+  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
+  FormProps?: FormProps_2;
 };
 
 // (No @packageDocumentation comment for this package)

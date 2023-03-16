@@ -48,6 +48,9 @@ import {
   scaffolderListTaskRouteRef,
 } from '../../routes';
 
+/**
+ * @alpha
+ */
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
@@ -76,6 +79,9 @@ const createGroupsWithOther = (
   },
 ];
 
+/**
+ * @alpha
+ */
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const {

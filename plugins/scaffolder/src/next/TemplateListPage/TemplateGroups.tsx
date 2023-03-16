@@ -39,6 +39,9 @@ export type TemplateGroupFilter = {
   filter: (entity: TemplateEntityV1beta3) => boolean;
 };
 
+/**
+ * @alpha
+ */
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -47,6 +50,9 @@ export interface TemplateGroupsProps {
   }>;
 }
 
+/**
+ * @alpha
+ */
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
   const { groups, templateFilter, TemplateCardComponent } = props;
