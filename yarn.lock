@@ -15551,11 +15551,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.8.1
-  resolution: "@types/sanitize-html@npm:2.8.1"
+  version: 2.9.0
+  resolution: "@types/sanitize-html@npm:2.9.0"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: 9c07d3a9d925e291472f74b097fb179b32659ea01834f728887811e5fc75cf2b17d844e32e97c0e583eba993af86a3f8250c82c8fa3152abf9ff2a8582972906
+  checksum: b60f42b740bbfb1b1434ce8b43925a38ecc608b60aa654fd009d2e22e33f324b61d370768c55bd2fd98e03de08518ffa8911d61606c483526fb931bb8b59d1b0
   languageName: node
   linkType: hard
 
