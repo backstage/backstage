@@ -1,4 +1,4 @@
-# @backstage/plugin-scaffolder-backend-module-confluence-to-markdowwn
+# @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
 Welcome to the `transform:confluence-to-markdown` action for the `scaffolder-backend`.
 
@@ -10,7 +10,7 @@ You need to configure the action in your backend:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-confluence-to-markdowwn
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 ```
 
 Configure the action:
@@ -21,7 +21,7 @@ Configure the action:
 
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
-import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdowwn';
+import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -58,16 +58,15 @@ export default async function createPlugin(
 
 You will also need an access token for authorization with `Read` permissions. You can create a Personal Access Token (PAT) in confluence and add the PAT to your `app-config.yaml`
 
-```
+```yaml
 confluence:
   baseUrl: ${CONFLUENCE_BASE_URL}
   token: ${CONFLUENCE_TOKEN}
-
 ```
 
 After that you can use the action in your template:
 
-```
+```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
@@ -85,7 +84,7 @@ spec:
       properties:
         confluenceUrls:
           type: array
-          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE> or <CONFLUENCE_BASE_URL>/pages/viewpage.action?spacekey=<SPACEKEY>&title=<PAGE_TITLE>
+          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>
           items:
             type: string
             default: confluence url
@@ -95,8 +94,8 @@ spec:
           maxItems: 5
         repoUrl:
           type: string
-          title: GitHub url mkdocs.yaml link
-          description: The GitHub repo url to your mkdocs.yaml file. Example <https://github.com/blob/master/mkdocs.yml>
+          title: GitHub URL mkdocs.yaml link
+          description: The GitHub repo URL to your mkdocs.yaml file. Example <https://github.com/blob/master/mkdocs.yml>
   steps:
     - id: create-docs
       name: Get markdown file created and update markdown.yaml file
@@ -118,9 +117,8 @@ spec:
       input:
         prUrl: ${{ steps['publish'].output.remoteUrl }}
         forceAdmin: true
-
 ```
 
 Replace `<GITHUB_BASE_URL>` with your GitHub url without `https://`.
 
-You can find a list of all registred actions including their parameters at the /create/actions route in your Backstage application.
+You can find a list of all registered actions including their parameters at the /create/actions route in your Backstage application.

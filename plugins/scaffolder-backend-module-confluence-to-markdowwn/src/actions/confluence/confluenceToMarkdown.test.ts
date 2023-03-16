@@ -19,14 +19,14 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import mockFs from 'mock-fs';
 import os from 'os';
-import fetch from 'node-fetch';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
-import { readFile, writeFile } from 'fs-extra';
-import { Readable } from 'stream';
+import { readFile, writeFile, createWriteStream } from 'fs-extra';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
-jest.mock('node-fetch');
 jest.mock('fs-extra', () => ({
   mkdirSync: jest.fn(),
   readFile: jest.fn().mockResolvedValue('File contents'),
@@ -38,12 +38,15 @@ jest.mock('fs-extra', () => ({
   createWriteStream: jest.fn().mockReturnValue(new PassThrough()),
   writeStream: jest.fn(),
 }));
-const { Response } = jest.requireActual('node-fetch');
 
 describe('transform:confluence-to-markdown', () => {
+  const baseUrl = `https://nodomain.confluence.com`;
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
   const config = new ConfigReader({
     confluence: {
-      baseUrl: 'https://nodomain.confluence.com/',
+      baseUrl: baseUrl,
       token: 'fake_token',
     },
   });
@@ -131,25 +134,19 @@ describe('transform:confluence-to-markdown', () => {
       ],
     };
 
-    (fetch as jest.MockedFunction<typeof fetch>)
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBody), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBodyTwo), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(Readable.from('Hello world'), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      );
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      ),
+      rest.get(
+        `${baseUrl}/rest/api/content/4444444/child/attachment`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+      ),
+      rest.get(
+        `${baseUrl}/download/attachments/4444444/testing.pdf`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.body('hello')),
+      ),
+    );
 
     const mockCreateWriteStream = jest.fn().mockReturnValue({
       on: jest.fn(),
@@ -169,8 +166,7 @@ describe('transform:confluence-to-markdown', () => {
       `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
     );
     expect(logger.info).toHaveBeenCalledTimes(5);
-
-    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(createWriteStream).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(writeFile).toHaveBeenCalledTimes(1);
   });
@@ -199,19 +195,15 @@ describe('transform:confluence-to-markdown', () => {
       results: [],
     };
 
-    (fetch as jest.MockedFunction<typeof fetch>)
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBody), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBodyTwo), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      );
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      ),
+      rest.get(
+        `${baseUrl}/rest/api/content/4444444/child/attachment`,
+        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+      ),
+    );
 
     jest.mock('fs-extra', () => ({
       readFile: jest.fn().mockResolvedValue('File contents'),
@@ -225,7 +217,7 @@ describe('transform:confluence-to-markdown', () => {
     );
     expect(logger.info).toHaveBeenCalledTimes(5);
 
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(createWriteStream).not.toHaveBeenCalled();
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(writeFile).toHaveBeenCalledTimes(1);
   });
@@ -237,13 +229,13 @@ describe('transform:confluence-to-markdown', () => {
       config,
     };
     const responseBody = {};
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
-      new Response(JSON.stringify(responseBody), {
-        status: 401,
-        statusText: 'npot',
-        ok: false,
-      }),
+
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(401, 'nope'), ctx.json(responseBody)),
+      ),
     );
+
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
@@ -259,12 +251,13 @@ describe('transform:confluence-to-markdown', () => {
     const responseBody = {
       results: [],
     };
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
-      new Response(JSON.stringify(responseBody), {
-        status: 200,
-        statusText: 'ok',
-      }),
+
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      ),
     );
+
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
@@ -295,19 +288,17 @@ describe('transform:confluence-to-markdown', () => {
     };
     const responseBodyTwo = {};
 
-    (fetch as jest.MockedFunction<typeof fetch>)
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBody), {
-          status: 200,
-          statusText: 'OK',
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(responseBodyTwo), {
-          status: 404,
-          statusText: 'notok',
-        }),
-      );
+    worker.use(
+      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      ),
+      rest.get(
+        `${baseUrl}/rest/api/content/4444444/child/attachment`,
+        (_, res, ctx) =>
+          res(ctx.status(404, 'nope'), ctx.json(responseBodyTwo)),
+      ),
+    );
+
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);

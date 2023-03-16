@@ -17,7 +17,6 @@
 import { Config } from '@backstage/config';
 import { ResponseError, ConflictError, InputError } from '@backstage/errors';
 import fs from 'fs-extra';
-import YAML from 'yaml';
 import fetch, { Response } from 'node-fetch';
 
 interface Links {
@@ -47,18 +46,6 @@ export interface Results {
 export const readFileAsString = async (fileDir: string) => {
   const content = await fs.readFile(fileDir, 'utf-8');
   return content.toString();
-};
-
-export const parseFromYaml = (content: string) => {
-  return YAML.parse(content);
-};
-
-export const transformToYaml = (content: any) => {
-  return YAML.stringify(content);
-};
-
-export const updateFile = async (content: string, file: string) => {
-  await fs.writeFile(file, content);
 };
 
 export const fetchConfluence = async (relativeUrl: string, config: Config) => {
@@ -100,7 +87,6 @@ export const getAndWriteAttachments = async (
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(`${workspace}/${mkdocsDir}docs/img/${downloadTitle}`)
       if (!res.ok) {
         throw ResponseError.fromResponse(res);
       } else if (res.body !== null) {
@@ -126,11 +112,11 @@ export const getAndWriteAttachments = async (
 };
 
 export const createConfluenceVariables = async (url: string) => {
-  let spacekey: string | null = null;
-  let title: string | null = null;
-  let titleWithSpaces: string | null = '';
+  let spacekey: string | undefined = undefined;
+  let title: string | undefined = undefined;
+  let titleWithSpaces: string | undefined = '';
   const params = new URL(url);
-  if (url.includes('display')) {
+  if (params.pathname.split('/')[1] === 'display') {
     spacekey = params.pathname.split('/')[2];
     title = params.pathname.split('/')[3];
     titleWithSpaces = title?.replace(/\+/g, ' ');

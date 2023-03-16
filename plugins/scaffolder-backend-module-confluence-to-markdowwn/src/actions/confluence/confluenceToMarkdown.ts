@@ -22,11 +22,9 @@ import { InputError, ConflictError } from '@backstage/errors';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
+import YAML from 'yaml';
 import {
-  parseFromYaml,
   readFileAsString,
-  transformToYaml,
-  updateFile,
   fetchConfluence,
   getAndWriteAttachments,
   createConfluenceVariables,
@@ -92,12 +90,9 @@ export const createConfluenceToMarkdownAction = (options: {
         },
       });
 
-      for (let p = 0; p < confluenceUrls.length; p++) {
-        const confluenceUrl = confluenceUrls[p];
-
+      for (const url of confluenceUrls) {
         const { spacekey, title, titleWithSpaces } =
-          await createConfluenceVariables(confluenceUrl);
-
+          await createConfluenceVariables(url);
         // This calls confluence to get the page html and page id
         const getConfluenceDoc = await fetchConfluence(
           `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
@@ -105,7 +100,7 @@ export const createConfluenceToMarkdownAction = (options: {
         );
         if (getConfluenceDoc.results.length === 0) {
           throw new InputError(
-            `Could not find document ${confluenceUrl}. Please check your input.`,
+            `Could not find document ${url}. Please check your input.`,
           );
         }
         // This gets attachements for the confluence page if they exist
@@ -132,7 +127,7 @@ export const createConfluenceToMarkdownAction = (options: {
 
         // This reads mkdocs.yml file
         const mkdocsFileContent = await readFileAsString(repoFileDir);
-        const mkdocsFile = parseFromYaml(mkdocsFileContent);
+        const mkdocsFile = await YAML.parse(mkdocsFileContent);
         ctx.logger.info(
           `Adding new file - ${titleWithSpaces} to the current mkdocs.yml file`,
         );
@@ -151,14 +146,14 @@ export const createConfluenceToMarkdownAction = (options: {
             );
           }
         }
-        const newTemplateFileContent = transformToYaml(mkdocsFile);
-        await updateFile(newTemplateFileContent, repoFileDir);
+
+        await fs.writeFile(repoFileDir, YAML.stringify(mkdocsFile));
 
         // This grabs the confluence html and converts it to markdown and adds attachments
         const html = getConfluenceDoc.results[0].body.export_view.value;
         const markdownToPublish = NodeHtmlMarkdown.translate(html);
         let newString: string = markdownToPublish;
-        productArray.map((product: string[]) => {
+        productArray.forEach((product: string[]) => {
           const regex = product[1].includes('pdf')
             ? new RegExp(`(\\[.*?\\]\\()(.*?${product[0]}.*?)(\\))`, 'gi')
             : new RegExp(`(\\!\\[.*?\\]\\()(.*?${product[0]}.*?)(\\))`, 'gi');
