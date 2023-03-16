@@ -266,7 +266,7 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
    * Call an API with provided arguments
    * @param url - URL of the API to call
    * @param path - path to call
-   * @param authToken - token used as basic auth user without password
+   * @param authToken - Sonarqube auth token
    * @param query - parameters to provide to the call
    * @returns A promise on the answer to the API call if the answer status code is 200, undefined otherwise.
    * @private
@@ -282,6 +282,7 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
     // lack of password
     const encodedAuthToken = Buffer.from(`${authToken}:`).toString('base64');
 
+    // Try with basic auth first assuming the token is a User token
     const response = await fetch(
       `${url}/${path}?${new URLSearchParams(query).toString()}`,
       {
@@ -291,9 +292,28 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
         },
       },
     );
+
+    if (response.status === 403) {
+      // Retries with Bearer auth which works if the token used
+      // is actually a Project Analysis or Global Analysis token
+      const retry = await fetch(
+        `${url}/${path}?${new URLSearchParams(query).toString()}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${encodedAuthToken}`,
+          },
+        },
+      );
+      if (retry.status === 200) {
+        return (await retry.json()) as T;
+      }
+    }
+
     if (response.status === 200) {
       return (await response.json()) as T;
     }
+
     return undefined;
   }
 
