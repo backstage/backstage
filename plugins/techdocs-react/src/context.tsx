@@ -24,7 +24,7 @@ import React, {
   useEffect,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 import {
   CompoundEntityRef,
