@@ -109,17 +109,52 @@ describe('createRouter', () => {
     spec: {
       owner: 'web@example.com',
       type: 'website',
-      steps: [],
-      parameters: {
-        type: 'object',
-        required: ['required'],
-        properties: {
-          required: {
-            type: 'string',
-            description: 'Required parameter',
+      steps: [
+        {
+          id: 'step-one',
+          name: 'First log',
+          action: 'debug:log',
+          input: {
+            message: 'hello',
           },
         },
-      },
+        {
+          id: 'step-two',
+          name: 'Second log',
+          action: 'debug:log',
+          input: {
+            message: 'world',
+          },
+          'backstage:permissions': {
+            tags: ['steps-tag'],
+          },
+        },
+      ],
+      parameters: [
+        {
+          type: 'object',
+          required: ['requiredParameter1'],
+          properties: {
+            requiredParameter1: {
+              type: 'string',
+              description: 'Required parameter 1',
+            },
+          },
+        },
+        {
+          type: 'object',
+          required: ['requiredParameter2'],
+          'backstage:permissions': {
+            tags: ['parameters-tag'],
+          },
+          properties: {
+            requiredParameter2: {
+              type: 'string',
+              description: 'Required parameter 2',
+            },
+          },
+        },
+      ],
     },
   });
 
@@ -237,12 +272,13 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
-        expect(response.body.id).toBe('a-random-id');
         expect(response.status).toEqual(201);
+        expect(response.body.id).toBe('a-random-id');
       });
 
       it('should call the broker with a correct spec', async () => {
@@ -261,7 +297,8 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
         expect(broker).toHaveBeenCalledWith(
@@ -280,7 +317,8 @@ describe('createRouter', () => {
               })),
               output: mockTemplate.spec.output ?? {},
               parameters: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
               user: {
                 entity: mockUser,
@@ -317,7 +355,8 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
         expect(broker).toHaveBeenCalledWith(
@@ -336,7 +375,8 @@ describe('createRouter', () => {
               })),
               output: mockTemplate.spec.output ?? {},
               parameters: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
               user: {
                 entity: undefined,
@@ -370,7 +410,8 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
@@ -393,7 +434,8 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
@@ -416,7 +458,8 @@ describe('createRouter', () => {
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
@@ -836,12 +879,28 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             {
               title: 'Please enter the following information',
               schema: {
-                required: ['required'],
+                required: ['requiredParameter1'],
                 type: 'object',
                 properties: {
-                  required: {
-                    description: 'Required parameter',
+                  requiredParameter1: {
+                    description: 'Required parameter 1',
                     type: 'string',
+                  },
+                },
+              },
+            },
+            {
+              title: 'Please enter the following information',
+              schema: {
+                type: 'object',
+                required: ['requiredParameter2'],
+                'backstage:permissions': {
+                  tags: ['parameters-tag'],
+                },
+                properties: {
+                  requiredParameter2: {
+                    type: 'string',
+                    description: 'Required parameter 2',
                   },
                 },
               },
@@ -866,12 +925,59 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             '/v2/templates/default/Template/create-react-app-template/parameter-schema',
           )
           .send();
-
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({
           title: 'Create React App Template',
           description: 'Create a new CRA website project',
           steps: [],
+        });
+      });
+
+      it('filters parameters that the user is not authorized to see in case of conditional decision', async () => {
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-template',
+                rule: 'HAS_TAG',
+                params: { tag: 'parameters-tag' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+          ]);
+        const response = await request(app)
+          .get(
+            '/v2/templates/default/Template/create-react-app-template/parameter-schema',
+          )
+          .send();
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          title: 'Create React App Template',
+          description: 'Create a new CRA website project',
+          steps: [
+            {
+              title: 'Please enter the following information',
+              schema: {
+                type: 'object',
+                required: ['requiredParameter2'],
+                'backstage:permissions': {
+                  tags: ['parameters-tag'],
+                },
+                properties: {
+                  requiredParameter2: {
+                    type: 'string',
+                    description: 'Required parameter 2',
+                  },
+                },
+              },
+            },
+          ],
         });
       });
     });
@@ -917,7 +1023,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
         expect(broker).toHaveBeenCalledWith(
@@ -932,7 +1039,89 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               steps: [],
               output: mockTemplate.spec.output ?? {},
               parameters: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
+              },
+              user: {
+                entity: mockUser,
+                ref: 'user:default/guest',
+              },
+              templateInfo: {
+                entityRef: stringifyEntityRef({
+                  kind: 'Template',
+                  namespace: 'Default',
+                  name: mockTemplate.metadata?.name,
+                }),
+                baseUrl: 'https://dev.azure.com',
+                entity: {
+                  metadata: mockTemplate.metadata,
+                },
+              },
+            },
+          }),
+        );
+      });
+
+      it('filters steps that the user is not authorized to see in case of conditional decision', async () => {
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementation(async () => [
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+            {
+              conditions: {
+                resourceType: 'scaffolder-template',
+                rule: 'HAS_TAG',
+                params: { tag: 'steps-tag' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        const mockTemplate = getMockTemplate();
+        await request(app)
+          .post('/v2/tasks')
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+            values: {
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
+            },
+          });
+        expect(broker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            createdBy: 'user:default/guest',
+            secrets: {
+              backstageToken: 'token',
+            },
+
+            spec: {
+              apiVersion: mockTemplate.apiVersion,
+              steps: [
+                {
+                  id: 'step-two',
+                  name: 'Second log',
+                  action: 'debug:log',
+                  input: {
+                    message: 'world',
+                  },
+                  'backstage:permissions': {
+                    tags: ['steps-tag'],
+                  },
+                },
+              ],
+              output: mockTemplate.spec.output ?? {},
+              parameters: {
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
               user: {
                 entity: mockUser,
@@ -969,7 +1158,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
@@ -990,7 +1180,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
         expect(broker).toHaveBeenCalledWith(
@@ -1009,7 +1200,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               })),
               output: mockTemplate.spec.output ?? {},
               parameters: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
               user: {
                 entity: mockUser,
@@ -1052,7 +1244,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 name: 'create-react-app-template',
               }),
               values: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
             });
           expect(response.status).not.toEqual(201);
@@ -1084,7 +1277,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 name: 'create-react-app-template',
               }),
               values: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
             });
 
@@ -1107,7 +1301,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 name: 'create-react-app-template',
               }),
               values: {
-                required: 'required-value',
+                requiredParameter1: 'required-value-1',
+                requiredParameter2: 'required-value-2',
               },
             });
 
@@ -1127,7 +1322,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               name: 'create-react-app-template',
             }),
             values: {
-              required: 'required-value',
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
             },
           });
 
