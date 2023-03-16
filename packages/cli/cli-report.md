@@ -424,6 +424,7 @@ Commands:
   clean
   list-deprecations [options]
   schema:openapi:verify
+  schema:openapi:generate
   test [options]
   help [command]
 ```
@@ -467,6 +468,15 @@ Usage: backstage-cli repo list-deprecations [options]
 
 Options:
   --json
+  -h, --help
+```
+
+### `backstage-cli repo schema:openapi:generate`
+
+```
+Usage: backstage-cli repo schema:openapi:generate [options]
+
+Options:
   -h, --help
 ```
 
