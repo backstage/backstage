@@ -41,7 +41,7 @@
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@kubernetes/client-node": "0.18.1",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@types/react": "^16.13.1 || ^17.0.0",

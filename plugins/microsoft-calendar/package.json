@@ -45,7 +45,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@microsoft/microsoft-graph-types": "^2.25.0",
     "@tanstack/react-query": "^4.1.3",
