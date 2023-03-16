@@ -131,7 +131,7 @@ const Community = () => {
   return (
     <Layout>
       <div className={clsx(communityStyles.communityPage)}>
-        <BannerSection greyBackground>
+        <BannerSection diagonalBottomBorder greyBackground>
           <BannerSectionGrid>
             <ContentBlock
               className="padding-right--xl"
@@ -169,7 +169,7 @@ const Community = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection greenBottomGradientBackground>
+        <BannerSection diagonalBorder greenBottomGradientBackground>
           <BannerSectionGrid
             header={
               <>
@@ -199,7 +199,7 @@ const Community = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection greyBackground>
+        <BannerSection diagonalBorder greyBackground>
           <BannerSectionGrid
             header={<h2 className="text--primary">Community initiatives</h2>}
           >
@@ -223,7 +223,7 @@ const Community = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection>
+        <BannerSection diagonalBorder>
           <BannerSectionGrid
             header={
               <h2 className="text--primary">Trainings and Certifications</h2>
