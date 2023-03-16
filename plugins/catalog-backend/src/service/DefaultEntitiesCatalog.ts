@@ -51,7 +51,6 @@ import {
 } from '../database/tables';
 
 import { Stitcher } from '../stitching/Stitcher';
-import { parseFullTextFilterFields } from './request/parseFullTextFilterFields';
 
 import {
   isQueryEntitiesCursorRequest,
