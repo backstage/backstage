@@ -16,7 +16,10 @@
 import React, { PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
 import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
-import { TemplateWizardPage } from '../TemplateWizardPage';
+import {
+  TemplateWizardPage,
+  TemplateWizardPageProps,
+} from '../TemplateWizardPage';
 import {
   NextFieldExtensionOptions,
   FormProps,
@@ -60,6 +63,7 @@ export type NextRouterProps = {
       output?: ScaffolderTaskOutput;
     }>;
     TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
+    TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -87,6 +91,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       TemplateOutputsComponent,
       TaskPageComponent = OngoingTask,
       TemplateListPageComponent = TemplateListPage,
+      TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
@@ -122,7 +127,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage
+            <TemplateWizardPageComponent
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               FormProps={props.FormProps}
