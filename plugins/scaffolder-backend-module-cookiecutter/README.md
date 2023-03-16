@@ -161,3 +161,5 @@ You can do so by including the following lines in the last step of your Dockerfi
 RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install cookiecutter
 ```
+
+In this case, you don't have to include `containerRunner` in the action configuration.

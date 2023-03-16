@@ -22,6 +22,7 @@ import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
+import { Client } from 'pg';
 
 /**
  * Creates a knex postgres database connection
@@ -35,6 +36,17 @@ export function createPgDatabaseClient(
 ) {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
+
+  const role = dbConfig.getOptionalString('role');
+
+  if (role) {
+    database.client.pool.on(
+      'createSuccess',
+      async (_event: number, pgClient: Client) => {
+        await pgClient.query(`SET ROLE ${role}`);
+      },
+    );
+  }
   return database;
 }
 
@@ -147,10 +159,18 @@ export async function ensurePgSchemaExists(
   ...schemas: Array<string>
 ): Promise<void> {
   const admin = createPgDatabaseClient(dbConfig);
+  const role = dbConfig.getOptionalString('role');
 
   try {
     const ensureSchema = async (database: string) => {
-      await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+      if (role) {
+        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??`, [
+          database,
+          role,
+        ]);
+      } else {
+        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+      }
     };
 
     await Promise.all(schemas.map(ensureSchema));

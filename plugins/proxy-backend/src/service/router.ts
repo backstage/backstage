@@ -121,6 +121,11 @@ export function buildMiddleware(
 
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
+  // http-proxy-middleware uses this log level to check if it should log the
+  // requests that it proxies. Setting this to the most verbose log level
+  // ensures that it always logs these requests. Our logger ends up deciding
+  // if the logs are displayed or not.
+  fullConfig.logLevel = 'debug';
 
   // Only return the allowed HTTP headers to not forward unwanted secret headers
   const requestHeaderAllowList = new Set<string>(

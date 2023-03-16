@@ -70,6 +70,7 @@ describe('DefaultWorkflowRunner', () => {
     complete: async () => {},
     done: false,
     emitLog: async () => {},
+    cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
   });
 
@@ -166,7 +167,7 @@ describe('DefaultWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+        /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
     });
 

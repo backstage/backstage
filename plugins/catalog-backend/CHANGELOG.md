@@ -1,5 +1,93 @@
 # @backstage/plugin-catalog-backend
 
+## 1.8.0
+
+### Minor Changes
+
+- 7f4ea3d3602: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- e675f902980: Add deprecations for symbols that were moved to `@backstage/plugin-catalog-node` a long time ago:
+
+  - `CatalogProcessor`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorResult`
+  - `DeferredEntity`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `EntityRelationSpec`
+  - `processingResult`
+
+  Also moved over and deprecated the following symbols:
+
+  - `locationSpecToLocationEntity`
+  - `locationSpecToMetadataName`
+
+- ac8929f2f31: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.8.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.8.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 1.8.0-next.0
 
 ### Minor Changes

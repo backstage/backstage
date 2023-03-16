@@ -18,7 +18,7 @@ import { BitbucketIntegration } from '@backstage/integration';
 import {
   CatalogProcessorResult,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 
 /**

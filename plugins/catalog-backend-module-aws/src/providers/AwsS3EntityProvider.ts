@@ -21,7 +21,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';

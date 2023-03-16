@@ -21,17 +21,22 @@ import { BackstageTheme } from '@backstage/theme';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { FavoriteEntity } from '@backstage/plugin-catalog-react';
 
-const useStyles = makeStyles<BackstageTheme, { cardBackgroundImage: string }>(
-  () => ({
-    header: {
-      backgroundImage: ({ cardBackgroundImage }) => cardBackgroundImage,
-    },
-    subtitleWrapper: {
-      display: 'flex',
-      justifyContent: 'space-between',
-    },
-  }),
-);
+const useStyles = makeStyles<
+  BackstageTheme,
+  {
+    cardFontColor: string;
+    cardBackgroundImage: string;
+  }
+>(() => ({
+  header: {
+    backgroundImage: ({ cardBackgroundImage }) => cardBackgroundImage,
+    color: ({ cardFontColor }) => cardFontColor,
+  },
+  subtitleWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+}));
 
 /**
  * Props for the CardHeader component
@@ -54,6 +59,7 @@ export const CardHeader = (props: CardHeaderProps) => {
   const themeForType = getPageTheme({ themeId: type });
 
   const styles = useStyles({
+    cardFontColor: themeForType.fontColor,
     cardBackgroundImage: themeForType.backgroundImage,
   });
 

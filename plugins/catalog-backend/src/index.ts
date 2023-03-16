@@ -20,45 +20,10 @@
  * @packageDocumentation
  */
 
-export type {
-  DeferredEntity,
-  EntityRelationSpec,
-  CatalogProcessor,
-  CatalogProcessorParser,
-  CatalogProcessorCache,
-  CatalogProcessorEmit,
-  CatalogProcessorLocationResult,
-  CatalogProcessorEntityResult,
-  CatalogProcessorRelationResult,
-  CatalogProcessorErrorResult,
-  CatalogProcessorRefreshKeysResult,
-  CatalogProcessorResult,
-  EntityProvider,
-  EntityProviderConnection,
-  EntityProviderMutation,
-} from '@backstage/plugin-catalog-node';
-export { processingResult } from '@backstage/plugin-catalog-node';
-
 export * from './catalog';
 export * from './ingestion';
 export * from './modules';
 export * from './processing';
 export * from './search';
 export * from './service';
-export * from './util';
-
-import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
-
-/**
- * Holds the entity location information.
- *
- * @remarks
- *
- *  `presence` flag: when using repo importer plugin, location is being created before the component yaml file is merged to the main branch.
- *  This flag is then set to indicate that the file can be not present.
- *  default value: 'required'.
- *
- * @public
- * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
- */
-export type LocationSpec = NonDeprecatedLocationSpec;
+export * from './deprecated';

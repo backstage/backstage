@@ -36,8 +36,9 @@ describe('LocalStoredShortcuts', () => {
           resolve();
         },
       });
-      shortcutApi.add(shortcut);
     });
+    observerNextHandler.mockClear(); // handler is called with current state to start
+    await shortcutApi.add(shortcut);
 
     expect(observerNextHandler).toHaveBeenCalledTimes(1);
     expect(observerNextHandler).toHaveBeenCalledWith(

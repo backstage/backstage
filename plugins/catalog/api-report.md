@@ -360,7 +360,7 @@ export function EntityProcessingErrorsPanel(): JSX.Element | null;
 
 // @public (undocumented)
 export const EntitySwitch: {
-  (props: EntitySwitchProps): JSX.Element | null;
+  (props: EntitySwitchProps): JSX.Element;
   Case: (_props: EntitySwitchCaseProps) => null;
 };
 
@@ -381,6 +381,8 @@ export interface EntitySwitchCaseProps {
 export interface EntitySwitchProps {
   // (undocumented)
   children: ReactNode;
+  // (undocumented)
+  renderMultipleMatches?: 'first' | 'all';
 }
 
 // @public @deprecated (undocumented)
@@ -441,6 +443,11 @@ export function isNamespace(
 
 // @public
 export function isOrphan(entity: Entity): boolean;
+
+// @public
+export function isResourceType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {

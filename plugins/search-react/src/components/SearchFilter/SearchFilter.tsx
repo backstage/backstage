@@ -208,10 +208,10 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
 /**
  * @public
  */
-const SearchFilter = ({
-  component: Element,
-  ...props
-}: SearchFilterWrapperProps) => <Element {...props} />;
+const SearchFilter = (props: SearchFilterWrapperProps) => {
+  const { component: Element, ...elementProps } = props;
+  return <Element {...elementProps} />;
+};
 
 SearchFilter.Checkbox = (
   props: Omit<SearchFilterWrapperProps, 'component'> &

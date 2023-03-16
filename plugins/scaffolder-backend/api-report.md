@@ -7,18 +7,20 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
@@ -89,7 +91,8 @@ export function createDebugLogAction(): TemplateAction_2<{
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
 }): TemplateAction_2<{
-  entityRef: string;
+  entityRef?: string | undefined;
+  entityRefs?: string[] | undefined;
   optional?: boolean | undefined;
 }>;
 
@@ -463,11 +466,9 @@ export function createPublishGithubAction(options: {
 }>;
 
 // @public
-export const createPublishGithubPullRequestAction: ({
-  integrations,
-  githubCredentialsProvider,
-  clientFactory,
-}: CreateGithubPullRequestActionOptions) => TemplateAction_2<{
+export const createPublishGithubPullRequestAction: (
+  options: CreateGithubPullRequestActionOptions,
+) => TemplateAction_2<{
   title: string;
   branchName: string;
   description: string;
@@ -530,6 +531,11 @@ export const createTemplateAction: <
 ) => TemplateAction_2<TActionInput>;
 
 // @public
+export function createWaitAction(options?: {
+  maxWaitTime?: Duration | HumanDuration;
+}): TemplateAction_2<HumanDuration>;
+
+// @public
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
@@ -551,6 +557,14 @@ export interface CurrentClaimedTask {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
+  // (undocumented)
+  cancelTask(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -592,7 +606,7 @@ export class DatabaseTaskStore implements TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -696,6 +710,8 @@ export type SerializedTaskEvent = {
 // @public
 export interface TaskBroker {
   // (undocumented)
+  cancel?(taskId: string): Promise<void>;
+  // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
   dispatch(
@@ -733,6 +749,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
+  cancelSignal: AbortSignal;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -751,16 +769,19 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log';
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get cancelSignal(): AbortSignal;
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
+    abortSignal: AbortSignal,
     logger: Logger,
   ): TaskManager;
   // (undocumented)
@@ -782,14 +803,16 @@ export type TaskSecrets = TaskSecrets_2;
 
 // @public
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public
 export interface TaskStore {
+  // (undocumented)
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -803,7 +826,7 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -813,7 +836,7 @@ export interface TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
@@ -823,7 +846,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public

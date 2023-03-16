@@ -24,6 +24,16 @@ const getPackages = require('./getPackages');
  * @type {object}
  * @property {'local'} type
  * @property {'value' | 'type'} kind
+ * @property {import('estree').Node} node
+ * @property {string} path
+ */
+
+/**
+ * @typedef ImportDirective
+ * @type {object}
+ * @property {'directive'} type
+ * @property {'value' | 'type'} kind
+ * @property {import('estree').Node} node
  * @property {string} path
  */
 
@@ -32,6 +42,7 @@ const getPackages = require('./getPackages');
  * @type {object}
  * @property {'internal'} type
  * @property {'value' | 'type'} kind
+ * @property {import('estree').Node} node
  * @property {string} path
  * @property {import('./getPackages').ExtendedPackage} package
  * @property {string} packageName
@@ -42,6 +53,7 @@ const getPackages = require('./getPackages');
  * @type {object}
  * @property {'external'} type
  * @property {'value' | 'type'} kind
+ * @property {import('estree').Node} node
  * @property {string} path
  * @property {string} packageName
  */
@@ -51,6 +63,7 @@ const getPackages = require('./getPackages');
  * @type {object}
  * @property {'builtin'} type
  * @property {'value' | 'type'} kind
+ * @property {import('estree').Literal} node
  * @property {string} path
  * @property {string} packageName
  */
@@ -58,7 +71,7 @@ const getPackages = require('./getPackages');
 /**
  * @callback ImportVisitor
  * @param {ConsideredNode} node
- * @param {LocalImport | InternalImport | ExternalImport | BuiltinImport} import
+ * @param {ImportDirective | LocalImport | InternalImport | ExternalImport | BuiltinImport} import
  */
 
 /**
@@ -68,7 +81,7 @@ const getPackages = require('./getPackages');
 
 /**
  * @param {ConsideredNode} node
- * @returns {undefined | {path: string, kind: 'type' | 'value'}}
+ * @returns {undefined | {path: string, node: import('estree').Literal, kind: 'type' | 'value'}}
  */
 function getImportInfo(node) {
   /** @type {import('estree').Expression | import('estree').SpreadElement | undefined | null} */
@@ -95,7 +108,11 @@ function getImportInfo(node) {
 
   /** @type {any} */
   const anyNode = node;
-  return { path: pathNode.value, kind: anyNode.importKind ?? 'value' };
+  return {
+    path: pathNode.value,
+    node: pathNode,
+    kind: anyNode.importKind ?? 'value',
+  };
 }
 
 /**
@@ -122,6 +139,10 @@ module.exports = function visitImports(context, visitor) {
       return visitor(node, { type: 'local', ...info });
     }
 
+    if (info.path.startsWith('directive:')) {
+      return visitor(node, { type: 'directive', ...info });
+    }
+
     const pathParts = info.path.split('/');
 
     // Check for match with plain name, then namespaced name
@@ -143,6 +164,7 @@ module.exports = function visitImports(context, visitor) {
         return visitor(node, {
           type: 'builtin',
           kind: info.kind,
+          node: info.node,
           path: subPath,
           packageName,
         });
@@ -151,6 +173,7 @@ module.exports = function visitImports(context, visitor) {
       return visitor(node, {
         type: 'external',
         kind: info.kind,
+        node: info.node,
         path: subPath,
         packageName,
       });
@@ -159,6 +182,7 @@ module.exports = function visitImports(context, visitor) {
     return visitor(node, {
       type: 'internal',
       kind: info.kind,
+      node: info.node,
       path: subPath,
       package: pkg,
       packageName,

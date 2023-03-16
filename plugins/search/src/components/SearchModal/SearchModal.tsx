@@ -168,12 +168,9 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
 /**
  * @public
  */
-export const SearchModal = ({
-  open = true,
-  hidden,
-  toggleModal,
-  children,
-}: SearchModalProps) => {
+export const SearchModal = (props: SearchModalProps) => {
+  const { open = true, hidden, toggleModal, children } = props;
+
   const classes = useStyles();
 
   return (

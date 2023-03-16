@@ -22,7 +22,7 @@ import { ConfigReader } from '@backstage/config';
 import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { gql } from 'apollo-server';
+import { gql } from '@apollo/client';
 import { Module, createApplication, testkit } from 'graphql-modules';
 
 describe('Catalog Module', () => {

@@ -8,7 +8,7 @@ description: TechDocs CLI - a utility command line interface for managing TechDo
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-https://backstage.io/docs/features/techdocs/techdocs-overview
+https://backstage.io/docs/features/techdocs/
 
 ## Features
 
@@ -198,6 +198,15 @@ Options:
   --gcsBucketRootPath <GCS BUCKET ROOT PATH>                    Optional sub-directory to store files in Google cloud storage
   --directory <PATH>                                            Path of the directory containing generated files to publish (default: "./site/")
   -h, --help                                                    display help for command
+```
+
+#### Publishing from behind a proxy
+
+For users attempting to publish TechDocs content behind a proxy, the TechDocs CLI leverages `global-agent` to navigate the proxy to successfully connect to that location. To enable `global-agent`, the following variables need to be set prior to running the techdocs-cli command:
+
+```bash
+export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
+export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
 ```
 
 ### Migrate content for case-insensitive access

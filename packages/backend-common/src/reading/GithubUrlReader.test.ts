@@ -247,7 +247,7 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(/rate limit exceeded/);
     });
 
-    it('should return etag from the response', async () => {
+    it('should return etag and last-modified from the response', async () => {
       (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
         headers: {
           Authorization: 'bearer blah',
@@ -261,6 +261,11 @@ describe('GithubUrlReader', () => {
             return res(
               ctx.status(200),
               ctx.set('Etag', 'foo'),
+              ctx.set(
+                'Last-Modified',
+                new Date('2021-01-01T00:00:00Z').toUTCString(),
+              ),
+
               ctx.body('bar'),
             );
           },
@@ -271,6 +276,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/blob/main',
       );
       expect(response.etag).toBe('foo');
+      expect(response.lastModifiedAt).toEqual(new Date('2021-01-01T00:00:00Z'));
     });
   });
 

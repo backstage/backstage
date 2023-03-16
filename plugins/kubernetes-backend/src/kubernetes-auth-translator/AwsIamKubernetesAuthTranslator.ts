@@ -55,46 +55,44 @@ export class AwsIamKubernetesAuthTranslator
     assumeRole?: string,
     externalId?: string,
   ): Promise<SigningCreds> {
-    return new Promise<SigningCreds>(async (resolve, reject) => {
-      const awsCreds = await this.awsGetCredentials();
+    const awsCreds = await this.awsGetCredentials();
 
-      if (!(awsCreds instanceof Credentials))
-        return reject(Error('No AWS credentials found.'));
+    if (!(awsCreds instanceof Credentials))
+      throw new Error('No AWS credentials found.');
 
-      let creds: SigningCreds = {
-        accessKeyId: awsCreds.accessKeyId,
-        secretAccessKey: awsCreds.secretAccessKey,
-        sessionToken: awsCreds.sessionToken,
+    let creds: SigningCreds = {
+      accessKeyId: awsCreds.accessKeyId,
+      secretAccessKey: awsCreds.secretAccessKey,
+      sessionToken: awsCreds.sessionToken,
+    };
+
+    if (!this.validCredentials(creds))
+      throw new Error('Invalid AWS credentials found.');
+    if (!assumeRole) return creds;
+
+    try {
+      const params: AWS.STS.Types.AssumeRoleRequest = {
+        RoleArn: assumeRole,
+        RoleSessionName: 'backstage-login',
       };
+      if (externalId) params.ExternalId = externalId;
 
-      if (!this.validCredentials(creds))
-        return reject(Error('Invalid AWS credentials found.'));
-      if (!assumeRole) return resolve(creds);
+      const assumedRole = await new AWS.STS().assumeRole(params).promise();
 
-      try {
-        const params: AWS.STS.Types.AssumeRoleRequest = {
-          RoleArn: assumeRole,
-          RoleSessionName: 'backstage-login',
-        };
-        if (externalId) params.ExternalId = externalId;
-
-        const assumedRole = await new AWS.STS().assumeRole(params).promise();
-
-        if (!assumedRole.Credentials) {
-          throw new Error(`No credentials returned for role ${assumeRole}`);
-        }
-
-        creds = {
-          accessKeyId: assumedRole.Credentials.AccessKeyId,
-          secretAccessKey: assumedRole.Credentials.SecretAccessKey,
-          sessionToken: assumedRole.Credentials.SessionToken,
-        };
-      } catch (e) {
-        console.warn(`There was an error assuming the role: ${e}`);
-        return reject(Error(`Unable to assume role: ${e}`));
+      if (!assumedRole.Credentials) {
+        throw new Error(`No credentials returned for role ${assumeRole}`);
       }
-      return resolve(creds);
-    });
+
+      creds = {
+        accessKeyId: assumedRole.Credentials.AccessKeyId,
+        secretAccessKey: assumedRole.Credentials.SecretAccessKey,
+        sessionToken: assumedRole.Credentials.SessionToken,
+      };
+    } catch (e) {
+      console.warn(`There was an error assuming the role: ${e}`);
+      throw new Error(`Unable to assume role: ${e}`);
+    }
+    return creds;
   }
   async getBearerToken(
     clusterName: string,

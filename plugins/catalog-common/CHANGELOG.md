@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.12
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.0.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 1.0.12-next.0
 
 ### Patch Changes

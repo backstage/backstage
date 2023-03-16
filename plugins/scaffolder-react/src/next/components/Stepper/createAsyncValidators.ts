@@ -77,31 +77,39 @@ export const createAsyncValidators = (
       const definitionInSchema = parsedSchema.getSchema(path, formData);
       const { schema, uiSchema } = extractSchemaFromStep(definitionInSchema);
 
-      if (definitionInSchema && 'ui:field' in definitionInSchema) {
-        if ('ui:field' in definitionInSchema) {
-          await validateForm(
-            definitionInSchema['ui:field'],
-            key,
-            value,
-            schema,
-            uiSchema,
-          );
-        }
-      } else if (
-        definitionInSchema &&
-        definitionInSchema.items &&
-        'ui:field' in definitionInSchema.items
-      ) {
-        if ('ui:field' in definitionInSchema.items) {
+      const hasItems = definitionInSchema && definitionInSchema.items;
+
+      const doValidateItem = async (
+        propValue: JsonObject,
+        itemSchema: JsonObject,
+        itemUiSchema: NextFieldExtensionUiSchema<unknown, unknown>,
+      ) => {
+        await validateForm(
+          propValue['ui:field'] as string,
+          key,
+          value,
+          itemSchema,
+          itemUiSchema,
+        );
+      };
+
+      const doValidate = async (propValue: JsonObject) => {
+        if ('ui:field' in propValue) {
           const { schema: itemsSchema, uiSchema: itemsUiSchema } =
             extractSchemaFromStep(definitionInSchema.items);
-          await validateForm(
-            definitionInSchema.items['ui:field'],
-            key,
-            value,
-            itemsSchema,
-            itemsUiSchema,
-          );
+          await doValidateItem(propValue, itemsSchema, itemsUiSchema);
+        }
+      };
+
+      if (definitionInSchema && 'ui:field' in definitionInSchema) {
+        await doValidateItem(definitionInSchema, schema, uiSchema);
+      } else if (hasItems && 'ui:field' in definitionInSchema.items) {
+        await doValidate(definitionInSchema.items);
+      } else if (hasItems && definitionInSchema.items.type === 'object') {
+        const properties = (definitionInSchema.items?.properties ??
+          []) as JsonObject[];
+        for (const [, propValue] of Object.entries(properties)) {
+          await doValidate(propValue);
         }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, path, value);

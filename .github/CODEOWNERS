@@ -13,6 +13,7 @@ yarn.lock                                           @backstage/maintainers @back
 /docs/features/search                               @backstage/techdocs-core
 /docs/features/techdocs                             @backstage/techdocs-core
 /docs/plugins/integrating-search-into-plugins.md    @backstage/techdocs-core
+/packages/cli/src/commands/onboard                  @backstage/sharks
 /packages/techdocs-cli                              @backstage/techdocs-core
 /packages/techdocs-cli-embedded-app                 @backstage/techdocs-core
 /plugins/adr                                        @backstage/maintainers @kuangp
@@ -30,6 +31,7 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/catalog-backend-module-aws                 @backstage/maintainers @backstage/catalog-core @pjungermann
 /plugins/catalog-backend-module-bitbucket-cloud     @backstage/maintainers @backstage/catalog-core @pjungermann
 /plugins/catalog-backend-module-msgraph             @backstage/maintainers @backstage/catalog-core @pjungermann
+/plugins/catalog-backend-module-puppetdb            @backstage/maintainers @backstage/catalog-core @tdabasinskas
 /plugins/catalog-graph                              @backstage/maintainers @backstage/catalog-core @backstage/sda-se-reviewers
 /plugins/circleci                                   @backstage/maintainers @adamdmharvey
 /plugins/cloudbuild                                 @backstage/maintainers @trivago/ebarrios
@@ -61,7 +63,7 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/kafka-backend                              @backstage/maintainers @nirga @andrewthauer
 /plugins/kubernetes                                 @backstage/maintainers @backstage/warpspeed
 /plugins/kubernetes-*                               @backstage/maintainers @backstage/warpspeed
-/plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer
+/plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer @NishkarshRaj
 /plugins/newrelic-dashboard                         @backstage/maintainers @mufaddal7
 /plugins/playlist                                   @backstage/maintainers @kuangp
 /plugins/playlist-*                                 @backstage/maintainers @kuangp

@@ -360,6 +360,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
+  cancelTask(taskId: string): Promise<void>;
+  // (undocumented)
   dryRun(
     options: ScaffolderDryRunOptions_2,
   ): Promise<ScaffolderDryRunResponse_2>;
@@ -460,7 +462,7 @@ export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
 // @public
-export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+export const TaskPage: (props: TaskPageProps) => JSX.Element;
 
 // @public
 export type TaskPageProps = {

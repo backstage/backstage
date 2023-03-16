@@ -26,29 +26,31 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbuck
 
 And then add the entity provider to your catalog builder:
 
-```diff
-  // In packages/backend/src/plugins/catalog.ts
-+ import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
 
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const builder = await CatalogBuilder.create(env);
-+   builder.addEntityProvider(
-+     BitbucketServerEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+       // optional: alternatively, use schedule
-+       scheduler: env.scheduler,
-+     }),
-+   );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    BitbucketServerEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
 
-    // [...]
-  }
+  // ..
+}
 ```
 
 ## Configuration
@@ -57,9 +59,7 @@ To use the entity provider, you'll need a [Bitbucket Server integration set up](
 
 Additionally, you need to configure your entity provider instance(s):
 
-```yaml
-# app-config.yaml
-
+```yaml title="app-config.yaml"
 catalog:
   providers:
     bitbucketServer:

@@ -327,12 +327,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     highlightOptions?: ElasticSearchHighlightOptions,
   );
   // (undocumented)
-  static fromConfig({
-    logger,
-    config,
-    aliasPostfix,
-    indexPrefix,
-  }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
+  static fromConfig(
+    options: ElasticSearchOptions,
+  ): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<ElasticSearchSearchEngineIndexer>;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;

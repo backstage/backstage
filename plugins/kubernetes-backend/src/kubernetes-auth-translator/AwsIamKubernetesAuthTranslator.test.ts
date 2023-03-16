@@ -17,6 +17,13 @@ import AWS from 'aws-sdk';
 import AWSMock from 'aws-sdk-mock';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 
+const awsError: AWS.AWSError = {
+  code: '123',
+  message: 'no way',
+  name: 'nope',
+  time: new Date(),
+};
+
 describe('AwsIamKubernetesAuthTranslator tests', () => {
   let role: any = undefined;
   const credentials: any = {
@@ -82,6 +89,25 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
 
     const response = await executeTranslation();
     expect(response.serviceAccountToken).toBeDefined();
+  });
+
+  describe('When the credentials is failing', () => {
+    beforeEach(() => {
+      jest.spyOn(AWS.config, 'getCredentials').mockImplementation(cb => {
+        cb(awsError, null);
+      });
+    });
+    it('throws the right error', async () => {
+      const authTranslator = new AwsIamKubernetesAuthTranslator();
+      await expect(
+        authTranslator.decorateClusterDetailsWithAuth({
+          assumeRole: role,
+          name: 'test-cluster',
+          url: '',
+          authProvider: 'aws',
+        }),
+      ).rejects.toEqual(awsError);
+    });
   });
 
   describe('When the role is assumed', () => {

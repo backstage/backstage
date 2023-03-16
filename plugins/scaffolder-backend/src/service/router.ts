@@ -94,14 +94,11 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
  * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
  * are using the IdentityApi, we can remove this function.
  */
-function buildDefaultIdentityClient({
-  logger,
-}: {
-  logger: Logger;
-}): IdentityApi {
+function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
   return {
     getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
       const header = request.headers.authorization;
+      const { logger } = options;
 
       if (!header) {
         return undefined;
@@ -129,6 +126,10 @@ function buildDefaultIdentityClient({
         const sub = payload.sub;
         if (typeof sub !== 'string') {
           throw new TypeError('Expected string sub claim');
+        }
+
+        if (sub === 'backstage-server') {
+          return undefined;
         }
 
         // Check that it's a valid ref, otherwise this will throw.
@@ -178,8 +179,7 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   const identity: IdentityApi =
-    options.identity || buildDefaultIdentityClient({ logger });
-
+    options.identity || buildDefaultIdentityClient(options);
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
 
@@ -413,6 +413,11 @@ export async function createRouter(
       // Do not disclose secrets
       delete task.secrets;
       res.status(200).json(task);
+    })
+    .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const { taskId } = req.params;
+      await taskBroker.cancel?.(taskId);
+      res.status(200).json({ status: 'cancelled' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;

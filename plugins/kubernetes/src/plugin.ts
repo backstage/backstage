@@ -23,6 +23,7 @@ import {
   createRouteRef,
   discoveryApiRef,
   identityApiRef,
+  gitlabAuthApiRef,
   googleAuthApiRef,
   microsoftAuthApiRef,
   oktaAuthApiRef,
@@ -49,18 +50,21 @@ export const kubernetesPlugin = createPlugin({
     createApiFactory({
       api: kubernetesAuthProvidersApiRef,
       deps: {
+        gitlabAuthApi: gitlabAuthApiRef,
         googleAuthApi: googleAuthApiRef,
         microsoftAuthApi: microsoftAuthApiRef,
         oktaAuthApi: oktaAuthApiRef,
         oneloginAuthApi: oneloginAuthApiRef,
       },
       factory: ({
+        gitlabAuthApi,
         googleAuthApi,
         microsoftAuthApi,
         oktaAuthApi,
         oneloginAuthApi,
       }) => {
         const oidcProviders = {
+          gitlab: gitlabAuthApi,
           google: googleAuthApi,
           microsoft: microsoftAuthApi,
           okta: oktaAuthApi,

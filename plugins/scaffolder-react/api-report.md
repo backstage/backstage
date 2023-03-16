@@ -113,7 +113,7 @@ export type ListActionsResponse = Array<Action>;
 
 // @public
 export type LogEvent = {
-  type: 'log' | 'completion';
+  type: 'log' | 'completion' | 'cancelled';
   body: {
     message: string;
     stepId?: string;
@@ -126,6 +126,7 @@ export type LogEvent = {
 
 // @public
 export interface ScaffolderApi {
+  cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
@@ -266,10 +267,11 @@ export type ScaffolderTaskOutput = {
 
 // @public
 export type ScaffolderTaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
   | 'open'
   | 'processing'
-  | 'failed'
-  | 'completed'
   | 'skipped';
 
 // @public
@@ -281,12 +283,13 @@ export interface ScaffolderUseTemplateSecrets {
 }
 
 // @public
-export const SecretsContextProvider: ({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
+export const SecretsContextProvider: (
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
 
 // @public
 export type TaskStream = {
+  cancelled: boolean;
   loading: boolean;
   error?: Error;
   stepLogs: {

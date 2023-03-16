@@ -33,7 +33,7 @@ import { EventSubscriber } from '@backstage/plugin-events-node';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import {
   OrganizationEvent,

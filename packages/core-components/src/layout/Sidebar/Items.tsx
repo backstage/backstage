@@ -103,6 +103,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         padding: 0,
         textAlign: 'inherit',
         font: 'inherit',
+        textTransform: 'none',
       },
       closed: {
         width: sidebarConfig.drawerWidthClosed,

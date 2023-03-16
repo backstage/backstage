@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { azureDevOpsEventRouterEventsModule } from './service/AzureDevOpsEventRouterEventsModule';
+export { eventsModuleAzureDevOpsEventRouter } from './service/eventsModuleAzureDevOpsEventRouter';

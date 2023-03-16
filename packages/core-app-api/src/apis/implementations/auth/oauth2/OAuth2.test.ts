@@ -48,9 +48,8 @@ describe('OAuth2', () => {
     expect(await oauth2.getAccessToken('my-scope my-scope2')).toBe(
       'access-token',
     );
-    expect(getSession).toHaveBeenCalledTimes(1);
-    expect(getSession.mock.calls[0][0].scopes).toEqual(
-      new Set(['my-scope', 'my-scope2']),
+    expect(getSession).toHaveBeenCalledWith(
+      expect.objectContaining({ scopes: new Set(['my-scope', 'my-scope2']) }),
     );
   });
 
@@ -65,9 +64,10 @@ describe('OAuth2', () => {
     });
 
     expect(await oauth2.getAccessToken('my-scope')).toBe('access-token');
-    expect(getSession).toHaveBeenCalledTimes(1);
-    expect(getSession.mock.calls[0][0].scopes).toEqual(
-      new Set(['my-prefix/my-scope']),
+    expect(getSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scopes: new Set(['my-prefix/my-scope']),
+      }),
     );
   });
 
@@ -82,7 +82,11 @@ describe('OAuth2', () => {
     });
 
     expect(await oauth2.getIdToken()).toBe('id-token');
-    expect(getSession).toHaveBeenCalledTimes(1);
+    expect(getSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scopes: new Set(['openid']),
+      }),
+    );
   });
 
   it('should get optional id token', async () => {
@@ -96,7 +100,11 @@ describe('OAuth2', () => {
     });
 
     expect(await oauth2.getIdToken({ optional: true })).toBe('id-token');
-    expect(getSession).toHaveBeenCalledTimes(1);
+    expect(getSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scopes: new Set(['openid']),
+      }),
+    );
   });
 
   it('should share popup closed errors', async () => {

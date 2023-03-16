@@ -223,4 +223,16 @@ describe('fetch:cookiecutter', () => {
       }),
     );
   });
+
+  it('should throw error if cookiecutter is not installed and containerRunner is undefined', async () => {
+    commandExists.mockResolvedValue(false);
+    const ccAction = createFetchCookiecutterAction({
+      integrations,
+      reader: mockReader,
+    });
+
+    await expect(ccAction.handler(mockContext)).rejects.toThrow(
+      /Invalid state: containerRunner cannot be undefined when cookiecutter is not installed/,
+    );
+  });
 });

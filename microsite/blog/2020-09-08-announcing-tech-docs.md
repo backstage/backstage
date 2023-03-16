@@ -40,7 +40,7 @@ More specifically, with this first iteration, you can:
 - Choose your own storage solution for the documentation.
 - Define your own API to interface with your documentation solution.
 
-For a full overview, including getting started instructions, check out our [TechDocs Documentation](https://backstage.io/docs/features/techdocs/techdocs-overview).
+For a full overview, including getting started instructions, check out our [TechDocs Documentation](https://backstage.io/docs/features/techdocs/).
 
 But before you go there, let me tell you a bit about the TechDocs story — and why we believe TechDocs is such a powerful yet simple solution for great documentation.
 

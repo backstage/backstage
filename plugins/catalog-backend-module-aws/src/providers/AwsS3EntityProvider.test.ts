@@ -21,7 +21,7 @@ import {
   TaskRunner,
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from './AwsS3EntityProvider';
 import aws from 'aws-sdk';
 import AWSMock from 'aws-sdk-mock';
