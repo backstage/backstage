@@ -31,6 +31,7 @@ export type NextRouterProps = {
     }>;
   };
   groups?: TemplateGroupFilter[];
+  templateFilter?: TemplateFilter;
   FormProps?: FormProps_2;
   contextMenu?: {
     editor?: boolean;
@@ -43,6 +44,9 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
+
+// @alpha (undocumented)
+export type TemplateFilter = (entity: Entity) => boolean;
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {

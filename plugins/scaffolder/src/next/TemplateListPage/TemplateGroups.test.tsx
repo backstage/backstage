@@ -243,7 +243,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
