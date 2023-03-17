@@ -31,8 +31,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { viewTechDocRouteRef } from '../../routes';
-import { nextSelectedTemplateRouteRef } from '../routes';
+import { viewTechDocRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -56,7 +55,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   const errorApi = useApi(errorApiRef);
   const app = useApp();
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
-  const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
   const onSelected = useCallback(
     (template: TemplateEntityV1beta3) => {

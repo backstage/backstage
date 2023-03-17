@@ -29,7 +29,6 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
-import { nextRouteRef } from '../routes';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -84,8 +83,7 @@ describe('TemplateWizardPage', () => {
       </ApiProvider>,
       {
         mountedRoutes: {
-          '/create': nextRouteRef,
-          '/create-legacy': rootRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
