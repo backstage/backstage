@@ -30,5 +30,5 @@ export interface ReadConfigDataOptions {
 export interface ConfigSource {
   readConfigData(
     options?: ReadConfigDataOptions,
-  ): AsyncIterator<{ data: ConfigSourceData[] }>;
+  ): AsyncIterator<{ data: ConfigSourceData[] }, void, void>;
 }

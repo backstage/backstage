@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { ConfigSource, ConfigSourceData } from './types';
+import { ConfigSource } from './types';
 
 export class EnvConfigSource implements ConfigSource {
   static create(options: {
@@ -32,9 +32,10 @@ export class EnvConfigSource implements ConfigSource {
     private readonly env: { [name: string]: string | undefined },
   ) {}
 
-  async *readConfigData(): AsyncIterator<{ data: ConfigSourceData[] }> {
+  async *readConfigData() {
     const data = readEnvConfig(this.env);
-    return { data };
+    yield { data };
+    return;
   }
 }
 
