@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-scaffolder': minor
 ---
 
-Making it possible to hide software templates via a template filter.
+Added a `templateFilter` prop to the `<Router/>` component to allow for filtering of templates through a function.
