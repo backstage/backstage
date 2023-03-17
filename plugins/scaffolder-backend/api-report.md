@@ -6,25 +6,27 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
-import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
@@ -32,19 +34,19 @@ import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node'
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
+import { ZodType } from 'zod';
+import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
 
-// @alpha
-export const catalogModuleTemplateKind: () => BackendFeature;
-
 // @public
 export const createBuiltinActions: (
   options: CreateBuiltInActionsOptions,
-) => TemplateAction_2<JsonObject>[];
+) => TemplateAction_2[];
 
 // @public
 export interface CreateBuiltInActionsOptions {
@@ -76,7 +78,7 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<{
   filePath?: string | undefined;
-  entity: Entity;
+  entity: {};
 }>;
 
 // @public
@@ -89,7 +91,8 @@ export function createDebugLogAction(): TemplateAction_2<{
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
 }): TemplateAction_2<{
-  entityRef: string;
+  entityRef?: string | undefined;
+  entityRefs?: string[] | undefined;
   optional?: boolean | undefined;
 }>;
 
@@ -463,11 +466,9 @@ export function createPublishGithubAction(options: {
 }>;
 
 // @public
-export const createPublishGithubPullRequestAction: ({
-  integrations,
-  githubCredentialsProvider,
-  clientFactory,
-}: CreateGithubPullRequestActionOptions) => TemplateAction_2<{
+export const createPublishGithubPullRequestAction: (
+  options: CreateGithubPullRequestActionOptions,
+) => TemplateAction_2<{
   title: string;
   branchName: string;
   description: string;
@@ -518,9 +519,21 @@ export const createPublishGitlabMergeRequestAction: (options: {
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction_2<TInput>,
-) => TemplateAction_2<TInput>;
+export const createTemplateAction: <
+  TParams,
+  TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
+  TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TParams,
+>(
+  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+) => TemplateAction_2<TActionInput>;
+
+// @public
+export function createWaitAction(options?: {
+  maxWaitTime?: Duration | HumanDuration;
+}): TemplateAction_2<HumanDuration>;
 
 // @public
 export type CreateWorkerOptions = {
@@ -544,6 +557,14 @@ export interface CurrentClaimedTask {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
+  // (undocumented)
+  cancelTask(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -585,7 +606,7 @@ export class DatabaseTaskStore implements TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -666,20 +687,6 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
 
-// @alpha
-export const scaffolderPlugin: (
-  options: ScaffolderPluginOptions,
-) => BackendFeature;
-
-// @alpha
-export type ScaffolderPluginOptions = {
-  actions?: TemplateAction_2<any>[];
-  taskWorkers?: number;
-  taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-};
-
 // @public
 export type SerializedTask = {
   id: string;
@@ -702,6 +709,8 @@ export type SerializedTaskEvent = {
 
 // @public
 export interface TaskBroker {
+  // (undocumented)
+  cancel?(taskId: string): Promise<void>;
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
@@ -740,6 +749,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
+  cancelSignal: AbortSignal;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -758,16 +769,19 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log';
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get cancelSignal(): AbortSignal;
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
+    abortSignal: AbortSignal,
     logger: Logger,
   ): TaskManager;
   // (undocumented)
@@ -789,14 +803,16 @@ export type TaskSecrets = TaskSecrets_2;
 
 // @public
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public
 export interface TaskStore {
+  // (undocumented)
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -810,7 +826,7 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -820,7 +836,7 @@ export interface TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
-  listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
+  listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
   // (undocumented)
@@ -830,7 +846,7 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
-  shutdownTask?({ taskId }: TaskStoreShutDownTaskOptions): Promise<void>;
+  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 // @public
@@ -881,11 +897,11 @@ export type TemplateAction<TInput extends JsonObject> =
 // @public
 export class TemplateActionRegistry {
   // (undocumented)
-  get(actionId: string): TemplateAction_2<JsonObject>;
+  get(actionId: string): TemplateAction_2;
   // (undocumented)
-  list(): TemplateAction_2<JsonObject>[];
+  list(): TemplateAction_2[];
   // (undocumented)
-  register<TInput extends JsonObject>(action: TemplateAction_2<TInput>): void;
+  register(action: TemplateAction_2): void;
 }
 
 // @public (undocumented)

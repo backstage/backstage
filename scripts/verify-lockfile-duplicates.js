@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 const { execFile: execFileCb } = require('child_process');
 const { resolve: resolvePath, dirname: dirnamePath } = require('path');
@@ -36,12 +36,7 @@ async function findLockFiles() {
 
   if (!files.length) {
     // List all lock files that are in the root or in an immediate subdirectory
-    files = [
-      'yarn.lock',
-      'cypress/yarn.lock',
-      'microsite/yarn.lock',
-      'microsite-next/yarn.lock',
-    ];
+    files = ['yarn.lock', 'cypress/yarn.lock', 'microsite/yarn.lock'];
   }
 
   return files.map(file => ({

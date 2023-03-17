@@ -1,5 +1,73 @@
 # @backstage/backend-defaults
 
+## 0.1.8
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 482dae5de1c: Updated link to docs.
+- 5d0693edc09: Added a workaround for the cyclic dependency bug across `@backstage/backend-common` and `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- 5d0693edc09: Added a workaround for the cyclic dependency bug across `@backstage/backend-common` and `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-app-api@0.4.1-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 725383f69d: Tweaked messaging in the README.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-app-api@0.3.2-next.1
+
 ## 0.1.7-next.0
 
 ### Patch Changes

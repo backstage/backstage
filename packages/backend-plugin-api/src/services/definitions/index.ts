@@ -17,9 +17,8 @@
 export { coreServices } from './coreServices';
 export type {
   CacheService,
-  CacheClient,
-  CacheClientOptions,
-  CacheClientSetOptions,
+  CacheServiceOptions,
+  CacheServiceSetOptions,
 } from './CacheService';
 export type { ConfigService } from './ConfigService';
 export type { DatabaseService } from './DatabaseService';
@@ -28,8 +27,9 @@ export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,
   LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
 } from './LifecycleService';
-export type { LoggerService, LogMeta } from './LoggerService';
+export type { LoggerService } from './LoggerService';
 export type { PermissionsService } from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';

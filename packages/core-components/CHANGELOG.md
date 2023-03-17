@@ -1,5 +1,107 @@
 # @backstage/core-components
 
+## 0.12.5
+
+### Patch Changes
+
+- 8bbf95b5507: Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
+  For example, a sidebar button with the label "Search" will appear as Search, "search" will appear as search, "SEARCH" will appear as SEARCH etc.
+  This can potentially affect any overriding styles previously applied to change the appearance of Button labels in the Sidebar.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- e1aae2f5a0c: Updated the `aria-label` of the `HeaderTabs` component.
+- 6a51a49a810: Fix bug where `<Table />` component would not take into account header styles defined in `columns[*].headerStyle`.
+- fa004f66871: Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5-next.2
+
+### Patch Changes
+
+- 8bbf95b5507: Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
+  For example, a sidebar button with the label "Search" will appear as Search, "search" will appear as search, "SEARCH" will appear as SEARCH etc.
+  This can potentially affect any overriding styles previously applied to change the appearance of Button labels in the Sidebar.
+- fa004f66871: Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.12.5-next.1
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- e1aae2f5a0c: Updated the `aria-label` of the `HeaderTabs` component.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4
+
+### Patch Changes
+
+- 68ce7d0417: Added aria labels on the support button and sidebar
+- 5637ebed92: Added a global override for `window.open` that helps prevent security vulnerabilities.
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- e81a6e0ab5: Updated Link URL validation to be more strict.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.1
+
+### Patch Changes
+
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.3
 
 ### Patch Changes

@@ -31,7 +31,7 @@ export interface SharedBackendEnvironmentConfig {
  * @public
  */
 export interface SharedBackendEnvironment {
-  $$type: 'SharedBackendEnvironment';
+  $$type: '@backstage/SharedBackendEnvironment';
 
   // NOTE: This type is opaque in order to allow for future API evolution without
   // cluttering the external API. For example we might want to add support
@@ -93,7 +93,7 @@ export function createSharedEnvironment<
 
     // Here to ensure type safety in this internal implementation.
     const env: SharedBackendEnvironment & InternalSharedBackendEnvironment = {
-      $$type: 'SharedBackendEnvironment',
+      $$type: '@backstage/SharedBackendEnvironment',
       version: 'v1',
       services,
     };

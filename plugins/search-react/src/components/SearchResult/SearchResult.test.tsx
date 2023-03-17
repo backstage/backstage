@@ -16,8 +16,6 @@
 
 import React from 'react';
 import { waitFor } from '@testing-library/react';
-
-import { ListItem } from '@material-ui/core';
 import {
   wrapInTestApp,
   renderInTestApp,
@@ -217,8 +215,7 @@ describe('SearchResult', () => {
     }).provide(
       createSearchResultListItemExtension({
         name: 'SearchResultExtension',
-        component: async () => props =>
-          <ListItem>Result: {props.result?.title}</ListItem>,
+        component: async () => props => <>Result: {props.result?.title}</>,
       }),
     );
 

@@ -143,7 +143,7 @@ describe('createBackend', () => {
     expect.assertions(3);
     backend.add(
       createBackendPlugin({
-        id: 'test',
+        pluginId: 'test',
         register(reg) {
           reg.registerInit({
             deps: {

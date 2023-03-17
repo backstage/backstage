@@ -1,5 +1,162 @@
 # @backstage/backend-common
 
+## 0.18.3
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- c1ee073a82b: Added `lastModifiedAt` field on `UrlReaderService` responses and a `lastModifiedAfter` option to `UrlReaderService.readUrl`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config-loader@1.1.9
+  - @backstage/integration@1.4.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-dev-utils@0.1.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+  - @backstage/backend-dev-utils@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2
+
+### Patch Changes
+
+- 5febb216fe: **BREAKING**: The `CacheClient` interface must now also implement the `withOptions` method. The `.get()` method has also received a type parameter that helps ensure that `undefined` in the event of a cache miss is handled.
+
+  Added a `cacheToPluginCacheManager` helper that converts a `CacheService` into a legacy `PluginCacheManager` instance.
+
+- 5febb216fe: Updated to match the new `CacheService` interface.
+- e716946103: Updated usage of the lifecycle service.
+- d31d8e00b3: Updated to work with the new `type: 'pem'` with `createHttpServer` from `@backstage/backend-app-api`
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- f60cca9da1: The `DatabaseManager.forPlugin` method now accepts additional service dependencies. There is no need to update existing code to pass these dependencies.
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-dev-utils@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- d31d8e00b3: Updated to work with the new `type: 'pem'` with `createHttpServer` from `@backstage/backend-app-api`
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- f60cca9da1: The `DatabaseManager.forPlugin` method now accepts additional service dependencies. There is no need to update existing code to pass these dependencies.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-dev-utils@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-app-api@0.3.2-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.18.2-next.0
 
 ### Patch Changes

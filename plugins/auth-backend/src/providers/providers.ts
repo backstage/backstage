@@ -31,6 +31,7 @@ import { okta } from './okta';
 import { onelogin } from './onelogin';
 import { saml } from './saml';
 import { AuthProviderFactory } from './types';
+import { bitbucketServer } from './bitbucketServer';
 
 /**
  * All built-in auth provider integrations.
@@ -42,6 +43,7 @@ export const providers = Object.freeze({
   auth0,
   awsAlb,
   bitbucket,
+  bitbucketServer,
   cfAccess,
   gcpIap,
   github,
@@ -76,5 +78,6 @@ export const defaultAuthProviderFactories: {
   onelogin: onelogin.create(),
   awsalb: awsAlb.create(),
   bitbucket: bitbucket.create(),
+  bitbucketServer: bitbucketServer.create(),
   atlassian: atlassian.create(),
 };

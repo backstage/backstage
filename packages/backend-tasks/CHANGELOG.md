@@ -1,5 +1,85 @@
 # @backstage/backend-tasks
 
+## 0.5.0
+
+### Minor Changes
+
+- 1578276708a: add functionality to get descriptions from the scheduler for triggering
+
+### Patch Changes
+
+- f0685193efa: Added the adapted query to mysql and sqlite3 databases to not returning warning on logs
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 1578276708a: add functionality to get descriptions from the scheduler for triggering
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- f0685193ef: Added the adapted query to mysql and sqlite3 databases to not returning warning on logs
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 0.4.3-next.0
 
 ### Patch Changes

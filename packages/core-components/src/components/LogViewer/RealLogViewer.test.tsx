@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { RealLogViewer } from './RealLogViewer';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import copyToClipboard from 'copy-to-clipboard';
 
 // Used by useCopyToClipboard

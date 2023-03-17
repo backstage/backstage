@@ -61,7 +61,7 @@ how this is done. Note that for the Bitbucket provider, you'll want to use
 factory.
 
 The `@backstage/plugin-auth-backend` plugin also comes with two built-in
-resolves that can be used if desired. The first one is the
+resolvers that can be used if desired. The first one is the
 `bitbucketUsernameSignInResolver`, which identifies users by matching their
 Bitbucket username to `bitbucket.org/username` annotations of `User` entities in
 the catalog. Note that you must populate your catalog with matching entities or

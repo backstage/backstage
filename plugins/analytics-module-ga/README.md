@@ -9,7 +9,12 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga`
+
+```sh
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-analytics-module-ga
+```
+
 2. Wire up the API implementation to your App:
 
 ```tsx

@@ -18,6 +18,7 @@ import { TechInsightsApi } from './TechInsightsApi';
 import {
   BulkCheckResponse,
   CheckResult,
+  FactSchema,
 } from '@backstage/plugin-tech-insights-common';
 import { Check, InsightFacts } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
@@ -67,6 +68,10 @@ export class TechInsightsClient implements TechInsightsApi {
 
   async getAllChecks(): Promise<Check[]> {
     return this.api('/checks');
+  }
+
+  async getFactSchemas(): Promise<FactSchema[]> {
+    return this.api('/fact-schemas');
   }
 
   async runChecks(

@@ -46,7 +46,7 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.snapshot('entityRefs').value).toEqual([
+    expect(newBucket.snapshot('entityRefs').value).toEqual([
       'component:default/c',
       'component:default/a',
       'template:custom/b',
@@ -72,7 +72,7 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.snapshot('entityRefs').value).toEqual([
+    expect(newBucket.snapshot('entityRefs').value).toEqual([
       'component:default/a',
     ]);
 

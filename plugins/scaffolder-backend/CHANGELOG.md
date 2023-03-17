@@ -1,5 +1,182 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.12.0
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- c6c78b4acbe: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 9968f455921: catalog write action should allow any shape of object
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 7af12854970: Extended scaffolder action `catalog:fetch` to fetch multiple catalog entities by entity references.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-scaffolder-node@0.1.1
+
+## 1.12.0-next.2
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- 9968f455921: catalog write action should allow any shape of object
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-scaffolder-node@0.1.1-next.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- c6c78b4acb: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.1.1-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- 6c70919f1a: Provide better error messaging when GitHub fails due to missing team definitions
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-scaffolder-common@1.2.5
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
 ## 1.11.0-next.0
 
 ### Minor Changes

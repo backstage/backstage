@@ -24,8 +24,13 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { TaskContext } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  TaskSecrets,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
+import { z } from 'zod';
 
 // The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
 void winston.transports.Stream;
@@ -65,6 +70,7 @@ describe('DefaultWorkflowRunner', () => {
     complete: async () => {},
     done: false,
     emitLog: async () => {},
+    cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
   });
 
@@ -102,6 +108,20 @@ describe('DefaultWorkflowRunner', () => {
         },
       },
     });
+
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-zod-validated-action',
+        description: 'Mock action for testing',
+        handler: fakeActionHandler,
+        supportsDryRun: true,
+        schema: {
+          input: z.object({
+            foo: z.number(),
+          }),
+        },
+      }) as TemplateAction<unknown>,
+    );
 
     actionRegistry.register({
       id: 'output-action',
@@ -147,8 +167,43 @@ describe('DefaultWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+        /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
+    });
+
+    it('should throw an error if the action has a zod schema and the input does not match', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          { id: 'test', name: 'name', action: 'jest-zod-validated-action' },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Invalid input passed to action jest-zod-validated-action, instance requires property \"foo\"/,
+      );
+    });
+
+    it('should run the action when the zod validation passes', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-zod-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
 
     it('should run the action when the validation passes', async () => {

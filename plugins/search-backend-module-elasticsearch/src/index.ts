@@ -20,7 +20,11 @@
  * @packageDocumentation
  */
 
-export { ElasticSearchSearchEngine, isOpenSearchCompatible } from './engines';
+export {
+  decodeElasticSearchPageCursor,
+  ElasticSearchSearchEngine,
+  isOpenSearchCompatible,
+} from './engines';
 export type {
   BaseElasticSearchClientOptions,
   ElasticSearchAgentOptions,

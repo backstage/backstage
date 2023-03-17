@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -308,10 +308,11 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       provider.tenantId,
       {
         userExpand: provider.userExpand,
-        groupExpand: provider.groupExpand,
         userFilter: provider.userFilter,
+        userSelect: provider.userSelect,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         groupSelect: provider.groupSelect,

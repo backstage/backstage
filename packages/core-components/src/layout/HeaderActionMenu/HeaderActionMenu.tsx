@@ -24,6 +24,7 @@ import ListItemText, {
 } from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
 import MoreVert from '@material-ui/icons/MoreVert';
+import { useTheme } from '@material-ui/core/styles';
 
 /**
  * @public
@@ -73,6 +74,11 @@ export type HeaderActionMenuProps = {
  * @public
  */
 export function HeaderActionMenu(props: HeaderActionMenuProps) {
+  const {
+    palette: {
+      common: { white },
+    },
+  } = useTheme();
   const { actionItems } = props;
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
@@ -84,7 +90,7 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
         data-testid="header-action-menu"
         ref={anchorElRef}
         style={{
-          color: 'white',
+          color: white,
           height: 56,
           width: 56,
           marginRight: -4,

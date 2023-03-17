@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, stringifyEntityRef } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   CatalogApi,

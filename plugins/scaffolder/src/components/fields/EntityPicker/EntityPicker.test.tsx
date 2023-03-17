@@ -236,4 +236,54 @@ describe('<EntityPicker />', () => {
       });
     });
   });
+
+  describe('uses full entity ref', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('returns the full entityRef when entity exists in the list', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
+    });
+
+    it('returns the full entityRef when entity does not exist in the list', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-b' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith('group:default/team-b');
+    });
+  });
 });

@@ -1,6 +1,7 @@
 name: Automate changeset feedback
 on:
   pull_request_target:
+    branches: ['master']
 
 permissions:
   pull-requests: write
@@ -28,13 +29,13 @@ jobs:
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
-      - uses: backstage/actions/changeset-feedback@v0.5.13
+      - uses: backstage/actions/changeset-feedback@v0.6.3
         name: Generate feedback
         with:
-          diffRef: 'origin/master'
+          diff-ref: 'origin/master'
           marker: <!-- changeset-feedback -->
           issue-number: ${{ github.event.pull_request.number }}
-          botUsername: backstage-goalie[bot]
+          bot-username: backstage-goalie[bot]
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}

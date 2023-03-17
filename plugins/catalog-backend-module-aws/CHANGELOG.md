@@ -1,5 +1,129 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.17
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `awsS3EntityProviderCatalogModule` to `catalogModuleAwsS3EntityProviders` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- bf611cf019a: Fix missing `dependencies` in `package.json`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-kubernetes-common@0.6.1
+
+## 0.1.17-next.2
+
+### Patch Changes
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-kubernetes-common@0.6.1-next.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- bf611cf019: Fix missing `dependencies` in `package.json`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-kubernetes-common@0.6.1-next.0
+
+## 0.1.15
+
+### Patch Changes
+
+- 671c6af700: Update to import `LocationSpec` from the correct package.
+- 8e025f1347: Added support for `externalId` when assuming role in `AwsS3EntityProvider`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.1.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+
 ## 0.1.15-next.0
 
 ### Patch Changes

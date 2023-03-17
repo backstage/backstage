@@ -18,8 +18,6 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  Divider,
-  ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
@@ -48,7 +46,7 @@ const useStyles = makeStyles({
  * @public
  */
 export interface ToolSearchResultListItemProps {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
@@ -64,46 +62,46 @@ export function ToolSearchResultListItem(props: ToolSearchResultListItemProps) {
 
   return (
     <>
-      <ListItem alignItems="flex-start">
-        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-        <div className={classes.flexContainer}>
-          <ListItemText
-            className={classes.itemText}
-            primaryTypographyProps={{ variant: 'h6' }}
-            primary={
-              <Link noTrack to={result.location}>
-                {props.highlight?.fields.title ? (
-                  <HighlightedSearchResultText
-                    text={props.highlight.fields.title}
-                    preTag={props.highlight.preTag}
-                    postTag={props.highlight.postTag}
-                  />
-                ) : (
-                  result.title
-                )}
-              </Link>
-            }
-            secondary={
-              props.highlight?.fields.text ? (
+      {props.icon && (
+        <ListItemIcon>
+          {typeof props.icon === 'function' ? props.icon(result) : props.icon}
+        </ListItemIcon>
+      )}
+      <div className={classes.flexContainer}>
+        <ListItemText
+          className={classes.itemText}
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={
+            <Link noTrack to={result.location}>
+              {props.highlight?.fields.title ? (
                 <HighlightedSearchResultText
-                  text={props.highlight.fields.text}
+                  text={props.highlight.fields.title}
                   preTag={props.highlight.preTag}
                   postTag={props.highlight.postTag}
                 />
               ) : (
-                result.text
-              )
-            }
-          />
-          <Box>
-            {result.tags &&
-              result.tags.map((tag: string) => (
-                <Chip label={tag} size="small" />
-              ))}
-          </Box>
-        </div>
-      </ListItem>
-      <Divider component="li" />
+                result.title
+              )}
+            </Link>
+          }
+          secondary={
+            props.highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={props.highlight.fields.text}
+                preTag={props.highlight.preTag}
+                postTag={props.highlight.postTag}
+              />
+            ) : (
+              result.text
+            )
+          }
+        />
+        <Box>
+          {result.tags?.map((tag: string) => (
+            <Chip label={tag} size="small" />
+          ))}
+        </Box>
+      </div>
     </>
   );
 }

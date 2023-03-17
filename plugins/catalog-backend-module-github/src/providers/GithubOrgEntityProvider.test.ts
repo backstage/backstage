@@ -20,7 +20,7 @@ import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,
 } from '@backstage/integration';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { EventParams } from '@backstage/plugin-events-node';
 import {
@@ -181,7 +181,10 @@ describe('GithubOrgEntityProvider', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
         metadata: {
-          name: 'githubuser',
+          name: 'user-name',
+          annotations: {
+            'github.com/user-login': 'githubuser',
+          },
         },
         spec: {
           memberOf: [],
@@ -192,12 +195,13 @@ describe('GithubOrgEntityProvider', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
         metadata: {
-          name: 'githubuser',
+          name: 'user-name',
           annotations: {
             'backstage.io/managed-by-location':
               'url:https://github.com/githubuser',
             'backstage.io/managed-by-origin-location':
               'url:https://github.com/githubuser',
+            'github.com/user-login': 'githubuser',
           },
         },
         spec: {
@@ -211,7 +215,10 @@ describe('GithubOrgEntityProvider', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
         metadata: {
-          name: 'mygroup',
+          name: 'group-name',
+          annotations: {
+            'github.com/team-slug': 'backstage/mygroup',
+          },
         },
         spec: {
           type: 'team',
@@ -223,12 +230,13 @@ describe('GithubOrgEntityProvider', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
         metadata: {
-          name: 'mygroup',
+          name: 'group-name',
           annotations: {
             'backstage.io/managed-by-location':
               'url:https://github.com/orgs/backstage/teams/mygroup',
             'backstage.io/managed-by-origin-location':
               'url:https://github.com/orgs/backstage/teams/mygroup',
+            'github.com/team-slug': 'backstage/mygroup',
           },
         },
         spec: {

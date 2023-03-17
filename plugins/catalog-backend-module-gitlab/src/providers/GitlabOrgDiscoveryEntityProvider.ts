@@ -20,7 +20,7 @@ import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -72,7 +72,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    const providerConfigs = readGitlabConfigs(config);
+    const providerConfigs = readGitlabConfigs(
+      config,
+      options.logger.child({ target: 'GitlabOrgDiscoveryEntityProvider' }),
+    );
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabOrgDiscoveryEntityProvider[] = [];
 
@@ -182,7 +185,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
     );
 
-    const idMappedGroup: { [groupId: number]: GitLabGroup } = {};
+    const idMappedUser: { [userId: number]: GitLabUser } = {};
 
     const res: Result = {
       scanned: 0,
@@ -193,17 +196,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       scanned: 0,
       matches: [],
     };
-
-    for await (const group of groups) {
-      if (!this.config.groupPattern.test(group.full_path ?? '')) {
-        continue;
-      }
-
-      groupRes.scanned++;
-      groupRes.matches.push(group);
-
-      idMappedGroup[group.id] = group;
-    }
 
     for await (const user of users) {
       if (!this.config.userPattern.test(user.email ?? user.username ?? '')) {
@@ -216,21 +208,31 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      const memberships = await client.getUserMemberships(user.id);
-      const userGroups: GitLabGroup[] = [];
+      idMappedUser[user.id] = user;
+      res.matches.push(user);
+    }
 
-      for (const i of memberships) {
-        if (
-          i.source_type === 'Namespace' &&
-          idMappedGroup.hasOwnProperty(i.source_id)
-        ) {
-          userGroups.push(idMappedGroup[i.source_id]);
-        }
+    for await (const group of groups) {
+      if (!this.config.groupPattern.test(group.full_path ?? '')) {
+        continue;
       }
 
-      user.groups = userGroups;
+      if (
+        this.config.group &&
+        !group.full_path.startsWith(`${this.config.group}/`)
+      ) {
+        continue;
+      }
 
-      res.matches.push(user);
+      groupRes.scanned++;
+      groupRes.matches.push(group);
+
+      for (const id of await client.getGroupMembers(group.full_path)) {
+        const user = idMappedUser[id];
+        if (user) {
+          user.groups = (user.groups ?? []).concat(group);
+        }
+      }
     }
 
     const groupsWithUsers = groupRes.matches.filter(group => {
@@ -253,7 +255,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       type: 'full',
       entities: [...userEntities, ...groupEntities].map(entity => ({
         locationKey: this.getProviderName(),
-        entity: this.withLocations(this.integration.config.host, entity),
+        entity: this.withLocations(
+          this.integration.config.host,
+          this.integration.config.baseUrl,
+          entity,
+        ),
       })),
     });
   }
@@ -273,7 +279,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       const entity = this.createGroupEntity(group, host);
 
       if (group.parent_id && idMapped.hasOwnProperty(group.parent_id)) {
-        entity.spec.parent = idMapped[group.parent_id].full_path;
+        entity.spec.parent = this.groupName(
+          idMapped[group.parent_id].full_path,
+        );
       }
 
       entities.push(entity);
@@ -282,11 +290,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     return entities;
   }
 
-  private withLocations(host: string, entity: Entity): Entity {
+  private withLocations(host: string, baseUrl: string, entity: Entity): Entity {
     const location =
       entity.kind === 'Group'
-        ? `url:${host}/teams/${entity.metadata.name}`
-        : `url:${host}/${entity.metadata.name}`;
+        ? `url:${baseUrl}/${entity.metadata.annotations?.[`${host}/team-path`]}`
+        : `url:${baseUrl}/${entity.metadata.name}`;
     return merge(
       {
         metadata: {
@@ -338,11 +346,20 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         if (!entity.spec.memberOf) {
           entity.spec.memberOf = [];
         }
-        entity.spec.memberOf.push(group.full_path.replace('/', '-'));
+        entity.spec.memberOf.push(this.groupName(group.full_path));
       }
     }
 
     return entity;
+  }
+
+  private groupName(full_path: string): string {
+    if (this.config.group && full_path.startsWith(`${this.config.group}/`)) {
+      return full_path
+        .replace(`${this.config.group}/`, '')
+        .replaceAll('/', '-');
+    }
+    return full_path.replaceAll('/', '-');
   }
 
   private createGroupEntity(group: GitLabGroup, host: string): GroupEntity {
@@ -354,7 +371,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
       metadata: {
-        name: group.full_path.replace('/', '-'),
+        name: this.groupName(group.full_path),
         annotations: annotations,
       },
       spec: {

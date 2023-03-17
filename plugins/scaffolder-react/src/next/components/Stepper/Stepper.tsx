@@ -22,18 +22,27 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
-import { ErrorSchema, FieldValidation } from '@rjsf/utils';
+import { type IChangeEvent } from '@rjsf/core-v5';
+import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { TemplateParameterSchema } from '../../../types';
-import { createAsyncValidators } from './createAsyncValidators';
+import {
+  createAsyncValidators,
+  type FormValidation,
+} from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
-import type { FormProps, LayoutOptions } from '../../types';
+import { FormProps } from '../../types';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
+import { hasErrors } from './utils';
+import * as FieldOverrides from './FieldOverrides';
+import { Form } from '../Form';
+import {
+  TemplateParameterSchema,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -69,11 +78,6 @@ export type StepperProps = {
   layouts?: LayoutOptions[];
 };
 
-// TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
-// which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
-// of the re-writing we're doing. Once we've migrated, we can import this the exact same as before.
-const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
-
 /**
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
@@ -91,9 +95,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
-  const [errors, setErrors] = useState<
-    undefined | Record<string, FieldValidation>
-  >();
+  const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
   const extensions = useMemo(() => {
@@ -124,6 +126,8 @@ export const Stepper = (stepperProps: StepperProps) => {
     [setFormState],
   );
 
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
   const handleNext = async ({
     formData = {},
   }: {
@@ -135,11 +139,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
     const returnedValidation = await validation(formData);
 
-    const hasErrors = Object.values(returnedValidation).some(
-      i => i.__errors?.length,
-    );
-
-    if (hasErrors) {
+    if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
     } else {
       setErrors(undefined);
@@ -151,8 +151,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     }
     setFormState(current => ({ ...current, ...formData }));
   };
-
-  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
   return (
     <>
@@ -176,7 +174,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             schema={currentStep.schema}
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
-            fields={extensions}
+            fields={{ ...FieldOverrides, ...extensions }}
             showErrorList={false}
             onChange={handleChange}
             {...(props.FormProps ?? {})}

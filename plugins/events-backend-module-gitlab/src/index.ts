@@ -23,5 +23,3 @@
 
 export { createGitlabTokenValidator } from './http/createGitlabTokenValidator';
 export { GitlabEventRouter } from './router/GitlabEventRouter';
-export { gitlabEventRouterEventsModule } from './service/GitlabEventRouterEventsModule';
-export { gitlabWebhookEventsModule } from './service/GitlabWebhookEventsModule';

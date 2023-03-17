@@ -31,7 +31,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 
-import { Button, ItemCardHeader } from '@backstage/core-components';
+import { LinkButton, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -66,9 +66,9 @@ export const EntityCard = (props: { entity: Entity }) => {
         {entity.metadata.description}
       </CardContent>
       <CardActions>
-        <Button to={url} color="primary">
+        <LinkButton to={url} color="primary">
           Explore
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );

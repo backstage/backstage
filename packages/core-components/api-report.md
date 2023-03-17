@@ -31,6 +31,7 @@ import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
+import { Options as Options_2 } from '@material-table/core';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -129,11 +130,11 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 // @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
-// @public
-export const Button: (props: ButtonProps) => JSX.Element;
+// @public @deprecated (undocumented)
+export const Button: (props: LinkButtonProps) => JSX.Element;
 
-// @public
-export type ButtonProps = ButtonProps_2 & Omit<LinkProps, 'variant' | 'color'>;
+// @public @deprecated (undocumented)
+export type ButtonProps = LinkButtonProps;
 
 // @public (undocumented)
 export type CardActionsTopRightClassKey = 'root';
@@ -628,6 +629,13 @@ export function LinearGauge(props: Props_11): JSX.Element | null;
 //
 // @public
 export const Link: (props: LinkProps) => JSX.Element;
+
+// @public
+export const LinkButton: (props: LinkButtonProps) => JSX.Element;
+
+// @public
+export type LinkButtonProps = ButtonProps_2 &
+  Omit<LinkProps, 'variant' | 'color'>;
 
 // Warning: (ae-missing-release-tag) "LinkProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1391,6 +1399,11 @@ export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 //
 // @public (undocumented)
 export type TableHeaderClassKey = 'header';
+
+// Warning: (ae-missing-release-tag) "TableOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface TableOptions<T extends object = {}> extends Options_2<T> {}
 
 // Warning: (ae-missing-release-tag) "TableProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -20,30 +20,30 @@ to do that in two steps.
    [interface](https://github.com/backstage/backstage/blob/db2666b980853c281b8fe77905d7639c5d255f13/plugins/search/src/apis.ts#L31)
    according to your needs.
 
-```typescript
-export class SearchClient implements SearchApi {
-  // your implementation
-}
-```
+   ```typescript
+   export class SearchClient implements SearchApi {
+     // your implementation
+   }
+   ```
 
 2. Override the API ref `searchApiRef` with your new implemented API in the
    `App.tsx` using `ApiFactories`.
    [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
 
-```typescript
-const app = createApp({
-  apis: [
-    // SearchApi
-    createApiFactory({
-      api: searchApiRef,
-      deps: { discovery: discoveryApiRef },
-      factory({ discovery }) {
-        return new SearchClient({ discoveryApi: discovery });
-      },
-    }),
-  ],
-});
-```
+   ```typescript
+   const app = createApp({
+     apis: [
+       // SearchApi
+       createApiFactory({
+         api: searchApiRef,
+         deps: { discovery: discoveryApiRef },
+         factory({ discovery }) {
+           return new SearchClient({ discoveryApi: discovery });
+         },
+       }),
+     ],
+   });
+   ```
 
 ## How to index TechDocs documents
 
@@ -63,35 +63,35 @@ getting started guide.
 1. Import the `DefaultTechDocsCollatorFactory` from
    `@backstage/plugin-techdocs-backend`.
 
-```typescript
-import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
-```
+   ```typescript
+   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+   ```
 
 2. If there isn't an existing schedule you'd like to run the collator on, be
    sure to create it first. Something like...
 
-```typescript
-import { Duration } from 'luxon';
+   ```typescript
+   import { Duration } from 'luxon';
 
-const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ seconds: 600 }),
-  timeout: Duration.fromObject({ seconds: 900 }),
-  initialDelay: Duration.fromObject({ seconds: 3 }),
-});
-```
+   const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+     frequency: Duration.fromObject({ seconds: 600 }),
+     timeout: Duration.fromObject({ seconds: 900 }),
+     initialDelay: Duration.fromObject({ seconds: 3 }),
+   });
+   ```
 
 3. Register the `DefaultTechDocsCollatorFactory` with the IndexBuilder.
 
-```typescript
-indexBuilder.addCollator({
-  schedule: every10MinutesSchedule,
-  factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
-    discovery: env.discovery,
-    logger: env.logger,
-    tokenManager: env.tokenManager,
-  }),
-});
-```
+   ```typescript
+   indexBuilder.addCollator({
+     schedule: every10MinutesSchedule,
+     factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+       discovery: env.discovery,
+       logger: env.logger,
+       tokenManager: env.tokenManager,
+     }),
+   });
+   ```
 
 You should now have your TechDocs documents indexed to your search engine of
 choice!
@@ -101,14 +101,14 @@ searching, you can update your `SearchPage.tsx` file in
 `packages/app/src/components/search` by adding `techdocs` to the list of values
 of the `SearchType` component.
 
-```tsx
+```tsx title="packages/app/src/components/search/SearchPage.tsx"
 <Paper className={classes.filters}>
   <SearchType
     values={['techdocs', 'software-catalog']}
     name="type"
     defaultValue="software-catalog"
   />
-  ...
+  {/* ... */}
 </Paper>
 ```
 
@@ -124,10 +124,10 @@ You can either just simply amend default behaviour, or even to write completely 
 
 > `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
 
-```diff
-// packages/backend/src/plugins/search.ts
-
-const entityTransformer: CatalogCollatorEntityTransformer = (entity: Entity) => {
+```ts title="packages/backend/src/plugins/search.ts"
+const entityTransformer: CatalogCollatorEntityTransformer = (
+  entity: Entity,
+) => {
   if (entity.kind === 'SomeKind') {
     return {
       // customize here output for 'SomeKind' kind
@@ -145,7 +145,8 @@ indexBuilder.addCollator({
   collator: DefaultCatalogCollatorFactory.fromConfig(env.config, {
     discovery: env.discovery,
     tokenManager: env.tokenManager,
-+   entityTransformer,
+    /* highlight-add-next-line */
+    entityTransformer,
   }),
 });
 ```
@@ -166,17 +167,17 @@ exactly what's available to search, (or a [Decorator](./concepts.md#decorators)
 to filter things out here and there), but the `DefaultCatalogCollator` that's
 provided by `@backstage/plugin-catalog-backend` offers some configuration too!
 
-```diff
-// packages/backend/src/plugins/search.ts
-
+```ts title="packages/backend/src/plugins/search.ts"
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
   collator: DefaultCatalogCollator.fromConfig(env.config, {
     discovery: env.discovery,
     tokenManager: env.tokenManager,
-+   filter: {
-+      kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
-+   },
+    /* highlight-add-start */
+    filter: {
+      kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
+    },
+    /* highlight-add-end */
   }),
 });
 ```
@@ -194,7 +195,7 @@ to create an override with your preferred styling.
 
 For example, the following will result in highlighted terms to be bold & underlined:
 
-```jsx
+```tsx
 const highlightOverride = {
   BackstageHighlightedSearchResultText: {
     highlight: {
@@ -207,10 +208,6 @@ const highlightOverride = {
 };
 ```
 
-[obj-mode]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#stream_object_mode
-[read-stream]: https://nodejs.org/dist/latest-v16.x/docs/api/stream.html#readable-streams
-[async-gen]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#iterating_over_async_generators
-
 ## How to render search results using extensions
 
 Extensions for search results let you customize components used to render search result items, It is possible to provide your own search result item extensions or use the ones provided by plugin packages:
@@ -219,8 +216,7 @@ Extensions for search results let you customize components used to render search
 
 Using the example below, you can provide an extension to be used as a default result item:
 
-```tsx
-// plugins/your-plugin/src/plugin.ts
+```tsx title="plugins/your-plugin/src/plugin.ts"
 import { createPlugin } from '@backstage/core-plugin-api';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
 
@@ -235,10 +231,23 @@ export const YourSearchResultListItemExtension = plugin.provide(
 );
 ```
 
-Additionally, you can define a predicate function that receives a result and returns whether your extension should be used to render it or not:
+If your list item accept props, you can extend the `SearchResultListItemExtensionProps` with your component specific props:
 
 ```tsx
-// plugins/your-plugin/src/plugin.ts
+export const YourSearchResultListItemExtension: (
+  props: SearchResultListItemExtensionProps<YourSearchResultListItemProps>,
+) => JSX.Element | null = plugin.provide(
+  createSearchResultListItemExtension({
+    name: 'YourSearchResultListItem',
+    component: () =>
+      import('./components').then(m => m.YourSearchResultListItem),
+  }),
+);
+```
+
+Additionally, you can define a predicate function that receives a result and returns whether your extension should be used to render it or not:
+
+```tsx title="plugins/your-plugin/src/plugin.ts"
 import { createPlugin } from '@backstage/core-plugin-api';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
 
@@ -257,8 +266,7 @@ export const YourSearchResultListItemExtension = plugin.provide(
 
 Remember to export your new extension:
 
-```tsx
-// plugins/your-plugin/src/index.ts
+```tsx title="plugins/your-plugin/src/index.ts"
 export { YourSearchResultListItem } from './plugin.ts';
 ```
 
@@ -268,8 +276,7 @@ For more details, see the [createSearchResultListItemExtension](https://backstag
 
 Now that you know how a search result item is provided, let's finally see how they can be used, for example, to compose a page in your application:
 
-```tsx
-// packages/app/src/components/searchPage.tsx
+```tsx title="packages/app/src/components/searchPage.tsx"
 import React from 'react';
 
 import { Grid, Paper } from '@material-ui/core';
@@ -323,8 +330,7 @@ export const searchPage = <SearchPage />;
 
 As another example, here's a search modal that renders results with extensions:
 
-```tsx
-// packages/app/src/components/searchModal.tsx
+```tsx title="packages/app/src/components/searchModal.tsx"
 import React from 'react';
 
 import { DialogContent, DialogTitle, Paper } from '@material-ui/core';
@@ -353,7 +359,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
         <CatalogSearchResultListItem icon={<CatalogIcon />} />
         <TechDocsSearchResultListItem icon={<DocsIcon />} />
         <ToolSearchResultListItem icon={<BuildIcon />} />
-        {/* As a "default" extension, it does not define a predicate function, 
+        {/* As a "default" extension, it does not define a predicate function,
         so it must be the last child to render results that do not match the above extensions */}
         <YourSearchResultListItem />
       </SearchResult>

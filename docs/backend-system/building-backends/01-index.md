@@ -6,14 +6,16 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
 > NOTE: If you have an existing backend that is not yet using the new backend
 > system, see [migrating](./08-migrating.md).
+
+This section covers how to set up and customize your own Backstage backend. It covers some aspects of how backend instances fit into the larger system, but for a more in-depth explanation of the role of backends in the backend system, see [the architecture section](../architecture/02-backends.md).
 
 # Overview
 
 A minimal Backstage backend is very lightweight. It is a single package with a `package.json` file and a `src/index.ts` file, not counting surrounding tooling and documentation. The package is typically placed within the `packages/backend` folder of a Backstage monorepo, but that is up to you. The backend package is part of any project created with `@backstage/create-app`, so you typically do not need to create it yourself.
-
-You'll get a brief description here, but for a more in-depth explanation of the role of backends in the backend system, see [the architecture section](../architecture/02-backends.md).
 
 When you create a new project with `@backstage/create-app`, you'll get a backend package with a `src/index.ts` that looks something like this:
 
@@ -59,11 +61,11 @@ All of these services can be replaced with your own implementations if you need 
 For example, let's say we want to customize the core configuration service to enable remote configuration loading. That would look something like this:
 
 ```ts
-import { configFactory } from '@backstage/backend-app-api';
+import { configServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configFactory({
+    configServiceFactory({
       remote: { reloadIntervalSeconds: 60 },
     }),
   ],
@@ -158,11 +160,11 @@ A shared environment is defined using `createSharedEnvironment`. In this example
 ```ts
 // packages/backend-env/src/index.ts
 import { createSharedEnvironment } from '@backstage/backend-plugin-api';
-import { customDiscoveryFactory } from './customDiscoveryFactory';
+import { customDiscoveryServiceFactory } from './customDiscoveryServiceFactory';
 
 export const env = createSharedEnvironment({
   services: [
-    customDiscoveryFactory(), // custom DiscoveryService implementation
+    customDiscoveryServiceFactory(), // custom DiscoveryService implementation
   ],
 });
 ```

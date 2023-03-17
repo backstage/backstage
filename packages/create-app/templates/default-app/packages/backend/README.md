@@ -36,7 +36,7 @@ The backend starts up on port 7007 per default.
 If you want to use the catalog functionality, you need to add so called
 locations to the backend. These are places where the backend can find some
 entity descriptor data to consume and serve. For more information, see
-[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog).
 
 To get started quickly, this template already includes some statically configured example locations
 in `app-config.yaml` under `catalog.locations`. You can remove and replace these locations as you
@@ -56,4 +56,4 @@ and
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

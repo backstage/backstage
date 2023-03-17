@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DiscoveryApi, createApiRef } from '@backstage/core-plugin-api';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, ResponseError } from '@backstage/errors';
 
 /**
  * @public
@@ -75,9 +75,7 @@ export class VaultClient implements VaultApi {
     } else if (response.status === 404) {
       throw new NotFoundError(`No secrets found in path '${path}'`);
     }
-    throw new Error(
-      `Unexpected error while fetching secrets from path '${path}'`,
-    );
+    throw await ResponseError.fromResponse(response);
   }
 
   async listSecrets(secretPath: string): Promise<VaultSecret[]> {

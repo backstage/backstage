@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable monorepo/no-relative-import */
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 
 /*
 This is a list of all packages used by the template. If dependencies are added or removed,

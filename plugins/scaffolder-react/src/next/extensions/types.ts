@@ -22,7 +22,7 @@ import {
 } from '@rjsf/utils';
 import { PropsWithChildren } from 'react';
 import { JsonObject } from '@backstage/types';
-import { CustomFieldExtensionSchema } from '../../extensions';
+import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Type for Field Extension Props for RJSF v5
@@ -33,9 +33,17 @@ export interface NextFieldExtensionComponentProps<
   TFieldReturnValue,
   TUiOptions = {},
 > extends PropsWithChildren<FieldPropsV5<TFieldReturnValue>> {
-  uiSchema?: UiSchemaV5<TFieldReturnValue> & {
-    'ui:options'?: TUiOptions & UIOptionsType;
-  };
+  uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+}
+
+/**
+ * Type for Field Extension UiSchema
+ *
+ * @alpha
+ */
+export interface NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
+  extends UiSchemaV5<TFieldReturnValue> {
+  'ui:options'?: TUiOptions & UIOptionsType;
 }
 
 /**
@@ -43,10 +51,18 @@ export interface NextFieldExtensionComponentProps<
  *
  * @alpha
  */
-export type NextCustomFieldValidator<TFieldReturnValue> = (
+export type NextCustomFieldValidator<
+  TFieldReturnValue,
+  TUiOptions = unknown,
+> = (
   data: TFieldReturnValue,
   field: FieldValidationV5,
-  context: { apiHolder: ApiHolder; formData: JsonObject },
+  context: {
+    apiHolder: ApiHolder;
+    formData: JsonObject;
+    schema: JsonObject;
+    uiSchema?: NextFieldExtensionUiSchema<TFieldReturnValue, TUiOptions>;
+  },
 ) => void | Promise<void>;
 
 /**
@@ -57,12 +73,12 @@ export type NextCustomFieldValidator<TFieldReturnValue> = (
  */
 export type NextFieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TInputProps = unknown,
+  TUiOptions = unknown,
 > = {
   name: string;
   component: (
-    props: NextFieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+    props: NextFieldExtensionComponentProps<TFieldReturnValue, TUiOptions>,
   ) => JSX.Element | null;
-  validation?: NextCustomFieldValidator<TFieldReturnValue>;
+  validation?: NextCustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
 };

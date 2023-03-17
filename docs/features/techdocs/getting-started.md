@@ -31,18 +31,16 @@ Once the package has been installed, you need to import the plugin in your app.
 In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 
-// ...
-
 const AppRoutes = () => {
   <FlatRoutes>
-    // ... other plugin routes
+    {/* ... other plugin routes */}
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
@@ -58,20 +56,20 @@ It would be nice to decorate your pages with something else... Having a link tha
 
 With the [TechDocs Addon framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these Addons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` Addon in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
 
-```diff
+```tsx
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-+ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-
-// ...
+/* highlight-add-start */
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+/* highlight-add-end */
 
 const AppRoutes = () => {
   <FlatRoutes>
-    // ... other plugin routes
+    {/* ... other plugin routes */}
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
@@ -79,9 +77,11 @@ const AppRoutes = () => {
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
     >
-+     <TechDocsAddons>
-+       <ReportIssue />
-+     </TechDocsAddons>
+      {/* highlight-add-start */}
+      <TechDocsAddons>
+        <ReportIssue />
+      </TechDocsAddons>
+      {/* highlight-add-end */}
     </Route>
   </FlatRoutes>;
 };
@@ -89,11 +89,15 @@ const AppRoutes = () => {
 
 I know, you're curious to see how it looks, aren't you? See the image below:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-addon.png" alt="TechDocs Report Issue Add-on" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
 
 By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
 
-<img data-zoomable src="../../assets/techdocs/report-issue-template.png" alt="TechDocs Report Issue Template" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
 
 That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
@@ -262,12 +266,12 @@ You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt).
 
-You can do so by including the following lines in the last step of your
+You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==1.0.1
+RUN pip3 install mkdocs-techdocs-core==1.1.7
 ```
 
 Please be aware that the version requirement could change, you need to check our

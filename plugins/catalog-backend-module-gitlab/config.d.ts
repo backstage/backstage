@@ -31,7 +31,7 @@ export interface Config {
           host: string;
           /**
            * (Optional) Gitlab's group[/subgroup] where the discovery is done.
-           * If not defined the whole project will be scanned.
+           * If not defined the whole instance will be scanned.
            */
           group?: string;
           /**

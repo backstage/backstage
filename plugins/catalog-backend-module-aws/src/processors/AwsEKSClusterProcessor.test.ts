@@ -20,10 +20,12 @@ import aws from 'aws-sdk';
 
 describe('AwsEKSClusterProcessor', () => {
   AWSMock.setSDKInstance(aws);
+
   describe('readLocation', () => {
     const processor = new (AwsEKSClusterProcessor as any)({});
     const location = { type: 'aws-eks', target: '957140518395/us-west-2' };
     const emit = jest.fn();
+
     it('generates cluster correctly', async () => {
       const clusters: aws.EKS.Types.ListClustersResponse = {
         clusters: ['backstage-test'],
@@ -40,11 +42,12 @@ describe('AwsEKSClusterProcessor', () => {
           },
         },
       };
-      AWSMock.mock('EKS', 'listClusters', clusters);
 
+      AWSMock.mock('EKS', 'listClusters', clusters);
       AWSMock.mock('EKS', 'describeCluster', cluster);
 
       await processor.readLocation(location, false, emit);
+
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location,

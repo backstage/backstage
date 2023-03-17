@@ -108,7 +108,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   pointer-events: none;
 }
 
-.md-footer-nav__link {
+.md-footer-nav__link, .md-footer__link {
   pointer-events: all;
 }
 

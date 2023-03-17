@@ -39,7 +39,9 @@ representative of physical spaces in the TechDocs UI:
 - `Component`: A [proposed-but-not-yet-implemented](https://github.com/backstage/backstage/issues/11109)
   virtual location, aimed at simplifying a common type of Addon.
 
-<img data-zoomable src="../../assets/techdocs/addon-locations.png" alt="TechDocs Addon Location Guide" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Addon Location Guide](../../assets/techdocs/addon-locations.png)
 
 ### Addon Registry
 
@@ -125,6 +127,7 @@ discover available Addons, we've compiled a list of them here:
 | [`<ExpandableNavigation />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.expandablenavigation) | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to expand or collapse the entire TechDocs main navigation, and keeps the user's preferred state between documentation sites.                                                                                                                                                      |
 | [`<ReportIssue />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue)                   | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to select a portion of text on a TechDocs page and open an issue against the repository that contains the documentation, populating the issue description with the selected text according to a configurable template.                                                            |
 | [`<TextSize />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.textsize)                         | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons. The default value for font size is 100% and this setting is kept in the browser's local storage whenever it is changed. |
+| [`<LightBox />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.lightbox)                         | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to open images in a light-box on documentation pages, they can navigate between images if there are several on one page. The image size of the light-box image is the same as the image size on the document page.                                                     |
 
 Got an Addon to contribute? Feel free to add a row above!
 

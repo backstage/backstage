@@ -13,14 +13,15 @@ import { Schema } from 'jsonschema';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
+import { z } from 'zod';
 
 // @public
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<TActionInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
+  input: TActionInput;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
@@ -29,12 +30,20 @@ export type ActionContext<TInput extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
+  signal?: AbortSignal;
 };
 
 // @public
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-) => TemplateAction<TInput>;
+export const createTemplateAction: <
+  TParams,
+  TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TParams,
+>(
+  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+) => TemplateAction<TActionInput>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
@@ -51,7 +60,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<TActionInput = unknown> = {
   id: string;
   description?: string;
   examples?: {
@@ -63,6 +72,26 @@ export type TemplateAction<TInput extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateActionOptions<
+  TActionInput = {},
+  TInputSchema extends Schema | z.ZodType = {},
+  TOutputSchema extends Schema | z.ZodType = {},
+> = {
+  id: string;
+  description?: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: TInputSchema;
+    output?: TOutputSchema;
+  };
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };
 ```

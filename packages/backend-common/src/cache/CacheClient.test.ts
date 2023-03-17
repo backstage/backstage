@@ -32,7 +32,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.get', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const key = 'somekey';
 
       await sut.get(key);
@@ -41,7 +41,7 @@ describe('CacheClient', () => {
     });
 
     it('calls client with normalized key (very long key)', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const key = 'x'.repeat(251);
 
       await sut.get(key);
@@ -53,7 +53,7 @@ describe('CacheClient', () => {
     });
 
     it('rejects on underlying error', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
       client.get = jest.fn().mockRejectedValue(expectedError);
 
@@ -61,7 +61,7 @@ describe('CacheClient', () => {
     });
 
     it('resolves what underlying client resolves', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const expectedValue = 'some value';
       client.get = jest.fn().mockResolvedValue(expectedValue);
 
@@ -73,7 +73,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.set', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const key = 'somekey';
 
       await sut.set(key, {});
@@ -84,7 +84,7 @@ describe('CacheClient', () => {
     });
 
     it('passes ttl to client when given', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const expectedTtl = 3600;
 
       await sut.set('someKey', {}, { ttl: expectedTtl });
@@ -95,7 +95,7 @@ describe('CacheClient', () => {
     });
 
     it('rejects on underlying error if configured', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
       client.set = jest.fn().mockRejectedValue(expectedError);
 
@@ -105,7 +105,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.delete', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const key = 'somekey';
 
       await sut.delete(key);
@@ -116,11 +116,35 @@ describe('CacheClient', () => {
     });
 
     it('rejects on underlying error if configured', async () => {
-      const sut = new DefaultCacheClient({ client });
+      const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
       client.delete = jest.fn().mockRejectedValue(expectedError);
 
       return expect(sut.delete('someKey')).rejects.toEqual(expectedError);
+    });
+  });
+
+  describe('CacheClient.withOptions', () => {
+    it('merges together options to create a new instance', async () => {
+      const factory = jest.fn();
+      const sut = new DefaultCacheClient(client, factory, { foo: 1 } as any);
+      expect(factory).not.toHaveBeenCalled();
+
+      const sutA = await sut.withOptions({});
+      expect(factory).toHaveBeenLastCalledWith({ foo: 1 });
+
+      const sutA2 = await sutA.withOptions({ bar: 2 } as any);
+      expect(factory).toHaveBeenCalledWith({ foo: 1, bar: 2 });
+
+      await sutA2.withOptions({ foo: 3 } as any);
+      expect(factory).toHaveBeenCalledWith({ foo: 3, bar: 2 });
+
+      // calling .withOptions should not mutate state
+      const sutB = await sut.withOptions({ foo: 2 } as any);
+      expect(factory).toHaveBeenLastCalledWith({ foo: 2 });
+
+      await sutB.withOptions({ bar: 3 } as any);
+      expect(factory).toHaveBeenLastCalledWith({ foo: 2, bar: 3 });
     });
   });
 });

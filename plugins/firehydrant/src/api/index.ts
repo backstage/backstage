@@ -30,6 +30,7 @@ export interface FireHydrantAPI {
 
   getServiceDetails(options: {
     serviceName: string;
+    lookupByName: boolean;
   }): Promise<ServiceDetailsResponse>;
 
   getServiceIncidents(options: {
@@ -77,11 +78,13 @@ export class FireHydrantAPIClient implements FireHydrantAPI {
 
   async getServiceDetails(options: {
     serviceName: string;
+    lookupByName: boolean;
   }): Promise<ServiceDetailsResponse> {
+    const queryOpt = options.lookupByName ? 'name' : 'query';
+    const query = new URLSearchParams();
+    query.set(queryOpt, options.serviceName);
     const proxyUrl = await this.getApiUrl();
-    const response = await fetch(
-      `${proxyUrl}/services?query=${options.serviceName}`,
-    );
+    const response = await fetch(`${proxyUrl}/services?${query}`);
 
     if (!response.ok) {
       throw new Error(

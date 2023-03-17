@@ -51,7 +51,7 @@ export type HttpServerOptions = {
  */
 export type HttpServerCertificateOptions =
   | {
-      type: 'plain';
+      type: 'pem';
       key: string;
       cert: string;
     }

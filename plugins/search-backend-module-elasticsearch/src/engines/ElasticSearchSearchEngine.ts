@@ -138,27 +138,29 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     };
   }
 
-  static async fromConfig({
-    logger,
-    config,
-    aliasPostfix = `search`,
-    indexPrefix = ``,
-  }: ElasticSearchOptions) {
-    const options = await createElasticSearchClientOptions(
+  static async fromConfig(options: ElasticSearchOptions) {
+    const {
+      logger,
+      config,
+      aliasPostfix = `search`,
+      indexPrefix = ``,
+    } = options;
+
+    const clientOptions = await createElasticSearchClientOptions(
       config.getConfig('search.elasticsearch'),
     );
-    if (options.provider === 'elastic') {
+    if (clientOptions.provider === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
-    } else if (options.provider === 'aws') {
+    } else if (clientOptions.provider === 'aws') {
       logger.info('Initializing AWS OpenSearch search engine.');
-    } else if (options.provider === 'opensearch') {
+    } else if (clientOptions.provider === 'opensearch') {
       logger.info('Initializing OpenSearch search engine.');
     } else {
       logger.info('Initializing ElasticSearch search engine.');
     }
 
     return new ElasticSearchSearchEngine(
-      options,
+      clientOptions,
       aliasPostfix,
       indexPrefix,
       logger,
@@ -175,12 +177,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
    * This need not be the same client that the engine uses internally.
    *
    * @example Instantiate an instance of an Elasticsearch client.
+   *
    * ```ts
    * import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
    * import { Client } from '@elastic/elasticsearch';
    *
    * const client = searchEngine.newClient<Client>(options => {
-   *   // This typeguard ensures options are compatible with either OpenSearch
+   *   // This type guard ensures options are compatible with either OpenSearch
    *   // or Elasticsearch client constructors.
    *   if (!isOpenSearchCompatible(options)) {
    *     return new Client(options);
@@ -408,6 +411,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 }
 
+/**
+ * @public
+ */
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
     return { page: 0 };

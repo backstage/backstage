@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import {
   AzureDevOpsDiscoveryProcessor,
   parseUrl,
@@ -135,6 +135,9 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         {
           fileName: 'catalog-info.yaml',
           path: '/catalog-info.yaml',
+          project: {
+            name: '*',
+          },
           repository: {
             name: 'backstage',
           },
@@ -142,6 +145,9 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         {
           fileName: 'catalog-info.yaml',
           path: '/src/catalog-info.yaml',
+          project: {
+            name: '*',
+          },
           repository: {
             name: 'ios-app',
           },
@@ -191,6 +197,9 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           repository: {
             name: 'backstage',
           },
+          project: {
+            name: '*',
+          },
         },
       ]);
       const emitter = jest.fn();
@@ -228,6 +237,9 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           path: '/src/main/catalog.yaml',
           repository: {
             name: 'backstage',
+          },
+          project: {
+            name: '*',
           },
         },
       ]);

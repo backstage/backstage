@@ -23,5 +23,3 @@
 
 export { createGithubSignatureValidator } from './http/createGithubSignatureValidator';
 export { GithubEventRouter } from './router/GithubEventRouter';
-export { githubEventRouterEventsModule } from './service/GithubEventRouterEventsModule';
-export { githubWebhookEventsModule } from './service/GithubWebhookEventsModule';

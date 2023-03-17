@@ -18,22 +18,28 @@ import { LoggerService } from './LoggerService';
 
 /**
  * @public
- **/
-export type LifecycleServiceShutdownHook = {
-  fn: () => void | Promise<void>;
+ */
+export type LifecycleServiceShutdownHook = () => void | Promise<void>;
 
+/**
+ * @public
+ */
+export interface LifecycleServiceShutdownOptions {
   /**
    * Optional {@link LoggerService} that will be used for logging instead of the default logger.
    */
   logger?: LoggerService;
-};
+}
 
 /**
  * @public
- **/
+ */
 export interface LifecycleService {
   /**
    * Register a function to be called when the backend is shutting down.
    */
-  addShutdownHook(options: LifecycleServiceShutdownHook): void;
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void;
 }

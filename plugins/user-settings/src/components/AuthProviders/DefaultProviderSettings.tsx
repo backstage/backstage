@@ -24,6 +24,7 @@ import {
   oktaAuthApiRef,
   microsoftAuthApiRef,
   bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   oneloginAuthApiRef,
 } from '@backstage/core-plugin-api';
@@ -96,6 +97,14 @@ export const DefaultProviderSettings = (props: {
           title="Atlassian"
           description="Provides authentication towards Atlassian APIs"
           apiRef={atlassianAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('bitbucketServer') && (
+        <ProviderSettingsItem
+          title="Bitbucket Server"
+          description="Provides authentication towards Bitbucket Server APIs"
+          apiRef={bitbucketServerAuthApiRef}
           icon={Star}
         />
       )}

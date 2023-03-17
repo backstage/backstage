@@ -54,7 +54,13 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   );
 
 /** @public */
-export const PagerDutyCard = () => {
+export type PagerDutyCardProps = {
+  readOnly?: boolean;
+};
+
+/** @public */
+export const PagerDutyCard = (props: PagerDutyCardProps) => {
+  const { readOnly } = props;
   const { entity } = useEntity();
   const pagerDutyEntity = getPagerDutyEntity(entity);
   const api = useApi(pagerDutyApiRef);
@@ -156,7 +162,11 @@ export const PagerDutyCard = () => {
           title="PagerDuty"
           subheader={
             <HeaderIconLinkRow
-              links={[serviceLink, triggerLink, escalationPolicyLink]}
+              links={
+                !readOnly
+                  ? [serviceLink, triggerLink, escalationPolicyLink]
+                  : [serviceLink, escalationPolicyLink]
+              }
             />
           }
         />

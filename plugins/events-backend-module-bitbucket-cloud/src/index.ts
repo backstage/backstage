@@ -22,4 +22,3 @@
  */
 
 export { BitbucketCloudEventRouter } from './router/BitbucketCloudEventRouter';
-export { bitbucketCloudEventRouterEventsModule } from './service/BitbucketCloudEventRouterEventsModule';

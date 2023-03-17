@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './module';
 export * from './service';
 export {
   type EntityIteratorResult,

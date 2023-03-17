@@ -1,5 +1,138 @@
 # @backstage/plugin-explore
 
+## 0.4.1
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 3f75b7607ca: Add ability to pass icon as function to have ability to customize it by search item
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-explore-react@0.0.27
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-explore-react@0.0.27-next.2
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/plugin-explore-react@0.0.27-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 3f75b7607c: Add ability to pass icon as function to have ability to customize it by search item
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.27-next.0
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-search-react@1.5.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 0eaa579f89: The `ToolSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.26
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.25
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 0eaa579f89: The `ToolSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.25
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.3.46-next.0
 
 ### Patch Changes

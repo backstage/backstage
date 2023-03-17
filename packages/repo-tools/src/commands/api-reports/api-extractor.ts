@@ -62,6 +62,7 @@ import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
 import minimatch from 'minimatch';
+import { getPackageExportNames } from '../../lib/entryPoints';
 
 const tmpDir = cliPaths.resolveTargetRoot(
   './node_modules/.cache/api-extractor',
@@ -237,10 +238,9 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
   return path;
 }
 
-export async function countApiReportWarnings(projectFolder: string) {
-  const path = resolvePath(projectFolder, 'api-report.md');
+export async function countApiReportWarnings(reportPath: string) {
   try {
-    const content = await fs.readFile(path, 'utf8');
+    const content = await fs.readFile(reportPath, 'utf8');
     const lines = content.split('\n');
 
     const lineWarnings = lines.filter(line =>
@@ -300,6 +300,32 @@ function logApiReportInstructions() {
   console.log('');
 }
 
+async function findPackageEntryPoints(packageDirs: string[]): Promise<
+  Array<{
+    packageDir: string;
+    name: string;
+    usesExperimentalTypeBuild?: boolean;
+  }>
+> {
+  return Promise.all(
+    packageDirs.map(async packageDir => {
+      const pkg = await fs.readJson(
+        cliPaths.resolveTargetRoot(packageDir, 'package.json'),
+      );
+
+      return (
+        getPackageExportNames(pkg)?.map(name => ({ packageDir, name })) ?? {
+          packageDir,
+          name: 'index',
+          usesExperimentalTypeBuild: pkg.scripts?.build?.includes(
+            '--experimental-type-build',
+          ),
+        }
+      );
+    }),
+  ).then(results => results.flat());
+}
+
 interface ApiExtractionOptions {
   packageDirs: string[];
   outputDir: string;
@@ -307,6 +333,7 @@ interface ApiExtractionOptions {
   tsconfigFilePath: string;
   allowWarnings?: boolean | string[];
   omitMessages?: string[];
+  validateReleaseTags?: boolean;
 }
 
 export async function runApiExtraction({
@@ -316,12 +343,15 @@ export async function runApiExtraction({
   tsconfigFilePath,
   allowWarnings = false,
   omitMessages = [],
+  validateReleaseTags = false,
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
-  const entryPoints = packageDirs.map(packageDir => {
+  const packageEntryPoints = await findPackageEntryPoints(packageDirs);
+
+  const entryPoints = packageEntryPoints.map(({ packageDir, name }) => {
     return cliPaths.resolveTargetRoot(
-      `./dist-types/${packageDir}/src/index.d.ts`,
+      `./dist-types/${packageDir}/src/${name}.d.ts`,
     );
   });
 
@@ -337,7 +367,11 @@ export async function runApiExtraction({
   }
   const warnings = new Array<string>();
 
-  for (const packageDir of packageDirs) {
+  for (const {
+    packageDir,
+    name,
+    usesExperimentalTypeBuild,
+  } of packageEntryPoints) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
       ? allowWarnings.some(aw => aw === packageDir || minimatch(packageDir, aw))
@@ -349,11 +383,15 @@ export async function runApiExtraction({
       packageDir,
     );
 
-    const warningCountBefore = await countApiReportWarnings(projectFolder);
+    const prefix = name === 'index' ? '' : `${name}-`;
+    const reportFileName = `${prefix}api-report.md`;
+    const reportPath = resolvePath(projectFolder, reportFileName);
+
+    const warningCountBefore = await countApiReportWarnings(reportPath);
 
     const extractorConfig = ExtractorConfig.prepare({
       configObject: {
-        mainEntryPointFilePath: resolvePath(packageFolder, 'src/index.d.ts'),
+        mainEntryPointFilePath: resolvePath(packageFolder, `src/${name}.d.ts`),
         bundledPackages: [],
 
         compiler: {
@@ -362,16 +400,21 @@ export async function runApiExtraction({
 
         apiReport: {
           enabled: true,
-          reportFileName: 'api-report.md',
+          reportFileName,
           reportFolder: projectFolder,
-          reportTempFolder: resolvePath(outputDir, '<unscopedPackageName>'),
+          reportTempFolder: resolvePath(
+            outputDir,
+            `${prefix}<unscopedPackageName>`,
+          ),
         },
 
         docModel: {
-          enabled: true,
+          // TODO(Rugvip): This skips docs for non-index entry points. We can try to work around it, but
+          //               most likely it makes sense to wait for API Extractor to natively support exports.
+          enabled: name === 'index',
           apiJsonFilePath: resolvePath(
             outputDir,
-            '<unscopedPackageName>.api.json',
+            `${prefix}<unscopedPackageName>.api.json`,
           ),
         },
 
@@ -461,6 +504,35 @@ export async function runApiExtraction({
       compilerState,
     });
 
+    // This release tag validation makes sure that the release tag of known entry points match expectations.
+    // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
+    if (validateReleaseTags && !usesExperimentalTypeBuild) {
+      if (['index', 'alpha', 'beta'].includes(name)) {
+        const report = await fs.readFile(
+          extractorConfig.reportFilePath,
+          'utf8',
+        );
+        const lines = report.split(/\r?\n/);
+        const expectedTag = name === 'index' ? 'public' : name;
+        for (let i = 0; i < lines.length; i += 1) {
+          const line = lines[i];
+          const match = line.match(/^\/\/ @(alpha|beta|public)/);
+          if (match && match[1] !== expectedTag) {
+            // Because of limitations in the type script rollup logic we need to allow public exports from the other release stages
+            // TODO(Rugvip): Try to work around the need for this exception
+            if (expectedTag !== 'public' && match[1] === 'public') {
+              continue;
+            }
+            throw new Error(
+              `Unexpected release tag ${match[1]} in ${
+                extractorConfig.reportFilePath
+              } at line ${i + 1}`,
+            );
+          }
+        }
+      }
+    }
+
     if (!extractorResult.succeeded) {
       if (shouldLogInstructions) {
         logApiReportInstructions();
@@ -488,7 +560,7 @@ export async function runApiExtraction({
       );
     }
 
-    const warningCountAfter = await countApiReportWarnings(projectFolder);
+    const warningCountAfter = await countApiReportWarnings(reportPath);
     if (noBail) {
       console.log(`Skipping warnings check for ${packageDir}`);
     }
@@ -1107,7 +1179,7 @@ export async function categorizePackageDirs(packageDirs: any[]) {
             });
           const role = pkgJson?.backstage?.role;
           if (!role) {
-            throw new Error(`No backstage.role in ${dir}/package.json`);
+            return; // Ignore packages without roles
           }
           if (role === 'cli') {
             cliPackageDirs.push(dir);

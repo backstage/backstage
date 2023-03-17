@@ -33,6 +33,7 @@ Options:
   --no-docker
   --techdocs-ref <HOST_TYPE:URL>
   --etag <ETAG>
+  --site-name
   -v --verbose
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
@@ -76,6 +77,7 @@ Options:
   --azureAccountKey <AZURE ACCOUNT KEY>
   --awsRoleArn <AWS ROLE ARN>
   --awsEndpoint <AWS ENDPOINT>
+  --awsProxy <HTTPS Proxy>
   --awsS3sse <AWS SSE>
   --awsS3ForcePathStyle
   --awsBucketRootPath <AWS BUCKET ROOT PATH>
@@ -98,6 +100,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   --mkdocs-port <PORT>
   -v --verbose
   --preview-app-bundle-path <PATH_TO_BUNDLE>
@@ -115,6 +118,7 @@ Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
   -p, --port <PORT>
   -v --verbose
   -h, --help

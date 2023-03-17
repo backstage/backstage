@@ -1,5 +1,23 @@
 # @backstage/theme
 
+## 0.2.18
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.2.17
+
+### Patch Changes
+
+- b7705e176c: Use same table header color as @backstage/core-components Table to meet accessibility color contrast requirements. This change affects material-ui tables.
+
 ## 0.2.16
 
 ### Patch Changes

@@ -24,7 +24,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { codeSearch } from '../lib';
 
@@ -43,7 +43,7 @@ import { codeSearch } from '../lib';
  *    target: https://dev.azure.com/org/project/_git/repo
  *
  * @public
- **/
+ */
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
@@ -123,7 +123,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
 /**
  * parseUrl extracts segments from the Azure DevOps URL.
- **/
+ */
 export function parseUrl(urlString: string): {
   baseUrl: string;
   org: string;

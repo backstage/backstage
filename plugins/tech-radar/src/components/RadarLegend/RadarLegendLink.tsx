@@ -25,6 +25,7 @@ type RadarLegendLinkProps = {
   title?: string;
   classes: ClassNameMap<string>;
   active?: boolean;
+  links: Array<{ url: string; title: string }>;
 };
 
 export const RadarLegendLink = ({
@@ -33,6 +34,7 @@ export const RadarLegendLink = ({
   title,
   classes,
   active,
+  links,
 }: RadarLegendLinkProps) => {
   const [open, setOpen] = React.useState(false);
 
@@ -73,6 +75,7 @@ export const RadarLegendLink = ({
             title={title ? title : 'no title'}
             url={url}
             description={description}
+            links={links}
           />
         )}
       </>

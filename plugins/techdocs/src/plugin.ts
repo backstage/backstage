@@ -33,7 +33,10 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
+import {
+  createSearchResultListItemExtension,
+  SearchResultListItemExtensionProps,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItemProps } from './search/components/TechDocsSearchResultListItem';
 
 /**
@@ -162,7 +165,7 @@ export const TechDocsReaderPage = techdocsPlugin.provide(
  * @public
  */
 export const TechDocsSearchResultListItem: (
-  props: TechDocsSearchResultListItemProps,
+  props: SearchResultListItemExtensionProps<TechDocsSearchResultListItemProps>,
 ) => JSX.Element | null = techdocsPlugin.provide(
   createSearchResultListItemExtension({
     name: 'TechDocsSearchResultListItem',

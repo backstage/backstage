@@ -5,28 +5,11 @@
 ```ts
 /// <reference types="node" />
 
-import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
-import { ServiceRef } from '@backstage/backend-plugin-api';
-
-// @alpha (undocumented)
-export interface CatalogProcessingExtensionPoint {
-  // (undocumented)
-  addEntityProvider(
-    ...providers: Array<EntityProvider | Array<EntityProvider>>
-  ): void;
-  // (undocumented)
-  addProcessor(
-    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
-  ): void;
-}
-
-// @alpha (undocumented)
-export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {
@@ -109,9 +92,6 @@ export type CatalogProcessorResult =
   | CatalogProcessorErrorResult
   | CatalogProcessorRefreshKeysResult;
 
-// @alpha
-export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
-
 // @public
 export type DeferredEntity = {
   entity: Entity;
@@ -162,6 +142,15 @@ export type EntityRelationSpec = {
 
 // @public @deprecated
 export type LocationSpec = LocationSpec_2;
+
+// @public
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec_2;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1;
+
+// @public
+export function locationSpecToMetadataName(location: LocationSpec_2): string;
 
 // @public
 export const processingResult: Readonly<{

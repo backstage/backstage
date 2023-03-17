@@ -1,5 +1,112 @@
 # @backstage/plugin-techdocs-node
 
+## 1.6.0
+
+### Minor Changes
+
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- bf493710f50: Update to a newer version of `@trendyol-js/openstack-swift-sdk`
+- bfe350ef4ce: Fixed bug that prevented deletion of stale files when non-empty directories where tried to be deleted as well.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- bfe350ef4ce: Fixed bug that prevented deletion of stale files when non-empty directories where tried to be deleted as well.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/integration-aws-node@0.1.2-next.0
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-aws-node@0.1.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.5.0
+
+### Minor Changes
+
+- dd1e37649f: Deprecated getMkDocsYml in favor of getMkdocsYml (lowercase 'd')
+
+### Patch Changes
+
+- 87ab76e55c: Fixed bug caused by recent migration to AWS SDK V3 for techdocs-node. Instead of s3ForcePathStyle, forcePathStyle should be passed.
+- 339d9a5b5c: Added support for using a default `mkdocs.yml` configuration file when none is provided
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-aws-node@0.1.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-aws-node@0.1.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-aws-node@0.1.1
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.4.6-next.0
 
 ### Patch Changes

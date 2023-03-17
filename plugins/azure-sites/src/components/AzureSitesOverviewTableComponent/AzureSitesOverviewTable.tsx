@@ -28,6 +28,7 @@ import {
 import { default as MuiAlert } from '@material-ui/lab/Alert';
 import { AzureSite } from '@backstage/plugin-azure-sites-common';
 import { Table, TableColumn, Link } from '@backstage/core-components';
+import { useTheme } from '@material-ui/core/styles';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PublicIcon from '@material-ui/icons/Public';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -38,18 +39,27 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
 import { azureSiteApiRef } from '../../api';
+import { BackstageTheme } from '@backstage/theme';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
 type Kinds = 'app' | 'functionapp';
 
 const State = ({ value }: { value: States }) => {
+  const {
+    palette: {
+      common: { black },
+      status: { ok, error },
+    },
+  } = useTheme<BackstageTheme>();
+
   const colorMap = {
     Waiting: '#dcbc21',
-    Running: 'green',
-    Paused: 'black',
-    Failed: 'red',
-    Stopped: 'black',
+    Running: ok,
+    Paused: black,
+    Failed: error,
+    Stopped: black,
   };
+
   return (
     <Box display="flex" alignItems="center">
       <Typography
@@ -73,9 +83,11 @@ const Kind = ({ value }: { value: Kinds }) => {
     app: <PublicIcon />,
     functionapp: <FlashOnIcon />,
   };
+  const kindArray = value.split(',');
+  const iconValue: Kinds = kindArray.includes('app') ? 'app' : 'functionapp';
   return (
     <Box display="flex" alignItems="center">
-      <Tooltip title={value}>{iconMap[value]}</Tooltip>
+      <Tooltip title={iconValue}>{iconMap[iconValue]}</Tooltip>
     </Box>
   );
 };
@@ -162,9 +174,8 @@ const ActionButtons = ({
           </MenuItem>
         )}
         <MenuItem
-          component="a"
-          href={value.logstreamHref}
-          target="_blank"
+          component={Link}
+          to={value.logstreamHref}
           key="logStream"
           onClick={handleClose}
         >

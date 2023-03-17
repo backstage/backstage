@@ -8,21 +8,28 @@ Authorizing `GET /todos` is similar to the update endpoint, in that it should be
 
 One possible solution may leverage the batching functionality to authorize all of the todos, and then returning only the ones for which the decision was `ALLOW`:
 
-```diff
-    router.get('/todos', async (req, res) => {
-+     const token = IdentityClient.getBearerToken(req.header('authorization'));
+```ts
+router.get('/todos', async (req, res) => {
+  /* highlight-add-next-line */
+  const token = IdentityClient.getBearerToken(req.header('authorization'));
 
--     res.json(getAll())
-+     const items = getAll();
-+     const decisions = await permissions.authorize(
-+       items.map(({ id }) => ({ permission: todosListRead, resourceRef: id })),
-+     );
+  /* highlight-remove-next-line */
+  res.json(getAll());
+  /* highlight-add-start */
+  const items = getAll();
+  const decisions = await permissions.authorize(
+    items.map(({ id }) => ({
+      permission: todoListReadPermission,
+      resourceRef: id,
+    })),
+  );
 
-+     const filteredItems = decisions.filter(
-+       decision => decision.result === AuthorizeResult.ALLOW,
-+     );
-+     res.json(filteredItems);
-    });
+  const filteredItems = decisions.filter(
+    decision => decision.result === AuthorizeResult.ALLOW,
+  );
+  res.json(filteredItems);
+  /* highlight-add-end */
+});
 ```
 
 This approach will work for simple cases, but it has a downside: it forces us to retrieve all the elements upfront and authorize them one by one. This forces the plugin implementation to handle concerns like pagination, which is currently handled by the data source.
@@ -35,84 +42,100 @@ To avoid this situation, the permissions framework has support for filtering ite
 
 Let's add another permission to the plugin.
 
-```diff
-  // plugins/todo-list-backend/src/service/permissions.ts
+```ts title="plugins/todo-list-backend/src/service/permissions.ts"
+import { createPermission } from '@backstage/plugin-permission-common';
 
-  import { createPermission } from '@backstage/plugin-permission-common';
+export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
-  export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
+export const todoListCreatePermission = createPermission({
+  name: 'todo.list.create',
+  attributes: { action: 'create' },
+});
 
-  export const todoListCreatePermission = createPermission({
-    name: 'todo.list.create',
-    attributes: { action: 'create' },
-  });
+export const todoListUpdatePermission = createPermission({
+  name: 'todo.list.update',
+  attributes: { action: 'update' },
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+});
 
-  export const todoListUpdatePermission = createPermission({
-    name: 'todo.list.update',
-    attributes: { action: 'update' },
-    resourceType: TODO_LIST_RESOURCE_TYPE,
-  });
-+
-+ export const todosListRead = createPermission({
-+   name: 'todos.list.read',
-+   attributes: { action: 'read' },
-+   resourceType: TODO_LIST_RESOURCE_TYPE,
-+ });
+/* highlight-add-start */
+export const todoListReadPermission = createPermission({
+  name: 'todos.list.read',
+  attributes: { action: 'read' },
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+});
+/* highlight-add-end */
 
-- export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission];
-+ export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission];
+/* highlight-add-next-line */
+export const todoListPermissions = [
+  todoListCreatePermission,
+  todoListUpdatePermission,
+];
+/* highlight-add-next-line */
+export const todoListPermissions = [
+  todoListCreatePermission,
+  todoListUpdatePermission,
+  todoListReadPermission,
+];
 ```
 
 ## Using conditional policy decisions
 
 So far we've only used the `PermissionEvaluator.authorize` method, which will evaluate conditional decisions before returning a result. In this step, we want to evaluate conditional decisions within our plugin, so we'll use `PermissionEvaluator.authorizeConditional` instead.
 
-```diff
-// plugins/todo-list-backend/src/service/router.ts
+```ts title="plugins/todo-list-backend/src/service/router.ts"
+/* highlight-remove-next-line */
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+/* highlight-add-start */
+import {
+  createPermissionIntegrationRouter,
+  createConditionTransformer,
+  ConditionTransformer,
+} from '@backstage/plugin-permission-node';
+/* highlight-add-end */
+/* highlight-remove-next-line */
+import { add, getAll, getTodo, update } from './todos';
+/* highlight-add-next-line */
+import { add, getAll, getTodo, TodoFilter, update } from './todos';
+import {
+  todosListCreate,
+  todosListUpdate,
+  /* highlight-add-next-line */
+  todoListReadPermission,
+  TODO_LIST_RESOURCE_TYPE,
+} from './permissions';
 
-- import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-+ import {
-+   createPermissionIntegrationRouter,
-+   createConditionTransformer,
-+   ConditionTransformer,
-+ } from '@backstage/plugin-permission-node';
-- import { add, getAll, getTodo, update } from './todos';
-+ import { add, getAll, getTodo, TodoFilter, update } from './todos';
-  import {
-    todosListCreate,
-    todosListUpdate,
-+   todosListRead,
-    TODO_LIST_RESOURCE_TYPE,
-  } from './permissions';
-+ import { rules } from './rules';
+/* highlight-add-next-line */
+const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));
 
-+ const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));
+/* highlight-remove-next-line */
+router.get('/todos', async (_req, res) => {
+/* highlight-add-start */
+router.get('/todos', async (req, res) => {
+  const token = getBearerTokenFromAuthorizationHeader(
+    req.header('authorization'),
+  );
 
-- router.get('/todos', async (_req, res) => {
-+ router.get('/todos', async (req, res) => {
-+   const token = getBearerTokenFromAuthorizationHeader(
-+     req.header('authorization'),
-+   );
-+
-+   const decision = (
-+     await permissions.authorizeConditional([{ permission: todosListRead }], {
-+       token,
-+     })
-+   )[0];
-+
-+   if (decision.result === AuthorizeResult.DENY) {
-+     throw new NotAllowedError('Unauthorized');
-+   }
-+
-+   if (decision.result === AuthorizeResult.CONDITIONAL) {
-+     const filter = transformConditions(decision.conditions);
-+     res.json(getAll(filter));
-+   } else {
-+     res.json(getAll());
-+   }
-+ }
--   res.json(getAll());
-  });
+  const decision = (
+    await permissions.authorizeConditional([{ permission: todoListReadPermission }], {
+      token,
+    })
+  )[0];
+
+  if (decision.result === AuthorizeResult.DENY) {
+    throw new NotAllowedError('Unauthorized');
+  }
+
+  if (decision.result === AuthorizeResult.CONDITIONAL) {
+    const filter = transformConditions(decision.conditions);
+    res.json(getAll(filter));
+  } else {
+    res.json(getAll());
+  }
+/* highlight-add-end */
+  /* highlight-remove-next-line */
+  res.json(getAll());
+});
 ```
 
 To make the process of handling conditional decisions easier, the permission framework provides a `createConditionTransformer` helper. This function accepts an array of permission rules, and returns a transformer function which converts the conditions to the format needed by the plugin using the `toQuery` method defined on each rule.
@@ -121,34 +144,31 @@ Since `TodoFilter` used in our plugin matches the structure of the conditions ob
 
 ## Test the authorized read endpoint
 
-Let's update our permission policy to return a conditional result whenever a `todosListRead` permission is received. In this case, we can reuse the decision returned for the `todosListCreate` permission.
+Let's update our permission policy to return a conditional result whenever a `todoListReadPermission` permission is received. In this case, we can reuse the decision returned for the `todosListCreate` permission.
 
-```diff
-// packages/backend/src/plugins/permission.ts
-
-...
-
+```ts title="packages/backend/src/plugins/permission.ts"
 import {
   todoListCreatePermission,
   todoListUpdatePermission,
-+ todoListReadPermission,
-  TODO_LIST_RESOURCE_TYPE,
+  /* highlight-add-next-line */
+  todoListReadPermission,
 } from '@internal/plugin-todo-list-common';
 
-...
-
--   if (isPermission(request.permission, todoListUpdatePermission)) {
-+   if (
-+     isPermission(request.permission, todoListUpdatePermission) ||
-+     isPermission(request.permission, todoListReadPermission)
-+   ) {
-      return createTodoListConditionalDecision(
-        request.permission,
-        todoListConditions.isOwner({
-          userId: user?.identity.userEntityRef
-        }),
-      );
-    }
+/* highlight-remove-next-line */
+if (isPermission(request.permission, todoListUpdatePermission)) {
+/* highlight-add-start */
+if (
+  isPermission(request.permission, todoListUpdatePermission) ||
+  isPermission(request.permission, todoListReadPermission)
+) {
+/* highlight-add-end */
+  return createTodoListConditionalDecision(
+    request.permission,
+    todoListConditions.isOwner({
+      userId: user?.identity.userEntityRef
+    }),
+  );
+}
 ```
 
 Once the changes to the permission policy are saved, the UI should show only the todo items you've created.

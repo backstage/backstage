@@ -102,12 +102,16 @@ export const AddEntitiesDrawer = ({
   const entityRoute = useRouteRef(entityRouteRef);
   const entityLocationRegex = useMemo(() => {
     const forwardSlashRegex = new RegExp('/', 'g');
+    // We need to do this in two steps, since entityRoute will ruin some special chars, like question marks
     const locationRegex = entityRoute({
-      namespace: '(?<namespace>.+?)',
-      kind: '(?<kind>.+?)',
-      name: '(?<name>.+?)',
-    }).replace(forwardSlashRegex, '\\/');
-
+      namespace: '__REPLACE_WITH_NAMESPACE__',
+      kind: '__REPLACE_WITH_KIND__',
+      name: '__REPLACE_WITH_NAME__',
+    })
+      .replace('__REPLACE_WITH_NAMESPACE__', '(?<namespace>.+?)')
+      .replace('__REPLACE_WITH_KIND__', '(?<kind>.+?)')
+      .replace('__REPLACE_WITH_NAME__', '(?<name>.+?)')
+      .replace(forwardSlashRegex, '\\/');
     return new RegExp(`${locationRegex}$`);
   }, [entityRoute]);
 
@@ -127,12 +131,12 @@ export const AddEntitiesDrawer = ({
 
   const addEntity = useCallback(
     entityResult => {
-      // TODO (kuangp): this parsing of the location is not great. Ideally `CatalogEntityDocument`
+      // TODO(kuangp): this parsing of the location is not great. Ideally `CatalogEntityDocument`
       // contains the `metadata.name` field so we can derive the full ref and we only fall back to
       // parsing location if it's missing (ie. for older versions)
-      const { groups } = entityResult.location.match(entityLocationRegex);
-      if (groups) {
-        onAdd(stringifyEntityRef(groups));
+      const match = entityResult.location.match(entityLocationRegex);
+      if (match?.groups) {
+        onAdd(stringifyEntityRef(match?.groups));
       } else {
         // eslint-disable-next-line no-console
         console.error(

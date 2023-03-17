@@ -27,9 +27,9 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * Extracts teams and users out of an LDAP server.

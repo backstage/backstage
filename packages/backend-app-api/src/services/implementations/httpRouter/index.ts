@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { httpRouterFactory } from './httpRouterFactory';
-export type { HttpRouterFactoryOptions } from './httpRouterFactory';
+export { httpRouterServiceFactory } from './httpRouterServiceFactory';
+export type { HttpRouterFactoryOptions } from './httpRouterServiceFactory';

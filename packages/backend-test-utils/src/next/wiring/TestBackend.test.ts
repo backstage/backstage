@@ -40,10 +40,8 @@ beforeAll(async () => {
           env.registerInit({
             deps: { lifecycle: coreServices.lifecycle },
             async init({ lifecycle }) {
-              lifecycle.addShutdownHook({
-                fn() {
-                  globalTestBackendHasBeenStopped = true;
-                },
+              lifecycle.addShutdownHook(() => {
+                globalTestBackendHasBeenStopped = true;
               });
             },
           });
@@ -145,7 +143,7 @@ describe('TestBackend', () => {
             lifecycle: coreServices.lifecycle,
           },
           async init({ lifecycle }) {
-            lifecycle.addShutdownHook({ fn: shutdownSpy });
+            lifecycle.addShutdownHook(shutdownSpy);
           },
         });
       },
@@ -165,7 +163,7 @@ describe('TestBackend', () => {
     expect.assertions(2);
 
     const testPlugin = createBackendPlugin({
-      id: 'test',
+      pluginId: 'test',
       register(env) {
         env.registerInit({
           deps: {
@@ -201,7 +199,7 @@ describe('TestBackend', () => {
 
   it('should allow making requests via supertest', async () => {
     const testPlugin = createBackendPlugin({
-      id: 'test',
+      pluginId: 'test',
       register(env) {
         env.registerInit({
           deps: {

@@ -20,14 +20,18 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   scaffolderActionsExtensionPoint,
   ScaffolderActionsExtensionPoint,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-import { TemplateFilter, TemplateGlobal } from './lib';
-import { createBuiltinActions, TaskBroker } from './scaffolder';
+import {
+  TemplateFilter,
+  TemplateGlobal,
+  TaskBroker,
+} from '@backstage/plugin-scaffolder-backend';
+import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
@@ -64,7 +68,7 @@ class ScaffolderActionsExtensionPointImpl
  */
 export const scaffolderPlugin = createBackendPlugin(
   (options: ScaffolderPluginOptions) => ({
-    id: 'scaffolder',
+    pluginId: 'scaffolder',
     register(env) {
       const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
 

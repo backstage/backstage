@@ -169,7 +169,7 @@ function convertColumns<T extends object>(
   theme: BackstageTheme,
 ): TableColumn<T>[] {
   return columns.map(column => {
-    const headerStyle: React.CSSProperties = {};
+    const headerStyle: React.CSSProperties = column.headerStyle ?? {};
 
     let cellStyle = column.cellStyle || {};
 
@@ -239,6 +239,8 @@ export interface TableProps<T extends object = {}>
   emptyContent?: ReactNode;
   onStateChange?: (state: TableState) => any;
 }
+
+export interface TableOptions<T extends object = {}> extends Options<T> {}
 
 export function TableToolbar(toolbarProps: {
   toolbarRef: MutableRefObject<any>;

@@ -26,7 +26,7 @@ import {
   GroupEntity,
   UserEntity,
 } from '@backstage/catalog-model';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import {
   MicrosoftGraphClient,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,

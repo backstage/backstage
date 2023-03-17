@@ -25,10 +25,8 @@ import {
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import {
-  catalogEntityReadPermission,
-  CatalogEntityDocument,
-} from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';

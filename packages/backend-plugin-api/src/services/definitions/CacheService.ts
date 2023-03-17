@@ -17,29 +17,11 @@
 import { JsonValue } from '@backstage/types';
 
 /**
- * Manages access to cache stores that plugins get.
+ * Options passed to {@link CacheService.set}.
  *
  * @public
  */
-export interface CacheService {
-  /**
-   * Provides backend plugins cache connections for themselves.
-   *
-   * @remarks
-   *
-   * The purpose of this method is to allow plugins to get isolated data stores
-   * so that plugins are discouraged from cache-level integration and/or cache
-   * key collisions.
-   */
-  getClient: (options?: CacheClientOptions) => CacheClient;
-}
-
-/**
- * Options passed to {@link CacheClient.set}.
- *
- * @public
- */
-export type CacheClientSetOptions = {
+export type CacheServiceSetOptions = {
   /**
    * Optional TTL in milliseconds. Defaults to the TTL provided when the client
    * was set up (or no TTL if none are provided).
@@ -48,17 +30,31 @@ export type CacheClientSetOptions = {
 };
 
 /**
- * A pre-configured, storage agnostic cache client suitable for use by
+ * Options passed to {@link CacheService.withOptions}.
+ *
+ * @public
+ */
+export type CacheServiceOptions = {
+  /**
+   * An optional default TTL (in milliseconds) to be set when getting a client
+   * instance. If not provided, data will persist indefinitely by default (or
+   * can be configured per entry at set-time).
+   */
+  defaultTtl?: number;
+};
+
+/**
+ * A pre-configured, storage agnostic cache service suitable for use by
  * Backstage plugins.
  *
  * @public
  */
-export interface CacheClient {
+export interface CacheService {
   /**
    * Reads data from a cache store for the given key. If no data was found,
    * returns undefined.
    */
-  get(key: string): Promise<JsonValue | undefined>;
+  get<TValue extends JsonValue>(key: string): Promise<TValue | undefined>;
 
   /**
    * Writes the given data to a cache store, associated with the given key. An
@@ -68,25 +64,16 @@ export interface CacheClient {
   set(
     key: string,
     value: JsonValue,
-    options?: CacheClientSetOptions,
+    options?: CacheServiceSetOptions,
   ): Promise<void>;
 
   /**
    * Removes the given key from the cache store.
    */
   delete(key: string): Promise<void>;
-}
 
-/**
- * Options given when constructing a {@link CacheClient}.
- *
- * @public
- */
-export type CacheClientOptions = {
   /**
-   * An optional default TTL (in milliseconds) to be set when getting a client
-   * instance. If not provided, data will persist indefinitely by default (or
-   * can be configured per entry at set-time).
+   * Creates a new {@link CacheService} instance with the given options.
    */
-  defaultTtl?: number;
-};
+  withOptions(options: CacheServiceOptions): CacheService;
+}

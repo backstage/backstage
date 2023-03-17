@@ -1,5 +1,205 @@
 # @backstage/plugin-scaffolder
 
+## 1.12.0
+
+### Minor Changes
+
+- 0d61fcca9c3: Update `EntityPicker` to use the fully qualified entity ref instead of the humanized version.
+- 8f4d13f21cf: Move `useTaskStream`, `TaskBorder`, `TaskLogStream` and `TaskSteps` into `scaffolder-react`.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- be3cddaab5f: Getting credentials in the RepoUrlPicker now also works for targets without owner (e.g. Bitbucket Server).
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- eb877bad736: Create an "Other Templates" group when groups are given to scaffolder/next.
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 0aae4596296: Fix the scaffolder validator for arrays when the item is a field in the object
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-scaffolder-react@1.2.0
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration-react@1.1.11
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/plugin-scaffolder-common@1.2.6
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 0d61fcca9c3: Update `EntityPicker` to use the fully qualified entity ref instead of the humanized version.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- 0aae4596296: Fix the scaffolder validator for arrays when the item is a field in the object
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-scaffolder-react@1.2.0-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/integration-react@1.1.11-next.2
+  - @backstage/plugin-permission-react@0.4.11-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- 8f4d13f21cf: Move `useTaskStream`, `TaskBorder`, `TaskLogStream` and `TaskSteps` into `scaffolder-react`.
+
+### Patch Changes
+
+- be3cddaab5f: Getting credentials in the RepoUrlPicker now also works for targets without owner (e.g. Bitbucket Server).
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- eb877bad736: Create an "Other Templates" group when groups are given to scaffolder/next.
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.2.0-next.1
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-permission-react@0.4.11-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/plugin-scaffolder-react@1.1.1-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.11-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- d6bb12a2e7: - **Deprecation** - Deprecated the following exports, please import them directly from `@backstage/plugin-scaffolder-react` instead
+
+  ```
+  createScaffolderLayout
+  ScaffolderLayouts
+  LayoutOptions
+  LayoutTemplate
+  ```
+
+- a521379688: Migrating the `TemplateEditorPage` to work with the new components from `@backstage/plugin-scaffolder-react`
+- 074f7e81b5: Added a missing validator check for items in an array
+- 8c2966536b: Embed scaffolder workflow in other components
+
+### Patch Changes
+
+- 04f717a8e1: `scaffolder/next`: bump `react-jsonschema-form` libraries to `v5-stable`
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- cbab8ac107: lock versions of `@rjsf/*-beta` packages
+- 346d6b6630: Upgrade `@rjsf` version 5 dependencies to `beta.18`
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- d2ddde2108: Add `ScaffolderLayouts` to `NextScaffolderPage`
+- 0f0da2f256: Prefer schema ordering of template properties during review content generation.
+- 38992bdbaf: Fixed bug in review step refactor that caused schema-based display settings for individual property values to be discarded.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.1.0
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-react@0.4.10
+  - @backstage/plugin-scaffolder-common@1.2.5
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.1.0-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
+## 1.11.0-next.1
+
+### Patch Changes
+
+- 04f717a8e1: `scaffolder/next`: bump `react-jsonschema-form` libraries to `v5-stable`
+- 346d6b6630: Upgrade `@rjsf` version 5 dependencies to `beta.18`
+- 0f0da2f256: Prefer schema ordering of template properties during review content generation.
+- 38992bdbaf: Fixed bug in review step refactor that caused schema-based display settings for individual property values to be discarded.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.1.0-next.1
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/integration-react@1.1.10-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+
 ## 1.11.0-next.0
 
 ### Minor Changes

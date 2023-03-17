@@ -22,7 +22,7 @@ import {
   EntityProviderConnection,
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { readAzureDevOpsConfigs } from './config';
 import { Logger } from 'winston';
 import { AzureDevOpsConfig } from './types';
@@ -166,17 +166,23 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(file: CodeSearchResultItem): LocationSpec {
+    const target = this.createObjectUrl(file);
+
     return {
       type: 'url',
-      target: this.createObjectUrl(file),
+      target: target,
       presence: 'required',
     };
   }
 
   private createObjectUrl(file: CodeSearchResultItem): string {
-    const baseUrl = `https://${this.config.host}/${this.config.organization}/${this.config.project}`;
-    return encodeURI(
-      `${baseUrl}/_git/${file.repository.name}?path=${file.path}`,
-    );
+    const baseUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}`;
+
+    let fullUrl = `${baseUrl}/_git/${file.repository.name}?path=${file.path}`;
+    if (this.config.branch) {
+      fullUrl += `&version=GB${this.config.branch}`;
+    }
+
+    return encodeURI(fullUrl);
   }
 }

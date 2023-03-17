@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { cacheFactory } from './cacheFactory';
+export { cacheServiceFactory } from './cacheServiceFactory';

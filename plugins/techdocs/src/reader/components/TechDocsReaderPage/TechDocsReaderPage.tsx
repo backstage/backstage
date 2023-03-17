@@ -102,6 +102,7 @@ CONFIGURATION 4: <TechDocsReaderPage> and provided content in <Route>
     <ExpandableNavigation />
     <ReportIssue />
     <TextSize />
+    <LightBox />
   </TechDocsAddons>
 </Route>
 
@@ -131,10 +132,8 @@ export type TechDocsReaderLayoutProps = {
  * Default TechDocs reader page structure composed with a header and content
  * @public
  */
-export const TechDocsReaderLayout = ({
-  withSearch,
-  withHeader = true,
-}: TechDocsReaderLayoutProps) => {
+export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
+  const { withSearch, withHeader = true } = props;
   return (
     <Page themeId="documentation">
       {withHeader && <TechDocsReaderPageHeader />}

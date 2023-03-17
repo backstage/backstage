@@ -18,6 +18,7 @@ import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
+import { TrpcApiDefinitionWidget } from '../TrpcDefinitionWidget';
 
 /** @public */
 export type ApiDefinitionWidget = {
@@ -59,6 +60,13 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       title: 'gRPC',
       component: definition => (
         <GrpcApiDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'trpc',
+      title: 'tRPC',
+      component: definition => (
+        <TrpcApiDefinitionWidget definition={definition} />
       ),
     },
   ];

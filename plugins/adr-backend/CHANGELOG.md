@@ -1,5 +1,109 @@
 # @backstage/plugin-adr-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- 2a73ded3861: Support MADR v3 format
+- 8bf24946c66: Adjust express dependencies to be the same as the rest of the project
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-adr-common@0.2.7
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 2a73ded3861: Support MADR v3 format
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-adr-common@0.2.7-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 8bf24946c6: Adjust express dependencies to be the same as the rest of the project
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.7-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 0a32911d8a: Display title, status and date in ADR navigation, sourced from ADR content and reverse order.
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.6-next.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/plugin-adr-common@0.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.2.7-next.0
 
 ### Patch Changes

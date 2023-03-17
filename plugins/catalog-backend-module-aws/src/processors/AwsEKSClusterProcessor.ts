@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/catalog-model';
+} from '@backstage/plugin-kubernetes-common';
 import { Credentials, EKS } from 'aws-sdk';
 import { AWSCredentialFactory } from '../types';
 

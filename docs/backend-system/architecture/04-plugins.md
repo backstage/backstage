@@ -6,6 +6,8 @@ sidebar_label: Plugins
 description: Backend plugins
 ---
 
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
+
 Plugins provide the actual base features of a Backstage backend. Each plugin operates completely independently of all other plugins and they only communicate with each other through network calls. This means that there is a strong degree of isolation between plugins, and that each plugin can be considered a separate microservice. While a default Backstage project has all plugins installed within a single backend, it is also possible to split this setup into multiple backends, with each backend housing one or more plugins.
 
 ## Defining a Plugin
@@ -20,7 +22,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export const examplePlugin = createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -51,7 +53,7 @@ export interface ExamplePluginOptions {
 
 export const examplePlugin = createBackendPlugin(
   (options?: ExamplePluginOptions) => ({
-    id: 'example',
+    pluginId: 'example',
     register(env) {
       env.registerInit({
         deps: {

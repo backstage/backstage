@@ -1,0 +1,16 @@
+{
+  "name": "@internal/foo",
+  "dependencies": {
+    "@internal/bar": "1.0.0"
+  },
+  "devDependencies": {
+    "lodash": "*"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+  "files": [
+    "dist",
+    "type-utils"
+  ]
+}

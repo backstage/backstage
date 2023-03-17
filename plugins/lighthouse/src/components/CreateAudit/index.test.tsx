@@ -32,7 +32,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
-import { Audit, lighthouseApiRef, LighthouseRestApi } from '../../api';
+import { Audit, LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import * as data from '../../__fixtures__/create-audit-response.json';
 import CreateAudit from './index';
 

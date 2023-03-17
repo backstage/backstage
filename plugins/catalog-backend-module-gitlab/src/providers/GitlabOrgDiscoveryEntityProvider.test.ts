@@ -22,8 +22,8 @@ import {
 } from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { rest } from 'msw';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { graphql, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
 
@@ -184,7 +184,6 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           gitlab: {
             'test-id': {
               host: 'test-gitlab',
-              group: 'test-group',
               orgEnabled: true,
             },
           },
@@ -319,20 +318,26 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
         ];
         return res(ctx.json(response));
       }),
-      rest.get(
-        `https://api.gitlab.example/api/v4/users/1/memberships`,
-        (_req, res, ctx) => {
-          const response = [
-            {
-              source_id: 2,
-              source_name: 'Group 2',
-              source_type: 'Namespace',
-              access_level: 50,
-            },
-          ];
-          return res(ctx.json(response));
-        },
-      ),
+      graphql
+        .link('https://test-gitlab/api/graphql')
+        .operation(async (req, res, ctx) =>
+          res(
+            ctx.data({
+              group: {
+                groupMembers: {
+                  nodes:
+                    req.variables.group === 'group1/group2'
+                      ? [{ user: { id: 'gid://gitlab/User/1' } }]
+                      : [],
+                  pageInfo: {
+                    endCursor: 'end',
+                    hasNextPage: false,
+                  },
+                },
+              },
+            }),
+          ),
+        ),
     );
 
     await provider.connect(entityProviderConnection);
@@ -350,9 +355,10 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           kind: 'User',
           metadata: {
             annotations: {
-              'backstage.io/managed-by-location': 'url:test-gitlab/test1',
+              'backstage.io/managed-by-location':
+                'url:https://test-gitlab/test1',
               'backstage.io/managed-by-origin-location':
-                'url:test-gitlab/test1',
+                'url:https://test-gitlab/test1',
               'test-gitlab/user-login': 'https://gitlab.example/test1',
             },
             name: 'test1',
@@ -375,9 +381,9 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           metadata: {
             annotations: {
               'backstage.io/managed-by-location':
-                'url:test-gitlab/teams/group1-group2',
+                'url:https://test-gitlab/group1/group2',
               'backstage.io/managed-by-origin-location':
-                'url:test-gitlab/teams/group1-group2',
+                'url:https://test-gitlab/group1/group2',
               'test-gitlab/team-path': 'group1/group2',
             },
             description: 'Group2',

@@ -31,6 +31,10 @@ export interface CodeSearchResultItem {
   repository: {
     name: string;
   };
+  project: {
+    name: string;
+  };
+  branch?: string;
 }
 
 const isCloud = (host: string) => host === 'dev.azure.com';
@@ -47,7 +51,7 @@ export async function codeSearch(
   const searchBaseUrl = isCloud(azureConfig.host)
     ? 'https://almsearch.dev.azure.com'
     : `https://${azureConfig.host}`;
-  const searchUrl = `${searchBaseUrl}/${org}/${project}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
+  const searchUrl = `${searchBaseUrl}/${org}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
 
   let items: CodeSearchResultItem[] = [];
   let hasMorePages = true;
@@ -59,7 +63,7 @@ export async function codeSearch(
       }),
       method: 'POST',
       body: JSON.stringify({
-        searchText: `path:${path} repo:${repo || '*'}`,
+        searchText: `path:${path} repo:${repo || '*'} proj:${project || '*'}`,
         $skip: items.length,
         $top: PAGE_SIZE,
       }),

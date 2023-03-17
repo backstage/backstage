@@ -1,5 +1,116 @@
 # @backstage/cli
 
+## 0.22.4
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 2011b86052c: Added templates for new plugin Web and Node.js libraries.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- b4cd145b574: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 8bf24946c66: Adjust express dependencies to be the same as the rest of the project
+- 17271841de8: Updated frontend plugin template to use some more recent features
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2
+  - @backstage/errors@1.1.5
+  - @backstage/config-loader@1.1.9
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.22.4-next.1
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/release-manifests@0.0.9-next.0
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/types@1.0.2
+
+## 0.22.4-next.0
+
+### Patch Changes
+
+- b4cd145b57: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 8bf24946c6: Adjust express dependencies to be the same as the rest of the project
+- 17271841de: Updated frontend plugin template to use some more recent features
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- a9c50af76b: Fixed Webpack loader patterns so that they properly match the file suffix only.
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.1
+
+### Patch Changes
+
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.0
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
 ## 0.22.1
 
 ### Patch Changes

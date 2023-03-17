@@ -14,6 +14,7 @@ import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
+import { ListItemProps } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core';
 import { ListProps } from '@material-ui/core';
 import { PropsWithChildren } from 'react';
@@ -55,14 +56,13 @@ export type DefaultResultListItemProps = {
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
+  toggleModal?: () => void;
 };
 
 // @public (undocumented)
-export const HighlightedSearchResultText: ({
-  text,
-  preTag,
-  postTag,
-}: HighlightedSearchResultTextProps) => JSX.Element;
+export const HighlightedSearchResultText: (
+  props: HighlightedSearchResultTextProps,
+) => JSX.Element;
 
 // @public
 export type HighlightedSearchResultTextProps = {
@@ -98,14 +98,9 @@ export type SearchAutocompleteComponent = <Option>(
 ) => JSX.Element;
 
 // @public
-export const SearchAutocompleteDefaultOption: ({
-  icon,
-  primaryText,
-  primaryTextTypographyProps,
-  secondaryText,
-  secondaryTextTypographyProps,
-  disableTextTypography,
-}: SearchAutocompleteDefaultOptionProps) => JSX.Element;
+export const SearchAutocompleteDefaultOption: (
+  props: SearchAutocompleteDefaultOptionProps,
+) => JSX.Element;
 
 // @public
 export type SearchAutocompleteDefaultOptionProps = {
@@ -191,7 +186,7 @@ export type SearchContextValue = {
 
 // @public (undocumented)
 export const SearchFilter: {
-  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  (props: SearchFilterWrapperProps): JSX.Element;
   Checkbox(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
@@ -232,6 +227,7 @@ export type SearchPaginationBaseProps = {
   className?: string;
   total?: number;
   cursor?: string;
+  hasNextPage?: boolean;
   onCursorChange?: (pageCursor: string) => void;
   limit?: number;
   limitLabel?: ReactNode;
@@ -262,7 +258,11 @@ export type SearchPaginationLimitText = (params: {
 // @public
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
-  'pageLimit' | 'onPageLimitChange' | 'pageCursor' | 'onPageCursorChange'
+  | 'pageLimit'
+  | 'onPageLimitChange'
+  | 'pageCursor'
+  | 'onPageCursorChange'
+  | 'hasNextPage'
 >;
 
 // @public
@@ -390,6 +390,16 @@ export type SearchResultListItemExtensionOptions<
   component: () => Promise<Component>;
   predicate?: (result: SearchResult_2) => boolean;
 };
+
+// @public
+export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
+  PropsWithChildren<
+    {
+      rank?: number;
+      result?: SearchDocument;
+      noTrack?: boolean;
+    } & Omit<ListItemProps, 'button'>
+  >;
 
 // @public
 export const SearchResultListItemExtensions: (

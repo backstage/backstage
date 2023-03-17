@@ -258,3 +258,5 @@ declare module 'webpack-node-externals' {
     }
   }
 }
+
+declare module '@esbuild-kit/cjs-loader' {}

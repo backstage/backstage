@@ -28,6 +28,8 @@ metadata:
     - url: https://example.com/alert
       title: Alerts
       icon: alert
+  annotations:
+    backstage.io/linguist: 'https://github.com/backstage/backstage/tree/master/plugins/playlist'
 spec:
   type: service
   lifecycle: experimental

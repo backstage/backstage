@@ -14,77 +14,80 @@ Take, for example, the "Add" button in our todo list application. When a user cl
 
 Let's start by adding the packages we will need:
 
-```
+```bash
 $ yarn workspace @internal/plugin-todo-list \
   add @backstage/plugin-permission-react @internal/plugin-todo-list-common
 ```
 
 Let's make the following changes in `plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx`:
 
-```diff
-...
+```tsx title="plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx"
+import {
+  alertApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+/* highlight-add-start */
+import { usePermission } from '@backstage/plugin-permission-react';
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+/* highlight-add-end */
 
-  import {
-    alertApiRef,
-    discoveryApiRef,
-    fetchApiRef,
-    useApi,
-  } from '@backstage/core-plugin-api';
-+ import { usePermission } from '@backstage/plugin-permission-react';
-+ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
+  const title = useRef('');
+  /* highlight-add-next-line */
+  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({
+    permission: todoListCreatePermission,
+  });
 
-...
-
-  function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
-    const title = useRef('');
-+   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
-
-    return (
-      <>
-        <Typography variant="body1">Add todo</Typography>
-        <Box
-          component="span"
-          alignItems="flex-end"
-          display="flex"
-          flexDirection="row"
-        >
-          <TextField
-            placeholder="Write something here..."
-            onChange={e => (title.current = e.target.value)}
-          />
--         <Button variant="contained" onClick={handleAdd}>
--           Add
--         </Button>
-+         {!loadingPermission && (
-+           <Button disabled={!canAddTodo} variant="contained" onClick={handleAdd}>
-+             Add
-+           </Button>
-+         )}
-        </Box>
-      </>
-    );
-  }
-
-...
+  return (
+    <>
+      <Typography variant="body1">Add todo</Typography>
+      <Box
+        component="span"
+        alignItems="flex-end"
+        display="flex"
+        flexDirection="row"
+      >
+        <TextField
+          placeholder="Write something here..."
+          onChange={e => (title.current = e.target.value)}
+        />
+        {/* highlight-remove-start */}
+        <Button variant="contained" onClick={handleAdd}>
+          Add
+        </Button>
+        {/* highlight-remove-end */}
+        {/* highlight-add-start */}
+        {!loadingPermission && (
+          <Button
+            disabled={!canAddTodo}
+            variant="contained"
+            onClick={() => onAdd(title.current)}
+          >
+            Add
+          </Button>
+        )}
+        {/* highlight-add-end */}
+      </Box>
+    </>
+  );
+}
 ```
 
 Here we are using the [`usePermission` hook](https://backstage.io/docs/reference/plugin-permission-react.usepermission) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
 
 It's really that simple! Let's change our policy to test the disabled button:
 
-```diff
-// packages/backend/src/plugins/permission.ts
-
-...
-
-    if (isPermission(request.permission, todoListCreatePermission)) {
-      return {
--       result: AuthorizeResult.ALLOW,
-+       result: AuthorizeResult.DENY,
-      };
-    }
-
-...
+```ts title="packages/backend/src/plugins/permission.ts"
+if (isPermission(request.permission, todoListCreatePermission)) {
+  return {
+    /* highlight-remove-next-line */
+    result: AuthorizeResult.ALLOW,
+    /* highlight-add-next-line */
+    result: AuthorizeResult.DENY,
+  };
+}
 ```
 
 And now you should see that you are not able to create a todo item from the frontend!
@@ -93,97 +96,110 @@ And now you should see that you are not able to create a todo item from the fron
 
 Providing a disabled state can be a helpful signal to users, but there may be cases where hiding the element is preferred. For such cases, you can use the provided [`RequirePermission` component](https://backstage.io/docs/reference/plugin-permission-react.requirepermission):
 
-```diff
-// plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx
+```tsx title="plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx"
+import {
+  alertApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+/* highlight-remove-next-line */
+import { usePermission } from '@backstage/plugin-permission-react';
+/* highlight-add-next-line */
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 
-...
+export const TodoListPage = () => {
+  // ..
+  <Grid container spacing={3} direction="column">
+    {/* highlight-remove-start */}
+    <Grid item>
+      <AddTodo onAdd={handleAdd} />
+    </Grid>
+    {/* highlight-remove-end */}
+    {/* highlight-add-start */}
+    <RequirePermission permission={todoListCreatePermission} errorPage={<></>}>
+      <Grid item>
+        <AddTodo onAdd={handleAdd} />
+      </Grid>
+    </RequirePermission>
+    {/* highlight-add-end */}
+    <Grid item>
+      <TodoList key={key} onEdit={setEdit} />
+    </Grid>
+  </Grid>;
+};
 
-  import {
-    alertApiRef,
-    discoveryApiRef,
-    fetchApiRef,
-    useApi,
-  } from '@backstage/core-plugin-api';
-- import { usePermission } from '@backstage/plugin-permission-react';
-+ import { RequirePermission } from '@backstage/plugin-permission-react';
-  import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
+  const title = useRef('');
+  /* highlight-remove-next-line */
+  const { loading: loadingPermission, allowed: canAddTodo } = usePermission({
+    permission: todoListCreatePermission,
+  });
 
-...
-
-  export const TodoListPage = () => {
-
-...
-
-          <Grid container spacing={3} direction="column">
--           <Grid item>
--             <AddTodo onAdd={handleAdd} />
--           </Grid>
-+           <RequirePermission permission={todoListCreatePermission} errorPage={<></>}>
-+             <Grid item>
-+               <AddTodo onAdd={handleAdd} />
-+             </Grid>
-+           </RequirePermission>
-            <Grid item>
-              <TodoList key={key} onEdit={setEdit} />
-            </Grid>
-          </Grid>
-
-...
-
-
-  function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
-    const title = useRef('');
--   const { loading: loadingPermission, allowed: canAddTodo } = usePermission({ permission: todoListCreatePermission });
-
-    return (
-      <>
-        <Typography variant="body1">Add todo</Typography>
-        <Box
-          component="span"
-          alignItems="flex-end"
-          display="flex"
-          flexDirection="row"
-        >
-          <TextField
-            placeholder="Write something here..."
-            onChange={e => (title.current = e.target.value)}
-          />
--         {!loadingPermission && (
--           <Button disabled={!canAddTodo} variant="contained" onClick={handleAdd}>
--             Add
--           </Button>
--         )}
-+         <Button variant="contained" onClick={handleAdd}>
-+           Add
-+         </Button>
-        </Box>
-      </>
-    );
-  }
-
-...
+  return (
+    <>
+      <Typography variant="body1">Add todo</Typography>
+      <Box
+        component="span"
+        alignItems="flex-end"
+        display="flex"
+        flexDirection="row"
+      >
+        <TextField
+          placeholder="Write something here..."
+          onChange={e => (title.current = e.target.value)}
+        />
+        {/* highlight-remove-start */}
+        {!loadingPermission && (
+          <Button
+            disabled={!canAddTodo}
+            variant="contained"
+            onClick={() => onAdd(title.current)}
+          >
+            Add
+          </Button>
+        )}
+        {/* highlight-remove-end */}
+        {/* highlight-add-start */}
+        <Button variant="contained" onClick={() => onAdd(title.current)}>
+          Add
+        </Button>
+        {/* highlight-add-end */}
+      </Box>
+    </>
+  );
+}
 ```
 
 Now you should find that the component for adding a todo list item does not render at all. Success!
 
 You can also use `RequirePermission` to prevent access to routes as well. Here's how that would look in your `packages/app/src/App.tsx`:
 
-```diff
-+ import { RequirePermission } from '@backstage/plugin-permission-react';
-+ import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-start */
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+/* highlight-add-end */
 
-...
-
+const routes = (
+  <FlatRoutes>
     <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
-+   <Route path="/todo-list" element={
-       // You might want to create a "read" permission for this, we are just using this one as an example
-+      <RequirePermission permission={todoListCreatePermission}>
-+        <TodoListPage />
-+      </RequirePermission>
+    {/* highlight-add-next-line */}
+    <Route path="/todo-list" element={
+      {/* You might want to create a "read" permission for this, we are just using this one as an example */}
+      {/* highlight-add-start */}
+      <RequirePermission permission={todoListCreatePermission}>
+        <TodoListPage />
+      </RequirePermission>
+      {/* highlight-add-end */}}
+      {/* ... */}
+    </Route>
   </FlatRoutes>
+);
 ```
 
 Now if you try to navigate to `https://localhost:3000/todo-list` you'll get and error page if you do not have permission.

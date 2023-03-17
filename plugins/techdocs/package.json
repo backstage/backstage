@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs",
   "description": "The Backstage plugin that renders technical documentation for your components",
-  "version": "1.4.4-next.0",
+  "version": "1.6.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -52,7 +52,7 @@
     "dompurify": "^2.2.9",
     "event-source-polyfill": "1.0.25",
     "git-url-parse": "^13.0.0",
-    "jss": "~10.9.0",
+    "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4"
@@ -78,7 +78,7 @@
     "@types/node": "^16.11.26",
     "canvas": "^2.10.2",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist",

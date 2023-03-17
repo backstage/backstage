@@ -21,7 +21,7 @@ import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
 import { NextFieldExtensionComponentProps } from '../../extensions';
-import { LayoutTemplate } from '../../types';
+import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {

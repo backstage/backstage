@@ -1,15 +1,27 @@
 {
   "name": "@backstage/plugin-scaffolder",
   "description": "The Backstage plugin that helps you create new things",
-  "version": "1.11.0-next.0",
+  "version": "1.12.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "frontend-plugin"
@@ -24,7 +36,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "start": "backstage-cli package start",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
@@ -57,7 +69,8 @@
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
     "@rjsf/material-ui": "^3.2.1",
-    "@rjsf/utils": "5.0.0-beta.18",
+    "@rjsf/utils": "5.1.0",
+    "@rjsf/validator-ajv8": "5.1.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "git-url-parse": "^13.0.0",
@@ -69,7 +82,6 @@
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
-    "use-immer": "^0.8.0",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
     "zod": "~3.18.0",
@@ -95,10 +107,9 @@
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
     "event-source-polyfill": "1.0.25",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ]
 }

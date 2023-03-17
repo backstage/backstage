@@ -14,7 +14,8 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
+      DOCUSAURUS_SSR_CONCURRENCY: 5
 
     steps:
       - uses: actions/checkout@v3
@@ -49,13 +50,13 @@ jobs:
         working-directory: storybook
 
       - name: move storybook dist into microsite
-        run: mv storybook/dist/ microsite/build/backstage/storybook
+        run: mv storybook/dist/ microsite/build/storybook
 
       - name: Check the build output
-        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
+        run: ls microsite/build && ls microsite/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
-          folder: microsite/build/backstage
+          folder: microsite/build

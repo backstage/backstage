@@ -29,7 +29,9 @@ auth:
       jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
 ```
 
-You can find the project number and service ID in the Google Cloud Console.
+The full `audience` value can be obtained by visiting your [Identity-Aware Proxy Google Cloud console](https://console.cloud.google.com/security/iap), selecting your project, finding your Backend Service to proxy, clicking the 3 vertical dots then "Get JWT Audience Code", and copying from the resulting popup, which will look similar to the following:
+
+![Identity-Aware Proxy JWT Audience Code popup](../../assets/auth/gcp-iap-jwt-audience-code-popup.png)
 
 This config section must be in place for the provider to load at all. Now let's
 add the provider itself.
@@ -43,7 +45,7 @@ callbacks in actual code as well as described below.
 Add a `providerFactories` entry to the router in
 `packages/backend/src/plugins/auth.ts`.
 
-```ts
+```ts title="packages/backend/src/plugins/auth.ts"
 import { providers } from '@backstage/plugin-auth-backend';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
@@ -97,12 +99,18 @@ sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 It is recommended to use the `ProxiedSignInPage` for this provider, which is
 installed in `packages/app/src/App.tsx` like this:
 
-```diff
-+import { ProxiedSignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { ProxiedSignInPage } from '@backstage/core-components';
 
- const app = createApp({
-   components: {
-+    SignInPage: props => <ProxiedSignInPage {...props} provider="gcp-iap" />,
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => <ProxiedSignInPage {...props} provider="gcp-iap" />,
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.

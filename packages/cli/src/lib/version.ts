@@ -19,7 +19,7 @@ import semver from 'semver';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
 
-/* eslint-disable monorepo/no-relative-import */
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 
 /*
 This is a list of all packages used by the templates. If dependencies are added or removed,

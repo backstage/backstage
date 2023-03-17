@@ -1,10 +1,12 @@
 ---
 id: index
 title: Core Backend Service APIs
-sidebar_label: Core Services
+sidebar_label: Overview
 # prettier-ignore
 description: Core backend service APIs
 ---
+
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 The default backend provides several [core services](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/coreServices.ts) out of the box which includes access to configuration, logging, URL Readers, databases and more.
 
@@ -31,7 +33,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: { http: coreServices.httpRouter },
@@ -57,11 +59,11 @@ There's additional configuration that you can optionally pass to setup the `http
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { httpRouterFactory } from '@backstage/backend-app-api';
+import { httpRouterServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    httpRouterFactory({
+    httpRouterServiceFactory({
       getPath: (pluginId: string) => `/plugins/${pluginId}`,
     }),
   ],
@@ -84,7 +86,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -114,11 +116,11 @@ There's additional options that you can pass to configure the root HTTP Router s
 You can configure the root HTTP Router service by passing the options to the `createBackend` function.
 
 ```ts
-import { rootHttpRouterFactory } from '@backstage/backend-app-api';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    rootHttpRouterFactory({
+    rootHttpRouterServiceFactory({
       configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
         // the built in middleware is provided through an option in the configure function
         app.use(middleware.helmet());
@@ -155,7 +157,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -181,11 +183,11 @@ There's additional configuration that you can optionally pass to setup the `conf
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { configFactory } from '@backstage/backend-app-api';
+import { configServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    configFactory({
+    configServiceFactory({
       argv: [
         '--config',
         '/backstage/app-config.development.yaml',
@@ -213,7 +215,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -286,7 +288,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -325,7 +327,7 @@ import {
 import { resolvePackagePath } from '@backstage/backend-common';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -364,7 +366,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -395,7 +397,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -436,11 +438,11 @@ There's additional configuration that you can optionally pass to setup the `iden
 You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
 
 ```ts
-import { identityFactory } from '@backstage/backend-app-api';
+import { identityServiceFactory } from '@backstage/backend-app-api';
 
 const backend = createBackend({
   services: [
-    identityFactory({
+    identityServiceFactory({
       issuer: 'backstage',
       algorithms: ['ES256', 'RS256'],
     }),
@@ -463,7 +465,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -477,10 +479,7 @@ createBackendPlugin({
           // do some other stuff.
         }, 1000);
 
-        lifecycle.addShutdownHook({
-          fn: () => clearInterval(interval),
-          logger,
-        });
+        lifecycle.addShutdownHook(() => clearInterval(interval));
       },
     });
   },
@@ -497,17 +496,19 @@ The following example shows how to override the default implementation of the li
 
 ```ts
 class MyCustomLifecycleService implements RootLifecycleService {
-  constructor(private readonly logger: LoggerService) {
-    ['SIGKILL', 'SIGTERM'].map(signal =>
-      process.on(signal, () => this.shutdown()),
-    );
-  }
+  constructor(private readonly logger: LoggerService) {}
 
   #isCalled = false;
-  #shutdownTasks: Array<LifecycleServiceShutdownHook> = [];
+  #shutdownTasks: Array<{
+    hook: LifecycleServiceShutdownHook;
+    options?: LifecycleServiceShutdownOptions;
+  }> = [];
 
-  addShutdownHook(options: LifecycleServiceShutdownHook): void {
-    this.#shutdownTasks.push(options);
+  addShutdownHook(
+    hook: LifecycleServiceShutdownHook,
+    options?: LifecycleServiceShutdownOptions,
+  ): void {
+    this.#shutdownTasks.push({ hook, options });
   }
 
   async shutdown(): Promise<void> {
@@ -518,10 +519,10 @@ class MyCustomLifecycleService implements RootLifecycleService {
 
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
-      this.#shutdownTasks.map(async hook => {
-        const { logger = this.logger } = hook;
+      this.#shutdownTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
         try {
-          await hook.fn();
+          await hook();
           logger.info(`Shutdown hook succeeded`);
         } catch (error) {
           logger.error(`Shutdown hook failed, ${error}`);
@@ -562,7 +563,7 @@ import {
 import { Router } from 'express';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -611,7 +612,7 @@ import {
 import { fetch } from 'node-fetch';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
@@ -650,7 +651,7 @@ import {
 import os from 'os';
 
 createBackendPlugin({
-  id: 'example',
+  pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {

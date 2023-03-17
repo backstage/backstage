@@ -33,7 +33,7 @@ import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import jsYaml from 'js-yaml';
 import {
-  Button as BackstageButton,
+  LinkButton as BackstageButton,
   CodeSnippet,
   StructuredMetadataTable,
   WarningPanel,

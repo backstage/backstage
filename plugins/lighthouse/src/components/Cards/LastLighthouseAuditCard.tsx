@@ -15,7 +15,11 @@
  */
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
+import {
+  Audit,
+  AuditCompleted,
+  LighthouseCategoryId,
+} from '@backstage/plugin-lighthouse-common';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import AuditStatusIcon from '../AuditStatusIcon';
 import {

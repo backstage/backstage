@@ -1,5 +1,85 @@
 # @backstage/app-defaults
 
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/core-app-api@1.6.0
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-permission-react@0.4.11
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-app-api@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-permission-react@0.4.11-next.2
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-app-api@1.5.1-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-permission-react@0.4.11-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/core-app-api@1.5.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-permission-react@0.4.11-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-app-api@1.5.0
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-permission-react@0.4.10
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-app-api@1.4.1-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-react@0.4.9
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.4.1-next.0
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-permission-react@0.4.9
+
 ## 1.1.0
 
 ### Minor Changes

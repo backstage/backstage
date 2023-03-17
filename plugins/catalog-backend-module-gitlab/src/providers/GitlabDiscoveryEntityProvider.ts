@@ -22,7 +22,7 @@ import {
   EntityProviderConnection,
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
@@ -61,7 +61,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    const providerConfigs = readGitlabConfigs(config);
+    const providerConfigs = readGitlabConfigs(
+      config,
+      options.logger.child({ target: 'GitlabDiscoveryEntityProvider' }),
+    );
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
 
@@ -177,11 +180,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      if (this.config.branch === '*' && project.default_branch === undefined) {
+      if (
+        this.config.fallbackBranch === '*' &&
+        project.default_branch === undefined
+      ) {
         continue;
       }
 
-      const project_branch = project.default_branch ?? this.config.branch;
+      const project_branch =
+        project.default_branch ?? this.config.fallbackBranch;
 
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
@@ -204,7 +211,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(project: GitLabProject): LocationSpec {
-    const project_branch = project.default_branch ?? this.config.branch;
+    const project_branch = project.default_branch ?? this.config.fallbackBranch;
     return {
       type: 'url',
       target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,

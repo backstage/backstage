@@ -21,10 +21,10 @@ catalog:
     gitlab:
       yourProviderId:
         host: gitlab-host # Identifies one of the hosts set up in the integrations
-        branch: main # Optional. Uses `master` as default
-        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole project will be scanned
+        fallbackBranch: main # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
+        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        projectPattern: /[\s\S]*/ # Optional. Filters found projects based on provided patter. Defaults to `/[\s\S]*/`, what means to not filter anything
+        projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
         schedule: # optional; same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
@@ -36,15 +36,13 @@ As this provider is not one of the default providers, you will first need to ins
 the gitlab catalog plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
 ```
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-
+```ts title="packages/backend/src/plugins/catalog.ts"
 import { GitlabDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
 const builder = await CatalogBuilder.create(env);
@@ -91,17 +89,22 @@ The target is composed of three parts:
 Finally, you will have to add the processor in the catalog initialization code
 of your backend.
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  builder.addProcessor(
-+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
-+  );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addProcessor(
+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { databaseFactory } from './databaseFactory';
+export { databaseServiceFactory } from './databaseServiceFactory';

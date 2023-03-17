@@ -26,7 +26,7 @@ import {
 } from './defaultTransformers';
 import { withLocations } from '../providers/GithubOrgEntityProvider';
 
-import { DeferredEntity } from '@backstage/plugin-catalog-backend';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 // Graphql types
 
@@ -195,7 +195,7 @@ export async function getOrganizationTeams(
             parentTeam { slug }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
-              nodes { 
+              nodes {
                 avatarUrl,
                 bio,
                 email,

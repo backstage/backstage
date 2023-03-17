@@ -26,7 +26,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from '../lib';
@@ -46,7 +46,7 @@ import { getOrganizationRepositories } from '../lib';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  *
  * @public
- **/
+ */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;

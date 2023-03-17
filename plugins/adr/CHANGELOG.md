@@ -1,5 +1,121 @@
 # @backstage/plugin-adr
 
+## 0.4.1
+
+### Patch Changes
+
+- d293f4aaf83: Updated readme instructions
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration-react@1.1.11
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-adr-common@0.2.7
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/integration-react@1.1.11-next.2
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-adr-common@0.2.7-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/integration-react@1.1.11-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-adr-common@0.2.7-next.0
+  - @backstage/plugin-search-common@1.2.1
+  - @backstage/plugin-search-react@1.5.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 0a32911d8a: Display title, status and date in ADR navigation, sourced from ADR content and reverse order.
+- ec34b535c0: The `AdrSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- ec34b535c0: Support displaying an icon on `AdrSearchResultListItem`
+- 496cf6aff0: Render the common `<MissingAnnotationEmptyState />` component when the `backstage.io/adr-location` annotation is missing from the component
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/integration-react@1.1.10
+  - @backstage/plugin-adr-common@0.2.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- ec34b535c0: The `AdrSearchResultListItem` component is now a search result extension. This means that when rendered as a child of components that render search extensions, the `result`, `rank`, and `highlight` properties are optional. See the [documentation](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions) for more details.
+
+### Patch Changes
+
+- ec34b535c0: Support displaying an icon on `AdrSearchResultListItem`
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-search-react@1.5.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.10-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.6-next.1
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-search-common@1.2.1
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-search-react@1.5.0-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/integration-react@1.1.10-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-adr-common@0.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

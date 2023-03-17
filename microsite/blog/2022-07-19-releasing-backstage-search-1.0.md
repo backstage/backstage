@@ -1,11 +1,11 @@
 ---
 # prettier-ignore
-title: Releasing Backstage Search 1.0 
+title: Releasing Backstage Search 1.0
 author: Emma Indal, Spotify
 authorURL: https://www.linkedin.com/in/emma-indal
 ---
 
-**TL;DR** If you’ve been waiting for Backstage Search to come out of beta, we’re excited to announce that [Backstage Search 1.0](https://backstage.io/docs/features/search/search-overview#backstage-search-10) is here!
+**TL;DR** If you’ve been waiting for Backstage Search to come out of beta, we’re excited to announce that [Backstage Search 1.0](https://backstage.io/docs/features/search/#backstage-search-10) is here!
 
 We first released the Backstage Search Platform over a year ago. Backstage Search Platform is a search experience built for you, by you.
 

@@ -287,10 +287,7 @@ export interface GetEntityFacetsRequest {
    * (exported from this package), which means that you assert on the existence
    * of that key, no matter what its value is.
    */
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntityFilterQuery;
   /**
    * Dot separated paths for the facets to extract from each entity.
    *
@@ -381,6 +378,67 @@ export type ValidateEntityResponse =
   | { valid: false; errors: SerializedError[] };
 
 /**
+ * The request type for {@link CatalogClient.queryEntities}.
+ *
+ * @public
+ */
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
+
+/**
+ * A request type for {@link CatalogClient.queryEntities}.
+ * The method takes this type in an initial pagination request,
+ * when requesting the first batch of entities.
+ *
+ * The properties filter, sortField, query and sortFieldOrder, are going
+ * to be immutable for the entire lifecycle of the following requests.
+ *
+ * @public
+ */
+export type QueryEntitiesInitialRequest = {
+  fields?: string[];
+  limit?: number;
+  filter?: EntityFilterQuery;
+  orderFields?: EntityOrderQuery;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
+};
+
+/**
+ * A request type for {@link CatalogClient.queryEntities}.
+ * The method takes this type in a pagination request, following
+ * the initial request.
+ *
+ * @public
+ */
+export type QueryEntitiesCursorRequest = {
+  fields?: string[];
+  limit?: number;
+  cursor: string;
+};
+
+/**
+ * The response type for {@link CatalogClient.queryEntities}.
+ *
+ * @public
+ */
+export type QueryEntitiesResponse = {
+  /* The list of entities for the current request */
+  items: Entity[];
+  /* The number of entities among all the requests */
+  totalItems: number;
+  pageInfo: {
+    /* The cursor for the next batch of entities */
+    nextCursor?: string;
+    /* The cursor for the previous batch of entities */
+    prevCursor?: string;
+  };
+};
+
+/**
  * A client for interacting with the Backstage software catalog through its API.
  *
  * @public
@@ -413,6 +471,49 @@ export interface CatalogApi {
     request: GetEntitiesByRefsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesByRefsResponse>;
+
+  /**
+   * Gets paginated entities from the catalog.
+   *
+   * @remarks
+   *
+   * @example
+   *
+   * ```
+   * const response = await catalogClient.queryEntities({
+   *   filter: [{ kind: 'group' }],
+   *   limit: 20,
+   *   fullTextFilter: {
+   *     term: 'A',
+   *   }
+   *   orderFields: { field: 'metadata.name' order: 'asc' },
+   * });
+   * ```
+   *
+   * this will match all entities of type group having a name starting
+   * with 'A', ordered by name ascending.
+   *
+   * The response will contain a maximum of 20 entities. In case
+   * more than 20 entities exist, the response will contain a nextCursor
+   * property that can be used to fetch the next batch of entities.
+   *
+   * ```
+   * const secondBatchResponse = await catalogClient
+   *  .queryEntities({ cursor: response.nextCursor });
+   * ```
+   *
+   * secondBatchResponse will contain the next batch of (maximum) 20 entities,
+   * together with a prevCursor property, useful to fetch the previous batch.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  queryEntities(
+    request?: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
 
   /**
    * Gets entity ancestor information, i.e. the hierarchy of parent entities

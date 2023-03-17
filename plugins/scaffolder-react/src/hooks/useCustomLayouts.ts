@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { useElementFilter } from '@backstage/core-plugin-api';
-import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../next/layouts/keys';
-import { type LayoutOptions } from '../next/types';
+import { LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts/keys';
+import { LayoutOptions } from '../layouts';
 
 /**
  * Hook that returns all custom field extensions from the current outlet.

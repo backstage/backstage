@@ -7,6 +7,7 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -17,8 +18,10 @@ import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -108,7 +111,7 @@ export const catalogPlugin: BackstagePlugin<
 
 // @public (undocumented)
 export const CatalogSearchResultListItem: (
-  props: CatalogSearchResultListItemProps,
+  props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
 ) => JSX.Element | null;
 
 // @public
@@ -116,7 +119,7 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
   // (undocumented)
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   // (undocumented)
   rank?: number;
   // (undocumented)
@@ -227,6 +230,8 @@ export interface DependencyOfComponentsCardProps {
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -234,6 +239,10 @@ export interface DependsOnComponentsCardProps {
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
+  // (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // (undocumented)
+  title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -351,7 +360,7 @@ export function EntityProcessingErrorsPanel(): JSX.Element | null;
 
 // @public (undocumented)
 export const EntitySwitch: {
-  (props: EntitySwitchProps): JSX.Element | null;
+  (props: EntitySwitchProps): JSX.Element;
   Case: (_props: EntitySwitchCaseProps) => null;
 };
 
@@ -372,6 +381,8 @@ export interface EntitySwitchCaseProps {
 export interface EntitySwitchProps {
   // (undocumented)
   children: ReactNode;
+  // (undocumented)
+  renderMultipleMatches?: 'first' | 'all';
 }
 
 // @public @deprecated (undocumented)
@@ -432,6 +443,11 @@ export function isNamespace(
 
 // @public
 export function isOrphan(entity: Entity): boolean;
+
+// @public
+export function isResourceType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {
