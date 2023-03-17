@@ -142,6 +142,14 @@ describe('isEntityWith', () => {
     const checkEntity = isEntityWith({ kind: 'another-type', type: 'service' });
     expect(checkEntity(missingSpecType)).not.toBeTruthy();
   });
+  it('allows a check against no criteria', () => {
+    const checkEntity = isEntityWith({});
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
+  it('allows a check against empty criteria', () => {
+    const checkEntity = isEntityWith({ kind: [], type: [] });
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
 });
 
 describe('isKind', () => {

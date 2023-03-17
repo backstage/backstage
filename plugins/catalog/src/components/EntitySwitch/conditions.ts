@@ -17,20 +17,22 @@
 import { Entity } from '@backstage/catalog-model';
 
 export interface EntityPredicates {
-  kind: string | string[];
+  kind?: string | string[];
   type?: string | string[];
 }
 
-function strCmp(a: string | undefined, b: string | undefined): boolean {
+function strCmp(a: unknown, b: string | undefined): boolean {
   return Boolean(
-    a && a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
+    a &&
+      typeof a === 'string' &&
+      a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
   );
 }
 
-function strCmpAll(value: string | undefined, cmpValues: string | string[]) {
+function strCmpAll(value: unknown, cmpValues: string | string[]) {
   return typeof cmpValues === 'string'
     ? strCmp(value, cmpValues)
-    : cmpValues.some(cmpVal => strCmp(value, cmpVal));
+    : cmpValues.length === 0 || cmpValues.some(cmpVal => strCmp(value, cmpVal));
 }
 
 /**
@@ -58,28 +60,21 @@ export function isResourceType(types: string | string[]) {
 }
 
 /**
- *
  * For use in EntitySwitch.Case. Matches if the entity is the specified kind and type (if present).
  * @public
  */
 export function isEntityWith(predicate: EntityPredicates) {
   return (entity: Entity) => {
-    if (!strCmpAll(entity.kind, predicate.kind)) {
+    if (predicate.kind && !strCmpAll(entity.kind, predicate.kind)) {
       return false;
     }
 
-    if (
-      !predicate.type ||
-      (Array.isArray(predicate.type) && predicate.type.length === 0)
-    ) {
-      // there's no type check, return true
-      return true;
-    } else if (typeof entity.spec?.type !== 'string') {
-      // we'll reject any entity's with some non-string (including undefined/null) spec.type value
+    if (predicate.type && !strCmpAll(entity.spec?.type, predicate.type)) {
       return false;
     }
 
-    return strCmpAll(entity.spec.type, predicate.type);
+    // there's no type check, return true
+    return true;
   };
 }
 
