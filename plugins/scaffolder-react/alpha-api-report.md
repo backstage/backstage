@@ -191,6 +191,9 @@ export interface TemplateCardProps {
 }
 
 // @alpha
+export const TemplateCategoryPicker: () => JSX.Element | null;
+
+// @alpha
 export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
 
 // @alpha

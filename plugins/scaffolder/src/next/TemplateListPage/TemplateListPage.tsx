@@ -32,7 +32,8 @@ import {
   CatalogFilterLayout,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { CategoryPicker } from './CategoryPicker';
+import { TemplateCategoryPicker } from '@backstage/plugin-scaffolder-react/alpha';
+
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
@@ -110,7 +111,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
                 initialFilter="all"
                 availableFilters={['all', 'starred']}
               />
-              <CategoryPicker />
+              <TemplateCategoryPicker />
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>

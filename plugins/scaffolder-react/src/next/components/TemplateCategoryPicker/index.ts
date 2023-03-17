@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './Stepper';
-export * from './TemplateCard';
-export * from './ReviewState';
-export * from './TemplateGroup';
-export * from './Workflow';
-export * from './TemplateOutputs';
-export * from './Form';
-export * from './TaskSteps';
-export * from './TaskLogStream';
-export * from './TemplateCategoryPicker';
+export { TemplateCategoryPicker } from './TemplateCategoryPicker';
