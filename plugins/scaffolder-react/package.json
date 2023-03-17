@@ -64,7 +64,7 @@
     "@rjsf/material-ui": "^3.2.1",
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.1.0",
     "@rjsf/utils": "5.1.0",
-    "@rjsf/validator-ajv8": "5.1.0",
+    "@rjsf/validator-ajv8": "5.3.0",
     "@types/json-schema": "^7.0.9",
     "classnames": "^2.2.6",
     "humanize-duration": "^3.25.1",
