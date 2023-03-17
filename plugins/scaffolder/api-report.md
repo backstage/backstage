@@ -110,8 +110,8 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
     showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 
@@ -120,8 +120,8 @@ export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
     showCounts?: boolean | undefined;
-    kinds?: string[] | undefined;
     helperText?: string | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 
@@ -259,8 +259,8 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
@@ -285,8 +285,8 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gerrit?: string[] | undefined;
               }
             | undefined;
@@ -425,6 +425,9 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
