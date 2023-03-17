@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export * from './EntityExplorerContent';
+export * from './CatalogKindExploreContent';
 export * from './ExploreLayout';
+export * from './DomainCard';

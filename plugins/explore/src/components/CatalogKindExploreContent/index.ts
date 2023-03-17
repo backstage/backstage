@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { EntityExplorerContent } from './EntityExplorerContent';
+export { CatalogKindExploreContent } from './CatalogKindExploreContent';

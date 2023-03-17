@@ -19,9 +19,9 @@ import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { EntityExplorerContent } from './EntityExplorerContent';
+import { CatalogKindExploreContent } from './CatalogKindExploreContent';
 
-describe('<EntityExplorerContent />', () => {
+describe('<CatalogKindExploreContent />', () => {
   const catalogApi = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
@@ -79,7 +79,7 @@ describe('<EntityExplorerContent />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <EntityExplorerContent kind="domain" />
+        <CatalogKindExploreContent kind="domain" />
       </Wrapper>,
       mountedRoutes,
     );
@@ -95,7 +95,7 @@ describe('<EntityExplorerContent />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <EntityExplorerContent kind="domain" tabTitle="Our Areas" />
+        <CatalogKindExploreContent kind="domain" tabTitle="Our Areas" />
       </Wrapper>,
       mountedRoutes,
     );
@@ -108,7 +108,7 @@ describe('<EntityExplorerContent />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <EntityExplorerContent kind="domain" />
+        <CatalogKindExploreContent kind="domain" />
       </Wrapper>,
       mountedRoutes,
     );
@@ -124,7 +124,7 @@ describe('<EntityExplorerContent />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <EntityExplorerContent kind="domain" />
+        <CatalogKindExploreContent kind="domain" />
       </Wrapper>,
       mountedRoutes,
     );

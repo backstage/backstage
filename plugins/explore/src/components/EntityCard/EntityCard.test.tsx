@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { DomainEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { EntityCard } from './EntityCard';
 
 describe('<EntityCard />', () => {
-  it('renders a domain card', async () => {
-    const entity: DomainEntity = {
+  it('renders an entity card', async () => {
+    const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Domain',
       metadata: {

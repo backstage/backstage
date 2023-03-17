@@ -30,10 +30,11 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import pluralize from 'pluralize';
 
 const Body = (props: { kind: string }) => {
   const { kind } = props;
-  const kindPlural = `${kind}s`;
+  const kindPlural = pluralize(kind);
   const catalogApi = useApi(catalogApiRef);
   const {
     value: entities,
@@ -44,7 +45,7 @@ const Body = (props: { kind: string }) => {
       filter: { kind },
     });
     return response.items as Entity[];
-  }, [catalogApi]);
+  }, [kind]);
 
   if (loading) {
     return <Progress />;
@@ -87,23 +88,21 @@ const Body = (props: { kind: string }) => {
 };
 
 /** @public */
-export const EntityExplorerContent = (props: {
+export const CatalogKindExploreContent = (props: {
   tabTitle?: string;
   kind: string;
 }) => {
   const { kind, tabTitle } = props;
+  const kindLowercase = kind.toLocaleLowerCase();
+  const kindCapitalized = `${kind[0].toLocaleUpperCase()}${kind.substring(1)}`;
   return (
     <Content noPadding>
-      <ContentHeader
-        title={
-          tabTitle || `${kind[0].toLocaleUpperCase()}${kind.substring(1)}s`
-        }
-      >
+      <ContentHeader title={tabTitle || `${pluralize(kindCapitalized)}`}>
         <SupportButton>
-          Discover the {kind.toLocaleLowerCase()}s in your ecosystem.
+          Discover the {pluralize(kindLowercase)} in your ecosystem.
         </SupportButton>
       </ContentHeader>
-      <Body kind={kind.toLocaleLowerCase()} />
+      <Body kind={kindLowercase} />
     </Content>
   );
 };
