@@ -3958,7 +3958,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
-    "@apidevtools/swagger-parser": ^10.1.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -4050,7 +4049,6 @@ __metadata:
     jest-css-modules: ^2.1.0
     jest-environment-jsdom: ^29.0.2
     jest-runtime: ^29.0.2
-    js-yaml: ^4.1.0
     json-schema: ^0.4.0
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
@@ -4062,7 +4060,6 @@ __metadata:
     nodemon: ^2.0.2
     npm-packlist: ^5.0.0
     ora: ^5.3.0
-    p-limit: ^3.0.2
     postcss: ^8.1.0
     process: ^0.11.10
     react-dev-utils: ^12.0.0-next.60
@@ -9611,6 +9608,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/repo-tools@workspace:packages/repo-tools"
   dependencies:
+    "@apidevtools/swagger-parser": ^10.1.0
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -9626,8 +9624,11 @@ __metadata:
     fs-extra: 10.1.0
     glob: ^8.0.3
     is-glob: ^4.0.3
+    js-yaml: ^4.1.0
+    lodash: ^4.17.21
     minimatch: ^5.1.1
     mock-fs: ^5.1.0
+    p-limit: ^3.0.2
     ts-node: ^10.0.0
   peerDependencies:
     "@microsoft/api-extractor-model": "*"

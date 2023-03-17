@@ -93,7 +93,7 @@ jobs:
         run: node scripts/verify-api-reference.js
 
       - name: verify openapi.yaml matches schema/openapi.ts files
-        run: yarn backstage-cli repo schema:openapi:verify
+        run: yarn backstage-repo-tools schema:openapi:verify
 
       - name: verify doc links
         run: node scripts/verify-links.js

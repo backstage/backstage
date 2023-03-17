@@ -15,13 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import { paths } from '../../lib/paths';
 import YAML from 'js-yaml';
 import chalk from 'chalk';
 import { resolve } from 'path';
-import { PackageGraph } from '../../lib/monorepo';
-import pLimit from 'p-limit';
-import { relative as relativePath } from 'path';
+import { runner } from './runner';
 
 async function generate(
   directoryPath: string,
@@ -44,36 +41,9 @@ async function generate(
   );
 }
 
-export async function command() {
-  try {
-    await generate(paths.resolveTarget('.'));
-    console.log(chalk.green('OpenAPI files successfully generated.'));
-  } catch (err) {
-    console.error(chalk.red(err.message));
-    process.exit(1);
-  }
-}
-
-export async function bulkCommand(): Promise<void> {
-  const packages = await PackageGraph.listTargetPackages();
-  const limit = pLimit(5);
-
-  const resultsList = await Promise.all(
-    packages.map(pkg =>
-      limit(async () => {
-        let resultText = '';
-        try {
-          await generate(pkg.dir, { skipMissingYamlFile: true });
-        } catch (err) {
-          resultText = err.message;
-        }
-
-        return {
-          relativeDir: relativePath(paths.targetRoot, pkg.dir),
-          resultText,
-        };
-      }),
-    ),
+export async function bulkCommand(paths: string[] = []): Promise<void> {
+  const resultsList = await runner(paths, (dir: string) =>
+    generate(dir, { skipMissingYamlFile: true }),
   );
 
   let failed = false;
@@ -93,5 +63,7 @@ export async function bulkCommand(): Promise<void> {
 
   if (failed) {
     process.exit(1);
+  } else {
+    console.log(chalk.green('Generated all files.'));
   }
 }

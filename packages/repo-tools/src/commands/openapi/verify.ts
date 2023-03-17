@@ -15,41 +15,16 @@
  */
 
 import fs from 'fs-extra';
-import { paths } from '../../lib/paths';
 import YAML from 'js-yaml';
-import { isEqual } from 'lodash';
-import { join, resolve } from 'path';
+import { isEqual, cloneDeep } from 'lodash';
+import { join } from 'path';
 import chalk from 'chalk';
-import { relative as relativePath } from 'path';
-import { PackageGraph } from '../../lib/monorepo';
-import { cloneDeep } from 'lodash';
+import { relative as relativePath, resolve as resolvePath } from 'path';
 import Parser from '@apidevtools/swagger-parser';
-import { detectRoleFromPackage } from '../../lib/role';
-import pLimit from 'p-limit';
+import { runner } from './runner';
+import { paths as cliPaths } from '../../lib/paths';
 
-const SUPPORTED_ROLES = [
-  'backend',
-  'backend-plugin',
-  'backend-plugin-module',
-  'node-library',
-];
-
-async function verify(
-  directoryPath: string,
-  config: { checkRole: boolean } = { checkRole: false },
-) {
-  const { checkRole } = config ?? {};
-  if (checkRole) {
-    const role = detectRoleFromPackage(
-      await fs.readJson(resolve(directoryPath, 'package.json')),
-    );
-
-    if (!role || !SUPPORTED_ROLES.includes(role)) {
-      console.log(chalk.red(`Unsupported role ${role}`));
-      process.exit(1);
-    }
-  }
-
+async function verify(directoryPath: string) {
   const openapiPath = join(directoryPath, 'openapi.yaml');
   if (!(await fs.pathExists(openapiPath))) {
     return;
@@ -62,51 +37,27 @@ async function verify(
   if (!(await fs.pathExists(schemaPath))) {
     throw new Error('No `schema/openapi.ts` file found.');
   }
-  const schema = await import(join(directoryPath, 'schema/openapi'));
+
+  const schema = await import(
+    resolvePath(join(directoryPath, 'schema/openapi'))
+  );
+
   if (!schema.default) {
     throw new Error('`schemas/openapi.ts` needs to have a default export.');
   }
   if (!isEqual(schema.default, yaml)) {
     throw new Error(
       `\`openapi.yaml\` and \`schema/openapi.ts\` do not match. Please run \`yarn --cwd ${relativePath(
-        paths.targetRoot,
+        cliPaths.targetRoot,
         directoryPath,
       )} schema:openapi:generate\` to regenerate \`schema/openapi.ts\`.`,
     );
   }
 }
 
-export async function command() {
-  try {
-    await verify(paths.resolveTarget('.'), { checkRole: true });
-    console.log(chalk.green('OpenAPI files are valid.'));
-  } catch (err) {
-    console.error(chalk.red(err.message));
-    process.exit(1);
-  }
-}
-
-export async function bulkCommand(): Promise<void> {
-  const packages = await PackageGraph.listTargetPackages();
-  const limit = pLimit(5);
-
-  const resultsList = await Promise.all(
-    packages.map(pkg =>
-      limit(async () => {
-        let resultText = '';
-        try {
-          await verify(pkg.dir);
-        } catch (err) {
-          resultText = err.message;
-        }
-
-        return {
-          relativeDir: relativePath(paths.targetRoot, pkg.dir),
-          resultText,
-        };
-      }),
-    ),
-  );
+export async function bulkCommand(paths: string[] = []): Promise<void> {
+  console.log(paths);
+  const resultsList = await runner(paths, dir => verify(dir));
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
@@ -121,5 +72,7 @@ export async function bulkCommand(): Promise<void> {
 
   if (failed) {
     process.exit(1);
+  } else {
+    console.log(chalk.green('Verified all files.'));
   }
 }
