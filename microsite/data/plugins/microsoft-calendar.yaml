@@ -11,6 +11,5 @@ npmPackageName: '@backstage/plugin-microsoft-calendar'
 tags:
   - Microsoft
   - calendar
-  - StatusNeo
   - Management
 addedDate: '2023-03-15'
