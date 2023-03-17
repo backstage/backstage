@@ -32596,11 +32596,11 @@ __metadata:
   linkType: hard
 
 "prom-client@npm:^14.0.1":
-  version: 14.1.1
-  resolution: "prom-client@npm:14.1.1"
+  version: 14.2.0
+  resolution: "prom-client@npm:14.2.0"
   dependencies:
     tdigest: ^0.1.1
-  checksum: 7ff3e85636b1f0ca590b38ad7c7c5f9998b985c06a1c572ffffc69f052d5b4baf84c9124923e3824c63f78b5e8400081c6472173d04382ca296ebdf36d774a88
+  checksum: d4c04e57616c72643dd02862d0d4bde09cf8869a19d0aef5e7b785e6e27d02439b66cdc165e3492f62d579fa91579183820870cc757a09b99399d2d02f46b9f1
   languageName: node
   linkType: hard
 
