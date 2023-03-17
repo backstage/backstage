@@ -28,7 +28,7 @@ import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { nextRouteRef } from '../routes';
+import { rootRouteRef } from '../../routes';
 
 describe('TemplateGroups', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -42,7 +42,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
@@ -64,7 +64,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
@@ -85,7 +85,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
@@ -106,7 +106,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
@@ -146,7 +146,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );
@@ -195,7 +195,7 @@ describe('TemplateGroups', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/next': nextRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );

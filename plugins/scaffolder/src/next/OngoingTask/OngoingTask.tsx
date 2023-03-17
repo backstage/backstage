@@ -21,7 +21,7 @@ import {
   ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { nextSelectedTemplateRouteRef } from '../routes';
+import { selectedTemplateRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
@@ -45,7 +45,7 @@ export const OngoingTask = (props: {
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
-  const templateRouteRef = useRouteRef(nextSelectedTemplateRouteRef);
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();

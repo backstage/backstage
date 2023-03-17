@@ -425,6 +425,9 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;

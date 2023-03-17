@@ -19,7 +19,7 @@ import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor } from '@testing-library/react';
-import { nextRouteRef } from '../routes';
+import { rootRouteRef } from '../../routes';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -59,7 +59,7 @@ describe('OngoingTask', () => {
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
         <OngoingTask />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
     const { getByText, getByTestId } = rendered;
 

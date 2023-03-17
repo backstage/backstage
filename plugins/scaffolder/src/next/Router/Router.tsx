@@ -33,12 +33,12 @@ import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
-  nextActionsRouteRef,
-  nextEditRouteRef,
-  nextScaffolderListTaskRouteRef,
-  nextScaffolderTaskRouteRef,
-  nextSelectedTemplateRouteRef,
-} from '../routes';
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderListTaskRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 import { OngoingTask } from '../OngoingTask';
 import { ActionsPage } from '../../components/ActionsPage';
@@ -115,7 +115,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
       <Route
-        path={nextSelectedTemplateRouteRef.path}
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateWizardPage
@@ -127,7 +127,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
       <Route
-        path={nextScaffolderTaskRouteRef.path}
+        path={scaffolderTaskRouteRef.path}
         element={
           <TaskPageComponent
             TemplateOutputsComponent={TemplateOutputsComponent}
@@ -135,7 +135,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
       <Route
-        path={nextEditRouteRef.path}
+        path={editRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateEditorPage
@@ -146,9 +146,9 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
 
-      <Route path={nextActionsRouteRef.path} element={<ActionsPage />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
-        path={nextScaffolderListTaskRouteRef.path}
+        path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
       />
       <Route
