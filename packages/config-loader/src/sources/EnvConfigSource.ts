@@ -16,24 +16,25 @@
 
 import { AppConfig } from '@backstage/config';
 import { assertError } from '@backstage/errors';
-import { JsonObject, Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
+import { JsonObject } from '@backstage/types';
 import { ConfigSource, ConfigSourceData } from './types';
 
-export function createConfigSource(
-  observable: Observable<{ data: ConfigSourceData[] }>,
-): ConfigSource {
-  return { configData$: observable };
-}
-
-export class EnvConfigSource {
+export class EnvConfigSource implements ConfigSource {
   static create(options: {
     env?: {
       [name: string]: string | undefined;
     };
   }): ConfigSource {
-    const data = readEnvConfig(options?.env ?? process.env);
-    return createConfigSource(ObservableImpl.of({ data }));
+    return new EnvConfigSource(options?.env ?? process.env);
+  }
+
+  private constructor(
+    private readonly env: { [name: string]: string | undefined },
+  ) {}
+
+  async *readConfigData(): AsyncIterator<{ data: ConfigSourceData[] }> {
+    const data = readEnvConfig(this.env);
+    return { data };
   }
 }
 

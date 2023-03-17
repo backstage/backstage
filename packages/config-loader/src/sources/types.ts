@@ -15,7 +15,6 @@
  */
 
 import { AppConfig } from '@backstage/config';
-import { Observable } from '@backstage/types';
 
 export interface ConfigSourceData extends AppConfig {
   /**
@@ -24,6 +23,12 @@ export interface ConfigSourceData extends AppConfig {
   path?: string;
 }
 
+export interface ReadConfigDataOptions {
+  signal?: AbortSignal;
+}
+
 export interface ConfigSource {
-  configData$: Observable<{ data: ConfigSourceData[] }>;
+  readConfigData(
+    options?: ReadConfigDataOptions,
+  ): AsyncIterator<{ data: ConfigSourceData[] }>;
 }
