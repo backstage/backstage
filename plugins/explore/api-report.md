@@ -34,7 +34,7 @@ export const catalogEntityRouteRef: ExternalRouteRef<
 
 // @public (undocumented)
 export const CatalogKindExploreContent: (props: {
-  tabTitle?: string;
+  title?: string;
   kind: string;
 }) => JSX.Element;
 
