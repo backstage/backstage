@@ -24280,12 +24280,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:5.11.2, graphql-ws@npm:^5.4.1, graphql-ws@npm:^5.9.0":
+"graphql-ws@npm:5.11.2":
   version: 5.11.2
   resolution: "graphql-ws@npm:5.11.2"
   peerDependencies:
     graphql: ">=0.11 <=16"
   checksum: 2c94b06c1919217dc15a0556474673de7aabcc7179a2982a87ded51856c105e4f4ee6d54a6c135a0a7f55d85a5997a6a15cff514959258885814adec6a61ff00
+  languageName: node
+  linkType: hard
+
+"graphql-ws@npm:^5.4.1, graphql-ws@npm:^5.9.0":
+  version: 5.12.0
+  resolution: "graphql-ws@npm:5.12.0"
+  peerDependencies:
+    graphql: ">=0.11 <=16"
+  checksum: 5c683e2d5bdadfcfec0639eda69b8a66ef275e68e64f662bd75da6779a87b34395cbce8e37cb66830a9febca1871f7dc2575e6814f6f6e899904fe72e245f216
   languageName: node
   linkType: hard
 
