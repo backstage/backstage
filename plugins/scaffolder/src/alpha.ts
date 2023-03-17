@@ -21,9 +21,6 @@ export {
   type TemplateGroupsProps,
   type NextRouterProps,
   type FormProps,
-  RegisterExistingButton,
-  type RegisterExistingButtonProps,
   type TemplateListPageProps,
   type TemplateWizardPageProps,
 } from './next';
-export { registerComponentRouteRef } from './routes';

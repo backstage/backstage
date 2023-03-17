@@ -21,6 +21,3 @@ export type {
   TemplateGroupFilter,
   TemplateGroupsProps,
 } from './TemplateGroups';
-
-export { RegisterExistingButton } from './RegisterExistingButton';
-export type { RegisterExistingButtonProps } from './RegisterExistingButton';
