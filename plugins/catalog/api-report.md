@@ -355,6 +355,16 @@ export const EntityListContainer: (props: {
 // @public
 export function EntityOrphanWarning(): JSX.Element;
 
+// Warning: (ae-missing-release-tag) "EntityPredicates" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EntityPredicates {
+  // (undocumented)
+  kind?: string | string[];
+  // (undocumented)
+  type?: string | string[];
+}
+
 // @public
 export function EntityProcessingErrorsPanel(): JSX.Element | null;
 
@@ -431,6 +441,11 @@ export interface HasSystemsCardProps {
 // @public
 export function isComponentType(
   types: string | string[],
+): (entity: Entity) => boolean;
+
+// @public
+export function isEntityWith(
+  predicate: EntityPredicates,
 ): (entity: Entity) => boolean;
 
 // @public
