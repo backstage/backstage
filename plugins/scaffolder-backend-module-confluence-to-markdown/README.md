@@ -1,6 +1,6 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
-Welcome to the `transform:confluence-to-markdown` action for the `scaffolder-backend`.
+Welcome to the `confluence:transform:markdown` action for the `scaffolder-backend`.
 
 ## Getting started
 
@@ -99,7 +99,7 @@ spec:
   steps:
     - id: create-docs
       name: Get markdown file created and update markdown.yaml file
-      action: transform:confluence-to-markdown
+      action: confluence:transform:markdown
       input:
         confluenceUrls: ${{ parameters.confluenceUrls }}
         repoUrl: ${{ parameters.repoUrl }}

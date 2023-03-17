@@ -39,7 +39,7 @@ jest.mock('fs-extra', () => ({
   writeStream: jest.fn(),
 }));
 
-describe('transform:confluence-to-markdown', () => {
+describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
   const worker = setupServer();
   setupRequestMockHandlers(worker);
