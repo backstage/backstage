@@ -91,11 +91,20 @@ export default class MicrosoftAuth {
   }
 
   private static resourceForScopes(scope: string): Promise<string> {
-    const audience =
-      scope
-        .split(' ')
-        .map(MicrosoftAuth.resourceForScope)
-        .find(aud => aud !== 'openid') ?? MicrosoftAuth.MicrosoftGraphID;
+    const audiences = scope
+      .split(' ')
+      .map(MicrosoftAuth.resourceForScope)
+      .filter(aud => aud !== 'openid');
+    if (audiences.length > 1) {
+      return Promise.reject(
+        new Error(
+          `Requested access token with scopes from multiple Azure resources: ${audiences.join(
+            ', ',
+          )}. Access tokens can only have a single audience.`,
+        ),
+      );
+    }
+    const audience = audiences[0] ?? MicrosoftAuth.MicrosoftGraphID;
     return Promise.resolve(audience);
   }
 

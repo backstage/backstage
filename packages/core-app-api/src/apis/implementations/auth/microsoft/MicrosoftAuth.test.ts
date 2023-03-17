@@ -69,6 +69,16 @@ describe('MicrosoftAuth', () => {
 
       expect(accessToken).toEqual('tokenForOtherResource');
     });
+
+    it('fails when requesting scopes for multiple resources at once', async () => {
+      const accessTokenPromise = microsoftAuth.getAccessToken(
+        'one-resource/scope other-resource/scope',
+      );
+
+      await expect(accessTokenPromise).rejects.toThrow(
+        'Requested access token with scopes from multiple Azure resources: one-resource, other-resource. Access tokens can only have a single audience.',
+      );
+    });
   });
 
   describe('without a refresh token', () => {
