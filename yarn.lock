@@ -4850,7 +4850,7 @@ __metadata:
     msw: ^1.0.0
     qs: ^6.9.6
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -5655,7 +5655,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5767,7 +5767,7 @@ __metadata:
     pluralize: ^8.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
     regression: ^2.0.1
     yup: ^0.32.9
   peerDependencies:
@@ -6275,7 +6275,7 @@ __metadata:
     msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
@@ -8733,7 +8733,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
-    recharts: ^2.0.0
+    recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -33850,7 +33850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recharts@npm:^2.0.0, recharts@npm:^2.1.5":
+"recharts@npm:^2.1.5":
   version: 2.1.9
   resolution: "recharts@npm:2.1.9"
   dependencies:
