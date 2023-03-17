@@ -2,7 +2,7 @@
 
 ## Summary
 
-This package is meant to provide a typed Express router for an OpenAPI spec. Based on the [oatx](https://github.com/varanauskas/oatx) library and adapted to override Express values.
+This package is meant to provide a typed Express router for an OpenAPI spec. Based on the [`oatx`](https://github.com/varanauskas/oatx) library and adapted to override Express values.
 
 ## Getting Started
 
