@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-react
 
+## 1.4.0
+
+### Minor Changes
+
+- 0a5b73b2926: Add possibility to re-use EntityPicker for filters with multiple select.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 24916d23494: Do not close `Autocomplete` powered multiple-selection filters when checking boxes
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-react@0.4.11
+
 ## 1.4.0-next.2
 
 ### Patch Changes

@@ -31,6 +31,7 @@ const manypkg = require('@manypkg/get-packages');
  * @property {ExtendedPackage} root
  * @property {ExtendedPackage[]} list
  * @property {Map<string, ExtendedPackage>} map
+ * @property {() => void} clearCache
  * @property {(path: string) => ExtendedPackage | undefined} byPath
  */
 
@@ -63,6 +64,9 @@ module.exports = (function () {
         return packages.packages.find(
           pkg => !path.relative(pkg.dir, filePath).startsWith('..'),
         );
+      },
+      clearCache() {
+        result = undefined;
       },
     };
     lastLoadAt = Date.now();

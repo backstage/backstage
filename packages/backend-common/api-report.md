@@ -301,6 +301,7 @@ export class FetchUrlReader implements UrlReader {
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
+  lastModifiedAt?: Date;
 }>;
 
 // @public
@@ -635,6 +636,7 @@ export class ReadUrlResponseFactory {
 // @public
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public

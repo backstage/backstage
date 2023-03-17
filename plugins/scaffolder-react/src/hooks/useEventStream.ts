@@ -44,6 +44,7 @@ export type ScaffolderStep = {
  * @public
  */
 export type TaskStream = {
+  cancelled: boolean;
   loading: boolean;
   error?: Error;
   stepLogs: { [stepId in string]: string[] };
@@ -66,6 +67,7 @@ type ReducerLogEntry = {
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
+  | { type: 'CANCELLED' }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
   | { type: 'ERROR'; data: Error };
@@ -111,7 +113,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
           }
 
           if (
-            ['cancelled', 'failed', 'completed'].includes(currentStep.status)
+            ['cancelled', 'completed', 'failed'].includes(currentStep.status)
           ) {
             currentStep.endedAt = entry.createdAt;
           }
@@ -128,6 +130,11 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       draft.output = action.data.body.output;
       draft.error = action.data.body.error;
 
+      return;
+    }
+
+    case 'CANCELLED': {
+      draft.cancelled = true;
       return;
     }
 
@@ -151,6 +158,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 export const useTaskEventStream = (taskId: string): TaskStream => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const [state, dispatch] = useImmerReducer(reducer, {
+    cancelled: false,
     loading: true,
     completed: false,
     stepLogs: {} as { [stepId in string]: string[] },
@@ -196,6 +204,9 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             switch (event.type) {
               case 'log':
                 return collectedLogEvents.push(event);
+              case 'cancelled':
+                dispatch({ type: 'CANCELLED' });
+                return undefined;
               case 'completion':
                 emitLogs();
                 dispatch({ type: 'COMPLETED', data: event });

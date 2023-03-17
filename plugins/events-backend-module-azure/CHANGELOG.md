@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.1.5
+
+### Patch Changes
+
+- a5de745ac17: Renamed `azureDevOpsEventRouterEventsModule` to `eventsModuleAzureDevOpsEventRouter` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/plugin-events-node@0.2.4
+
 ## 0.1.5-next.2
 
 ### Patch Changes

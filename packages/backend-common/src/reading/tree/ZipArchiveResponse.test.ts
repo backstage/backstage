@@ -59,10 +59,12 @@ describe('ZipArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: expect.any(Date),
       },
       {
         path: 'docs/index.md',
         content: expect.any(Function),
+        lastModifiedAt: expect.any(Date),
       },
     ]);
 
@@ -85,6 +87,7 @@ describe('ZipArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: expect.any(Date),
       },
     ]);
     const content = await files[0].content();
@@ -108,10 +111,12 @@ describe('ZipArchiveResponse', () => {
       {
         path: 'mkdocs.yml',
         content: expect.any(Function),
+        lastModifiedAt: expect.any(Date),
       },
       {
         path: 'docs/index.md',
         content: expect.any(Function),
+        lastModifiedAt: expect.any(Date),
       },
     ]);
     const contents = await Promise.all(files.map(f => f.content()));

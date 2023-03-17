@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, makeStyles, Paper } from '@material-ui/core';
 import {
   ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
-import { nextSelectedTemplateRouteRef } from '../routes';
+import { selectedTemplateRouteRef } from '../../routes';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
@@ -45,7 +45,7 @@ export const OngoingTask = (props: {
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
-  const templateRouteRef = useRouteRef(nextSelectedTemplateRouteRef);
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
@@ -105,6 +105,8 @@ export const OngoingTask = (props: {
   const templateName =
     taskStream.task?.spec.templateInfo?.entity?.metadata.name;
 
+  const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+
   return (
     <Page themeId="website">
       <Header
@@ -117,9 +119,11 @@ export const OngoingTask = (props: {
         subtitle={`Task ${taskId}`}
       >
         <ContextMenu
-          onToggleLogs={setLogVisibleState}
-          onStartOver={startOver}
+          cancelEnabled={cancelEnabled}
           logsVisible={logsVisible}
+          onStartOver={startOver}
+          onToggleLogs={setLogVisibleState}
+          taskId={taskId}
         />
       </Header>
       <Content className={classes.contentWrapper}>

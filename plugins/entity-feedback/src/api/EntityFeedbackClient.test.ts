@@ -121,6 +121,24 @@ describe('EntityFeedbackClient', () => {
     expect(response).toEqual(ratings);
   });
 
+  it('getRatingAggregates', async () => {
+    const ratings = { LIKE: 3, DISLIKE: 5 };
+
+    server.use(
+      rest.get(
+        `${mockBaseUrl}/ratings/${encodeURIComponent(
+          'component:default/service',
+        )}/aggregate`,
+        (_, res, ctx) => res(ctx.json(ratings)),
+      ),
+    );
+
+    const response = await client.getRatingAggregates(
+      'component:default/service',
+    );
+    expect(response).toEqual(ratings);
+  });
+
   it('recordResponse', async () => {
     expect.assertions(1);
     const response = {

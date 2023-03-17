@@ -1,5 +1,15 @@
 # @backstage/repo-tools
 
+## 0.1.3
+
+### Patch Changes
+
+- 32a4a05838c: Tweaked type dependency check to trim wildcard type imports.
+- 6ba8faf22ac: The API report generation process is now able to detect and generate reports for additional entry points declared in the package `"exports"` field.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/cli-common@0.1.12
+
 ## 0.1.3-next.1
 
 ### Patch Changes

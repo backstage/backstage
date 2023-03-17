@@ -28,7 +28,7 @@ const HomePage = () => {
   return (
     <Layout>
       <div className={homeStyles.homePage}>
-        <BannerSection greyBackground>
+        <BannerSection diagonalBottomBorder greyBackground>
           <BannerSectionGrid
             header={
               !hiddenNewsletterBanner && (
@@ -99,7 +99,7 @@ const HomePage = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection>
+        <BannerSection diagonalBorder>
           <BannerSectionGrid>
             <ContentBlock
               title="The Speed Paradox"
@@ -125,7 +125,7 @@ const HomePage = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection greenGradientBackground>
+        <BannerSection diagonalBorder greenGradientBackground>
           <div className={homeStyles.catalogContainer}>
             <div className="catalogTitle">
               <img
@@ -183,7 +183,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about the software catalog</h1>
 
@@ -196,7 +196,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenBottomGradientBackground>
+        <BannerSection diagonalBorder greenBottomGradientBackground>
           <div className={homeStyles.softwareTemplatesContainer}>
             <div className="softwareTemplatesTitle">
               <img
@@ -247,7 +247,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Build your own software templates</h1>
 
@@ -260,7 +260,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenBottomGradientBackground>
+        <BannerSection diagonalBorder greenBottomGradientBackground>
           <div className={homeStyles.softwareTemplatesContainer}>
             <div className="softwareTemplatesTitle">
               <img
@@ -307,7 +307,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about TechDocs</h1>
 
@@ -320,7 +320,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenGradientBackground>
+        <BannerSection diagonalBorder greenGradientBackground>
           <div className={homeStyles.softwareTemplatesContainer}>
             <div className="softwareTemplatesTitle">
               <img
@@ -368,7 +368,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about Backstage Search</h1>
 
@@ -381,7 +381,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenBottomGradientBackground>
+        <BannerSection diagonalBorder greenBottomGradientBackground>
           <BannerSectionGrid
             className={homeStyles.kubernetesSectionContainer}
             header={
@@ -424,7 +424,7 @@ const HomePage = () => {
           </BannerSectionGrid>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Learn more about the K8s plugin</h1>
 
@@ -437,7 +437,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenBottomGradientBackground>
+        <BannerSection diagonalBorder greenBottomGradientBackground>
           <div className={homeStyles.softwareTemplatesContainer}>
             <div className="softwareTemplatesTitle">
               <img
@@ -496,7 +496,7 @@ const HomePage = () => {
           </div>
         </BannerSection>
 
-        <BannerSection greenCallToActionGradientBackground>
+        <BannerSection diagonalBorder greenCallToActionGradientBackground>
           <div className="padding--lg text--center">
             <h1>Build a plugin</h1>
 

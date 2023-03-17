@@ -24,10 +24,10 @@ import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Workflow } from './Workflow';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { ScaffolderApi } from '../../../api/types';
-import { scaffolderApiRef } from '../../../api/ref';
+import { ScaffolderApi, scaffolderApiRef } from '../../../api';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
+  cancelTask: jest.fn(),
   scaffold: jest.fn(),
   getTemplateParameterSchema: jest.fn(),
   getIntegrationsList: jest.fn(),

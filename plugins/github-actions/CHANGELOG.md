@@ -1,5 +1,18 @@
 # @backstage/plugin-github-actions
 
+## 0.5.16
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/theme@0.2.18
+
 ## 0.5.16-next.2
 
 ### Patch Changes

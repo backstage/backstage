@@ -1,5 +1,16 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.27
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+
 ## 0.1.27-next.2
 
 ### Patch Changes

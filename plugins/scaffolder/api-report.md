@@ -360,6 +360,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
+  cancelTask(taskId: string): Promise<void>;
+  // (undocumented)
   dryRun(
     options: ScaffolderDryRunOptions_2,
   ): Promise<ScaffolderDryRunResponse_2>;
@@ -423,6 +425,9 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;

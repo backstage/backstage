@@ -502,6 +502,47 @@ describe('getKubernetesObjectsByEntity', () => {
     });
   });
 
+  it('pods api is returning garbage', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
+    );
+
+    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+      Promise.resolve({
+        errors: [],
+        responses: [
+          {
+            garbage: ['thrash', 'rubbish'],
+          },
+        ],
+      }),
+    );
+
+    mockMetrics(fetchPodMetricsByNamespaces);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(0);
+
+    expect(result).toStrictEqual({
+      items: [],
+    });
+  });
+
   it('retrieve objects for two clusters', async () => {
     getClustersByEntity.mockImplementation(() =>
       Promise.resolve({

@@ -1,5 +1,16 @@
 # @backstage/plugin-newrelic
 
+## 0.3.34
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 66fdf05a1ef: Updated installation instructions
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
 ## 0.3.34-next.2
 
 ### Patch Changes

@@ -414,6 +414,11 @@ export async function createRouter(
       delete task.secrets;
       res.status(200).json(task);
     })
+    .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const { taskId } = req.params;
+      await taskBroker.cancel?.(taskId);
+      res.status(200).json({ status: 'cancelled' });
+    })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
       const after =

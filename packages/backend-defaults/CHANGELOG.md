@@ -1,5 +1,17 @@
 # @backstage/backend-defaults
 
+## 0.1.8
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 482dae5de1c: Updated link to docs.
+- 5d0693edc09: Added a workaround for the cyclic dependency bug across `@backstage/backend-common` and `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+
 ## 0.1.8-next.2
 
 ### Patch Changes

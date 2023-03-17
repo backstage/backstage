@@ -133,6 +133,8 @@ spec:
               description: Light intensity measured in lumens.
             sentAt:
               $ref: "#/components/schemas/sentAt"
+            sentBy:
+              $ref: "#/components/schemas/sentBy"
         turnOnOffPayload:
           type: object
           properties:
@@ -144,6 +146,8 @@ spec:
               description: Whether to turn on or off the light.
             sentAt:
               $ref: "#/components/schemas/sentAt"
+            sentBy:
+              $ref: "#/components/schemas/sentBy"
         dimLightPayload:
           type: object
           properties:
@@ -154,10 +158,25 @@ spec:
               maximum: 100
             sentAt:
               $ref: "#/components/schemas/sentAt"
+            sentBy:
+              $ref: "#/components/schemas/sentBy"
         sentAt:
           type: string
           format: date-time
           description: Date and time when the message was sent.
+        sentBy:
+          type: object
+          description: Description of the message sender.
+          properties:
+            name:
+              type: string
+              description: Name of the sender.
+            type:
+              type: string
+              description: Type of the sender.
+              enum:
+              - user
+              - machine
 
       securitySchemes:
         apiKey:

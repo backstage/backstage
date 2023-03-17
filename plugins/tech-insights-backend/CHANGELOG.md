@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.9
+
+### Patch Changes
+
+- f244b589163: Add DB index to improve latency of latest fact query
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.1
+
 ## 0.5.9-next.2
 
 ### Patch Changes

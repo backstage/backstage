@@ -146,6 +146,9 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       files.push({
         path: this.getInnerPath(entry.fileName),
         content: async () => await streamToBuffer(content),
+        lastModifiedAt: entry.lastModFileTime
+          ? new Date(entry.lastModFileTime)
+          : undefined,
       });
     });
 

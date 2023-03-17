@@ -249,7 +249,7 @@ describe('CatalogClient', () => {
         { token },
       );
 
-      expect(response).toEqual({ items: [entity, null] });
+      expect(response).toEqual({ items: [entity, undefined] });
     });
   });
 

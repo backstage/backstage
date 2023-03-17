@@ -1,0 +1,25 @@
+--- a/packages/app/src/App.tsx
++++ b/packages/app/src/App.tsx
+@@ -30 +30,5 @@ import { Root } from './components/Root';
+-import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
++import {
++  AlertDisplay,
++  OAuthRequestDialog,
++  SignInPage,
++} from '@backstage/core-components';
+@@ -35,0 +40 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
++import { githubAuthApiRef } from '@backstage/core-plugin-api';
+@@ -38,0 +44,14 @@ const app = createApp({
++  components: {
++    SignInPage: props => (
++      <SignInPage
++        {...props}
++        provider={{
++          id: 'github-auth-provider',
++          title: 'GitHub',
++          message: 'Sign in using GitHub',
++          apiRef: githubAuthApiRef,
++        }}
++      />
++    ),
++  },

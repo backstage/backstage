@@ -359,11 +359,13 @@ export type ReadTreeResponseDirOptions = {
 export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
 };
 
 // @public
 export type ReadUrlOptions = {
   etag?: string;
+  lastModifiedAfter?: Date;
   signal?: AbortSignal;
 };
 
@@ -372,6 +374,7 @@ export type ReadUrlResponse = {
   buffer(): Promise<Buffer>;
   stream?(): Readable;
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public (undocumented)
@@ -420,6 +423,7 @@ export type SearchResponse = {
 export type SearchResponseFile = {
   url: string;
   content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
 };
 
 // @public (undocumented)

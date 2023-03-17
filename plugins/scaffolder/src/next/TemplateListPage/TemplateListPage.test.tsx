@@ -25,7 +25,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import React from 'react';
-import { nextRouteRef } from '../routes';
+import { rootRouteRef } from '../../routes';
 import { TemplateListPage } from './TemplateListPage';
 
 describe('TemplateListPage', () => {
@@ -63,7 +63,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByPlaceholderText('Search')).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByRole('menuitem', { name: /All/ })).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByText('Categories')).toBeInTheDocument();

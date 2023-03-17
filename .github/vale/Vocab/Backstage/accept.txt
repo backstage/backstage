@@ -158,6 +158,7 @@ img
 incentivised
 Indal
 indexable
+ingestors
 inlined
 inlinehilite
 integrator's
@@ -367,6 +368,7 @@ templaters
 Templaters
 TFRecord
 theia
+threenager
 thumbsup
 todo
 todos
@@ -403,6 +405,7 @@ validator
 validators
 varchar
 VMware
+Vodafone
 VPCs
 VSCode
 Wayfair

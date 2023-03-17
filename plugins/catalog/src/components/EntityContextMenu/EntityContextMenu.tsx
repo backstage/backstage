@@ -90,9 +90,13 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const alertApi = useApi(alertApiRef);
 
   const copyToClipboard = useCallback(() => {
-    window.navigator.clipboard
-      .writeText(window.location.toString())
-      .then(() => alertApi.post({ message: 'Copied!', severity: 'info' }));
+    window.navigator.clipboard.writeText(window.location.toString()).then(() =>
+      alertApi.post({
+        message: 'Copied!',
+        severity: 'info',
+        display: 'transient',
+      }),
+    );
   }, [alertApi]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
