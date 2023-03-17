@@ -44,9 +44,6 @@ import { ToolSearchResultListItem } from '@backstage/plugin-explore';
 import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  bar: {
-    padding: theme.spacing(1),
-  },
   filter: {
     '& + &': {
       marginTop: theme.spacing(2.5),

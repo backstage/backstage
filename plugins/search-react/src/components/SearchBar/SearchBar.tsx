@@ -19,8 +19,8 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import ClearButton from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import React, {
   ChangeEvent,
@@ -133,9 +133,9 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const endAdornment = (
         <InputAdornment position="end">
-          <IconButton aria-label="Clear" size="small" onClick={handleClear}>
-            <ClearButton />
-          </IconButton>
+          <Button aria-label="Clear" size="small" onClick={handleClear}>
+            Clear
+          </Button>
         </InputAdornment>
       );
 
