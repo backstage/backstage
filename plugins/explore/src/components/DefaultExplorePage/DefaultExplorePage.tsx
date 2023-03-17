@@ -34,9 +34,6 @@ export const DefaultExplorePage = () => {
       <ExploreLayout.Route path="domains" title="Domains">
         <CatalogKindExploreContent kind="domain" />
       </ExploreLayout.Route>
-      <ExploreLayout.Route path="systems" title="Systems">
-        <CatalogKindExploreContent kind="system" />
-      </ExploreLayout.Route>
       <ExploreLayout.Route path="groups" title="Groups">
         <GroupsExplorerContent />
       </ExploreLayout.Route>
