@@ -7,7 +7,7 @@ _This plugin was created through the Backstage CLI_
 ## Features
 
 1. You can add a tool that can be used to bookmark the web page or web application.
-2. You can create, update, and delete your tool and add other's tools that are public.
+2. You can create, and delete your tool and add other's tools that are public.
 3. The tool can be created by providing a title, logo and URL.
 4. Public tools are visible to all the members throughout the application and a private tool is visible to its creator only.
 5. Toolkit card to display all the tools which are either created or added by the user

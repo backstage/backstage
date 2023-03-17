@@ -7,7 +7,7 @@ _This plugin was created through the Backstage CLI_
 ## Features
 
 1. API to get the list of all tools.
-2. API to create, update, and delete your tool and add other's tools that are public.
+2. API to create, and delete your tool and add other's tools that are public.
 3. Public tools are visible to all the members throughout the application and a private tool is visible to its creator only.
 4. All the tools are user-specific.
 5. APIs to manage the tools.

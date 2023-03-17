@@ -32,6 +32,7 @@ export type Toolkit = {
   title?: string;
   url?: string;
   type?: string;
+  cloneId?: number;
   toolkits?: number[];
   toolkit?: number;
 };
@@ -135,10 +136,21 @@ export async function createRouter(
         DEFAULT_USER;
       const userId = user?.identity?.userEntityRef;
 
-      const data = await client('toolkit').whereNot({
-        owner: userId,
-        type: 'private',
-      });
+      let clonedToolkits = await client('toolkit')
+        .where({ owner: userId })
+        .whereNotNull('cloneId')
+        .select('cloneId');
+
+      clonedToolkits = clonedToolkits?.length
+        ? clonedToolkits.map(({ cloneId }) => cloneId)
+        : [];
+
+      const data = await client('toolkit')
+        .whereNot({
+          owner: userId,
+          type: 'private',
+        })
+        .whereNotIn('id', clonedToolkits);
       res.status(200).json({ data: data || [] });
     } catch (error) {
       res.status(500).send('Internal server error!');
@@ -219,6 +231,7 @@ export async function createRouter(
               logo: checkExists.logo,
               url: checkExists.url,
               type: 'private',
+              cloneId: checkExists.id,
               owner: userId,
             });
           }

@@ -24,7 +24,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { IconButton, makeStyles } from '@material-ui/core';
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { getMyToolkits } from '../../redux/slices/toolkit.slice';
+import { getMyToolkits, toggleModal } from '../../redux/slices/toolkit.slice';
 import { ITool, TToolkitMode } from '../../interfaces/interface';
 import { ShowToolkitModal } from './ShowToolkitModal';
 import { RootState } from '../../redux/store';
@@ -44,11 +44,11 @@ const useStyles = makeStyles(() => ({
 const Toolkit: React.FC<TToolkitMode> = ({ mode }) => {
   const classes = useStyles();
   const [links, setLinks] = useState<ITool[]>([]);
-  const [open, setOpen] = useState(false);
   const toolkitApi = useApi(toolkitApiRef);
   const dispatch = useAppDispatch();
   const {
     myToolkits: { list, loading, error, message },
+    showModal,
   } = useAppSelector((state: RootState) => state.toolkit);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const Toolkit: React.FC<TToolkitMode> = ({ mode }) => {
         key: 'Add',
         label: 'Add',
         icon: (
-          <IconButton onClick={() => setOpen(true)}>
+          <IconButton onClick={() => dispatch(toggleModal(true))}>
             <AddIcon fontSize="large" />
           </IconButton>
         ),
@@ -85,20 +85,15 @@ const Toolkit: React.FC<TToolkitMode> = ({ mode }) => {
       });
     }
     setLinks([...link_arr]);
-  }, [list, loading, error, mode]);
+  }, [list, dispatch, loading, error, mode]);
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
+  if (error) {
     return <Alert severity="error">{message}</Alert>;
   }
 
   return (
     <div className={classes.container}>
+      {loading && <Progress />}
       <HomePageToolkit key={links.toString()} tools={links} />
       {mode === 'read' ? (
         <Link to="/toolkit" className={classes.editIcon}>
@@ -108,7 +103,7 @@ const Toolkit: React.FC<TToolkitMode> = ({ mode }) => {
         ''
       )}
 
-      <ShowToolkitModal show={open} onClose={onClose} />
+      <ShowToolkitModal show={showModal} />
     </div>
   );
 };

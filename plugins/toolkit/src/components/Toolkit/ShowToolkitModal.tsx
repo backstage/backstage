@@ -15,6 +15,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import {
+  Box,
   Button,
   ButtonGroup,
   Dialog,
@@ -30,7 +31,7 @@ import { ToolkitList } from '../ToolkitList/ToolkitList';
 import { CreateToolkit } from '../CreateToolkit';
 import { toolkitApiRef } from '../../api';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { addTool } from '../../redux/slices/toolkit.slice';
+import { addTool, toggleModal } from '../../redux/slices/toolkit.slice';
 import { RootState } from '../../redux/store';
 
 const useStyles = makeStyles({
@@ -45,18 +46,16 @@ const useStyles = makeStyles({
 
 type TCreateToolkit = {
   show: boolean;
-  onClose: () => void;
 };
 
-export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
-  show,
-  onClose,
-}) => {
+export const ShowToolkitModal: React.FC<TCreateToolkit> = ({ show }) => {
   const theme = useTheme();
   const classes = useStyles();
   const toolkitApi = useApi(toolkitApiRef);
   const dispatch = useAppDispatch();
-  const { toolkits } = useAppSelector((state: RootState) => state.toolkit);
+  const { toolkits, showModal } = useAppSelector(
+    (state: RootState) => state.toolkit,
+  );
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [Open, setOpen] = useState(false);
@@ -66,9 +65,9 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
     setSelectedToolkits([]);
   }, [toolkits]);
   const closeModal = () => {
-    onClose();
     setOpen(false);
     setSelectedToolkits([]);
+    dispatch(toggleModal(true));
   };
 
   const onCheck = (id: number) => {
@@ -80,22 +79,18 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
   };
   const onAddTool = () => {
     dispatch(addTool({ toolkitApi, toolkits: selectedToolkits }));
-    onClose();
+    closeModal();
   };
-  const closeSelf = () => {
-    setOpen(false);
-    setSelectedToolkits([]);
-    onClose();
-  };
+
   return (
     <>
       {Open ? (
-        <CreateToolkit show={Open} onClose={closeModal} />
+        <CreateToolkit show={showModal} onClose={closeModal} />
       ) : (
         <Dialog
           maxWidth="lg"
           fullWidth={!fullScreen}
-          onClose={closeSelf}
+          onClose={closeModal}
           aria-labelledby="simple-dialog-title"
           open={show}
         >
@@ -127,13 +122,19 @@ export const ShowToolkitModal: React.FC<TCreateToolkit> = ({
               Add selected toolkit
             </Button>
           </ButtonGroup>
-          <InfoCard>
-            <ToolkitList
-              checkable
-              selectedToolkits={selectedToolkits}
-              onCheck={onCheck}
-            />
-          </InfoCard>
+          <Box
+            sx={{
+              overflow: 'scroll',
+            }}
+          >
+            <InfoCard>
+              <ToolkitList
+                checkable
+                selectedToolkits={selectedToolkits}
+                onCheck={onCheck}
+              />
+            </InfoCard>
+          </Box>
         </Dialog>
       )}
     </>

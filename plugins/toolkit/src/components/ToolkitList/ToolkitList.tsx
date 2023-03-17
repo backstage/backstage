@@ -19,7 +19,7 @@ import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Progress, Table, TableColumn } from '@backstage/core-components';
+import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { IToolkit, TActionButton } from '../../interfaces/interface';
@@ -167,7 +167,7 @@ export const DenseTable = ({
           ),
           logo: <LogoImage key={index} src={toolkit.logo || logo} />,
           title: `${toolkit.title}`,
-          url: toolkit.url,
+          url: <Link to={toolkit.url}>{toolkit.url}</Link>,
           type: toolkit.type,
           owner: toolkit.owner,
           action: (
@@ -185,9 +185,7 @@ export const DenseTable = ({
     dispatch(toggleToolkitAlert(true));
   };
 
-  if (loading) {
-    return <Progress />;
-  } else if (error && showAlert) {
+  if (error && showAlert) {
     return (
       <Alert severity="error" onClose={closeAlert}>
         {message}
@@ -196,6 +194,7 @@ export const DenseTable = ({
   }
   return (
     <>
+      {loading && <Progress />}
       {deleted.error && deleted.showAlert ? (
         <Alert severity="error" onClose={closeAlert}>
           {deleted.error}
@@ -212,11 +211,10 @@ export const DenseTable = ({
       )}
       <Table
         options={{
-          search: true,
-          paging: true,
-          toolbar: true,
-          pageSize: 10,
-          sorting: true,
+          search: false,
+          paging: false,
+          sorting: false,
+          toolbar: false,
         }}
         columns={columns}
         data={data || []}

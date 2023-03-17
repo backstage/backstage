@@ -22,6 +22,7 @@ exports.up = async function (knex) {
     table.text('url').notNullable();
     table.text('logo').notNullable();
     table.string('owner').notNullable();
+    table.integer('cloneId').defaultTo(null);
     table.enu('type', ['public', 'private']).defaultTo('public');
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
