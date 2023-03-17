@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,27 @@
  */
 
 import { AppConfig } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
+import { JsonObject, Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
+import { ConfigSource, ConfigSourceData } from './types';
+
+export function createConfigSource(
+  observable: Observable<{ data: ConfigSourceData[] }>,
+): ConfigSource {
+  return { configData$: observable };
+}
+
+export class EnvConfigSource {
+  static create(options: {
+    env?: {
+      [name: string]: string | undefined;
+    };
+  }): ConfigSource {
+    const data = readEnvConfig(options?.env ?? process.env);
+    return createConfigSource(ObservableImpl.of({ data }));
+  }
+}
 
 const ENV_PREFIX = 'APP_CONFIG_';
 
@@ -42,6 +61,7 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
  * APP_CONFIG_app_title='"My Title"'
  *
  * @public
+ * @deprecated Use {@link EnvConfigSource} instead
  */
 export function readEnvConfig(env: {
   [name: string]: string | undefined;

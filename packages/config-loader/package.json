@@ -44,10 +44,12 @@
     "json-schema": "^0.4.0",
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-traverse": "^1.0.0",
+    "minimist": "^1.2.8",
     "node-fetch": "^2.6.7",
     "typescript-json-schema": "^0.55.0",
     "yaml": "^2.0.0",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
