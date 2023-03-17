@@ -82,7 +82,7 @@ export const useShadowRootSelection = (waitMillis: number = 0) => {
     [shadowRoot, setSelection, waitMillis],
   );
 
-  useEffect(() => handleSelectionChange.cancel);
+  useEffect(() => handleSelectionChange.cancel, [handleSelectionChange.cancel]);
 
   useEffect(() => {
     window.document.addEventListener('selectionchange', handleSelectionChange);

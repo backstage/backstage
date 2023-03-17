@@ -6,7 +6,6 @@
 '@backstage/plugin-git-release-manager': patch
 '@backstage/plugin-github-deployments': patch
 '@backstage/plugin-newrelic-dashboard': patch
-'@internal/plugin-todo-list': patch
 '@backstage/core-components': patch
 '@backstage/plugin-scaffolder-react': patch
 '@backstage/plugin-cicd-statistics': patch
