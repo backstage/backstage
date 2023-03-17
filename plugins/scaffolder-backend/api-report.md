@@ -106,6 +106,15 @@ export function createFetchPlainAction(options: {
 }>;
 
 // @public
+export function createFetchPlainFileAction(options: {
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+}): TemplateAction_2<{
+  url: string;
+  targetPath: string;
+}>;
+
+// @public
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;

@@ -35,6 +35,55 @@ export async function fetchContents(options: {
 }) {
   const { reader, integrations, baseUrl, fetchUrl = '.', outputPath } = options;
 
+  const fetchUrlIsAbsolute = isFetchUrlAbsolute(fetchUrl);
+
+  // We handle both file locations and url ones
+  if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
+    const basePath = baseUrl.slice('file://'.length);
+    const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
+    await fs.copy(srcDir, outputPath);
+  } else {
+    const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);
+
+    const res = await reader.readTree(readUrl);
+    await fs.ensureDir(outputPath);
+    await res.dir({ targetDir: outputPath });
+  }
+}
+
+/**
+ * A helper function that reads the content of a single file from the given URL.
+ * Can be used in your own actions, and also used behind fetch:plain:file
+ *
+ * @public
+ */
+export async function fetchFile(options: {
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+  baseUrl?: string;
+  fetchUrl?: string;
+  outputPath: string;
+}) {
+  const { reader, integrations, baseUrl, fetchUrl = '.', outputPath } = options;
+
+  const fetchUrlIsAbsolute = isFetchUrlAbsolute(fetchUrl);
+
+  // We handle both file locations and url ones
+  if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
+    const basePath = baseUrl.slice('file://'.length);
+    const src = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
+    await fs.copyFile(src, outputPath);
+  } else {
+    const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);
+
+    const res = await reader.readUrl(readUrl);
+    await fs.ensureDir(path.dirname(outputPath));
+    const buffer = await res.buffer();
+    await fs.outputFile(outputPath, buffer.toString());
+  }
+}
+
+function isFetchUrlAbsolute(fetchUrl: string) {
   let fetchUrlIsAbsolute = false;
   try {
     // eslint-disable-next-line no-new
@@ -43,35 +92,28 @@ export async function fetchContents(options: {
   } catch {
     /* ignored */
   }
+  return fetchUrlIsAbsolute;
+}
 
-  // We handle both file locations and url ones
-  if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
-    const basePath = baseUrl.slice('file://'.length);
-    const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
-    await fs.copy(srcDir, outputPath);
-  } else {
-    let readUrl;
-
-    if (fetchUrlIsAbsolute) {
-      readUrl = fetchUrl;
-    } else if (baseUrl) {
-      const integration = integrations.byUrl(baseUrl);
-      if (!integration) {
-        throw new InputError(`No integration found for location ${baseUrl}`);
-      }
-
-      readUrl = integration.resolveUrl({
-        url: fetchUrl,
-        base: baseUrl,
-      });
-    } else {
-      throw new InputError(
-        `Failed to fetch, template location could not be determined and the fetch URL is relative, ${fetchUrl}`,
-      );
+function getReadUrl(
+  fetchUrl: string,
+  baseUrl: string | undefined,
+  integrations: ScmIntegrations,
+) {
+  if (isFetchUrlAbsolute(fetchUrl)) {
+    return fetchUrl;
+  } else if (baseUrl) {
+    const integration = integrations.byUrl(baseUrl);
+    if (!integration) {
+      throw new InputError(`No integration found for location ${baseUrl}`);
     }
 
-    const res = await reader.readTree(readUrl);
-    await fs.ensureDir(outputPath);
-    await res.dir({ targetDir: outputPath });
+    return integration.resolveUrl({
+      url: fetchUrl,
+      base: baseUrl,
+    });
   }
+  throw new InputError(
+    `Failed to fetch, template location could not be determined and the fetch URL is relative, ${fetchUrl}`,
+  );
 }
