@@ -2,7 +2,7 @@
 
 Welcome to the explore plugin!
 
-This plugin helps to visualize the domains, systems and tools in your ecosystem.
+This plugin helps to visualize the top level entities like domains, groups and tools in your ecosystem.
 
 ## Setup
 
