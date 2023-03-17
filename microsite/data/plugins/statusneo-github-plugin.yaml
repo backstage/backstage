@@ -3,7 +3,7 @@ author: Statusneo
 authorUrl: https://statusneo.com/
 category: GitHub
 description: Provides status cards GitHub pull requests and GitHub actions.
-documentation: https://statusneo.com/23468-2/
+documentation: https://github.com/StatusNeo/backstage-plugin-github
 iconUrl: /img/github-statusneo.png
 npmPackageName: '@statusneo/backstage-plugin-github'
 tags:
