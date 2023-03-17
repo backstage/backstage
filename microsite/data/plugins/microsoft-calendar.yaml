@@ -5,7 +5,7 @@ category: Productivity
 description: |
   The plugin integrates with your Microsoft Calendar.
   It displays all your calendars and events in it.
-documentation: https://statusneo.com/23392-2
+documentation: https://github.com/backstage/backstage/tree/master/plugins/microsoft-calendar
 iconUrl: /img/outlook-statusneo.png
 npmPackageName: '@backstage/plugin-microsoft-calendar'
 tags:
