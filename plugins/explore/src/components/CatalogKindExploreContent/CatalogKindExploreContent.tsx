@@ -89,15 +89,15 @@ const Body = (props: { kind: string }) => {
 
 /** @public */
 export const CatalogKindExploreContent = (props: {
-  tabTitle?: string;
+  title?: string;
   kind: string;
 }) => {
-  const { kind, tabTitle } = props;
+  const { kind, title } = props;
   const kindLowercase = kind.toLocaleLowerCase();
   const kindCapitalized = `${kind[0].toLocaleUpperCase()}${kind.substring(1)}`;
   return (
     <Content noPadding>
-      <ContentHeader title={tabTitle || `${pluralize(kindCapitalized)}`}>
+      <ContentHeader title={title || `${pluralize(kindCapitalized)}`}>
         <SupportButton>
           Discover the {pluralize(kindLowercase)} in your ecosystem.
         </SupportButton>

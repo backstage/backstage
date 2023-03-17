@@ -95,7 +95,7 @@ describe('<CatalogKindExploreContent />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <CatalogKindExploreContent kind="domain" tabTitle="Our Areas" />
+        <CatalogKindExploreContent kind="domain" title="Our Areas" />
       </Wrapper>,
       mountedRoutes,
     );
