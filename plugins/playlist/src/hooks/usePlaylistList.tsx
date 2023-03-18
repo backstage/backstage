@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';

@@ -16,6 +16,7 @@
 
 import {
   ConfigApi,
+  configApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
