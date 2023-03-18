@@ -99,7 +99,7 @@ export class LinguistBackendApi {
     await this.generateEntitiesLanguages();
   }
 
-  private async addNewEntities() {
+  public async addNewEntities() {
     const annotationKey = this.useSourceLocation
       ? ANNOTATION_SOURCE_LOCATION
       : LINGUIST_ANNOTATION;
@@ -121,7 +121,7 @@ export class LinguistBackendApi {
     });
   }
 
-  private async generateEntitiesLanguages() {
+  public async generateEntitiesLanguages() {
     const entitiesOverview = await this.getEntitiesOverview();
     this.logger?.info(
       `Entities overview: Entity: ${entitiesOverview.entityCount}, Processed: ${entitiesOverview.processedCount}, Pending: ${entitiesOverview.pendingCount}, Stale ${entitiesOverview.staleCount}`,
@@ -156,7 +156,7 @@ export class LinguistBackendApi {
     });
   }
 
-  private async getEntitiesOverview(): Promise<EntitiesOverview> {
+  public async getEntitiesOverview(): Promise<EntitiesOverview> {
     this.logger?.debug('Getting pending entities');
 
     const processedEntities = await this.store.getProcessedEntities();
@@ -172,7 +172,7 @@ export class LinguistBackendApi {
     const filteredEntities = staleEntities.concat(unprocessedEntities);
 
     const entitiesOverview: EntitiesOverview = {
-      entityCount: unprocessedEntities.length,
+      entityCount: unprocessedEntities.length + processedEntities.length,
       processedCount: processedEntities.length,
       staleCount: staleEntities.length,
       pendingCount: filteredEntities.length,
@@ -182,7 +182,7 @@ export class LinguistBackendApi {
     return entitiesOverview;
   }
 
-  private async generateEntityLanguages(
+  public async generateEntityLanguages(
     entityRef: string,
     url: string,
   ): Promise<string> {
@@ -193,7 +193,7 @@ export class LinguistBackendApi {
     const readTreeResponse = await this.urlReader.readTree(url);
     const dir = await readTreeResponse.dir();
 
-    const results = await linguist(dir, this.linguistJsOptions);
+    const results = await this.getLinguistResults(dir);
 
     try {
       const totalBytes = results.languages.bytes;
@@ -232,6 +232,11 @@ export class LinguistBackendApi {
       this.logger?.info(`Cleaning up files from ${dir}`);
       await fs.remove(dir);
     }
+  }
+
+  public async getLinguistResults(dir: string) {
+    const results = await linguist(dir, this.linguistJsOptions);
+    return results;
   }
 }
 
