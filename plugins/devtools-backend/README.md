@@ -1,14 +1,10 @@
 # DevTools Backend
 
-Welcome to the DevTools backend plugin! This plugin provides data for the DevTools frontend features.
+Welcome to the DevTools backend plugin! This plugin provides data for the [DevTools frontend](../devtools/) features.
 
 ## Setup
 
-The following sections will help you get the DevTools Backend plugin setup and running.
-
-### Up and Running
-
-Here's how to get the backend up and running:
+Here's how to get the DevTools Backend up and running:
 
 1. First we need to add the `@backstage/plugin-devtools-backend` package to your backend:
 
