@@ -49,7 +49,7 @@ const serviceEntityPage = (
 +    >
 +      <DynatraceTab />
 +    </EntityLayout.Route>
-  </EntityLaytou>
+  </EntityLayout>
 )
 
 ```
