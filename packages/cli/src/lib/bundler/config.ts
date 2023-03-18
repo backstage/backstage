@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, join as joinPath } from 'path';
+import { resolve as resolvePath, posix as posixPath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
@@ -39,6 +39,7 @@ import yn from 'yn';
 import { readEntryPoints } from '../monorepo/entryPoints';
 import { ExtendedPackage } from '../monorepo';
 
+const joinPath = posixPath.join;
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
