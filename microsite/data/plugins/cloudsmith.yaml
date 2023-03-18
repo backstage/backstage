@@ -1,6 +1,6 @@
 ---
 title: Cloudsmith
-author: Roadie
+author: roadie.io
 authorUrl: https://roadie.io
 category: CI/CD
 description: Show Cloudsmith Repository stats, Quota, Audit logs and Security scans for specific repositories.
