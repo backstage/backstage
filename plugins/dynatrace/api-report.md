@@ -16,6 +16,4 @@ export const DynatraceTab: () => JSX.Element;
 
 // @public
 export const isDynatraceAvailable: (entity: Entity) => boolean;
-
-// (No @packageDocumentation comment for this package)
 ```
