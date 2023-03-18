@@ -15,7 +15,11 @@
  */
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import {
@@ -39,6 +43,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
+import { useGroupNoun } from '../../hooks/useConfig';
 
 const useStyles = makeStyles({
   buttonWrapper: {
@@ -105,6 +110,8 @@ export const PlaylistEditDialog = ({
     }
   };
 
+  const groupSingularNounLowercase = useGroupNoun(false, false);
+
   return (
     <Dialog fullWidth maxWidth="xs" onClose={closeDialog} open={open}>
       <DialogContent>
@@ -121,7 +128,7 @@ export const PlaylistEditDialog = ({
               fullWidth
               label="Name"
               margin="dense"
-              placeholder="Give your playlist name"
+              placeholder={`Give your ${groupSingularNounLowercase} name`}
               required
               type="text"
             />
@@ -139,7 +146,7 @@ export const PlaylistEditDialog = ({
               label="Description"
               margin="dense"
               multiline
-              placeholder="Describe your playlist"
+              placeholder={`Describe your ${groupSingularNounLowercase}`}
               type="text"
             />
           )}

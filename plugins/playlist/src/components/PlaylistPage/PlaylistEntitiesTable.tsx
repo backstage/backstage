@@ -21,7 +21,7 @@ import {
   Table,
   TableFilter,
 } from '@backstage/core-components';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
@@ -32,6 +32,7 @@ import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
+import { useGroupNoun } from '../../hooks/useConfig';
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';
 
 export const PlaylistEntitiesTable = ({
@@ -41,6 +42,7 @@ export const PlaylistEntitiesTable = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
+  const configApi = useApi(configApiRef);
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
 
   const { allowed: editAllowed } = usePermission({
@@ -84,16 +86,18 @@ export const PlaylistEntitiesTable = ({
     [errorApi, loadEntities, playlistApi, playlistId],
   );
 
+  const groupSingularNounLowerCase = useGroupNoun(false, true);
+
   const actions = editAllowed
     ? [
         {
           icon: DeleteIcon,
-          tooltip: 'Remove from playlist',
+          tooltip: `Remove from ${groupSingularNounLowerCase}`,
           onClick: removeEntity,
         },
         {
           icon: AddBoxIcon,
-          tooltip: 'Add entities to playlist',
+          tooltip: `Add entities to ${groupSingularNounLowerCase}`,
           isFreeAction: true,
           onClick: () => setOpenAddEntitiesDrawer(true),
         },

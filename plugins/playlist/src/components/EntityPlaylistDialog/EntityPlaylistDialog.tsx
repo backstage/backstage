@@ -16,7 +16,12 @@
 
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  configApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   humanizeEntityRef,
   useAsyncEntity,
@@ -51,6 +56,7 @@ import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
+import { useGroupNoun } from '../../hooks/useConfig';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 
@@ -104,6 +110,10 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
     [playlistApi],
   );
 
+  const groupSingularNoun = useGroupNoun(true, false);
+  const groupSingularNounLowerCase = useGroupNoun(false, true);
+  const groupPluralNounLowerCase = useGroupNoun(true, true);
+
   useEffect(() => {
     if (open) {
       loadPlaylists();
@@ -120,12 +130,19 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         navigate(playlistRoute({ playlistId }));
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to playlist: ${e}`,
+          message: `Failed to add entity to ${groupSingularNounLowerCase}: ${e}`,
           severity: 'error',
         });
       }
     },
-    [alertApi, entity, navigate, playlistApi, playlistRoute],
+    [
+      alertApi,
+      entity,
+      navigate,
+      playlistApi,
+      playlistRoute,
+      groupSingularNounLowerCase,
+    ],
   );
 
   const [{ loading: addEntityLoading }, addToPlaylist] = useAsyncFn(
@@ -141,12 +158,12 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         });
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to playlist: ${e}`,
+          message: `Failed to add entity to ${groupSingularNounLowerCase}: ${e}`,
           severity: 'error',
         });
       }
     },
-    [alertApi, closeDialog, entity, playlistApi],
+    [alertApi, closeDialog, entity, playlistApi, groupSingularNounLowerCase],
   );
 
   return (
@@ -160,7 +177,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
       >
         {(loading || addEntityLoading) && <LinearProgress />}
         <DialogTitle className={classes.dialogTitle}>
-          Add to Playlist
+          Add to {groupSingularNoun}
           <TextField
             fullWidth
             data-testid="entity-playlist-dialog-search"
@@ -191,7 +208,10 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
           {error && (
-            <ResponseErrorPanel title="Error loading playlists" error={error} />
+            <ResponseErrorPanel
+              title={`Error loading ${groupPluralNounLowerCase}`}
+              error={error}
+            />
           )}
           {playlists && entity && (
             <List>
@@ -205,7 +225,9 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
                   <ListItemIcon>
                     <PlaylistAddIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Create new playlist" />
+                  <ListItemText
+                    primary={`Create new ${groupSingularNounLowerCase}`}
+                  />
                 </ListItem>
               )}
               {playlists

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  errorApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
@@ -29,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import { playlistApiRef } from '../../api';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
+import { useGroupNoun } from '../../hooks/useConfig';
 
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
@@ -55,13 +61,15 @@ export const CreatePlaylistButton = () => {
     [errorApi, navigate, playlistApi, playlistRoute],
   );
 
+  const groupSingularNounLowerCase = useGroupNoun(false, false);
+
   return (
     <>
       {isXSScreen ? (
         <IconButton
           disabled={!allowed}
           color="primary"
-          title="Create Playlist"
+          title={`Create ${groupSingularNounLowerCase}`}
           size="small"
           onClick={() => setOpenDialog(true)}
         >
@@ -74,7 +82,7 @@ export const CreatePlaylistButton = () => {
           color="primary"
           onClick={() => setOpenDialog(true)}
         >
-          Create Playlist
+          Create {groupSingularNounLowerCase}
         </Button>
       )}
       <PlaylistEditDialog

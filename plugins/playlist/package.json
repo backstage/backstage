@@ -66,5 +66,26 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "type": "object",
+    "properties": {
+      "playlist": {
+        "type": "object",
+        "properties": {
+          "groupPluralNoun": {
+            "type": "string",
+            "description": "Frontend plural entities grouping name",
+            "visibility": "frontend"
+          },
+          "groupSingularNoun": {
+            "type": "string",
+            "description": "Frontend singular entities grouping name",
+            "visibility": "frontend"
+          }
+        }
+      }
+    }
+  }
 }

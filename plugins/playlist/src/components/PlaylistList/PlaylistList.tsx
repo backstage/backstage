@@ -23,18 +23,21 @@ import {
 } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 
-import { usePlaylistList } from '../../hooks';
+import { useGroupNoun, usePlaylistList } from '../../hooks';
 import { PlaylistCard } from '../PlaylistCard';
 
 export const PlaylistList = () => {
   const { loading, error, playlists } = usePlaylistList();
+  const groupPluralNounLowercase = useGroupNoun(true, true);
 
   return (
     <>
       {loading && <Progress />}
 
       {error && (
-        <WarningPanel title="Oops! Something went wrong loading playlists">
+        <WarningPanel
+          title={`Oops! Something went wrong loading ${groupPluralNounLowercase}`}
+        >
           {error.message}
         </WarningPanel>
       )}

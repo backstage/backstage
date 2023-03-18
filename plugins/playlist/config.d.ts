@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export * from './usePlaylistList';
-export * from './useConfig';
+export interface Config {
+  playlist: {
+    /**
+     * (Optional) The plural noun for the entities grouping that will shown in the UI; leave empty for `PLaylists`.
+     * @visibility frontend
+     */
+    groupPluralNoun: string;
+
+    /**
+     * (Optional) The singular noun for the entities grouping that will shown in the UI; leave empty for `PLaylists`.
+     * @visibility frontend
+     */
+    groupSingularNoun: string;
+  };
+}

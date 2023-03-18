@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export * from './usePlaylistList';
-export * from './useConfig';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
+export function useGroupNoun(inPlural: boolean, inLowerCase: boolean) {
+  const configApi = useApi(configApiRef);
+  const defaultNoun = inPlural ? 'Playlists' : 'Playlist';
+  const configProp = inPlural ? 'groupPluralNoun' : 'groupSingularNoun';
+  const groupNoun =
+    configApi.getOptionalString(`playlist.${configProp}`) ?? `${defaultNoun}`;
+
+  return inLowerCase ? groupNoun.toLocaleLowerCase('en-US') : groupNoun;
+}
