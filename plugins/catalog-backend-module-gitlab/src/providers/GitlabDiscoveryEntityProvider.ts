@@ -61,10 +61,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    const providerConfigs = readGitlabConfigs(
-      config,
-      options.logger.child({ target: 'GitlabDiscoveryEntityProvider' }),
-    );
+    const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
 
