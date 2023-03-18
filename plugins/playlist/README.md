@@ -131,6 +131,18 @@ const defaultEntityPage = (
 
 Note: the above only shows an example for the `defaultEntityPage` for a full example of this you can look at [this EntityPage](../../packages/app/src/components/catalog/EntityPage.tsx)
 
+## Custom Group Noun
+
+You can define your custom group noun to shown in all the components of the Playlist plugin in the UI. To do this you just need to add some config in your **app-config.yaml**, here's an example:
+
+```yaml
+playlist:
+  groupPluralNoun: Collections
+  groupSingularNoun: Collection
+```
+
+_You will always need the plural and the singular matching to have a consistency in the UI_
+
 ## Features
 
 ### View All Playlists
