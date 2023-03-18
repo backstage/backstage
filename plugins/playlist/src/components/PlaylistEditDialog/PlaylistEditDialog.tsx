@@ -15,11 +15,7 @@
  */
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import {
-  configApiRef,
-  identityApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import {

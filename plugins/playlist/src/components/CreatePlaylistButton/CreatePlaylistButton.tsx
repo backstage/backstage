@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  configApiRef,
-  errorApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {

@@ -21,7 +21,7 @@ import {
   Table,
   TableFilter,
 } from '@backstage/core-components';
-import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
@@ -42,7 +42,6 @@ export const PlaylistEntitiesTable = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
-  const configApi = useApi(configApiRef);
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
 
   const { allowed: editAllowed } = usePermission({
