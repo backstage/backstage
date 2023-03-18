@@ -70,7 +70,7 @@ export const DevToolsLayout = ({ children }: DevToolsLayoutProps) => {
 
   return (
     <Page themeId="home">
-      <Header title="DevTools" />
+      <Header title="Backstage DevTools" />
       <RoutedTabs routes={routes} />
     </Page>
   );

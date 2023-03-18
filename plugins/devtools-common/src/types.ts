@@ -43,3 +43,9 @@ export type PackageDependency = {
   name: string;
   versions: string;
 };
+
+/** @public */
+export enum ExternalDependencyStatus {
+  healthy = 'Healthy',
+  unhealthy = 'Unhealthy',
+}

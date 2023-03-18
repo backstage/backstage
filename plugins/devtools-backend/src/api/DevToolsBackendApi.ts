@@ -25,6 +25,7 @@ import {
   DevToolsInfo,
   ExternalDependency,
   Endpoint,
+  ExternalDependencyStatus,
 } from '@backstage/plugin-devtools-common';
 
 import { JsonValue } from '@backstage/types';
@@ -89,7 +90,10 @@ export class DevToolsBackendApi {
 
     await fetch(endpoint.target)
       .then(res => {
-        status = res.status === 200 ? 'Healthy' : 'Unhealthy';
+        status =
+          res.status === 200
+            ? ExternalDependencyStatus.healthy
+            : ExternalDependencyStatus.unhealthy;
         this.logger.info(
           `Fetch for ${endpoint.name} resulted in status code "${res.status}"`,
         );
@@ -103,7 +107,7 @@ export class DevToolsBackendApi {
       name: endpoint.name,
       type: endpoint.type,
       target: endpoint.target,
-      status: status ?? 'Unhealthy',
+      status: status ?? ExternalDependencyStatus.unhealthy,
       error: error ?? undefined,
     };
 
@@ -135,7 +139,9 @@ export class DevToolsBackendApi {
       name: endpoint.name,
       type: endpoint.type,
       target: endpoint.target,
-      status: pingResult.alive ? 'Healthy' : 'Unhealthy',
+      status: pingResult.alive
+        ? ExternalDependencyStatus.healthy
+        : ExternalDependencyStatus.unhealthy,
       error: error ?? undefined,
     };
 
