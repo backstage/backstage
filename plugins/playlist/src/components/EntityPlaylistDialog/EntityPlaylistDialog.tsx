@@ -16,12 +16,7 @@
 
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import {
-  alertApiRef,
-  configApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   humanizeEntityRef,
   useAsyncEntity,
