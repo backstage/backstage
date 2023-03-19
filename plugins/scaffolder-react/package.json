@@ -62,7 +62,7 @@
     "@rjsf/core": "^3.2.1",
     "@rjsf/core-v5": "npm:@rjsf/core@5.1.0",
     "@rjsf/material-ui": "^3.2.1",
-    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.1.0",
+    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.3.1",
     "@rjsf/utils": "5.1.0",
     "@rjsf/validator-ajv8": "5.3.0",
     "@types/json-schema": "^7.0.9",
