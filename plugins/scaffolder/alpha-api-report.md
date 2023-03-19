@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="react" />
 
-import { Entity } from '@backstage/catalog-model';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { PropsWithChildren } from 'react';
@@ -31,7 +30,7 @@ export type NextRouterProps = {
     }>;
   };
   groups?: TemplateGroupFilter[];
-  templateFilter?: TemplateFilter;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   FormProps?: FormProps_2;
   contextMenu?: {
     editor?: boolean;
@@ -46,12 +45,9 @@ export const NextScaffolderPage: (
 ) => JSX.Element;
 
 // @alpha (undocumented)
-export type TemplateFilter = (entity: Entity) => boolean;
-
-// @alpha (undocumented)
 export type TemplateGroupFilter = {
   title?: React_2.ReactNode;
-  filter: (entity: Entity) => boolean;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 // (No @packageDocumentation comment for this package)

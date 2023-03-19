@@ -38,9 +38,9 @@ export type TemplateListProps = {
     | undefined;
   group?: {
     title?: React.ReactNode;
-    filter: (entity: Entity) => boolean;
+    filter: (entity: TemplateEntityV1beta3) => boolean;
   };
-  templateFilter?: (entity: Entity) => boolean;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 /**
@@ -54,8 +54,22 @@ export const TemplateList = ({
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
   const maybeFilteredEntities = (
-    group ? entities.filter(e => group.filter(e)) : entities
-  ).filter(e => (templateFilter ? !templateFilter(e) : true));
+    group
+      ? entities
+          .filter(
+            (e): e is TemplateEntityV1beta3 =>
+              e.kind === 'Template' &&
+              e.apiVersion === 'scaffolder.backstage.io/v1beta3',
+          )
+          .filter(group.filter)
+      : entities
+  )
+    .filter(
+      (e): e is TemplateEntityV1beta3 =>
+        e.kind === 'Template' &&
+        e.apiVersion === 'scaffolder.backstage.io/v1beta3',
+    )
+    .filter(e => (templateFilter ? !templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {

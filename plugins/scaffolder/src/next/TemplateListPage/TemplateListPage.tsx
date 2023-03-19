@@ -35,11 +35,7 @@ import {
 import { CategoryPicker } from './CategoryPicker';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import {
-  TemplateGroupFilter,
-  TemplateGroups,
-  TemplateFilter,
-} from './TemplateGroups';
+import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import { registerComponentRouteRef } from '../../routes';
 import { ContextMenu } from './ContextMenu';
 
@@ -48,7 +44,7 @@ export type TemplateListPageProps = {
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
-  templateFilter?: TemplateFilter;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;

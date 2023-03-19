@@ -58,7 +58,7 @@ export type RouterProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
-  templateFilter?: (entity: Entity) => boolean;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   defaultPreviewTemplate?: string;
   headerOptions?: {
     pageTitleOverride?: string;

@@ -15,11 +15,7 @@
  */
 import React, { useCallback } from 'react';
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Progress, Link, DocsIcon } from '@backstage/core-components';
@@ -37,19 +33,14 @@ import { useNavigate } from 'react-router-dom';
 /**
  * @alpha
  */
-export type TemplateFilter = (entity: Entity) => boolean;
-
-/**
- * @alpha
- */
 export type TemplateGroupFilter = {
   title?: React.ReactNode;
-  filter: (entity: Entity) => boolean;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
-  templateFilter?: TemplateFilter;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
@@ -96,8 +87,13 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     <>
       {groups.map(({ title, filter }, index) => {
         const templates = entities
+          .filter(
+            (e): e is TemplateEntityV1beta3 =>
+              e.kind === 'Template' &&
+              e.apiVersion === 'scaffolder.backstage.io/v1beta3',
+          )
           .filter(e => (templateFilter ? !templateFilter(e) : true))
-          .filter((e): e is TemplateEntityV1beta3 => filter(e))
+          .filter(filter)
           .map(template => {
             const { kind, namespace, name } = parseEntityRef(
               stringifyEntityRef(template),
