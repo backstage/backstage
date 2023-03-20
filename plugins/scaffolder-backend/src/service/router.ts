@@ -113,7 +113,7 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissionApi?: PermissionEvaluator;
-  rules?: TemplatePermissionRuleInput[];
+  permissionRules?: TemplatePermissionRuleInput[];
   identity?: IdentityApi;
 }
 
@@ -208,7 +208,7 @@ export async function createRouter(
     additionalTemplateFilters,
     additionalTemplateGlobals,
     permissionApi,
-    rules,
+    permissionRules,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -289,8 +289,8 @@ export async function createRouter(
     scaffolderTemplateRules,
   );
 
-  if (rules) {
-    templateRules.push(...rules);
+  if (permissionRules) {
+    templateRules.push(...permissionRules);
   }
 
   const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
