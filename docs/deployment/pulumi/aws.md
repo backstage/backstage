@@ -7,7 +7,7 @@ description: How to deploy Backstage on AWS Lightsail
 
 > **DISCLAIMER: The `deploy` command is in alpha and still experimental. Do not use the `deploy` command for production deployments.**
 
-Getting started with Backstage mostly starts with a proof-of-concept phase. To make the proof-of-concept phase more seamless there is the `deploy` command. The `deploy` command should make it easier for you to deploy your Backstage instance on a cloud provider. In this section we will focus on deploying `Backstage` on AWS Lightsail.
+Getting started with Backstage mostly starts with a proof-of-concept phase. To make the proof-of-concept phase more seamless there is the `deploy` command. The `deploy` command should make it easier for you to deploy your Backstage instance on a cloud provider. Currently the `deploy` command only supports deploying `Backstage` on AWS Lightsail.
 
 ## What is AWS Lightsail
 
@@ -15,7 +15,17 @@ AWS Lightsail offers a simple way to run containers in the cloud. To learn more 
 
 ## Configuring the AWS CLI
 
-First, install the [AWS CLI](https://aws.amazon.com/cli/). Afterwards, use the AWS CLI to configure your user. Make sure that the following environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are available.
+First, install the [AWS CLI](https://aws.amazon.com/cli/). You can then configure the CLI:
+
+```bash
+$ aws configure
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: us-west-2
+Default output format [None]: json
+```
+
+Optionally you can also export the following environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 ## Configuring the Pulumi CLI
 
@@ -47,13 +57,7 @@ $ yarn backstage-cli deploy aws --stack backstage-poc --create-dockerfile
 
 In the first part of the command, we are specifying that we want to deploy our instance on AWS. With the [`--stack`](https://www.pulumi.com/docs/reference/cli/pulumi_stack/) option, we are supplying Pulumi a reference to our container deployment. Furthermore, with the `--create-dockerfile` option, there will be a `Dockerfile` and `.dockerignore` created in the root of the project.
 
-:::tip
-
-By default, the `deploy` command looks for a `Dockerfile` in the root. If you want to use a different path, use the `--dockerfile` option. For example: `backstage-cli deploy aws --stack backstage-poc --dockerfile packages/backend/Dockerfile`
-
-:::
-
-After you run the command, Pulumi will start creating the following resources for you in AWS:
+After running the command, Pulumi will start creating the following resources for you in AWS:
 
 - ECR Repository
 - Lightsail Container Service
