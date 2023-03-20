@@ -50,23 +50,41 @@ describe('GithubIntegration', () => {
     expect(integration.config.host).toBe('h.com');
   });
 
-  it('resolveUrl', () => {
-    const integration = new GithubIntegration({ host: 'h.com' });
+  describe('resolveUrl', () => {
+    let integration: GithubIntegration;
+    beforeAll(() => {
+      integration = new GithubIntegration({ host: 'h.com' });
+    });
 
-    expect(
-      integration.resolveUrl({
-        url: '../a.yaml',
-        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
-        lineNumber: 17,
-      }),
-    ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml#L17');
+    it('should resolve a relative URL pointing to file in parent directory', () => {
+      expect(
+        integration.resolveUrl({
+          url: '../a.yaml',
+          base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
+          lineNumber: 17,
+        }),
+      ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml#L17');
+    });
 
-    expect(
-      integration.resolveUrl({
-        url: './',
-        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
-      }),
-    ).toBe('https://github.com/backstage/backstage/tree/master/test/');
+    it('should resolve a relative URL pointing to current directory', () => {
+      expect(
+        integration.resolveUrl({
+          url: './',
+          base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
+        }),
+      ).toBe('https://github.com/backstage/backstage/tree/master/test/');
+    });
+
+    it('should not change query parameters when resolving full URLs', () => {
+      expect(
+        integration.resolveUrl({
+          url: 'https://github.com/backstage/backstage/blob/release/production?path=catalog-info.yaml',
+          base: '',
+        }),
+      ).toBe(
+        'https://github.com/backstage/backstage/tree/release/production?path=catalog-info.yaml',
+      );
+    });
   });
 
   it('resolve edit URL', () => {
