@@ -80,8 +80,22 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -95,8 +109,22 @@ export const EntityPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -212,8 +240,22 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -226,8 +268,22 @@ export const OwnerPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
