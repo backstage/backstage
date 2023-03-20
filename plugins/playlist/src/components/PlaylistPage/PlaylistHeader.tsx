@@ -45,7 +45,7 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
-import { useGroupNoun } from '../../hooks/useConfig';
+import { useTitle } from '../../hooks';
 
 const useStyles = makeStyles({
   buttonWrapper: {
@@ -110,7 +110,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     }
   }, [playlistApi]);
 
-  const groupSingularNoun = useGroupNoun(false, false);
+  const singularTitle = useTitle(false, false);
 
   return (
     <Header
@@ -146,7 +146,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
             onClick: () => setOpenEditDialog(true),
           },
           {
-            label: `Delete ${groupSingularNoun}`,
+            label: `Delete ${singularTitle}`,
             icon: <DeleteIcon />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),

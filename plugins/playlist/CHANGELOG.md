@@ -1,9 +1,5 @@
 # @backstage/plugin-playlist
 
-## 0.1.8
-
-- Added config properties to change dynamically the group noun for all the components in the UI
-
 ## 0.1.7
 
 ### Patch Changes

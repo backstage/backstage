@@ -23,7 +23,7 @@ import {
 } from '@backstage/core-components';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 
-import { PlaylistListProvider, useGroupNoun } from '../../hooks';
+import { PlaylistListProvider, useTitle } from '../../hooks';
 import { CreatePlaylistButton } from '../CreatePlaylistButton';
 import { PersonalListPicker } from '../PersonalListPicker';
 import { PlaylistList } from '../PlaylistList';
@@ -32,10 +32,10 @@ import { PlaylistSearchBar } from '../PlaylistSearchBar';
 import { PlaylistSortPicker } from '../PlaylistSortPicker';
 
 export const PlaylistIndexPage = () => {
-  const groupPluralNoun = useGroupNoun(true, false);
+  const pluralTitle = useTitle(true, false);
 
   return (
-    <PageWithHeader themeId="home" title={groupPluralNoun}>
+    <PageWithHeader themeId="home" title={pluralTitle}>
       <PlaylistListProvider>
         <Content>
           <ContentHeader title="">

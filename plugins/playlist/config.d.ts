@@ -15,17 +15,11 @@
  */
 
 export interface Config {
-  playlist: {
+  playlist?: {
     /**
-     * (Optional) The plural noun for the entities grouping that will shown in the UI; leave empty for `PLaylists`.
+     * (Optional) The title that will shown in the UI; leave empty for `PLaylist`.
      * @visibility frontend
      */
-    groupPluralNoun: string;
-
-    /**
-     * (Optional) The singular noun for the entities grouping that will shown in the UI; leave empty for `PLaylists`.
-     * @visibility frontend
-     */
-    groupSingularNoun: string;
+    title?: string | undefined;
   };
 }

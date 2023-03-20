@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-playlist",
-  "version": "0.1.8",
+  "version": "0.1.7",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -42,6 +42,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "lodash": "^4.17.21",
+    "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "react-hook-form": "^7.13.0",
     "react-use": "^17.2.4"
@@ -65,27 +66,8 @@
     "swr": "^2.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "type": "object",
-    "properties": {
-      "playlist": {
-        "type": "object",
-        "properties": {
-          "groupPluralNoun": {
-            "type": "string",
-            "description": "Frontend plural entities grouping name",
-            "visibility": "frontend"
-          },
-          "groupSingularNoun": {
-            "type": "string",
-            "description": "Frontend singular entities grouping name",
-            "visibility": "frontend"
-          }
-        }
-      }
-    }
-  }
+  "configSchema": "config.d.ts"
 }

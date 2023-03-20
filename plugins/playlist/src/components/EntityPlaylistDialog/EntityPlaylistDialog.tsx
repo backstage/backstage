@@ -51,7 +51,7 @@ import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
-import { useGroupNoun } from '../../hooks/useConfig';
+import { useTitle } from '../../hooks';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 
@@ -105,9 +105,9 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
     [playlistApi],
   );
 
-  const groupSingularNoun = useGroupNoun(true, false);
-  const groupSingularNounLowerCase = useGroupNoun(false, true);
-  const groupPluralNounLowerCase = useGroupNoun(true, true);
+  const singularTitle = useTitle(true, false);
+  const singularTitleLowerCase = useTitle(false, true);
+  const plurlaTitleLowerCase = useTitle(true, true);
 
   useEffect(() => {
     if (open) {
@@ -125,7 +125,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         navigate(playlistRoute({ playlistId }));
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to ${groupSingularNounLowerCase}: ${e}`,
+          message: `Failed to add entity to ${singularTitleLowerCase}: ${e}`,
           severity: 'error',
         });
       }
@@ -136,7 +136,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
       navigate,
       playlistApi,
       playlistRoute,
-      groupSingularNounLowerCase,
+      singularTitleLowerCase,
     ],
   );
 
@@ -153,12 +153,12 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         });
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to ${groupSingularNounLowerCase}: ${e}`,
+          message: `Failed to add entity to ${singularTitleLowerCase}: ${e}`,
           severity: 'error',
         });
       }
     },
-    [alertApi, closeDialog, entity, playlistApi, groupSingularNounLowerCase],
+    [alertApi, closeDialog, entity, playlistApi, singularTitleLowerCase],
   );
 
   return (
@@ -172,7 +172,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
       >
         {(loading || addEntityLoading) && <LinearProgress />}
         <DialogTitle className={classes.dialogTitle}>
-          Add to {groupSingularNoun}
+          Add to {singularTitle}
           <TextField
             fullWidth
             data-testid="entity-playlist-dialog-search"
@@ -204,7 +204,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         <DialogContent className={classes.dialogContent}>
           {error && (
             <ResponseErrorPanel
-              title={`Error loading ${groupPluralNounLowerCase}`}
+              title={`Error loading ${plurlaTitleLowerCase}`}
               error={error}
             />
           )}
@@ -221,7 +221,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
                     <PlaylistAddIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`Create new ${groupSingularNounLowerCase}`}
+                    primary={`Create new ${singularTitleLowerCase}`}
                   />
                 </ListItem>
               )}

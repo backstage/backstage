@@ -15,13 +15,15 @@
  */
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import pluralize from 'pluralize';
 
-export function useGroupNoun(inPlural: boolean, inLowerCase: boolean) {
+export function useTitle(inPlural: boolean, inLowerCase: boolean) {
   const configApi = useApi(configApiRef);
-  const defaultNoun = inPlural ? 'Playlists' : 'Playlist';
-  const configProp = inPlural ? 'groupPluralNoun' : 'groupSingularNoun';
-  const groupNoun =
-    configApi.getOptionalString(`playlist.${configProp}`) ?? `${defaultNoun}`;
+  let title = configApi.getOptionalString('playlist.title') ?? 'Playlist';
 
-  return inLowerCase ? groupNoun.toLocaleLowerCase('en-US') : groupNoun;
+  if (inPlural) {
+    title = pluralize(title);
+  }
+
+  return inLowerCase ? title.toLocaleLowerCase('en-US') : title;
 }

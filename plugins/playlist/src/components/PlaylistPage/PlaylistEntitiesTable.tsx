@@ -32,7 +32,7 @@ import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
-import { useGroupNoun } from '../../hooks/useConfig';
+import { useTitle } from '../../hooks';
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';
 
 export const PlaylistEntitiesTable = ({
@@ -85,18 +85,18 @@ export const PlaylistEntitiesTable = ({
     [errorApi, loadEntities, playlistApi, playlistId],
   );
 
-  const groupSingularNounLowerCase = useGroupNoun(false, true);
+  const singularTitleLowerCase = useTitle(false, true);
 
   const actions = editAllowed
     ? [
         {
           icon: DeleteIcon,
-          tooltip: `Remove from ${groupSingularNounLowerCase}`,
+          tooltip: `Remove from ${singularTitleLowerCase}`,
           onClick: removeEntity,
         },
         {
           icon: AddBoxIcon,
-          tooltip: `Add entities to ${groupSingularNounLowerCase}`,
+          tooltip: `Add entities to ${singularTitleLowerCase}`,
           isFreeAction: true,
           onClick: () => setOpenAddEntitiesDrawer(true),
         },

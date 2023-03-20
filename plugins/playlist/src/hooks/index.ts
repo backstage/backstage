@@ -15,4 +15,4 @@
  */
 
 export * from './usePlaylistList';
-export * from './useConfig';
+export * from './useTitle';

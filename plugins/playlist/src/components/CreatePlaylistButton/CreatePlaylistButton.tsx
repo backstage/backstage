@@ -29,7 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { playlistApiRef } from '../../api';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
-import { useGroupNoun } from '../../hooks/useConfig';
+import { useTitle } from '../../hooks';
 
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ export const CreatePlaylistButton = () => {
     [errorApi, navigate, playlistApi, playlistRoute],
   );
 
-  const groupSingularNounLowerCase = useGroupNoun(false, false);
+  const singularTitle = useTitle(false, false);
 
   return (
     <>
@@ -64,7 +64,7 @@ export const CreatePlaylistButton = () => {
         <IconButton
           disabled={!allowed}
           color="primary"
-          title={`Create ${groupSingularNounLowerCase}`}
+          title={`Create ${singularTitle}`}
           size="small"
           onClick={() => setOpenDialog(true)}
         >
@@ -77,7 +77,7 @@ export const CreatePlaylistButton = () => {
           color="primary"
           onClick={() => setOpenDialog(true)}
         >
-          Create {groupSingularNounLowerCase}
+          Create {singularTitle}
         </Button>
       )}
       <PlaylistEditDialog

@@ -39,7 +39,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import { useGroupNoun } from '../../hooks/useConfig';
+import { useTitle } from '../../hooks';
 
 const useStyles = makeStyles({
   buttonWrapper: {
@@ -106,7 +106,7 @@ export const PlaylistEditDialog = ({
     }
   };
 
-  const groupSingularNounLowercase = useGroupNoun(false, false);
+  const titleSingularLowerCase = useTitle(false, false);
 
   return (
     <Dialog fullWidth maxWidth="xs" onClose={closeDialog} open={open}>
@@ -124,7 +124,7 @@ export const PlaylistEditDialog = ({
               fullWidth
               label="Name"
               margin="dense"
-              placeholder={`Give your ${groupSingularNounLowercase} name`}
+              placeholder={`Give your ${titleSingularLowerCase} name`}
               required
               type="text"
             />
@@ -142,7 +142,7 @@ export const PlaylistEditDialog = ({
               label="Description"
               margin="dense"
               multiline
-              placeholder={`Describe your ${groupSingularNounLowercase}`}
+              placeholder={`Describe your ${titleSingularLowerCase}`}
               type="text"
             />
           )}
