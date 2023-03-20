@@ -29,12 +29,12 @@ A Contributor contributes directly to the project and adds value to it. Contribu
 
 ### How to get involved
 
-- Participating in community discussions
-- Helping other users
-- Submitting bug reports
-- Commenting on issues
-- Trying out new releases
-- Attending community events
+- Participate in community discussions
+- Help other users
+- Submit bug reports
+- Comment on issues
+- Try out new releases
+- Attend community events
 
 ### How to contribute
 
