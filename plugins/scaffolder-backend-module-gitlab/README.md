@@ -116,7 +116,7 @@ spec:
 
     - id: gitlab-deploy-token
       name: Create Deploy Token
-      action: gitlab:pdt:create
+      action: gitlab:projectDeployToken:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish'].output.projectId }}"
@@ -125,8 +125,8 @@ spec:
         scopes: ['read_registry']
 
     - id: gitlab-access-token
-      name: Gitlab Access Token
-      action: gitlab:pat:create
+      name: Gitlab Project Access Token
+      action: gitlab:projectAccessToken:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish-manifest'].output.projectId }}"
@@ -135,8 +135,8 @@ spec:
         scopes: ['read_repository', 'write_repository']
 
     - id: gitlab-project-variable
-      name: Manifest CI/CD Variable
-      action: gitlab:pv:create
+      name: Gitlab Project Variable
+      action: gitlab:projectVariable:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
         projectId: "${{ steps['publish'].output.projectId }}"

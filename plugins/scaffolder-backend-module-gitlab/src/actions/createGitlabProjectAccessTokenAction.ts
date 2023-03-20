@@ -36,7 +36,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
     scopes: string[];
     token?: string;
   }>({
-    id: 'gitlab:personalAccessToken:create',
+    id: 'gitlab:projectAccessToken:create',
     schema: {
       input: {
         required: ['projectId', 'repoUrl'],
