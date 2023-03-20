@@ -3827,9 +3827,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:plugins/openapi-utils":
+"@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils":
   version: 0.0.0-use.local
-  resolution: "@backstage/backend-openapi-utils@workspace:plugins/openapi-utils"
+  resolution: "@backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils"
   dependencies:
     "@backstage/cli": "workspace:^"
     "@types/express": ^4.17.6
