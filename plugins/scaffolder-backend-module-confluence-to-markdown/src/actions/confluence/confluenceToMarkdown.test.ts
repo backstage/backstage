@@ -36,7 +36,7 @@ jest.mock('fs-extra', () => ({
   outputFile: jest.fn(),
   openSync: jest.fn(),
   createWriteStream: jest.fn().mockReturnValue(new PassThrough()),
-  writeStream: jest.fn(),
+  ensureDir: jest.fn(),
 }));
 
 describe('confluence:transform:markdown', () => {
@@ -148,16 +148,6 @@ describe('confluence:transform:markdown', () => {
       ),
     );
 
-    const mockCreateWriteStream = jest.fn().mockReturnValue({
-      on: jest.fn(),
-      once: jest.fn((_event, callback) => {
-        callback();
-      }),
-    });
-    jest.mock('fs', () => ({
-      openSync: jest.fn(),
-      createWriteStream: jest.fn().mockReturnValue(mockCreateWriteStream),
-    }));
     const action = createConfluenceToMarkdownAction(options);
 
     await action.handler(mockContext);
@@ -205,9 +195,6 @@ describe('confluence:transform:markdown', () => {
       ),
     );
 
-    jest.mock('fs-extra', () => ({
-      readFile: jest.fn().mockResolvedValue('File contents'),
-    }));
     const action = createConfluenceToMarkdownAction(options);
 
     await action.handler(mockContext);

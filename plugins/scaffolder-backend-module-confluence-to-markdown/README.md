@@ -119,6 +119,6 @@ spec:
         forceAdmin: true
 ```
 
-Replace `<GITHUB_BASE_URL>` with your GitHub url without `https://`.
+Replace `<GITHUB_BASE_URL>` with your GitHub URL without `https://`.
 
 You can find a list of all registered actions including their parameters at the /create/actions route in your Backstage application.

@@ -155,7 +155,7 @@ export const createConfluenceToMarkdownAction = (options: {
         let newString: string = markdownToPublish;
         productArray.forEach((product: string[]) => {
           // This regex is looking for either [](link to confluence) or ![](link to confluence) in the newly created markdown doc and updating it to point to the versions saved(in ./docs/img) in the local version of GitHub Repo during getAndWriteAttachments
-          const regex = product[0].includes('pdf')
+          const regex = product[0].includes('.pdf')
             ? new RegExp(`(\\[.*?\\]\\()(.*?${product[0]}.*?)(\\))`, 'gi')
             : new RegExp(`(\\!\\[.*?\\]\\()(.*?${product[0]}.*?)(\\))`, 'gi');
           newString = newString.replace(regex, `$1./img/${product[1]}$3`);
