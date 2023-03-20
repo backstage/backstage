@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.22.5
+
+### Patch Changes
+
+- 3770f7f6f8d: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+
 ## 0.22.4
 
 ### Patch Changes
