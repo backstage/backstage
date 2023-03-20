@@ -29,6 +29,7 @@ import {
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
+import { isTemplateEntity } from '../../lib/isTemplateEntity';
 
 /**
  * @alpha
@@ -87,11 +88,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     <>
       {groups.map(({ title, filter }, index) => {
         const templates = entities
-          .filter(
-            (e): e is TemplateEntityV1beta3 =>
-              e.kind === 'Template' &&
-              e.apiVersion === 'scaffolder.backstage.io/v1beta3',
-          )
+          .filter(isTemplateEntity)
           .filter(e => (templateFilter ? !templateFilter(e) : true))
           .filter(filter)
           .map(template => {

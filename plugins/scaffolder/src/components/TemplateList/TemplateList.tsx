@@ -28,6 +28,7 @@ import {
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
+import { isTemplateEntity } from '../../lib/isTemplateEntity';
 
 /**
  * @internal
@@ -53,23 +54,10 @@ export const TemplateList = ({
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
+  const templateEntities = entities.filter(isTemplateEntity);
   const maybeFilteredEntities = (
-    group
-      ? entities
-          .filter(
-            (e): e is TemplateEntityV1beta3 =>
-              e.kind === 'Template' &&
-              e.apiVersion === 'scaffolder.backstage.io/v1beta3',
-          )
-          .filter(group.filter)
-      : entities
-  )
-    .filter(
-      (e): e is TemplateEntityV1beta3 =>
-        e.kind === 'Template' &&
-        e.apiVersion === 'scaffolder.backstage.io/v1beta3',
-    )
-    .filter(e => (templateFilter ? !templateFilter(e) : true));
+    group ? templateEntities.filter(group.filter) : templateEntities
+  ).filter(e => (templateFilter ? !templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {
