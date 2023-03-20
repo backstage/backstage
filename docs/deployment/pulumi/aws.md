@@ -11,6 +11,12 @@ Getting started with Backstage mostly starts with a proof-of-concept phase. To m
 
 ## What is AWS Lightsail
 
+:::tip
+
+AWS offers a free tier for up to three months on $10 USD/month Container service (Micro -1 node). By default we use the `nano` node, so if you are a new user this approach shouldn't cost you anything. For more information, refer to the [pricing](https://aws.amazon.com/lightsail/pricing/) documentation.
+
+:::
+
 AWS Lightsail offers a simple way to run containers in the cloud. To learn more about AWS Lightsail, please refer to the [official documentation](https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-container-services-deployments).
 
 ## Configuring the AWS CLI
