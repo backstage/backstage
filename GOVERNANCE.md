@@ -56,7 +56,7 @@ An Organization Member must meet the responsibilities and has the requirements o
 
 ### Responsibilities
 
-- Continues to contribute regularly, as demonstrated by having at least 10 GitHub contributions per year, as found in [Devstats](https://backstage.devstats.cncf.io/d/48/users-statistics-by-repository-group?orgId=1&var-period=y&var-metric=contributions&var-repogroup_name=All&from=now-1y&to=now&var-users=All).
+- Continues to contribute regularly, as demonstrated by having at least 10 GitHub contributions per year in [Devstats](https://backstage.devstats.cncf.io/d/48/users-statistics-by-repository-group?orgId=1&var-period=y&var-metric=contributions&var-repogroup_name=All&from=now-1y&to=now&var-users=All), or contributions of a similar effort that might not be captured in Devstats.
 
 ### Requirements
 
