@@ -31,7 +31,7 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-} from './types';
+} from '@backstage/plugin-search-backend-node';
 
 import { IndexBuilder } from './IndexBuilder';
 
@@ -157,11 +157,3 @@ export const searchIndexRegistryExtensionPoint =
   createExtensionPoint<SearchIndexRegistryExtensionPoint>({
     id: 'search.index.registry',
   });
-
-/**
- * @alpha
- */
-export type {
-  RegisterCollatorParameters,
-  RegisterDecoratorParameters,
-} from './types';

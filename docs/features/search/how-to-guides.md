@@ -370,7 +370,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
 
 There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).
 
-## How to migrate to use Search together with the new backend system
+## How to migrate your backend installation to use Search together with the new backend system
 
 > DISCLAIMER: The new backend system is in alpha, and so are the search backend support for the new backend system. We don't recommend you to migrate your backend installations to the new system yet. But if you want to experiment, this is the guide for you!
 

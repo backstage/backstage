@@ -6,6 +6,22 @@ This package exports techdocs backend modules responsible for extending search.
 
 ## Example
 
+### Use default schedule
+
+```tsx
+// packages/backend-next/src/index.ts
+import { createBackend } from '@backstage/backend-defaults';
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
+import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
+
+const backend = createBackend();
+backend.add(searchPlugin());
+backend.add(searchModuleTechDocsCollator());
+backend.start();
+```
+
+### Use custom schedule
+
 ```tsx
 // packages/backend-next/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
@@ -23,5 +39,3 @@ backend.add(searchPlugin());
 backend.add(searchModuleTechDocsCollator({ schedule }));
 backend.start();
 ```
-
-...

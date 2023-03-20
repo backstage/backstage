@@ -4,4 +4,4 @@
 '@backstage/plugin-explore-backend': patch
 ---
 
-Deprecate the collator files in the backend package by extracting them into a separate module.
+Collator factories instantiated in new backend system modules and now marked as deprecated. Will be continued to be exported publicly until the new backend system is fully rolled out.
