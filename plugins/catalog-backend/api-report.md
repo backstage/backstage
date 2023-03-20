@@ -31,6 +31,7 @@ import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-no
 import { EntityProviderConnection as EntityProviderConnection_2 } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation as EntityProviderMutation_2 } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec as EntityRelationSpec_2 } from '@backstage/plugin-catalog-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
@@ -139,6 +140,8 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor_2[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
+  // (undocumented)
+  setConflictEventBroker(broker: EventBroker): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser_2): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
