@@ -518,15 +518,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cognito-identity@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-cognito-identity@npm:3.293.0"
+"@aws-sdk/client-cognito-identity@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/client-cognito-identity@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.293.0
+    "@aws-sdk/client-sts": 3.294.0
     "@aws-sdk/config-resolver": 3.292.0
-    "@aws-sdk/credential-provider-node": 3.293.0
+    "@aws-sdk/credential-provider-node": 3.294.0
     "@aws-sdk/fetch-http-handler": 3.292.0
     "@aws-sdk/hash-node": 3.292.0
     "@aws-sdk/invalid-dependency": 3.292.0
@@ -557,20 +557,20 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.292.0
     "@aws-sdk/util-utf8": 3.292.0
     tslib: ^2.3.1
-  checksum: 1902b344dec5807817583bf76df60d13eb62b663b73a3587aad513046f775222644859c5e146ddfc443486436d9912881aa8e00715f8ff26d5e497cf75aea22b
+  checksum: 438789bc1c3ce038666a981087682f451a79b911d8455b2eaa20539a4be86b78392a7dfa765591569cf8e2475aa2e18c797c9dcc1cf1b6f04fe327041111ac9b
   languageName: node
   linkType: hard
 
 "@aws-sdk/client-s3@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-s3@npm:3.293.0"
+  version: 3.294.0
+  resolution: "@aws-sdk/client-s3@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha1-browser": 3.0.0
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.293.0
+    "@aws-sdk/client-sts": 3.294.0
     "@aws-sdk/config-resolver": 3.292.0
-    "@aws-sdk/credential-provider-node": 3.293.0
+    "@aws-sdk/credential-provider-node": 3.294.0
     "@aws-sdk/eventstream-serde-browser": 3.292.0
     "@aws-sdk/eventstream-serde-config-resolver": 3.292.0
     "@aws-sdk/eventstream-serde-node": 3.292.0
@@ -619,19 +619,19 @@ __metadata:
     "@aws-sdk/xml-builder": 3.292.0
     fast-xml-parser: 4.1.2
     tslib: ^2.3.1
-  checksum: c049bbd40964ebfc189f8a72aed2e5dafcfbc949b4c06a2e811eb0fb58ab34ac681aa039fe7f3473310a9efe226feed889268ff0f44c9eb71805aea3018b5bc7
+  checksum: 1511b57f49833c5f22a54acc49eb7778bcca682498f2594ea889e7e725bc9232dab2ca47d77e3986df85f0549d0e190b90e478e33fe9be0ee3a0332fef9d0f97
   languageName: node
   linkType: hard
 
 "@aws-sdk/client-sqs@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-sqs@npm:3.293.0"
+  version: 3.294.0
+  resolution: "@aws-sdk/client-sqs@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.293.0
+    "@aws-sdk/client-sts": 3.294.0
     "@aws-sdk/config-resolver": 3.292.0
-    "@aws-sdk/credential-provider-node": 3.293.0
+    "@aws-sdk/credential-provider-node": 3.294.0
     "@aws-sdk/fetch-http-handler": 3.292.0
     "@aws-sdk/hash-node": 3.292.0
     "@aws-sdk/invalid-dependency": 3.292.0
@@ -665,13 +665,13 @@ __metadata:
     "@aws-sdk/util-utf8": 3.292.0
     fast-xml-parser: 4.1.2
     tslib: ^2.3.1
-  checksum: d07b9729ac138e71c789851d146a7632fdf1a50cb8d23a85af14b957bc23d18dbd42d291e04ee1df52844f75168e71818a3d2d962dc47a530350d760fefd8300
+  checksum: 1fd2df404b9c0111c6f4b0b13919c0b1b671417a01fd6675a6b5dc563068a5b3feb0b7342442c0608980c03f6940ee575d48d702ab077e9e5a19c004e348fe7d
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso-oidc@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-sso-oidc@npm:3.293.0"
+"@aws-sdk/client-sso-oidc@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/client-sso-oidc@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -705,13 +705,13 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.292.0
     "@aws-sdk/util-utf8": 3.292.0
     tslib: ^2.3.1
-  checksum: 4137f631355f75f7eea083b3e172dcbd67b1e7701cfe02fb21c922a39aa0d4f80171458473833d72150341f2320fc21fef74bb5cffdd15b4723f719c8caa4bce
+  checksum: ac2ef9fb1d96cdb0ad53a373a18b929d214bfad52208465466006443aef8f4704f646e5f4e00a0165922d97aa419c74f43390ae1f92cf1d4015af7a23ec06491
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-sso@npm:3.293.0"
+"@aws-sdk/client-sso@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/client-sso@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -745,18 +745,18 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.292.0
     "@aws-sdk/util-utf8": 3.292.0
     tslib: ^2.3.1
-  checksum: a502dddebf8905b765f1bf126435d7948ac32e857f0127ac68e3fb1328cacaa660eed026d264853c7a6da39126cbcfedd5b022a1073525ea8ee66c409157b9a4
+  checksum: 5c6cda16e7204fc1993af198de32e9f00821cb29e1f43a73252d77876cb453535a4e985d55e4cc27e903183c123c9df2eb100ec6841d5bbbfc017f99c3b1bf4b
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:3.293.0, @aws-sdk/client-sts@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/client-sts@npm:3.293.0"
+"@aws-sdk/client-sts@npm:3.294.0, @aws-sdk/client-sts@npm:^3.208.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/client-sts@npm:3.294.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
     "@aws-sdk/config-resolver": 3.292.0
-    "@aws-sdk/credential-provider-node": 3.293.0
+    "@aws-sdk/credential-provider-node": 3.294.0
     "@aws-sdk/fetch-http-handler": 3.292.0
     "@aws-sdk/hash-node": 3.292.0
     "@aws-sdk/invalid-dependency": 3.292.0
@@ -789,7 +789,7 @@ __metadata:
     "@aws-sdk/util-utf8": 3.292.0
     fast-xml-parser: 4.1.2
     tslib: ^2.3.1
-  checksum: c99efc08e494098436fef2ba1321fa8362008d9190fcafff0694490f09f7bed76cc16c24b0d938c0d143255149efa6bffd8a568ecca5eab5fb103eba57f61966
+  checksum: 75cb38df86db0880e82bd55002377f6089ac9c59fb9aa9a68cca12057cf98d49aaa6b9d9cfd5ed06691c99ceb4e363567cb7e3f96785463578431fe2121e18aa
   languageName: node
   linkType: hard
 
@@ -806,15 +806,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-cognito-identity@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.293.0"
+"@aws-sdk/credential-provider-cognito-identity@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.294.0"
   dependencies:
-    "@aws-sdk/client-cognito-identity": 3.293.0
+    "@aws-sdk/client-cognito-identity": 3.294.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: e23bcc010cf8002e4264b3074af6734f9fb81a8d556d453f19196765174ff313173749e2c17a76f9e7c4a485b82cb5f91a7d55e7742f5262fde5c7b93e279b9d
+  checksum: d4e3a8990edb7e6a468c291a471d27c3debed4566a657f0e20ee3e607778b7c908021c4dee90276f75fb3f3f0c220fefb7b1077099139721e6fd009f306e8827
   languageName: node
   linkType: hard
 
@@ -842,38 +842,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-ini@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/credential-provider-ini@npm:3.293.0"
+"@aws-sdk/credential-provider-ini@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.294.0"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.292.0
     "@aws-sdk/credential-provider-imds": 3.292.0
     "@aws-sdk/credential-provider-process": 3.292.0
-    "@aws-sdk/credential-provider-sso": 3.293.0
+    "@aws-sdk/credential-provider-sso": 3.294.0
     "@aws-sdk/credential-provider-web-identity": 3.292.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/shared-ini-file-loader": 3.292.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: 7fafb9ada9e0eec303b46bb02f392c0ff63861214df9345f6e4678d158d573cc2d5f941e25e8bad1491fc67f6913053e72cf6327ac4432fe4f7e70b68cdaeef3
+  checksum: 9ff139aeb7ccc8cac8822fa86ede6c49226f625d76ecd83ca861fda7508c3f939df2bf96e026c7542ffbf2372eebfc85ad6c28dd50083bd40c711df2638e7747
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:3.293.0, @aws-sdk/credential-provider-node@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/credential-provider-node@npm:3.293.0"
+"@aws-sdk/credential-provider-node@npm:3.294.0, @aws-sdk/credential-provider-node@npm:^3.208.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.294.0"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.292.0
     "@aws-sdk/credential-provider-imds": 3.292.0
-    "@aws-sdk/credential-provider-ini": 3.293.0
+    "@aws-sdk/credential-provider-ini": 3.294.0
     "@aws-sdk/credential-provider-process": 3.292.0
-    "@aws-sdk/credential-provider-sso": 3.293.0
+    "@aws-sdk/credential-provider-sso": 3.294.0
     "@aws-sdk/credential-provider-web-identity": 3.292.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/shared-ini-file-loader": 3.292.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: c0ff0ef0f4983ed6b56d73e910fb2a1f9ad43faf9cd9067fb6f276dd384e23ef7035016ff339273c9a2dfba1e4d0a27887f22acc86fb0d65018c85c5e1f6b1ab
+  checksum: 7182ca60b6208b0be3ac5416397725a6f0975ed80326925eec268342419d7dd99baa37941bbca3098390577cd057d22e6625bd99b5bf42f38688279936a8ae9e
   languageName: node
   linkType: hard
 
@@ -889,17 +889,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-sso@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/credential-provider-sso@npm:3.293.0"
+"@aws-sdk/credential-provider-sso@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.294.0"
   dependencies:
-    "@aws-sdk/client-sso": 3.293.0
+    "@aws-sdk/client-sso": 3.294.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/shared-ini-file-loader": 3.292.0
-    "@aws-sdk/token-providers": 3.293.0
+    "@aws-sdk/token-providers": 3.294.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: 75fa91c622d526ebfee18d83e1eeeeac12f2069abae5d7921a1df21b85dd241da2d67b9976522f2efdfc319d53334e89b3715df4c4a857bf3978d38a3326dd00
+  checksum: c9e05370b1334cf73311d13b5bdb67ccd7d10781eac952c57bc00c2f850bb0676dab3306ac9d6b9588d1e9f01942a14bbed0b14272e413a9e2c7181128852fbd
   languageName: node
   linkType: hard
 
@@ -915,25 +915,25 @@ __metadata:
   linkType: hard
 
 "@aws-sdk/credential-providers@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/credential-providers@npm:3.293.0"
+  version: 3.294.0
+  resolution: "@aws-sdk/credential-providers@npm:3.294.0"
   dependencies:
-    "@aws-sdk/client-cognito-identity": 3.293.0
-    "@aws-sdk/client-sso": 3.293.0
-    "@aws-sdk/client-sts": 3.293.0
-    "@aws-sdk/credential-provider-cognito-identity": 3.293.0
+    "@aws-sdk/client-cognito-identity": 3.294.0
+    "@aws-sdk/client-sso": 3.294.0
+    "@aws-sdk/client-sts": 3.294.0
+    "@aws-sdk/credential-provider-cognito-identity": 3.294.0
     "@aws-sdk/credential-provider-env": 3.292.0
     "@aws-sdk/credential-provider-imds": 3.292.0
-    "@aws-sdk/credential-provider-ini": 3.293.0
-    "@aws-sdk/credential-provider-node": 3.293.0
+    "@aws-sdk/credential-provider-ini": 3.294.0
+    "@aws-sdk/credential-provider-node": 3.294.0
     "@aws-sdk/credential-provider-process": 3.292.0
-    "@aws-sdk/credential-provider-sso": 3.293.0
+    "@aws-sdk/credential-provider-sso": 3.294.0
     "@aws-sdk/credential-provider-web-identity": 3.292.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/shared-ini-file-loader": 3.292.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: cca87d8518e353612c610e8c81944452d4461733d317f68fa29b819eac4741fe7438bc90261c67bd4284721158ce710c1ca7130e5e09eb3ad4f6174f2c14d34b
+  checksum: 6921e5d71e61d5e4cbb7de52c696f40a3babb7d6fe3460d7d425ace4f0a88d3925242392fda49f2d83d17b33b7954ba42290e6f054aa19d386b9d66912f25305
   languageName: node
   linkType: hard
 
@@ -1060,8 +1060,8 @@ __metadata:
   linkType: hard
 
 "@aws-sdk/lib-storage@npm:^3.208.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/lib-storage@npm:3.293.0"
+  version: 3.294.0
+  resolution: "@aws-sdk/lib-storage@npm:3.294.0"
   dependencies:
     "@aws-sdk/middleware-endpoint": 3.292.0
     "@aws-sdk/smithy-client": 3.292.0
@@ -1072,7 +1072,7 @@ __metadata:
   peerDependencies:
     "@aws-sdk/abort-controller": ^3.0.0
     "@aws-sdk/client-s3": ^3.0.0
-  checksum: 99742e84bc4c4c18e0d9863cfd5d84dfcad2c57d83b1766973f5440840b0185264a069e172b504e212f5d8c9d0e38cd11ed2d5a06ecfcb93edb11ea44cc2cf92
+  checksum: 26c0db366050efd252acbc067b56b11b7c6d450aa5561f7b0108646e766b34a0129fa7a89efe028d8a8196ad0a1d5bd22554724277e606216b5873804bc4f648
   languageName: node
   linkType: hard
 
@@ -1430,16 +1430,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/token-providers@npm:3.293.0":
-  version: 3.293.0
-  resolution: "@aws-sdk/token-providers@npm:3.293.0"
+"@aws-sdk/token-providers@npm:3.294.0":
+  version: 3.294.0
+  resolution: "@aws-sdk/token-providers@npm:3.294.0"
   dependencies:
-    "@aws-sdk/client-sso-oidc": 3.293.0
+    "@aws-sdk/client-sso-oidc": 3.294.0
     "@aws-sdk/property-provider": 3.292.0
     "@aws-sdk/shared-ini-file-loader": 3.292.0
     "@aws-sdk/types": 3.292.0
     tslib: ^2.3.1
-  checksum: 3a12f7f190e34e7341bff58d273706176538662bc1435637f866444233035ac142aabdb9fb7529d75b4d224fd3c739878ebd6a19f5fefb0ee054f63627cc3d2f
+  checksum: 7d982876b2083a06810f6df62fce140b2408177debbd078eb3e4c591007db38b769abac308c7ebd86598784bc690a92619e6d5d917bef005242e02c4978b64b9
   languageName: node
   linkType: hard
 
