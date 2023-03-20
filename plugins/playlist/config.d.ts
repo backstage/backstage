@@ -17,7 +17,7 @@
 export interface Config {
   playlist?: {
     /**
-     * (Optional) The title that will shown in the UI; leave empty for `PLaylist`.
+     * (Optional) The title that will shown in the UI; Defaults to`Playlist` if undefined.
      * @visibility frontend
      */
     title?: string | undefined;
