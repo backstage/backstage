@@ -419,6 +419,10 @@ export class CatalogBuilder {
     return this;
   }
 
+  /**
+   * Enables the publishing of events for conflicting entities so that a subscriber
+   * can listen to them and implement a conflict resolution strategy like retries.
+   */
   setConflictEventBroker(broker: EventBroker): CatalogBuilder {
     this.conflictEventBroker = broker;
     return this;
