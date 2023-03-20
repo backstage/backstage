@@ -92,7 +92,7 @@ export default async function createPlugin(
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
-  const bitBucketProvider = BitbucketCloudEntityProvider.fromConfig(
+  const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
     env.config,
     {
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
@@ -101,8 +101,8 @@ export default async function createPlugin(
       tokenManager: env.tokenManager,
     },
   );
-  env.eventBroker.subscribe(bitBucketProvider);
-  builder.addEntityProvider(bitBucketProvider);
+  env.eventBroker.subscribe(bitbucketCloudProvider);
+  builder.addEntityProvider(bitbucketCloudProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
