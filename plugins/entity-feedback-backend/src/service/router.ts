@@ -25,7 +25,10 @@ import {
   getBearerTokenFromAuthorizationHeader,
   IdentityApi,
 } from '@backstage/plugin-auth-node';
-import { EntityRatingsData } from '@backstage/plugin-entity-feedback-common';
+import {
+  EntityRatingsData,
+  Ratings,
+} from '@backstage/plugin-entity-feedback-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -165,6 +168,19 @@ export async function createRouter(
       .map(ent => stringifyEntityRef(ent!));
 
     res.json(ratings.filter(r => accessibleEntityRefs.includes(r.userRef)));
+  });
+
+  router.get('/ratings/:entityRef/aggregate', async (req, res) => {
+    const entityRatings = (
+      await dbHandler.getRatings(req.params.entityRef)
+    ).reduce((ratings: Ratings, { rating }) => {
+      ratings[rating] = ratings[rating] ?? 0;
+      ratings[rating]++;
+
+      return ratings;
+    }, {});
+
+    res.json(entityRatings);
   });
 
   router.post('/responses/:entityRef', async (req, res) => {

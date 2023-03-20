@@ -30,10 +30,10 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  nextActionsRouteRef,
-  nextEditRouteRef,
-  nextScaffolderListTaskRouteRef,
-} from '../routes';
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   button: {
@@ -50,9 +50,9 @@ export type ScaffolderPageContextMenuProps = {
 export function ContextMenu(props: ScaffolderPageContextMenuProps) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
-  const editLink = useRouteRef(nextEditRouteRef);
-  const actionsLink = useRouteRef(nextActionsRouteRef);
-  const tasksLink = useRouteRef(nextScaffolderListTaskRouteRef);
+  const editLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
 
   const navigate = useNavigate();
 

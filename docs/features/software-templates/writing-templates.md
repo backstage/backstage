@@ -472,6 +472,20 @@ owner:
       kind: [Group, User]
 ```
 
+#### `catalogFilter`
+
+The `catalogFilter` allow you to filter the list entities using any of the [catalog api filters](https://backstage.io/docs/features/software-catalog/software-catalog-api#filtering):
+
+For example, if you want to show users in the `default` namespace, and groups with the `github.com/team-slug` annotation, you can do the following:
+
+```yaml
+catalogFilter:
+  - kind: [User]
+    metadata.namespace: default
+  - kind: [Group]
+    metadata.annotations.github.com/team-slug: { exists: true }
+```
+
 ## `spec.steps` - `Action[]`
 
 The `steps` is an array of the things that you want to happen part of this

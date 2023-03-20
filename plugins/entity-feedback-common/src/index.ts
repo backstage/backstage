@@ -51,10 +51,15 @@ export interface FeedbackResponse {
 /**
  * @public
  */
+export interface Ratings {
+  [ratingValue: string]: number;
+}
+
+/**
+ * @public
+ */
 export interface EntityRatingsData {
   entityRef: string;
   entityTitle?: string;
-  ratings: {
-    [ratingValue: string]: number;
-  };
+  ratings: Ratings;
 }

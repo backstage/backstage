@@ -1,7 +1,6 @@
 # Microsoft-Calendar Plugin
 
-Welcome to the Microsoft calendar plugin!
-_This plugin was created through the Backstage CLI_
+This plugin is contributed by [StatusNeo](https://statusneo.com/)
 
 ## Features
 

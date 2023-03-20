@@ -37,7 +37,11 @@ Defining feature flag in the application is done by adding feature flags in`feat
 const app = createApp({
   // ...
   featureFlags: [
-    { name: 'tech-radar', description: 'Enables the tech radar plugin' },
+    {
+      pluginId: '', // pluginId is required for feature flags in plugins. It can be left blank for a feature flag leveraged in the application.
+      name: 'tech-radar',
+      description: 'Enables the tech radar plugin',
+    },
   ],
   // ...
 });

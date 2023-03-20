@@ -21,6 +21,7 @@ import {
   EntityRatingsData,
   FeedbackResponse,
   Rating,
+  Ratings,
 } from '@backstage/plugin-entity-feedback-common';
 
 import { EntityFeedbackApi } from './EntityFeedbackApi';
@@ -86,6 +87,22 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
     const resp = await this.fetchApi.fetch(
       `${baseUrl}/ratings/${encodeURIComponent(entityRef)}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    if (!resp.ok) {
+      throw await ResponseError.fromResponse(resp);
+    }
+
+    return resp.json();
+  }
+
+  async getRatingAggregates(entityRef: string): Promise<Ratings> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('entity-feedback');
+    const resp = await this.fetchApi.fetch(
+      `${baseUrl}/ratings/${encodeURIComponent(entityRef)}/aggregate`,
       {
         method: 'GET',
       },

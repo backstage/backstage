@@ -60,6 +60,11 @@ export type ActionContext<TActionInput extends JsonObject> = {
      */
     ref?: string;
   };
+
+  /**
+   * Implement the signal to make your custom step abortable https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal
+   */
+  signal?: AbortSignal;
 };
 
 /** @public */

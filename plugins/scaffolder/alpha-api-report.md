@@ -8,12 +8,9 @@
 import { Entity } from '@backstage/catalog-model';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
-import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
-import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @alpha @deprecated
@@ -21,9 +18,6 @@ export type FormProps = Pick<
   FormProps_3,
   'transformErrors' | 'noHtml5Validate'
 >;
-
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
 
 // @alpha
 export type NextRouterProps = {
@@ -49,16 +43,6 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
-
-// @alpha (undocumented)
-export const nextScaffolderTaskRouteRef: SubRouteRef<
-  PathParams<'/tasks/:taskId'>
->;
-
-// @alpha (undocumented)
-export const nextSelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {

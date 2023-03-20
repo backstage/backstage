@@ -132,6 +132,8 @@ export const TechDocsSearchResultListItem = (
               WebkitLineClamp: lineClamp,
               overflow: 'hidden',
             }}
+            color="textSecondary"
+            variant="body2"
           >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText

@@ -1,5 +1,13 @@
 # @internal/plugin-catalog-customized
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0
+  - @backstage/plugin-catalog-react@1.4.0
+
 ## 0.0.8-next.2
 
 ### Patch Changes

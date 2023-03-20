@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.1.35
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.1.35-next.2
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/test-utils
 
+## 1.2.6
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/core-app-api@1.6.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11
+
 ## 1.2.6-next.2
 
 ### Patch Changes

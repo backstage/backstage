@@ -33,7 +33,7 @@ jobs:
         run: yarn install --immutable
       - name: microsite yarn install
         run: yarn install --immutable
-        working-directory: microsite-next
+        working-directory: microsite
       - name: storybook yarn install
         run: yarn install --immutable
         working-directory: storybook
@@ -43,20 +43,20 @@ jobs:
 
       - name: build microsite
         run: yarn build
-        working-directory: microsite-next
+        working-directory: microsite
 
       - name: build storybook
         run: yarn build-storybook
         working-directory: storybook
 
       - name: move storybook dist into microsite
-        run: mv storybook/dist/ microsite-next/build/storybook
+        run: mv storybook/dist/ microsite/build/storybook
 
       - name: Check the build output
-        run: ls microsite-next/build && ls microsite-next/build/storybook
+        run: ls microsite/build && ls microsite/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
-          folder: microsite-next/build
+          folder: microsite/build

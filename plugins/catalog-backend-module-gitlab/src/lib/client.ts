@@ -20,7 +20,7 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
-import { GitLabGroup, GitLabMembership, GitLabUser } from './types';
+import { GitLabGroup, GitLabGroupMembersResponse, GitLabUser } from './types';
 
 export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
@@ -78,16 +78,11 @@ export class GitLabClient {
   async listUsers(
     options?: UserListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
-    let requestOptions = options;
-
-    if (!requestOptions) {
-      requestOptions = {};
-    }
-
-    requestOptions.without_project_bots = true;
-    requestOptions.exclude_internal = true;
-
-    return this.pagedRequest(`/users?`, requestOptions);
+    return this.pagedRequest(`/users?`, {
+      ...options,
+      without_project_bots: true,
+      exclude_internal: true,
+    });
   }
 
   async listGroups(
@@ -96,30 +91,51 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
-  async getUserMemberships(userId: number): Promise<GitLabMembership[]> {
-    const endpoint: string = `/users/${encodeURIComponent(userId)}/memberships`;
-    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
-    request.searchParams.append('per_page', '100');
-
-    const response = await fetch(request.toString(), {
-      headers: getGitLabRequestOptions(this.config).headers,
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      if (response.status >= 500) {
-        this.logger.debug(
-          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-            response.status
-          } - ${response.statusText}`,
-        );
+  async getGroupMembers(groupPath: string): Promise<number[]> {
+    const memberIds = [];
+    let hasNextPage: boolean = false;
+    let endCursor: string | null = null;
+    do {
+      const response: GitLabGroupMembersResponse = await fetch(
+        `${this.config.baseUrl}/api/graphql`,
+        {
+          method: 'POST',
+          headers: {
+            ...getGitLabRequestOptions(this.config).headers,
+            ['Content-Type']: 'application/json',
+          },
+          body: JSON.stringify({
+            variables: { group: groupPath, endCursor },
+            query: `query($group: ID!, $endCursor: String) {
+              group(fullPath: $group) {
+                groupMembers(first: 100, relations: [DIRECT], after: $endCursor) {
+                  nodes {
+                    user {
+                      id
+                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
+                }
+              }
+            }`,
+          }),
+        },
+      ).then(r => r.json());
+      if (response.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
-      return [];
-    }
-
-    return response.json().then(items => {
-      return items as GitLabMembership[];
-    });
+      memberIds.push(
+        ...response.data.group.groupMembers.nodes.map(
+          (node: { user: { id: string } }) =>
+            Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+        ),
+      );
+      ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
+    } while (hasNextPage);
+    return memberIds;
   }
 
   /**

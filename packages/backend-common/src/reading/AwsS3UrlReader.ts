@@ -41,6 +41,7 @@ import {
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
   GetObjectCommand,
+  GetObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -253,6 +254,8 @@ export class AwsS3UrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
+    const { etag, lastModifiedAfter } = options ?? {};
+
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
@@ -262,19 +265,15 @@ export class AwsS3UrlReader implements UrlReader {
       );
       const abortController = new AbortController();
 
-      let params;
-      if (options?.etag) {
-        params = {
-          Bucket: bucket,
-          Key: path,
-          IfNoneMatch: options.etag,
-        };
-      } else {
-        params = {
-          Bucket: bucket,
-          Key: path,
-        };
-      }
+      const params: GetObjectCommandInput = {
+        Bucket: bucket,
+        Key: path,
+        ...(etag && { IfNoneMatch: etag }),
+        ...(lastModifiedAfter && {
+          IfModifiedSince: lastModifiedAfter,
+        }),
+      };
+
       options?.signal?.addEventListener('abort', () => abortController.abort());
       const getObjectCommand = new GetObjectCommand(params);
       const response = await s3Client.send(getObjectCommand, {
@@ -284,10 +283,10 @@ export class AwsS3UrlReader implements UrlReader {
       const s3ObjectData = await this.retrieveS3ObjectData(
         response.Body as Readable,
       );
-      const etag = response.ETag;
 
       return ReadUrlResponseFactory.fromReadable(s3ObjectData, {
-        etag: etag,
+        etag: response.ETag,
+        lastModifiedAt: response.LastModified,
       });
     } catch (e) {
       if (e.$metadata && e.$metadata.httpStatusCode === 304) {
@@ -347,6 +346,7 @@ export class AwsS3UrlReader implements UrlReader {
         responses.push({
           data: s3ObjectData,
           path: String(allObjects[i]),
+          lastModifiedAt: response?.LastModified ?? undefined,
         });
       }
 

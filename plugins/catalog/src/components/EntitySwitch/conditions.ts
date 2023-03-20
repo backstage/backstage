@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentEntity, Entity } from '@backstage/catalog-model';
+import {
+  ComponentEntity,
+  ResourceEntity,
+  Entity,
+} from '@backstage/catalog-model';
 
 function strCmp(a: string | undefined, b: string | undefined): boolean {
   return Boolean(
@@ -47,6 +51,20 @@ export function isComponentType(types: string | string[]) {
     }
     const componentEntity = entity as ComponentEntity;
     return strCmpAll(componentEntity.spec.type, types);
+  };
+}
+
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is a Resource of a given spec.type.
+ * @public
+ */
+export function isResourceType(types: string | string[]) {
+  return (entity: Entity) => {
+    if (!strCmp(entity.kind, 'resource')) {
+      return false;
+    }
+    const resourceEntity = entity as ResourceEntity;
+    return strCmpAll(resourceEntity.spec.type, types);
   };
 }
 

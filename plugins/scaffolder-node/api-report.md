@@ -30,6 +30,7 @@ export type ActionContext<TActionInput extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
+  signal?: AbortSignal;
 };
 
 // @public

@@ -65,6 +65,7 @@ export type ReaderFactory = (options: {
  */
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 /**
@@ -95,10 +96,16 @@ export type FromReadableArrayOptions = Array<{
    * The raw data itself.
    */
   data: Readable;
+
   /**
    * The filepath of the data.
    */
   path: string;
+
+  /**
+   * Last modified date of the file contents.
+   */
+  lastModifiedAt?: Date;
 }>;
 
 /**
