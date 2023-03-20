@@ -36,12 +36,18 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
+/**
+ * @alpha
+ */
 export type ScaffolderPageContextMenuProps = {
   editor?: RouteFunc<AnyParams>;
   actions?: RouteFunc<AnyParams>;
   tasks?: RouteFunc<AnyParams>;
 };
 
+/**
+ * @alpha
+ */
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {

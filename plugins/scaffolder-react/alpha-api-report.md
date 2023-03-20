@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyParams } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
@@ -22,6 +23,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
+import { RouteFunc } from '@backstage/core-plugin-api';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
@@ -130,6 +132,18 @@ export const ReviewState: (props: ReviewStateProps) => JSX.Element;
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+};
+
+// @alpha (undocumented)
+export function ScaffolderPageContextMenu(
+  props: ScaffolderPageContextMenuProps,
+): JSX.Element | null;
+
+// @alpha (undocumented)
+export type ScaffolderPageContextMenuProps = {
+  editor?: RouteFunc<AnyParams>;
+  actions?: RouteFunc<AnyParams>;
+  tasks?: RouteFunc<AnyParams>;
 };
 
 // @alpha
