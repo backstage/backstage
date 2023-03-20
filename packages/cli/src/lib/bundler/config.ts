@@ -39,7 +39,6 @@ import yn from 'yn';
 import { readEntryPoints } from '../monorepo/entryPoints';
 import { ExtendedPackage } from '../monorepo';
 
-const joinPath = posixPath.join;
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
@@ -237,7 +236,7 @@ export async function createBackendConfig(
   const { packages } = await getPackages(cliPaths.targetDir);
   const localPackageEntryPoints = packages.flatMap(p => {
     const entryPoints = readEntryPoints((p as ExtendedPackage).packageJson);
-    return entryPoints.map(e => joinPath(p.packageJson.name, e.mount));
+    return entryPoints.map(e => posixPath.join(p.packageJson.name, e.mount));
   });
   const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));
   // See frontend config

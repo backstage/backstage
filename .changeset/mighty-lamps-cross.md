@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Use `posix` for joining paths instead of platform dependent joins.
+Fixed backend start command on Windows by removing the use of platform dependent path joins.
