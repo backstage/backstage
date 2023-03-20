@@ -39,7 +39,7 @@ export const createGitlabProjectDeployTokenAction = (options: {
     scopes: string[];
     token?: string;
   }>({
-    id: 'gitlab:pdt:create',
+    id: 'gitlab:projectDeployToken:create',
     schema: {
       input: {
         required: ['projectId', 'repoUrl'],

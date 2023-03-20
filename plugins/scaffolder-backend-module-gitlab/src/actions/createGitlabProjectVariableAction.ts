@@ -41,7 +41,7 @@ export const createGitlabProjectVariableAction = (options: {
     environmentScope: string;
     token?: string;
   }>({
-    id: 'gitlab:pv:create',
+    id: 'gitlab:projectVariable:create',
     schema: {
       input: {
         required: [
