@@ -116,7 +116,7 @@ A Project Area Maintainer has all the rights and responsibilities of an Organiza
 
 ### Responsibilities
 
-- Review PRs towards their project area. Project area maintainers are expected to review at least 20 PRs per year, or the majority of all PRs towards the area
+- Review PRs towards their project area. Project area maintainers are expected to review at least 20 PRs per year, or the majority of all PRs towards the area, if it is less than 20
 - Follow the [reviewing guide](REVIEWING.md)
 - Triage and respond to issues related to their project area
 - Mentor new project area maintainers
