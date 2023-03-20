@@ -82,7 +82,10 @@ export const useShadowRootSelection = (waitMillis: number = 0) => {
     [shadowRoot, setSelection, waitMillis],
   );
 
-  useEffect(() => handleSelectionChange.cancel, [handleSelectionChange.cancel]);
+  useEffect(() => {
+    // cancel debounce on unmount
+    return () => handleSelectionChange.cancel();
+  }, [handleSelectionChange]);
 
   useEffect(() => {
     window.document.addEventListener('selectionchange', handleSelectionChange);
