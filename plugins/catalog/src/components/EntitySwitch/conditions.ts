@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export interface EntityPredicates {
   kind?: string | string[];
   type?: string | string[];

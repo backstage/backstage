@@ -355,8 +355,6 @@ export const EntityListContainer: (props: {
 // @public
 export function EntityOrphanWarning(): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityPredicates" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface EntityPredicates {
   // (undocumented)
