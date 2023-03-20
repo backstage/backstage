@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteFunc, AnyParams } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -28,7 +27,6 @@ import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   button: {
@@ -40,9 +38,9 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
  * @alpha
  */
 export type ScaffolderPageContextMenuProps = {
-  editor?: RouteFunc<AnyParams>;
-  actions?: RouteFunc<AnyParams>;
-  tasks?: RouteFunc<AnyParams>;
+  onEditorClicked?: () => void;
+  onActionsClicked?: () => void;
+  onTasksClicked?: () => void;
 };
 
 /**
@@ -51,13 +49,11 @@ export type ScaffolderPageContextMenuProps = {
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
-  const { editor, actions, tasks } = props;
+  const { onEditorClicked, onActionsClicked, onTasksClicked } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
-  const navigate = useNavigate();
-
-  if (!editor && !actions) {
+  if (!onEditorClicked && !onActionsClicked) {
     return null;
   }
 
@@ -90,24 +86,24 @@ export function ScaffolderPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          {editor && (
-            <MenuItem onClick={() => navigate(editor())}>
+          {onEditorClicked && (
+            <MenuItem onClick={onEditorClicked}>
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Template Editor" />
             </MenuItem>
           )}
-          {actions && (
-            <MenuItem onClick={() => navigate(actions())}>
+          {onActionsClicked && (
+            <MenuItem onClick={onActionsClicked}>
               <ListItemIcon>
                 <Description fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Installed Actions" />
             </MenuItem>
           )}
-          {tasks && (
-            <MenuItem onClick={() => navigate(tasks())}>
+          {onTasksClicked && (
+            <MenuItem onClick={onTasksClicked}>
               <ListItemIcon>
                 <List fontSize="small" />
               </ListItemIcon>

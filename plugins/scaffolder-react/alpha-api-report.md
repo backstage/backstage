@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="react" />
 
-import { AnyParams } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { CustomFieldExtensionSchema } from '@backstage/plugin-scaffolder-react';
@@ -23,7 +22,6 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
-import { RouteFunc } from '@backstage/core-plugin-api';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
@@ -141,9 +139,9 @@ export function ScaffolderPageContextMenu(
 
 // @alpha (undocumented)
 export type ScaffolderPageContextMenuProps = {
-  editor?: RouteFunc<AnyParams>;
-  actions?: RouteFunc<AnyParams>;
-  tasks?: RouteFunc<AnyParams>;
+  onEditorClicked?: () => void;
+  onActionsClicked?: () => void;
+  onTasksClicked?: () => void;
 };
 
 // @alpha

@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   Content,
@@ -38,7 +40,6 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 
 import { RegisterExistingButton } from './RegisterExistingButton';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 import {
   actionsRouteRef,
@@ -82,6 +83,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     groups: givenGroups = [],
     templateFilter,
   } = props;
+  const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
@@ -91,9 +93,18 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     : [defaultGroup];
 
   const scaffolderPageContextMenuProps = {
-    editor: props?.contextMenu?.editor !== false ? editorLink : undefined,
-    actions: props?.contextMenu?.actions !== false ? actionsLink : undefined,
-    tasks: props?.contextMenu?.tasks !== false ? tasksLink : undefined,
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
+    onTasksClicked:
+      props?.contextMenu?.tasks !== false
+        ? () => navigate(tasksLink())
+        : undefined,
   };
 
   return (
