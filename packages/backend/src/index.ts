@@ -38,11 +38,10 @@ import {
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
-import { metricsInit, metricsHandler } from './metrics';
+import { metricsHandler, metricsInit } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
-import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
 import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
@@ -68,6 +67,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import createCatalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -156,7 +156,7 @@ async function main() {
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
 
-  const eventBasedEntityProviders = await catalogEventBasedProviders(
+  const eventBasedEntityProviders = await createCatalogEventBasedProviders(
     catalogEnv,
   );
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));

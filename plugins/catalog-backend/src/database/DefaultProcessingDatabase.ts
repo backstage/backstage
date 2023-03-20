@@ -359,8 +359,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
         if (this.options.conflictEventBroker) {
-          this.options.conflictEventBroker?.publish({
-            topic: 'conflicting-entities',
+          await this.options.conflictEventBroker?.publish({
+            topic: 'conflicts',
             eventPayload: {
               ...entity,
               entityRef,

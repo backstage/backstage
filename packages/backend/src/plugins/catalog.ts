@@ -21,6 +21,7 @@ import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { InMemoryEventBroker } from '@backstage/plugin-events-backend';
 import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { ConflictEventSubscriber } from './conflictEventSubscriber';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -40,6 +41,9 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   builder.addEntityProvider(providers ?? []);
   const conflictBroker = new InMemoryEventBroker(env.logger);
+  conflictBroker.subscribe(
+    new ConflictEventSubscriber(env.logger, ['conflicts']),
+  );
   builder.setConflictEventBroker(conflictBroker);
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
