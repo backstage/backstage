@@ -61,15 +61,11 @@ installed, may be captured.
 | `discover` | The title of the search result that was clicked on                                                                                                                 | The `value` is the result rank. A `to` attribute is also provided                                                                                                                                                            |
 
 If there is an event you'd like to see captured, please [open an
-issue][add-event] describing the event you want to see and the questions it
-would help you answer. Or jump to [Capturing Events][event-howto] to learn how
+issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE) describing the event you want to see and the questions it
+would help you answer. Or jump to [Capturing Events](#capturing-events) to learn how
 to contribute the instrumentation yourself!
 
 _OSS plugin maintainers: feel free to document your events in the table above._
-
-[add-event]:
-https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE
-[event-howto]: #capturing-events
 
 ## Writing Integrations
 
