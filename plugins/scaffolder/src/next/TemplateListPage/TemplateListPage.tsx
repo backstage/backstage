@@ -44,6 +44,7 @@ export type TemplateListPageProps = {
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -68,7 +69,11 @@ const createGroupsWithOther = (
 
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-  const { TemplateCardComponent, groups: givenGroups = [] } = props;
+  const {
+    TemplateCardComponent,
+    groups: givenGroups = [],
+    templateFilter,
+  } = props;
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups)
@@ -111,6 +116,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
             <CatalogFilterLayout.Content>
               <TemplateGroups
                 groups={groups}
+                templateFilter={templateFilter}
                 TemplateCardComponent={TemplateCardComponent}
               />
             </CatalogFilterLayout.Content>

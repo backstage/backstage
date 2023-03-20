@@ -28,6 +28,7 @@ import {
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
+import { isTemplateEntity } from '../../lib/isTemplateEntity';
 
 /**
  * @internal
@@ -38,8 +39,9 @@ export type TemplateListProps = {
     | undefined;
   group?: {
     title?: React.ReactNode;
-    filter: (entity: Entity) => boolean;
+    filter: (entity: TemplateEntityV1beta3) => boolean;
   };
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 /**
@@ -48,12 +50,14 @@ export type TemplateListProps = {
 export const TemplateList = ({
   TemplateCardComponent,
   group,
+  templateFilter,
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
-  const maybeFilteredEntities = group
-    ? entities.filter(e => group.filter(e))
-    : entities;
+  const templateEntities = entities.filter(isTemplateEntity);
+  const maybeFilteredEntities = (
+    group ? templateEntities.filter(group.filter) : templateEntities
+  ).filter(e => (templateFilter ? !templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {

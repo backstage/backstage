@@ -15,11 +15,7 @@
  */
 import React, { useCallback } from 'react';
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Progress, Link, DocsIcon } from '@backstage/core-components';
@@ -33,17 +29,19 @@ import {
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
 import { viewTechDocRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { useNavigate } from 'react-router-dom';
+import { isTemplateEntity } from '../../lib/isTemplateEntity';
 
 /**
  * @alpha
  */
 export type TemplateGroupFilter = {
   title?: React.ReactNode;
-  filter: (entity: Entity) => boolean;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
@@ -51,7 +49,7 @@ export interface TemplateGroupsProps {
 
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
-  const { groups, TemplateCardComponent } = props;
+  const { groups, templateFilter, TemplateCardComponent } = props;
   const errorApi = useApi(errorApiRef);
   const app = useApp();
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
@@ -90,7 +88,9 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     <>
       {groups.map(({ title, filter }, index) => {
         const templates = entities
-          .filter((e): e is TemplateEntityV1beta3 => filter(e))
+          .filter(isTemplateEntity)
+          .filter(e => (templateFilter ? !templateFilter(e) : true))
+          .filter(filter)
           .map(template => {
             const { kind, namespace, name } = parseEntityRef(
               stringifyEntityRef(template),
