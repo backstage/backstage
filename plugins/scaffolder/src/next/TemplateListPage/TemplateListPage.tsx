@@ -32,13 +32,20 @@ import {
   CatalogFilterLayout,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { TemplateCategoryPicker } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderPageContextMenu,
+  TemplateCategoryPicker,
+} from '@backstage/plugin-scaffolder-react/alpha';
 
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
-import { registerComponentRouteRef } from '../../routes';
-import { ContextMenu } from './ContextMenu';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  registerComponentRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
@@ -75,10 +82,19 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     groups: givenGroups = [],
     templateFilter,
   } = props;
+  const editorLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups)
     : [defaultGroup];
+
+  const scaffolderPageContextMenuProps = {
+    editor: props?.contextMenu?.editor !== false ? editorLink : undefined,
+    actions: props?.contextMenu?.actions !== false ? actionsLink : undefined,
+    tasks: props?.contextMenu?.tasks !== false ? tasksLink : undefined,
+  };
 
   return (
     <EntityListProvider>
@@ -88,7 +104,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
         >
-          <ContextMenu {...props.contextMenu} />
+          <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
         <Content>
           <ContentHeader title="Available Templates">
