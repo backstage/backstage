@@ -664,9 +664,9 @@ export interface RouterOptions {
   // (undocumented)
   permissionApi?: PermissionEvaluator;
   // (undocumented)
-  reader: UrlReader;
+  permissionRules?: TemplatePermissionRuleInput[];
   // (undocumented)
-  rules?: TemplatePermissionRuleInput[];
+  reader: UrlReader;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
