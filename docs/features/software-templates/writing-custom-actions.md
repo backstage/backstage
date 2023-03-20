@@ -114,7 +114,7 @@ We follow `provider:entity:verb` or as close to this as possible for our built i
 
 Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create`.
 
-Prefer to use `camelCase` over `pascalCase` for these actions if possible, which leads to better reading and writing of template entity definitions.
+Prefer to use `camelCase` over `snake-case` for these actions if possible, which leads to better reading and writing of template entity definitions.
 
 > We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
