@@ -21,4 +21,5 @@
  */
 
 export { EventsBackend } from './service/EventsBackend';
+export { InMemoryEventBroker } from './service/InMemoryEventBroker';
 export { HttpPostIngressEventPublisher } from './service/http';

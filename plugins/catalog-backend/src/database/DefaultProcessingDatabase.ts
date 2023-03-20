@@ -44,6 +44,7 @@ import { checkLocationKeyConflict } from './operations/refreshState/checkLocatio
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash } from './util';
+import { EventBroker } from '@backstage/plugin-events-node';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -57,6 +58,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
+      conflictEventBroker?: EventBroker;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -356,6 +358,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
+        if (this.options.conflictEventBroker) {
+          this.options.conflictEventBroker?.publish({
+            topic: 'conflicting-entities',
+            eventPayload: {
+              ...entity,
+              entityRef,
+              newLocationKey: locationKey,
+              existingLocationKey: conflictingKey,
+            },
+            metadata: {},
+          });
+        }
       }
     }
 

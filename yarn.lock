@@ -5006,7 +5006,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
+"@backstage/plugin-catalog-backend-module-github@workspace:^, @backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:
@@ -5204,6 +5204,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
@@ -22508,6 +22509,7 @@ __metadata:
     "@backstage/plugin-azure-sites-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-code-coverage-backend": "workspace:^"
     "@backstage/plugin-entity-feedback-backend": "workspace:^"

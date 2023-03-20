@@ -98,6 +98,7 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+import { EventBroker } from '@backstage/plugin-events-node';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -166,6 +167,7 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
+  private conflictEventBroker?: EventBroker;
 
   /**
    * Creates a catalog builder.
@@ -417,6 +419,11 @@ export class CatalogBuilder {
     return this;
   }
 
+  setConflictEventBroker(broker: EventBroker): CatalogBuilder {
+    this.conflictEventBroker = broker;
+    return this;
+  }
+
   /**
    * Wires up and returns all of the component parts of the catalog
    */
@@ -440,6 +447,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       refreshInterval: this.processingInterval,
+      conflictEventBroker: this.conflictEventBroker,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
