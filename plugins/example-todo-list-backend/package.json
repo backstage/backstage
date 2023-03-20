@@ -34,8 +34,7 @@
     "express-promise-router": "^4.1.0",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
-    "yn": "^4.0.0",
-    "zod": "~3.18.0"
+    "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
