@@ -56,7 +56,10 @@ export const CreatePlaylistButton = () => {
     [errorApi, navigate, playlistApi, playlistRoute],
   );
 
-  const singularTitle = useTitle(false, false);
+  const singularTitle = useTitle({
+    pluralize: false,
+    lowerCase: false,
+  });
 
   return (
     <>

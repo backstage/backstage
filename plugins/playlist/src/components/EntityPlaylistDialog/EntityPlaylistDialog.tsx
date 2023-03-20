@@ -105,9 +105,18 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
     [playlistApi],
   );
 
-  const singularTitle = useTitle(true, false);
-  const singularTitleLowerCase = useTitle(false, true);
-  const plurlaTitleLowerCase = useTitle(true, true);
+  const singularTitle = useTitle({
+    pluralize: true,
+    lowerCase: false,
+  });
+  const singularTitleLowerCase = useTitle({
+    pluralize: false,
+    lowerCase: true,
+  });
+  const pluralTitleLowerCase = useTitle({
+    pluralize: true,
+    lowerCase: true,
+  });
 
   useEffect(() => {
     if (open) {
@@ -204,7 +213,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         <DialogContent className={classes.dialogContent}>
           {error && (
             <ResponseErrorPanel
-              title={`Error loading ${plurlaTitleLowerCase}`}
+              title={`Error loading ${pluralTitleLowerCase}`}
               error={error}
             />
           )}

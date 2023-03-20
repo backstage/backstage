@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,18 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
 
-export function useTitle(inPlural: boolean, inLowerCase: boolean) {
+interface UseTitleOptions {
+  pluralize?: boolean;
+  lowerCase?: boolean;
+}
+
+export function useTitle(opts: UseTitleOptions) {
   const configApi = useApi(configApiRef);
   let title = configApi.getOptionalString('playlist.title') ?? 'Playlist';
 
-  if (inPlural) {
+  if (opts.pluralize) {
     title = pluralize(title);
   }
 
-  return inLowerCase ? title.toLocaleLowerCase('en-US') : title;
+  return opts.lowerCase ? title.toLocaleLowerCase('en-US') : title;
 }

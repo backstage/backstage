@@ -32,7 +32,10 @@ import { PlaylistSearchBar } from '../PlaylistSearchBar';
 import { PlaylistSortPicker } from '../PlaylistSortPicker';
 
 export const PlaylistIndexPage = () => {
-  const pluralTitle = useTitle(true, false);
+  const pluralTitle = useTitle({
+    pluralize: true,
+    lowerCase: false,
+  });
 
   return (
     <PageWithHeader themeId="home" title={pluralTitle}>

@@ -28,7 +28,10 @@ import { PlaylistCard } from '../PlaylistCard';
 
 export const PlaylistList = () => {
   const { loading, error, playlists } = usePlaylistList();
-  const pluralTitleLowerCase = useTitle(true, true);
+  const pluralTitleLowerCase = useTitle({
+    pluralize: true,
+    lowerCase: true,
+  });
 
   return (
     <>

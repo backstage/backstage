@@ -106,7 +106,10 @@ export const PlaylistEditDialog = ({
     }
   };
 
-  const titleSingularLowerCase = useTitle(false, false);
+  const titleSingularLowerCase = useTitle({
+    pluralize: false,
+    lowerCase: false,
+  });
 
   return (
     <Dialog fullWidth maxWidth="xs" onClose={closeDialog} open={open}>
@@ -124,7 +127,7 @@ export const PlaylistEditDialog = ({
               fullWidth
               label="Name"
               margin="dense"
-              placeholder={`Give your ${titleSingularLowerCase} name`}
+              placeholder={`Give your ${titleSingularLowerCase} a name`}
               required
               type="text"
             />

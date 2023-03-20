@@ -110,7 +110,10 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     }
   }, [playlistApi]);
 
-  const singularTitle = useTitle(false, false);
+  const singularTitle = useTitle({
+    pluralize: false,
+    lowerCase: false,
+  });
 
   return (
     <Header

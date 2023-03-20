@@ -85,7 +85,10 @@ export const PlaylistEntitiesTable = ({
     [errorApi, loadEntities, playlistApi, playlistId],
   );
 
-  const singularTitleLowerCase = useTitle(false, true);
+  const singularTitleLowerCase = useTitle({
+    pluralize: false,
+    lowerCase: true,
+  });
 
   const actions = editAllowed
     ? [
