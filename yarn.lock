@@ -33364,8 +33364,8 @@ __metadata:
   linkType: hard
 
 "react-markdown@npm:^8.0.0":
-  version: 8.0.5
-  resolution: "react-markdown@npm:8.0.5"
+  version: 8.0.6
+  resolution: "react-markdown@npm:8.0.6"
   dependencies:
     "@types/hast": ^2.0.0
     "@types/prop-types": ^15.0.0
@@ -33385,7 +33385,7 @@ __metadata:
   peerDependencies:
     "@types/react": ">=16"
     react: ">=16"
-  checksum: 9d11b7aba16216d590e56b4744e05d2925141bfb0f5885b3d9400ccf006cd24b79ce3b3d20af8a083a01324215b58fa4c5979e44f69d54123ff1dd5dacb0dc89
+  checksum: 59fd5dcd089df0cd9098755e3063d8fcf4b4635b1ac2d5e05fcda9923769724476396abdf2afb80fb8e7589a951deac50d6f89c4740d5ec6decd34076122c80c
   languageName: node
   linkType: hard
 
