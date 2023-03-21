@@ -37,7 +37,6 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /**
  * The Category Picker that is rendered on the left side for picking
  * categories and filtering the template list.
- *
  * @alpha
  */
 export const TemplateCategoryPicker = () => {

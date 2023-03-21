@@ -208,6 +208,12 @@ export const TemplateCategoryPicker: () => JSX.Element | null;
 // @alpha
 export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
 
+// @alpha (undocumented)
+export type TemplateGroupFilter = {
+  title?: React_2.ReactNode;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
+};
+
 // @alpha
 export interface TemplateGroupProps {
   // (undocumented)
@@ -227,6 +233,29 @@ export interface TemplateGroupProps {
   }[];
   // (undocumented)
   title: React_2.ReactNode;
+}
+
+// @alpha (undocumented)
+export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
+
+// @alpha (undocumented)
+export interface TemplateGroupsProps {
+  // (undocumented)
+  additionalLinksForEntity?: (template: TemplateEntityV1beta3) => {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  groups: TemplateGroupFilter[];
+  // (undocumented)
+  onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
+  // (undocumented)
+  TemplateCardComponent?: React_2.ComponentType<{
+    template: TemplateEntityV1beta3;
+  }>;
+  // (undocumented)
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }
 
 // @alpha

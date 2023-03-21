@@ -13,11 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-
-export const isTemplateEntity = (
-  entity: Entity,
-): entity is TemplateEntityV1beta3 =>
-  entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
-  entity.kind === 'Template';
+export * from './TemplateGroups';

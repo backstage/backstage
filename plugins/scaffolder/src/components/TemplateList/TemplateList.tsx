@@ -16,7 +16,10 @@
 
 import React, { ComponentType } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  isTemplateEntityV1beta3,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,
@@ -28,7 +31,6 @@ import {
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
-import { isTemplateEntity } from '../../lib/isTemplateEntity';
 
 /**
  * @internal
@@ -54,7 +56,7 @@ export const TemplateList = ({
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
-  const templateEntities = entities.filter(isTemplateEntity);
+  const templateEntities = entities.filter(isTemplateEntityV1beta3);
   const maybeFilteredEntities = (
     group ? templateEntities.filter(group.filter) : templateEntities
   ).filter(e => (templateFilter ? !templateFilter(e) : true));

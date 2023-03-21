@@ -17,6 +17,7 @@ export * from './Stepper';
 export * from './TemplateCard';
 export * from './ReviewState';
 export * from './TemplateGroup';
+export * from './TemplateGroups';
 export * from './Workflow';
 export * from './TemplateOutputs';
 export * from './Form';

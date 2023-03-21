@@ -11,6 +11,11 @@ import { KindValidator } from '@backstage/catalog-model';
 import type { UserEntity } from '@backstage/catalog-model';
 
 // @public
+export const isTemplateEntityV1beta3: (
+  entity: Entity,
+) => entity is TemplateEntityV1beta3;
+
+// @public
 export type TaskSpec = TaskSpecV1beta3;
 
 // @public
