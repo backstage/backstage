@@ -505,6 +505,7 @@ of all supported file extensions:
 | `.jpg`      | URL Path        | Image                                                                         |
 | `.png`      | URL Path        | Image                                                                         |
 | `.svg`      | URL Path        | Image                                                                         |
+| `.md`       | URL Path        | Markdown File                                                                 |
 | `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
 
 ## Jest Configuration

@@ -132,6 +132,7 @@ export async function makeRollupConfigs(
               /\.woff$/,
               /\.woff2$/,
               /\.ttf$/,
+              /\.md$/,
             ],
           }),
           json(),
