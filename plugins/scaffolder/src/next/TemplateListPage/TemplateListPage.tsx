@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   Content,
   ContentHeader,
+  DocsIcon,
   Header,
   Page,
   SupportButton,
@@ -40,13 +41,19 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 
 import { RegisterExistingButton } from './RegisterExistingButton';
-import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
+import {
+  TemplateGroupFilter,
+  TemplateGroups,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import {
   actionsRouteRef,
   editRouteRef,
   registerComponentRouteRef,
   scaffolderListTaskRouteRef,
+  selectedTemplateRouteRef,
+  viewTechDocRouteRef,
 } from '../../routes';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -93,6 +100,9 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+  const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const app = useApp();
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups)
@@ -112,6 +122,34 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
         ? () => navigate(tasksLink())
         : undefined,
   };
+
+  const additionalLinksForEntity = useCallback(
+    (template: TemplateEntityV1beta3) => {
+      const { kind, namespace, name } = parseEntityRef(
+        stringifyEntityRef(template),
+      );
+      return template.metadata.annotations?.['backstage.io/techdocs-ref'] &&
+        viewTechDocsLink
+        ? [
+            {
+              icon: app.getSystemIcon('docs') ?? DocsIcon,
+              text: 'View TechDocs',
+              url: viewTechDocsLink({ kind, namespace, name }),
+            },
+          ]
+        : [];
+    },
+    [app, viewTechDocsLink],
+  );
+
+  const onTemplateSelected = useCallback(
+    (template: TemplateEntityV1beta3) => {
+      const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
+
+      navigate(templateRoute({ namespace, templateName: name }));
+    },
+    [navigate, templateRoute],
+  );
 
   return (
     <EntityListProvider>
@@ -152,6 +190,8 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
                 groups={groups}
                 templateFilter={templateFilter}
                 TemplateCardComponent={TemplateCardComponent}
+                onTemplateSelected={onTemplateSelected}
+                additionalLinksForEntity={additionalLinksForEntity}
               />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>

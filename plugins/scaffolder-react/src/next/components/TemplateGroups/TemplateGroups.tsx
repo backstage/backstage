@@ -21,18 +21,10 @@ import {
   isTemplateEntityV1beta3,
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link, DocsIcon } from '@backstage/core-components';
+import { Progress, Link } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
-import {
-  errorApiRef,
-  IconComponent,
-  useApi,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { viewTechDocRouteRef } from '../../routes';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * @alpha
@@ -51,10 +43,7 @@ export interface TemplateGroupsProps {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
-  onTemplateSelected?: (template: {
-    namespace: string;
-    templateName: string;
-  }) => void;
+  onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
   additionalLinksForEntity?: (template: TemplateEntityV1beta3) => {
     icon: IconComponent;
     text: string;
@@ -72,8 +61,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   const errorApi = useApi(errorApiRef);
   const onSelected = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
-      onTemplateSelected?.({ namespace, templateName: name });
+      onTemplateSelected?.(template);
     },
     [onTemplateSelected],
   );

@@ -15,9 +15,3 @@
  */
 export { TemplateListPage } from './TemplateListPage';
 export type { TemplateListPageProps } from './TemplateListPage';
-
-export { TemplateGroups } from './TemplateGroups';
-export type {
-  TemplateGroupFilter,
-  TemplateGroupsProps,
-} from './TemplateGroups';
