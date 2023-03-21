@@ -8,7 +8,9 @@ types and how to resolve them.
 - [Extending Schema](#extending-your-schema-with-a-custom-module)
   - [Directives API](#directives-api)
     - [`@field`](#field)
-    - [`@inherit`](#inherit)
+    - [`@implements`](#implements)
+    - [`@discriminates`](#discriminates)
+    - [`@discriminationAlias`](#discriminationalias)
     - [`@relation`](#../graphql-catalog/README.md#relation-directive)
 - [Integrations](#integrations)
   - [@graphql-codegen/TypeScript](#graphql-codegentypescript)
@@ -127,27 +129,23 @@ type Entity {
 }
 ```
 
-#### `@inherit`
+#### `@implements`
 
-The `@inherit` directive allows you to inherit fields from another
-entity. We created this directive to make it easier to implement
+The `@implements` directive allows you to inherit fields from another
+interface. We created this directive to make it easier to implement
 interfaces that inherit from other interfaces. It makes GraphQL types
 similar to extending types in TypeScript. In TypeScript, when a class
 inherits another class, the child class automatically inherits
 properties and methods of the parent class. This functionality doesn't
-have an equivalent in GraphQL. Without this directive, the `IService`
+have an equivalent in GraphQL. Without this directive, the `Service`
 interface in GraphQL would need to re-implement many fields that are
 defined on implemented interfaces which leads to lots of duplication.
 
-> 💡Heads up! your interface must be prefixed with `I` letter\*\*. This is done to
-> avoid naming collisions because for each interface we generate an
-> object type.
-
-1. Use this directive to define a new interface that
-   includes all of the properties of the parent.
+1. Use this directive to define a new type that
+   includes all of the properties of the parent interface.
 
 ```graphql
-interface IService @inherit(interface: "IComponent") {
+type Service @implements(interface: "Component") {
   endpoint: String! @field(at: "spec.endpoint")
 }
 ```
@@ -155,36 +153,44 @@ interface IService @inherit(interface: "IComponent") {
 In the output schema it is transformed into:
 
 ```graphql
-interface IService implements IComponent & IEntity & Node {
+type Service implements Component & Entity & Node {
   id: ID!
   name: String!
   kind: String!
   namespace: String!
-  # ... rest `IEntity` and `IComponent` fields ...
+  # ... rest `Entity` and `Component` fields ...
 
   endpoint: String!
 }
-
-type Service implements IService & IComponent & IEntity & Node {
-  # ... all fields from `IService` ...
-}
 ```
 
-2. In order to inherit multiple levels of inheritance, you must define
-   a discriminator by using `when/is` arguments. The structure of
-   `when` is the same as the `at` argument for the [`@field`](#field)
-   directive. The `is` argument is a value which is used to compare
-   with the value found at the `when` path. So in this example we are
-   inheriting `IRepository` from the `IEntity` interface and we presume
-   if an entity from a data source has the `kind` field which is equal
-   to `Repository`, the entity will be `Repository` type.
+#### `@discriminates`
+
+The `@discriminates` directive tells the GraphQL App that an interface
+could be discriminated by a given value to another interface or a type.
 
 ```graphql
-interface IRepository
-  @inherit(interface: "IEntity", when: "kind", is: "Repository") {
-  languages: [String] @field(at: "spec.languages")
+interface Entity
+  @implements(interface: "Node")
+  @discriminates(with: "kind") {
+    # ...
+  }
+
+type Component @implements(interface: "Entity") {
+  # ...
+}
+type Service @implements(interface: "Entity") {
+  # ...
 }
 ```
+
+// TODO Explain how it works
+// TODO opaqueType argument
+// TODO generateOpaqueTypes option
+
+#### `@discriminationAlias`
+
+// TODO Explain how it works
 
 ## Integrations
 
@@ -229,10 +235,9 @@ You might notice that if you have a `union` type which is used in
 `@relation` directive with `Connection` type, like this:
 
 ```graphql
-union Owner = IUser | IGroup
+union Owner = User | Group
 
-interface IResource
-  @inherit(interface: "IEntity", when: "kind", is: "Resource") {
+type Resource @implements(interface: "Entity") {
   owners: Connection! @relation(name: "ownedBy", nodeType: "Owner")
 }
 ```
@@ -255,11 +260,11 @@ type OwnerEdge implements Edge {
   node: Owner!
 }
 
-interface IUser implements IEntity & Node & Owner {
+type User implements Entity & Node & Owner {
   # ...
 }
 
-interface IGroup implements IEntity & Node & Owner {
+type Group implements Entity & Node & Owner {
   # ...
 }
 ```
