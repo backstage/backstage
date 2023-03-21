@@ -52,32 +52,53 @@ And this API should be the exact same as the previous Router, so you should be a
 
 ```tsx
 <Route
-    path="/create"
-    element={
-      {/* highlight-remove-next-line */}
-      <ScaffolderPage
-      {/* highlight-add-next-line */}
-      <NextScaffolderPage
-        groups={[
-          {
-            title: 'Recommended',
-            filter: entity =>
-              entity?.metadata?.tags?.includes('recommended') ?? false,
-          },
-        ]}
-      />
-    }
-  >
-    <ScaffolderFieldExtensions>
-      <LowerCaseValuePickerFieldExtension />
-      {/* ... other extensions */}
-    </ScaffolderFieldExtensions>
-    <ScaffolderLayouts>
-      <TwoColumnLayout />
-      {/* ... other layouts */}
-    </ScaffolderLayouts>
-  </Route>
+  path="/create"
+  element={
+    {/* highlight-remove-next-line */}
+    <ScaffolderPage
+    {/* highlight-add-next-line */}
+    <NextScaffolderPage
+      groups={[
+        {
+          title: 'Recommended',
+          filter: entity =>
+            entity?.metadata?.tags?.includes('recommended') ?? false,
+        },
+      ]}
+    />
+  }
+>
+  <ScaffolderFieldExtensions>
+    <LowerCaseValuePickerFieldExtension />
+    {/* ... other extensions */}
+  </ScaffolderFieldExtensions>
+  <ScaffolderLayouts>
+    <TwoColumnLayout />
+    {/* ... other layouts */}
+  </ScaffolderLayouts>
+</Route>
 ```
+
+Optionally, you can choose to run the two side by side by using `FeatureFlags` in your `App.tsx` if you wish, but, we would also recommend duplicating any `CustomFieldExtensions` too as the new `CustomFieldExtensions` might not be compatible with the old form.
+
+```tsx
+<FeatureFlagged with="scaffolder-next-preview">
+  <Route path="/create" element={<NextScaffolderPage />}>
+    <ScaffolderFieldExtensions>
+      <DelayingComponentFieldExtension />
+    </ScaffolderFieldExtensions>
+  </Route>
+</FeatureFlagged>
+<FeatureFlagged without="scaffolder-next-preview">
+  <Route path="/create" element={<ScaffolderPage />}>
+    <ScaffolderFieldExtensions>
+      <DelayingComponentFieldExtension />
+    </ScaffolderFieldExtensions>
+  </Route>
+</FeatureFlagged>
+```
+
+You should then be able to enable the `scaffolder-next-preview` feature flag under `/settings/feature-flags` in Backstage.
 
 ### Make the required changes to your `CustomFieldExtensions`
 
