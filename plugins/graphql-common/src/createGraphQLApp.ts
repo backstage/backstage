@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
 import { createApplication, Module } from 'graphql-modules';
 import { Core } from './core';
 import { transformSchema } from './transformSchema';
+import { loadSchema } from './loadSchema';
 
 /** @public */
 export type createGraphQLAppOptions = {
+  schema?: string | string[];
   modules?: Module[];
-  logger?: Logger;
+  generateOpaqueTypes?: boolean;
 };
 
 /** @public */
 export function createGraphQLApp(options: createGraphQLAppOptions) {
   const modules = [Core, ...(options.modules ?? [])];
+  if (options.schema) {
+    modules.push(...loadSchema(options.schema));
+  }
   return createApplication({
-    schemaBuilder: _ => transformSchema(modules, options),
+    schemaBuilder: _ =>
+      transformSchema(modules, {
+        generateOpaqueTypes: options.generateOpaqueTypes,
+      }),
     modules,
   });
 }

@@ -24,6 +24,7 @@ import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './setupTests';
 import { Relation } from './relation/relation';
+import { ResolverContext } from './types';
 
 describe('mapRelationDirective', () => {
   const transform = (source: DocumentNode) =>
@@ -37,41 +38,49 @@ describe('mapRelationDirective', () => {
 
   it('should add subtypes to a union type', function* () {
     const schema = transform(gql`
-      union Ownable = IEntity
+      union Ownable = Entity
 
-      interface IEntity @inherit {
+      interface Entity
+        @discriminates(with: "kind")
+        @implements(interface: "Node") {
         name: String!
       }
-      interface IResource @inherit(interface: "IEntity") {
+      interface Resource
+        @discriminates(with: "spec.type")
+        @implements(interface: "Entity") {
         location: String!
       }
-      interface IWebResource
-        @inherit(interface: "IResource", when: "spec.type", is: "website") {
+      type Database @implements(interface: "Resource") {
+        credentials: String!
+      }
+      type Website @implements(interface: "Resource") {
         url: String!
       }
-      interface IUser @inherit {
+      type User {
         ownerOf: [Ownable!]! @relation
       }
     `);
     expect(
       printType(schema.getType('Ownable') as GraphQLNamedType).split('\n'),
-    ).toEqual(['union Ownable = Entity | Resource | WebResource']);
+    ).toEqual(['union Ownable = Database | Website']);
   });
 
   it('should add arguments to the "Connection" type', function* () {
     const schema = transform(gql`
-      interface IGroup @inherit(interface: "Node") {
-        users: Connection @relation(name: "hasMember", nodeType: "IUser")
+      extend interface Node @discriminates(with: "kind")
+
+      interface Group @implements(interface: "Node") {
+        users: Connection @relation(name: "hasMember", nodeType: "User")
       }
 
-      interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
+      type User @implements(interface: "Node") {
         name: String!
       }
     `);
     expect(
-      printType(schema.getType('IGroup') as GraphQLNamedType).split('\n'),
+      printType(schema.getType('Group') as GraphQLNamedType).split('\n'),
     ).toEqual([
-      'interface IGroup implements Node {',
+      'interface Group implements Node {',
       '  id: ID!',
       '  users(first: Int, after: String, last: Int, before: String): UserConnection',
       '}',
@@ -80,16 +89,17 @@ describe('mapRelationDirective', () => {
 
   it('should override union type to interface if it has been used in a @relation directive with "Connection" type', function* () {
     const schema = transform(gql`
-      union Ownable = IEntity
+      union Ownable = Entity
 
-      interface IEntity @inherit(interface: "Node") {
+      interface Entity
+        @discriminates(with: "kind")
+        @implements(interface: "Node") {
         name: String!
       }
-      interface IResource
-        @inherit(interface: "IEntity", when: "kind", is: "Resource") {
+      type Resource @implements(interface: "Entity") {
         location: String!
       }
-      interface IUser @inherit {
+      type User @implements(interface: "Entity") {
         owns: Connection @relation(name: "ownerOf", nodeType: "Ownable")
       }
     `);
@@ -97,17 +107,17 @@ describe('mapRelationDirective', () => {
       printType(schema.getType('Ownable') as GraphQLNamedType).split('\n'),
     ).toEqual(['interface Ownable implements Node {', '  id: ID!', '}']);
     expect(
-      printType(schema.getType('IEntity') as GraphQLNamedType).split('\n'),
+      printType(schema.getType('Entity') as GraphQLNamedType).split('\n'),
     ).toEqual([
-      'interface IEntity implements Node & Ownable {',
+      'interface Entity implements Node & Ownable {',
       '  id: ID!',
       '  name: String!',
       '}',
     ]);
     expect(
-      printType(schema.getType('IResource') as GraphQLNamedType).split('\n'),
+      printType(schema.getType('Resource') as GraphQLNamedType).split('\n'),
     ).toEqual([
-      'interface IResource implements IEntity & Node & Ownable {',
+      'type Resource implements Entity & Node & Ownable {',
       '  id: ID!',
       '  name: String!',
       '  location: String!',
@@ -125,9 +135,11 @@ describe('mapRelationDirective', () => {
       '}',
     ]);
     expect(
-      printType(schema.getType('IUser') as GraphQLNamedType).split('\n'),
+      printType(schema.getType('User') as GraphQLNamedType).split('\n'),
     ).toEqual([
-      'interface IUser {',
+      'type User implements Entity & Node & Ownable {',
+      '  id: ID!',
+      '  name: String!',
       '  owns(first: Int, after: String, last: Int, before: String): OwnableConnection',
       '}',
     ]);
@@ -136,19 +148,19 @@ describe('mapRelationDirective', () => {
   it("should fail if @relation interface doesn't exist", function* () {
     expect(() =>
       transform(gql`
-        interface IEntity @inherit {
+        interface Entity {
           owners: Connection @relation(name: "ownedBy", nodeType: "Owner")
         }
       `),
     ).toThrow(
-      'Error while processing directives on field "owners" of "IEntity":\nThe interface "Owner" is not defined in the schema.',
+      'Error while processing relation directive on the field "owners" of "Entity":\nThe interface "Owner" is not defined in the schema',
     );
   });
 
   it('should fail if @relation interface is input type', function* () {
     expect(() =>
       transform(gql`
-        interface IEntity @inherit {
+        interface Entity {
           owners: Connection @relation(name: "ownedBy", nodeType: "OwnerInput")
         }
         input OwnerInput {
@@ -156,55 +168,55 @@ describe('mapRelationDirective', () => {
         }
       `),
     ).toThrow(
-      `Error while processing directives on field "owners" of "IEntity":\nThe interface "OwnerInput" is an input type and can't be used in a Connection.`,
+      `Error while processing relation directive on the field "owners" of "Entity":\nThe interface "OwnerInput" is an input type and can't be used in a Connection`,
     );
   });
 
   it('should fail if Connection type is in a list', function* () {
     expect(() =>
       transform(gql`
-        interface IEntity @inherit {
-          owners: [Connection] @relation(name: "ownedBy", nodeType: "IOwner")
+        interface Entity {
+          owners: [Connection] @relation(name: "ownedBy", nodeType: "Owner")
         }
-        interface IOwner @inherit {
+        interface Owner {
           name: String!
         }
       `),
     ).toThrow(
-      `Error while processing directives on field "owners" of "IEntity":\nIt's not possible to use a list of Connection type. Use either Connection type or list of specific type`,
+      `Error while processing relation directive on the field "owners" of "Entity":\nIt's not possible to use a list of Connection type. Use either Connection type or list of specific type`,
     );
   });
 
   it('should fail if Connection has arguments are not valid types', function* () {
     expect(() =>
       transform(gql`
-        interface IEntity @inherit {
+        interface Entity {
           owners(first: String!, after: Int!): Connection
-            @relation(name: "ownedBy", nodeType: "IOwner")
+            @relation(name: "ownedBy", nodeType: "Owner")
         }
-        interface IOwner @inherit {
+        interface Owner {
           name: String!
         }
       `),
     ).toThrow(
-      `Error while processing directives on field "owners" of "IEntity":\nThe field has mandatory argument \"first\" with different type than expected. Expected: Int`,
+      `Error while processing relation directive on the field "owners" of "Entity":\nThe field has mandatory argument \"first\" with different type than expected. Expected: Int`,
     );
   });
 
   it('should fail if @relation and @field are used on the same field', function* () {
     expect(() =>
       transform(gql`
-        interface IEntity @inherit {
+        interface Entity {
           owners: Connection
-            @relation(name: "ownedBy", nodeType: "IOwner")
+            @relation(name: "ownedBy", nodeType: "Owner")
             @field(at: "name")
         }
-        interface IOwner @inherit {
+        interface Owner {
           name: String!
         }
       `),
     ).toThrow(
-      `The field "owners" of "IEntity" type has more than one directives at the same time`,
+      `It's ambiguous how to resolve the field "owners" of "Entity" type with more than one directives on it`,
     );
   });
 
@@ -212,17 +224,17 @@ describe('mapRelationDirective', () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
-        interface IEntity
-          @inherit(interface: "Node", when: "kind", is: "Entity") {
-          ownedBy: IUser @relation
-          owner: IUser @relation(name: "ownedBy")
-          group: IGroup @relation(name: "ownedBy", kind: "Group")
+        extend interface Node @discriminates(with: "kind")
+
+        type Entity @implements(interface: "Node") {
+          ownedBy: User @relation
+          owner: User @relation(name: "ownedBy")
+          group: Group @relation(name: "ownedBy", kind: "Group")
         }
-        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
+        type User @implements(interface: "Node") {
           name: String! @field(at: "name")
         }
-        interface IGroup
-          @inherit(interface: "Node", when: "kind", is: "Group") {
+        type Group @implements(interface: "Node") {
           name: String! @field(at: "name")
         }
       `,
@@ -242,17 +254,20 @@ describe('mapRelationDirective', () => {
       kind: 'Group',
       name: 'Team A',
     };
-    const loader = () =>
+    const loader = ({ decodeId }: ResolverContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
-          if (id === 'user:default/john') return user;
-          if (id === 'group:default/team-a') return group;
+          const { ref } = decodeId(id as string);
+          if (ref === 'user:default/john') return user;
+          if (ref === 'group:default/team-a') return group;
           return entity;
         }),
       );
     const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
-      node(id: "entity") {
+      node(id: ${JSON.stringify(
+        JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+      )}) {
         ...on Entity {
           ownedBy { name }
           owner { name }
@@ -273,20 +288,20 @@ describe('mapRelationDirective', () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
-        union Owner = IUser | IGroup
+        extend interface Node @discriminates(with: "kind")
 
-        interface IEntity
-          @inherit(interface: "Node", when: "kind", is: "Entity") {
+        union Owner = User | Group
+
+        type Entity @implements(interface: "Node") {
           ownedBy: [Owner] @relation
           owners: [Owner] @relation(name: "ownedBy")
-          users: [IUser] @relation(name: "ownedBy") # We intentionally don't specify kind here
-          groups: [IGroup] @relation(name: "ownedBy", kind: "Group")
+          users: [User] @relation(name: "ownedBy") # We intentionally don't specify kind here
+          groups: [Group] @relation(name: "ownedBy", kind: "Group")
         }
-        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
+        type User @implements(interface: "Node") {
           username: String! @field(at: "name")
         }
-        interface IGroup
-          @inherit(interface: "Node", when: "kind", is: "Group") {
+        type Group @implements(interface: "Node") {
           groupname: String! @field(at: "name")
         }
       `,
@@ -304,19 +319,22 @@ describe('mapRelationDirective', () => {
     const mark = { kind: 'User', name: 'Mark' };
     const teamA = { kind: 'Group', name: 'Team A' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = () =>
+    const loader = ({ decodeId }: ResolverContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
-          if (id === 'user:default/john') return john;
-          if (id === 'user:default/mark') return mark;
-          if (id === 'group:default/team-a') return teamA;
-          if (id === 'group:default/team-b') return teamB;
+          const { ref } = decodeId(id as string);
+          if (ref === 'user:default/john') return john;
+          if (ref === 'user:default/mark') return mark;
+          if (ref === 'group:default/team-a') return teamA;
+          if (ref === 'group:default/team-b') return teamB;
           return entity;
         }),
       );
     const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
-      node(id: "entity") {
+      node(id: ${JSON.stringify(
+        JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+      )}) {
         ...on Entity {
           ownedBy { ...on User { username }, ...on Group { groupname } }
           owners { ...on Group { groupname }, ...on User { username } }
@@ -354,22 +372,22 @@ describe('mapRelationDirective', () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
-        union Owner = IUser | IGroup
+        extend interface Node @discriminates(with: "kind")
 
-        interface IEntity
-          @inherit(interface: "Node", when: "kind", is: "Entity") {
-          ownedBy: Connection @relation
-          nodes: Connection @relation(name: "ownedBy")
+        union Owner = User | Group
+
+        type Entity @implements(interface: "Node") {
+          ownedBy: Connection @relation(nodeType: "Owner")
+          nodes: Connection @relation(name: "ownedBy", nodeType: "Owner")
           owners: Connection @relation(name: "ownedBy", nodeType: "Owner")
-          users: Connection @relation(name: "ownedBy", nodeType: "IUser") # We intentionally don't specify kind here
+          users: Connection @relation(name: "ownedBy", nodeType: "User") # We intentionally don't specify kind here
           groups: Connection
-            @relation(name: "ownedBy", kind: "Group", nodeType: "IGroup")
+            @relation(name: "ownedBy", kind: "Group", nodeType: "Group")
         }
-        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
+        type User @implements(interface: "Node") {
           username: String! @field(at: "name")
         }
-        interface IGroup
-          @inherit(interface: "Node", when: "kind", is: "Group") {
+        type Group @implements(interface: "Node") {
           groupname: String! @field(at: "name")
         }
       `,
@@ -387,36 +405,25 @@ describe('mapRelationDirective', () => {
     const mark = { kind: 'User', name: 'Mark' };
     const teamA = { kind: 'Group', name: 'Team A' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = () =>
+    const loader = ({ decodeId }: ResolverContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
-          if (id === 'user:default/john') return john;
-          if (id === 'user:default/mark') return mark;
-          if (id === 'group:default/team-a') return teamA;
-          if (id === 'group:default/team-b') return teamB;
+          const { ref } = decodeId(id as string);
+          if (ref === 'user:default/john') return john;
+          if (ref === 'user:default/mark') return mark;
+          if (ref === 'group:default/team-a') return teamA;
+          if (ref === 'group:default/team-b') return teamB;
           return entity;
         }),
       );
     const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
-      node(id: "entity") {
+      node(id: ${JSON.stringify(
+        JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+      )}) {
         ...on Entity {
-          ownedBy(first: 2) {
-            edges {
-              node {
-                ...on User { username },
-                ...on Group { groupname }
-              }
-            }
-          }
-          nodes(first: 2, after: "YXJyYXljb25uZWN0aW9uOjE=") {
-            edges {
-              node {
-                ...on Group { groupname },
-                ...on User { username }
-              }
-            }
-          }
+          ownedBy(first: 2) { edges { node { ...on User { username }, ...on Group { groupname } } } }
+          nodes(first: 2, after: "YXJyYXljb25uZWN0aW9uOjE=") { edges { node { ...on Group { groupname }, ...on User { username } } } }
           owners(last: 2) { edges { node { id, ...on User { username } } } }
           users { count, edges { node { username } } }
           groups { edges { node { groupname } } }
@@ -439,8 +446,17 @@ describe('mapRelationDirective', () => {
         },
         owners: {
           edges: [
-            { node: { id: 'user:default/mark', username: 'Mark' } },
-            { node: { id: 'group:default/team-a' } },
+            {
+              node: {
+                id: '{"source":"Mock","typename":"Owner","ref":"user:default/mark"}',
+                username: 'Mark',
+              },
+            },
+            {
+              node: {
+                id: '{"source":"Mock","typename":"Owner","ref":"group:default/team-a"}',
+              },
+            },
           ],
         },
         users: {
@@ -466,23 +482,21 @@ describe('mapRelationDirective', () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
-        interface IEntity
-          @inherit(interface: "Node", when: "kind", is: "Entity") {
+        extend interface Node @discriminates(with: "kind")
+
+        type Entity @implements(interface: "Node") {
           assets: [Node] @relation
         }
-        interface IUser @inherit(interface: "Node", when: "kind", is: "User") {
+        type User @implements(interface: "Node") {
           username: String! @field(at: "name")
         }
-        interface IGroup
-          @inherit(interface: "Node", when: "kind", is: "Group") {
+        type Group @implements(interface: "Node") {
           groupname: String! @field(at: "name")
         }
-        interface IComponent
-          @inherit(interface: "Node", when: "kind", is: "Component") {
+        type Component @implements(interface: "Node") {
           name: String! @field(at: "name")
         }
-        interface IResource
-          @inherit(interface: "Node", when: "kind", is: "Resource") {
+        type Resource @implements(interface: "Node") {
           domain: String! @field(at: "name")
         }
       `,
@@ -500,19 +514,22 @@ describe('mapRelationDirective', () => {
     const backend = { kind: 'Component', name: 'Backend' };
     const website = { kind: 'Resource', name: 'example.com' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = () =>
+    const loader = ({ decodeId }: ResolverContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
-          if (id === 'user:default/john') return john;
-          if (id === 'component:default/backend') return backend;
-          if (id === 'resource:default/website') return website;
-          if (id === 'group:default/team-b') return teamB;
+          const { ref } = decodeId(id as string);
+          if (ref === 'user:default/john') return john;
+          if (ref === 'component:default/backend') return backend;
+          if (ref === 'resource:default/website') return website;
+          if (ref === 'group:default/team-b') return teamB;
           return entity;
         }),
       );
     const query = createGraphQLAPI(TestModule, loader);
     const result = yield query(/* GraphQL */ `
-      node(id: "entity") {
+      node(id: ${JSON.stringify(
+        JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
+      )}) {
         ...on Entity {
           assets {
             id
@@ -527,10 +544,22 @@ describe('mapRelationDirective', () => {
     expect(result).toEqual({
       node: {
         assets: [
-          { domain: 'example.com', id: 'resource:default/website' },
-          { id: 'component:default/backend', name: 'Backend' },
-          { id: 'user:default/john', username: 'John' },
-          { groupname: 'Team B', id: 'group:default/team-b' },
+          {
+            domain: 'example.com',
+            id: '{"source":"Mock","typename":"Node","ref":"resource:default/website"}',
+          },
+          {
+            id: '{"source":"Mock","typename":"Node","ref":"component:default/backend"}',
+            name: 'Backend',
+          },
+          {
+            id: '{"source":"Mock","typename":"Node","ref":"user:default/john"}',
+            username: 'John',
+          },
+          {
+            groupname: 'Team B',
+            id: '{"source":"Mock","typename":"Node","ref":"group:default/team-b"}',
+          },
         ],
       },
     });

@@ -2,12 +2,17 @@ directive @field(
   at: _DirectiveArgument_!
   default: _DirectiveArgument_
 ) on FIELD_DEFINITION
-directive @inherit(
-  interface: String
-  generatedTypeName: String
-  when: _DirectiveArgument_
-  is: _DirectiveArgument_
+directive @discriminates(
+  with: _DirectiveArgument_
+  opaqueType: String
 ) on INTERFACE
+directive @discriminationAlias(
+  value: String!
+  type: String!
+) repeatable on INTERFACE
+directive @implements(
+  interface: String!
+) on OBJECT | INTERFACE
 
 scalar _DirectiveArgument_
 
@@ -15,7 +20,7 @@ interface Node {
   id: ID!
 }
 
-interface Connection @inherit(generatedTypeName: "NodeConnection") {
+interface Connection {
   pageInfo: PageInfo!
   edges: [Edge!]!
   count: Int
@@ -28,7 +33,7 @@ type PageInfo {
   endCursor: String
 }
 
-interface Edge @inherit(generatedTypeName: "NodeEdge") {
+interface Edge {
   cursor: String!
   node: Node!
 }

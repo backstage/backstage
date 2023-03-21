@@ -36,6 +36,9 @@
   "dependencies": {
     "@apollo/server": "^4.0.0",
     "@backstage/backend-common": "workspace:^",
+    "@graphql-tools/code-file-loader": "^7.3.17",
+    "@graphql-tools/graphql-file-loader": "^7.5.0",
+    "@graphql-tools/load": "^7.8.13",
     "@graphql-tools/load-files": "^6.6.1",
     "@graphql-tools/merge": "^8.3.15",
     "@graphql-tools/schema": "^9.0.13",
@@ -43,6 +46,7 @@
     "dataloader": "^2.1.0",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
+    "pascal-case": "^3.1.2",
     "reflect-metadata": "^0.1.13",
     "winston": "^3.2.1"
   },

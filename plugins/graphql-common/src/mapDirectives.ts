@@ -23,10 +23,12 @@ import {
   isObjectType,
   isUnionType,
 } from 'graphql';
-import { Logger, FieldDirectiveMapper, DirectiveMapperAPI } from './types';
+import { FieldDirectiveMapper, DirectiveMapperAPI, NamedType } from './types';
 import { mapCompositeFields } from './mapCompositeField';
 import { mapInterfaceType } from './mapInterfaceType';
 import { mapUnionType } from './mapUnionType';
+import { implementsDirectiveMapper } from './implementsDirectiveMapper';
+import { mapObjectType } from './mapObjectType';
 
 export function getObjectTypeFromTypeMap(
   typeMap: Record<string, GraphQLNamedType>,
@@ -40,12 +42,15 @@ export function getObjectTypeFromTypeMap(
 
 export function mapDirectives(
   sourceSchema: GraphQLSchema,
-  options: {
+  {
+    directiveMappers,
+    generateOpaqueTypes = false,
+  }: {
     directiveMappers?: Record<string, FieldDirectiveMapper>;
-    logger?: Logger;
+    generateOpaqueTypes?: boolean;
   } = {},
 ) {
-  const { logger = console } = options;
+  const implementationsMap = new Map<string, NamedType>();
   const newTypeMap = { ...sourceSchema.getTypeMap() };
   const directiveMapperAPI: DirectiveMapperAPI = {
     getDirective(node, directiveName, pathToDirectives) {
@@ -65,16 +70,49 @@ export function mapDirectives(
   };
 
   Object.values(newTypeMap).forEach(type => {
+    if (isInterfaceType(type) || isObjectType(type)) {
+      implementsDirectiveMapper(type, directiveMapperAPI, implementationsMap);
+    }
+  });
+
+  const interfaces = new Set(implementationsMap.keys());
+  interfaces.delete('Node');
+  const discriminates = [
+    ...(implementationsMap.get('Node')?.discriminates ?? new Set()),
+  ];
+  while (discriminates.length > 0) {
+    const value = discriminates.pop();
+    if (value) {
+      interfaces.delete(value);
+      discriminates.push(
+        ...(implementationsMap.get(value)?.discriminates ?? new Set()),
+      );
+    }
+  }
+
+  if (interfaces.size > 0) {
+    throw new Error(
+      `The following interfaces are not in @implements chain from "Node": ${[
+        ...interfaces,
+      ].join(', ')}`,
+    );
+  }
+
+  Object.values(newTypeMap).forEach(type => {
     if (isInterfaceType(type)) {
       const interfaceConfig = type.toConfig();
-      mapCompositeFields(interfaceConfig, directiveMapperAPI, options);
+      mapCompositeFields(interfaceConfig, directiveMapperAPI, {
+        directiveMappers,
+      });
       newTypeMap[type.name] = new GraphQLInterfaceType({
         ...(newTypeMap[type.name] as GraphQLInterfaceType).toConfig(),
         fields: interfaceConfig.fields,
       });
     } else if (isObjectType(type)) {
       const objectConfig = type.toConfig();
-      mapCompositeFields(objectConfig, directiveMapperAPI, options);
+      mapCompositeFields(objectConfig, directiveMapperAPI, {
+        directiveMappers,
+      });
       newTypeMap[type.name] = new GraphQLObjectType({
         ...(newTypeMap[type.name] as GraphQLObjectType).toConfig(),
         fields: objectConfig.fields,
@@ -82,33 +120,23 @@ export function mapDirectives(
     }
   });
 
-  const inheritsWithoutArgs = new Set<string>();
   Object.values(newTypeMap).forEach(type => {
     if (isInterfaceType(type))
-      mapInterfaceType(type.name, directiveMapperAPI, { inheritsWithoutArgs });
+      mapInterfaceType(type.name, directiveMapperAPI, {
+        implementationsMap,
+        generateOpaqueTypes,
+      });
   });
 
   Object.values(newTypeMap).forEach(type => {
-    if (isUnionType(type)) mapUnionType(type, directiveMapperAPI, options);
+    if (isObjectType(type))
+      mapObjectType(type.name, directiveMapperAPI, { implementationsMap });
   });
 
-  const nodeInterface = sourceSchema.getType('Node');
-  const node = newTypeMap.Node;
-  if (
-    nodeInterface &&
-    'resolveType' in nodeInterface &&
-    nodeInterface.resolveType &&
-    isInterfaceType(node)
-  ) {
-    const nodeConfig = node.toConfig();
-    const resolveType = nodeConfig.resolveType;
-    logger.warn(
-      `The "resolveType" function has already been implemented for "Node" interface which may lead to undefined behavior`,
-    );
-    nodeConfig.resolveType = (...args) =>
-      resolveType?.(...args) ?? nodeInterface.resolveType?.(...args);
-    newTypeMap.Node = new GraphQLInterfaceType(nodeConfig);
-  }
+  Object.values(newTypeMap).forEach(type => {
+    if (isUnionType(type))
+      mapUnionType(type, directiveMapperAPI, { implementationsMap });
+  });
 
   const { typeMap, directives } = rewireTypes(
     newTypeMap,

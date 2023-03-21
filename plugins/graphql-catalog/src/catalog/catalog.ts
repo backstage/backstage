@@ -16,10 +16,10 @@
 import { createModule } from 'graphql-modules';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { ResolverContext } from '../types';
-import { refToId as defaultRefToId } from '../refToId';
 import { catalogSchema } from './schema';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export const Catalog = createModule({
@@ -41,8 +41,14 @@ export const Catalog = createModule({
           kind,
           namespace = 'default',
         }: { name: string; kind: string; namespace: string },
-        { refToId = defaultRefToId }: ResolverContext,
-      ): { id: string } => ({ id: refToId({ name, kind, namespace }) }),
+        { encodeId }: ResolverContext,
+      ): { id: string } => ({
+        id: encodeId({
+          source: 'Catalog',
+          typename: 'Entity',
+          ref: stringifyEntityRef({ name, kind, namespace }),
+        }),
+      }),
     },
   },
   providers: [

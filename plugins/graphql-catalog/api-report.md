@@ -4,7 +4,6 @@
 
 ```ts
 import type { CatalogClient } from '@backstage/catalog-client';
-import type { CompoundEntityRef } from '@backstage/catalog-model';
 import { default as default_2 } from 'dataloader';
 import { Entity } from '@backstage/catalog-model';
 import { Module } from 'graphql-modules';
@@ -37,8 +36,6 @@ export const relationSchema: any[];
 export interface ResolverContext extends ResolverContext_2 {
   // (undocumented)
   catalog: CatalogClient;
-  // (undocumented)
-  refToId?: (ref: CompoundEntityRef | string) => string;
 }
 
 // (No @packageDocumentation comment for this package)

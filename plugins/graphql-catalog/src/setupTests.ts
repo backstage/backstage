@@ -21,7 +21,7 @@ import { createGraphQLApp } from '@backstage/plugin-graphql-common';
 import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
-import { PromiseOrValue } from './types';
+import { PromiseOrValue, ResolverContext } from './types';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
@@ -29,10 +29,16 @@ import { Relation } from './relation';
 
 export function createGraphQLAPI(
   TestModule: Module,
-  loader: () => DataLoader<any, any>,
+  loader: (context: ResolverContext) => DataLoader<any, any>,
+  generateOpaqueTypes?: boolean,
 ) {
+  const context = {
+    encodeId: (x: unknown) => JSON.stringify(x),
+    decodeId: (x: string) => JSON.parse(x),
+  };
   const application = createGraphQLApp({
     modules: [Relation, TestModule],
+    generateOpaqueTypes,
   });
 
   const run = envelop({
@@ -51,7 +57,7 @@ export function createGraphQLAPI(
       if (errors.length) {
         throw errors[0];
       }
-      const contextValue = yield* unwrap(contextFactory());
+      const contextValue = yield* unwrap(contextFactory(context));
 
       const result = yield* unwrap(
         execute({

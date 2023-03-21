@@ -28,12 +28,9 @@ export type PromiseOrValue<T> = T | Promise<T>;
 export interface ResolverContext {
   application: Application;
   loader: DataLoader<any, any>;
+  encodeId: (obj: { source: string; typename: string; ref: string }) => string;
+  decodeId: (id: string) => { source: string; typename: string; ref: string };
 }
-
-/** @public */
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-/** @public */
-export type Logger = Record<LogLevel, (...args: any[]) => void>;
 
 /** @public */
 export type OmitFirst<T extends Array<any>> = T extends [
@@ -57,5 +54,9 @@ export type FieldDirectiveMapper = (
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
   api: DirectiveMapperAPI,
-  options?: { logger?: Logger },
 ) => void;
+
+export interface NamedType {
+  implements: string | null;
+  discriminates: Set<string>;
+}

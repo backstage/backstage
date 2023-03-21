@@ -23,6 +23,4 @@ export type {
   FieldDirectiveMapper,
   DirectiveMapperAPI,
   OmitFirst,
-  Logger,
-  LogLevel,
 } from './types';

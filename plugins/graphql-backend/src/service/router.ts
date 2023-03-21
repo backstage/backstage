@@ -30,7 +30,6 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { createYoga, Plugin, YogaServerInstance } from 'graphql-yoga';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { printSchema } from 'graphql';
 
@@ -38,29 +37,35 @@ import { printSchema } from 'graphql';
 export interface RouterOptions {
   config: Config;
   logger: Logger;
+  schema?: string | string[];
   modules?: Module[];
   plugins?: Plugin[];
   createLoader?: (
     context: Omit<ResolverContext, 'loader'>,
   ) => DataLoader<string, any>;
-  refToId?: (ref: CompoundEntityRef | string) => string;
+  generateOpaqueTypes?: boolean;
 }
 
 /** @public */
 export async function createRouter({
   config,
   logger,
+  schema,
   modules,
   plugins,
   createLoader,
-  refToId,
+  generateOpaqueTypes,
 }: RouterOptions): Promise<express.Router> {
   let yoga: YogaServerInstance<any, any> | null = null;
 
   const router = Router();
   const discovery = SingleHostDiscovery.fromConfig(config);
   const catalog = new CatalogClient({ discoveryApi: discovery });
-  const application = createGraphQLApp({ modules, logger });
+  const application = createGraphQLApp({
+    modules,
+    generateOpaqueTypes,
+    schema,
+  });
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
@@ -89,7 +94,7 @@ export async function createRouter({
           useDataLoader('loader', createLoader ?? createCatalogLoader),
           ...(plugins ?? []),
         ],
-        context: { application, catalog, refToId },
+        context: { application, catalog },
         logging: logger,
         graphqlEndpoint: req.baseUrl,
       });

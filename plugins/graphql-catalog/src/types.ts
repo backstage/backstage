@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { CatalogClient } from '@backstage/catalog-client';
-import type { CompoundEntityRef } from '@backstage/catalog-model';
 import type { ResolverContext as CommonResolverContext } from '@backstage/plugin-graphql-common';
 
 export type PromiseOrValue<T> = T | Promise<T>;
@@ -22,8 +21,4 @@ export type PromiseOrValue<T> = T | Promise<T>;
 /** @public */
 export interface ResolverContext extends CommonResolverContext {
   catalog: CatalogClient;
-  refToId?: (ref: CompoundEntityRef | string) => string;
 }
-
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type Logger = Record<LogLevel, (...args: any[]) => void>;
