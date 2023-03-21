@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.7.10-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+
 ## 0.7.9
 
 ### Patch Changes

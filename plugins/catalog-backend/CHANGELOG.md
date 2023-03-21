@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- 899ebfd8e02: Add full text search support to the `by-query` endpoint.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-search-common@1.2.2
+
 ## 1.8.0
 
 ### Minor Changes

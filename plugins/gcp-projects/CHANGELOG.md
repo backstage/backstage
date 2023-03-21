@@ -1,5 +1,15 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.36-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
 ## 0.3.35
 
 ### Patch Changes
