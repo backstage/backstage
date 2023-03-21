@@ -176,6 +176,11 @@ export function relationDirectiveMapper(
       } else {
         field.type = createConnectionType(nodeType, fieldType);
       }
+    } else {
+      field.type = createConnectionType(
+        api.typeMap.Node as GraphQLInterfaceType,
+        fieldType,
+      );
     }
     const mandatoryArgs: [string, string][] = [
       ['first', 'Int'],
