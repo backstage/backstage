@@ -14642,12 +14642,12 @@ __metadata:
   linkType: hard
 
 "@types/cron@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/cron@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@types/cron@npm:2.0.1"
   dependencies:
     "@types/luxon": "*"
     "@types/node": "*"
-  checksum: 392d2cfca51504140397533c30be8facd2196251074eb26ee09232a7e983144ff1d8364cd64922ed22d142686a4724934a70672fc8353b441fea729ac0ed0611
+  checksum: 4268c784750a1373036b4de95cd1f35ab4fa5227c1639302eedb25a35900d7805271e33b557ad7ccccd6d1829944963df25cd0d9d0d603abf3bcdf148b69ea5d
   languageName: node
   linkType: hard
 
