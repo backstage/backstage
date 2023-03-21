@@ -208,22 +208,19 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-
     <FeatureFlagged with="scaffolder-next">
       <Route
         path="/create"
         element={
-          <>
-            <NextScaffolderPage
-              groups={[
-                {
-                  title: 'Recommended',
-                  filter: entity =>
-                    entity?.metadata?.tags?.includes('recommended') ?? false,
-                },
-              ]}
-            />
-          </>
+          <NextScaffolderPage
+            groups={[
+              {
+                title: 'Recommended',
+                filter: entity =>
+                  entity?.metadata?.tags?.includes('recommended') ?? false,
+              },
+            ]}
+          />
         }
       >
         <ScaffolderFieldExtensions>
@@ -234,22 +231,19 @@ const routes = (
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
-
     <FeatureFlagged without="scaffolder-next">
       <Route
         path="/create"
         element={
-          <>
-            <ScaffolderPage
-              groups={[
-                {
-                  title: 'Recommended',
-                  filter: entity =>
-                    entity?.metadata?.tags?.includes('recommended') ?? false,
-                },
-              ]}
-            />
-          </>
+          <ScaffolderPage
+            groups={[
+              {
+                title: 'Recommended',
+                filter: entity =>
+                  entity?.metadata?.tags?.includes('recommended') ?? false,
+              },
+            ]}
+          />
         }
       >
         <ScaffolderFieldExtensions>
@@ -260,7 +254,6 @@ const routes = (
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
-
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
