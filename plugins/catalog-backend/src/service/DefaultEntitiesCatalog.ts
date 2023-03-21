@@ -382,11 +382,30 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
     if (normalizedFullTextFilterTerm) {
-      dbQuery.andWhereRaw(
-        'value like ?',
-        `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-      );
+      if (
+        textFilterFields.length === 1 &&
+        textFilterFields[0] === sortField.field
+      ) {
+        // If there is one item, apply the like query to the top level query which is already
+        //   filtered based on the singular sortField.
+        dbQuery.andWhereRaw(
+          'value like ?',
+          `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+        );
+      } else {
+        const matchQuery = db<DbSearchRow>('search')
+          .select('search.entity_id')
+          .whereIn('key', textFilterFields)
+          .andWhere(function keyFilter() {
+            this.andWhereRaw(
+              'value like ?',
+              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            );
+          });
+        dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+      }
     }
 
     const countQuery = dbQuery.clone();
