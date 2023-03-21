@@ -53,9 +53,7 @@ export async function fetchContents(options: {
 
 /**
  * A helper function that reads the content of a single file from the given URL.
- * Can be used in your own actions, and also used behind fetch:plain:file
- *
- * @public
+ * Can be used in your own actions, and also used behind `fetch:plain:file`
  */
 export async function fetchFile(options: {
   reader: UrlReader;
