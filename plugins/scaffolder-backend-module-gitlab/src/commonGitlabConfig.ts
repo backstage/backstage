@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * A module for the scaffolder backend that lets you interact with gitlab
- *
- * @packageDocumentation
- */
-export * from './actions/createGitlabGroupEnsureExistsAction';
-export * from './actions/createGitlabProjectDeployTokenAction';
-export * from './actions/createGitlabProjectAccessTokenAction';
-export * from './actions/createGitlabProjectVariableAction';
+import { z } from 'zod';
+
+const commonGitlabConfig = z.object({
+  repoUrl: z.string({ description: 'Repository Location' }),
+  token: z
+    .string({ description: 'The token to use for authorization to GitLab' })
+    .optional(),
+});
+
+export default commonGitlabConfig;

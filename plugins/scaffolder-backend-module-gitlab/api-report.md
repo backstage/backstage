@@ -8,6 +8,18 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export const createGitlabGroupEnsureExistsAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+  } & {
+    path: string[];
+  }
+>;
+
+// @public
 export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -43,16 +55,18 @@ export const createGitlabProjectVariableAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
+    token?: string | undefined;
+  } & {
     key: string;
     value: string;
+    projectId: string | number;
     variableType: string;
-    variableProtected: boolean;
-    masked: boolean;
-    raw: boolean;
-    environmentScope: string;
-    token?: string | undefined;
-  },
+    variableProtected?: boolean | undefined;
+    masked?: boolean | undefined;
+    raw?: boolean | undefined;
+    environmentScope?: string | undefined;
+  }
+,
   JsonObject
 >;
 ```
