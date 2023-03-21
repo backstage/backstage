@@ -50,7 +50,7 @@ export function FetchedEntityRefLinks<
 >(props: FetchedEntityRefLinksProps<TRef>) {
   const {
     entityRefs,
-    usePeekAheadPopover = false,
+    usePeekAheadPopover,
     defaultKind,
     getTitle,
     ...linkProps

@@ -51,7 +51,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const {
       entityRef,
-      usePeekAheadPopover = false,
+      usePeekAheadPopover,
       defaultKind,
       title,
       children,
