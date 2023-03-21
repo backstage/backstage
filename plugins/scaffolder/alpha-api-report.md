@@ -13,6 +13,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react/alpha';
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -47,27 +48,6 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
-
-// @alpha (undocumented)
-export type TemplateGroupFilter = {
-  title?: React_2.ReactNode;
-  filter: (entity: TemplateEntityV1beta3) => boolean;
-};
-
-// @alpha (undocumented)
-export const TemplateGroups: (props: TemplateGroupsProps) => JSX.Element | null;
-
-// @alpha (undocumented)
-export interface TemplateGroupsProps {
-  // (undocumented)
-  groups: TemplateGroupFilter[];
-  // (undocumented)
-  TemplateCardComponent?: React_2.ComponentType<{
-    template: TemplateEntityV1beta3;
-  }>;
-  // (undocumented)
-  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-}
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {

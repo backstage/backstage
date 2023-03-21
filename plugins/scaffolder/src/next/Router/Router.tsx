@@ -23,6 +23,7 @@ import {
 import {
   NextFieldExtensionOptions,
   FormProps,
+  TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   ScaffolderTaskOutput,
@@ -32,7 +33,6 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateGroupFilter } from '../TemplateListPage';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {

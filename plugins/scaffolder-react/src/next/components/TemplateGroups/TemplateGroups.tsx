@@ -15,7 +15,6 @@
  */
 import React, { useCallback } from 'react';
 
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
