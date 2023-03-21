@@ -203,7 +203,7 @@ Candidates for membership will be nominated by current Sponsor members or by Bac
 
 In general, we prefer that technical issues and membership are amicably worked out between the persons involved. If a dispute cannot be decided independently, the sponsors and core maintainers can be called in to decide an issue. If the sponsors and maintainers themselves cannot decide an issue, the issue will be resolved by voting.
 
-In all cases in this document where voting is mentioned, the voting process is a simple majority in which each sponsor receives two votes and each maintainer receives one vote. If such a majority is reached, the vote is said to have _passed_.
+In all cases in this document where voting is mentioned, the voting process is a simple majority in which each sponsor receives two votes and each core maintainer receives one vote. If such a majority is reached, the vote is said to have _passed_.
 
 ## Inactivity
 
