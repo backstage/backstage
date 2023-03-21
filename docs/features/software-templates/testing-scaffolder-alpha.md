@@ -79,7 +79,7 @@ And this API should be the exact same as the previous Router, so you should be a
 </Route>
 ```
 
-Optionally, you can chose to run the two side by side by using `FeatureFlags` in your `App.tsx` if you wish, but, we would also recommend duplicating any `CustomFieldExtensions` too as the new `CustomFieldExtensions` might not be compatible with the old form.
+Optionally, you can choose to run the two side by side by using `FeatureFlags` in your `App.tsx` if you wish, but, we would also recommend duplicating any `CustomFieldExtensions` too as the new `CustomFieldExtensions` might not be compatible with the old form.
 
 ```tsx
 <FeatureFlagged with="scaffolder-next-preview">
