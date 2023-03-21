@@ -556,6 +556,10 @@ describe('GitlabUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
     );
 
+    const archiveSubPathBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gitlab-subpath-archive.tar.gz'),
+    );
+
     const projectGitlabApiResponse = {
       id: 11111111,
       default_branch: 'main',
@@ -566,21 +570,34 @@ describe('GitlabUrlReader', () => {
         id: 'sha123abc',
       },
     ];
+    const commitsOfSubPathGitlabApiResponse = [
+      {
+        id: 'sha456abc',
+      },
+    ];
 
     beforeEach(() => {
       worker.use(
         rest.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
-          (_, res, ctx) =>
-            res(
+          (req, res, ctx) => {
+            const filepath = req.url.searchParams.get('path');
+            let filename = 'mock-main-sha123abc.zip';
+            let body = archiveBuffer;
+            if (filepath === 'docs') {
+              filename = 'gitlab-subpath-archive.tar.gz';
+              body = archiveSubPathBuffer;
+            }
+            return res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
               ctx.set(
                 'content-disposition',
-                'attachment; filename="mock-main-sha123abc.zip"',
+                `attachment; filename="${filename}"`,
               ),
-              ctx.body(archiveBuffer),
-            ),
+              ctx.body(body),
+            );
+          },
         ),
         rest.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock',
@@ -596,6 +613,14 @@ describe('GitlabUrlReader', () => {
           (req, res, ctx) => {
             const refName = req.url.searchParams.get('ref_name');
             if (refName === 'main') {
+              const filepath = req.url.searchParams.get('path');
+              if (filepath === 'docs') {
+                return res(
+                  ctx.status(200),
+                  ctx.set('Content-Type', 'application/json'),
+                  ctx.json(commitsOfSubPathGitlabApiResponse),
+                );
+              }
               return res(
                 ctx.status(200),
                 ctx.set('Content-Type', 'application/json'),
@@ -619,6 +644,21 @@ describe('GitlabUrlReader', () => {
       );
       await expect(result.files[0].content()).resolves.toEqual(
         Buffer.from('# Test\n'),
+      );
+    });
+
+    it('load only relevant path', async () => {
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/tree/main/docs/**/index.*',
+      );
+
+      expect(result.etag).toBe('sha456abc');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://gitlab.com/backstage/mock/tree/main/docs/index.md',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test Subpath\n'),
       );
     });
 
