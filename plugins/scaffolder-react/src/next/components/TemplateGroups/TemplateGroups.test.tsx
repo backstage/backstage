@@ -28,7 +28,6 @@ import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { rootRouteRef } from '../../routes';
 
 describe('TemplateGroups', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -40,11 +39,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(await findByTestId('progress')).toBeInTheDocument();
@@ -62,11 +56,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(errorApi.post).toHaveBeenCalledWith(mockError);
@@ -83,11 +72,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -104,11 +88,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -144,11 +123,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
@@ -193,11 +167,6 @@ describe('TemplateGroups', () => {
           groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
         />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
@@ -241,11 +210,6 @@ describe('TemplateGroups', () => {
           templateFilter={e => e.metadata.name === 't1'}
         />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/create': rootRouteRef,
-        },
-      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
