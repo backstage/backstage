@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-export * from './KubernetesBuilder';
-export { DEFAULT_OBJECTS } from './KubernetesFanOutHandler';
-export {
-  HEADER_KUBERNETES_CLUSTER,
-  KubernetesProxy,
-  HEADER_KUBERNETES_AUTH,
-} from './KubernetesProxy';
-export type { KubernetesProxyCreateRequestHandlerOptions } from './KubernetesProxy';
-export * from './router';
+import { createPermission } from '@backstage/plugin-permission-common';
+
+/** This permission is used to check access to the proxy endpoint
+ * @public
+ */
+export const kubernetesProxyPermission = createPermission({
+  name: 'kubernetes.proxy',
+  attributes: {},
+});
+
+/**
+ * List of all Kubernetes permissions.
+ * @public
+ */
+export const kubernetesPermissions = [kubernetesProxyPermission];

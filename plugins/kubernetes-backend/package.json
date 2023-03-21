@@ -42,6 +42,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@google-cloud/container": "^4.0.0",
     "@jest-mock/express": "^2.0.1",
     "@kubernetes/client-node": "0.18.1",
