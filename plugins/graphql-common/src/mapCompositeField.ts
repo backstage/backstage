@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GraphQLInterfaceType, GraphQLObjectType } from 'graphql';
-import { DirectiveMapperAPI, FieldDirectiveMapper, Logger } from './types';
+import { DirectiveMapperAPI, FieldDirectiveMapper } from './types';
 
 export function mapCompositeFields<
   T extends GraphQLInterfaceType | GraphQLObjectType,
@@ -23,33 +23,33 @@ export function mapCompositeFields<
   api: DirectiveMapperAPI,
   {
     directiveMappers = {},
-    logger,
   }: {
     directiveMappers?: Record<string, FieldDirectiveMapper>;
-    logger?: Logger;
   } = {},
 ) {
   Object.entries(typeConfig.fields).forEach(([fieldName, fieldConfig]) => {
-    const directives = Object.entries(directiveMappers).flatMap<
-      [Record<string, any>, FieldDirectiveMapper]
-    >(([directiveName, mapper]) => {
+    const directives = Object.entries(directiveMappers).flatMap<{
+      directiveName: string;
+      directive: Record<string, any>;
+      mapper: FieldDirectiveMapper;
+    }>(([directiveName, mapper]) => {
       const [directive] = api.getDirective(fieldConfig, directiveName) ?? [];
-      return directive ? [[directive, mapper]] : [];
+      return directive ? [{ directiveName, directive, mapper }] : [];
     });
     if (directives.length > 1) {
       throw new Error(
-        `The field "${fieldName}" of "${typeConfig.name}" type has more than one directives at the same time`,
+        `It's ambiguous how to resolve the field "${fieldName}" of "${typeConfig.name}" type with more than one directives on it`,
       );
     }
     if (directives.length === 0) return;
 
+    const [{ directiveName, directive, mapper }] = directives;
     try {
-      const [[directive, mapper]] = directives;
-      mapper(fieldConfig, directive, api, { logger });
+      mapper(fieldConfig, directive, api);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : error;
       throw new Error(
-        `Error while processing directives on field "${fieldName}" of "${typeConfig.name}":\n${errorMessage}`,
+        `Error while processing ${directiveName} directive on the field "${fieldName}" of "${typeConfig.name}":\n${errorMessage}`,
       );
     }
   });

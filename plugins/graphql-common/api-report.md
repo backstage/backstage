@@ -10,7 +10,6 @@ import { GraphQLFieldConfig } from 'graphql';
 import { GraphQLNamedType } from 'graphql';
 import { GraphQLObjectType } from 'graphql';
 import { GraphQLSchema } from 'graphql';
-import { Logger as Logger_2 } from 'winston';
 import { Module } from 'graphql-modules';
 import { TypeProvider } from 'graphql-modules';
 
@@ -31,8 +30,9 @@ export function createGraphQLApp(options: createGraphQLAppOptions): Application;
 
 // @public (undocumented)
 export type createGraphQLAppOptions = {
+  schema?: string | string[];
   modules?: Module[];
-  logger?: Logger_2;
+  generateOpaqueTypes?: boolean;
 };
 
 // @public (undocumented)
@@ -57,16 +57,7 @@ export type FieldDirectiveMapper = (
   >,
   directive: Record<string, any>,
   api: DirectiveMapperAPI,
-  options?: {
-    logger?: Logger;
-  },
 ) => void;
-
-// @public (undocumented)
-export type Logger = Record<LogLevel, (...args: any[]) => void>;
-
-// @public (undocumented)
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 // @public (undocumented)
 export type OmitFirst<T extends Array<any>> = T extends [
@@ -81,6 +72,14 @@ export interface ResolverContext {
   // (undocumented)
   application: Application;
   // (undocumented)
+  decodeId: (id: string) => {
+    source: string;
+    typename: string;
+    ref: string;
+  };
+  // (undocumented)
+  encodeId: (obj: { source: string; typename: string; ref: string }) => string;
+  // (undocumented)
   loader: DataLoader<any, any>;
 }
 
@@ -88,9 +87,9 @@ export interface ResolverContext {
 export function transformSchema(
   modules?: Module[],
   {
-    logger,
+    generateOpaqueTypes,
   }?: {
-    logger?: Logger;
+    generateOpaqueTypes?: boolean;
   },
 ): GraphQLSchema;
 

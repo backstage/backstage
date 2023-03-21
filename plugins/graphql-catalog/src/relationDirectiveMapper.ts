@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 import { connectionFromArray } from 'graphql-relay';
-import {
-  CompoundEntityRef,
-  Entity,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import {
   GraphQLFieldConfig,
   GraphQLID,
   GraphQLInt,
   GraphQLInterfaceType,
   GraphQLList,
+  GraphQLNamedType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
@@ -36,8 +33,7 @@ import {
   isObjectType,
   isUnionType,
 } from 'graphql';
-import { refToId as defaultRefToId } from './refToId';
-import { Logger, ResolverContext } from './types';
+import { ResolverContext } from './types';
 import { DirectiveMapperAPI } from '@backstage/plugin-graphql-common';
 
 function isConnectionType(type: unknown): type is GraphQLInterfaceType {
@@ -47,21 +43,21 @@ function isConnectionType(type: unknown): type is GraphQLInterfaceType {
   );
 }
 
-function getObjectTypeName(
-  interfaceName: string,
-  directive?: Record<string, any>,
-): string {
-  if (directive && 'generatedTypeName' in directive)
-    return directive.generatedTypeName;
-
-  return interfaceName.slice(1);
+function unboxNamedType(type: GraphQLOutputType): GraphQLNamedType {
+  if (isNonNullType(type)) {
+    return unboxNamedType(type.ofType);
+  }
+  if (isListType(type)) {
+    return unboxNamedType(type.ofType);
+  }
+  return type;
 }
 
 function filterEntityRefs(
   entity: Entity | undefined,
   relationType?: string,
   targetKind?: string,
-): CompoundEntityRef[] {
+): string[] {
   return (
     entity?.relations
       ?.filter(({ type }) => !relationType || type === relationType)
@@ -69,16 +65,15 @@ function filterEntityRefs(
         const ref = parseEntityRef(targetRef);
         return !targetKind ||
           ref.kind.toLowerCase() === targetKind.toLowerCase()
-          ? [ref]
+          ? [targetRef]
           : [];
       }) ?? []
   );
 }
 
 function createConnectionType(
-  typeName: string,
+  nodeType: GraphQLInterfaceType | GraphQLObjectType,
   fieldType: GraphQLInterfaceType,
-  nodeType: GraphQLOutputType,
 ): GraphQLObjectType {
   const wrappedEdgeType = fieldType.getFields().edges.type as GraphQLNonNull<
     GraphQLList<GraphQLNonNull<GraphQLInterfaceType>>
@@ -86,7 +81,7 @@ function createConnectionType(
   const edgeType = wrappedEdgeType.ofType.ofType.ofType as GraphQLInterfaceType;
 
   return new GraphQLObjectType({
-    name: `${typeName}Connection`,
+    name: `${nodeType.name}Connection`,
     fields: {
       ...fieldType.toConfig().fields,
       edges: {
@@ -94,11 +89,11 @@ function createConnectionType(
           new GraphQLList(
             new GraphQLNonNull(
               new GraphQLObjectType({
-                name: `${typeName}Edge`,
+                name: `${nodeType.name}Edge`,
                 fields: {
                   ...edgeType.toConfig().fields,
                   node: {
-                    type: new GraphQLNonNull(nodeType as GraphQLOutputType),
+                    type: new GraphQLNonNull(nodeType),
                   },
                 },
                 interfaces: [edgeType],
@@ -116,7 +111,6 @@ export function relationDirectiveMapper(
   field: GraphQLFieldConfig<{ id: string }, ResolverContext>,
   directive: Record<string, any>,
   api: DirectiveMapperAPI,
-  { logger = console }: { logger?: Logger } = {},
 ) {
   const fieldType = field.type;
   if (
@@ -139,18 +133,18 @@ export function relationDirectiveMapper(
 
       if (!nodeType) {
         throw new Error(
-          `The interface "${directive.nodeType}" is not defined in the schema.`,
+          `The interface "${directive.nodeType}" is not defined in the schema`,
         );
       }
       if (isInputType(nodeType)) {
         throw new Error(
-          `The interface "${directive.nodeType}" is an input type and can't be used in a Connection.`,
+          `The interface "${directive.nodeType}" is an input type and can't be used in a Connection`,
         );
       }
       if (isUnionType(nodeType)) {
         const resolveType = nodeType.resolveType;
         if (resolveType)
-          logger.warn(
+          throw new Error(
             `The "resolveType" function has already been implemented for "${nodeType.name}" union which may lead to undefined behavior`,
           );
         const iface = (api.typeMap[directive.nodeType] =
@@ -159,7 +153,6 @@ export function relationDirectiveMapper(
             interfaces: [api.typeMap.Node as GraphQLInterfaceType],
             fields: { id: { type: new GraphQLNonNull(GraphQLID) } },
             resolveType: (...args) =>
-              resolveType?.(...args) ??
               (api.typeMap.Node as GraphQLInterfaceType).resolveType?.(...args),
           }));
         const types = nodeType.getTypes().map(type => type.name);
@@ -179,16 +172,9 @@ export function relationDirectiveMapper(
           }
         });
 
-        field.type = createConnectionType(nodeType.name, fieldType, iface);
-      }
-      if (isInterfaceType(nodeType)) {
-        const [inheritDirective] = api.getDirective(nodeType, 'inherit') ?? [];
-        const typeName = inheritDirective
-          ? getObjectTypeName(nodeType.name, inheritDirective)
-          : nodeType.name;
-        field.type = createConnectionType(typeName, fieldType, nodeType);
+        field.type = createConnectionType(iface, fieldType);
       } else {
-        field.type = createConnectionType(nodeType.name, fieldType, nodeType);
+        field.type = createConnectionType(nodeType, fieldType);
       }
     }
     const mandatoryArgs: [string, string][] = [
@@ -216,28 +202,34 @@ export function relationDirectiveMapper(
     });
     field.args = fieldArgs;
 
-    field.resolve = async (
-      { id },
-      args,
-      { loader, refToId = defaultRefToId },
-    ) => {
+    field.resolve = async ({ id }, args, { loader, encodeId, decodeId }) => {
+      const { source } = decodeId(id);
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
         directive.kind,
-      ).map(ref => ({ id: refToId(ref) }));
+      ).map(ref => ({
+        id: encodeId({ source, typename: directive.nodeType ?? 'Node', ref }),
+      }));
       return {
         ...connectionFromArray(ids, args),
         count: ids.length,
       };
     };
   } else {
-    field.resolve = async ({ id }, _, { loader, refToId = defaultRefToId }) => {
+    field.resolve = async ({ id }, _, { loader, encodeId, decodeId }) => {
+      const { source } = decodeId(id);
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
         directive.kind,
-      ).map(ref => ({ id: refToId(ref) }));
+      ).map(ref => ({
+        id: encodeId({
+          source,
+          typename: unboxNamedType(field.type).name,
+          ref,
+        }),
+      }));
       return isList ? ids : ids[0] ?? null;
     };
   }

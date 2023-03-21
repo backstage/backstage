@@ -18,33 +18,30 @@ import {
   GraphQLUnionType,
   isInterfaceType,
 } from 'graphql';
-import { DirectiveMapperAPI, Logger } from './types';
+import { DirectiveMapperAPI, NamedType } from './types';
 
 export function mapUnionType(
   unionType: GraphQLUnionType,
   api: DirectiveMapperAPI,
-  { logger = console }: { logger?: Logger } = {},
+  { implementationsMap }: { implementationsMap: Map<string, NamedType> },
 ) {
   const typeConfig = unionType.toConfig();
-  let hasUnionInterfaces = false;
 
-  typeConfig.types = typeConfig.types.flatMap(type => {
-    if (isInterfaceType(type)) {
-      hasUnionInterfaces = true;
-      return api.getImplementingTypes((type as GraphQLInterfaceType).name);
-    }
-    return [type];
-  });
+  if (typeConfig.types.every(type => !implementationsMap.has(type.name)))
+    return;
 
-  if (!hasUnionInterfaces) return;
+  typeConfig.types = typeConfig.types.flatMap(type =>
+    isInterfaceType(type)
+      ? api.getImplementingTypes((type as GraphQLInterfaceType).name)
+      : [type],
+  );
 
   const resolveType = typeConfig.resolveType;
   if (resolveType)
-    logger.warn(
+    throw new Error(
       `The "resolveType" function has already been implemented for "${unionType.name}" union which may lead to undefined behavior`,
     );
   typeConfig.resolveType = (...args) =>
-    resolveType?.(...args) ??
     (api.typeMap.Node as GraphQLInterfaceType).resolveType?.(...args);
 
   api.typeMap[unionType.name] = new GraphQLUnionType(typeConfig);

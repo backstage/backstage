@@ -13,187 +13,323 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { get, isEqual } from 'lodash';
+import { get } from 'lodash';
+import { pascalCase } from 'pascal-case';
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
   GraphQLObjectType,
+  GraphQLTypeResolver,
   isInterfaceType,
+  isObjectType,
+  isUnionType,
 } from 'graphql';
-import { DirectiveMapperAPI, ResolverContext } from './types';
+import { DirectiveMapperAPI, NamedType, ResolverContext } from './types';
 
-function getObjectTypeName(
+function validateDiscriminatesDirective(
   interfaceName: string,
-  directive?: Record<string, any>,
-): string {
-  if (directive && 'generatedTypeName' in directive)
-    return directive.generatedTypeName;
-
-  return interfaceName.slice(1);
-}
-
-function validateInheritDirective(
-  interfaceName: string,
-  directive: Record<string, any>,
+  directive: Record<string, any> | undefined,
+  aliases: Record<string, any>[],
   api: DirectiveMapperAPI,
-  { inheritsWithoutArgs }: { inheritsWithoutArgs: Set<string> },
+  {
+    implementationsMap,
+    generateOpaqueTypes,
+  }: {
+    implementationsMap: Map<string, NamedType>;
+    generateOpaqueTypes: boolean;
+  },
 ) {
-  if (!/^I[A-Z].*/.test(interfaceName)) {
-    if (!('generatedTypeName' in directive)) {
-      throw new Error(
-        `The interface name "${interfaceName}" should started from capitalized 'I', like: "I${interfaceName}"`,
-      );
-    }
-    if (api.typeMap[directive.generatedTypeName]) {
-      throw new Error(
-        `The type "${directive.generatedTypeName}" described in the @inherit directive for "${interfaceName}" interface is already declared in the schema`,
-      );
-    }
-  }
-  if ('when' in directive !== 'is' in directive) {
-    throw new Error(
-      `The @inherit directive for "${interfaceName}" should have both "when" and "is" arguments or none of them`,
-    );
-  }
-  if (directive.interface) {
-    const parentType = api.typeMap[directive.interface];
-    if (!parentType) {
-      // TODO Write a test
-      throw new Error(
-        `The interface "${directive.interface}" described in the @inherit directive for "${interfaceName}" interface is not declared in the schema`,
-      );
-    }
-    if (!isInterfaceType(parentType)) {
-      // TODO Write a test
-      throw new Error(
-        `The type "${directive.interface}" described in the @inherit directive for "${interfaceName}" interface is not an interface`,
-      );
-    }
-  }
-  if (!('when' in directive)) {
-    if (
-      'interface' in directive &&
-      inheritsWithoutArgs.has(directive.interface)
-    ) {
-      throw new Error(
-        `The @inherit directive of "${directive.interface}" without "when" and "is" arguments could be used only once`,
-      );
-    } else {
-      inheritsWithoutArgs.add(directive.interface);
-    }
-  }
+  const { implements: implementsInterface, discriminates } =
+    implementationsMap.get(interfaceName) ?? {};
   if (
-    'when' in directive &&
-    (typeof directive.when !== 'string' ||
-      (Array.isArray(directive.when) &&
-        directive.when.some(a => typeof a !== 'string')))
+    (api.typeMap[interfaceName] as GraphQLInterfaceType)
+      .getInterfaces()
+      .some(i => implementationsMap.has(i.name))
   ) {
     throw new Error(
-      `The "when" argument of @inherit directive must be a string or an array of strings`,
+      `The "${interfaceName}" interface implements some interface without @implements directive`,
+    );
+  }
+  if (!directive) {
+    if (aliases.length > 0) {
+      throw new Error(
+        `The "${interfaceName}" interface has @discriminationAlias directive but doesn't have @discriminates directive`,
+      );
+    }
+    if (discriminates && discriminates.size > 1) {
+      throw new Error(
+        `The "${interfaceName}" interface has multiple implementations but doesn't have @discriminates directive`,
+      );
+    }
+  }
+  if (directive) {
+    if (typeof implementsInterface !== 'string' && interfaceName !== 'Node') {
+      throw new Error(
+        `The "${interfaceName}" interface has @discriminates directive but doesn't implement any interface`,
+      );
+    }
+
+    const opaqueTypename =
+      directive.opaqueType ??
+      (generateOpaqueTypes ? `Opaque${interfaceName}` : undefined);
+    const opaqueType = api.typeMap[opaqueTypename];
+    const implementingTypes = api.getImplementingTypes(interfaceName);
+    if (implementingTypes.length > 0) {
+      throw new Error(
+        `The following type(-s) "${implementingTypes.join(
+          '", "',
+        )}" must implement "${interfaceName}" interface by using @implements directive`,
+      );
+    }
+    if (!opaqueTypename && discriminates && discriminates.size === 0) {
+      throw new Error(
+        `The "${interfaceName}" interface has @discriminates directive but doesn't have any implementations`,
+      );
+    }
+    if (opaqueType) {
+      if (directive.opaqueType) {
+        throw new Error(
+          `The "${directive.opaqueType}" type in \`interface ${interfaceName} @discriminates(opaqueType: "...")\` is already declared in the schema`,
+        );
+      } else if (generateOpaqueTypes) {
+        throw new Error(
+          `The "Opaque${interfaceName}" type is already declared in the schema. Please specify a different name for a opaque type (eg. \`interface ${interfaceName} @discriminates(opaqueType: "...")\`)`,
+        );
+      }
+    }
+
+    if (!directive.with) {
+      if (discriminates && discriminates.size > 1) {
+        throw new Error(
+          `The "with" argument in \`interface ${interfaceName} @discriminates(with: ...)\` must be specified if the interface has multiple implementations`,
+        );
+      }
+      if (!directive.opaqueType && !generateOpaqueTypes) {
+        throw new Error(
+          `The "with" argument in \`interface ${interfaceName} @discriminates(with: ...)\` must be specified if "generateOpaqueTypes" is false and "opaqueType" is not specified`,
+        );
+      }
+    }
+
+    if ('with' in directive) {
+      if (
+        typeof directive.with !== 'string' ||
+        (Array.isArray(directive.with) &&
+          directive.with.some(a => typeof a !== 'string'))
+      ) {
+        throw new Error(
+          `The "with" argument in \`interface ${interfaceName} @discriminates(with: ...)\` must be a string or an array of strings`,
+        );
+      }
+    }
+  } else if (discriminates) {
+    const implementations = [...discriminates];
+    if (implementations.length > 1) {
+      throw new Error(
+        `The "${interfaceName}" interface has multiple implementations but doesn't have @discriminates directive`,
+      );
+    }
+  }
+
+  const aliasesMap = aliases.reduce(
+    (map, alias) => ({
+      ...map,
+      [alias.value]: [...(map[alias.value] ?? []), alias.type],
+    }),
+    {},
+  );
+  const ambiguousAliases = Object.entries(aliasesMap).filter(
+    ([, types]) => types.length > 1,
+  );
+  if (ambiguousAliases.length) {
+    throw new Error(
+      `The following discrimination aliases are ambiguous: ${ambiguousAliases
+        .map(([alias, types]) => `"${alias}" => "${types.join('" | "')}"`)
+        .join(', ')}`,
+    );
+  }
+
+  const types = Object.values(aliasesMap).map(
+    ([type]) => [type as string, api.typeMap[type as string]] as const,
+  );
+  const missingTypes = types.filter(([, type]) => !type).map(([name]) => name);
+  const invalidTypes = types
+    .filter(([, type]) => type && !isObjectType(type) && !isInterfaceType(type))
+    .map(([name]) => name);
+  if (missingTypes.length) {
+    throw new Error(
+      `Type(-s) "${missingTypes.join(
+        '", "',
+      )}" in \`interface ${interfaceName} @discriminationAlias(value: ..., type: ...)\` are not defined in the schema`,
+    );
+  }
+  if (invalidTypes.length) {
+    throw new Error(
+      `Type(-s) "${invalidTypes.join(
+        '", "',
+      )}" in \`interface ${interfaceName} @discriminationAlias(value: ..., type: ...)\` are not object types or interfaces`,
     );
   }
 }
 
 function defineResolver(
   interfaceName: string,
-  directive: Record<string, any>,
-  api: DirectiveMapperAPI,
-) {
-  const iface = api.typeMap[interfaceName];
-  if (!isInterfaceType(iface)) return;
+  directive: Record<string, any> | undefined,
+  aliases: { value: string; type: string }[],
+  {
+    implementationsMap,
+    generateOpaqueTypes,
+  }: {
+    implementationsMap: Map<string, NamedType>;
+    generateOpaqueTypes: boolean;
+  },
+): GraphQLTypeResolver<{ id: string }, ResolverContext> {
+  const { discriminates } = implementationsMap.get(interfaceName) ?? {};
+  const [implementationType] = [...(discriminates ?? [])];
+  const generatedOpaqueType = generateOpaqueTypes
+    ? `Opaque${interfaceName}`
+    : undefined;
+  const opaqueTypeName = directive
+    ? directive.opaqueType ?? generatedOpaqueType
+    : implementationType;
 
-  if (!iface.resolveType) {
-    const interfaceConfig = iface.toConfig();
-    interfaceConfig.resolveType = () =>
-      getObjectTypeName(iface.name, directive);
-    api.typeMap[interfaceName] = new GraphQLInterfaceType(interfaceConfig);
-  }
-
-  const inheritedInterface = api.typeMap[directive.interface];
-  if (!isInterfaceType(inheritedInterface)) return;
-
-  const [inheritDirective] =
-    api.getDirective(inheritedInterface, 'inherit') ?? [];
-  const resolveType =
-    inheritedInterface.resolveType ??
-    (inheritedInterface.name === 'Node'
-      ? () => undefined
-      : () => getObjectTypeName(inheritedInterface.name, inheritDirective));
-  const inheritedInterfaceConfig = inheritedInterface.toConfig();
-  inheritedInterfaceConfig.resolveType = async (
-    source: { id: string },
-    context: ResolverContext,
-    info,
-    abstractType,
-  ) => {
-    if ('when' in directive && 'is' in directive) {
+  return async (source, context, info, _abstractType) => {
+    const { schema } = info;
+    if (directive && 'with' in directive) {
       const { id } = source;
-      const { loader } = context;
-      const entity = await loader.load(id);
-      if (!entity) return undefined;
-      if (isEqual(get(entity, directive.when), directive.is)) {
-        return (
-          (api.typeMap[interfaceName] as GraphQLInterfaceType).resolveType?.(
-            source,
-            context,
-            info,
-            abstractType,
-          ) ?? undefined
-        );
+      const { loader, decodeId } = context;
+      const { typename: sourceTypename } = decodeId(id);
+      const node = await loader.load(id);
+
+      if (!node) return undefined;
+
+      const value: unknown = get(node, directive.with);
+      if (value !== undefined) {
+        if (typeof value !== 'string') {
+          throw new Error(
+            `Can't resolve type for node with "${id}" id. The \`${JSON.stringify(
+              value,
+            )}\` value which was discriminated by ${interfaceName} interface must be a string`,
+          );
+        }
+        const typename =
+          aliases.find(alias => alias.value === value)?.type ??
+          pascalCase(value);
+        const type = schema.getType(typename);
+
+        if (type) {
+          if (!isObjectType(type) && !isInterfaceType(type)) {
+            throw new Error(
+              `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface is not an object type or interface`,
+            );
+          }
+
+          if (
+            !type
+              .getInterfaces()
+              .find(({ name: ifaceName }) => ifaceName === interfaceName)
+          ) {
+            throw new Error(
+              `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface does not implement the "${interfaceName}" interface`,
+            );
+          }
+
+          if (isInterfaceType(type)) {
+            return type.resolveType?.(source, context, info, type);
+          }
+
+          const sourceType = schema.getType(sourceTypename);
+          if (
+            typename === sourceTypename ||
+            type.getInterfaces().find(i => i.name === sourceTypename) ||
+            (isUnionType(sourceType) &&
+              sourceType.getTypes().find(t => t.name === typename))
+          ) {
+            return typename;
+          }
+          throw new Error(
+            `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface does not equal to the encoded type "${sourceTypename}" or implement it`,
+          );
+        } else if (!opaqueTypeName) {
+          throw new Error(
+            `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface is not defined in the schema`,
+          );
+        }
       }
-      return resolveType(source, context, info, abstractType) ?? undefined;
     }
-    return (
-      (api.typeMap[interfaceName] as GraphQLInterfaceType).resolveType?.(
-        source,
-        context,
-        info,
-        abstractType,
-      ) ?? undefined
-    );
+    const opaqueType = schema.getType(opaqueTypeName);
+    return isInterfaceType(opaqueType)
+      ? opaqueType.resolveType?.(source, context, info, opaqueType)
+      : opaqueTypeName;
   };
-  api.typeMap[directive.interface] = new GraphQLInterfaceType(
-    inheritedInterfaceConfig,
-  );
 }
 
-function traverseInherits(
+function traverseImplements(
   interfaceName: string,
+  implementationsMap: Map<string, NamedType>,
   api: DirectiveMapperAPI,
 ): string[] {
-  const iface = api.typeMap[interfaceName];
-  if (!isInterfaceType(iface)) return [];
-
-  const [inheritDirective] = api.getDirective(iface, 'inherit') ?? [];
+  const implementedInterface =
+    implementationsMap.get(interfaceName)?.implements;
   return [
-    ...(typeof inheritDirective?.interface === 'string'
+    ...(implementedInterface
       ? [
-          inheritDirective.interface,
-          ...traverseInherits(inheritDirective.interface, api),
+          implementedInterface,
+          ...traverseImplements(implementedInterface, implementationsMap, api),
         ]
       : []),
-    ...iface
+    ...(api.typeMap[interfaceName] as GraphQLInterfaceType)
       .getInterfaces()
-      .flatMap(parent => [parent.name, ...traverseInherits(parent.name, api)]),
+      .map(iface => iface.name),
   ];
 }
 
 export function mapInterfaceType(
   interfaceName: string,
   api: DirectiveMapperAPI,
-  options: { inheritsWithoutArgs: Set<string> },
+  options: {
+    implementationsMap: Map<string, NamedType>;
+    generateOpaqueTypes: boolean;
+  },
 ) {
-  const [inheritDirective] =
-    api.getDirective(
-      api.typeMap[interfaceName] as GraphQLInterfaceType,
-      'inherit',
-    ) ?? [];
-  if (!inheritDirective) return;
+  const interfaceType = api.typeMap[interfaceName] as GraphQLInterfaceType;
 
-  validateInheritDirective(interfaceName, inheritDirective, api, options);
-  defineResolver(interfaceName, inheritDirective, api);
+  const [discriminatesDirective] = (api.getDirective(
+    interfaceType,
+    'discriminates',
+  ) ?? []) as (Record<string, any> | undefined)[];
+  const discriminationAliases = (api.getDirective(
+    interfaceType,
+    'discriminationAlias',
+  ) ?? []) as { value: string; type: string }[];
 
-  const interfaces = [...new Set(traverseInherits(interfaceName, api))];
+  if (!discriminatesDirective && !options.implementationsMap.has(interfaceName))
+    return;
+
+  if (interfaceType.resolveType) {
+    throw new Error(
+      `The "resolveType" function has already been implemented for "${interfaceName}" interface which may lead to undefined behavior`,
+    );
+  }
+  validateDiscriminatesDirective(
+    interfaceName,
+    discriminatesDirective,
+    discriminationAliases,
+    api,
+    options,
+  );
+  const resolver = defineResolver(
+    interfaceName,
+    discriminatesDirective,
+    discriminationAliases,
+    options,
+  );
+
+  const interfaces = [
+    ...new Set(
+      traverseImplements(interfaceName, options.implementationsMap, api),
+    ),
+  ];
   const fields = [...interfaces].reverse().reduce(
     (acc, name) => ({
       ...acc,
@@ -205,13 +341,15 @@ export function mapInterfaceType(
   const { astNode, extensionASTNodes, ...interfaceConfig } = (
     api.typeMap[interfaceName] as GraphQLInterfaceType
   ).toConfig();
+
+  interfaceConfig.resolveType = resolver;
+  interfaceConfig.interfaces = interfaces.map(
+    name => api.typeMap[name] as GraphQLInterfaceType,
+  );
   interfaceConfig.fields = {
     ...fields,
     ...interfaceConfig.fields,
   };
-  interfaceConfig.interfaces = interfaces.map(
-    name => api.typeMap[name] as GraphQLInterfaceType,
-  );
 
   api.typeMap[interfaceName] = new GraphQLInterfaceType({
     ...interfaceConfig,
@@ -219,13 +357,18 @@ export function mapInterfaceType(
     extensionASTNodes,
   });
 
-  const objectTypeName = getObjectTypeName(interfaceName, inheritDirective);
-  api.typeMap[objectTypeName] = new GraphQLObjectType({
-    ...interfaceConfig,
-    name: objectTypeName,
-    interfaces: [
-      api.typeMap[interfaceName] as GraphQLInterfaceType,
-      ...interfaceConfig.interfaces,
-    ],
-  });
+  const opaqueTypeName =
+    discriminatesDirective?.opaqueType ??
+    (options.generateOpaqueTypes ? `Opaque${interfaceName}` : undefined);
+  const { discriminates } = options.implementationsMap.get(interfaceName) ?? {};
+  if (discriminatesDirective && opaqueTypeName && discriminates?.size !== 1) {
+    api.typeMap[opaqueTypeName] = new GraphQLObjectType({
+      ...interfaceConfig,
+      name: opaqueTypeName,
+      interfaces: [
+        api.typeMap[interfaceName] as GraphQLInterfaceType,
+        ...interfaceConfig.interfaces,
+      ],
+    });
+  }
 }

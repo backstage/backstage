@@ -19,13 +19,13 @@ import { validateSchema } from 'graphql';
 import { Module, Resolvers } from 'graphql-modules';
 import { Core } from './core';
 import { mapDirectives } from './mapDirectives';
-import { FieldDirectiveMapper, Logger } from './types';
+import { FieldDirectiveMapper } from './types';
 import { toPrivateProp } from './mapperProvider';
 
 /** @public */
 export function transformSchema(
   modules: Module[] = [],
-  { logger }: { logger?: Logger } = {},
+  { generateOpaqueTypes }: { generateOpaqueTypes?: boolean } = {},
 ) {
   const directiveMappers: Record<string, FieldDirectiveMapper> = {};
   const allModules = [Core, ...modules];
@@ -52,7 +52,7 @@ export function transformSchema(
 
   const schema = mapDirectives(makeExecutableSchema({ typeDefs, resolvers }), {
     directiveMappers,
-    logger,
+    generateOpaqueTypes,
   });
 
   const errors = validateSchema(schema);
