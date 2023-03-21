@@ -117,10 +117,13 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
-  // Example of application level feature flag
-  // featureFlags: [
-  // { name: 'tech-radar', description: 'Enables the tech radar plugin' },
-  // ],
+  featureFlags: [
+    {
+      name: 'scaffolder-next-preview',
+      description: 'Preview the new Scaffolder Next',
+      pluginId: '',
+    },
+  ],
   components: {
     SignInPage: props => {
       return (
@@ -208,7 +211,7 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <FeatureFlagged with="scaffolder-next">
+    <FeatureFlagged with="scaffolder-next-preview">
       <Route
         path="/create"
         element={
@@ -231,11 +234,12 @@ const routes = (
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
-    <FeatureFlagged without="scaffolder-next">
+    <FeatureFlagged without="scaffolder-next-preview">
       <Route
         path="/create"
         element={
           <ScaffolderPage
+            defaultPreviewTemplate={defaultPreviewTemplate}
             groups={[
               {
                 title: 'Recommended',
@@ -247,7 +251,7 @@ const routes = (
         }
       >
         <ScaffolderFieldExtensions>
-          <DelayingComponentFieldExtension />
+          <LowerCaseValuePickerFieldExtension />
         </ScaffolderFieldExtensions>
         <ScaffolderLayouts>
           <TwoColumnLayout />
