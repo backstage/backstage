@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   Content,
@@ -32,12 +34,19 @@ import {
   CatalogFilterLayout,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { CategoryPicker } from './CategoryPicker';
+import {
+  ScaffolderPageContextMenu,
+  TemplateCategoryPicker,
+} from '@backstage/plugin-scaffolder-react/alpha';
+
 import { RegisterExistingButton } from './RegisterExistingButton';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
-import { registerComponentRouteRef } from '../../routes';
-import { ContextMenu } from './ContextMenu';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  registerComponentRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
@@ -74,10 +83,29 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     groups: givenGroups = [],
     templateFilter,
   } = props;
+  const navigate = useNavigate();
+  const editorLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups)
     : [defaultGroup];
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
+    onTasksClicked:
+      props?.contextMenu?.tasks !== false
+        ? () => navigate(tasksLink())
+        : undefined,
+  };
 
   return (
     <EntityListProvider>
@@ -87,7 +115,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
         >
-          <ContextMenu {...props.contextMenu} />
+          <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
         <Content>
           <ContentHeader title="Available Templates">
@@ -110,7 +138,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
                 initialFilter="all"
                 availableFilters={['all', 'starred']}
               />
-              <CategoryPicker />
+              <TemplateCategoryPicker />
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>

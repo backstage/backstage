@@ -132,6 +132,18 @@ export type ReviewStateProps = {
   formState: JsonObject;
 };
 
+// @alpha (undocumented)
+export function ScaffolderPageContextMenu(
+  props: ScaffolderPageContextMenuProps,
+): JSX.Element | null;
+
+// @alpha (undocumented)
+export type ScaffolderPageContextMenuProps = {
+  onEditorClicked?: () => void;
+  onActionsClicked?: () => void;
+  onTasksClicked?: () => void;
+};
+
 // @alpha
 export const Stepper: (stepperProps: StepperProps) => JSX.Element;
 
@@ -189,6 +201,9 @@ export interface TemplateCardProps {
   // (undocumented)
   template: TemplateEntityV1beta3;
 }
+
+// @alpha
+export const TemplateCategoryPicker: () => JSX.Element | null;
 
 // @alpha
 export const TemplateGroup: (props: TemplateGroupProps) => JSX.Element;
