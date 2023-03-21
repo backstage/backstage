@@ -58,7 +58,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
-      conflictEventBroker?: EventBroker;
+      eventBroker?: EventBroker;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -358,11 +358,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        if (this.options.conflictEventBroker) {
-          await this.options.conflictEventBroker?.publish({
-            topic: 'conflicts',
+        if (this.options.eventBroker) {
+          await this.options.eventBroker?.publish({
+            topic: 'catalog.conflicts',
             eventPayload: {
-              ...entity,
+              entity,
               entityRef,
               newLocationKey: locationKey,
               existingLocationKey: conflictingKey,

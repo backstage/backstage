@@ -140,8 +140,8 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder;
   replaceProcessors(processors: CatalogProcessor_2[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
-  setConflictEventBroker(broker: EventBroker): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser_2): CatalogBuilder;
+  setEventBroker(broker: EventBroker): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
   setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
   setPlaceholderResolver(

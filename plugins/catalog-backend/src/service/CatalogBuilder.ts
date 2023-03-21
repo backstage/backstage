@@ -167,7 +167,7 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
-  private conflictEventBroker?: EventBroker;
+  private eventBroker?: EventBroker;
 
   /**
    * Creates a catalog builder.
@@ -420,11 +420,10 @@ export class CatalogBuilder {
   }
 
   /**
-   * Enables the publishing of events for conflicting entities so that a subscriber
-   * can listen to them and implement a conflict resolution strategy like retries.
+   * Enables the publishing of events for cloflicts in the DefaultProcessingDatabase
    */
-  setConflictEventBroker(broker: EventBroker): CatalogBuilder {
-    this.conflictEventBroker = broker;
+  setEventBroker(broker: EventBroker): CatalogBuilder {
+    this.eventBroker = broker;
     return this;
   }
 
@@ -451,7 +450,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       refreshInterval: this.processingInterval,
-      conflictEventBroker: this.conflictEventBroker,
+      eventBroker: this.eventBroker,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
