@@ -38,13 +38,11 @@ import {
 import {
   ScaffolderPageContextMenu,
   TemplateCategoryPicker,
-} from '@backstage/plugin-scaffolder-react/alpha';
-
-import { RegisterExistingButton } from './RegisterExistingButton';
-import {
   TemplateGroupFilter,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+
+import { RegisterExistingButton } from './RegisterExistingButton';
 import {
   actionsRouteRef,
   editRouteRef,
