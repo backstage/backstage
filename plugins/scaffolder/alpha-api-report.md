@@ -5,11 +5,9 @@
 ```ts
 /// <reference types="react" />
 
-import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { LinkProps } from 'react-router-dom';
 import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
@@ -49,19 +47,6 @@ export type NextRouterProps = {
 export const NextScaffolderPage: (
   props: PropsWithChildren<NextRouterProps>,
 ) => JSX.Element;
-
-// @public (undocumented)
-export const registerComponentRouteRef: ExternalRouteRef<undefined, true>;
-
-// @alpha
-export const RegisterExistingButton: (
-  props: RegisterExistingButtonProps,
-) => JSX.Element | null;
-
-// @alpha
-export type RegisterExistingButtonProps = {
-  title: string;
-} & Partial<Pick<LinkProps, 'to'>>;
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
