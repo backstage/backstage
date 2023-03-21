@@ -15,11 +15,15 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
-import { TemplateListPage } from '../TemplateListPage';
-import { TemplateWizardPage } from '../TemplateWizardPage';
+import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
+import {
+  TemplateWizardPage,
+  TemplateWizardPageProps,
+} from '../TemplateWizardPage';
 import {
   NextFieldExtensionOptions,
   FormProps,
+  TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   ScaffolderTaskOutput,
@@ -29,16 +33,15 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
-  nextActionsRouteRef,
-  nextEditRouteRef,
-  nextScaffolderListTaskRouteRef,
-  nextScaffolderTaskRouteRef,
-  nextSelectedTemplateRouteRef,
-} from '../routes';
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderListTaskRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 import { OngoingTask } from '../OngoingTask';
 import { ActionsPage } from '../../components/ActionsPage';
@@ -59,8 +62,11 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
+    TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   // todo(blam): rename this to formProps
   FormProps?: FormProps;
   contextMenu?: {
@@ -84,6 +90,8 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       TemplateCardComponent,
       TemplateOutputsComponent,
       TaskPageComponent = OngoingTask,
+      TemplateListPageComponent = TemplateListPage,
+      TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
@@ -107,18 +115,19 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       <Route
         path="/"
         element={
-          <TemplateListPage
+          <TemplateListPageComponent
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             groups={props.groups}
+            templateFilter={props.templateFilter}
           />
         }
       />
       <Route
-        path={nextSelectedTemplateRouteRef.path}
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage
+            <TemplateWizardPageComponent
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               FormProps={props.FormProps}
@@ -127,7 +136,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
       <Route
-        path={nextScaffolderTaskRouteRef.path}
+        path={scaffolderTaskRouteRef.path}
         element={
           <TaskPageComponent
             TemplateOutputsComponent={TemplateOutputsComponent}
@@ -135,7 +144,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
       <Route
-        path={nextEditRouteRef.path}
+        path={editRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateEditorPage
@@ -146,9 +155,9 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
         }
       />
 
-      <Route path={nextActionsRouteRef.path} element={<ActionsPage />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
-        path={nextScaffolderListTaskRouteRef.path}
+        path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
       />
       <Route

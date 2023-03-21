@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.12.1-next.0
+
+### Patch Changes
+
+- e23abb37ec1: Rename output parameter `mergeRequestURL` of `publish:gitlab:merge-request` action to `mergeRequestUrl`.
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.2-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
 ## 1.12.0
 
 ### Minor Changes

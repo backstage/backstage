@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
-import { CategoryPicker } from './CategoryPicker';
+import { TemplateCategoryPicker } from './TemplateCategoryPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { fireEvent } from '@testing-library/react';
@@ -25,7 +25,7 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityTypeFilter: jest.fn(),
 }));
 
-describe('CategoryPicker', () => {
+describe('TemplateCategoryPicker', () => {
   const mockAlertApi = { post: jest.fn() };
 
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe('CategoryPicker', () => {
 
     await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
@@ -56,7 +56,7 @@ describe('CategoryPicker', () => {
 
     const { findByTestId } = await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
@@ -70,7 +70,7 @@ describe('CategoryPicker', () => {
 
     const { queryByText } = await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
@@ -86,7 +86,7 @@ describe('CategoryPicker', () => {
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
@@ -108,7 +108,7 @@ describe('CategoryPicker', () => {
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
@@ -139,7 +139,7 @@ describe('CategoryPicker', () => {
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
-        <CategoryPicker />
+        <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 

@@ -26,7 +26,6 @@ import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
   ReadTreeResponseFactory,
   ReaderFactory,
@@ -163,7 +162,7 @@ export class GitlabUrlReader implements UrlReader {
     // ref is an empty string if no branch is set in provided url to readTree.
     const branch = ref || projectGitlabResponseJson.default_branch;
 
-    // Fetch the latest commit that modifies the the filepath in the provided or default branch
+    // Fetch the latest commit that modifies the filepath in the provided or default branch
     // to compare against the provided sha.
     const commitsReqParams = new URLSearchParams();
     commitsReqParams.set('ref_name', branch);
@@ -200,11 +199,16 @@ export class GitlabUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
+    const archiveReqParams = new URLSearchParams();
+    archiveReqParams.set('sha', branch);
+    if (!!filepath) {
+      archiveReqParams.set('path', filepath);
+    }
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         repoFullName,
-      )}/repository/archive?sha=${branch}`,
+      )}/repository/archive?${archiveReqParams.toString()}`,
       {
         ...getGitLabRequestOptions(this.integration.config),
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -234,29 +238,52 @@ export class GitlabUrlReader implements UrlReader {
 
   async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
     const { filepath } = parseGitUrl(url);
+    const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
-
-    // TODO(freben): For now, read the entire repo and filter through that. In
-    // a future improvement, we could be smart and try to deduce that non-glob
-    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
-    // to get just that part of the repo.
-    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
-
+    const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);
+    const pathPrefix = staticPart ? `${staticPart}/` : '';
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
       signal: options?.signal,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      filter: path => matcher.match(`${pathPrefix}${path}`),
     });
-    const files = await tree.files();
 
+    const files = await tree.files();
     return {
       etag: tree.etag,
       files: files.map(file => ({
-        url: this.integration.resolveUrl({ url: `/${file.path}`, base: url }),
+        url: this.integration.resolveUrl({
+          url: `/${pathPrefix}${file.path}`,
+          base: url,
+        }),
         content: file.content,
         lastModifiedAt: file.lastModifiedAt,
       })),
     };
+  }
+
+  /**
+   * This function splits the input globPattern string into segments using the  path separator /. It then iterates over
+   * the segments from the end of the array towards the beginning, checking if the concatenated string up to that
+   * segment matches the original globPattern using the minimatch function. If a match is found, it continues iterating.
+   * If no match is found, it returns the concatenated string up to the current segment, which is the static part of the
+   * glob pattern.
+   *
+   * E.g. `catalog/foo/*.yaml` will return `catalog/foo`.
+   *
+   * @param globPattern the glob pattern
+   * @private
+   */
+  private getStaticPart(globPattern: string) {
+    const segments = globPattern.split('/');
+    let i = segments.length;
+    while (
+      i > 0 &&
+      new Minimatch(segments.slice(0, i).join('/')).match(globPattern)
+    ) {
+      i--;
+    }
+    return segments.slice(0, i).join('/');
   }
 
   toString() {

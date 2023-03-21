@@ -44,6 +44,8 @@ export const SidebarComponent = () => (
 );
 ```
 
+To allow external links to be added as shortcut, you can add `allowExternalLinks` property to the `<Shortcuts />` component.
+
 The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each user's shortcuts.
 
 To overwrite the default implementation add it to the App's `apis.ts`:

@@ -28,7 +28,6 @@ import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { nextRouteRef } from '../routes';
 
 describe('TemplateGroups', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -40,11 +39,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(await findByTestId('progress')).toBeInTheDocument();
@@ -62,11 +56,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(errorApi.post).toHaveBeenCalledWith(mockError);
@@ -83,11 +72,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -104,11 +88,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(await findByText(/No templates found/)).toBeInTheDocument();
@@ -144,11 +123,6 @@ describe('TemplateGroups', () => {
       <TestApiProvider apis={[[errorApiRef, {}]]}>
         <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
@@ -193,16 +167,54 @@ describe('TemplateGroups', () => {
           groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
         />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/next': nextRouteRef,
-        },
-      },
     );
 
     expect(TemplateGroup).toHaveBeenCalledWith(
       expect.objectContaining({
         templates: [expect.objectContaining({ template: mockEntities[0] })],
+      }),
+      {},
+    );
+  });
+
+  it('should filter out templates based on filter condition', async () => {
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {},
+      },
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {},
+      },
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups
+          groups={[{ title: 'all', filter: _ => true }]}
+          templateFilter={e => e.metadata.name === 't1'}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        templates: [expect.objectContaining({ template: mockEntities[1] })],
       }),
       {},
     );

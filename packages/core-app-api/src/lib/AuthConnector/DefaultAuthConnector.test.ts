@@ -21,11 +21,17 @@ import { UrlPatternDiscovery } from '../../apis';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 jest.mock('../loginPopup', () => {
   return {
     showLoginPopup: jest.fn(),
   };
+});
+
+const configApi: ConfigApi = new ConfigReader({
+  enableExperimentalRedirectFlow: false,
 });
 
 const defaultOptions = {
@@ -42,6 +48,7 @@ const defaultOptions = {
     scopes: new Set(res.scopes.split(' ')),
     expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
   }),
+  configApi: configApi,
 };
 
 describe('DefaultAuthConnector', () => {
@@ -131,7 +138,7 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&origin=http%3A%2F%2Flocalhost&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
@@ -179,7 +186,7 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
     });
   });
 });

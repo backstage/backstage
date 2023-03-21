@@ -1,5 +1,23 @@
 # @backstage/plugin-entity-feedback
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 7eba760e6f6: Added an endpoint to fetch anonymous aggregated results from an entity
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-entity-feedback-common@0.1.1-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+
 ## 0.1.1
 
 ### Patch Changes

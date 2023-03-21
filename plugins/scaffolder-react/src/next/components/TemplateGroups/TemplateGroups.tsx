@@ -15,55 +15,54 @@
  */
 import React, { useCallback } from 'react';
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link, DocsIcon } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
 import {
-  errorApiRef,
-  useApi,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+  isTemplateEntityV1beta3,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
+import { Progress, Link } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
+import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-import { viewTechDocRouteRef } from '../../routes';
-import { nextSelectedTemplateRouteRef } from '../routes';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * @alpha
  */
 export type TemplateGroupFilter = {
   title?: React.ReactNode;
-  filter: (entity: Entity) => boolean;
+  filter: (entity: TemplateEntityV1beta3) => boolean;
 };
 
+/**
+ * @alpha
+ */
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
+  onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
+  additionalLinksForEntity?: (template: TemplateEntityV1beta3) => {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
 }
 
+/**
+ * @alpha
+ */
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
-  const { groups, TemplateCardComponent } = props;
+  const { groups, templateFilter, TemplateCardComponent, onTemplateSelected } =
+    props;
   const errorApi = useApi(errorApiRef);
-  const app = useApp();
-  const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
-  const templateRoute = useRouteRef(nextSelectedTemplateRouteRef);
-  const navigate = useNavigate();
   const onSelected = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
-      navigate(templateRoute({ namespace, templateName: name }));
+      onTemplateSelected?.(template);
     },
-    [navigate, templateRoute],
+    [onTemplateSelected],
   );
 
   if (loading) {
@@ -91,22 +90,12 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     <>
       {groups.map(({ title, filter }, index) => {
         const templates = entities
-          .filter((e): e is TemplateEntityV1beta3 => filter(e))
+          .filter(isTemplateEntityV1beta3)
+          .filter(e => (templateFilter ? !templateFilter(e) : true))
+          .filter(filter)
           .map(template => {
-            const { kind, namespace, name } = parseEntityRef(
-              stringifyEntityRef(template),
-            );
             const additionalLinks =
-              template.metadata.annotations?.['backstage.io/techdocs-ref'] &&
-              viewTechDocsLink
-                ? [
-                    {
-                      icon: app.getSystemIcon('docs') ?? DocsIcon,
-                      text: 'View TechDocs',
-                      url: viewTechDocsLink({ kind, namespace, name }),
-                    },
-                  ]
-                : [];
+              props.additionalLinksForEntity?.(template) ?? [];
 
             return {
               template,

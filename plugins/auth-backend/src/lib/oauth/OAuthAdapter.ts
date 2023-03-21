@@ -33,7 +33,11 @@ import {
   NotAllowedError,
 } from '@backstage/errors';
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
-import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import {
+  postMessageResponse,
+  ensuresXRequestedWith,
+  WebMessageResponse,
+} from '../flow';
 import {
   OAuthHandlers,
   OAuthStartRequest,
@@ -98,6 +102,8 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const scope = req.query.scope?.toString() ?? '';
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
+    const redirectUrl = req.query.redirectUrl?.toString();
+    const flow = req.query.flow?.toString();
 
     if (!env) {
       throw new InputError('No env provided in request query parameters');
@@ -109,7 +115,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     // set a nonce cookie before redirecting to oauth provider
     this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin };
+    const state: OAuthState = { nonce, env, origin, redirectUrl, flow };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth
@@ -169,11 +175,21 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       const identity = await this.populateIdentity(response.backstageIdentity);
 
-      // post message back to popup if successful
-      return postMessageResponse(res, appOrigin, {
+      const responseObj: WebMessageResponse = {
         type: 'authorization_response',
         response: { ...response, backstageIdentity: identity },
-      });
+      };
+
+      if (state.flow === 'redirect') {
+        if (!state.redirectUrl) {
+          throw new InputError(
+            'No redirectUrl provided in request query parameters',
+          );
+        }
+        res.redirect(state.redirectUrl);
+      }
+      // post message back to popup if successful
+      return postMessageResponse(res, appOrigin, responseObj);
     } catch (error) {
       const { name, message } = isError(error)
         ? error

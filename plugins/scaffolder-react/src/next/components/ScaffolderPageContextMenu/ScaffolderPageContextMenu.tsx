@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -28,12 +27,6 @@ import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  nextActionsRouteRef,
-  nextEditRouteRef,
-  nextScaffolderListTaskRouteRef,
-} from '../routes';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   button: {
@@ -41,26 +34,26 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
+/**
+ * @alpha
+ */
 export type ScaffolderPageContextMenuProps = {
-  editor?: boolean;
-  actions?: boolean;
-  tasks?: boolean;
+  onEditorClicked?: () => void;
+  onActionsClicked?: () => void;
+  onTasksClicked?: () => void;
 };
 
-export function ContextMenu(props: ScaffolderPageContextMenuProps) {
+/**
+ * @alpha
+ */
+export function ScaffolderPageContextMenu(
+  props: ScaffolderPageContextMenuProps,
+) {
+  const { onEditorClicked, onActionsClicked, onTasksClicked } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
-  const editLink = useRouteRef(nextEditRouteRef);
-  const actionsLink = useRouteRef(nextActionsRouteRef);
-  const tasksLink = useRouteRef(nextScaffolderListTaskRouteRef);
 
-  const navigate = useNavigate();
-
-  const showEditor = props.editor !== false;
-  const showActions = props.actions !== false;
-  const showTasks = props.tasks !== false;
-
-  if (!showEditor && !showActions) {
+  if (!onEditorClicked && !onActionsClicked) {
     return null;
   }
 
@@ -93,24 +86,24 @@ export function ContextMenu(props: ScaffolderPageContextMenuProps) {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          {showEditor && (
-            <MenuItem onClick={() => navigate(editLink())}>
+          {onEditorClicked && (
+            <MenuItem onClick={onEditorClicked}>
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Template Editor" />
             </MenuItem>
           )}
-          {showActions && (
-            <MenuItem onClick={() => navigate(actionsLink())}>
+          {onActionsClicked && (
+            <MenuItem onClick={onActionsClicked}>
               <ListItemIcon>
                 <Description fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Installed Actions" />
             </MenuItem>
           )}
-          {showTasks && (
-            <MenuItem onClick={() => navigate(tasksLink())}>
+          {onTasksClicked && (
+            <MenuItem onClick={onTasksClicked}>
               <ListItemIcon>
                 <List fontSize="small" />
               </ListItemIcon>

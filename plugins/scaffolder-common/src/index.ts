@@ -21,5 +21,8 @@
  */
 
 export * from './TaskSpec';
-export { templateEntityV1beta3Validator } from './TemplateEntityV1beta3';
+export {
+  templateEntityV1beta3Validator,
+  isTemplateEntityV1beta3,
+} from './TemplateEntityV1beta3';
 export type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';

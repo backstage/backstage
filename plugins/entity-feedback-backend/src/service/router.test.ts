@@ -258,6 +258,22 @@ describe('createRouter', () => {
     });
   });
 
+  describe('GET /ratings/:entityRef/aggregate', () => {
+    it('should get aggregated ratings for an entity correctly', async () => {
+      const response = await request(app)
+        .get('/ratings/component%3Adefault%2Fservice/aggregate')
+        .send();
+      expect(mockDbHandler.getRatings).toHaveBeenCalledWith(
+        'component:default/service',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        DISLIKE: 1,
+        LIKE: 2,
+      });
+    });
+  });
+
   describe('POST /responses/:entityRef', () => {
     it('should record a response correctly', async () => {
       const body = { response: 'blah', comments: 'feedback', consent: true };

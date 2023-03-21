@@ -1,5 +1,22 @@
 # @backstage/backend-common
 
+## 0.18.4-next.0
+
+### Patch Changes
+
+- 420164593cf: Improve GitlabUrlReader to only load requested sub-path
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.18.3
 
 ### Patch Changes

@@ -2623,90 +2623,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-darwin-arm64@npm:1.3.38"
+"@swc/core-darwin-arm64@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-darwin-arm64@npm:1.3.41"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-darwin-x64@npm:1.3.38"
+"@swc/core-darwin-x64@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-darwin-x64@npm:1.3.41"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.38"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.41"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.38"
+"@swc/core-linux-arm64-gnu@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.41"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.38"
+"@swc/core-linux-arm64-musl@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.41"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.38"
+"@swc/core-linux-x64-gnu@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.41"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.38"
+"@swc/core-linux-x64-musl@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.41"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.38"
+"@swc/core-win32-arm64-msvc@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.41"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.38"
+"@swc/core-win32-ia32-msvc@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.41"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.38":
-  version: 1.3.38
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.38"
+"@swc/core-win32-x64-msvc@npm:1.3.41":
+  version: 1.3.41
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.41"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "@swc/core@npm:^1.3.36":
-  version: 1.3.38
-  resolution: "@swc/core@npm:1.3.38"
+  version: 1.3.41
+  resolution: "@swc/core@npm:1.3.41"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.38
-    "@swc/core-darwin-x64": 1.3.38
-    "@swc/core-linux-arm-gnueabihf": 1.3.38
-    "@swc/core-linux-arm64-gnu": 1.3.38
-    "@swc/core-linux-arm64-musl": 1.3.38
-    "@swc/core-linux-x64-gnu": 1.3.38
-    "@swc/core-linux-x64-musl": 1.3.38
-    "@swc/core-win32-arm64-msvc": 1.3.38
-    "@swc/core-win32-ia32-msvc": 1.3.38
-    "@swc/core-win32-x64-msvc": 1.3.38
+    "@swc/core-darwin-arm64": 1.3.41
+    "@swc/core-darwin-x64": 1.3.41
+    "@swc/core-linux-arm-gnueabihf": 1.3.41
+    "@swc/core-linux-arm64-gnu": 1.3.41
+    "@swc/core-linux-arm64-musl": 1.3.41
+    "@swc/core-linux-x64-gnu": 1.3.41
+    "@swc/core-linux-x64-musl": 1.3.41
+    "@swc/core-win32-arm64-msvc": 1.3.41
+    "@swc/core-win32-ia32-msvc": 1.3.41
+    "@swc/core-win32-x64-msvc": 1.3.41
   dependenciesMeta:
     "@swc/core-darwin-arm64":
       optional: true
@@ -2728,7 +2728,7 @@ __metadata:
       optional: true
     "@swc/core-win32-x64-msvc":
       optional: true
-  checksum: c55d30e57638bcd21f788add8490c3f3e71bfe027aa5a8b153e1b1b9686ecddd6deeaaa6a6b17717c7eab4c1e2a232b465b6755b6c891506fc0d03139badfbf7
+  checksum: e2d2bd2d1821608bfafab66f7b94d31b4ae3f486ad6d18aa30abca961299431a26ab2dfc04a7e614f8b8f6680d9790f0596f43e18d0b794e2802136c1d5e3376
   languageName: node
   linkType: hard
 
@@ -8558,11 +8558,11 @@ __metadata:
   linkType: hard
 
 "prettier@npm:^2.6.2":
-  version: 2.8.4
-  resolution: "prettier@npm:2.8.4"
+  version: 2.8.5
+  resolution: "prettier@npm:2.8.5"
   bin:
     prettier: bin-prettier.js
-  checksum: c173064bf3df57b6d93d19aa98753b9b9dd7657212e33b41ada8e2e9f9884066bb9ca0b4005b89b3ab137efffdf8fbe0b462785aba20364798ff4303aadda57e
+  checksum: b7f8d30e14061e0478bc5a59d4d889688d804c173a0daa91b1b85dc08eef5eb6956d1b59f4037770776fda5b967f6c9ca3b7a8a43c50bedb4c7b182029f865aa
   languageName: node
   linkType: hard
 
@@ -9437,15 +9437,15 @@ __metadata:
   linkType: hard
 
 "sass@npm:^1.57.1":
-  version: 1.58.3
-  resolution: "sass@npm:1.58.3"
+  version: 1.59.3
+  resolution: "sass@npm:1.59.3"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 35a2b98c037ef80fdc93c9b0be846e6ccc7d75596351a37ee79c397e66666d0a754c52c4696e746c0aff32327471e185343ca349e998a58340411adc9d0489a5
+  checksum: 839b5282cdf7d0ba3fdbfb605277dd584a8c40fa3e3e58ad905d64cd812acfb82ff0a4072d4981673db884ee61505472ff07c5c5a8a497f16ba013b183ba6473
   languageName: node
   linkType: hard
 
@@ -10889,8 +10889,8 @@ __metadata:
   linkType: hard
 
 "webpack@npm:^5.73.0":
-  version: 5.75.0
-  resolution: "webpack@npm:5.75.0"
+  version: 5.76.2
+  resolution: "webpack@npm:5.76.2"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^0.0.51
@@ -10921,7 +10921,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 2bcc5f3c195f375944e8af2f00bf2feea39cb9fda5f763b0d1b00077f1c51783db25c94d3fae96a07dead9fa085e6ae7474417e5ab31719c9776ea5969ceb83a
+  checksum: 86db98299a175c371031449c26077e87b33acd8f45de7f7945ed4b9b37c8ca11bc5169af9c44743efccd4d55e08042a3aa3a3bc42aff831309a0821ffbcd395e
   languageName: node
   linkType: hard
 

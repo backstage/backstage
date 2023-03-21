@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-api-docs",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
-  "version": "0.9.1",
+  "version": "0.9.2-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -41,7 +41,7 @@
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "graphiql": "^1.8.8",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",

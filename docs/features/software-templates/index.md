@@ -58,6 +58,10 @@ It shouldn't take too long, and you'll have a success screen!
 If it fails, you'll be able to click on each section to get the log from the
 step that failed which can be helpful in debugging.
 
+You can also cancel the running process. Once you clicked on button "Cancel", the abort signal
+will be sent to a task and all next steps won't be executed. The current step will be cancelled
+only if it supports it.
+
 ![Templating failed](../../assets/software-templates/failed.png)
 
 ## View Component in Catalog

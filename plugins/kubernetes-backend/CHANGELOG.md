@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.10.0-next.0
+
+### Minor Changes
+
+- 804f6d16b0c: **BREAKING**: `KubernetesBuilder.create` now requires a `permissions` field of type `PermissionEvaluator`. The kubernetes `/proxy` endpoint now requires two tokens: the `Backstage-Kubernetes-Authorization` header should contain a bearer token for the target cluster, and the `Authorization` header should contain a backstage identity token. The kubernetes `/proxy` endpoint now requires a `Backstage-Kubernetes-Cluster` header replacing the previously required `X-Kubernetes-Cluster` header.
+
+### Patch Changes
+
+- 75d4985f5e8: Fixes bug whereby backstage crashes when bad credentials are provided to the kubernetes plugin.
+- 83d250badc6: Fix parsing error when kubernetes api is returning badly structured data.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+
 ## 0.9.4
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
   "description": "The Backstage backend plugin that helps you create new things",
-  "version": "1.12.0",
+  "version": "1.12.1-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -56,6 +56,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
@@ -64,6 +65,7 @@
     "@gitbeaker/node": "^35.1.0",
     "@octokit/webhooks": "^10.0.0",
     "@types/express": "^4.17.6",
+    "@types/luxon": "^3.0.0",
     "azure-devops-node-api": "^11.0.1",
     "command-exists": "^1.2.9",
     "compression": "^1.7.4",
@@ -109,6 +111,7 @@
     "mock-fs": "^5.1.0",
     "msw": "^1.0.0",
     "supertest": "^6.1.3",
+    "wait-for-expect": "^3.0.2",
     "yaml": "^2.0.0"
   },
   "files": [

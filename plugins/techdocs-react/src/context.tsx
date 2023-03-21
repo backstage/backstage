@@ -21,8 +21,10 @@ import React, {
   useState,
   memo,
   ReactNode,
+  useEffect,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 import {
   CompoundEntityRef,
@@ -117,12 +119,12 @@ export const TechDocsReaderPageProvider = memo(
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
 
-    const metadata = useAsync(async () => {
-      return techdocsApi.getTechDocsMetadata(entityRef);
-    }, [entityRef]);
-
     const entityMetadata = useAsync(async () => {
       return techdocsApi.getEntityMetadata(entityRef);
+    }, [entityRef]);
+
+    const metadata = useAsyncRetry(async () => {
+      return techdocsApi.getTechDocsMetadata(entityRef);
     }, [entityRef]);
 
     const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
@@ -133,7 +135,19 @@ export const TechDocsReaderPageProvider = memo(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
 
-    const value = {
+    useEffect(() => {
+      if (shadowRoot && !metadata.value && !metadata.loading) {
+        metadata.retry();
+      }
+    }, [
+      metadata.value,
+      metadata.loading,
+      shadowRoot,
+      metadata.retry,
+      metadata,
+    ]);
+
+    const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,

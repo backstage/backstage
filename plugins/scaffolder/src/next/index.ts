@@ -17,4 +17,3 @@ export * from './Router';
 export * from './TemplateListPage';
 export * from './TemplateWizardPage';
 export * from './types';
-export * from './routes';

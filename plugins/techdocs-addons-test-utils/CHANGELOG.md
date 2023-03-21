@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.12-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-catalog@1.10.0-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-app-api@1.7.0-next.0
+  - @backstage/test-utils@1.3.0-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-techdocs@1.6.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.5-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
 ## 1.0.11
 
 ### Patch Changes

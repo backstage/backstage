@@ -17,9 +17,6 @@
 import { ConfigReader } from '@backstage/config';
 import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
-import { getVoidLogger } from '@backstage/backend-common';
-
-const logger = getVoidLogger();
 
 describe('config', () => {
   it('empty gitlab config', () => {
@@ -29,7 +26,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config, logger);
+    const result = readGitlabConfigs(config);
     expect(result).toHaveLength(0);
   });
 
@@ -47,12 +44,13 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config, logger);
+    const result = readGitlabConfigs(config);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
+        branch: undefined,
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
@@ -74,6 +72,7 @@ describe('config', () => {
               group: 'group',
               host: 'host',
               branch: 'not-master',
+              fallbackBranch: 'main',
               entityFilename: 'custom-file.yaml',
             },
           },
@@ -81,13 +80,14 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config, logger);
+    const result = readGitlabConfigs(config);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
-        fallbackBranch: 'not-master',
+        branch: 'not-master',
+        fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
@@ -119,12 +119,13 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config, logger);
+    const result = readGitlabConfigs(config);
     expect(result).toHaveLength(1);
     result.forEach(r =>
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
+        branch: undefined,
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
@@ -158,7 +159,7 @@ describe('config', () => {
       },
     });
 
-    expect(() => readGitlabConfigs(config, logger)).toThrow(
+    expect(() => readGitlabConfigs(config)).toThrow(
       "Missing required config value at 'catalog.providers.gitlab.test.host'",
     );
   });
@@ -177,7 +178,7 @@ describe('config', () => {
       },
     });
 
-    const result = readGitlabConfigs(config, logger);
+    const result = readGitlabConfigs(config);
     expect(result).toHaveLength(1);
     expect(result[0].group).toEqual('');
   });

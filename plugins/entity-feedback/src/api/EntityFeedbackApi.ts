@@ -19,6 +19,7 @@ import {
   EntityRatingsData,
   FeedbackResponse,
   Rating,
+  Ratings,
 } from '@backstage/plugin-entity-feedback-common';
 
 /**
@@ -39,6 +40,11 @@ export interface EntityFeedbackApi {
   recordRating(entityRef: string, rating: string): Promise<void>;
 
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
+
+  /**
+   * Returns anonymized aggregated results for one entityRef
+   */
+  getRatingAggregates(entityRef: string): Promise<Ratings>;
 
   recordResponse(
     entityRef: string,

@@ -76,6 +76,8 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
       ...theme.typography.button,
       borderRadius: theme.shape.borderRadius,
       color: theme.palette.primary.main,
+      // override whatever may be in the theme's typography to ensure consistency with asyncapi
+      textTransform: 'inherit',
     },
     '& a': {
       color: theme.palette.link,

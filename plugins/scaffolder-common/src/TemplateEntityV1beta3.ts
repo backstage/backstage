@@ -86,3 +86,13 @@ export const templateEntityV1beta3Validator: KindValidator = {
     return validator(data) === data;
   },
 };
+
+/**
+ * Typeguard for filtering entities and ensuring v1beta3 entities
+ * @public
+ */
+export const isTemplateEntityV1beta3 = (
+  entity: Entity,
+): entity is TemplateEntityV1beta3 =>
+  entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
+  entity.kind === 'Template';

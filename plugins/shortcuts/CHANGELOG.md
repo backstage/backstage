@@ -1,5 +1,17 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 99df676e324: Allow external links to be added as shortcuts
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+
 ## 0.3.8
 
 ### Patch Changes
