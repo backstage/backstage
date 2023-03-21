@@ -29,17 +29,24 @@ import { GridItem } from './styles';
 import { ForwardedError } from '@backstage/errors';
 import { UserIdentity } from './UserIdentity';
 
-const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
+const Component: ProviderComponent = ({
+  config,
+  onSignInStarted,
+  onSignInSuccess,
+  onSignInFailure,
+}) => {
   const { apiRef, title, message } = config as SignInProviderConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
 
   const handleLogin = async () => {
     try {
+      onSignInStarted();
       const identityResponse = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
       if (!identityResponse) {
+        onSignInFailure();
         throw new Error(
           `The ${title} provider is not configured to support sign-in`,
         );
@@ -55,6 +62,7 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
         }),
       );
     } catch (error) {
+      onSignInFailure();
       errorApi.post(new ForwardedError('Login failed', error));
     }
   };

@@ -33,6 +33,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
