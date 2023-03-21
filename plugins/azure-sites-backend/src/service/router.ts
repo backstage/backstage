@@ -75,9 +75,7 @@ export async function createRouter(
       const annotationName =
         entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
       if (await azureSitesApi.validateSite(annotationName, name)) {
-        throw new NotAllowedError(
-          'Site name mismatched with entity annocation',
-        );
+        throw new NotAllowedError();
       }
 
       const decision = (
@@ -115,9 +113,7 @@ export async function createRouter(
       const annotationName =
         entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
       if (await azureSitesApi.validateSite(annotationName, name)) {
-        throw new NotAllowedError(
-          'Site name mismatched with entity annocation',
-        );
+        throw new NotAllowedError();
       }
 
       const decision = (
