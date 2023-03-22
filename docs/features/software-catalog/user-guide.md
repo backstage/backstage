@@ -54,8 +54,8 @@ The recommended approach would be to represent information in catalog-info files
 **Systems**
 
 - Jira installation
-- Pageduty
-- Physical resources: This is probably more useful for longer-lived ones (eg, servers).
+- Pagerduty
+- Physical resources: This is probably more useful for longer-lived ones (For example servers).
 
 **Ownership - users - groups by**
 
