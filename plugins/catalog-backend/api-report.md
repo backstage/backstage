@@ -11,6 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { CatalogApi } from '@backstage/catalog-client';
+import type { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor as CatalogProcessor_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorCache as CatalogProcessorCache_2 } from '@backstage/plugin-catalog-node';
@@ -23,8 +24,9 @@ import { CatalogProcessorRefreshKeysResult as CatalogProcessorRefreshKeysResult_
 import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
+import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
+import type { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
-import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
@@ -44,7 +46,6 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Readable } from 'stream';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -160,10 +161,9 @@ export class CatalogBuilder {
   useLegacySingleProcessorValidation(): this;
 }
 
-// @public (undocumented)
-export type CatalogCollatorEntityTransformer = (
-  entity: Entity,
-) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
+// @public @deprecated (undocumented)
+export type CatalogCollatorEntityTransformer =
+  CatalogCollatorEntityTransformer_2;
 
 // @public (undocumented)
 export type CatalogEnvironment = {
@@ -286,34 +286,15 @@ export class DefaultCatalogCollator {
   readonly visibilityPermission: Permission;
 }
 
-// @public (undocumented)
-export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
+// @public @deprecated (undocumented)
+export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer_2;
 
-// @public (undocumented)
-export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
-  // (undocumented)
-  static fromConfig(
-    _config: Config,
-    options: DefaultCatalogCollatorFactoryOptions,
-  ): DefaultCatalogCollatorFactory;
-  // (undocumented)
-  getCollator(): Promise<Readable>;
-  // (undocumented)
-  readonly type = 'software-catalog';
-  // (undocumented)
-  readonly visibilityPermission: Permission;
-}
+// @public @deprecated (undocumented)
+export const DefaultCatalogCollatorFactory: typeof DefaultCatalogCollatorFactory_2;
 
-// @public (undocumented)
-export type DefaultCatalogCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-  locationTemplate?: string;
-  filter?: GetEntitiesRequest['filter'];
-  batchSize?: number;
-  catalogClient?: CatalogApi;
-  entityTransformer?: CatalogCollatorEntityTransformer;
-};
+// @public @deprecated (undocumented)
+export type DefaultCatalogCollatorFactoryOptions =
+  DefaultCatalogCollatorFactoryOptions_2;
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;

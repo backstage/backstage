@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * todo(backstage/techdocs-core): stop exporting this in a future release.
- */
-export { DefaultCatalogCollator } from './DefaultCatalogCollator';
+import { startTestBackend } from '@backstage/backend-test-utils';
+import request from 'supertest';
+import { searchPlugin } from './alpha';
+
+describe('searchPlugin', () => {
+  it('should serve search results on query endpoint', async () => {
+    const { server } = await startTestBackend({
+      features: [searchPlugin()],
+    });
+
+    const response = await request(server).get('/api/search/query');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ numberOfResults: 0, results: [] });
+  });
+});

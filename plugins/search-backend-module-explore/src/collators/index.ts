@@ -15,6 +15,7 @@
  */
 
 export { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
+
 export type {
   ToolDocument,
   ToolDocumentCollatorFactoryOptions,
