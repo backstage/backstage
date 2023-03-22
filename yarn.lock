@@ -9135,8 +9135,8 @@ __metadata:
   linkType: hard
 
 "@changesets/cli@npm:^2.14.0":
-  version: 2.26.0
-  resolution: "@changesets/cli@npm:2.26.0"
+  version: 2.26.1
+  resolution: "@changesets/cli@npm:2.26.1"
   dependencies:
     "@babel/runtime": ^7.20.1
     "@changesets/apply-release-plan": ^6.1.3
@@ -9173,7 +9173,7 @@ __metadata:
     tty-table: ^4.1.5
   bin:
     changeset: bin.js
-  checksum: 12a911b4196ff390ce114e27b475e59f5f5e1fdc7049d1ab04effe73d4811d99db47a030de6abe332300b4b2c43cffc537cec4883476b59b69bc23aee07cd5c5
+  checksum: d7d6445ebbc1b2718d97852a2275f59af32020e8a1e1efe666767819dd862c7794ce50627ad52f1f97ba4bc57c81bfc4750e92265757cc94ab2d44198d2afb10
   languageName: node
   linkType: hard
 
