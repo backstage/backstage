@@ -19,9 +19,11 @@ import { Logger } from 'winston';
 import {
   createServiceBuilder,
   loadBackendConfig,
+  ServerTokenManager,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 export interface ServerOptions {
   port: number;
@@ -38,7 +40,27 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
 
-  const router = await createRouter({ config, discovery });
+  const tokenManager = ServerTokenManager.noop();
+  const identity: IdentityApi = {
+    async getIdentity({ request }) {
+      const token = request.headers.authorization?.split(' ')[1];
+      return {
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: token || 'user:default/john_doe',
+        },
+        token: token || 'no-token',
+      };
+    },
+  };
+  const router = await createRouter({
+    config,
+    discovery,
+    tokenManager,
+    logger,
+    identity,
+  });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

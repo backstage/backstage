@@ -18,6 +18,39 @@ This will popup a badges dialog showing all available badges for that entity lik
 
 ![Badges Dialog](./doc/badges-dialog.png)
 
+##  Badge obfuscation
+
+The badges plugin supports obfuscating the badge URL to prevent it from being enumerated if the badges are used in a public context (like in Github repositories).
+
+To enable obfuscation, set the `obfuscate` option to `true` in the `app.badges` section of your `app-config.yaml`:
+
+```yaml
+app:
+  badges:
+    obfuscate: true
+```
+
+Please note that if you have already set badges in your repositories and you activate the obfuscation you will need to update the badges in your repositories to use the new obfuscated URLs.
+
+Please note that the backend part needs to be configured to support obfuscation. See the [backend plugin documentation](../badges-backend/README.md) for more details.
+
+Also, you need to allow your frontend to access the configuration :
+
+```typescript
+export interface Config {
+  app: {
+    ... some code
+    badges: {
+      /**
+       * badges obfuscate
+       * @visibility frontend
+       */
+      obfuscate?: string;
+    };
+  };
+}
+```
+
 ## Sample Badges
 
 Here are some samples of badges for the `artists-lookup` service in the Demo Backstage site:

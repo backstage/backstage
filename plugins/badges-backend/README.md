@@ -36,6 +36,8 @@ export default async function createPlugin(
     config: env.config,
     discovery: env.discovery,
     badgeFactories: createDefaultBadgeFactories(),
+    tokenManager: env.tokenManager,
+    logger: env.logger,
   });
 }
 ```
@@ -112,10 +114,41 @@ export const createMyCustomBadgeFactories = (): BadgeFactories => ({
 });
 ```
 
+### Badge obfuscation
+
+When you enable the obfuscation feature, the badges backend will obfuscate the entity names in the badge link. It's useful when you want your badges to be visible to the public, but you don't want to expose the entity names and also to protect your entity names from being enumerated.
+
+To enable the obfuscation you need to activate the `obfuscation` feature in the `app-config.yaml`:
+
+```yaml
+app:
+  badges:
+    obfuscate: 'true'
+```
+
+Also you need to provide the [salt](<https://en.wikipedia.org/wiki/Salt_(cryptography)>) in the `app-config.yaml`:
+
+```yaml
+custom:
+  badges-backend:
+    salt: <your-salt> # required
+    cacheTimeToLive: 10 # minutes (optional)
+```
+
+Any string can be used as a salt, but it's recommended to use a long random string to increase entropy. You can generate a random string using the following command:
+
+```bash
+openssl rand -hex 32
+```
+
+> Note: The salt is used to obfuscate the entity names, so if you change the salt, the entity names will be obfuscated differently and the already established badges (in Github repositories for examples) will need to be updated.
+
 ## API
 
 The badges backend api exposes two main endpoints for entity badges. The
 `/badges` prefix is arbitrary, and the default for the example backend.
+
+### If obfuscation is disabled (default or apps.badges.obfuscate: "false")
 
 - `/badges/entity/:namespace/:kind/:name/badge-specs` List all defined badges
   for a particular entity, in json format. See
@@ -125,6 +158,22 @@ The badges backend api exposes two main endpoints for entity badges. The
 - `/badges/entity/:namespace/:kind/:name/badge/:badgeId` Get the entity badge as
   an SVG image. If the `accept` request header prefers `application/json` the
   badge spec as JSON will be returned instead of the image.
+
+### If obfuscation is enabled (apps.badges.obfuscate: "true")
+
+- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated entity
+  hash from name, namespace, kind.
+
+> Note that endpoint have a embedded authMiddleware to authenticate the user requesting this endpoint. It meant to be called from the frontend plugin.
+
+- `/badges/entity/:entityHash/:badgeId` Get the entity badge as an SVG image. If
+  the `accept` request header prefers `application/json` the badge spec as JSON
+  will be returned instead of the image.
+
+- `/badge/entity/:entityHash/badge-specs` List all defined badges for a
+  particular entity, in json format. See
+  [BadgeSpec](https://github.com/backstage/backstage/tree/master/plugins/badges/src/api/types.ts)
+  from the frontend plugin for a type declaration.
 
 ## Links
 

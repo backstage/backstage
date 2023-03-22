@@ -15,6 +15,7 @@
  */
 import { badgesApiRef, BadgesClient } from './api';
 import {
+  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
@@ -28,9 +29,17 @@ export const badgesPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: badgesApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new BadgesClient({ discoveryApi, identityApi }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        configApi: configApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, configApi }) =>
+        new BadgesClient({
+          discoveryApi,
+          identityApi,
+          configApi,
+        }),
     }),
   ],
 });
