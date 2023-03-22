@@ -1,6 +1,6 @@
 ---
-'@backstage/badges': patch
-'@backstage/badges-backend': patch
+'@backstage/plugin-badges': patch
+'@backstage/plugin-badges-backend': patch
 ---
 
 Fixing badges-backend plugin to get a token from the TokenManager instead of parsing the request header. Hence, it's now possible to disable the authMiddleware for the badges-backend plugin to expose publicly the badges.
