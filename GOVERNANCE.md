@@ -60,7 +60,6 @@ An Organization Member must meet the responsibilities and has the requirements o
 
 ### Requirements
 
-- Must have successful contributions to the project, including at least one of the following:
 - Must have at least 10 contributions to the projects in the form of:
   - Accepted PRs
   - Helpful PR reviews
