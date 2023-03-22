@@ -20,7 +20,7 @@ import { GraphQLError } from 'graphql';
 
 /** @public */
 export function createLoader(
-  { catalog }: { catalog: Pick<CatalogClient, 'getEntitiesByRefs'> },
+  { catalog }: { catalog: CatalogClient },
   options?: Options<string, Entity>,
 ) {
   return new DataLoader<string, Entity>(

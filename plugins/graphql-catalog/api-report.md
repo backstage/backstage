@@ -18,7 +18,7 @@ export function createLoader(
   {
     catalog,
   }: {
-    catalog: Pick<CatalogClient, 'getEntitiesByRefs'>;
+    catalog: CatalogClient;
   },
   options?: Options<string, Entity>,
 ): default_2<string, Entity, string>;
