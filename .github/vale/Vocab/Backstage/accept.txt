@@ -82,6 +82,7 @@ Debounce
 debuggability
 declaratively
 deduplicated
+deliverables
 dependabot
 deps
 destructured
