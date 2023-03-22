@@ -72,6 +72,7 @@ export async function createRouter({
   });
 
   router.get('/schema', (_, response) => {
+    response.set('Content-Type', 'text/plain');
     response.send(printSchema(application.schema));
   });
 
