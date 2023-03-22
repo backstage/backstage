@@ -40,6 +40,4 @@ export const apolloExplorerPlugin: BackstagePlugin<
   {},
   {}
 >;
-
-// (No @packageDocumentation comment for this package)
 ```

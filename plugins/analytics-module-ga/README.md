@@ -236,7 +236,7 @@ make and test changes is to do the following:
 Code for the isolated version of the plugin can be found inside the [/dev](./dev)
 directory. Changes to the plugin are hot-reloaded.
 
-#### Recommended Dev Config
+### Recommended Dev Config
 
 Paste this into your `app-config.local.yaml` while developing this plugin:
 
