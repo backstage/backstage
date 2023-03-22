@@ -70,7 +70,7 @@ An Organization Member must meet the responsibilities and has the requirements o
 
 ### Becoming an Organization Member
 
-Open an issue towards [the community repository](https://github.com/backstage/community) using the [org membership request template](#TODO).
+Open an issue towards [the community repository](https://github.com/backstage/community) using the [org membership request template](https://github.com/backstage/community/issues/new?template=org_member.yaml&title=Org+Member%3A+%3Cyour-github-login%3E).
 
 ### Privileges
 
