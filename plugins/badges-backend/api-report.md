@@ -7,7 +7,10 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export interface Badge {
@@ -112,5 +115,11 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
+  // (undocumented)
+  identity: IdentityApi;
+  // (undocumented)
+  logger: Logger;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 ```
