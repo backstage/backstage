@@ -57,6 +57,7 @@ Team: @backstage/search-maintainers
 | David Tuite   | Roadie                   | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
 | Jussi Hallila | Roadie                   | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
 | Phil Kuang    | FactSet Research Systems | [kuangp](https://github.com/kuangp)             | `pkuang#3202`                  |
+| Mark Avery    | Cvent                    | [webark](https://github.com/webark)             | `webark#8471`                  |
 
 ## Emeritus Core Maintainers
 
