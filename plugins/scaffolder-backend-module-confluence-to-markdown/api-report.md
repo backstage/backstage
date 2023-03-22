@@ -8,8 +8,6 @@ import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "createConfluenceToMarkdownAction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const createConfluenceToMarkdownAction: (options: {
   reader: UrlReader;
@@ -19,8 +17,4 @@ export const createConfluenceToMarkdownAction: (options: {
   confluenceUrls: string[];
   repoUrl: string;
 }>;
-
-// Warnings were encountered during analysis:
-//
-// src/index.d.ts:2:42 - (tsdoc-characters-after-block-tag) The token "@backstage" looks like a TSDoc tag but contains an invalid character "/"; if it is not a tag, use a backslash to escape the "@"
 ```

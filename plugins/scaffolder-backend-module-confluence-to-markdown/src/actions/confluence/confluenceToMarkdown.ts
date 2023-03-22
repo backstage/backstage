@@ -30,6 +30,10 @@ import {
   createConfluenceVariables,
 } from './helpers';
 
+/**
+ * @public
+ */
+
 export const createConfluenceToMarkdownAction = (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
