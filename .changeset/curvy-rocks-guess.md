@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-allow the title of the card to use the title of the entity, if it is set.
+Allow the title of the group profile card to use the title of the entity, if it is set.
