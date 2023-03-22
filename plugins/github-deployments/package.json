@@ -31,7 +31,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/graphql": "^5.0.0",

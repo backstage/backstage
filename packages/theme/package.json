@@ -32,7 +32,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.2"
+    "@mui/material": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

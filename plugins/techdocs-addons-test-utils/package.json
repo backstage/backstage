@@ -42,7 +42,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@testing-library/react": "^12.1.3",

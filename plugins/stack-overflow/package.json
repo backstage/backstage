@@ -29,7 +29,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^5.10.1",
     "cross-fetch": "^3.1.5",
