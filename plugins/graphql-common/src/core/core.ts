@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { resolvePackagePath } from '@backstage/backend-common';
+import { loadFilesSync } from '@graphql-tools/load-files';
 import { createModule } from 'graphql-modules';
 import { createDirectiveMapperProvider } from '../mapperProvider';
 import { ResolverContext } from '../types';
 import { fieldDirectiveMapper } from './fieldDirectiveMapper';
-import { coreSchema } from './schema';
 
 /** @public */
 export const Core = createModule({
   id: 'core',
-  typeDefs: coreSchema,
+  typeDefs: loadFilesSync(
+    resolvePackagePath(
+      '@backstage/plugin-graphql-common',
+      'src/core/core.graphql',
+    ),
+  ),
   resolvers: {
     Node: {
       id: async (

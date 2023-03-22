@@ -17,9 +17,6 @@ import { TypeProvider } from 'graphql-modules';
 export const Core: Module;
 
 // @public (undocumented)
-export const coreSchema: any[];
-
-// @public (undocumented)
 export function createDirectiveMapperProvider(
   name: string,
   mapper: FieldDirectiveMapper,

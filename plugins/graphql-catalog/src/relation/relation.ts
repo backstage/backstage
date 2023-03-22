@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 import { createModule } from 'graphql-modules';
-import { relationSchema } from './schema';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 /** @public */
 export const Relation = createModule({
   id: 'relation',
-  typeDefs: relationSchema,
+  typeDefs: loadFilesSync(
+    resolvePackagePath(
+      '@backstage/plugin-graphql-catalog',
+      'src/relation/relation.graphql',
+    ),
+  ),
   providers: [
     createDirectiveMapperProvider('relation', relationDirectiveMapper),
   ],

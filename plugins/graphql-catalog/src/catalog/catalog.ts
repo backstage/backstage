@@ -16,15 +16,21 @@
 import { createModule } from 'graphql-modules';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { ResolverContext } from '../types';
-import { catalogSchema } from './schema';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 /** @public */
 export const Catalog = createModule({
   id: 'catalog',
-  typeDefs: catalogSchema,
+  typeDefs: loadFilesSync(
+    resolvePackagePath(
+      '@backstage/plugin-graphql-catalog',
+      'src/catalog/catalog.graphql',
+    ),
+  ),
   resolvers: {
     Lifecycle: {
       EXPERIMENTAL: 'experimental',
