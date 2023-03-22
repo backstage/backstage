@@ -3,6 +3,8 @@
 
 ## Core Maintainers
 
+Team: @backstage/maintainers
+
 | Maintainer      | Organization | GitHub                                          | Discord       |
 | --------------- | ------------ | ----------------------------------------------- | ------------- |
 | Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019` |
@@ -10,33 +12,35 @@
 | Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`   |
 | Johan Haals     | Spotify      | [jhaals](https://github.com/jhaals)             | `Johan#0679`  |
 
-# Project Areas
+## Project Areas
 
-## Catalog
+These are the separate project areas of Backstage, each with their own project area maintainers
 
-Team: @backstage/catalog
+### Catalog
 
-| Name | Organization | GitHub                       | Discord |
-| ---- | ------------ | ---------------------------- | ------- |
-| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
+Team: @backstage/catalog-maintainers
 
-## TechDocs
+| Name | Organization | Team      | GitHub                       | Discord |
+| ---- | ------------ | --------- | ---------------------------- | ------- |
+| TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
 
-Team: @backstage/techdocs
+### TechDocs
 
-| Name | Organization | GitHub                       | Discord |
-| ---- | ------------ | ---------------------------- | ------- |
-| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
+Team: @backstage/techdocs-maintainers
 
-## Search
+| Name | Organization | Team         | GitHub                       | Discord |
+| ---- | ------------ | ------------ | ---------------------------- | ------- |
+| TBD  | Spotify      | Pulp Fiction | [TBD](http://github.com/TBD) | -       |
 
-Team: @backstage/search
+### Search
 
-| Name | Organization | GitHub                       | Discord |
-| ---- | ------------ | ---------------------------- | ------- |
-| TBD  | TBD          | [TBD](http://github.com/TBD) | TBD     |
+Team: @backstage/search-maintainers
 
-# Sponsors
+| Name | Organization | Team | GitHub                       | Discord |
+| ---- | ------------ | ---- | ---------------------------- | ------- |
+| TBD  | Spotify      | BUX  | [TBD](http://github.com/TBD) | -       |
+
+## Sponsors
 
 | Name              | Organization | GitHub                                      | Email             |
 | ----------------- | ------------ | ------------------------------------------- | ----------------- |
@@ -44,18 +48,16 @@ Team: @backstage/search
 | Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
 | Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com  |
 
-# Organization Members
-
-People that have made significant contributions to the project
+## Organization Members
 
 | Name          | Organization | GitHub                                          | Discord                        |
 | ------------- | ------------ | ----------------------------------------------- | ------------------------------ |
+| Adam Harvey   | Cisco        | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
 | Andrew Thauer | Wealthsimple | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
 | David Tuite   | Roadie       | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
 | Jussi Hallila | Roadie       | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
-| Adam Harvey   | Cisco        | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
 
-# Emeritus Core Maintainers
+## Emeritus Core Maintainers
 
 | Maintainer   | Organization | GitHub                                        | Discord        |
 | ------------ | ------------ | --------------------------------------------- | -------------- |
