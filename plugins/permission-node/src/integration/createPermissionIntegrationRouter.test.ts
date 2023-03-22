@@ -34,6 +34,11 @@ const testPermission: Permission = createPermission({
   attributes: {},
 });
 
+const testPermission2: Permission = createPermission({
+  name: 'test.permission2',
+  attributes: {},
+});
+
 const mockTestRule1Apply = jest
   .fn()
   .mockImplementation((_resource: any, _params) => true);
@@ -60,6 +65,17 @@ const testRule2 = createPermissionRule({
   toQuery: () => ({}),
 });
 
+const mockTestRule3Apply = jest
+  .fn()
+  .mockImplementation((_resource: any) => false);
+const testRule3 = createPermissionRule({
+  name: 'test-rule-3',
+  description: 'Test rule 3',
+  resourceType: 'test-resource-2',
+  apply: mockTestRule2Apply,
+  toQuery: () => ({}),
+});
+
 const defaultMockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
@@ -69,8 +85,7 @@ const defaultMockedGetResources: CreatePermissionIntegrationRouterResourceOption
 
 const createApp = (
   mockedGetResources:
-    | typeof defaultMockedGetResources
-    | null = defaultMockedGetResources,
+    | typeof defaultMockedGetResources = defaultMockedGetResources,
 ) => {
   const router = mockedGetResources
     ? createPermissionIntegrationRouter({
@@ -81,6 +96,16 @@ const createApp = (
       })
     : createPermissionIntegrationRouter({ permissions: [testPermission] });
 
+  return express().use(router);
+};
+
+const createAppWithResources = (
+  resourceOptions: CreatePermissionIntegrationRouterResourceOptions<
+    string,
+    any
+  >,
+) => {
+  const router = createPermissionIntegrationRouter(resourceOptions);
   return express().use(router);
 };
 
@@ -573,15 +598,35 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 501 with no getResources implementation', async () => {
-      const response = await request(createApp(null))
+      const response = await request(
+        createAppWithResources({
+          resourceType: 'test-resource',
+          permissions: [testPermission],
+          rules: [testRule1, testRule2],
+        }),
+      )
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
-          items: [],
+          items: [
+            {
+              id: '345',
+              resourceRef: 'default:test/resource-2',
+              resourceType: 'test-resource',
+              conditions: {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
+              },
+            },
+          ],
         });
 
       expect(response.status).toEqual(501);
       expect(response.body.error.message).toEqual(
-        `This plugin does not expose any permission rule or can't evaluate conditional decisions`,
+        `This plugin does not expose any permission rule or can't evaluate the conditions request for test-resource`,
       );
     });
   });
@@ -620,6 +665,73 @@ describe('createPermissionIntegrationRouter', () => {
             name: testRule2.name,
             description: testRule2.description,
             resourceType: testRule2.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
+          },
+        ],
+      });
+    });
+    it.skip('returns a list of permissions and rules used by a given backend that was created with an array of resource options', async () => {
+      const mockedResourceOptions = [
+        {
+          resourceType: 'test-resource',
+          permissions: [testPermission],
+          rules: [testRule1, testRule2],
+        },
+        {
+          resourceType: 'test-resource-2',
+          permissions: [testPermission2],
+          rules: [testRule3],
+        },
+      ];
+
+      const response = await request(
+        createApp({ resourceOptions: mockedResourceOptions }),
+      ).get('/.well-known/backstage/permissions/metadata');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        permissions: [testPermission, testPermission2],
+        rules: [
+          {
+            name: testRule1.name,
+            description: testRule1.description,
+            resourceType: testRule1.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {
+                foo: {
+                  type: 'string',
+                },
+                bar: {
+                  description: 'bar',
+                  type: 'number',
+                },
+              },
+              required: ['foo', 'bar'],
+              type: 'object',
+            },
+          },
+          {
+            name: testRule2.name,
+            description: testRule2.description,
+            resourceType: testRule2.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
+          },
+          {
+            name: testRule3.name,
+            description: testRule3.description,
+            resourceType: testRule3.resourceType,
             paramsSchema: {
               $schema: 'http://json-schema.org/draft-07/schema#',
               additionalProperties: false,
