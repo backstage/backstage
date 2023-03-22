@@ -608,15 +608,17 @@ export class CatalogBuilder {
       }),
     ];
 
+    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
     // If the user adds a processor named 'BuiltinKindsEntityProcessor',
     //   skip inclusion of the catalog-backend version.
     if (
-      !this.processors.find(
+      !this.processors.some(
         processor =>
-          processor.getProcessorName() === 'BuiltinKindsEntityProcessor',
+          processor.getProcessorName() ===
+          builtinKindsEntityProcessor.getProcessorName(),
       )
     ) {
-      processors.push(new BuiltinKindsEntityProcessor());
+      processors.push(builtinKindsEntityProcessor);
     }
 
     // These are only added unless the user replaced them all
