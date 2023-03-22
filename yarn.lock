@@ -24829,8 +24829,8 @@ __metadata:
   linkType: hard
 
 "graphql-modules@npm:^2.0.0":
-  version: 2.1.1
-  resolution: "graphql-modules@npm:2.1.1"
+  version: 2.1.2
+  resolution: "graphql-modules@npm:2.1.2"
   dependencies:
     "@graphql-tools/schema": ^9.0.0
     "@graphql-tools/wrap": ^9.0.0
@@ -24838,7 +24838,7 @@ __metadata:
     ramda: ^0.28.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 1e916eb85a4bc0ff25040adf35a95caa25001b23e43d5608eb304186041e145893e995f82815e9b4e71322a60bd7f7968583ceb22a5e566ed15b3876c6224448
+  checksum: 3a4732c54acb707350b7249d96952b5bb1e5a2c054090181d4e4f8adcd66d4d0675208d06f873bca75b924833df9a2c5bc7ce90aeb04b2d9e256605313a6080a
   languageName: node
   linkType: hard
 
