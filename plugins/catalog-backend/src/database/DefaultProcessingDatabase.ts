@@ -45,6 +45,7 @@ import { insertUnprocessedEntity } from './operations/refreshState/insertUnproce
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash } from './util';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { DateTime } from 'luxon';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -366,6 +367,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               entityRef,
               newLocationKey: locationKey,
               existingLocationKey: conflictingKey,
+              lastConflictAt: DateTime.now().toISO(),
             },
             metadata: {},
           });
