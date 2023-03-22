@@ -7052,7 +7052,7 @@ __metadata:
     fs-extra: ^10.0.0
     knex: ^2.0.0
     linguist-js: ^2.5.3
-    luxon: ^2.0.2
+    luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
@@ -7093,7 +7093,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
     cross-fetch: ^3.1.5
-    luxon: ^2.0.2
+    luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
     slugify: ^1.6.4
@@ -29143,17 +29143,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^2.0.2":
-  version: 2.5.2
-  resolution: "luxon@npm:2.5.2"
-  checksum: d8b671ffd2ff0b438af862ac11082a81b3aedd9f8b6a4ca636f944224f8dd381125cd4d274ca0a8aedcaf2cfca0fc2ca96fe4cc1b16a28b7af701afb95c0bff8
-  languageName: node
-  linkType: hard
-
 "luxon@npm:^3.0.0, luxon@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "luxon@npm:3.2.1"
-  checksum: 3fa3def2c5f5d3032b4c46220c4da8aeb467ac979888fc9d2557adcd22195f93516b4ad5909a75862bec8dc6ddc0953b0f38e6d2f4a8ab8450ddc531a83cf20d
+  version: 3.3.0
+  resolution: "luxon@npm:3.3.0"
+  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
   languageName: node
   linkType: hard
 
