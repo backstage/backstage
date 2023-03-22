@@ -27,6 +27,7 @@ import {
   Permission,
   PermissionCondition,
   PermissionCriteria,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import {
@@ -158,6 +159,30 @@ const applyConditions = <TResourceType extends string, TResource>(
   }
 
   return rule.apply(resource, criteria.params ?? {});
+};
+
+/**
+
+ * Takes some permission conditions and returns a definitive authorization result
+ * on the resource to which they apply.
+ *
+ * @public
+ */
+export const createConditionAuthorizer = <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string>[],
+) => {
+  const getRule = createGetRule(rules);
+
+  return (
+    decision: PolicyDecision,
+    resource: TResource | undefined,
+  ): boolean => {
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      return applyConditions(decision.conditions, resource, getRule);
+    }
+
+    return decision.result === AuthorizeResult.ALLOW;
+  };
 };
 
 /**
