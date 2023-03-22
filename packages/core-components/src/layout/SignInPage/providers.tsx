@@ -177,7 +177,10 @@ export const useSignInProviders = (
         };
 
         const handleSignInStarted = () => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.config!.id);
+          localStorage.setItem(
+            PROVIDER_STORAGE_KEY,
+            provider?.config?.id || provider.id,
+          );
         };
 
         const handleSignInFailure = () => {
