@@ -14,9 +14,6 @@ import type { ResolverContext as ResolverContext_2 } from '@backstage/plugin-gra
 export const Catalog: Module;
 
 // @public (undocumented)
-export const catalogSchema: any[];
-
-// @public (undocumented)
 export function createLoader(
   {
     catalog,
@@ -28,9 +25,6 @@ export function createLoader(
 
 // @public (undocumented)
 export const Relation: Module;
-
-// @public (undocumented)
-export const relationSchema: any[];
 
 // @public (undocumented)
 export interface ResolverContext extends ResolverContext_2 {
