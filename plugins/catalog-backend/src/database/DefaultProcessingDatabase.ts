@@ -369,7 +369,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               existingLocationKey: conflictingKey,
               lastConflictAt: DateTime.now().toISO(),
             },
-            metadata: {},
           });
         }
       }
