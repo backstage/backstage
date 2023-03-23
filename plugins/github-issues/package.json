@@ -31,7 +31,7 @@
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.61",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "luxon": "^3.0.0",
     "octokit": "^2.0.4",
     "react-use": "^17.4.0"
