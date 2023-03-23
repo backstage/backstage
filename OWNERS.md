@@ -38,6 +38,18 @@ Scope: Discoverability within Backstage, including the home page, information ar
 | Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
 | Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
 
+### Helm Charts
+
+Team: @backstage/helm-chart-maintainers
+
+Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
+
+| Name                 | Organization | Team | GitHub                                   | Discord        |
+| -------------------- | ------------ | ---- | ---------------------------------------- | -------------- |
+| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | sabre1041#2622 |
+| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | Tumi#4346      |
+| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | vinzscam#6944  |
+
 ### Kubernetes
 
 Team: @backstage/kubernetes-maintainers
