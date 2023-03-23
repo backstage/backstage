@@ -8746,7 +8746,7 @@ __metadata:
     "@types/node": ^16.11.26
     canvas: ^2.10.2
     cross-fetch: ^3.1.5
-    dompurify: ^2.3.6
+    dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
     jss: ~10.10.0
@@ -21580,10 +21580,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.2.7, dompurify@npm:^2.3.6":
-  version: 2.4.3
-  resolution: "dompurify@npm:2.4.3"
-  checksum: b440981f2a38cada2085759cc3d1e2f94571afc34343d011a8a6aa1ad91ae6abf651adbfa4994b0e2283f0ce81f7891cdb04b67d0b234c8d190cb70e9691f026
+"dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
+  version: 2.4.5
+  resolution: "dompurify@npm:2.4.5"
+  checksum: d6d3c3b320f15cdb5b26aa1902c3275a3ab2c3705a9df4420bb94691d7c4df67959ec7b91e486c308320791b0ee000456f042734c45d76721e61c2768eac706e
   languageName: node
   linkType: hard
 
