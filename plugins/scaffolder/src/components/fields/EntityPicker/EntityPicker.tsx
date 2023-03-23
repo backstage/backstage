@@ -96,7 +96,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
-        onChange(ref ? stringifyEntityRef(ref as Entity) : '');
+        // if ref does not exist: pass 'undefined' to trigger validation for non-free solo entries
+        onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
       } else {
         if (reason === 'blur' || reason === 'create-option') {
           // Add in default namespace, etc.
