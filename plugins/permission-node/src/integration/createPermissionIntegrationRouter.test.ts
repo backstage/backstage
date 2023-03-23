@@ -69,23 +69,46 @@ const mockTestRule3Apply = jest
   .fn()
   .mockImplementation((_resource: any) => false);
 const testRule3 = createPermissionRule({
-  name: 'test-rule-3',
+  // simulating a clash of name with test-rule-1 rule of test-resource
+  name: 'test-rule-1',
   description: 'Test rule 3',
   resourceType: 'test-resource-2',
-  apply: mockTestRule2Apply,
+  apply: mockTestRule3Apply,
   toQuery: () => ({}),
 });
 
-const defaultMockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+const defaultMockedGetResources1: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
 >['getResources'] = jest.fn(async resourceRefs =>
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
+const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptions<
+  string,
+  { id: string }
+>['getResources'] = jest.fn(async resourceRefs =>
+  resourceRefs.map(resourceRef => ({ id: resourceRef })),
+);
+
+const mockedResourceOptions = [
+  {
+    resourceType: 'test-resource',
+    permissions: [testPermission],
+    getResources: defaultMockedGetResources1,
+    rules: [testRule1, testRule2],
+  },
+  {
+    resourceType: 'test-resource-2',
+    permissions: [testPermission2],
+    getResources: defaultMockedGetResources2,
+    rules: [testRule3],
+  },
+];
+
 const createApp = (
   mockedGetResources:
-    | typeof defaultMockedGetResources = defaultMockedGetResources,
+    | typeof defaultMockedGetResources1 = defaultMockedGetResources1,
 ) => {
   const router = mockedGetResources
     ? createPermissionIntegrationRouter({
@@ -100,12 +123,13 @@ const createApp = (
 };
 
 const createAppWithResources = (
-  resourceOptions: CreatePermissionIntegrationRouterResourceOptions<
-    string,
-    any
-  >,
+  resourceOptions:
+    | CreatePermissionIntegrationRouterResourceOptions<string, any>
+    | CreatePermissionIntegrationRouterResourceOptions<string, any>[],
 ) => {
-  const router = createPermissionIntegrationRouter(resourceOptions);
+  const router = createPermissionIntegrationRouter(
+    resourceOptions as Parameters<typeof createPermissionIntegrationRouter>[0],
+  );
   return express().use(router);
 };
 
@@ -185,7 +209,7 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
     ])('returns 200/ALLOW when criteria match (case %#)', async conditions => {
-      const response = await request(createApp())
+      let response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -207,6 +231,37 @@ describe('createPermissionIntegrationRouter', () => {
           },
         ],
       });
+
+      expect(defaultMockedGetResources1).toHaveBeenCalled();
+      expect(mockTestRule3Apply).not.toHaveBeenCalled();
+
+      (defaultMockedGetResources1 as jest.Mock).mockClear();
+
+      response = await request(createAppWithResources(mockedResourceOptions))
+        .post('/.well-known/backstage/permissions/apply-conditions')
+        .send({
+          items: [
+            {
+              id: '123',
+              resourceRef: 'default:test/resource',
+              resourceType: 'test-resource',
+              conditions,
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.ALLOW,
+          },
+        ],
+      });
+      expect(defaultMockedGetResources1).toHaveBeenCalled();
+      expect(defaultMockedGetResources2).not.toHaveBeenCalled();
+      expect(mockTestRule3Apply).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -388,10 +443,116 @@ describe('createPermissionIntegrationRouter', () => {
       });
 
       it('calls getResources for all required resources at once', () => {
-        expect(defaultMockedGetResources).toHaveBeenCalledWith([
+        expect(defaultMockedGetResources1).toHaveBeenCalledWith([
           'default:test/resource-1',
           'default:test/resource-2',
           'default:test/resource-3',
+          'default:test/resource-4',
+        ]);
+      });
+    });
+
+    describe('batched requests with different resource types', () => {
+      let response: Response;
+
+      beforeEach(async () => {
+        response = await request(createAppWithResources(mockedResourceOptions))
+          .post('/.well-known/backstage/permissions/apply-conditions')
+          .send({
+            items: [
+              {
+                id: '123',
+                resourceRef: 'default:test/resource-1',
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
+                },
+              },
+              {
+                id: '234',
+                resourceRef: 'default:test/resource-1',
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-2',
+                  resourceType: 'test-resource',
+                },
+              },
+              {
+                id: '345',
+                resourceRef: 'default:test/resource-2',
+                resourceType: 'test-resource-2',
+                conditions: {
+                  not: {
+                    rule: 'test-rule-1',
+                    resourceType: 'test-resource-2',
+                    params: {
+                      foo: 'a',
+                      bar: 1,
+                    },
+                  },
+                },
+              },
+              {
+                id: '456',
+                resourceRef: 'default:test/resource-3',
+                resourceType: 'test-resource',
+                conditions: {
+                  not: {
+                    rule: 'test-rule-2',
+                    resourceType: 'test-resource',
+                  },
+                },
+              },
+              {
+                id: '567',
+                resourceRef: 'default:test/resource-4',
+                resourceType: 'test-resource-2',
+                conditions: {
+                  anyOf: [
+                    {
+                      rule: 'test-rule-1',
+                      resourceType: 'test-resource-2',
+                      params: {
+                        foo: 'a',
+                        bar: 1,
+                      },
+                    },
+                    {
+                      rule: 'test-rule-1',
+                      resourceType: 'test-resource-2',
+                    },
+                  ],
+                },
+              },
+            ],
+          });
+      });
+
+      it('processes batched requests', () => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          items: [
+            { id: '123', result: AuthorizeResult.ALLOW },
+            { id: '234', result: AuthorizeResult.DENY },
+            { id: '345', result: AuthorizeResult.ALLOW },
+            { id: '456', result: AuthorizeResult.ALLOW },
+            { id: '567', result: AuthorizeResult.DENY },
+          ],
+        });
+      });
+
+      it('calls getResources for all required resources at once', () => {
+        expect(defaultMockedGetResources1).toHaveBeenCalledWith([
+          'default:test/resource-1',
+          'default:test/resource-3',
+        ]);
+        expect(defaultMockedGetResources2).toHaveBeenCalledWith([
+          'default:test/resource-2',
           'default:test/resource-4',
         ]);
       });
@@ -675,22 +836,9 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       });
     });
-    it.skip('returns a list of permissions and rules used by a given backend that was created with an array of resource options', async () => {
-      const mockedResourceOptions = [
-        {
-          resourceType: 'test-resource',
-          permissions: [testPermission],
-          rules: [testRule1, testRule2],
-        },
-        {
-          resourceType: 'test-resource-2',
-          permissions: [testPermission2],
-          rules: [testRule3],
-        },
-      ];
-
+    it('returns a list of permissions and rules used by a given backend that was created with an array of resource options', async () => {
       const response = await request(
-        createApp({ resourceOptions: mockedResourceOptions }),
+        createAppWithResources(mockedResourceOptions),
       ).get('/.well-known/backstage/permissions/metadata');
 
       expect(response.status).toEqual(200);
