@@ -170,6 +170,7 @@ its schema. There is a builtin processor that implements this for all known core
 kinds and matches the data against their fixed validation schema. This processor
 can be replaced when building the backend catalog using the `CatalogBuilder`,
 with a processor of your own that validates the data differently.
+This replacement processor must have a name that matches the builtin processor, `BuiltinKindsEntityProcessor`.
 
 This type of extension is high risk, and may have high impact across the
 ecosystem depending on the type of change that is made. It is therefore not
