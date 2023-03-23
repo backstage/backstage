@@ -42,7 +42,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@material-ui/styles": "^4.9.6",
+    "@mui/styles": "^5.0.0",
     "@types/recharts": "^1.8.14",
     "classnames": "^2.2.6",
     "history": "^5.0.0",
