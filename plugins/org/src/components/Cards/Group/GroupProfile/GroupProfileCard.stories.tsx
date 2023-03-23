@@ -139,26 +139,6 @@ const extraDetailsEntity: GroupEntity = {
   relations: [dummyDepartment],
 };
 
-const groupWithTitle: GroupEntity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Group',
-  metadata: {
-    name: 'team-a',
-    description: 'Team A description',
-    title: 'Team A title',
-  },
-  spec: {
-    profile: {
-      email: 'team-a@example.com',
-      picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
-    },
-    type: 'group',
-    children: [],
-  },
-  relations: [dummyDepartment],
-};
-
 export const ExtraDetails = () => (
   <EntityProvider entity={extraDetailsEntity}>
     <Grid container spacing={4}>
