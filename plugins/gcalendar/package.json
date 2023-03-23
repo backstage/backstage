@@ -27,7 +27,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@maxim_mazurok/gapi.client.calendar": "^3.0.20220408",
     "@tanstack/react-query": "^4.1.3",

@@ -43,7 +43,7 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.61",
     "classnames": "^2.2.6",
     "react-use": "^17.2.4"
