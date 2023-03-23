@@ -57,6 +57,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@opentelemetry/api": "^1.3.0",

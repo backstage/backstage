@@ -37,7 +37,7 @@
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "luxon": "^2.0.2",
     "react-use": "^17.2.4",
     "slugify": "^1.6.4"

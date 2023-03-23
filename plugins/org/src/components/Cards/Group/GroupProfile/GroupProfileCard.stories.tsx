@@ -179,11 +179,31 @@ export const UsePeekAheadPopover = () => (
   </EntityProvider>
 );
 
+const groupWithTitle: GroupEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Group',
+  metadata: {
+    name: 'team-a',
+    description: 'Team A description',
+    title: 'Team A title',
+  },
+  spec: {
+    profile: {
+      email: 'team-a@example.com',
+      picture:
+        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+    },
+    type: 'group',
+    children: [],
+  },
+  relations: [dummyDepartment],
+};
+
 export const UseGroupTitle = () => (
   <EntityProvider entity={groupWithTitle}>
     <Grid container spacing={4}>
       <Grid item xs={12} md={4}>
-        <GroupProfileCard variant="gridItem" showLinks usePeekAheadPopover />
+        <GroupProfileCard variant="gridItem" showLinks />
       </Grid>
     </Grid>
   </EntityProvider>

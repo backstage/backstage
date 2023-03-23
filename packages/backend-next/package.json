@@ -29,6 +29,11 @@
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-search-backend": "workspace:^",
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^",
+    "@backstage/plugin-search-backend-module-explore": "workspace:^",
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^"
   },

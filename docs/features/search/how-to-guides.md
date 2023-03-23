@@ -51,7 +51,7 @@ The TechDocs plugin has supported integrations to Search, meaning that it
 provides a default collator factory ready to be used.
 
 The purpose of this guide is to walk you through how to register the
-[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
+[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
 in your App, so that you can get TechDocs documents indexed.
 
 If you have been through the
@@ -369,3 +369,31 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
 ```
 
 There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).
+
+## How to migrate your backend installation to use Search together with the new backend system
+
+> DISCLAIMER: The new backend system is in alpha, and so are the search backend support for the new backend system. We don't recommend you to migrate your backend installations to the new system yet. But if you want to experiment, this is the guide for you!
+
+Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
+
+In packages/backend-next/index.ts
+
+```ts
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
+import { searchModuleElasticsearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch/alpha';
+import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
+import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
+import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
+
+const backend = createBackend();
+// adding the search plugin to the backend
+backend.add(searchPlugin());
+// (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
+backend.add(searchModuleElasticsearchEngine());
+// extending search with collator modules to start index documents, take in optional schedule parameters.
+backend.add(searchModuleCatalogCollator());
+backend.add(searchModuleTechDocsCollator());
+backend.add(searchModuleExploreCollator());
+
+backend.start();
+```

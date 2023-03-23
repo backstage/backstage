@@ -15,7 +15,10 @@
  */
 
 import { entityKindSchemaValidator } from '@backstage/catalog-model';
-import type { TemplateEntityV1beta3 } from './TemplateEntityV1beta3';
+import type {
+  TemplateEntityV1beta3,
+  TemplateParametersV1beta3,
+} from './TemplateEntityV1beta3';
 import schema from './Template.v1beta3.schema.json';
 
 const validator = entityKindSchemaValidator(schema);
@@ -35,6 +38,7 @@ describe('templateEntityV1beta3Validator', () => {
         owner: 'team-b',
         parameters: {
           required: ['owner'],
+          'backstage:permissions': { tags: ['one', 'two'] },
           properties: {
             owner: {
               type: 'string',
@@ -52,6 +56,9 @@ describe('templateEntityV1beta3Validator', () => {
               url: './template',
             },
             if: '${{ parameters.owner }}',
+            'backstage:permissions': {
+              tags: ['one', 'two'],
+            },
           },
         ],
         output: {
@@ -153,5 +160,25 @@ describe('templateEntityV1beta3Validator', () => {
   it('rejects wrong type if', async () => {
     (entity as any).spec.steps[0].if = 5;
     expect(() => validator(entity)).toThrow(/if/);
+  });
+
+  it('rejects parameters with wrong backstage:permissions', async () => {
+    (entity.spec.parameters as TemplateParametersV1beta3)[
+      'backstage:permissions'
+    ]!.tags = true as unknown as [];
+    expect(() => validator(entity)).toThrow(/must be array/);
+
+    (entity.spec.parameters as TemplateParametersV1beta3)[
+      'backstage:permissions'
+    ] = true as {};
+    expect(() => validator(entity)).toThrow(/must be object/);
+  });
+
+  it('rejects steps with wrong backstage:permissions', async () => {
+    entity.spec.steps[0]['backstage:permissions']!.tags = true as unknown as [];
+    expect(() => validator(entity)).toThrow(/must be array/);
+
+    entity.spec.steps[0]['backstage:permissions'] = true as {};
+    expect(() => validator(entity)).toThrow(/must be object/);
   });
 });
