@@ -23,8 +23,8 @@ export type GitlabGroupDescription = {
 };
 
 export type GitlabProjectForkedFrom = {
-  id: number
-}
+  id: number;
+};
 
 export type GitLabProject = {
   id: number;

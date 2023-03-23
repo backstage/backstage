@@ -46,7 +46,11 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; skipReposWithoutExactFileMatch?: boolean; skipForkedRepos?: boolean },
+    options: {
+      logger: Logger;
+      skipReposWithoutExactFileMatch?: boolean;
+      skipForkedRepos?: boolean;
+    },
   ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
@@ -143,7 +147,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
         }
       }
 
-      if (this.skipForkedRepos && project.hasOwnProperty('forked_from_project')) {
+      if (
+        this.skipForkedRepos &&
+        project.hasOwnProperty('forked_from_project')
+      ) {
         continue;
       }
 
