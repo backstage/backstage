@@ -109,3 +109,5 @@ export default async function createPlugin(
 ```
 
 If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.
+
+If you don't want to create location object if the project is a fork, you can set the `skipForkedRepos` option.
