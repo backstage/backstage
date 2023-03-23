@@ -17,7 +17,7 @@ export function createSentryCreateProjectAction(options: {
     slug?: string | undefined;
     authToken?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // (No @packageDocumentation comment for this package)

@@ -22,6 +22,6 @@ export function createFetchRailsAction(options: {
     values: JsonObject;
     imageName?: string | undefined;
   },
-  undefined
+  unknown
 >;
 ```

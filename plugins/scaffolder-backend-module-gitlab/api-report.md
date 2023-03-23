@@ -18,7 +18,7 @@ export const createGitlabProjectAccessTokenAction: (options: {
     scopes: string[];
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -33,7 +33,7 @@ export const createGitlabProjectDeployTokenAction: (options: {
     scopes: string[];
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -52,6 +52,6 @@ export const createGitlabProjectVariableAction: (options: {
     environmentScope: string;
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 ```

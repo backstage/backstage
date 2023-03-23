@@ -20,10 +20,22 @@ import { Schema } from 'jsonschema';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 /** @public */
+export type ActionOutputType<TOutputSchema> = TOutputSchema extends z.ZodType<
+  any,
+  any,
+  infer IReturn
+>
+  ? IReturn
+  : TOutputSchema extends undefined
+  ? undefined
+  : unknown;
+
+/** @public */
 export type TemplateActionOptions<
   TActionInput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
+  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 > = {
   id: string;
   description?: string;
@@ -33,14 +45,7 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (
-    ctx: ActionContext<
-      TActionInput,
-      TOutputSchema extends z.ZodType<any, any, infer IReturn>
-        ? IReturn
-        : undefined
-    >,
-  ) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 /**
@@ -55,11 +60,14 @@ export const createTemplateAction = <
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TParams,
-  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn>
-    ? IReturn
-    : undefined,
+  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 >(
-  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+  action: TemplateActionOptions<
+    TActionInput,
+    TInputSchema,
+    TOutputSchema,
+    TActionOutput
+  >,
 ): TemplateAction<TActionInput, TActionOutput> => {
   const inputSchema =
     action.schema?.input && 'safeParseAsync' in action.schema.input

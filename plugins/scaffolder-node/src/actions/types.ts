@@ -28,7 +28,7 @@ import { Schema } from 'jsonschema';
  */
 export type ActionContext<
   TActionInput extends JsonObject,
-  TActionOutput extends JsonObject | undefined = undefined,
+  TActionOutput extends JsonObject | unknown | undefined = unknown,
 > = {
   logger: Logger;
   logStream: Writable;
@@ -36,8 +36,16 @@ export type ActionContext<
   workspacePath: string;
   input: TActionInput;
   output<KEY extends keyof TActionOutput>(
-    name: TActionOutput extends undefined ? string : KEY,
-    value: TActionOutput extends undefined ? JsonValue : TActionOutput[KEY],
+    name: TActionOutput extends JsonObject
+      ? KEY
+      : TActionOutput extends undefined
+      ? never
+      : string,
+    value: TActionOutput extends JsonObject
+      ? TActionOutput[KEY]
+      : TActionOutput extends undefined
+      ? never
+      : JsonValue,
   ): void;
 
   /**
@@ -74,10 +82,7 @@ export type ActionContext<
 };
 
 /** @public */
-export type TemplateAction<
-  TActionInput = unknown,
-  TActionOutput = undefined,
-> = {
+export type TemplateAction<TActionInput = unknown, TActionOutput = unknown> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];

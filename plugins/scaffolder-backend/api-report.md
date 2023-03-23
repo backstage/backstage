@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { ActionOutputType } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
@@ -79,7 +80,7 @@ export function createCatalogRegisterAction(options: {
       catalogInfoPath?: string | undefined;
       optional?: boolean | undefined;
     },
-  undefined
+  unknown
 >;
 
 // @public
@@ -88,7 +89,7 @@ export function createCatalogWriteAction(): TemplateAction_2<
     filePath?: string | undefined;
     entity: {};
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -97,7 +98,7 @@ export function createDebugLogAction(): TemplateAction_2<
     message?: string | undefined;
     listWorkspace?: boolean | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -124,7 +125,7 @@ export function createFetchPlainAction(options: {
     url: string;
     targetPath?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -136,7 +137,7 @@ export function createFetchPlainFileAction(options: {
     url: string;
     targetPath: string;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -156,7 +157,7 @@ export function createFetchTemplateAction(options: {
     cookiecutterCompat?: boolean | undefined;
     replace?: boolean | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -164,7 +165,7 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
   {
     files: string[];
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -176,7 +177,7 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
       overwrite?: boolean;
     }>;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -195,7 +196,7 @@ export function createGithubActionsDispatchAction(options: {
       | undefined;
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -209,7 +210,7 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -297,7 +298,7 @@ export function createGithubRepoCreateAction(options: {
     topics?: string[] | undefined;
     requireCommitSigning?: boolean | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -339,7 +340,7 @@ export function createGithubRepoPushAction(options: {
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -358,7 +359,7 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -376,7 +377,7 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public @deprecated
@@ -396,7 +397,7 @@ export function createPublishBitbucketAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -412,7 +413,7 @@ export function createPublishBitbucketCloudAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -432,7 +433,7 @@ export function createPublishBitbucketServerAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -449,7 +450,7 @@ export function createPublishGerritAction(options: {
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -465,7 +466,7 @@ export function createPublishGerritReviewAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -541,7 +542,7 @@ export function createPublishGithubAction(options: {
     topics?: string[] | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -560,7 +561,7 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -580,7 +581,7 @@ export function createPublishGitlabAction(options: {
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -600,7 +601,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
   },
-  undefined
+  unknown
 >;
 
 // @public
@@ -614,17 +615,20 @@ export const createTemplateAction: <
   TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
     ? IReturn
     : TParams,
-  TActionOutput = TOutputSchema extends ZodType<any, any, infer IReturn_1>
-    ? IReturn_1
-    : undefined,
+  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 >(
-  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+  action: TemplateActionOptions<
+    TActionInput,
+    TInputSchema,
+    TOutputSchema,
+    TActionOutput
+  >,
 ) => TemplateAction_2<TActionInput, TActionOutput>;
 
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction_2<HumanDuration, undefined>;
+}): TemplateAction_2<HumanDuration, unknown>;
 
 // @public
 export type CreateWorkerOptions = {

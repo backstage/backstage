@@ -18,7 +18,7 @@ import { z } from 'zod';
 // @public
 export type ActionContext<
   TActionInput extends JsonObject,
-  TActionOutput extends JsonObject | undefined = undefined,
+  TActionOutput extends JsonObject | unknown | undefined = unknown,
 > = {
   logger: Logger;
   logStream: Writable;
@@ -26,8 +26,16 @@ export type ActionContext<
   workspacePath: string;
   input: TActionInput;
   output<KEY extends keyof TActionOutput>(
-    name: TActionOutput extends undefined ? string : KEY,
-    value: TActionOutput extends undefined ? JsonValue : TActionOutput[KEY],
+    name: TActionOutput extends JsonObject
+      ? KEY
+      : TActionOutput extends undefined
+      ? never
+      : string,
+    value: TActionOutput extends JsonObject
+      ? TActionOutput[KEY]
+      : TActionOutput extends undefined
+      ? never
+      : JsonValue,
   ): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
@@ -39,6 +47,17 @@ export type ActionContext<
   signal?: AbortSignal;
 };
 
+// @public (undocumented)
+export type ActionOutputType<TOutputSchema> = TOutputSchema extends z.ZodType<
+  any,
+  any,
+  infer IReturn
+>
+  ? IReturn
+  : TOutputSchema extends undefined
+  ? undefined
+  : unknown;
+
 // @public
 export const createTemplateAction: <
   TParams,
@@ -47,11 +66,14 @@ export const createTemplateAction: <
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TParams,
-  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn_1>
-    ? IReturn_1
-    : undefined,
+  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 >(
-  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
+  action: TemplateActionOptions<
+    TActionInput,
+    TInputSchema,
+    TOutputSchema,
+    TActionOutput
+  >,
 ) => TemplateAction<TActionInput, TActionOutput>;
 
 // @alpha
@@ -69,10 +91,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<
-  TActionInput = unknown,
-  TActionOutput = undefined,
-> = {
+export type TemplateAction<TActionInput = unknown, TActionOutput = unknown> = {
   id: string;
   description?: string;
   examples?: {
@@ -92,6 +111,7 @@ export type TemplateActionOptions<
   TActionInput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
+  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 > = {
   id: string;
   description?: string;
@@ -104,13 +124,6 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (
-    ctx: ActionContext<
-      TActionInput,
-      TOutputSchema extends z.ZodType<any, any, infer IReturn>
-        ? IReturn
-        : undefined
-    >,
-  ) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
 ```
