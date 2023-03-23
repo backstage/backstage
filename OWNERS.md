@@ -24,6 +24,16 @@ Team: @backstage/catalog-maintainers
 | ---- | ------------ | --------- | ---------------------------- | ------- |
 | TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
 
+### Kubernetes
+
+Team: @backstage/kubernetes-maintainers
+
+Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
+
+| Name           | Organization | Team | GitHub                                   | Discord      |
+| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
+
 ### TechDocs
 
 Team: @backstage/techdocs-maintainers

@@ -61,8 +61,8 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/jenkins-backend                            @backstage/maintainers @timja
 /plugins/kafka                                      @backstage/maintainers @nirga @andrewthauer
 /plugins/kafka-backend                              @backstage/maintainers @nirga @andrewthauer
-/plugins/kubernetes                                 @backstage/maintainers @backstage/warpspeed
-/plugins/kubernetes-*                               @backstage/maintainers @backstage/warpspeed
+/plugins/kubernetes                                 @backstage/maintainers @backstage/kubernetes-maintainers
+/plugins/kubernetes-*                               @backstage/maintainers @backstage/kubernetes-maintainers
 /plugins/microsoft-calendar                         @backstage/maintainers @abhay-soni-developer @NishkarshRaj
 /plugins/newrelic-dashboard                         @backstage/maintainers @mufaddal7
 /plugins/playlist                                   @backstage/maintainers @kuangp
