@@ -23,8 +23,8 @@ interface IEntity @inherit(interface: "Node") {
   namespace: String! @field(at: "metadata.namespace", default: "default")
   title: String! @field(at: "metadata.title", default: "")
   description: String! @field(at: "metadata.description", default: "")
-  tags: [String] @field(at: "metadata.tags")
-  links: [EntityLink] @field(at: "metadata.links")
+  tags: [String!] @field(at: "metadata.tags")
+  links: [EntityLink!] @field(at: "metadata.links")
 }
 
 type EntityLink {
@@ -37,7 +37,7 @@ interface ILocation
   @inherit(interface: "IEntity", when: "kind", is: "Location") {
   type: String @field(at: "spec.type")
   target: String @field(at: "spec.target")
-  targets: [String] @field(at: "spec.targets")
+  targets: [String!] @field(at: "spec.targets")
 }
 
 interface IAPI @inherit(interface: "IEntity", when: "kind", is: "API") {
@@ -94,7 +94,7 @@ type Step {
 interface ITemplate
   @inherit(interface: "IEntity", when: "kind", is: "Template") {
   parameters: JSONObject @field(at: "spec.parameters")
-  steps: [Step]! @field(at: "spec.steps")
+  steps: [Step!]! @field(at: "spec.steps")
   output: JSONObject @field(at: "spec.output")
   owner: Owner @relation(name: "ownedBy")
 }
