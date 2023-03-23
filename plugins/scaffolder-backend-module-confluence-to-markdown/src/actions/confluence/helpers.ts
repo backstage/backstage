@@ -61,7 +61,7 @@ export const fetchConfluence = async (relativeUrl: string, config: Config) => {
     throw await ResponseError.fromResponse(response);
   }
 
-  return response.json() as Promise<any>;
+  return response.json();
 };
 
 export const getAndWriteAttachments = async (

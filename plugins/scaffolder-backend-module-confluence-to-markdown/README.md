@@ -111,12 +111,6 @@ spec:
         branchName: confluence-to-markdown
         title: Confluence to Markdown
         description: PR for converting confluence page to mkdocs
-    - id: merge
-      name: Merge PR
-      action: publish:github:merge-pull-request
-      input:
-        prUrl: ${{ steps['publish'].output.remoteUrl }}
-        forceAdmin: true
 ```
 
 Replace `<GITHUB_BASE_URL>` with your GitHub URL without `https://`.
