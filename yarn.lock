@@ -7608,6 +7608,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    fs-extra: 10.1.0
+    git-url-parse: ^13.1.0
+    mock-fs: ^5.2.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    node-html-markdown: ^1.3.0
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter"
@@ -20407,6 +20430,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-select@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "css-select@npm:5.1.0"
+  dependencies:
+    boolbase: ^1.0.0
+    css-what: ^6.1.0
+    domhandler: ^5.0.2
+    domutils: ^3.0.1
+    nth-check: ^2.0.1
+  checksum: 2772c049b188d3b8a8159907192e926e11824aea525b8282981f72ba3f349cf9ecd523fdf7734875ee2cb772246c22117fc062da105b6d59afe8dcd5c99c9bda
+  languageName: node
+  linkType: hard
+
 "css-to-react-native@npm:^3.0.0":
   version: 3.0.0
   resolution: "css-to-react-native@npm:3.0.0"
@@ -20458,6 +20494,13 @@ __metadata:
   version: 5.1.0
   resolution: "css-what@npm:5.1.0"
   checksum: 0b75d1bac95c885c168573c85744a6c6843d8c33345f54f717218b37ea6296b0e99bb12105930ea170fd4a921990392a7c790c16c585c1d8960c49e2b7ec39f7
+  languageName: node
+  linkType: hard
+
+"css-what@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "css-what@npm:6.1.0"
+  checksum: b975e547e1e90b79625918f84e67db5d33d896e6de846c9b584094e529f0c63e2ab85ee33b9daffd05bff3a146a1916bec664e18bb76dd5f66cbff9fc13b2bbe
   languageName: node
   linkType: hard
 
@@ -24459,7 +24502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"git-url-parse@npm:^13.0.0":
+"git-url-parse@npm:^13.0.0, git-url-parse@npm:^13.1.0":
   version: 13.1.0
   resolution: "git-url-parse@npm:13.1.0"
   dependencies:
@@ -25143,7 +25186,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"he@npm:^1.2.0":
+"he@npm:1.2.0, he@npm:^1.2.0":
   version: 1.2.0
   resolution: "he@npm:1.2.0"
   bin:
@@ -30905,6 +30948,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-html-markdown@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "node-html-markdown@npm:1.3.0"
+  dependencies:
+    node-html-parser: ^6.1.1
+  checksum: 303affd75bf11e92f004047e283aa05da5c8ae8696c1f28f811e9f61762c55b4480e0e5986a9a4b399791485b835380af8ab0554ebf867d6cf9be362abedcf5d
+  languageName: node
+  linkType: hard
+
+"node-html-parser@npm:^6.1.1":
+  version: 6.1.5
+  resolution: "node-html-parser@npm:6.1.5"
+  dependencies:
+    css-select: ^5.1.0
+    he: 1.2.0
+  checksum: b54257b31954be17d473c86a2fede53d5e238708f3d88577c98881c28ab66013fd37044903f6f3cd662b56d882681fb511bca75a80a80b62f7111b32b39eebae
+  languageName: node
+  linkType: hard
+
 "node-int64@npm:^0.4.0":
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
@@ -31205,12 +31267,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nth-check@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "nth-check@npm:2.0.1"
+"nth-check@npm:^2.0.0, nth-check@npm:^2.0.1":
+  version: 2.1.1
+  resolution: "nth-check@npm:2.1.1"
   dependencies:
     boolbase: ^1.0.0
-  checksum: 5386d035c48438ff304fe687704d93886397349d1bed136de97aeae464caba10e8ffac55a04b215b86b3bc8897f33e0a5aa1045a9d8b2f251ae61b2a3ad3e450
+  checksum: 5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
   languageName: node
   linkType: hard
 
