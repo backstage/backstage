@@ -24,6 +24,20 @@ Team: @backstage/catalog-maintainers
 | ---- | ------------ | --------- | ---------------------------- | ------- |
 | TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
 
+### Discoverability
+
+Team: @backstage/discoverability-maintainers
+
+Scope: Discoverability within Backstage, including the home page, information architecture, and search
+
+| Name                     | Organization | Team | GitHub                                   | Discord            |
+| ------------------------ | ------------ | ---- | ---------------------------------------- | ------------------ |
+| Avantika Iyer            | Spotify      | BUX  | [tikabom](http://github.com/tikabom)     | -                  |
+| Camila Belo              | Spotify      | BUX  | [camilaibs](http://github.com/camilaibs) | Camila Loiola#0226 |
+| Emma Indal               | Spotify      | BUX  | [emmaindal](http://github.com/emmaindal) | emmaindal#7503     |
+| Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
+| Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
+
 ### Kubernetes
 
 Team: @backstage/kubernetes-maintainers
@@ -38,17 +52,12 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 
 Team: @backstage/techdocs-maintainers
 
-| Name | Organization | Team         | GitHub                       | Discord |
-| ---- | ------------ | ------------ | ---------------------------- | ------- |
-| TBD  | Spotify      | Pulp Fiction | [TBD](http://github.com/TBD) | -       |
+Scope: The TechDocs plugin and related tooling
 
-### Search
-
-Team: @backstage/search-maintainers
-
-| Name | Organization | Team | GitHub                       | Discord |
-| ---- | ------------ | ---- | ---------------------------- | ------- |
-| TBD  | Spotify      | BUX  | [TBD](http://github.com/TBD) | -       |
+| Name                     | Organization | Team         | GitHub                                           | Discord            |
+| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
+| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
+| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
 
 ## Sponsors
 
