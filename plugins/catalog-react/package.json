@@ -62,6 +62,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "classnames": "^2.2.6",
     "jwt-decode": "^3.1.0",
+    "lodash": "^4.17.21",
     "material-ui-popup-state": "^1.9.3",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
