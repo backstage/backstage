@@ -88,7 +88,8 @@ const AdrListContainer = (props: {
     switch (status) {
       case 'accepted':
         return 'primary';
-      case 'rejected' || 'deprecated':
+      case 'rejected':
+      case 'deprecated':
         return 'secondary';
       default:
         return 'default';
