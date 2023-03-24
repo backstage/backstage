@@ -13,11 +13,13 @@ enum Lifecycle {
   DEPRECATED
 }
 
-union Ownable = IAPI | IComponent | IDomain | IResource | ISystem | ITemplate
-union Dependency = IComponent | IResource
-union Owner = IUser | IGroup
+union Ownable = API | Component | Domain | Resource | System | Template
+union Dependency = Component | Resource
+union Owner = User | Group
 
-interface IEntity @inherit(interface: "Node") {
+interface Entity
+  @implements(interface: "Node")
+  @discriminates(with: "kind", opaqueType: "OpaqueEntity") {
   name: String! @field(at: "metadata.name")
   kind: String! @field(at: "kind")
   namespace: String! @field(at: "metadata.namespace", default: "default")
@@ -33,54 +35,69 @@ type EntityLink {
   icon: String
 }
 
-interface ILocation
-  @inherit(interface: "IEntity", when: "kind", is: "Location") {
+interface Location
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueLocation")
+  @discriminationAlias(value: "url", type: "URLLocation")
+  @discriminationAlias(value: "file", type: "FileLocation") {
   type: String @field(at: "spec.type")
   target: String @field(at: "spec.target")
   targets: [String!] @field(at: "spec.targets")
 }
 
-interface IAPI @inherit(interface: "IEntity", when: "kind", is: "API") {
+interface API
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueAPI")
+  @discriminationAlias(value: "openapi", type: "OpenAPI")
+  @discriminationAlias(value: "asyncapi", type: "AsyncAPI")
+  @discriminationAlias(value: "graphql", type: "GraphQL")
+  @discriminationAlias(value: "grpc", type: "GRPC") {
   lifecycle: Lifecycle! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   definition: String! @field(at: "spec.definition")
-  system: ISystem @relation(name: "partOf")
-  consumers: Connection @relation(name: "apiConsumedBy", nodeType: "IComponent")
-  providers: Connection @relation(name: "apiProvidedBy", nodeType: "IComponent")
+  system: System @relation(name: "partOf")
+  consumers: Connection @relation(name: "apiConsumedBy", nodeType: "Component")
+  providers: Connection @relation(name: "apiProvidedBy", nodeType: "Component")
 }
 
-interface IComponent
-  @inherit(interface: "IEntity", when: "kind", is: "Component") {
+interface Component
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueComponent")
+  @discriminationAlias(value: "service", type: "Service")
+  @discriminationAlias(value: "website", type: "Website")
+  @discriminationAlias(value: "library", type: "Library") {
   lifecycle: Lifecycle! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
-  system: ISystem @relation(name: "partOf", kind: "system")
-  component: IComponent @relation(name: "partOf", kind: "component")
-  subComponents: Connection @relation(name: "hasPart", nodeType: "IComponent")
-  providesApi: Connection @relation(name: "providesApi", nodeType: "IAPI")
-  consumesApi: Connection @relation(name: "consumesApi", nodeType: "IAPI")
+  system: System @relation(name: "partOf", kind: "system")
+  component: Component @relation(name: "partOf", kind: "component")
+  subComponents: Connection @relation(name: "hasPart", nodeType: "Component")
+  providesApi: Connection @relation(name: "providesApi", nodeType: "API")
+  consumesApi: Connection @relation(name: "consumesApi", nodeType: "API")
   dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
 }
 
-interface IDomain @inherit(interface: "IEntity", when: "kind", is: "Domain") {
+type Domain @implements(interface: "Entity") {
   owner: Owner! @relation(name: "ownedBy")
-  systems: Connection @relation(name: "hasPart", nodeType: "ISystem")
+  systems: Connection @relation(name: "hasPart", nodeType: "System")
 }
 
-interface IResource
-  @inherit(interface: "IEntity", when: "kind", is: "Resource") {
+interface Resource
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueResource")
+  @discriminationAlias(value: "database", type: "Database") {
   owner: Owner! @relation(name: "ownedBy")
   dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
   dependents: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
-  system: ISystem @relation(name: "partOf")
+  system: System @relation(name: "partOf")
 }
 
-interface ISystem @inherit(interface: "IEntity", when: "kind", is: "System") {
+type System @implements(interface: "Entity") {
   owner: Owner! @relation(name: "ownedBy")
-  domain: IDomain @relation(name: "partOf")
+  domain: Domain @relation(name: "partOf")
   components: Connection
-    @relation(name: "hasPart", nodeType: "IComponent", kind: "component")
+    @relation(name: "hasPart", nodeType: "Component", kind: "component")
   resources: Connection
-    @relation(name: "hasPart", nodeType: "IResource", kind: "resource")
+    @relation(name: "hasPart", nodeType: "Resource", kind: "resource")
 }
 
 type Step {
@@ -91,32 +108,39 @@ type Step {
   if: JSON
 }
 
-interface ITemplate
-  @inherit(interface: "IEntity", when: "kind", is: "Template") {
+interface Template
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueTemplate") {
   parameters: JSONObject @field(at: "spec.parameters")
   steps: [Step!]! @field(at: "spec.steps")
   output: JSONObject @field(at: "spec.output")
   owner: Owner @relation(name: "ownedBy")
 }
 
-interface IGroup @inherit(interface: "IEntity", when: "kind", is: "Group") {
+interface Group
+  @implements(interface: "Entity")
+  @discriminates(with: "spec.type", opaqueType: "OpaqueGroup")
+  @discriminationAlias(value: "team", type: "Team")
+  @discriminationAlias(value: "sub-department", type: "SubDepartment")
+  @discriminationAlias(value: "department", type: "Department")
+  @discriminationAlias(value: "organization", type: "Organization") {
   displayName: String @field(at: "spec.profile.displayName")
   email: String @field(at: "spec.profile.email")
   picture: String @field(at: "spec.profile.picture")
-  parent: IGroup @relation(name: "childOf")
-  children: Connection @relation(name: "parentOf", nodeType: "IGroup")
-  members: Connection @relation(name: "hasMember", nodeType: "IUser")
+  parent: Group @relation(name: "childOf")
+  children: Connection @relation(name: "parentOf", nodeType: "Group")
+  members: Connection @relation(name: "hasMember", nodeType: "User")
   ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
 }
 
-interface IUser @inherit(interface: "IEntity", when: "kind", is: "User") {
+type User @implements(interface: "Entity") {
   displayName: String @field(at: "spec.profile.displayName")
   email: String @field(at: "spec.profile.email")
   picture: String @field(at: "spec.profile.picture")
-  memberOf: Connection @relation(name: "memberOf", nodeType: "IGroup")
+  memberOf: Connection @relation(name: "memberOf", nodeType: "Group")
   ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
 }
 
 extend type Query {
-  entity(kind: String!, name: String!, namespace: String): IEntity
+  entity(kind: String!, name: String!, namespace: String): Entity
 }
