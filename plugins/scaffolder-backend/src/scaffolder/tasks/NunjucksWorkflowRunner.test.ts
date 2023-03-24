@@ -698,6 +698,58 @@ describe('DefaultWorkflowRunner', () => {
         repo: 'repo',
       });
     });
+
+    it('provides the parseEntityRef filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | parseEntityRef }}',
+        },
+        parameters: {
+          entity: 'component:default/ben',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual({
+        kind: 'component',
+        namespace: 'default',
+        name: 'ben',
+      });
+    });
+
+    it('provides the pick filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | parseEntityRef | pick("kind") }}',
+        },
+        parameters: {
+          entity: 'component:default/ben',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
+    });
   });
 
   describe('dry run', () => {
