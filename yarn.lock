@@ -8020,7 +8020,6 @@ __metadata:
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
     "@types/zen-observable": ^0.8.0
-    ajv: ^8.12.0
     azure-devops-node-api: ^11.0.1
     command-exists: ^1.2.9
     compression: ^1.7.4

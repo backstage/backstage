@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Ajv from 'ajv';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
@@ -36,7 +35,19 @@ export const createTemplatePermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE
 >();
 
-const ajv = new Ajv({ allErrors: true });
+export const hasTag = createTemplatePermissionRule({
+  name: 'HAS_TAG',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  description: `Match parameters or steps with the given tag`,
+  paramsSchema: z.object({
+    tag: z.string().describe('Name of the tag to match on'),
+  }),
+  apply: (resource, { tag }) => {
+    return resource['backstage:permissions']?.tags?.includes(tag) ?? false;
+  },
+  toQuery: () => ({}),
+});
+
 export const createActionPermissionRule = makeCreatePermissionRule<
   {
     action: string;
@@ -55,39 +66,6 @@ export const hasActionId = createActionPermissionRule({
   }),
   apply: (resource, { actionId }) => {
     return resource.action === actionId;
-  },
-  toQuery: () => ({}),
-});
-
-export const matchesInput = createActionPermissionRule({
-  name: 'MATCHES_INPUT',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  description: `Matches actionId and the input given`,
-  paramsSchema: z.object({
-    action: z.string().describe('Name of the actionId to match on'),
-    input: z
-      .any()
-      .optional()
-      .describe('JSON schema to validate input against')
-      .superRefine((value, ctx) => {
-        if (value && ajv.validateSchema(value)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Invalid JSON schema',
-          });
-        }
-      }),
-  }),
-  apply: (resource, { action, input }) => {
-    if (resource.action !== action) {
-      return true;
-    }
-
-    if (!input) {
-      return true;
-    }
-
-    return ajv.validate(input, resource.input);
   },
   toQuery: () => ({}),
 });
@@ -122,18 +100,5 @@ export const hasInputProperty = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasTag = createTemplatePermissionRule({
-  name: 'HAS_TAG',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  description: `Match parameters or steps with the given tag`,
-  paramsSchema: z.object({
-    tag: z.string().describe('Name of the tag to match on'),
-  }),
-  apply: (resource, { tag }) => {
-    return resource['backstage:permissions']?.tags?.includes(tag) ?? false;
-  },
-  toQuery: () => ({}),
-});
-
 export const scaffolderTemplateRules = { hasTag };
-export const scaffolderActionRules = { matchesInput, hasInputProperty };
+export const scaffolderActionRules = { hasActionId, hasInputProperty };
