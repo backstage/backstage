@@ -37,7 +37,22 @@ Optionally you can also export the following environment variables `AWS_ACCESS_K
 
 Second, install the [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/).
 
+Then we need to execute the following commands, to set Pulumi up:
+
+```bash
+$ pulumi login --local
+$ export PULUMI_CONFIG_PASSPHRASE="<your-secret>"
+```
+
+By using `pulumi login --local` we are making sure that Pulumi stores our state on the local file disk. The environment variable `PULUMI_CONFIG_PASSPHRASE` is used by Pulumi to generate a unique key for your stack
+
 ## Deploying your instance on Lightsail
+
+:::warning
+
+Make sure that Docker is running before you start with this section.
+
+:::
 
 After you have made your changes to your local instance, it's time to deploy it on Lightsail.
 
