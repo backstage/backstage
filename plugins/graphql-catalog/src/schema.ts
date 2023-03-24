@@ -17,4 +17,4 @@ import { transformSchema } from '@backstage/plugin-graphql-common';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { Catalog } from './catalog';
 
-export default printSchemaWithDirectives(transformSchema([Catalog]));
+export const schema = printSchemaWithDirectives(transformSchema([Catalog]));
