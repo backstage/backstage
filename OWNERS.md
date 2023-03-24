@@ -25,7 +25,7 @@ Scope: The catalog plugin and catalog model
 | Name           | Organization | Team      | GitHub                                   | Discord          |
 | -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
 | Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
-| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | -                |
+| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
 | Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
 | Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
 
