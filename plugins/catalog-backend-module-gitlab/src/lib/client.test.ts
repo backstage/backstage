@@ -18,9 +18,10 @@ import { ConfigReader } from '@backstage/config';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
-import { rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import { graphql, rest } from 'msw';
+import { setupServer, SetupServer } from 'msw/node';
 import { GitLabClient, paginated } from './client';
+import { GitLabGroup, GitLabUser } from './types';
 
 const server = setupServer();
 setupRequestMockHandlers(server);
@@ -30,12 +31,13 @@ const MOCK_CONFIG = readGitLabIntegrationConfig(
     host: 'example.com',
     token: 'test-token',
     apiBaseUrl: 'https://example.com/api/v4',
+    baseUrl: 'https://example.com',
   }),
 );
 const FAKE_PAGED_ENDPOINT = `/some-endpoint`;
 const FAKE_PAGED_URL = `${MOCK_CONFIG.apiBaseUrl}${FAKE_PAGED_ENDPOINT}`;
 
-function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
+function setupFakeFourPageURL(srv: SetupServer, url: string) {
   srv.use(
     rest.get(url, (req, res, ctx) => {
       const page = req.url.searchParams.get('page');
@@ -55,7 +57,7 @@ function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
 }
 
 function setupFakeGroupProjectsEndpoint(
-  srv: SetupServerApi,
+  srv: SetupServer,
   apiBaseUrl: string,
   groupID: string,
 ) {
@@ -77,7 +79,7 @@ function setupFakeGroupProjectsEndpoint(
 }
 
 function setupFakeInstanceProjectsEndpoint(
-  srv: SetupServerApi,
+  srv: SetupServer,
   apiBaseUrl: string,
 ) {
   srv.use(
@@ -103,7 +105,7 @@ function setupFakeInstanceProjectsEndpoint(
   );
 }
 
-function setupFakeHasFileEndpoint(srv: SetupServerApi, apiBaseUrl: string) {
+function setupFakeHasFileEndpoint(srv: SetupServer, apiBaseUrl: string) {
   srv.use(
     rest.head(
       `${apiBaseUrl}/projects/group%2Frepo/repository/files/catalog-info.yaml`,
@@ -257,6 +259,228 @@ describe('GitLabClient', () => {
         allProjects.push(project);
       }
       expect(allProjects).toHaveLength(2);
+    });
+  });
+
+  it('listUsers gets all users in the instance', async () => {
+    server.use(
+      rest.get(`${MOCK_CONFIG.apiBaseUrl}/users`, (_, res, ctx) =>
+        res(
+          ctx.set('x-next-page', ''),
+          ctx.json([
+            {
+              id: 1,
+              username: 'test1',
+              name: 'Test Testit',
+              state: 'active',
+              avatar_url: 'https://secure.gravatar.com/',
+              web_url: 'https://gitlab.example/test1',
+              created_at: '2023-01-19T07:27:03.333Z',
+              bio: '',
+              location: null,
+              public_email: null,
+              skype: '',
+              linkedin: '',
+              twitter: '',
+              website_url: '',
+              organization: null,
+              job_title: '',
+              pronouns: null,
+              bot: false,
+              work_information: null,
+              followers: 0,
+              following: 0,
+              is_followed: false,
+              local_time: null,
+              last_sign_in_at: '2023-01-19T07:27:49.601Z',
+              confirmed_at: '2023-01-19T07:27:02.905Z',
+              last_activity_on: '2023-01-19',
+              email: 'test@example.com',
+              theme_id: 1,
+              color_scheme_id: 1,
+              projects_limit: 100000,
+              current_sign_in_at: '2023-01-19T09:09:10.676Z',
+              identities: [],
+              can_create_group: true,
+              can_create_project: true,
+              two_factor_enabled: false,
+              external: false,
+              private_profile: false,
+              commit_email: 'test@example.com',
+              is_admin: false,
+              note: '',
+            },
+          ]),
+        ),
+      ),
+    );
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const allUsers: GitLabUser[] = [];
+    for await (const user of paginated(
+      options => client.listUsers(options),
+      {},
+    )) {
+      allUsers.push(user);
+    }
+
+    expect(allUsers).toMatchObject([
+      {
+        id: 1,
+        username: 'test1',
+        email: 'test@example.com',
+        name: 'Test Testit',
+        state: 'active',
+        web_url: 'https://gitlab.example/test1',
+        avatar_url: 'https://secure.gravatar.com/',
+      },
+    ]);
+  });
+
+  it('listGroups gets all groups in the instance', async () => {
+    server.use(
+      rest.get(`${MOCK_CONFIG.apiBaseUrl}/groups`, (_, res, ctx) =>
+        res(
+          ctx.set('x-next-page', ''),
+          ctx.json([
+            {
+              id: 1,
+              web_url: 'https://gitlab.example/groups/group1',
+              name: 'group1',
+              path: 'group1',
+              description: '',
+              visibility: 'internal',
+              share_with_group_lock: false,
+              require_two_factor_authentication: false,
+              two_factor_grace_period: 48,
+              project_creation_level: 'developer',
+              auto_devops_enabled: null,
+              subgroup_creation_level: 'owner',
+              emails_disabled: null,
+              mentions_disabled: null,
+              lfs_enabled: true,
+              default_branch_protection: 2,
+              avatar_url: null,
+              request_access_enabled: false,
+              full_name: '8020',
+              full_path: '8020',
+              created_at: '2017-06-19T06:42:34.160Z',
+              parent_id: null,
+            },
+          ]),
+        ),
+      ),
+    );
+    const client = new GitLabClient({
+      config: MOCK_CONFIG,
+      logger: getVoidLogger(),
+    });
+
+    const allGroups: GitLabGroup[] = [];
+    for await (const group of paginated(
+      options => client.listGroups(options),
+      {},
+    )) {
+      allGroups.push(group);
+    }
+
+    expect(allGroups).toMatchObject([
+      {
+        id: 1,
+        name: 'group1',
+        full_path: '8020',
+        description: '',
+        parent_id: null,
+      },
+    ]);
+  });
+
+  describe('getGroupMembers', () => {
+    it('gets member IDs', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: [{ user: { id: 'gid://gitlab/User/1' } }],
+                    pageInfo: {
+                      endCursor: 'end',
+                      hasNextPage: false,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const members = await client.getGroupMembers('group1');
+
+      expect(members).toEqual([1]);
+    });
+
+    it('rejects when GraphQL returns errors', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((_, res, ctx) =>
+            res(
+              ctx.errors([
+                { message: 'Unexpected end of document', locations: [] },
+              ]),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      await expect(() => client.getGroupMembers('group1')).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+
+    it('traverses multi-page results', async () => {
+      server.use(
+        graphql
+          .link(`${MOCK_CONFIG.baseUrl}/api/graphql`)
+          .operation((req, res, ctx) =>
+            res(
+              ctx.data({
+                group: {
+                  groupMembers: {
+                    nodes: req.variables.endCursor
+                      ? [{ user: { id: 'gid://gitlab/User/2' } }]
+                      : [{ user: { id: 'gid://gitlab/User/1' } }],
+                    pageInfo: {
+                      endCursor: req.variables.endCursor ? 'end' : 'next',
+                      hasNextPage: !req.variables.endCursor,
+                    },
+                  },
+                },
+              }),
+            ),
+          ),
+      );
+      const client = new GitLabClient({
+        config: MOCK_CONFIG,
+        logger: getVoidLogger(),
+      });
+
+      const members = await client.getGroupMembers('group1');
+
+      expect(members).toEqual([1, 2]);
     });
   });
 });

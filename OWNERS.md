@@ -1,43 +1,79 @@
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines.
 - See [GOVERNANCE.md](GOVERNANCE.md) for governance guidelines and responsibilities.
 
-This page lists all active sponsors and maintainers.
+## Core Maintainers
 
-# Sponsors
+Team: @backstage/maintainers
 
-- Niklas Gustavsson ([protocol7](https://github.com/protocol7)) (ngn@spotify.com)
-- Dave Zolotusky ([dzolotusky](https://github.com/dzolotusky)) (dzolo@spotify.com)
-- Lee Mills ([leemills83](https://github.com/leemills83)) (leem@spotify.com)
+| Maintainer      | Organization | GitHub                                          | Discord       |
+| --------------- | ------------ | ----------------------------------------------- | ------------- |
+| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019` |
+| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)             | `freben#3926` |
+| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`   |
+| Johan Haals     | Spotify      | [jhaals](https://github.com/jhaals)             | `Johan#0679`  |
 
-# Maintainers
+## Project Areas
 
-- Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
-- Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
-- Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
-- Johan Haals ([jhaals](https://github.com/jhaals)) (Discord: @jhaals)
+These are the separate project areas of Backstage, each with their own project area maintainers
 
-# Reviewers
+### Catalog
 
-See [`GOVERNANCE.md`](./GOVERNANCE.md) for details about how the reviewers team
-works.
+Team: @backstage/catalog-maintainers
 
-- Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
-- Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
-- Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
-- Johan Haals ([jhaals](https://github.com/jhaals)) (Discord: @jhaals)
-- Himanshu Mishra ([OrkoHunter](https://github.com/OrkoHunter)) (Discord: @OrkoHunter)
-- Tim Hansen ([timbonicus](https://github.com/timbonicus)) (Discord: @timbonicus)
+| Name | Organization | Team      | GitHub                       | Discord |
+| ---- | ------------ | --------- | ---------------------------- | ------- |
+| TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
 
-# Emeritus maintainers
+### Kubernetes
 
-- Stefan Ålund ([stefanalund](https://github.com/stefanalund)) (Discord: @stalund)
+Team: @backstage/kubernetes-maintainers
 
-# Hall of Fame
+Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
-People that have made significant contributions to the project and earned write access.
+| Name           | Organization | Team | GitHub                                   | Discord      |
+| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
 
-- Andrew Thauer - Wealthsimple (GitHub: [andrewthauer](https://github.com/andrewthauer))
-- Oliver Sand - SDA SE (GitHub: [Fox32](https://github.com/Fox32))
-- David Tuite - Roadie (GitHub: [dtuite](https://github.com/dtuite))
-- Adam Harvey - Cisco (GitHub: [adamdmharvey](https://github.com/adamdmharvey))
-- Dominik Henneke - SDA SE (GitHub: [dhenneke](https://github.com/dhenneke))
+### TechDocs
+
+Team: @backstage/techdocs-maintainers
+
+| Name | Organization | Team         | GitHub                       | Discord |
+| ---- | ------------ | ------------ | ---------------------------- | ------- |
+| TBD  | Spotify      | Pulp Fiction | [TBD](http://github.com/TBD) | -       |
+
+### Search
+
+Team: @backstage/search-maintainers
+
+| Name | Organization | Team | GitHub                       | Discord |
+| ---- | ------------ | ---- | ---------------------------- | ------- |
+| TBD  | Spotify      | BUX  | [TBD](http://github.com/TBD) | -       |
+
+## Sponsors
+
+| Name              | Organization | GitHub                                      | Email             |
+| ----------------- | ------------ | ------------------------------------------- | ----------------- |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
+| Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com  |
+
+## Organization Members
+
+| Name            | Organization             | GitHub                                          | Discord                        |
+| --------------- | ------------------------ | ----------------------------------------------- | ------------------------------ |
+| Adam Harvey     | Cisco                    | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
+| Andre Wanlin    | Keyloop                  | [awanlin](https://github.com/awanlin)           | `Ahhhndre#3095`                |
+| Andrew Thauer   | Wealthsimple             | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
+| Brian Fletcher  | RoadieHQ                 | [punkle](https://github.com/punkle)             | `Brian Fletcher#7051`          |
+| David Tuite     | Roadie                   | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
+| Jussi Hallila   | Roadie                   | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
+| Mark Avery      | Cvent                    | [webark](https://github.com/webark)             | `webark#8471`                  |
+| Phil Kuang      | FactSet Research Systems | [kuangp](https://github.com/kuangp)             | `pkuang#3202`                  |
+| Taras Mankovski | Frontside                | [taras](https://github.com/taras)               | `tarasm#1256`                  |
+
+## Emeritus Core Maintainers
+
+| Maintainer   | Organization | GitHub                                        | Discord        |
+| ------------ | ------------ | --------------------------------------------- | -------------- |
+| Stefan Ålund | Spotify      | [stefanalund](https://github.com/stefanalund) | `stalund#9602` |

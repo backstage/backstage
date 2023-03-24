@@ -58,9 +58,10 @@ const getIconText = (title: string) =>
 type Props = {
   shortcut: Shortcut;
   api: ShortcutApi;
+  allowExternalLinks?: boolean;
 };
 
-export const ShortcutItem = ({ shortcut, api }: Props) => {
+export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
 
@@ -100,6 +101,7 @@ export const ShortcutItem = ({ shortcut, api }: Props) => {
         anchorEl={anchorEl}
         api={api}
         shortcut={shortcut}
+        allowExternalLinks={allowExternalLinks}
       />
     </>
   );

@@ -27,7 +27,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -117,10 +117,13 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
-  // Example of application level feature flag
-  // featureFlags: [
-  // { name: 'tech-radar', description: 'Enables the tech radar plugin' },
-  // ],
+  featureFlags: [
+    {
+      name: 'scaffolder-next-preview',
+      description: 'Preview the new Scaffolder Next',
+      pluginId: '',
+    },
+  ],
   components: {
     SignInPage: props => {
       return (
@@ -208,49 +211,53 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <Route
-      path="/create"
-      element={
-        <ScaffolderPage
-          defaultPreviewTemplate={defaultPreviewTemplate}
-          groups={[
-            {
-              title: 'Recommended',
-              filter: entity =>
-                entity?.metadata?.tags?.includes('recommended') ?? false,
-            },
-          ]}
-        />
-      }
-    >
-      <ScaffolderFieldExtensions>
-        <LowerCaseValuePickerFieldExtension />
-      </ScaffolderFieldExtensions>
-      <ScaffolderLayouts>
-        <TwoColumnLayout />
-      </ScaffolderLayouts>
-    </Route>
-    <Route
-      path="/create/next"
-      element={
-        <NextScaffolderPage
-          groups={[
-            {
-              title: 'Recommended',
-              filter: entity =>
-                entity?.metadata?.tags?.includes('recommended') ?? false,
-            },
-          ]}
-        />
-      }
-    >
-      <ScaffolderFieldExtensions>
-        <DelayingComponentFieldExtension />
-      </ScaffolderFieldExtensions>
-      <ScaffolderLayouts>
-        <TwoColumnLayout />
-      </ScaffolderLayouts>
-    </Route>
+    <FeatureFlagged with="scaffolder-next-preview">
+      <Route
+        path="/create"
+        element={
+          <NextScaffolderPage
+            groups={[
+              {
+                title: 'Recommended',
+                filter: entity =>
+                  entity?.metadata?.tags?.includes('recommended') ?? false,
+              },
+            ]}
+          />
+        }
+      >
+        <ScaffolderFieldExtensions>
+          <DelayingComponentFieldExtension />
+        </ScaffolderFieldExtensions>
+        <ScaffolderLayouts>
+          <TwoColumnLayout />
+        </ScaffolderLayouts>
+      </Route>
+    </FeatureFlagged>
+    <FeatureFlagged without="scaffolder-next-preview">
+      <Route
+        path="/create"
+        element={
+          <ScaffolderPage
+            defaultPreviewTemplate={defaultPreviewTemplate}
+            groups={[
+              {
+                title: 'Recommended',
+                filter: entity =>
+                  entity?.metadata?.tags?.includes('recommended') ?? false,
+              },
+            ]}
+          />
+        }
+      >
+        <ScaffolderFieldExtensions>
+          <LowerCaseValuePickerFieldExtension />
+        </ScaffolderFieldExtensions>
+        <ScaffolderLayouts>
+          <TwoColumnLayout />
+        </ScaffolderLayouts>
+      </Route>
+    </FeatureFlagged>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"

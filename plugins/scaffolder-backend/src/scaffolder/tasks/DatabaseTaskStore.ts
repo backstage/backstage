@@ -220,7 +220,7 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets when moving moving to processing state.
+          // remove the secrets when moving to processing state.
           secrets: null,
         });
 
@@ -287,13 +287,14 @@ export class DatabaseTaskStore implements TaskStore {
     const { taskId, status, eventBody } = options;
 
     let oldStatus: string;
-    if (status === 'failed' || status === 'completed') {
+    if (['failed', 'completed', 'cancelled'].includes(status)) {
       oldStatus = 'processing';
     } else {
       throw new Error(
         `Invalid status update of run '${taskId}' to status '${status}'`,
       );
     }
+
     await this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
@@ -301,6 +302,40 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .limit(1)
         .select();
+
+      const updateTask = async (criteria: {
+        id: string;
+        status?: TaskStatus;
+      }) => {
+        const updateCount = await tx<RawDbTaskRow>('tasks')
+          .where(criteria)
+          .update({
+            status,
+          });
+
+        if (updateCount !== 1) {
+          throw new ConflictError(
+            `Failed to update status to '${status}' for taskId ${taskId}`,
+          );
+        }
+
+        await tx<RawDbTaskEventRow>('task_events').insert({
+          task_id: taskId,
+          event_type: 'completion',
+          body: JSON.stringify(eventBody),
+        });
+      };
+
+      if (status === 'cancelled') {
+        await updateTask({
+          id: taskId,
+        });
+        return;
+      }
+
+      if (task.status === 'cancelled') {
+        return;
+      }
 
       if (!task) {
         throw new Error(`No task with taskId ${taskId} found`);
@@ -311,25 +346,10 @@ export class DatabaseTaskStore implements TaskStore {
             `as it is currently '${task.status}', expected '${oldStatus}'`,
         );
       }
-      const updateCount = await tx<RawDbTaskRow>('tasks')
-        .where({
-          id: taskId,
-          status: oldStatus,
-        })
-        .update({
-          status,
-        });
 
-      if (updateCount !== 1) {
-        throw new ConflictError(
-          `Failed to update status to '${status}' for taskId ${taskId}`,
-        );
-      }
-
-      await tx<RawDbTaskEventRow>('task_events').insert({
-        task_id: taskId,
-        event_type: 'completion',
-        body: JSON.stringify(eventBody),
+      await updateTask({
+        id: taskId,
+        status: oldStatus,
       });
     });
   }
@@ -417,6 +437,18 @@ export class DatabaseTaskStore implements TaskStore {
       eventBody: {
         message,
       },
+    });
+  }
+
+  async cancelTask(
+    options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
+  ): Promise<void> {
+    const { taskId, body } = options;
+    const serializedBody = JSON.stringify(body);
+    await this.db<RawDbTaskEventRow>('task_events').insert({
+      task_id: taskId,
+      event_type: 'cancelled',
+      body: serializedBody,
     });
   }
 }

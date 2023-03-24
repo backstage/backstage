@@ -17,6 +17,7 @@
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import BitbucketServerAuth from './BitbucketServerAuth';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const getSession = jest.fn();
 
@@ -40,7 +41,10 @@ describe('BitbucketServerAuth', () => {
       ['PROJECT_ADMIN', 'REPO_READ', 'ACCOUNT_WRITE'],
     ],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    const configApi = new MockConfigApi({});
+
     const bitbucketServerAuth = BitbucketServerAuth.create({
+      configApi: configApi,
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
     });

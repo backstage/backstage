@@ -134,6 +134,7 @@ export const useSignInProviders = (
       .loader(apiHolder, provider.config?.apiRef!)
       .then(result => {
         if (didCancel) {
+          localStorage.removeItem(PROVIDER_STORAGE_KEY);
           return;
         }
         if (result) {
@@ -143,10 +144,10 @@ export const useSignInProviders = (
         }
       })
       .catch(error => {
+        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         if (didCancel) {
           return;
         }
-        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         errorApi.post(error);
         setLoading(false);
       });
@@ -172,16 +173,27 @@ export const useSignInProviders = (
         const { Component } = provider.components;
 
         const handleSignInSuccess = (result: IdentityApi) => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.id);
-
           handleWrappedResult(result);
+        };
+
+        const handleSignInStarted = () => {
+          localStorage.setItem(
+            PROVIDER_STORAGE_KEY,
+            provider?.config?.id || provider.id,
+          );
+        };
+
+        const handleSignInFailure = () => {
+          localStorage.removeItem(PROVIDER_STORAGE_KEY);
         };
 
         return (
           <Component
             key={provider.id}
             config={provider.config!}
+            onSignInStarted={handleSignInStarted}
             onSignInSuccess={handleSignInSuccess}
+            onSignInFailure={handleSignInFailure}
           />
         );
       }),

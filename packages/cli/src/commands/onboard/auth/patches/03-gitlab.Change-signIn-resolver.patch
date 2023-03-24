@@ -1,0 +1,5 @@
+--- a/packages/backend/src/plugins/auth.ts
++++ b/packages/backend/src/plugins/auth.ts
+@@ -38 +38 @@ export default async function createPlugin(
+-      github: providers.github.create({
++      gitlab: providers.gitlab.create({

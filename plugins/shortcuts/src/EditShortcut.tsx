@@ -46,9 +46,16 @@ type Props = {
   onClose: () => void;
   anchorEl?: Element;
   api: ShortcutApi;
+  allowExternalLinks?: boolean;
 };
 
-export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
+export const EditShortcut = ({
+  shortcut,
+  onClose,
+  anchorEl,
+  api,
+  allowExternalLinks,
+}: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const open = Boolean(anchorEl);
@@ -127,6 +134,7 @@ export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
           formValues={{ url: shortcut.url, title: shortcut.title }}
           onClose={handleClose}
           onSave={handleSave}
+          allowExternalLinks={allowExternalLinks}
         />
       </Card>
     </Popover>

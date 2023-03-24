@@ -167,7 +167,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
         <SidebarDivider />
-        <Shortcuts />
+        <Shortcuts allowExternalLinks />
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />

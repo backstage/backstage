@@ -48,6 +48,7 @@ export default class BitbucketServerAuth {
     options: OAuthApiCreateOptions,
   ): typeof bitbucketServerAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
@@ -56,6 +57,7 @@ export default class BitbucketServerAuth {
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,

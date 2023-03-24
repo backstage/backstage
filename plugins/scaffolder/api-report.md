@@ -80,8 +80,22 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -95,8 +109,22 @@ export const EntityPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -212,8 +240,22 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -226,8 +268,22 @@ export const OwnerPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -332,6 +388,7 @@ export type RouterProps = {
     title?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   defaultPreviewTemplate?: string;
   headerOptions?: {
     pageTitleOverride?: string;
@@ -359,6 +416,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
+  // (undocumented)
+  cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun(
     options: ScaffolderDryRunOptions_2,
@@ -423,6 +482,9 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;

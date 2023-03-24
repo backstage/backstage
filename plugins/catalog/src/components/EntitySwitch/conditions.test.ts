@@ -15,7 +15,34 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { isComponentType, isKind, isNamespace } from './conditions';
+import {
+  isComponentType,
+  isKind,
+  isNamespace,
+  isResourceType,
+  isEntityWith,
+} from './conditions';
+
+const kubernetesClusterResource: Entity = {
+  apiVersion: '',
+  kind: 'Resource',
+  metadata: { name: 'aKubernetesCluster' },
+  spec: { type: 'kubernetes-cluster' },
+};
+
+const databaseResource: Entity = {
+  apiVersion: '',
+  kind: 'Resource',
+  metadata: { name: 'aDatabase' },
+  spec: { type: 'database' },
+};
+
+const notResource: Entity = {
+  apiVersion: '',
+  kind: 'not-Resource',
+  metadata: { name: 'aService' },
+  spec: { type: 'service' },
+};
 
 const serviceComponent: Entity = {
   apiVersion: '',
@@ -36,6 +63,13 @@ const notComponent: Entity = {
   kind: 'not-component',
   metadata: { name: 'aService' },
   spec: { type: 'service' },
+};
+
+const missingSpecType: Entity = {
+  apiVersion: '',
+  kind: 'another-type',
+  metadata: { name: 'anEntity' },
+  spec: {},
 };
 
 const apiKind: Entity = {
@@ -59,6 +93,26 @@ const bNamespace: Entity = {
   spec: { type: 'service' },
 };
 
+describe('isResourceType', () => {
+  it('should false on non resource kinds', () => {
+    const checkEntity = isResourceType('kubernetes-cluster');
+
+    expect(checkEntity(notResource)).not.toBeTruthy();
+  });
+  it('should check for the intended type', () => {
+    const checkEntity = isResourceType('kubernetes-cluster');
+
+    expect(checkEntity(databaseResource)).not.toBeTruthy();
+    expect(checkEntity(kubernetesClusterResource)).toBeTruthy();
+  });
+  it('should check for multiple types', () => {
+    const checkEntity = isResourceType(['database', 'kubernetes-cluster']);
+
+    expect(checkEntity(databaseResource)).toBeTruthy();
+    expect(checkEntity(kubernetesClusterResource)).toBeTruthy();
+  });
+});
+
 describe('isComponentType', () => {
   it('should false on non component kinds', () => {
     const checkEntity = isComponentType('service');
@@ -76,6 +130,25 @@ describe('isComponentType', () => {
 
     expect(checkEntity(serviceComponent)).toBeTruthy();
     expect(checkEntity(websiteComponent)).toBeTruthy();
+  });
+});
+
+describe('isEntityWith', () => {
+  it('allows for a kind-only check (empty type array)', () => {
+    const checkEntity = isEntityWith({ kind: 'api', type: [] });
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
+  it('handles missing spec.type field', () => {
+    const checkEntity = isEntityWith({ kind: 'another-type', type: 'service' });
+    expect(checkEntity(missingSpecType)).not.toBeTruthy();
+  });
+  it('allows a check against no criteria', () => {
+    const checkEntity = isEntityWith({});
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
+  it('allows a check against empty criteria', () => {
+    const checkEntity = isEntityWith({ kind: [], type: [] });
+    expect(checkEntity(apiKind)).toBeTruthy();
   });
 });
 
