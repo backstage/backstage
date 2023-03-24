@@ -1,5 +1,4 @@
 ---
-'@backstage/core-app-api': minor
 '@backstage/plugin-techdocs': patch
 ---
 

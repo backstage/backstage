@@ -577,9 +577,6 @@ export class UrlPatternDiscovery implements DiscoveryApi {
 }
 
 // @public
-export function useNavigateUrl(): (to: string) => void;
-
-// @public
 export class WebStorage implements StorageApi {
   constructor(namespace: string, errorApi: ErrorApi);
   // (undocumented)

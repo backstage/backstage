@@ -46,6 +46,8 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
  * NOTE: This does not support routing to external URLs. That should be done with a `Link` or `a`
  *  element instead, or just `window.location.href`.
  *
+ * TODO: Update this to use `useRouteRef` instead of `useApi`.
+ *
  * @returns Navigation function that is a wrapper over `react-router-dom`'s
  *  to support passing full URLs for navigation.
  *

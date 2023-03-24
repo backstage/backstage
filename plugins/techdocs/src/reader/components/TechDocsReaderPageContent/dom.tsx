@@ -46,7 +46,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
 } from '../../transformers';
-import { useNavigateUrl } from '@backstage/core-app-api';
+import { useNavigateUrl } from './useNavigateUrl';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
