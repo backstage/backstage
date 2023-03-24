@@ -5509,7 +5509,6 @@ __metadata:
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     jwt-decode: ^3.1.0
-    lodash: ^4.17.21
     material-ui-popup-state: ^1.9.3
     qs: ^6.9.4
     react-test-renderer: ^16.13.1
