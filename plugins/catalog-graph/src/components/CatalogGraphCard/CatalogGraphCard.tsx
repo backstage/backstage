@@ -75,6 +75,8 @@ export const CatalogGraphCard = (
     className,
     rootEntityNames,
     onNodeClick,
+    renderLabel,
+    renderNode,
     title = 'Relations',
     zoom = 'enable-on-click',
   } = props;
@@ -140,6 +142,8 @@ export const CatalogGraphCard = (
         direction={direction}
         relationPairs={relationPairs}
         zoom={zoom}
+        renderLabel={renderLabel}
+        renderNode={renderNode}
       />
     </InfoCard>
   );

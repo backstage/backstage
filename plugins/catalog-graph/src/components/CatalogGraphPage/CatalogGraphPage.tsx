@@ -18,6 +18,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
+  DependencyGraphTypes,
   Header,
   Page,
   SupportButton,
@@ -36,6 +37,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ALL_RELATION_PAIRS,
   Direction,
+  EntityEdge,
   EntityNode,
   EntityRelationsGraph,
   RelationPairs,
@@ -105,6 +107,8 @@ const useStyles = makeStyles(
 
 export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
+  renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   initialState?: {
     selectedRelations?: string[];
     selectedKinds?: string[];
@@ -117,7 +121,12 @@ export const CatalogGraphPage = (props: {
     curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
 }) => {
-  const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
+  const {
+    relationPairs = ALL_RELATION_PAIRS,
+    initialState,
+    renderLabel,
+    renderNode,
+  } = props;
 
   const navigate = useNavigate();
   const classes = useStyles();
@@ -254,6 +263,8 @@ export const CatalogGraphPage = (props: {
                 className={classes.graph}
                 zoom="enabled"
                 curve={curve}
+                renderLabel={renderLabel}
+                renderNode={renderNode}
               />
             </Paper>
           </Grid>
