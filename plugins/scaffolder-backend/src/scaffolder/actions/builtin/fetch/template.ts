@@ -28,6 +28,7 @@ import {
   SecureTemplater,
   TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
+import { createDefaultFilters } from '../../../../lib/templating/filters';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -48,6 +49,11 @@ export function createFetchTemplateAction(options: {
     additionalTemplateFilters,
     additionalTemplateGlobals,
   } = options;
+
+  const templateFilters = {
+    ...createDefaultFilters({ integrations }),
+    ...additionalTemplateFilters,
+  };
 
   return createTemplateAction<{
     url: string;
@@ -231,8 +237,8 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
+        templateFilters,
+        templateGlobals: additionalTemplateGlobals,
       });
 
       for (const location of allEntriesInTemplate) {
