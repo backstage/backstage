@@ -65,27 +65,6 @@ const applyConditionsRequestSchema = z.object({
   ),
 });
 
-/*
-
-BEFORE:
-[
-  { resourceType: 'A', resourceRef: 'ref1', conditions: ... },
-  { resourceType: 'A', resourceRef: 'ref2', conditions: ... }
-]
-
-await getResources(['ref1', 'ref2' ])
-
-NOW:
-[
-  { resourceType: 'A', resourceRef: 'ref1', conditions: ... },
-  { resourceType: 'A', resourceRef: 'ref2', conditions: ... }
-  { resourceType: 'B', resourceRef: 'ref3', conditions: ... }
-]
-
-await getResourcesA(['ref1', 'ref2' ])
-await getResourcesB(['ref3' ])
-*/
-
 /**
  * A request to load the referenced resource and apply conditions in order to
  * finalize a conditional authorization response.
@@ -238,6 +217,9 @@ export type CreatePermissionIntegrationRouterResourceOptions<
  * In case the `permissions` option is provided, the router also
  * provides a route that exposes permissions and routes of a plugin.
  *
+ * In case an array of CreatePermissionIntegrationRouterResourceOptions is
+ * provided, the routes can handle permissions for multiple resource types.
+ *
  * @remarks
  *
  * To make this concrete, we can use the Backstage software catalog as an
@@ -288,6 +270,9 @@ export function createPermissionIntegrationRouter(options: {
 
 /**
  *
+ * Create an express Router which provides an authorization route to allow
+ * integration between the permission backend and other Backstage backend
+ * plugins. Handles permissions for 2 resource types.
  * @public
  */
 export function createPermissionIntegrationRouter<
@@ -310,6 +295,9 @@ export function createPermissionIntegrationRouter<
 
 /**
  *
+ * Create an express Router which provides an authorization route to allow
+ * integration between the permission backend and other Backstage backend
+ * plugins. Handles permissions for 3 resource types.
  * @public
  */
 export function createPermissionIntegrationRouter<
