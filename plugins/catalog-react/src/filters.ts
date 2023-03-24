@@ -150,7 +150,7 @@ export class EntityLifecycleFilter implements EntityFilter {
 }
 
 /**
- * Filters entities on namespace.
+ * Filters entities to those within the given namespace(s).
  * @public
  */
 export class EntityNamespaceFilter implements EntityFilter {
