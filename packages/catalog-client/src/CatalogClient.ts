@@ -54,8 +54,8 @@ import { isQueryEntitiesInitialRequest } from './utils';
  * @public
  */
 export class CatalogClient implements CatalogApi {
-  private readonly discoveryApi: DiscoveryApi;
-  private readonly fetchApi: FetchApi;
+  protected readonly discoveryApi: DiscoveryApi;
+  protected readonly fetchApi: FetchApi;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
