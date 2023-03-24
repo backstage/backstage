@@ -23,7 +23,7 @@ import {
   SvgIcon,
   Tooltip,
 } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import type { Transformer } from './transformer';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
@@ -69,9 +69,13 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       onClose={handleClose}
       leaveDelay={1000}
     >
-      <Button className="md-clipboard md-icon" onClick={handleClick}>
+      <IconButton
+        style={{ color: 'inherit' }}
+        className="md-clipboard md-icon"
+        onClick={handleClick}
+      >
         <CopyToClipboardIcon />
-      </Button>
+      </IconButton>
     </CopyToClipboardTooltip>
   );
 };
