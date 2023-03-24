@@ -5,7 +5,6 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Credentials } from 'aws-sdk';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
@@ -35,24 +34,9 @@ export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   // (undocumented)
-  awsGetCredentials: () => Promise<Credentials>;
-  // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: AWSClusterDetails,
   ): Promise<AWSClusterDetails>;
-  // (undocumented)
-  getBearerToken(
-    clusterName: string,
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<string>;
-  // (undocumented)
-  getCredentials(
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<SigningCreds>;
-  // (undocumented)
-  validCredentials(creds: SigningCreds): boolean;
 }
 
 // @public (undocumented)
