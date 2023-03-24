@@ -77,6 +77,28 @@ describe('mapDirectives', () => {
     ]);
   });
 
+  it('should add missing discrimination alias types', function* () {
+    const schema = transform(
+      gql`
+        interface Entity
+          @implements(interface: "Node")
+          @discriminates(with: "kind")
+          @discriminationAlias(value: "component", type: "Component")
+          @discriminationAlias(value: "template", type: "Template")
+          @discriminationAlias(value: "location", type: "Location") {
+          totalCount: Int!
+        }
+
+        type Component @implements(interface: "Entity") {
+          name: String!
+        }
+      `,
+    );
+    expect(schema.getType('Component')).toBeDefined();
+    expect(schema.getType('Template')).toBeDefined();
+    expect(schema.getType('Location')).toBeDefined();
+  });
+
   it(`shouldn't generate opaque type if there is only one implementation with generateOpaqueTypes: true`, function* () {
     const schema = transform(
       gql`
@@ -409,24 +431,6 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if @discriminationAlias has missing types`, function* () {
-    expect(() =>
-      transform(gql`
-        interface Entity
-          @implements(interface: "Node")
-          @discriminates(with: "kind")
-          @discriminationAlias(value: "component", type: "EntityComponent") {
-          name: String!
-        }
-        type Component @implements(interface: "Entity") {
-          type: String!
-        }
-      `),
-    ).toThrow(
-      'Type(-s) "EntityComponent" in `interface Entity @discriminationAlias(value: ..., type: ...)` are not defined in the schema',
-    );
-  });
-
   it(`should fail if @discriminationAlias is used without @discriminates`, function* () {
     expect(() =>
       transform(gql`
@@ -573,6 +577,29 @@ describe('mapDirectives', () => {
       `),
     ).toThrow(
       'The following type(-s) "Component" must implement "Entity" interface by using @implements directive',
+    );
+  });
+
+  it('should fail if discrimination alias type does not implement the interface', function* () {
+    expect(() =>
+      transform(gql`
+        interface Entity
+          @discriminates(with: "kind")
+          @implements(interface: "Node")
+          @discriminationAlias(value: "component", type: "Component") {
+          name: String!
+        }
+        type Resource @implements(interface: "Entity") {
+          type: String!
+        }
+        type Component {
+          id: ID!
+          name: String!
+          type: String!
+        }
+      `),
+    ).toThrow(
+      'Type(-s) "Component" in `interface Entity @discriminationAlias(value: ..., type: ...)` must implement "Entity" interface by using @implements directive',
     );
   });
 
