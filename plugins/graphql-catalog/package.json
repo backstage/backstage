@@ -67,7 +67,6 @@
   },
   "files": [
     "dist",
-    "src/**/*.graphql",
-    "README.md"
+    "src/**/*.graphql"
   ]
 }
