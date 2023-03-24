@@ -38,4 +38,6 @@ export type {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from './api';
+export type { DiscoveryApi } from './discovery';
+export type { FetchApi } from './fetch';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

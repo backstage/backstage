@@ -95,6 +95,10 @@ export class CatalogClient implements CatalogApi {
     request: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
+  // (undocumented)
+  protected readonly discoveryApi: DiscoveryApi;
+  // (undocumented)
+  protected readonly fetchApi: FetchApi;
   getEntities(
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -158,6 +162,11 @@ export interface CatalogRequestOptions {
 }
 
 // @public
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
+};
+
+// @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
@@ -179,6 +188,11 @@ export type EntityOrderQuery =
       field: string;
       order: 'asc' | 'desc';
     }>;
+
+// @public
+export type FetchApi = {
+  fetch: typeof fetch;
+};
 
 // @public
 export interface GetEntitiesByRefsRequest {
