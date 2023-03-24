@@ -68,7 +68,7 @@
     "react-window": "^1.8.6",
     "remark-gfm": "^3.0.1",
     "zen-observable": "^0.10.0",
-    "zod": "~3.18.0"
+    "zod": "~3.21.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",

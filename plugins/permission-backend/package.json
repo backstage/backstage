@@ -36,7 +36,7 @@
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
     "yn": "^4.0.0",
-    "zod": "~3.18.0"
+    "zod": "~3.21.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

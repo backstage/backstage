@@ -46,7 +46,7 @@
     "@backstage/types": "workspace:^",
     "cross-fetch": "^3.1.5",
     "uuid": "^8.0.0",
-    "zod": "~3.18.0"
+    "zod": "~3.21.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
