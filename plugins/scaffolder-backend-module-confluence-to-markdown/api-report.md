@@ -13,8 +13,11 @@ export const createConfluenceToMarkdownAction: (options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   config: Config;
-}) => TemplateAction<{
-  confluenceUrls: string[];
-  repoUrl: string;
-}>;
+}) => TemplateAction<
+  {
+    confluenceUrls: string[];
+    repoUrl: string;
+  },
+  unknown
+>;
 ```

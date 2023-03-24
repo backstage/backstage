@@ -20,15 +20,14 @@ import { Schema } from 'jsonschema';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 /** @public */
-export type ActionOutputType<TOutputSchema> = TOutputSchema extends z.ZodType<
-  any,
-  any,
-  infer IReturn
->
+export type ActionOutputType<
+  TOutputSchema,
+  FallbackOutput = unknown,
+> = TOutputSchema extends z.ZodType<any, any, infer IReturn>
   ? IReturn
   : TOutputSchema extends undefined
   ? undefined
-  : unknown;
+  : FallbackOutput;
 
 /** @public */
 export type TemplateActionOptions<
@@ -54,13 +53,17 @@ export type TemplateActionOptions<
  * @public
  */
 export const createTemplateAction = <
-  TParams,
+  TInputParams,
+  TOutputParams = unknown,
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
-    : TParams,
-  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
+    : TInputParams,
+  TActionOutput extends ActionOutputType<
+    TOutputSchema,
+    TOutputParams
+  > = ActionOutputType<TOutputSchema, TOutputParams>,
 >(
   action: TemplateActionOptions<
     TActionInput,

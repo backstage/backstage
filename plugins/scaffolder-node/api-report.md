@@ -48,25 +48,28 @@ export type ActionContext<
 };
 
 // @public (undocumented)
-export type ActionOutputType<TOutputSchema> = TOutputSchema extends z.ZodType<
-  any,
-  any,
-  infer IReturn
->
+export type ActionOutputType<
+  TOutputSchema,
+  FallbackOutput = unknown,
+> = TOutputSchema extends z.ZodType<any, any, infer IReturn>
   ? IReturn
   : TOutputSchema extends undefined
   ? undefined
-  : unknown;
+  : FallbackOutput;
 
 // @public
 export const createTemplateAction: <
-  TParams,
+  TInputParams,
+  TOutputParams = unknown,
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
-    : TParams,
-  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
+    : TInputParams,
+  TActionOutput extends ActionOutputType<
+    TOutputSchema,
+    TOutputParams
+  > = ActionOutputType<TOutputSchema, TOutputParams>,
 >(
   action: TemplateActionOptions<
     TActionInput,

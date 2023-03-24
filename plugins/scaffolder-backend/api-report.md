@@ -609,13 +609,17 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export const createTemplateAction: <
-  TParams,
+  TInputParams,
+  TOutputParams = unknown,
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
     ? IReturn
-    : TParams,
-  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
+    : TInputParams,
+  TActionOutput extends ActionOutputType<
+    TOutputSchema,
+    TOutputParams
+  > = ActionOutputType<TOutputSchema, TOutputParams>,
 >(
   action: TemplateActionOptions<
     TActionInput,
