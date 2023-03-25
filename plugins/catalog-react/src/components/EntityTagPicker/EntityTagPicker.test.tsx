@@ -222,7 +222,6 @@ describe('<EntityTagPicker/>', () => {
         tags: new EntityTagFilter(['tag1']),
       }),
     );
-
     fireEvent.click(screen.getByTestId('tags-picker-expand'));
     fireEvent.click(screen.getByLabelText('tag2'));
     expect(screen.getByLabelText('tag2')).toBeChecked();
