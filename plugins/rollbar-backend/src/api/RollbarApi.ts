@@ -104,7 +104,7 @@ export class RollbarApi {
     );
   }
 
-  private async get<T>(url: string, accessToken?: string) {
+  private async get<T extends {}>(url: string, accessToken?: string) {
     const fullUrl = buildUrl(url);
 
     if (this.logger) {
@@ -119,7 +119,7 @@ export class RollbarApi {
       .then(json => camelcaseKeys<T>(json?.result, { deep: true }));
   }
 
-  private async getForProject<T>(
+  private async getForProject<T extends {}>(
     url: string,
     projectName: string,
     useProjectToken = true,

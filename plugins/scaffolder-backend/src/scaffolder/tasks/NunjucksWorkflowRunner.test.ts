@@ -120,7 +120,7 @@ describe('DefaultWorkflowRunner', () => {
             foo: z.number(),
           }),
         },
-      }) as TemplateAction<unknown>,
+      }) as TemplateAction,
     );
 
     actionRegistry.register({

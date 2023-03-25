@@ -59,7 +59,7 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
     return <Typography paragraph>could not load questions</Typography>;
   }
 
-  const getSecondaryText = (answer_count: Number) =>
+  const getSecondaryText = (answer_count: number) =>
     answer_count > 1 ? `${answer_count} answers` : `${answer_count} answer`;
 
   return (

@@ -57,11 +57,14 @@ export function FetchedEntityRefLinks<
     error,
   } = useAsync(async () => {
     const refs = entityRefs.reduce((acc, current) => {
-      return 'metadata' in current ? acc : [...acc, parseEntityRef(current)];
+      if (typeof current === 'object' && 'metadata' in current) {
+        return acc;
+      }
+      return [...acc, parseEntityRef(current)];
     }, new Array<CompoundEntityRef>());
 
     const pureEntities = entityRefs.filter(
-      ref => 'metadata' in ref,
+      ref => typeof ref === 'object' && 'metadata' in ref,
     ) as Array<Entity>;
 
     return refs.length > 0

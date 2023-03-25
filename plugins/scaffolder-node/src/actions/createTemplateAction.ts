@@ -22,8 +22,8 @@ import { JsonObject } from '@backstage/types';
 
 /** @public */
 export type TemplateActionOptions<
-  TActionInput = {},
-  TActionOutput = {},
+  TActionInput extends JsonObject = {},
+  TActionOutput extends JsonObject = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 > = {
@@ -48,10 +48,18 @@ export const createTemplateAction = <
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
-  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
     ? IReturn
     : TInputParams,
-  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn>
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
     ? IReturn
     : TOutputParams,
 >(
