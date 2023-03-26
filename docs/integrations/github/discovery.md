@@ -163,6 +163,13 @@ catalog:
           branch: 'main' # string
           repository: '.*' # Regex
         validateLocationsExist: true # optional boolean
+      visibilityProviderId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          visibilities:
+            - public
+            - internal
       enterpriseProviderId:
         host: ghe.example.net
         organization: 'backstage' # string

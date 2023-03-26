@@ -40,7 +40,11 @@ import {
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
 import { getOrganizationRepositories } from '../lib/github';
-import { satisfiesTopicFilter, satisfiesForkFilter } from '../lib/util';
+import {
+  satisfiesTopicFilter,
+  satisfiesForkFilter,
+  satisfiesVisibilityFilter,
+} from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
@@ -56,6 +60,7 @@ type Repository = {
   repositoryTopics: string[];
   defaultBranchRef?: string;
   isCatalogInfoFilePresent: boolean;
+  visibility: string;
 };
 
 /**
@@ -221,6 +226,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         isCatalogInfoFilePresent:
           r.catalogInfoFile?.__typename === 'Blob' &&
           r.catalogInfoFile.text !== '',
+        visibility: r.visibility,
       };
     });
 
@@ -237,6 +243,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilters = this.config.filters?.topic;
     const allowForks = this.config.filters?.allowForks ?? true;
+    const visibilities = this.config.filters?.visibilities ?? [];
 
     const matchingRepositories = repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;
@@ -245,6 +252,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
         satisfiesForkFilter(allowForks, r.isFork) &&
+        satisfiesVisibilityFilter(visibilities, r.visibility) &&
         r.defaultBranchRef
       );
     });
@@ -310,6 +318,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       // we can consider this file present because
       // only the catalog file will be recovered from the commits
       isCatalogInfoFilePresent: true,
+      visibility: event.repository.visibility,
     };
 
     const matchingTargets = this.matchesFilters([repository]);

@@ -99,3 +99,13 @@ export function splitTeamSlug(slug: string): [string, string] {
   }
   return [parts[0], parts[1]];
 }
+
+export function satisfiesVisibilityFilter(
+  visibilities: string[],
+  visibility: string,
+): Boolean {
+  if (!visibilities.length) {
+    return true;
+  }
+  return visibilities.indexOf(visibility) > -1;
+}

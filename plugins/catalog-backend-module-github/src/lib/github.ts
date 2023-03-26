@@ -99,6 +99,7 @@ export type RepositoryResponse = {
     id: string;
     text: string;
   } | null;
+  visibility: string;
 };
 
 type RepositoryTopics = {
@@ -437,6 +438,7 @@ export async function getOrganizationRepositories(
             url
             isArchived
             isFork
+            visibility
             repositoryTopics(first: 100) {
               nodes {
                 ... on RepositoryTopic {
