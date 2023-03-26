@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   getVoidLogger,
-  PluginEndpointDiscovery,
   ReadTreeResponse,
   ServerTokenManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { CatalogApi, GetEntitiesResponse } from '@backstage/catalog-client';
 import { Results } from 'linguist-js/dist/types';
 import { DateTime } from 'luxon';
 import { LinguistBackendStore } from '../db';
 import { kindOrDefault, LinguistBackendApi } from './LinguistBackendApi';
 import fs from 'fs-extra';
+import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
 
 const linguistResultMock = Promise.resolve({
   files: {
@@ -70,15 +71,6 @@ describe('kindOrDefault', () => {
 });
 
 describe('Linguist backend API', () => {
-  const getEntitiesMock = jest.fn();
-  jest.mock('@backstage/catalog-client', () => {
-    return {
-      CatalogClient: jest
-        .fn()
-        .mockImplementation(() => ({ getEntities: getEntitiesMock })),
-    };
-  });
-
   const logger = getVoidLogger();
 
   const store: jest.Mocked<LinguistBackendStore> = {
@@ -95,10 +87,10 @@ describe('Linguist backend API', () => {
     readUrl: jest.fn(),
   };
 
-  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+  } as any;
 
   const tokenManager = ServerTokenManager.noop();
 
@@ -106,8 +98,8 @@ describe('Linguist backend API', () => {
     logger,
     store,
     urlReader,
-    discovery,
     tokenManager,
+    catalogApi,
   );
 
   beforeEach(() => {
@@ -174,7 +166,7 @@ describe('Linguist backend API', () => {
         },
       ],
     };
-    getEntitiesMock.mockResolvedValue(testEntityListResponse);
+    catalogApi.getEntities.mockResolvedValue(testEntityListResponse);
 
     await api.addNewEntities();
     expect(store.insertNewEntity).toHaveBeenCalledTimes(3);
@@ -211,12 +203,12 @@ describe('Linguist backend API', () => {
   });
 
   it('should get entity overview with stale items', async () => {
-    const staleApi = new LinguistBackendApi(
+    const apiWithAge = new LinguistBackendApi(
       logger,
       store,
       urlReader,
-      discovery,
       tokenManager,
+      catalogApi,
       { days: 5 },
     );
     store.getProcessedEntities.mockResolvedValue([
@@ -236,7 +228,7 @@ describe('Linguist backend API', () => {
       'component:default/service-five',
     ]);
 
-    const overview = await staleApi.getEntitiesOverview();
+    const overview = await apiWithAge.getEntitiesOverview();
     expect(overview.entityCount).toEqual(5);
     expect(overview.processedCount).toEqual(2);
     expect(overview.staleCount).toEqual(1);
@@ -277,7 +269,7 @@ describe('Linguist backend API', () => {
     fsSpy.mockClear();
   });
 
-  it('should generate languages for multiple entities using default', async () => {
+  it('should generate languages for entities using default', async () => {
     store.getProcessedEntities.mockResolvedValue([
       {
         entityRef: 'component:default/service-one',
@@ -294,21 +286,56 @@ describe('Linguist backend API', () => {
       'component:default/service-four',
       'component:default/service-five',
     ]);
+
+    const entity = {
+      apiVersion: 'backstage.io/v1beta1',
+      metadata: {
+        name: 'service-one',
+        annotations: {
+          [LINGUIST_ANNOTATION]: 'https://some.fake/service/',
+        },
+      },
+      kind: 'Component',
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValue(entity);
+
+    const resultsSpy = jest
+      .spyOn(api, 'getLinguistResults')
+      .mockImplementation(() => linguistResultMock);
+
+    urlReader.readTree.mockResolvedValue({
+      files: async () => [
+        {
+          content: async () => Buffer.from('-- XXX: code-data', 'utf8'),
+          path: 'my-file.js',
+        },
+      ],
+      dir: async () => '/temp/my-code',
+    } as ReadTreeResponse);
+
+    const fsSpy = jest.spyOn(fs, 'remove');
+
     const generateEntityLanguages = jest.spyOn(api, 'generateEntityLanguages');
     await api.generateEntitiesLanguages();
     expect(generateEntityLanguages).toHaveBeenCalledTimes(3);
+
+    generateEntityLanguages.mockClear();
+    resultsSpy.mockClear();
+    fsSpy.mockClear();
   });
 
-  it('should generate languages for multiple entities using defined batch size', async () => {
-    const batchApi = new LinguistBackendApi(
+  it('should generate languages for entities using defined batch size', async () => {
+    const apiWithBatchSize = new LinguistBackendApi(
       logger,
       store,
       urlReader,
-      discovery,
       tokenManager,
+      catalogApi,
       undefined,
-      1,
+      2,
     );
+
     store.getProcessedEntities.mockResolvedValue([
       {
         entityRef: 'component:default/service-one',
@@ -325,11 +352,45 @@ describe('Linguist backend API', () => {
       'component:default/service-four',
       'component:default/service-five',
     ]);
+
+    const entity = {
+      apiVersion: 'backstage.io/v1beta1',
+      metadata: {
+        name: 'service-one',
+        annotations: {
+          [LINGUIST_ANNOTATION]: 'https://some.fake/service/',
+        },
+      },
+      kind: 'Component',
+    };
+
+    catalogApi.getEntityByRef.mockResolvedValue(entity);
+
+    const resultsSpy = jest
+      .spyOn(apiWithBatchSize, 'getLinguistResults')
+      .mockImplementation(() => linguistResultMock);
+
+    urlReader.readTree.mockResolvedValue({
+      files: async () => [
+        {
+          content: async () => Buffer.from('-- XXX: code-data', 'utf8'),
+          path: 'my-file.js',
+        },
+      ],
+      dir: async () => '/temp/my-code',
+    } as ReadTreeResponse);
+
+    const fsSpy = jest.spyOn(fs, 'remove');
+
     const generateEntityLanguages = jest.spyOn(
-      batchApi,
+      apiWithBatchSize,
       'generateEntityLanguages',
     );
-    await batchApi.generateEntitiesLanguages();
-    expect(generateEntityLanguages).toHaveBeenCalledTimes(1);
+    await apiWithBatchSize.generateEntitiesLanguages();
+    expect(generateEntityLanguages).toHaveBeenCalledTimes(2);
+
+    generateEntityLanguages.mockClear();
+    resultsSpy.mockClear();
+    fsSpy.mockClear();
   });
 });

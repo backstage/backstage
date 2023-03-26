@@ -31,6 +31,7 @@ import {
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
 import { HumanDuration } from '@backstage/types';
+import { CatalogClient } from '@backstage/catalog-client';
 
 /** @public */
 export interface PluginOptions {
@@ -74,14 +75,16 @@ export async function createRouter(
     await database.getClient(),
   );
 
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
   const linguistBackendApi =
     routerOptions.linguistBackendApi ||
     new LinguistBackendApi(
       logger,
       linguistBackendStore,
       reader,
-      discovery,
       tokenManager,
+      catalogClient,
       age,
       batchSize,
       useSourceLocation,
