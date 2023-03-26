@@ -6,6 +6,7 @@ edit_uri: edit/master/docs
 plugins:
   - techdocs-core
 
+# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.json`
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
