@@ -57,9 +57,15 @@ export const OwnershipCard = (props: {
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: string;
+  entityLimit?: number;
 }) => {
-  const { variant, entityFilterKind, hideRelationsToggle, relationsType } =
-    props;
+  const {
+    variant,
+    entityFilterKind,
+    hideRelationsToggle,
+    relationsType,
+    entityLimit = 6,
+  } = props;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
@@ -106,6 +112,7 @@ export const OwnershipCard = (props: {
       )}
       <ComponentsGrid
         entity={entity}
+        entityLimit={entityLimit}
         relationsType={getRelationsType}
         isGroup={isGroup}
         entityFilterKind={entityFilterKind}

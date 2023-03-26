@@ -28,6 +28,7 @@ export const EntityOwnershipCard: (props: {
   entityFilterKind?: string[] | undefined;
   hideRelationsToggle?: boolean | undefined;
   relationsType?: string | undefined;
+  entityLimit?: number | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -73,6 +74,7 @@ export const OwnershipCard: (props: {
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: string;
+  entityLimit?: number;
 }) => JSX.Element;
 
 // @public (undocumented)
