@@ -75,10 +75,10 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -104,10 +104,10 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -137,8 +137,8 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
-    showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
     helperText?: string | undefined;
   }
 >;
@@ -147,8 +147,8 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
     helperText?: string | undefined;
   }
 >;
@@ -210,10 +210,10 @@ export function makeFieldSchemaFromZod<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
   }
 >;
 
@@ -221,10 +221,10 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
   }
 >;
 
@@ -236,9 +236,9 @@ export type OwnedEntityPickerUiOptions =
 export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -264,9 +264,9 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnerPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -311,16 +311,16 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
+          secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
               }
             | undefined;
-          secretsKey: string;
         }
       | undefined;
   }
@@ -337,16 +337,16 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
+          secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
               }
             | undefined;
-          secretsKey: string;
         }
       | undefined;
   }

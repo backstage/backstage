@@ -83,8 +83,10 @@ export function createCatalogRegisterAction(options: {
 
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<{
+  entity: {} & {
+    [k: string]: unknown;
+  };
   filePath?: string | undefined;
-  entity: {};
 }>;
 
 // @public
