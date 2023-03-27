@@ -93,7 +93,7 @@ type ErrorPanelProps = {
   children?: React.ReactNode;
 };
 
-export const ErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
+export const LinkErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
   <WarningPanel
     title="There was a problem formatting the link to the Kubernetes dashboard"
     message={`Could not format the link to the dashboard of your cluster named '${
@@ -108,11 +108,13 @@ export const ErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
   </WarningPanel>
 );
 
-interface KubernetesDrawerable {
+interface KubernetesStructuredMetadataTableDrawerable {
   metadata?: V1ObjectMeta;
 }
 
-interface KubernetesDrawerContentProps<T extends KubernetesDrawerable> {
+interface KubernetesStructuredMetadataTableDrawerContentProps<
+  T extends KubernetesStructuredMetadataTableDrawerable,
+> {
   toggleDrawer: (e: ChangeEvent<{}>, isOpen: boolean) => void;
   object: T;
   renderObject: (obj: T) => object;
@@ -142,12 +144,14 @@ function tryFormatClusterLink(options: FormatClusterLinkOptions) {
   }
 }
 
-const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
+const KubernetesStructuredMetadataTableDrawerContent = <
+  T extends KubernetesStructuredMetadataTableDrawerable,
+>({
   toggleDrawer,
   object,
   renderObject,
   kind,
-}: KubernetesDrawerContentProps<T>) => {
+}: KubernetesStructuredMetadataTableDrawerContentProps<T>) => {
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
   const classes = useDrawerContentStyles();
@@ -191,7 +195,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
       </div>
       {errorMessage && (
         <div className={classes.errorMessage}>
-          <ErrorPanel cluster={cluster} errorMessage={errorMessage} />
+          <LinkErrorPanel cluster={cluster} errorMessage={errorMessage} />
         </div>
       )}
       <div className={classes.options}>
@@ -232,7 +236,9 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
     </>
   );
 };
-interface KubernetesDrawerProps<T extends KubernetesDrawerable> {
+interface KubernetesStructuredMetadataTableDrawerProps<
+  T extends KubernetesStructuredMetadataTableDrawerable,
+> {
   object: T;
   renderObject: (obj: T) => object;
   buttonVariant?: 'h5' | 'subtitle2';
@@ -241,14 +247,16 @@ interface KubernetesDrawerProps<T extends KubernetesDrawerable> {
   children?: React.ReactNode;
 }
 
-export const KubernetesDrawer = <T extends KubernetesDrawerable>({
+export const KubernetesStructuredMetadataTableDrawer = <
+  T extends KubernetesStructuredMetadataTableDrawerable,
+>({
   object,
   renderObject,
   kind,
   buttonVariant = 'subtitle2',
   expanded = false,
   children,
-}: KubernetesDrawerProps<T>) => {
+}: KubernetesStructuredMetadataTableDrawerProps<T>) => {
   const [isOpen, setIsOpen] = useState(expanded);
   const classes = useDrawerStyles();
 
@@ -280,7 +288,7 @@ export const KubernetesDrawer = <T extends KubernetesDrawerable>({
         onClose={(e: any) => toggleDrawer(e, false)}
         onClick={event => event.stopPropagation()}
       >
-        <KubernetesDrawerContent
+        <KubernetesStructuredMetadataTableDrawerContent
           kind={kind}
           toggleDrawer={toggleDrawer}
           object={object}

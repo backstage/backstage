@@ -23,14 +23,14 @@ import {
   imageChips,
   renderCondition,
 } from '../../utils/pod';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
 /** @public */
 export const PodDrawer = (props: { pod: V1Pod; expanded?: boolean }) => {
   const { pod, expanded } = props;
 
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={pod}
       expanded={expanded}
       kind="Pod"

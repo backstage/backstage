@@ -337,19 +337,19 @@ export const KubernetesContent: ({
   refreshIntervalMs,
 }: KubernetesContentProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "KubernetesDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerable" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesStructuredMetadataTableDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const KubernetesDrawer: <T extends KubernetesDrawerable>({
+export const KubernetesStructuredMetadataTableDrawer: <T extends KubernetesStructuredMetadataTableDrawerable>({
   object,
   renderObject,
   kind,
   buttonVariant,
   expanded,
   children,
-}: KubernetesDrawerProps<T>) => JSX.Element;
+}: KubernetesStructuredMetadataTableDrawerProps<T>) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "KubernetesObjects" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { V1StatefulSet } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
 import { Typography, Grid, Chip } from '@material-ui/core';
 
@@ -29,7 +29,7 @@ export const StatefulSetDrawer = ({
 }) => {
   const namespace = statefulset.metadata?.namespace;
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={statefulset}
       expanded={expanded}
       kind="StatefulSet"
@@ -74,6 +74,6 @@ export const StatefulSetDrawer = ({
           </Grid>
         )}
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };
