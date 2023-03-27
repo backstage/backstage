@@ -33,6 +33,7 @@ export interface AWSClusterDetails extends ClusterDetails {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
+  constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: AWSClusterDetails,
@@ -148,6 +149,7 @@ export class KubernetesAuthTranslatorGenerator {
     authProvider: string,
     options: {
       logger: Logger;
+      config: Config;
     },
   ): KubernetesAuthTranslator;
 }
@@ -299,6 +301,8 @@ export interface KubernetesObjectsProvider {
 
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
+  // (undocumented)
+  config: Config;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
