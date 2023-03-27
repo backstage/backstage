@@ -111,14 +111,6 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
               )}
             </ItemCardGrid>
           </Grid>
-          {podAndErrors.errors.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="h5">Errors:</Typography>
-            </Grid>
-          )}
-          <Grid item xs={12}>
-            <Typography variant="h5">Events</Typography>
-          </Grid>
         </Grid>
       </div>
     </KubernetesDrawer>
