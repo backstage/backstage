@@ -15,7 +15,6 @@
  */
 
 import { Git, getVoidLogger } from '@backstage/backend-common';
-import { entityNamePickerValidation } from '@backstage/plugin-scaffolder/src/components/fields/EntityNamePicker';
 import {
   commitAndPushRepo,
   familiarizeEntityName,

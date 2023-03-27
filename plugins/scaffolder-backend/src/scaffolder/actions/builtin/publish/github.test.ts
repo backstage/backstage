@@ -100,7 +100,7 @@ describe('publish:github', () => {
     });
 
     // restore real implmentation
-    (familiarizeEntityName as jest.MockedFunction).mockImplementation(
+    (familiarizeEntityName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
   });
