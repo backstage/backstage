@@ -31,6 +31,7 @@ describe('DomainV1alpha1Validator', () => {
       },
       spec: {
         owner: 'me',
+        domain: 'parent',
       },
     };
   });
@@ -67,5 +68,20 @@ describe('DomainV1alpha1Validator', () => {
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('accepts missing domain', async () => {
+    delete (entity as any).spec.domain;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong domain', async () => {
+    (entity as any).spec.domain = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/domain/);
+  });
+
+  it('rejects empty domain', async () => {
+    (entity as any).spec.domain = '';
+    await expect(validator.check(entity)).rejects.toThrow(/domain/);
   });
 });

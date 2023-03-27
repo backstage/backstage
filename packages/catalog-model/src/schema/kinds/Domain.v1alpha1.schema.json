@@ -11,7 +11,8 @@
         "description": "Everything about artists"
       },
       "spec": {
-        "owner": "artist-relations-team"
+        "owner": "artist-relations-team",
+        "domain": "artists"
       }
     }
   ],
@@ -37,6 +38,12 @@
               "type": "string",
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "domain": {
+              "type": "string",
+              "description": "An entity reference to the domain that the system belongs to.",
+              "examples": ["artists"],
               "minLength": 1
             }
           }
