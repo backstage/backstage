@@ -39,7 +39,7 @@
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0",
-    "zod": "~3.18.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
