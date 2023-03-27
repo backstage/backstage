@@ -1404,7 +1404,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/signature-v4@npm:3.296.0, @aws-sdk/signature-v4@npm:^3.208.0":
+"@aws-sdk/signature-v4@npm:3.296.0":
   version: 3.296.0
   resolution: "@aws-sdk/signature-v4@npm:3.296.0"
   dependencies:
@@ -1416,6 +1416,21 @@ __metadata:
     "@aws-sdk/util-utf8": 3.295.0
     tslib: ^2.5.0
   checksum: fc208a696d38aeae1908dba7e2c9ebf5c84d5585f3620387fe0297d283562d8e9c6125ab8973a0f4740f25472dda0ac3280c5411b3d8090fea67a0e8bd5d7689
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/signature-v4@npm:^3.296.0":
+  version: 3.299.0
+  resolution: "@aws-sdk/signature-v4@npm:3.299.0"
+  dependencies:
+    "@aws-sdk/is-array-buffer": 3.295.0
+    "@aws-sdk/types": 3.296.0
+    "@aws-sdk/util-hex-encoding": 3.295.0
+    "@aws-sdk/util-middleware": 3.296.0
+    "@aws-sdk/util-uri-escape": 3.295.0
+    "@aws-sdk/util-utf8": 3.295.0
+    tslib: ^2.5.0
+  checksum: 642e49ef1cb87649a0fdceb82c55f5153f9d662d5429d49fb18601c3ff8c12a1b050d8856fb18c041511be9d4d38fa741628c23f4be508cb816be696446139cd
   languageName: node
   linkType: hard
 
@@ -6883,7 +6898,7 @@ __metadata:
   dependencies:
     "@aws-crypto/sha256-js": ^3.0.0
     "@aws-sdk/credential-providers": ^3.208.0
-    "@aws-sdk/signature-v4": ^3.208.0
+    "@aws-sdk/signature-v4": ^3.296.0
     "@azure/identity": ^2.0.4
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -6892,6 +6907,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
