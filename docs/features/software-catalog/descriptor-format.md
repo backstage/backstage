@@ -1240,6 +1240,7 @@ metadata:
   description: Everything about artists
 spec:
   owner: artist-relations-team
+  domain: audio-domain
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
