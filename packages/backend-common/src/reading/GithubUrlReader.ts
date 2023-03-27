@@ -40,6 +40,7 @@ import {
   ReadUrlResponse,
 } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
@@ -109,6 +110,9 @@ export class GithubUrlReader implements UrlReader {
         headers: {
           ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(options?.lastModifiedAfter && {
+            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+          }),
           Accept: 'application/vnd.github.v3.raw',
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -130,6 +134,9 @@ export class GithubUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -290,6 +297,7 @@ export class GithubUrlReader implements UrlReader {
     return files.map(file => ({
       url: pathToUrl(file.path),
       content: file.content,
+      lastModifiedAt: file.lastModifiedAt,
     }));
   }
 

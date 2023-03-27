@@ -192,6 +192,7 @@ export class AzureUrlReader implements UrlReader {
           base: url,
         }),
         content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
       })),
     };
   }

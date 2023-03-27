@@ -16,10 +16,10 @@
 
 import { pageTheme } from '@backstage/theme';
 import { v4 as uuid } from 'uuid';
-import { ShortcutApi } from './ShortcutApi';
-import { Shortcut } from '../types';
-import { StorageApi } from '@backstage/core-plugin-api';
-import Observable from 'zen-observable';
+import { ShortcutApi, type Shortcut } from '@backstage/plugin-shortcuts';
+import type { StorageApi } from '@backstage/core-plugin-api';
+import type { Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
 
 /**
  * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
@@ -27,27 +27,41 @@ import Observable from 'zen-observable';
  * @public
  */
 export class LocalStoredShortcuts implements ShortcutApi {
-  private readonly shortcuts: Observable<Shortcut[]>;
+  private shortcuts: Shortcut[];
+  private readonly subscribers = new Set<
+    ZenObservable.SubscriptionObserver<Shortcut[]>
+  >();
+
+  private readonly observable = new ObservableImpl<Shortcut[]>(subscriber => {
+    // forward the the latest value
+    subscriber.next(this.shortcuts);
+
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
 
   constructor(private readonly storageApi: StorageApi) {
-    this.shortcuts = Observable.from(
-      this.storageApi.observe$<Shortcut[]>('items'),
-    ).map(snapshot => snapshot.value ?? []);
+    this.shortcuts = this.storageApi.snapshot<Shortcut[]>('items').value ?? [];
+    this.storageApi.observe$<Shortcut[]>('items').subscribe({
+      next: next => {
+        this.shortcuts = next.value ?? [];
+        this.notifyChanges();
+      },
+    });
   }
 
-  shortcut$() {
-    return this.shortcuts;
+  shortcut$(): Observable<Shortcut[]> {
+    return this.observable;
   }
 
   get() {
-    return Array.from(
-      this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
-    ).sort((a, b) => (a.title >= b.title ? 1 : -1));
+    return this.shortcuts;
   }
 
   async add(shortcut: Omit<Shortcut, 'id'>) {
-    const shortcuts = this.get();
-    shortcuts.push({ ...shortcut, id: uuid() });
+    const shortcuts = this.sort([...this.get(), { ...shortcut, id: uuid() }]);
 
     await this.storageApi.set('items', shortcuts);
   }
@@ -78,4 +92,14 @@ export class LocalStoredShortcuts implements ShortcutApi {
     catalog: 'home',
     docs: 'documentation',
   };
+
+  private sort(shortcuts: Shortcut[]): Shortcut[] {
+    return shortcuts.slice().sort((a, b) => (a.title >= b.title ? 1 : -1));
+  }
+
+  private notifyChanges() {
+    for (const subscription of this.subscribers) {
+      subscription.next(this.shortcuts);
+    }
+  }
 }

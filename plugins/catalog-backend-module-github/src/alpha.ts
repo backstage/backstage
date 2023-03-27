@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { githubEntityProviderCatalogModule } from './service/GithubEntityProviderCatalogModule';
+export * from './module';

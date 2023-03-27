@@ -17,13 +17,22 @@ import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { fireHydrantApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
-export const useServiceDetails = ({ serviceName }: { serviceName: string }) => {
+export const useServiceDetails = ({
+  serviceName,
+  lookupByName,
+}: {
+  serviceName: string;
+  lookupByName: boolean;
+}) => {
   const api = useApi(fireHydrantApiRef);
   const errorApi = useApi(errorApiRef);
 
   const { loading, value, error, retry } = useAsyncRetry(async () => {
     try {
-      return await api.getServiceDetails({ serviceName: serviceName });
+      return await api.getServiceDetails({
+        serviceName: serviceName,
+        lookupByName: lookupByName,
+      });
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);

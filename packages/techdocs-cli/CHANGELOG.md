@@ -1,5 +1,30 @@
 # @techdocs/cli
 
+## 1.4.0
+
+### Minor Changes
+
+- 8e465ce52e2: Running `@techdocs/cli generate` with the `--verbose` flag will now print the mkdocs output.
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 1.4.0-next.1
 
 ### Minor Changes

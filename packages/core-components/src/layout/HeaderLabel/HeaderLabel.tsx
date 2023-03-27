@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Link } from '../../components/Link';
@@ -23,13 +24,13 @@ import { Link } from '../../components/Link';
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     root: {
       textAlign: 'left',
     },
     label: {
-      color: theme.palette.common.white,
+      color: theme.page.fontColor,
       fontWeight: theme.typography.fontWeightBold,
       letterSpacing: 0,
       fontSize: theme.typography.fontSize,
@@ -37,7 +38,7 @@ const useStyles = makeStyles(
       lineHeight: 1,
     },
     value: {
-      color: 'rgba(255, 255, 255, 0.8)',
+      color: alpha(theme.page.fontColor, 0.8),
       fontSize: theme.typography.fontSize,
       lineHeight: 1,
     },

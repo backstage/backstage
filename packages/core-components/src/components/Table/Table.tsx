@@ -169,7 +169,7 @@ function convertColumns<T extends object>(
   theme: BackstageTheme,
 ): TableColumn<T>[] {
   return columns.map(column => {
-    const headerStyle: React.CSSProperties = {};
+    const headerStyle: React.CSSProperties = column.headerStyle ?? {};
 
     let cellStyle = column.cellStyle || {};
 

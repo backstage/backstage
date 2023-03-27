@@ -20,7 +20,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import AWS, { Credentials, Organizations } from 'aws-sdk';
 import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';

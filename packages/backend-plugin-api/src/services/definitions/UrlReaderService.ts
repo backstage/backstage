@@ -65,6 +65,26 @@ export type ReadUrlOptions = {
   etag?: string;
 
   /**
+   * A date which can be provided to check whether a
+   * {@link UrlReaderService.readUrl} response has changed since the lastModifiedAt.
+   *
+   * @remarks
+   *
+   * In the {@link UrlReaderService.readUrl} response, an lastModifiedAt is returned
+   * along with data. The lastModifiedAt date represents the last time the data
+   * was modified.
+   *
+   * When an lastModifiedAfter is given in ReadUrlOptions, {@link UrlReaderService.readUrl}
+   * will compare the lastModifiedAfter against the lastModifiedAt of the target. If
+   * the data has not been modified since this date, the {@link UrlReaderService.readUrl}
+   * will throw a {@link @backstage/errors#NotModifiedError} indicating that the
+   * response does not contain any new data. If they do not match,
+   * {@link UrlReaderService.readUrl} will return the rest of the response along with new
+   * lastModifiedAt date.
+   */
+  lastModifiedAfter?: Date;
+
+  /**
    * An abort signal to pass down to the underlying request.
    *
    * @remarks
@@ -102,6 +122,11 @@ export type ReadUrlResponse = {
    * Can be used to compare and cache responses when doing subsequent calls.
    */
   etag?: string;
+
+  /**
+   * Last modified date of the file contents.
+   */
+  lastModifiedAt?: Date;
 };
 
 /**
@@ -213,8 +238,20 @@ export type ReadTreeResponse = {
  * @public
  */
 export type ReadTreeResponseFile = {
+  /**
+   * The filepath of the data.
+   */
   path: string;
+
+  /**
+   * The binary contents of the file.
+   */
   content(): Promise<Buffer>;
+
+  /**
+   * The last modified timestamp of the data.
+   */
+  lastModifiedAt?: Date;
 };
 
 /**
@@ -278,4 +315,9 @@ export type SearchResponseFile = {
    * The binary contents of the file.
    */
   content(): Promise<Buffer>;
+
+  /**
+   * The last modified timestamp of the data.
+   */
+  lastModifiedAt?: Date;
 };

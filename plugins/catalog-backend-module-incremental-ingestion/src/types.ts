@@ -26,7 +26,7 @@ import type { Config } from '@backstage/config';
 import type {
   DeferredEntity,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';

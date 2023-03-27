@@ -31,16 +31,19 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
 2. Set `cookiecutterCompat` to `true` in the `fetch:template` step input in
    `template.yaml`.
 
-```diff
-  steps:
-    - id: fetch-base
-      name: Fetch Base
--     action: fetch:cookiecutter
-+     action: fetch:template
-      input:
-        url: ./skeleton
-+       cookiecutterCompat: true
-        values:
+```yaml title="template.yaml"
+steps:
+   - id: fetch-base
+   name: Fetch Base
+   # highlight-remove-next-line
+   action: fetch:cookiecutter
+   # highlight-add-next-line
+   action: fetch:template
+   input:
+      url: ./skeleton
+      # highlight-add-next-line
+      cookiecutterCompat: true
+      values:
 ```
 
 ### Manual migration

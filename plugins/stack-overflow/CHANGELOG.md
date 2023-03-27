@@ -1,5 +1,31 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.12
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 3ef5fb09ca5: Export api ref and StackOverflowApi type
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-home@0.4.32
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-home@0.4.32-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.1.12-next.1
 
 ### Patch Changes

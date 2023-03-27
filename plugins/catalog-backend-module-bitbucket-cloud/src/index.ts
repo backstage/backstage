@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 
-export { BitbucketCloudEntityProvider } from './BitbucketCloudEntityProvider';
+export { BitbucketCloudEntityProvider } from './providers/BitbucketCloudEntityProvider';

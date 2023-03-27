@@ -20,7 +20,7 @@ import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,
 } from '@backstage/integration';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { EventParams } from '@backstage/plugin-events-node';
 import {

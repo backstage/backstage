@@ -1,5 +1,23 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.12
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
 ## 0.1.12-next.1
 
 ### Patch Changes

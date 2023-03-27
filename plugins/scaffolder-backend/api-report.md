@@ -89,7 +89,8 @@ export function createDebugLogAction(): TemplateAction_2<{
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
 }): TemplateAction_2<{
-  entityRef: string;
+  entityRef?: string | undefined;
+  entityRefs?: string[] | undefined;
   optional?: boolean | undefined;
 }>;
 

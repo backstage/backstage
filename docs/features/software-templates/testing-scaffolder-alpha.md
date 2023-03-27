@@ -41,39 +41,42 @@ It's also worth calling out that if you do test this out, and find some issues o
 
 The `ScaffolderPage` router has a completely different export for the `scaffolder/next` work, so you will want to change any import from the old `ScaffolderPage` to the new `NextScaffolderPage`
 
-```diff
-- import { ScaffolderPage } from '@backstage/plugin-scaffolder';
-+ import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
-
+```tsx
+/* highlight-remove-next-line */
+import { ScaffolderPage } from '@backstage/plugin-scaffolder';
+/* highlight-add-next-line */
+import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 ```
 
 And this API should be the exact same as the previous Router, so you should be able to make a change like the following further down in this file:
 
-```diff
-  <Route
-      path="/create"
-      element={
--        <ScaffolderPage
-+        <NextScaffolderPage
-          groups={[
-            {
-              title: 'Recommended',
-              filter: entity =>
-                entity?.metadata?.tags?.includes('recommended') ?? false,
-            },
-          ]}
-        />
-      }
-    >
-      <ScaffolderFieldExtensions>
-        <LowerCaseValuePickerFieldExtension />
-        ... other extensions
-      </ScaffolderFieldExtensions>
-      <ScaffolderLayouts>
-        <TwoColumnLayout />
-        ... other layouts
-      </ScaffolderLayouts>
-    </Route>
+```tsx
+<Route
+    path="/create"
+    element={
+      {/* highlight-remove-next-line */}
+      <ScaffolderPage
+      {/* highlight-add-next-line */}
+      <NextScaffolderPage
+        groups={[
+          {
+            title: 'Recommended',
+            filter: entity =>
+              entity?.metadata?.tags?.includes('recommended') ?? false,
+          },
+        ]}
+      />
+    }
+  >
+    <ScaffolderFieldExtensions>
+      <LowerCaseValuePickerFieldExtension />
+      {/* ... other extensions */}
+    </ScaffolderFieldExtensions>
+    <ScaffolderLayouts>
+      <TwoColumnLayout />
+      {/* ... other layouts */}
+    </ScaffolderLayouts>
+  </Route>
 ```
 
 ### Make the required changes to your `CustomFieldExtensions`
@@ -95,13 +98,17 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 
 References for `createScaffolderFieldExtension` have an `/alpha` version of `createNextScaffolderFieldExtension`, which should be used instead.
 
-```diff
--import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder';
-+import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder/alpha';
+```ts
+/* highlight-remove-next-line */
+import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder';
+/* highlight-add-next-line */
+import { createNextScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react/alpha';
 
 export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
--  createScaffolderFieldExtension({
-+  createNextScaffolderFieldExtension({
+  /* highlight-remove-next-line */
+  createScaffolderFieldExtension({
+  /* highlight-add-next-line */
+  createNextScaffolderFieldExtension({
     component: EntityNamePicker,
     name: 'EntityNamePicker',
     validation: entityNamePickerValidation,
@@ -113,7 +120,7 @@ Once you've done this you will find that you will have two squiggly lines under 
 
 Let's take the following code for the `EntityNamePicker` component:
 
-```ts
+```tsx
 export const EntityNamePicker = (
   props: FieldExtensionComponentProps<string, EntityNamePickerProps>,
 ) => {
@@ -127,19 +134,23 @@ export const EntityNamePicker = (
     idSchema,
     placeholder,
   } = props;
-  ...
-}
+  // ..
+};
 ```
 
 There's another `/alpha` export that you need to replace `FieldExtensionComponentProps` with which is the `NextFieldExtensionComponentProps`.
 
-```diff
-- import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
-+ import { NextFieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react/alpha';
+```tsx
+/* highlight-remove-next-line */
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
+/* highlight-add-next-line */
+import { NextFieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react/alpha';
 
 export const EntityNamePicker = (
--  props: FieldExtensionComponentProps<string, EntityNamePickerProps>,
-+  props: NextFieldExtensionComponentProps<string, EntityNamePickerProps>,
+  /* highlight-remove-next-line */
+  props: FieldExtensionComponentProps<string, EntityNamePickerProps>,
+  /* highlight-add-next-line */
+  props: NextFieldExtensionComponentProps<string, EntityNamePickerProps>,
 ) => {
   const {
     onChange,
@@ -147,13 +158,15 @@ export const EntityNamePicker = (
     schema: { title = 'Name', description = 'Unique name of the component' },
     rawErrors,
     formData,
--    uiSchema: { 'ui:autofocus': autoFocus },
-+    uiSchema: { 'ui:autofocus': autoFocus } = {},
+    /* highlight-remove-next-line */
+    uiSchema: { 'ui:autofocus': autoFocus },
+    /* highlight-add-next-line */
+    uiSchema: { 'ui:autofocus': autoFocus } = {},
     idSchema,
     placeholder,
   } = props;
-  ...
-}
+  // ..
+};
 ```
 
 You'll notice that there's an additional change here, which is that we're now defaulting the `uiSchema` to an empty object. This is because the `uiSchema` is now optional, and if you don't provide it, it will be `undefined` instead of an empty object. There's more around this in the [breaking changes](#breaking-changes) section.
@@ -182,8 +195,10 @@ You will need to change the import for `FieldValidation` to point at the new `re
 
 > Note: you will probably need to install this dependency too, by using `yarn add @rjsf/utils` in the package where you define these validation functions, this could also be in the `packages/app` folder, so you can install it there if needed.
 
-```diff
+```ts
+/* highlight-remove-next-line */
 - import { FieldValidation } from '@rjsf/core';
+/* highlight-add-next-line */
 + import { FieldValidation } from '@rjsf/utils;
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
@@ -201,34 +216,40 @@ Once we fully release the code that is in the `/alpha` exports right now onto th
 
 Later releases of `react-jsonschema-form` have made the `uiSchema` optional, and if you don't provide it, it will be `undefined` instead of an empty object. This means that you will need to make sure that you're defaulting the `uiSchema` to an empty object if you're using it in your code.
 
-```diff
-  const {
-    onChange,
-    required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
-    rawErrors,
-    formData,
--    uiSchema: { 'ui:autofocus': autoFocus },
-+    uiSchema: { 'ui:autofocus': autoFocus } = {},
-    idSchema,
-    placeholder,
-  } = props;
+```tsx
+const {
+  onChange,
+  required,
+  schema: { title = 'Name', description = 'Unique name of the component' },
+  rawErrors,
+  formData,
+  /* highlight-remove-next-line */
+  uiSchema: { 'ui:autofocus': autoFocus },
+  /* highlight-add-next-line */
+  uiSchema: { 'ui:autofocus': autoFocus } = {},
+  idSchema,
+  placeholder,
+} = props;
+// ..
 ```
 
 ### `formData` can also be `undefined`
 
 If you were using the `formData` and assuming that it was set to an empty object when building `Field Extensions` that return objects, then this will be `undefined` now due to a change in the `react-jsonschema-form` library.
 
-```diff
-  const {
-    onChange,
-    required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
-    rawErrors,
--    formData,
-+    formData = {}, // or maybe some other default value that you would prefer
-    uiSchema: { 'ui:autofocus': autoFocus } = {},
-    idSchema,
-    placeholder,
-  } = props;
+```tsx
+const {
+  onChange,
+  required,
+  schema: { title = 'Name', description = 'Unique name of the component' },
+  rawErrors,
+  /* highlight-remove-next-line */
+  formData,
+  /* highlight-add-next-line */
+  formData = {}, // or maybe some other default value that you would prefer
+  uiSchema: { 'ui:autofocus': autoFocus } = {},
+  idSchema,
+  placeholder,
+} = props;
+// ..
 ```

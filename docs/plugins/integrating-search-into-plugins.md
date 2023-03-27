@@ -146,7 +146,7 @@ Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backs
 
 #### 6. Make your plugins collator discoverable for others
 
-If you want to make your collator discoverable for other adopters, add it to the list of [plugins integrated to search](https://backstage.io/docs/features/search/search-overview#plugins-integrated-with-backstage-search).
+If you want to make your collator discoverable for other adopters, add it to the list of [plugins integrated to search](https://backstage.io/docs/features/search/#plugins-integrated-with-backstage-search).
 
 ## Building a search experience into your plugin
 

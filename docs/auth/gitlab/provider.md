@@ -18,7 +18,11 @@ Settings for local development:
 
 - Name: Backstage (or your custom app name)
 - Redirect URI: `http://localhost:7007/api/auth/gitlab/handler/frame`
-- Scopes: `read_api` and `read_user`
+- Scopes: `read_user` for sign-in. If you also need ID tokens (e.g. if you are
+  using the Kubernetes plugin and have clusters with `authProvider: oidc` and
+  [`oidcTokenProvider:
+gitlab`](https://backstage.io/docs/features/kubernetes/configuration/#clustersoidctokenprovider-optional)),
+  add the `openid` scope.
 
 ## Configuration
 

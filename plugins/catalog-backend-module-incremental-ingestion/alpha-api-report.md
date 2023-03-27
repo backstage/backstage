@@ -8,7 +8,7 @@ import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-mod
 import { IncrementalEntityProviderOptions } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // @alpha
-export const incrementalIngestionEntityProviderCatalogModule: (options: {
+export const catalogModuleIncrementalIngestionEntityProvider: (options: {
   providers: {
     provider: IncrementalEntityProvider<unknown, unknown>;
     options: IncrementalEntityProviderOptions;

@@ -4,8 +4,8 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EntityProvider } from '@backstage/plugin-catalog-backend';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';

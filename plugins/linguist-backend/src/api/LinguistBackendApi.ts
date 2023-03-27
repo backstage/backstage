@@ -57,6 +57,7 @@ export class LinguistBackendApi {
   private readonly batchSize?: number;
   private readonly useSourceLocation?: boolean;
   private readonly kind: string[];
+  private readonly linguistJsOptions?: Record<string, unknown>;
   public constructor(
     logger: Logger,
     store: LinguistBackendStore,
@@ -67,6 +68,7 @@ export class LinguistBackendApi {
     batchSize?: number,
     useSourceLocation?: boolean,
     kind?: string[],
+    linguistJsOptions?: Record<string, unknown>,
   ) {
     this.logger = logger;
     this.store = store;
@@ -78,6 +80,7 @@ export class LinguistBackendApi {
     this.age = age;
     this.useSourceLocation = useSourceLocation;
     this.kind = kindOrDefault(kind);
+    this.linguistJsOptions = linguistJsOptions;
   }
 
   public async getEntityLanguages(entityRef: string): Promise<Languages> {
@@ -190,7 +193,7 @@ export class LinguistBackendApi {
     const readTreeResponse = await this.urlReader.readTree(url);
     const dir = await readTreeResponse.dir();
 
-    const results = await linguist(dir);
+    const results = await linguist(dir, this.linguistJsOptions);
 
     try {
       const totalBytes = results.languages.bytes;

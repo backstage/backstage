@@ -1,7 +1,7 @@
 # Backstage Catalog Frontend
 
 This is the React frontend for the default Backstage [software
-catalog](http://backstage.io/docs/features/software-catalog/software-catalog-overview).
+catalog](http://backstage.io/docs/features/software-catalog/).
 This package supplies interfaces related to listing catalog entities or showing
 more information about them on entity pages.
 

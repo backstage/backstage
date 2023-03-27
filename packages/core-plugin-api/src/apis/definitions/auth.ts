@@ -357,7 +357,11 @@ export const oktaAuthApiRef: ApiRef<
  * for a full list of supported scopes.
  */
 export const gitlabAuthApiRef: ApiRef<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
 > = createApiRef({
   id: 'core.auth.gitlab',
 });
