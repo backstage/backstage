@@ -41,7 +41,16 @@ const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
   {
     title: 'name',
     highlight: true,
-    render: (pod: V1Pod) => <PodDrawer pod={pod} />,
+    render: (pod: V1Pod) => (
+      <PodDrawer
+        podAndErrors={{
+          // TODO fix hard coding
+          pod: pod as any,
+          clusterName: 'local',
+          errors: [],
+        }}
+      />
+    ),
   },
   {
     title: 'phase',

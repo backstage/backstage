@@ -54,6 +54,24 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
+  private async handleText(response: Response): Promise<string> {
+    if (!response.ok) {
+      const payload = await response.text();
+      let message;
+      switch (response.status) {
+        case 404:
+          message =
+            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
+      throw new Error(message);
+    }
+
+    return await response.text();
+  }
+
   private async postRequired(path: string, requestBody: any): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
     const { token: idToken } = await this.identityApi.getCredentials();
@@ -67,6 +85,24 @@ export class KubernetesBackendClient implements KubernetesApi {
     });
 
     return this.handleResponse(response);
+  }
+
+  private async getProxyRequired(
+    path: string,
+    clusterName: string,
+    token: string,
+  ): Promise<Response> {
+    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Backstage-Kubernetes-Cluster': clusterName,
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response;
   }
 
   async getObjectsByEntity(
@@ -109,5 +145,28 @@ export class KubernetesBackendClient implements KubernetesApi {
     });
 
     return (await this.handleResponse(response)).items;
+  }
+
+  async getPodLogs({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+    token,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    token: string;
+  }): Promise<string> {
+    const params = new URLSearchParams({
+      container: containerName,
+    });
+    return await this.getProxyRequired(
+      `/proxy/api/v1/namespaces/${namespace}/pods/${podName}/log?${params.toString()}`,
+      clusterName,
+      token,
+    ).then(response => this.handleText(response));
   }
 }

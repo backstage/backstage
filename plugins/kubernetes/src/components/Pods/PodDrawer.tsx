@@ -15,52 +15,110 @@
  */
 
 import React from 'react';
-import { V1Pod } from '@kubernetes/client-node';
-import {
-  containersReady,
-  containerStatuses,
-  totalRestarts,
-  imageChips,
-  renderCondition,
-} from '../../utils/pod';
-import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
-/** @public */
-export const PodDrawer = (props: { pod: V1Pod; expanded?: boolean }) => {
-  const { pod, expanded } = props;
+import { ItemCardGrid } from '@backstage/core-components';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+
+import { Pod } from 'kubernetes-models/v1';
+
+import { ContainerCard } from './ContainerCard';
+
+import { PodAndErrors } from './types';
+import { KubernetesDrawer } from '../KubernetesDrawer';
+
+const useDrawerContentStyles = makeStyles((_theme: Theme) =>
+  createStyles({
+    header: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    content: {
+      height: '80%',
+    },
+    icon: {
+      fontSize: 20,
+    },
+    podoklist: {
+      width: '100%',
+      maxWidth: 360,
+      maxHeight: 360,
+    },
+  }),
+);
+
+function getContainerSpecByName(pod: Pod, containerName: string) {
+  return pod.spec?.containers.find(c => c.name === containerName);
+}
+interface PodDrawerProps {
+  podAndErrors: PodAndErrors;
+}
+
+export const PodDrawer = ({ podAndErrors }: PodDrawerProps) => {
+  const classes = useDrawerContentStyles();
 
   return (
-    <KubernetesStructuredMetadataTableDrawer
-      object={pod}
-      expanded={expanded}
-      kind="Pod"
-      renderObject={(podObject: V1Pod) => {
-        const phase = podObject.status?.phase ?? 'unknown';
-
-        const ports =
-          podObject.spec?.containers?.map(c => {
-            return {
-              [c.name]: c.ports,
-            };
-          }) ?? 'N/A';
-
-        const conditions = (podObject.status?.conditions ?? [])
-          .map(renderCondition)
-          .reduce((accum, next) => {
-            accum[next[0]] = next[1];
-            return accum;
-          }, {} as { [key: string]: React.ReactNode });
-
-        return {
-          images: imageChips(podObject),
-          phase: phase,
-          'Containers Ready': containersReady(podObject),
-          'Total Restarts': totalRestarts(podObject),
-          'Container Statuses': containerStatuses(podObject),
-          ...conditions,
-          'Exposed ports': ports,
-        };
-      }}
-    />
+    <KubernetesDrawer
+      drawerContentsHeader={
+        <Typography variant="subtitle1">
+          Pod{' '}
+          {podAndErrors.pod.status?.podIP &&
+            `(${podAndErrors.pod.status?.podIP})`}
+        </Typography>
+      }
+      kubernetesObject={podAndErrors.pod}
+      label={
+        <Typography variant="subtitle1">
+          {podAndErrors.pod.metadata?.name ?? 'unknown'}
+        </Typography>
+      }
+    >
+      <div className={classes.content}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h5">Containers</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <ItemCardGrid>
+              {podAndErrors.pod.status?.containerStatuses?.map(
+                (containerStatus, i) => {
+                  const containerSpec = getContainerSpecByName(
+                    podAndErrors.pod,
+                    containerStatus.name,
+                  );
+                  return (
+                    <ContainerCard
+                      key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
+                      logContext={{
+                        podName: podAndErrors.pod.metadata?.name ?? 'unknown',
+                        podNamespace:
+                          podAndErrors.pod.metadata?.namespace ?? 'unknown',
+                        clusterName: podAndErrors.clusterName,
+                      }}
+                      containerSpec={containerSpec}
+                      containerStatus={containerStatus}
+                    />
+                  );
+                },
+              )}
+            </ItemCardGrid>
+          </Grid>
+          {podAndErrors.errors.length > 0 && (
+            <Grid item xs={12}>
+              <Typography variant="h5">Errors:</Typography>
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <Typography variant="h5">Events</Typography>
+          </Grid>
+        </Grid>
+      </div>
+    </KubernetesDrawer>
   );
 };
