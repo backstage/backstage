@@ -59,6 +59,7 @@ const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 export interface OctopusDeployApi {
   getReleaseProgression(
     projectId: string,
+    spaceId: string | null,
     releaseHistoryCount: number,
   ): Promise<OctopusProgression>;
 }
@@ -81,9 +82,10 @@ export class OctopusDeployClient implements OctopusDeployApi {
 
   async getReleaseProgression(
     projectId: string,
+    spaceId: string | null,
     releaseHistoryCount: number,
   ): Promise<OctopusProgression> {
-    const url = await this.getApiUrl(projectId, releaseHistoryCount);
+    const url = await this.getApiUrl(projectId, spaceId, releaseHistoryCount);
 
     const response = await this.fetchApi.fetch(url);
 
@@ -106,11 +108,21 @@ export class OctopusDeployClient implements OctopusDeployApi {
     return responseJson;
   }
 
-  private async getApiUrl(projectId: string, releaseHistoryCount: number) {
+  private async getApiUrl(
+    projectId: string,
+    spaceId: string | null,
+    releaseHistoryCount: number,
+  ) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     const queryParameters = new URLSearchParams({
       releaseHistoryCount: releaseHistoryCount.toString(),
     });
+    if (spaceId !== null)
+      return `${proxyUrl}${this.proxyPathBase}/${encodeURIComponent(
+        spaceId,
+      )}/projects/${encodeURIComponent(
+        projectId,
+      )}/progression?${queryParameters}`;
     return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
       projectId,
     )}/progression?${queryParameters}`;

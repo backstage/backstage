@@ -23,6 +23,7 @@ import {
 
 export function useReleases(
   projectId: string,
+  spaceId: string | null,
   releaseHistoryCount: number,
 ): {
   environments?: OctopusEnvironment[];
@@ -33,8 +34,8 @@ export function useReleases(
   const api = useApi(octopusDeployApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    return api.getReleaseProgression(projectId, releaseHistoryCount);
-  }, [api, projectId, releaseHistoryCount]);
+    return api.getReleaseProgression(projectId, spaceId, releaseHistoryCount);
+  }, [api, projectId, spaceId, releaseHistoryCount]);
 
   return {
     environments: value?.Environments,

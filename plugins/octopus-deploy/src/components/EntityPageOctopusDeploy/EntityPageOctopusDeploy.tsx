@@ -15,17 +15,22 @@
  */
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useReleases } from '../../hooks/useReleases';
-import { getAnnotationFromEntity } from '../../utils/getAnnotationFromEntity';
+import {
+  getProjectIdAnnotationFromEntity,
+  getSpaceIdAnnotationFromEntity,
+} from '../../utils/getAnnotationFromEntity';
 import React from 'react';
 import { ReleaseTable } from '../ReleaseTable';
 
 export const EntityPageOctopusDeploy = (props: { defaultLimit?: number }) => {
   const { entity } = useEntity();
 
-  const projectId = getAnnotationFromEntity(entity);
+  const projectId = getProjectIdAnnotationFromEntity(entity);
+  const spaceId = getSpaceIdAnnotationFromEntity(entity);
 
   const { environments, releases, loading, error } = useReleases(
     projectId,
+    spaceId,
     props.defaultLimit ?? 3,
   );
 
