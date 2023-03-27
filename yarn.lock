@@ -3714,6 +3714,7 @@ __metadata:
     "@spotify/eslint-config-react": ^14.0.0
     "@spotify/eslint-config-typescript": ^14.0.0
     "@sucrase/webpack-loader": ^2.0.0
+    "@svgr/core": 6.5.x
     "@svgr/plugin-jsx": 6.5.x
     "@svgr/plugin-svgo": 6.5.x
     "@svgr/rollup": 6.5.x
@@ -3983,6 +3984,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6884,6 +6886,7 @@ __metadata:
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
     msw: ^1.0.0
+    prop-types: ^15.7.2
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -8381,6 +8384,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -14038,7 +14042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/core@npm:^6.5.0":
+"@svgr/core@npm:6.5.x, @svgr/core@npm:^6.5.0":
   version: 6.5.0
   resolution: "@svgr/core@npm:6.5.0"
   dependencies:

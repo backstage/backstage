@@ -36,6 +36,7 @@
     "@material-ui/pickers": "^3.3.10",
     "humanize-duration": "^3.26.0",
     "luxon": "^3.0.0",
+    "prop-types": "^15.7.2",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {

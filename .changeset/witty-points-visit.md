@@ -96,6 +96,8 @@
 '@backstage/plugin-todo': patch
 '@backstage/plugin-adr': patch
 '@backstage/plugin-org': patch
+'@backstage/repo-tools': patch
+'@backstage/cli': patch
 ---
 
 Update peer dependencies
