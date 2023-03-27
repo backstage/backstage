@@ -7825,7 +7825,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
-    camelcase-keys: ^7.0.1
+    camelize-ts: ^2.3.0
     compression: ^1.7.4
     cors: ^2.8.5
     express: ^4.17.1
@@ -19232,18 +19232,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase-keys@npm:^7.0.1":
-  version: 7.0.2
-  resolution: "camelcase-keys@npm:7.0.2"
-  dependencies:
-    camelcase: ^6.3.0
-    map-obj: ^4.1.0
-    quick-lru: ^5.1.1
-    type-fest: ^1.2.1
-  checksum: b5821cc48dd00e8398a30c5d6547f06837ab44de123f1b3a603d0a03399722b2fc67a485a7e47106eb02ef543c3b50c5ebaabc1242cde4b63a267c3258d2365b
-  languageName: node
-  linkType: hard
-
 "camelcase@npm:5.0.0":
   version: 5.0.0
   resolution: "camelcase@npm:5.0.0"
@@ -19265,10 +19253,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^6.2.0, camelcase@npm:^6.3.0":
+"camelcase@npm:^6.2.0":
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
   checksum: 8c96818a9076434998511251dcb2761a94817ea17dbdc37f47ac080bd088fc62c7369429a19e2178b993497132c8cbcf5cc1f44ba963e76782ba469c0474938d
+  languageName: node
+  linkType: hard
+
+"camelize-ts@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "camelize-ts@npm:2.3.0"
+  checksum: 0f33c65468cc0883128bb15df96f244b21b94aa80094b358bda5a07db28b1f6e79fddb96b5af57cd754c6c8e07dc40ad2cb0d73b79b2ad584683babc57675ea6
   languageName: node
   linkType: hard
 
@@ -29710,7 +29705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"map-obj@npm:^4.0.0, map-obj@npm:^4.1.0":
+"map-obj@npm:^4.0.0":
   version: 4.3.0
   resolution: "map-obj@npm:4.3.0"
   checksum: fbc554934d1a27a1910e842bc87b177b1a556609dd803747c85ece420692380827c6ae94a95cce4407c054fa0964be3bf8226f7f2cb2e9eeee432c7c1985684e
