@@ -40,7 +40,6 @@
     "recharts": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
@@ -56,6 +55,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/highlightjs": "^10.1.0",
     "@types/node": "^16.11.26",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "@types/recharts": "^1.8.15",
     "cross-fetch": "^3.1.5",
     "msw": "^1.0.0"

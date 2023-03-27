@@ -43,6 +43,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.9.6",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "@types/recharts": "^1.8.14",
     "classnames": "^2.2.6",
     "history": "^5.0.0",
@@ -55,7 +56,6 @@
     "yup": "^0.32.9"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

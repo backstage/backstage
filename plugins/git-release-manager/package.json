@@ -31,13 +31,13 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "luxon": "^3.0.0",
     "qs": "^6.10.1",
     "react-use": "^17.2.4",
     "recharts": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

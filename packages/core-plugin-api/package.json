@@ -48,12 +48,12 @@
     "@backstage/config": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "zen-observable": "^0.10.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

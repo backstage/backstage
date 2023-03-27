@@ -46,6 +46,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "git-url-parse": "^13.0.0",
     "js-base64": "^3.6.0",
     "lodash": "^4.17.21",
@@ -54,7 +55,6 @@
     "yaml": "^2.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

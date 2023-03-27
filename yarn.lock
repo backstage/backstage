@@ -3409,7 +3409,6 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -3902,8 +3901,10 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
+    history: ^5.0.0
     msw: ^1.0.0
     prop-types: ^15.7.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
@@ -3914,7 +3915,6 @@ __metadata:
     zen-observable: ^0.10.0
     zod: ~3.18.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4001,6 +4001,7 @@ __metadata:
     "@types/dagre": ^0.7.44
     "@types/google-protobuf": ^3.7.2
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-helmet": ^6.1.0
     "@types/react-sparklines": ^1.7.0
     "@types/react-syntax-highlighter": ^15.0.0
@@ -4036,7 +4037,6 @@ __metadata:
     zen-observable: ^0.10.0
     zod: ~3.18.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4060,6 +4060,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
@@ -4067,7 +4068,6 @@ __metadata:
     prop-types: ^15.7.2
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4121,10 +4121,10 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4211,11 +4211,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4306,13 +4306,13 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-markdown: ^8.0.0
     react-use: ^17.2.4
     remark-gfm: ^3.0.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4360,11 +4360,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4392,11 +4392,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4423,12 +4423,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
+    prop-types: ^15.7.2
     react-ga: ^3.3.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4453,12 +4454,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4474,7 +4475,6 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     grpc-docs: ^1.1.2
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4504,6 +4504,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.1.1
     cross-fetch: ^3.1.5
     graphiql: ^1.8.8
@@ -4514,7 +4515,6 @@ __metadata:
     react-use: ^17.2.4
     swagger-ui-react: ^4.11.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4540,12 +4540,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4720,13 +4720,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4785,12 +4785,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4841,11 +4841,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4892,13 +4892,13 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
     "@testing-library/jest-dom": ^5.10.1
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     material-ui-search-bar: ^1.0.0
     react-hook-form: ^7.13.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4939,6 +4939,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -4948,7 +4949,6 @@ __metadata:
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5379,13 +5379,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     lodash: ^4.17.15
     p-limit: ^3.1.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5408,6 +5408,7 @@ __metadata:
     "@graphql-codegen/typescript": ^3.0.0
     "@graphql-codegen/typescript-resolvers": ^3.0.0
     "@graphql-tools/schema": ^9.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     graphql: ^16.0.0
     graphql-modules: ^2.0.0
     graphql-tag: ^2.11.0
@@ -5416,7 +5417,6 @@ __metadata:
     node-fetch: ^2.6.7
     winston: ^3.2.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5450,6 +5450,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     js-base64: ^3.6.0
@@ -5459,7 +5460,6 @@ __metadata:
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5546,6 +5546,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/jwt-decode": ^3.1.0
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
@@ -5558,7 +5559,6 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5593,6 +5593,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
     lodash: ^4.17.21
@@ -5601,7 +5602,6 @@ __metadata:
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5618,10 +5618,10 @@ __metadata:
     "@backstage/plugin-cicd-statistics": "workspace:^"
     "@gitbeaker/browser": ^35.6.0
     "@gitbeaker/core": ^35.6.0
+    "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     p-limit: ^4.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5647,10 +5647,10 @@ __metadata:
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
     luxon: ^3.0.0
+    prop-types: ^15.7.2
     react-use: ^17.3.1
     recharts: ^2.1.5
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5679,6 +5679,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     circleci-api: ^4.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
@@ -5687,7 +5688,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5715,13 +5715,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5750,13 +5750,13 @@ __metadata:
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5815,6 +5815,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/highlightjs": ^10.1.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     highlight.js: ^10.6.0
@@ -5823,7 +5824,6 @@ __metadata:
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5851,12 +5851,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5885,13 +5885,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     jsonschema: ^1.2.6
     msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5931,6 +5931,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/pluralize": ^0.0.29
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
     "@types/yup": ^0.29.13
@@ -5947,7 +5948,6 @@ __metadata:
     regression: ^2.0.1
     yup: ^0.32.9
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -5974,12 +5974,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     express: ^4.18.1
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6043,11 +6043,11 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6082,6 +6082,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -6089,7 +6090,6 @@ __metadata:
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6272,10 +6272,10 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6309,12 +6309,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6342,12 +6342,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6376,13 +6376,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     p-limit: ^3.0.2
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6412,6 +6412,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.3.3
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
     cross-fetch: ^3.1.5
@@ -6422,7 +6423,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6449,10 +6449,10 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6481,6 +6481,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -6489,7 +6490,6 @@ __metadata:
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6519,12 +6519,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6556,12 +6556,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6586,7 +6586,6 @@ __metadata:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@spotify/prettier-config": ^14.0.0
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -6599,7 +6598,6 @@ __metadata:
     octokit: ^2.0.4
     react-use: ^17.4.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6635,7 +6633,6 @@ __metadata:
     p-limit: ^4.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6662,11 +6659,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6697,6 +6694,7 @@ __metadata:
     "@types/lodash": ^4.14.173
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -6704,7 +6702,6 @@ __metadata:
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6731,6 +6728,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     graphiql: ^1.5.12
     graphql: ^16.0.0
@@ -6738,7 +6736,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6789,12 +6786,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     graphql-voyager: ^1.0.0-rc.31
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6846,12 +6843,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6882,13 +6879,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6954,13 +6951,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/testing-library__jest-dom": ^5.9.1
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7013,12 +7010,12 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     jest-when: ^3.1.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7116,7 +7113,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7177,7 +7173,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7246,13 +7241,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^2.0.2
     msw: ^1.0.0
     react-use: ^17.2.4
     slugify: ^1.6.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7280,6 +7275,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     cross-fetch: ^3.1.5
     dompurify: ^2.3.6
@@ -7289,7 +7285,6 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7315,7 +7310,6 @@ __metadata:
     cross-fetch: ^3.1.5
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7341,11 +7335,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7373,11 +7367,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7406,11 +7400,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7439,6 +7433,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     p-limit: ^3.1.0
@@ -7446,7 +7441,6 @@ __metadata:
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7475,13 +7469,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7531,12 +7525,12 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7618,11 +7612,11 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     react-use: ^17.2.4
     swr: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7696,6 +7690,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -7704,7 +7699,6 @@ __metadata:
     react-use: ^17.2.4
     swr: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -7793,7 +7787,6 @@ __metadata:
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8047,6 +8040,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/luxon": ^3.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     humanize-duration: ^3.25.1
     immer: ^9.0.1
@@ -8061,7 +8055,6 @@ __metadata:
     zod: ~3.18.0
     zod-to-json-schema: ~3.18.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8111,6 +8104,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
@@ -8130,7 +8124,6 @@ __metadata:
     zod: ~3.18.0
     zod-to-json-schema: ~3.18.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8324,11 +8317,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     qs: ^6.9.4
     react-use: ^17.3.2
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8363,12 +8356,12 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8405,7 +8398,6 @@ __metadata:
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8432,6 +8424,7 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
     msw: ^1.0.0
@@ -8440,7 +8433,6 @@ __metadata:
     uuid: ^8.3.2
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8475,8 +8467,8 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-  peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8506,12 +8498,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8540,13 +8532,13 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8592,13 +8584,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8624,11 +8616,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8737,12 +8729,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8778,7 +8770,6 @@ __metadata:
     prop-types: ^15.7.2
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8809,12 +8800,12 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
     testing-library__dom: ^7.29.4-beta.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8887,7 +8878,6 @@ __metadata:
     photoswipe: ^5.3.5
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8956,12 +8946,12 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     jss: ~10.10.0
     lodash: ^4.17.21
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9001,6 +8991,7 @@ __metadata:
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     canvas: ^2.10.2
     cross-fetch: ^3.1.5
     dompurify: ^2.2.9
@@ -9012,7 +9003,6 @@ __metadata:
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9066,11 +9056,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9128,7 +9118,6 @@ __metadata:
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9184,11 +9173,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9216,6 +9205,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -9223,7 +9213,6 @@ __metadata:
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9255,6 +9244,7 @@ __metadata:
     "@microsoft/api-extractor": ^7.33.7
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
+    "@types/node": ^16.11.26
     chalk: ^4.0.0
     commander: ^9.1.0
     fs-extra: 10.1.0
@@ -9296,11 +9286,11 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9313,8 +9303,8 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@material-ui/core": ^4.12.2
-  peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -9339,8 +9329,8 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
-  peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -11296,7 +11286,6 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -11360,10 +11349,10 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0

@@ -32,7 +32,6 @@
 '@backstage/plugin-splunk-on-call': patch
 '@backstage/plugin-stack-overflow': patch
 '@backstage/plugin-techdocs-react': patch
-'@backstage/app-defaults': patch
 '@backstage/core-app-api': patch
 '@backstage/plugin-catalog-graph': patch
 '@backstage/plugin-catalog-react': patch

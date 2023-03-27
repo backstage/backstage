@@ -66,6 +66,7 @@
     "@rjsf/utils": "5.3.1",
     "@rjsf/validator-ajv8": "5.3.1",
     "@types/json-schema": "^7.0.9",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "classnames": "^2.2.6",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
@@ -81,7 +82,6 @@
     "zod-to-json-schema": "~3.18.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
