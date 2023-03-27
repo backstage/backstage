@@ -30,6 +30,7 @@ import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { Onboarding } from '@backstage/plugin-onboarding';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -58,6 +59,7 @@ const timeFormat: Intl.DateTimeFormatOptions = {
 
 export const homePage = (
   <Page themeId="home">
+    <Onboarding />
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
       <HeaderWorldClock
         clockConfigs={clockConfigs}
