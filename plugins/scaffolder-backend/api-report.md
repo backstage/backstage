@@ -7,23 +7,29 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GithubCredentialsProvider } from '@backstage/integration';
+import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -33,6 +39,8 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
+import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 import { ZodType } from 'zod';
@@ -75,8 +83,10 @@ export function createCatalogRegisterAction(options: {
 
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<{
+  entity: {} & {
+    [k: string]: unknown;
+  };
   filePath?: string | undefined;
-  entity: {};
 }>;
 
 // @public
@@ -89,7 +99,8 @@ export function createDebugLogAction(): TemplateAction_2<{
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
 }): TemplateAction_2<{
-  entityRef: string;
+  entityRef?: string | undefined;
+  entityRefs?: string[] | undefined;
   optional?: boolean | undefined;
 }>;
 
@@ -100,6 +111,15 @@ export function createFetchPlainAction(options: {
 }): TemplateAction_2<{
   url: string;
   targetPath?: string | undefined;
+}>;
+
+// @public
+export function createFetchPlainFileAction(options: {
+  reader: UrlReader;
+  integrations: ScmIntegrations;
+}): TemplateAction_2<{
+  url: string;
+  targetPath: string;
 }>;
 
 // @public
@@ -528,6 +548,11 @@ export const createTemplateAction: <
 ) => TemplateAction_2<TActionInput>;
 
 // @public
+export function createWaitAction(options?: {
+  maxWaitTime?: Duration | HumanDuration;
+}): TemplateAction_2<HumanDuration>;
+
+// @public
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
@@ -549,6 +574,14 @@ export interface CurrentClaimedTask {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
+  // (undocumented)
+  cancelTask(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -640,6 +673,10 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
+  permissionApi?: PermissionEvaluator;
+  // (undocumented)
+  permissionRules?: TemplatePermissionRuleInput[];
+  // (undocumented)
   reader: UrlReader;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
@@ -694,6 +731,8 @@ export type SerializedTaskEvent = {
 // @public
 export interface TaskBroker {
   // (undocumented)
+  cancel?(taskId: string): Promise<void>;
+  // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
   dispatch(
@@ -731,6 +770,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
+  cancelSignal: AbortSignal;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -749,16 +790,19 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log';
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
 
 // @public
 export class TaskManager implements TaskContext {
+  // (undocumented)
+  get cancelSignal(): AbortSignal;
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
+    abortSignal: AbortSignal,
     logger: Logger,
   ): TaskManager;
   // (undocumented)
@@ -780,14 +824,16 @@ export type TaskSecrets = TaskSecrets_2;
 
 // @public
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 // @public
 export interface TaskStore {
+  // (undocumented)
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -886,4 +932,14 @@ export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// @public (undocumented)
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 ```

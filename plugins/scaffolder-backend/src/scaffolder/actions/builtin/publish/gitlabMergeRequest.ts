@@ -127,7 +127,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Gitlab Project path',
             type: 'string',
           },
-          mergeRequestURL: {
+          mergeRequestUrl: {
             title: 'MergeRequest(MR) URL',
             type: 'string',
             description: 'Link to the merge request in GitLab',

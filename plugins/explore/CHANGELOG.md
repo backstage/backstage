@@ -1,5 +1,43 @@
 # @backstage/plugin-explore
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-explore-react@0.0.27
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 3f75b7607ca: Add ability to pass icon as function to have ability to customize it by search item
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-explore-react@0.0.27
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.2
+
 ## 0.4.1-next.2
 
 ### Patch Changes

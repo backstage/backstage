@@ -599,15 +599,27 @@ export class CatalogBuilder {
       ...this.placeholderResolvers,
     };
 
-    // These are always there no matter what
+    // The placeholder is always there no matter what
     const processors: CatalogProcessor[] = [
       new PlaceholderProcessor({
         resolvers: placeholderResolvers,
         reader,
         integrations,
       }),
-      new BuiltinKindsEntityProcessor(),
     ];
+
+    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
+    // If the user adds a processor named 'BuiltinKindsEntityProcessor',
+    //   skip inclusion of the catalog-backend version.
+    if (
+      !this.processors.some(
+        processor =>
+          processor.getProcessorName() ===
+          builtinKindsEntityProcessor.getProcessorName(),
+      )
+    ) {
+      processors.push(builtinKindsEntityProcessor);
+    }
 
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {

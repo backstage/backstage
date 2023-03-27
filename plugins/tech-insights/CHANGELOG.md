@@ -1,5 +1,37 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- f538b9c5b83: The `Check` type now optionally includes the `failureMetadata` and `successMetadata` as returned by the `runChecks` call.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-tech-insights-common@0.2.10
+
+## 0.3.8
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-tech-insights-common@0.2.10
+
 ## 0.3.8-next.2
 
 ### Patch Changes

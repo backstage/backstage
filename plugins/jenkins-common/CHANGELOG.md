@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.14
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-permission-common@0.7.4
+
 ## 0.1.14-next.1
 
 ### Patch Changes

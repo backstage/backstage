@@ -1,5 +1,25 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/plugin-events-node@0.2.5-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a5de745ac17: Renamed `githubEventRouterEventsModule` to `eventsModuleGithubEventRouter` and `githubWebhookEventsModule` to `eventsModuleGithubWebhook`, to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/plugin-events-node@0.2.4
+  - @backstage/config@1.0.7
+
 ## 0.1.5-next.2
 
 ### Patch Changes

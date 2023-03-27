@@ -1,5 +1,33 @@
 # @backstage/backend-plugin-api
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+
+## 0.5.0
+
+### Minor Changes
+
+- c1ee073a82b: Added `lastModifiedAt` field on `UrlReaderService` responses and a `lastModifiedAfter` option to `UrlReaderService.readUrl`.
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.4.1-next.2
 
 ### Patch Changes

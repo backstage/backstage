@@ -1,5 +1,55 @@
 # @backstage/plugin-techdocs
 
+## 1.6.1-next.0
+
+### Patch Changes
+
+- b2e182cdfa4: Fixes a UI bug in search result item which rendered the item text with incorrect font size and color
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-techdocs-react@1.1.5-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.6.0
+
+### Minor Changes
+
+- 3f75b7607ca: Add ability to pass icon as function to have ability to customize it by search item
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 54a1e133b56: Fix bug that caused next and previous links not to work with certain versions of mkdocs-material
+- f320c299c67: The HTML tag attributes in the documentation content inserted to shadow DOM is preserved to improve accessibility
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 8adfda60ae1: Updated dependency `jss` to `~10.10.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 238cf657c09: Copy to clipboard now works in a not secure context.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-techdocs-react@1.1.4
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration-react@1.1.11
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-search-common@1.2.2
+
 ## 1.6.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,44 @@
 # @backstage/cli
 
+## 0.22.6-next.0
+
+### Patch Changes
+
+- b9839d7135c: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+- c07c3b7364b: Add `onboard` command. While still in development, this command aims to guide users in setting up their Backstage App.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.22.4
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 2011b86052c: Added templates for new plugin Web and Node.js libraries.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- b4cd145b574: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 8bf24946c66: Adjust express dependencies to be the same as the rest of the project
+- 17271841de8: Updated frontend plugin template to use some more recent features
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2
+  - @backstage/errors@1.1.5
+  - @backstage/config-loader@1.1.9
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.22.4-next.1
 
 ### Patch Changes

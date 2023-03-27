@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { TemplateWizardPage } from './TemplateWizardPage';
+export type { TemplateWizardPageProps } from './TemplateWizardPage';

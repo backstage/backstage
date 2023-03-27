@@ -1,5 +1,33 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 99df676e324: Allow external links to be added as shortcuts
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+
+## 0.3.8
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 7c38e565d1f: Fixed bug in LocalStoredShortcuts client where adding new Shortcut results in replacing entire shortcut list.
+
+  Refactored LocalStoredShortcuts client to listen to `storageApi` updates to ensure that local state is always up to date.
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+
 ## 0.3.8-next.2
 
 ### Patch Changes

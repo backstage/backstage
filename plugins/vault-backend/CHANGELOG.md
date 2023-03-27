@@ -1,5 +1,31 @@
 # @backstage/plugin-vault-backend
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 5e959c9eb62: Allow generic Vault clients to be passed into the builder
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/errors@1.1.5
+
+## 0.2.10
+
+### Patch Changes
+
+- 66b3a3956b8: Ignore the `eslint` error
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+
 ## 0.2.10-next.2
 
 ### Patch Changes

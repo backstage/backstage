@@ -15,6 +15,9 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
@@ -49,6 +52,7 @@ export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
+  permissions: PermissionEvaluator;
 }
 
 /**
@@ -89,6 +93,7 @@ export class KubernetesBuilder {
   public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
     const config = this.env.config;
+    const permissions = this.env.permissions;
 
     logger.info('Initializing Kubernetes backend');
 
@@ -126,6 +131,7 @@ export class KubernetesBuilder {
       clusterSupplier,
       this.env.catalogApi,
       proxy,
+      permissions,
     );
 
     return {
@@ -262,12 +268,17 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler());
+    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-
+    router.use(
+      createPermissionIntegrationRouter({
+        permissions: kubernetesPermissions,
+      }),
+    );
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;

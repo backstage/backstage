@@ -28,6 +28,7 @@ import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { CatalogClient } from '@backstage/catalog-client';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -47,6 +48,8 @@ export async function createStandaloneApplication(
     discoveryApi: SingleHostDiscovery.fromConfig(config),
   });
 
+  const permissions = {} as PermissionEvaluator;
+
   app.use(helmet());
   if (enableCors) {
     app.use(cors());
@@ -54,7 +57,10 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config, discovery, catalogApi }));
+  app.use(
+    '/',
+    await createRouter({ logger, config, discovery, catalogApi, permissions }),
+  );
   app.use(notFoundHandler());
   app.use(errorHandler());
 

@@ -71,7 +71,7 @@ You can also choose to define your custom action using JSON schema instead of `z
 
 ```ts title="With JSON Schema"
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import fs from 'fs-extra';
+import { writeFile } from 'fs';
 
 export const createNewFileAction = () => {
   return createTemplateAction<{ contents: string; filename: string }>({
@@ -95,9 +95,12 @@ export const createNewFileAction = () => {
       },
     },
     async handler(ctx) {
-      await fs.outputFile(
+      const { signal } = ctx;
+      await writeFile(
         `${ctx.workspacePath}/${ctx.input.filename}`,
         ctx.input.contents,
+        { signal },
+        _ => {},
       );
     },
   });

@@ -25,7 +25,7 @@ import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 import { GiteaUrlReader } from './GiteaUrlReader';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -199,6 +199,52 @@ describe('GiteaUrlReader', () => {
       ).rejects.toThrow(
         'https://gitea.com/owner/project/src/branch/branch2/LICENSE could not be read as https://gitea.com/api/v1/repos/owner/project/contents/LICENSE?ref=branch2, 500 Error!!!',
       );
+    });
+
+    it('should throw NotModified if server responds with 304 from etag', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
+          (_, res, ctx) => {
+            return res(ctx.set('ETag', 'foo'), ctx.status(304, 'Error!!!'));
+          },
+        ),
+      );
+
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/branch2/LICENSE',
+          {
+            etag: 'foo',
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
+          (_, res, ctx) => {
+            return res(
+              ctx.set(
+                'Last-Modified',
+                new Date('2020-01-01T00:00:00Z').toUTCString(),
+              ),
+              ctx.status(304, 'Error!!!'),
+            );
+          },
+        ),
+      );
+
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/branch2/LICENSE',
+          {
+            lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
     });
   });
 });

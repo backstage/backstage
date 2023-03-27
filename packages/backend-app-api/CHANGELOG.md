@@ -1,5 +1,41 @@
 # @backstage/backend-app-api
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 8cce2205a39: Register unhandled rejection and uncaught exception handlers to avoid backend crashes.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 482dae5de1c: Updated link to docs.
+- 915e46622cf: Add support for `NotImplementedError`, properly returning 501 as status code.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/config-loader@1.1.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.4.1-next.2
 
 ### Patch Changes

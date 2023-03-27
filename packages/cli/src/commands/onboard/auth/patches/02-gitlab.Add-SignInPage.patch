@@ -1,0 +1,25 @@
+--- a/packages/app/src/App.tsx
++++ b/packages/app/src/App.tsx
+@@ -30 +30,5 @@ import { Root } from './components/Root';
+-import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
++import {
++  AlertDisplay,
++  OAuthRequestDialog,
++  SignInPage,
++} from '@backstage/core-components';
+@@ -35,0 +40 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
++import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
+@@ -38,0 +44,14 @@ const app = createApp({
++  components: {
++    SignInPage: props => (
++      <SignInPage
++        {...props}
++        provider={{
++          id: 'gitlab-auth-provider',
++          title: 'GitLab',
++          message: 'Sign in using GitLab',
++          apiRef: gitlabAuthApiRef,
++        }}
++      />
++    ),
++  },

@@ -60,8 +60,10 @@ import {
   viewTechDocRouteRef,
   selectedTemplateRouteRef,
   scaffolderTaskRouteRef,
+  scaffolderListTaskRouteRef,
+  actionsRouteRef,
+  editRouteRef,
 } from './routes';
-import { nextRouteRef } from './next';
 
 /**
  * The main plugin export for the scaffolder.
@@ -91,6 +93,9 @@ export const scaffolderPlugin = createPlugin({
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
+    actions: actionsRouteRef,
+    listTasks: scaffolderListTaskRouteRef,
+    edit: editRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,
@@ -199,6 +204,6 @@ export const NextScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     name: 'NextScaffolderPage',
     component: () => import('./next/Router').then(m => m.Router),
-    mountPoint: nextRouteRef,
+    mountPoint: rootRouteRef,
   }),
 );

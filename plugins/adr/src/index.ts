@@ -15,7 +15,7 @@
  */
 
 /**
- * ADR frontend plugin
+ * Architecture Decision Records frontend plugin.
  *
  * @packageDocumentation
  */

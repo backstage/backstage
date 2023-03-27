@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "1.6.0-next.2",
+  "version": "1.7.0-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -40,7 +40,7 @@
     "prop-types": "^15.7.2",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
-    "zod": "~3.18.0"
+    "zod": "^3.21.4"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",

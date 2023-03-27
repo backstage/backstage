@@ -1,5 +1,48 @@
 # @backstage/core-app-api
 
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.6.0
+
+### Minor Changes
+
+- 456eaa8cf83: `OAuth2` now gets ID tokens from a session with the `openid` scope explicitly
+  requested.
+
+  This should not be considered a breaking change, because spec-compliant OIDC
+  providers will already be returning ID tokens if and only if the `openid` scope
+  is granted.
+
+  This change makes the dependence explicit, and removes the burden on
+  OAuth2-based providers which require an ID token (e.g. this is done by various
+  default [auth
+  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  `openid` to their default scopes. _That_ could carry another indirect benefit:
+  by removing `openid` from the default scopes for a provider, grants for
+  resource-specific access tokens can avoid requesting excess ID token-related
+  scopes.
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.6.0-next.2
 
 ### Minor Changes

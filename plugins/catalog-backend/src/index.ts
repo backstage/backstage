@@ -27,3 +27,40 @@ export * from './processing';
 export * from './search';
 export * from './service';
 export * from './deprecated';
+
+import {
+  DefaultCatalogCollatorFactory as _DefaultCatalogCollatorFactory,
+  defaultCatalogCollatorEntityTransformer as _defaultCatalogCollatorEntityTransformer,
+} from '@backstage/plugin-search-backend-module-catalog';
+
+/**
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-catalog` instead
+ */
+export const DefaultCatalogCollatorFactory = _DefaultCatalogCollatorFactory;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-catalog` instead
+ */
+export const defaultCatalogCollatorEntityTransformer =
+  _defaultCatalogCollatorEntityTransformer;
+
+import type {
+  DefaultCatalogCollatorFactoryOptions as _DefaultCatalogCollatorFactoryOptions,
+  CatalogCollatorEntityTransformer as _CatalogCollatorEntityTransformer,
+} from '@backstage/plugin-search-backend-module-catalog';
+
+/**
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-catalog` instead
+ */
+export type DefaultCatalogCollatorFactoryOptions =
+  _DefaultCatalogCollatorFactoryOptions;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/search-backend-module-catalog` instead
+ */
+export type CatalogCollatorEntityTransformer =
+  _CatalogCollatorEntityTransformer;

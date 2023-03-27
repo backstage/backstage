@@ -1,5 +1,41 @@
+@use 'src/theme/variables';
+
 .bannerSection {
+  --diagonalBorderHeight: 40px;
+
   display: block;
+  background: var(--ifm-background-color);
+
+  @media (min-width: variables.$desktopUpBreakpoint) {
+    --diagonalBorderHeight: 80px;
+  }
+
+  &:global(:is(.diagonalBorder, .diagonalBottomBorder)) {
+    padding-bottom: var(--diagonalBorderHeight);
+
+    & + section {
+      margin-top: calc(var(--diagonalBorderHeight) * -1);
+      padding-top: var(--diagonalBorderHeight);
+    }
+  }
+
+  &:global(.diagonalBorder) {
+    clip-path: polygon(
+      0 var(--diagonalBorderHeight),
+      100% 0,
+      100% calc(100% - var(--diagonalBorderHeight)),
+      0 100%
+    );
+  }
+
+  &:global(.diagonalBottomBorder) {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--diagonalBorderHeight)),
+      0 100%
+    );
+  }
 
   &:global(.greyBackground) {
     background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);

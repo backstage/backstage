@@ -142,20 +142,22 @@ export const TemplateCard = (props: TemplateCardProps) => {
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={2}>
-                  {props.additionalLinks?.map(({ icon, text, url }) => (
-                    <Grid className={styles.linkText} item xs={6}>
+                  {props.additionalLinks?.map(({ icon, text, url }, index) => (
+                    <Grid className={styles.linkText} item xs={6} key={index}>
                       <CardLink icon={icon} text={text} url={url} />
                     </Grid>
                   ))}
-                  {template.metadata.links?.map(({ url, icon, title }) => (
-                    <Grid className={styles.linkText} item xs={6}>
-                      <CardLink
-                        icon={iconResolver(icon)}
-                        text={title || url}
-                        url={url}
-                      />
-                    </Grid>
-                  ))}
+                  {template.metadata.links?.map(
+                    ({ url, icon, title }, index) => (
+                      <Grid className={styles.linkText} item xs={6} key={index}>
+                        <CardLink
+                          icon={iconResolver(icon)}
+                          text={title || url}
+                          url={url}
+                        />
+                      </Grid>
+                    ),
+                  )}
                 </Grid>
               </Grid>
             </>

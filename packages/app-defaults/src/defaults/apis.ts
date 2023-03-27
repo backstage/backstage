@@ -130,6 +130,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GoogleAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -144,6 +145,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       MicrosoftAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -158,6 +160,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GithubAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['read:user'],
@@ -173,6 +176,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       OktaAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -187,6 +191,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GitlabAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -201,6 +206,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       OneLoginAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -215,6 +221,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       BitbucketAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['team'],
@@ -226,9 +233,11 @@ export const apis = [
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       BitbucketServerAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['REPO_READ'],
@@ -243,6 +252,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
       return AtlassianAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),

@@ -25,7 +25,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import React from 'react';
-import { nextRouteRef } from '../routes';
+import { rootRouteRef } from '../../routes';
 import { TemplateListPage } from './TemplateListPage';
 
 describe('TemplateListPage', () => {
@@ -63,7 +63,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByPlaceholderText('Search')).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByRole('menuitem', { name: /All/ })).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      { mountedRoutes: { '/': nextRouteRef } },
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByText('Categories')).toBeInTheDocument();
@@ -134,5 +134,55 @@ describe('TemplateListPage', () => {
     );
 
     expect(getByText('Tags')).toBeInTheDocument();
+  });
+
+  describe('scaffolder page context menu', () => {
+    it('should render if context menu props are not set to false', async () => {
+      const { queryByTestId } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: MockStorageApi.create(),
+              }),
+            ],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <TemplateListPage />
+        </TestApiProvider>,
+        { mountedRoutes: { '/': rootRouteRef } },
+      );
+      expect(queryByTestId('menu-button')).toBeInTheDocument();
+    });
+
+    it('should not render if context menu props are set to false', async () => {
+      const { queryByTestId } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: MockStorageApi.create(),
+              }),
+            ],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <TemplateListPage
+            contextMenu={{
+              editor: false,
+              actions: false,
+              tasks: false,
+            }}
+          />
+        </TestApiProvider>,
+        { mountedRoutes: { '/': rootRouteRef } },
+      );
+      expect(queryByTestId('menu-button')).not.toBeInTheDocument();
+    });
   });
 });

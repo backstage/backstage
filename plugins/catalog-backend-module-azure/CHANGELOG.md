@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `azureDevOpsEntityProviderCatalogModule` to `catalogModuleAzureDevOpsEntityProvider` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- c17fa101825: Add branch filter support
+  https://backstage.io/docs/integrations/azure/discovery
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.1.14-next.2
 
 ### Patch Changes

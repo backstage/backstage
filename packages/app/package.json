@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.81-next.2",
+  "version": "0.2.82-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -72,7 +72,7 @@
     "@internal/plugin-catalog-customized": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
     "@oriflame/backstage-plugin-score-card": "^0.6.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",

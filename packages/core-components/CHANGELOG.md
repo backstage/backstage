@@ -1,5 +1,39 @@
 # @backstage/core-components
 
+## 0.12.6-next.0
+
+### Patch Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 7245e744ab1: Fixed the font color on `BackstageHeaderLabel` to respect the active page theme.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5
+
+### Patch Changes
+
+- 8bbf95b5507: Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
+  For example, a sidebar button with the label "Search" will appear as Search, "search" will appear as search, "SEARCH" will appear as SEARCH etc.
+  This can potentially affect any overriding styles previously applied to change the appearance of Button labels in the Sidebar.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- e1aae2f5a0c: Updated the `aria-label` of the `HeaderTabs` component.
+- 6a51a49a810: Fix bug where `<Table />` component would not take into account header styles defined in `columns[*].headerStyle`.
+- fa004f66871: Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/version-bridge@1.0.3
+
 ## 0.12.5-next.2
 
 ### Patch Changes

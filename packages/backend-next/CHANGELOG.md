@@ -1,5 +1,29 @@
 # example-backend-next
 
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.1-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-defaults@0.1.9-next.0
+  - @backstage/plugin-app-backend@0.3.44-next.0
+  - @backstage/plugin-techdocs-backend@1.6.1-next.0
+  - @backstage/plugin-todo-backend@0.1.41-next.0
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/plugin-todo-backend@0.1.40
+  - @backstage/plugin-techdocs-backend@1.6.0
+  - @backstage/backend-defaults@0.1.8
+  - @backstage/plugin-app-backend@0.3.43
+
 ## 0.0.9-next.2
 
 ### Patch Changes

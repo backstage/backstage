@@ -1,5 +1,35 @@
 # @backstage/plugin-api-docs
 
+## 0.9.2-next.0
+
+### Patch Changes
+
+- ca50c3bbea1: Corrected styling of nested objects in AsyncAPI to avoid inappropriate uppercase text transformation of nested objects.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-catalog@1.10.0-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+
+## 0.9.1
+
+### Patch Changes
+
+- 095e755d9b5: Add ApiDefinitionDialog component for fast access to the API definition in ProvidedApiCards and ConsumedApiCards.
+- 8bc7dcec820: Fix dark theme Swagger's clear button font color.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 9820eb5d24f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+
 ## 0.9.1-next.2
 
 ### Patch Changes

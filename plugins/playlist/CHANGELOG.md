@@ -1,5 +1,42 @@
 # @backstage/plugin-playlist
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-playlist-common@0.1.5
+
+## 0.1.7
+
+### Patch Changes
+
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 122a37a880e: Internal update to work with newer versions of react-router
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/plugin-playlist-common@0.1.5
+
 ## 0.1.7-next.2
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-sites-common@0.1.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-sites-common@0.1.0
+
 ## 0.1.5-next.2
 
 ### Patch Changes

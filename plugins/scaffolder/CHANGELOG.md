@@ -1,5 +1,84 @@
 # @backstage/plugin-scaffolder
 
+## 1.13.0-next.0
+
+### Minor Changes
+
+- cdab34fd9a2: scaffolder/next: removing the `routeRefs` and exporting the originals on `scaffolderPlugin.routes.x` instead
+- e5ad1bd61ec: Allow `TemplateListPage` and `TemplateWizardPage` to be passed in as props
+- 92cf86a4b5d: Added a `templateFilter` prop to the `<Router/>` component to allow for filtering of templates through a function.
+- 259d3407b9b: Move `CategoryPicker` from `scaffolder` into `scaffolder-react`
+  Move `ContextMenu` into `scaffolder-react` and rename it to `ScaffolderPageContextMenu`
+
+### Patch Changes
+
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- 57c1b4752fa: Allow use of `{ exists: true }` value inside filters to filter entities that has that key.
+
+  this example will filter all entities that has the annotation `someAnnotation` set to any value.
+
+  ```yaml
+  ui:options:
+    catalogFilter:
+      kind: Group
+      metadata.annotations.someAnnotation: { exists: true }
+  ```
+
+- 7a6b16cc506: `scaffolder/next`: Bump `@rjsf/*` deps to 5.3.1
+- f84fc7fd040: Updated dependency `@rjsf/validator-ajv8` to `5.3.0`.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.3.0-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+
+## 1.12.0
+
+### Minor Changes
+
+- 0d61fcca9c3: Update `EntityPicker` to use the fully qualified entity ref instead of the humanized version.
+- 8f4d13f21cf: Move `useTaskStream`, `TaskBorder`, `TaskLogStream` and `TaskSteps` into `scaffolder-react`.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- be3cddaab5f: Getting credentials in the RepoUrlPicker now also works for targets without owner (e.g. Bitbucket Server).
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- eb877bad736: Create an "Other Templates" group when groups are given to scaffolder/next.
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 0aae4596296: Fix the scaffolder validator for arrays when the item is a field in the object
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-scaffolder-react@1.2.0
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration-react@1.1.11
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/plugin-scaffolder-common@1.2.6
+
 ## 1.12.0-next.2
 
 ### Minor Changes

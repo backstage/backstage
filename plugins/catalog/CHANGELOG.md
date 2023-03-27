@@ -1,5 +1,78 @@
 # @backstage/plugin-catalog
 
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 4dbf3d3e4da: Added a new EntitySwitch isResourceType to allow different views depending on Resource type
+- fc6cab4eb48: Added `isEntityWith` condition helper for `EntitySwitch` case statements.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.9.0
+
+### Minor Changes
+
+- 23cc40039c0: Allow `EntitySwitch` to render all cases that match the condition.
+
+  This change introduces a new parameter for the `EntitySwitch` component
+  `renderMultipleMatches`. In case the parameter value is `all`, the `EntitySwitch`
+  will render all `EntitySwitch.Case` that contain `if` parameter, and it
+  evaluates to true. In case none of the cases match, the default case will be
+  rendered, if any.
+
+  This means for example in the CI/CD page you can now do the following:
+
+  ```tsx
+  <EntitySwitch renderMultipleMatches="all">
+    <EntitySwitch.Case if={isJenkinsAvailable}>Jenkins</EntitySwitch.Case>
+    <EntitySwitch.Case if={isCodebuildAvailable}>CodeBuild</EntitySwitch.Case>
+    <EntitySwitch.Case>No CI/CD</EntitySwitch.Case>
+  </EntitySwitch>
+  ```
+
+  This allows the component to have multiple CI/CD systems and all of those are
+  rendered on the same page.
+
+- 3f75b7607ca: Add ability to pass icon as function to have ability to customize it by search item
+- c9a9f3c834f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+
+### Patch Changes
+
+- 3fa41696820: Make the "Copied!" message disappear automatically after some time
+- 7e8930ae1c6: Fix icon alignment in `CatalogSearchResultListItem`
+- dbbde6ed353: fix entity switch rendering when there is no default case
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration-react@1.1.11
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.2
+
 ## 1.9.0-next.2
 
 ### Minor Changes

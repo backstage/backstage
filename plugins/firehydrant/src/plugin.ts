@@ -50,3 +50,6 @@ export const FirehydrantCard = firehydrantPlugin.provide(
     },
   }),
 );
+
+/** @public */
+export { isFireHydrantAvailable } from './components/hooks';

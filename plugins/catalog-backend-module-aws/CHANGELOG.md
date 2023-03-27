@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 0.1.17
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `awsS3EntityProviderCatalogModule` to `catalogModuleAwsS3EntityProviders` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- bf611cf019a: Fix missing `dependencies` in `package.json`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-kubernetes-common@0.6.1
+
 ## 0.1.17-next.2
 
 ### Patch Changes
