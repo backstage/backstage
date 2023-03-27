@@ -44,7 +44,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@types/luxon": "^3.0.0",
     "msw": "^1.0.0"
   },

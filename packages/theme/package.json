@@ -34,6 +34,11 @@
   "dependencies": {
     "@material-ui/core": "^4.12.2"
   },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   },
