@@ -619,6 +619,21 @@ export const providers: Readonly<{
     ) => AuthProviderFactory_2;
     resolvers: never;
   }>;
+  pinniped: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OidcAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OidcAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
   saml: Readonly<{
     create: (
       options?:
