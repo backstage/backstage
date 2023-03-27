@@ -57,14 +57,16 @@ function getContainerSpecByName(pod: Pod, containerName: string) {
   return pod.spec?.containers.find(c => c.name === containerName);
 }
 interface PodDrawerProps {
+  open?: boolean;
   podAndErrors: PodAndErrors;
 }
 
-export const PodDrawer = ({ podAndErrors }: PodDrawerProps) => {
+export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
 
   return (
     <KubernetesDrawer
+      open={open}
       drawerContentsHeader={
         <Typography variant="subtitle1">
           Pod{' '}

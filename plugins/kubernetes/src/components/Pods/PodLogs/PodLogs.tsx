@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DismissableBanner,
-  LogViewer,
-  Progress,
-} from '@backstage/core-components';
+import { DismissableBanner, LogViewer } from '@backstage/core-components';
+import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 
 import { ContainerLogContext } from './types';
@@ -50,8 +47,7 @@ export const PodLogs: React.FC<PodLogsProps> = ({
         />
       )}
       <div style={{ height: '50rem', width: '100rem' }}>
-        {/* TODO Make this a skeleton? */}
-        {loading && <Progress />}
+        {loading && <Skeleton variant="rect" width="100rem" height="50rem" />}
         {!loading && value !== undefined && <LogViewer text={value} />}
       </div>
     </>

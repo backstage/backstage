@@ -15,85 +15,53 @@
  */
 
 import React from 'react';
+
 import { render } from '@testing-library/react';
-import * as pod from './__fixtures__/pod.json';
-import * as crashingPod from './__fixtures__/crashing-pod.json';
-import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
+import '@testing-library/jest-dom';
+
 import { PodDrawer } from './PodDrawer';
 
 describe('PodDrawer', () => {
-  it('should render pod', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(<PodDrawer pod={pod as any} expanded />),
+  it('Should show title and container names', async () => {
+    const { getAllByText, getByText } = render(
+      wrapInTestApp(
+        <PodDrawer
+          {...({
+            open: true,
+            podAndErrors: {
+              clusterName: 'some-cluster-1',
+              pod: {
+                metadata: {
+                  name: 'ok-pod',
+                },
+                spec: {
+                  containers: [
+                    {
+                      name: 'some-container',
+                    },
+                  ],
+                },
+                status: {
+                  podIP: '127.0.0.1',
+                  containerStatuses: [
+                    {
+                      name: 'some-container',
+                    },
+                  ],
+                },
+              },
+              errors: [],
+            },
+          } as any)}
+        />,
+      ),
     );
 
-    expect(getAllByText('dice-roller-6c8646bfd-2m5hv')).toHaveLength(2);
-    expect(getByText('Pod')).toBeInTheDocument();
+    expect(getAllByText('ok-pod')).toHaveLength(2);
+    expect(getByText('Pod (127.0.0.1)')).toBeInTheDocument();
     expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Images')).toBeInTheDocument();
-    expect(getByText('nginx=nginx:1.14.2')).toBeInTheDocument();
-    expect(getByText('Phase')).toBeInTheDocument();
-    expect(getByText('Running')).toBeInTheDocument();
-    expect(getAllByText('Containers Ready')).toHaveLength(2);
-    expect(getByText('1/1')).toBeInTheDocument();
-    expect(getByText('Total Restarts')).toBeInTheDocument();
-    expect(getByText('0')).toBeInTheDocument();
-    expect(getByText('Container Statuses')).toBeInTheDocument();
-    expect(getByText('OK')).toBeInTheDocument();
-    expect(getByText('Initialized')).toBeInTheDocument();
-    expect(getByText('Ready')).toBeInTheDocument();
-    expect(getByText('Pod Scheduled')).toBeInTheDocument();
-    expect(getAllByText('True')).toHaveLength(4);
-    expect(getByText('Exposed Ports')).toBeInTheDocument();
-    expect(getByText('Nginx:')).toBeInTheDocument();
-    expect(
-      getByText(textContentMatcher('Container Port: 80')),
-    ).toBeInTheDocument();
-    expect(getByText(textContentMatcher('Protocol: TCP'))).toBeInTheDocument();
-  });
-  it('should render crashing pod', async () => {
-    const { getByText, getAllByText } = render(
-      wrapInTestApp(<PodDrawer pod={crashingPod as any} expanded />),
-    );
-
-    expect(getAllByText('dice-roller-canary-7d64cd756c-55rfq')).toHaveLength(2);
-    expect(getByText('Pod')).toBeInTheDocument();
-    expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Images')).toBeInTheDocument();
-    expect(getByText('nginx=nginx:1.14.2')).toBeInTheDocument();
-    expect(getByText('other-side-car=nginx:1.14.2')).toBeInTheDocument();
-    expect(getByText('side-car=nginx:1.14.2')).toBeInTheDocument();
-    expect(getByText('Phase')).toBeInTheDocument();
-    expect(getByText('Running')).toBeInTheDocument();
-    expect(getAllByText('Containers Ready')).toHaveLength(2);
-    expect(getByText('1/3')).toBeInTheDocument();
-    expect(getByText('Total Restarts')).toBeInTheDocument();
-    expect(getByText('76')).toBeInTheDocument();
-    expect(getByText('Container Statuses')).toBeInTheDocument();
-    expect(getByText('Container: side-car')).toBeInTheDocument();
-    expect(getByText('Container: other-side-car')).toBeInTheDocument();
-    expect(getAllByText('CrashLoopBackOff')).toHaveLength(2);
-    expect(getByText('Initialized')).toBeInTheDocument();
-    expect(getByText('Ready')).toBeInTheDocument();
-    expect(getByText('Pod Scheduled')).toBeInTheDocument();
-    expect(getAllByText('True')).toHaveLength(2);
-    expect(getAllByText('False')).toHaveLength(2);
-    expect(
-      getAllByText('containers with unready status: [side-car other-side-car]'),
-    ).toHaveLength(2);
-    expect(getByText('Exposed Ports')).toBeInTheDocument();
-    expect(getAllByText(textContentMatcher('Protocol: TCP'))).toHaveLength(3);
-    expect(getByText('Nginx:')).toBeInTheDocument();
-    expect(
-      getByText(textContentMatcher('Container Port: 80')),
-    ).toBeInTheDocument();
-    expect(getByText('Side Car:')).toBeInTheDocument();
-    expect(
-      getByText(textContentMatcher('Container Port: 81')),
-    ).toBeInTheDocument();
-    expect(getByText('Other Side Car:')).toBeInTheDocument();
-    expect(
-      getByText(textContentMatcher('Container Port: 82')),
-    ).toBeInTheDocument();
+    expect(getByText('Containers')).toBeInTheDocument();
+    expect(getByText('some-container')).toBeInTheDocument();
   });
 });

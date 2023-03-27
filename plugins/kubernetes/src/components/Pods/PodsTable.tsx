@@ -26,6 +26,7 @@ import {
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import { ClusterContext } from '../../hooks/Cluster';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
@@ -36,32 +37,6 @@ type PodsTablesProps = {
   extraColumns?: PodColumns[];
   children?: React.ReactNode;
 };
-
-const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
-  {
-    title: 'name',
-    highlight: true,
-    render: (pod: V1Pod) => (
-      <PodDrawer
-        podAndErrors={{
-          // TODO fix hard coding
-          pod: pod as any,
-          clusterName: 'local',
-          errors: [],
-        }}
-      />
-    ),
-  },
-  {
-    title: 'phase',
-    render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
-    width: 'auto',
-  },
-  {
-    title: 'status',
-    render: containerStatuses,
-  },
-];
 
 const READY: TableColumn<V1Pod>[] = [
   {
@@ -81,7 +56,32 @@ const READY: TableColumn<V1Pod>[] = [
 
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
-  const columns: TableColumn<V1Pod>[] = [...DEFAULT_COLUMNS];
+  const cluster = useContext(ClusterContext);
+  const defaultColumns: TableColumn<V1Pod>[] = [
+    {
+      title: 'name',
+      highlight: true,
+      render: (pod: V1Pod) => (
+        <PodDrawer
+          podAndErrors={{
+            pod: pod as any,
+            clusterName: cluster.name,
+            errors: [],
+          }}
+        />
+      ),
+    },
+    {
+      title: 'phase',
+      render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
+      width: 'auto',
+    },
+    {
+      title: 'status',
+      render: containerStatuses,
+    },
+  ];
+  const columns: TableColumn<V1Pod>[] = [...defaultColumns];
 
   if (extraColumns.includes(READY_COLUMNS)) {
     columns.push(...READY);
