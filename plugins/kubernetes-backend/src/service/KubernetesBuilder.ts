@@ -121,6 +121,7 @@ export class KubernetesBuilder {
     const objectsProvider = this.getObjectsProvider({
       logger,
       fetcher,
+      config,
       serviceLocator,
       customResources,
       objectTypesToFetch: this.getObjectTypesToFetch(),

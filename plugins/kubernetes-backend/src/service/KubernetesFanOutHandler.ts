@@ -48,6 +48,7 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
+import { Config } from '@backstage/config';
 
 const isRejected = (
   input: PromiseSettledResult<unknown>,
@@ -196,14 +197,17 @@ export class KubernetesFanOutHandler {
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
   private readonly authTranslators: Record<string, KubernetesAuthTranslator>;
+  private readonly config: Config;
 
   constructor({
+    config,
     logger,
     fetcher,
     serviceLocator,
     customResources,
     objectTypesToFetch = DEFAULT_OBJECTS,
   }: KubernetesFanOutHandlerOptions) {
+    this.config = config;
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
@@ -404,6 +408,7 @@ export class KubernetesFanOutHandler {
         provider,
         {
           logger: this.logger,
+          config: this.config,
         },
       );
     return this.authTranslators[provider];

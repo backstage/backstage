@@ -15,12 +15,14 @@
  */
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
-import {
-  fromEnv,
-  fromTemporaryCredentials,
-} from '@aws-sdk/credential-providers';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { Sha256 } from '@aws-crypto/sha256-js';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import { Config } from '@backstage/config';
 
 /**
  *
@@ -41,13 +43,21 @@ const defaultRegion = 'us-east-1';
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
+  private readonly credsManager: AwsCredentialsManager;
+  constructor(opts: { config: Config }) {
+    this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
+  }
+
   private async getBearerToken(
     clusterName: string,
     assumeRole?: string,
     externalId?: string,
   ): Promise<string> {
+    console.log(`here ${clusterName}, ${assumeRole} ${externalId}`);
     const region = process.env.AWS_REGION ?? defaultRegion;
-    let credentials = fromEnv();
+
+    let credentials = (await this.credsManager.getCredentialProvider())
+      .sdkCredentialProvider;
     if (assumeRole) {
       credentials = fromTemporaryCredentials({
         masterCredentials: credentials,

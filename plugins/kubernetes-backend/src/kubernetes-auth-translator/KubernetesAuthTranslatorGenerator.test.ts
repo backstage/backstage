@@ -21,39 +21,44 @@ import { NoopKubernetesAuthTranslator } from './NoopKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 const logger = getVoidLogger();
+const config = new ConfigReader({});
 
 describe('getKubernetesAuthTranslatorInstance', () => {
   const sut = KubernetesAuthTranslatorGenerator;
 
   it('can return an auth translator for google auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance('google', { logger });
+      sut.getKubernetesAuthTranslatorInstance('google', { logger, config });
     expect(authTranslator instanceof GoogleKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for aws auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance('aws', { logger });
+      sut.getKubernetesAuthTranslatorInstance('aws', { logger, config });
     expect(authTranslator instanceof AwsIamKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for serviceAccount auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance('serviceAccount', { logger });
+      sut.getKubernetesAuthTranslatorInstance('serviceAccount', {
+        logger,
+        config,
+      });
     expect(authTranslator instanceof NoopKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for oidc auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance('oidc', { logger });
+      sut.getKubernetesAuthTranslatorInstance('oidc', { logger, config });
     expect(authTranslator instanceof OidcKubernetesAuthTranslator).toBe(true);
   });
 
   it('throws an error when asked for an auth translator for an unsupported auth type', () => {
     expect(() =>
-      sut.getKubernetesAuthTranslatorInstance('linode', { logger }),
+      sut.getKubernetesAuthTranslatorInstance('linode', { logger, config }),
     ).toThrow(
       'authProvider "linode" has no KubernetesAuthTranslator associated with it',
     );

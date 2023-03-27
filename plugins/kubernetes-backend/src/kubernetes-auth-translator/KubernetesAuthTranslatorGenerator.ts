@@ -22,6 +22,7 @@ import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
 import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
 import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
+import { Config } from '@backstage/config';
 
 /**
  *
@@ -32,6 +33,7 @@ export class KubernetesAuthTranslatorGenerator {
     authProvider: string,
     options: {
       logger: Logger;
+      config: Config;
     },
   ): KubernetesAuthTranslator {
     switch (authProvider) {
@@ -39,7 +41,7 @@ export class KubernetesAuthTranslatorGenerator {
         return new GoogleKubernetesAuthTranslator();
       }
       case 'aws': {
-        return new AwsIamKubernetesAuthTranslator();
+        return new AwsIamKubernetesAuthTranslator(options);
       }
       case 'azure': {
         return new AzureIdentityKubernetesAuthTranslator(options.logger);

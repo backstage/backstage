@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
+import { ConfigReader } from '@backstage/config';
 
 let presign = jest.fn(async () => ({
   hostname: 'https://example.com',
@@ -21,65 +22,79 @@ let presign = jest.fn(async () => ({
   path: '/asdf',
 }));
 
-const fromEnv = jest.fn(() => {
-  return {
-    AccessId: 'asdf',
-  };
-});
-const fromTemporaryCredentials = jest.fn();
+const credsManager = {
+  getCredentialProvider: async () => ({
+    sdkCredentialProvider: {
+      AccessKeyId: 'asdf',
+    },
+  }),
+};
+
+jest.mock('@backstage/integration-aws-node', () => ({
+  DefaultAwsCredentialsManager: {
+    fromConfig: () => credsManager,
+  },
+}));
+
+const config = new ConfigReader({});
+
 jest.mock('@aws-sdk/signature-v4', () => ({
   SignatureV4: jest.fn().mockImplementation(() => ({
     presign,
   })),
 }));
 
+const fromTemporaryCredentials = jest.fn();
 jest.mock('@aws-sdk/credential-providers', () => ({
-  fromEnv: () => fromEnv(),
-  fromTemporaryCredentials: (opts: any) => fromTemporaryCredentials(opts),
+  fromTemporaryCredentials: (opts: any) => {
+    console.log(`got: ${JSON.stringify(opts)}`);
+    return fromTemporaryCredentials(opts);
+  },
 }));
 
 describe('AwsIamKubernetesAuthTranslator tests', () => {
   beforeEach(() => {});
   it('returns a signed url for AWS credentials without assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator();
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
     const authPromise = authTranslator.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
     });
-    expect(fromEnv).toHaveBeenCalledWith();
     expect((await authPromise).serviceAccountToken).toEqual(
       'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
   });
 
   it('returns a signed url for AWS credentials with assume role', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator();
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
     const authPromise = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: 'asdf',
+      assumeRole: 'SomeRole',
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
     });
+    expect((await authPromise).serviceAccountToken).toEqual(
+      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',
       },
-      masterCredentials: fromEnv(),
+      masterCredentials: {
+        AccessKeyId: 'asdf',
+      },
       params: {
         ExternalId: undefined,
-        RoleArn: 'asdf',
+        RoleArn: 'SomeRole',
       },
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
   });
 
   it('returns a signed url for AWS credentials and passes the external id', async () => {
-    const authTranslator = new AwsIamKubernetesAuthTranslator();
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
     const authPromise = authTranslator.decorateClusterDetailsWithAuth({
       assumeRole: 'SomeRole',
@@ -88,19 +103,21 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
     });
+    expect((await authPromise).serviceAccountToken).toEqual(
+      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    );
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
       clientConfig: {
         region: 'us-east-1',
       },
-      masterCredentials: fromEnv(),
+      masterCredentials: {
+        AccessKeyId: 'asdf',
+      },
       params: {
         ExternalId: 'external-id',
         RoleArn: 'SomeRole',
       },
     });
-    expect((await authPromise).serviceAccountToken).toEqual(
-      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
-    );
   });
 
   describe('When the credentials is failing', () => {
@@ -110,7 +127,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       });
     });
     it('throws the right error', async () => {
-      const authTranslator = new AwsIamKubernetesAuthTranslator();
+      const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
       await expect(
         authTranslator.decorateClusterDetailsWithAuth({
           name: 'test-cluster',

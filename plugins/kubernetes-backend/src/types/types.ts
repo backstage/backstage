@@ -25,6 +25,7 @@ import type {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
+import { Config } from '@backstage/config';
 
 /**
  *
@@ -240,6 +241,7 @@ export interface AWSClusterDetails extends ClusterDetails {
  */
 export interface KubernetesObjectsProviderOptions {
   logger: Logger;
+  config: Config;
   fetcher: KubernetesFetcher;
   serviceLocator: KubernetesServiceLocator;
   customResources: CustomResource[];
