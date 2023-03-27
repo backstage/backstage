@@ -7822,7 +7822,7 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@5.3.1"
+    "@rjsf/core-v5": "npm:@rjsf/core@5.4.0"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.3.1"
     "@rjsf/utils": 5.3.1
@@ -13140,19 +13140,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core-v5@npm:@rjsf/core@5.3.1":
-  version: 5.3.1
-  resolution: "@rjsf/core@npm:5.3.1"
+"@rjsf/core-v5@npm:@rjsf/core@5.4.0":
+  version: 5.4.0
+  resolution: "@rjsf/core@npm:5.4.0"
   dependencies:
     lodash: ^4.17.15
     lodash-es: ^4.17.15
-    markdown-to-jsx: ^7.1.9
+    markdown-to-jsx: ^7.2.0
     nanoid: ^3.3.4
     prop-types: ^15.7.2
   peerDependencies:
     "@rjsf/utils": ^5.0.0
     react: ^16.14.0 || >=17
-  checksum: e7f5c05a594db0549c5289f1dc570977fa37c9ca0f1fed47ec17fa49dd4b6b85ffc3844c9c11d36455a66ff17f898469b6a2dca159223de348f84bdadd28ae32
+  checksum: 3d0a2bd0814c8aae3ffb524a0d53ba9141475bcf63975b9a5409602ab9d3ce60f0bdc49c86cff7e30b0d1468562e74a8d5ec2a61b9e5329cf9ef57dcdf227167
   languageName: node
   linkType: hard
 
@@ -29367,7 +29367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"markdown-to-jsx@npm:^7.1.9":
+"markdown-to-jsx@npm:^7.2.0":
   version: 7.2.0
   resolution: "markdown-to-jsx@npm:7.2.0"
   peerDependencies:
