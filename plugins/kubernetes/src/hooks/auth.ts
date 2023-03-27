@@ -48,3 +48,36 @@ export const generateAuth = async (
   }
   return requestBody.auth ?? {};
 };
+
+export const generateProxyToken = async (
+  entity: Entity,
+  clusterName: string,
+  kubernetesApi: KubernetesApi,
+  kubernetesAuthProvidersApi: KubernetesAuthProvidersApi,
+): Promise<string> => {
+  const clusters = await kubernetesApi.getClusters();
+
+  const cluster = clusters.find(c => c.name === clusterName);
+
+  if (!cluster) {
+    throw new Error(`Cluster not found ${clusterName}`);
+  }
+
+  let requestBody: KubernetesRequestBody = {
+    entity,
+  };
+  requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+    cluster.authProvider,
+    requestBody,
+  );
+
+  if (requestBody.auth?.google !== undefined) {
+    return requestBody.auth?.google;
+  } else if (requestBody.auth?.oidc !== undefined) {
+    return '';
+    // TODO not sure what to do here
+    // return requestBody.auth?.oidc ???
+  }
+  // TODO handle this better
+  return '';
+};

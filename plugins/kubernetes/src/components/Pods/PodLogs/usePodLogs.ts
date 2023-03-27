@@ -21,7 +21,7 @@ import useAsync from 'react-use/lib/useAsync';
 
 import { ContainerLogContext } from './types';
 import { useApi } from '@backstage/core-plugin-api';
-import { generateAuth } from '../../../hooks/auth';
+import { generateProxyToken } from '../../../hooks/auth';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 interface PodLogsOptions {
@@ -34,14 +34,13 @@ export const usePodLogs = ({ logContext, previous }: PodLogsOptions) => {
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
   const { entity } = useEntity();
   return useAsync(async () => {
-    const auth = await generateAuth(
+    const token = await generateProxyToken(
       entity,
+      logContext.clusterName,
       kubernetesApi,
       kubernetesAuthProvidersApi,
     );
 
-    // TODO fix hardcoding
-    const token = auth.google ?? '';
     return await kubernetesApi.getPodLogs({
       podName: logContext.podName,
       namespace: logContext.podNamespace,
