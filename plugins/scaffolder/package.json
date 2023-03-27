@@ -84,8 +84,8 @@
     "react-use": "^17.2.4",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
-    "zod": "~3.18.0",
-    "zod-to-json-schema": "~3.18.0"
+    "zod": "^3.21.4",
+    "zod-to-json-schema": "^3.20.4"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
