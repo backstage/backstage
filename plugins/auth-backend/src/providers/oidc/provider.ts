@@ -130,7 +130,9 @@ export class OidcAuthProvider implements OAuthHandlers {
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
     }
-    const userinfo = await client.userinfo(tokenset.access_token);
+    const userinfo = client.issuer.userinfo_endpoint
+      ? await client.userinfo(tokenset.access_token)
+      : { sub: '' };
 
     return {
       response: await this.handleResult({ tokenset, userinfo }),
@@ -159,17 +161,23 @@ export class OidcAuthProvider implements OAuthHandlers {
       },
       (
         tokenset: TokenSet,
-        userinfo: UserinfoResponse,
-        done: PassportDoneCallback<OidcAuthResult, PrivateInfo>,
+        userinfo:
+          | UserinfoResponse
+          | PassportDoneCallback<OidcAuthResult, PrivateInfo>,
+        done?: PassportDoneCallback<OidcAuthResult, PrivateInfo>,
       ) => {
-        if (typeof done !== 'function') {
-          throw new Error(
-            'OIDC IdP must provide a userinfo_endpoint in the metadata response',
+        if (typeof userinfo === 'function') {
+          userinfo(
+            undefined,
+            { tokenset, userinfo: { sub: '' } },
+            {
+              refreshToken: tokenset.refresh_token,
+            },
           );
         }
-        done(
+        done!(
           undefined,
-          { tokenset, userinfo },
+          { tokenset, userinfo: userinfo as UserinfoResponse },
           {
             refreshToken: tokenset.refresh_token,
           },
