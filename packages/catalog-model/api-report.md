@@ -4,12 +4,6 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
-import { SerializedError } from '@backstage/errors';
-
-// @alpha
-export interface AlphaEntity extends Entity {
-  status?: EntityStatus;
-}
 
 // @public
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
@@ -208,22 +202,6 @@ export type EntityRelation = {
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;
-
-// @alpha
-export type EntityStatus = {
-  items?: EntityStatusItem[];
-};
-
-// @alpha
-export type EntityStatusItem = {
-  type: string;
-  level: EntityStatusLevel;
-  message: string;
-  error?: SerializedError;
-};
-
-// @alpha
-export type EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {

@@ -7,7 +7,8 @@ The shortcuts plugin allows a user to have easy access to pages within a Backsta
 ### Install the package:
 
 ```bash
-yarn add @backstage/plugin-shortcuts
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-shortcuts
 ```
 
 ### Register plugin:
@@ -42,6 +43,8 @@ export const SidebarComponent = () => (
   </Sidebar>
 );
 ```
+
+To allow external links to be added as shortcut, you can add `allowExternalLinks` property to the `<Shortcuts />` component.
 
 The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each user's shortcuts.
 

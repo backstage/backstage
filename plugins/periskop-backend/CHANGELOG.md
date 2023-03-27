@@ -1,5 +1,63 @@
 # @backstage/plugin-periskop-backend
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/config@1.0.7
+
+## 0.1.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+
+## 0.1.13
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- 4a6f38a535: Added a Backend System plugin feature
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+
 ## 0.1.13-next.2
 
 ### Patch Changes

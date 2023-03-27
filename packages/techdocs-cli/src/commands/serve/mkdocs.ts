@@ -19,7 +19,7 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
-import { getMkDocsYml } from '@backstage/plugin-techdocs-node';
+import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 
 export default async function serveMkdocs(opts: OptionValues) {
@@ -29,7 +29,7 @@ export default async function serveMkdocs(opts: OptionValues) {
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
-  const { path: mkDocsYmlPath, configIsTemporary } = await getMkDocsYml(
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     './',
     opts.siteName,
   );
@@ -81,7 +81,7 @@ export default async function serveMkdocs(opts: OptionValues) {
 
   if (configIsTemporary) {
     process.on('exit', async () => {
-      fs.rmSync(mkDocsYmlPath, {});
+      fs.rmSync(mkdocsYmlPath, {});
     });
   }
 }

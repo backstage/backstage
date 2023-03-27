@@ -39,7 +39,9 @@ representative of physical spaces in the TechDocs UI:
 - `Component`: A [proposed-but-not-yet-implemented](https://github.com/backstage/backstage/issues/11109)
   virtual location, aimed at simplifying a common type of Addon.
 
-<img data-zoomable src="../../assets/techdocs/addon-locations.png" alt="TechDocs Addon Location Guide" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Addon Location Guide](../../assets/techdocs/addon-locations.png)
 
 ### Addon Registry
 

@@ -74,6 +74,11 @@ export type ConditionTransformer<TQuery> = (
 ) => PermissionCriteria<TQuery>;
 
 // @public
+export const createConditionAuthorizer: <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string, PermissionRuleParams>[],
+) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public
 export const createConditionExports: <
   TResourceType extends string,
   TResource,
@@ -112,20 +117,33 @@ export const createConditionTransformer: <
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <
+export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
->(options: {
+>(
+  options: CreatePermissionIntegrationRouterResourceOptions<
+    TResourceType,
+    TResource
+  >,
+): express.Router;
+
+// @public
+export function createPermissionIntegrationRouter(options: {
+  permissions: Array<Permission>;
+}): express.Router;
+
+// @public
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
   resourceType: TResourceType;
-  permissions?: Permission[] | undefined;
-  rules: PermissionRule<
-    TResource,
-    any,
-    NoInfer<TResourceType>,
-    PermissionRuleParams
-  >[];
-  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
-}) => express.Router;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
+};
 
 // @public
 export const createPermissionRule: <
@@ -137,17 +155,17 @@ export const createPermissionRule: <
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
-// @alpha
+// @public
 export const isAndCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AllOfCriteria<T>;
 
-// @alpha
+// @public
 export const isNotCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is NotCriteria<T>;
 
-// @alpha
+// @public
 export const isOrCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AnyOfCriteria<T>;

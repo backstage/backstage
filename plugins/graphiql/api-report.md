@@ -16,7 +16,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export type EndpointConfig = {
   id: string;
   title: string;
-  url: string;
+  url: string | Promise<string>;
   method?: 'POST';
   headers?: {
     [name in string]: string;

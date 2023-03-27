@@ -21,7 +21,7 @@ const IGNORED = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
   /^.*[/\\]CHANGELOG\.md$/,
-  /^.*[/\\]api-report\.md$/,
+  /^.*[/\\]([^\/]+-)?api-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
   /^docs[/\\]reference[/\\]/,
 ];

@@ -15,3 +15,4 @@
  */
 
 export { createDebugLogAction } from './log';
+export { createWaitAction } from './wait';

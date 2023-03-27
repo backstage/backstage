@@ -15,10 +15,11 @@
  */
 
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
 import {
-  AlphaEntity,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
   EntityRelation,
-  EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -31,6 +32,11 @@ import {
 } from '../database/tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { BATCH_SIZE, generateStableHash } from './util';
+
+// See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
+const scriptProtocolPattern =
+  // eslint-disable-next-line no-control-regex
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
 
 /**
  * Performs the act of stitching - to take all of the various outputs from the
@@ -164,6 +170,14 @@ export class Stitcher {
           message: `${e.name}: ${e.message}`,
           error: e,
         }));
+      }
+    }
+    // We opt to do this check here as we otherwise can't guarantee that it will be run after all processors
+    for (const annotation of [ANNOTATION_VIEW_URL, ANNOTATION_EDIT_URL]) {
+      const value = entity.metadata.annotations?.[annotation];
+      if (typeof value === 'string' && scriptProtocolPattern.test(value)) {
+        entity.metadata.annotations![annotation] =
+          'https://backstage.io/annotation-rejected-for-security-reasons';
       }
     }
 

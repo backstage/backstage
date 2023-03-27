@@ -42,6 +42,7 @@ const mockOctokit = {
     },
     teams: {
       addOrUpdateRepoPermissionsInOrg: jest.fn(),
+      getByName: jest.fn(),
     },
   },
 };
@@ -94,6 +95,13 @@ describe('github:repo:create', () => {
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        name: 'blam',
+        id: 42,
+      },
     });
 
     mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });

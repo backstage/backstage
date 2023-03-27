@@ -15,10 +15,13 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { EntityTable } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { TableColumn } from '@backstage/core-components';
+import { EntityTable } from '@backstage/plugin-catalog-react';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import { ToggleButton } from '@material-ui/lab';
+import React, { useState } from 'react';
+import { ApiTypeTitle } from '../ApiDefinitionCard';
+import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
 
 export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
   return {
@@ -28,9 +31,29 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
   };
 }
 
-// TODO: This could be moved to plugin-catalog-react if we wouldn't have a
-// special createSpecApiTypeColumn. But this is required to use ApiTypeTitle to
-// resolve the display name of an entity. Is the display name really worth it?
+const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  return (
+    <>
+      <ToggleButton onClick={() => setDialogOpen(!dialogOpen)}>
+        <ExtensionIcon />
+      </ToggleButton>
+      <ApiDefinitionDialog
+        entity={apiEntity}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+      />
+    </>
+  );
+};
+
+function createApiDefinitionColumn(): TableColumn<ApiEntity> {
+  return {
+    title: 'API Definition',
+    render: entity => <ApiDefinitionButton apiEntity={entity} />,
+  };
+}
 
 export const apiEntityColumns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
@@ -39,4 +62,5 @@ export const apiEntityColumns: TableColumn<ApiEntity>[] = [
   createSpecApiTypeColumn(),
   EntityTable.columns.createSpecLifecycleColumn(),
   EntityTable.columns.createMetadataDescriptionColumn(),
+  createApiDefinitionColumn(),
 ];

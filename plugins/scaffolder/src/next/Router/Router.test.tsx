@@ -47,6 +47,21 @@ describe('Router', () => {
 
       expect(TemplateListPage).toHaveBeenCalled();
     });
+
+    it('should render user-provided TemplateListPage', async () => {
+      const { getByText } = await renderInTestApp(
+        <Router
+          components={{
+            TemplateListPageComponent: () => <>foobar</>,
+          }}
+        />,
+        {
+          routeEntries: ['/'],
+        },
+      );
+      expect(getByText('foobar')).toBeInTheDocument();
+      expect(TemplateListPage).not.toHaveBeenCalled();
+    });
   });
 
   describe('/templates/:templateName', () => {
@@ -56,6 +71,21 @@ describe('Router', () => {
       });
 
       expect(TemplateWizardPage).toHaveBeenCalled();
+    });
+
+    it('should render user-provided TemplateWizardPage', async () => {
+      const { getByText } = await renderInTestApp(
+        <Router
+          components={{
+            TemplateWizardPageComponent: () => <>foobar</>,
+          }}
+        />,
+        {
+          routeEntries: ['/templates/default/foo'],
+        },
+      );
+      expect(getByText('foobar')).toBeInTheDocument();
+      expect(TemplateWizardPage).not.toHaveBeenCalled();
     });
 
     it('should pass through the FormProps property', async () => {

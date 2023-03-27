@@ -1,5 +1,90 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+
+## 0.2.37
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 3e3eea4bc7e: The proxy-backend plugin now supports reviving request bodies that have previously been consumed by an express middleware (e.g. `express.json()`). This is done by setting `reviveConsumedRequestBodies: true` on the proxy `RouterOptions`. In order to preserve the current behavior, the proxy will **not** revive request bodies by default.
+
+  The following is an example of a proxy `createRouter` invocation that revives request bodies:
+
+  ```diff
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+  + reviveConsumedRequestBodies: true,
+  });
+  ```
+
+- 4acd93dae1d: Ensure that `@backstage/plugin-proxy-backend` logs the requests that it proxies when log level is set to `debug`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/config@1.0.7
+
+## 0.2.37-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.37-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.37-next.0
+
+### Patch Changes
+
+- 3e3eea4bc7: The proxy-backend plugin now supports reviving request bodies that have previously been consumed by an express middleware (e.g. `express.json()`). This is done by setting `reviveConsumedRequestBodies: true` on the proxy `RouterOptions`. In order to preserve the current behavior, the proxy will **not** revive request bodies by default.
+
+  The following is an example of a proxy `createRouter` invocation that revives request bodies:
+
+  ```diff
+  const router = await createRouter({
+    config,
+    logger,
+    discovery,
+  + reviveConsumedRequestBodies: true,
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+
+## 0.2.36
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- 4a6f38a535: Added a Backend System plugin feature
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+
 ## 0.2.36-next.2
 
 ### Patch Changes

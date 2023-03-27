@@ -101,7 +101,7 @@ export interface DeploymentResources {
   replicaSets: V1ReplicaSet[];
 }
 
-// @alpha
+// @public
 export interface DetectedError {
   // (undocumented)
   cluster: string;
@@ -117,10 +117,10 @@ export interface DetectedError {
   severity: ErrorSeverity;
 }
 
-// @alpha
+// @public
 export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
 
-// @alpha
+// @public
 export const detectErrors: (
   objects: ObjectsByEntityResponse,
 ) => DetectedErrorsByCluster;
@@ -137,7 +137,7 @@ export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
 
-// @alpha
+// @public
 export type ErrorDetectableKind =
   | 'Pod'
   | 'Deployment'
@@ -161,7 +161,7 @@ export const ErrorReporting: ({
   detectedErrors,
 }: ErrorReportingProps) => JSX.Element;
 
-// @alpha
+// @public
 export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts

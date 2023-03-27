@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.2
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+
+## 0.1.0
+
+### Minor Changes
+
+- d72866f0cc: New package that takes over some of the types and functionality from `@backstage/plugin-scaffolder-backend` that are shared with other modules
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.5
+
 ## 0.1.0-next.2
 
 ### Patch Changes

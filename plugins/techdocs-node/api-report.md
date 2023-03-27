@@ -19,10 +19,7 @@ import { Writable } from 'stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
-  static fromConfig(
-    config: Config,
-    { logger, reader }: PreparerConfig,
-  ): DirectoryPreparer;
+  static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 
@@ -88,8 +85,22 @@ export const getLocationForEntity: (
   scmIntegration: ScmIntegrationRegistry,
 ) => ParsedLocationAnnotation;
 
-// @public
+// @public @deprecated (undocumented)
 export const getMkDocsYml: (
+  inputDir: string,
+  siteOptions?:
+    | {
+        name?: string | undefined;
+      }
+    | undefined,
+) => Promise<{
+  path: string;
+  content: string;
+  configIsTemporary: boolean;
+}>;
+
+// @public
+export const getMkdocsYml: (
   inputDir: string,
   siteOptions?: {
     name?: string;
@@ -151,7 +162,7 @@ export type PreparerResponse = {
 export class Preparers implements PreparerBuilder {
   static fromConfig(
     backstageConfig: Config,
-    { logger, reader }: PreparerConfig,
+    options: PreparerConfig,
   ): Promise<PreparerBuilder>;
   get(entity: Entity): PreparerBase;
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
@@ -161,7 +172,7 @@ export class Preparers implements PreparerBuilder {
 export class Publisher {
   static fromConfig(
     config: Config,
-    { logger, discovery }: PublisherFactory,
+    options: PublisherFactory,
   ): Promise<PublisherBase>;
 }
 
@@ -261,7 +272,7 @@ export const transformDirLocation: (
 
 // @public
 export class UrlPreparer implements PreparerBase {
-  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
+  static fromConfig(options: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 ```

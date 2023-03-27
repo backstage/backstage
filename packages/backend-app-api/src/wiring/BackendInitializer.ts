@@ -165,6 +165,25 @@ export class BackendInitializer {
       );
       await registerInit.init.func(deps);
     }
+
+    // Once the backend is started, any uncaught errors or unhandled rejections are caught
+    // and logged, in order to avoid crashing the entire backend on local failures.
+    if (process.env.NODE_ENV !== 'test') {
+      const rootLogger = await this.#serviceHolder.get(
+        coreServices.rootLogger,
+        'root',
+      );
+      process.on('unhandledRejection', (reason: Error) => {
+        rootLogger
+          ?.child({ type: 'unhandledRejection' })
+          ?.error('Unhandled rejection', reason);
+      });
+      process.on('uncaughtException', error => {
+        rootLogger
+          ?.child({ type: 'uncaughtException' })
+          ?.error('Uncaught exception', error);
+      });
+    }
   }
 
   #resolveInitOrder(registerInits: Array<BackendRegisterInit>) {

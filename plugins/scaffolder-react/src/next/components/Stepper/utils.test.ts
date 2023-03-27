@@ -58,4 +58,35 @@ describe('hasErrors', () => {
       }),
     ).toBe(true);
   });
+
+  it('should not return false when the error is an empty object', () => {
+    const errors = {
+      something: {},
+      otherThing: {},
+      someName: {
+        __errors: [
+          'Accepts alphanumeric values along with _(underscore) and -(hypen) as special characters',
+        ],
+        addError: jest.fn(),
+      },
+      someOtherName: {
+        __errors: ['Must start with an alphabet & not contain .(period)'],
+        addError: jest.fn(),
+      },
+      aName: {
+        __errors: [],
+        addError: jest.fn(),
+      },
+      bName: {
+        __errors: [],
+        addError: jest.fn(),
+      },
+      cName: {
+        __errors: [],
+        addError: jest.fn(),
+      },
+    };
+
+    expect(hasErrors(errors)).toBe(true);
+  });
 });

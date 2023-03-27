@@ -1,12 +1,12 @@
 ---
 id: index
 title: Core Backend Service APIs
-sidebar_label: Core Services
+sidebar_label: Overview
 # prettier-ignore
 description: Core backend service APIs
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 The default backend provides several [core services](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/coreServices.ts) out of the box which includes access to configuration, logging, URL Readers, databases and more.
 

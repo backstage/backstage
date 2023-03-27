@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.12.4-next.1",
+  "version": "0.12.6-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -40,7 +40,7 @@
     "@material-table/core": "^3.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^20.0.0",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",
@@ -68,7 +68,7 @@
     "react-window": "^1.8.6",
     "remark-gfm": "^3.0.1",
     "zen-observable": "^0.10.0",
-    "zod": "~3.18.0"
+    "zod": "^3.21.4"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
@@ -98,7 +98,7 @@
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

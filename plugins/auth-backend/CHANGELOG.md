@@ -1,5 +1,92 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- e262738b8a0: Handle difference in expiration time between Microsoft session and Backstage session which caused the Backstage token to be invalid during a time frame.
+- 86cece2c1fb: Updated dependency `@types/passport-microsoft` to `^1.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 529de8c4211: Added authentication provider for Azure Easy Authentication.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.18.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- 86cece2c1fb: Updated dependency `@types/passport-microsoft` to `^1.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 529de8c421: Added authentication provider for Azure Easy Authentication.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+
+## 0.18.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+
 ## 0.17.5-next.2
 
 ### Patch Changes

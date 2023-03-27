@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  AlphaEntity,
-  stringifyEntityRef,
-  EntityStatusItem,
-} from '@backstage/catalog-model';
+import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   EntityRefLink,

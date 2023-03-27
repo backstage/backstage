@@ -21,8 +21,6 @@ import { FieldExtensionComponent as FieldExtensionComponent_2 } from '@backstage
 import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/core';
-import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react';
-import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -31,7 +29,6 @@ import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-
 import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-react';
 import { Observable } from '@backstage/types';
 import { PathParams } from '@backstage/core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -78,13 +75,27 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -93,13 +104,27 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -112,8 +137,8 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
-    showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
     helperText?: string | undefined;
   }
 >;
@@ -122,8 +147,8 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    showCounts?: boolean | undefined;
     kinds?: string[] | undefined;
+    showCounts?: boolean | undefined;
     helperText?: string | undefined;
   }
 >;
@@ -155,12 +180,6 @@ export interface FieldSchema<TReturn, TUiOptions> {
   readonly uiOptionsType: TUiOptions;
 }
 
-// @alpha @deprecated
-export type FormProps = Pick<
-  FormProps_3,
-  'transformErrors' | 'noHtml5Validate'
->;
-
 // @public @deprecated (undocumented)
 export type LayoutOptions = LayoutOptions_2;
 
@@ -187,52 +206,14 @@ export function makeFieldSchemaFromZod<
     : never
 >;
 
-// @alpha (undocumented)
-export const nextRouteRef: RouteRef<undefined>;
-
-// @alpha
-export type NextRouterProps = {
-  components?: {
-    TemplateCardComponent?: React_2.ComponentType<{
-      template: TemplateEntityV1beta3;
-    }>;
-    TaskPageComponent?: React_2.ComponentType<{}>;
-    TemplateOutputsComponent?: React_2.ComponentType<{
-      output?: ScaffolderTaskOutput_2;
-    }>;
-  };
-  groups?: TemplateGroupFilter[];
-  FormProps?: FormProps_2;
-  contextMenu?: {
-    editor?: boolean;
-    actions?: boolean;
-    tasks?: boolean;
-  };
-};
-
-// @alpha
-export const NextScaffolderPage: (
-  props: PropsWithChildren<NextRouterProps>,
-) => JSX.Element;
-
-// @alpha (undocumented)
-export const nextScaffolderTaskRouteRef: SubRouteRef<
-  PathParams<'/tasks/:taskId'>
->;
-
-// @alpha (undocumented)
-export const nextSelectedTemplateRouteRef: SubRouteRef<
-  PathParams<'/templates/:namespace/:templateName'>
->;
-
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
   }
 >;
 
@@ -240,10 +221,10 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultKind?: string | undefined;
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
+    defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
   }
 >;
 
@@ -255,12 +236,26 @@ export type OwnedEntityPickerUiOptions =
 export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -269,12 +264,26 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnerPickerFieldSchema: FieldSchema<
   string,
   {
-    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
     catalogFilter?:
-      | Record<string, string | string[]>
-      | Record<string, string | string[]>[]
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
       | undefined;
   }
 >;
@@ -302,16 +311,16 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
+          secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
               }
             | undefined;
-          secretsKey: string;
         }
       | undefined;
   }
@@ -328,16 +337,16 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
     allowedRepos?: string[] | undefined;
     requestUserCredentials?:
       | {
+          secretsKey: string;
           additionalScopes?:
             | {
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
               }
             | undefined;
-          secretsKey: string;
         }
       | undefined;
   }
@@ -379,6 +388,7 @@ export type RouterProps = {
     title?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   defaultPreviewTemplate?: string;
   headerOptions?: {
     pageTitleOverride?: string;
@@ -406,6 +416,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
+  // (undocumented)
+  cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun(
     options: ScaffolderDryRunOptions_2,
@@ -470,6 +482,9 @@ export const scaffolderPlugin: BackstagePlugin<
       PathParams<'/templates/:namespace/:templateName'>
     >;
     ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined, true>;
@@ -507,17 +522,11 @@ export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
 
 // @public
-export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
+export const TaskPage: (props: TaskPageProps) => JSX.Element;
 
 // @public
 export type TaskPageProps = {
   loadingText?: string;
-};
-
-// @alpha (undocumented)
-export type TemplateGroupFilter = {
-  title?: React_2.ReactNode;
-  filter: (entity: Entity) => boolean;
 };
 
 // @public @deprecated (undocumented)

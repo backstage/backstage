@@ -18,12 +18,12 @@ import express from 'express';
 import request from 'supertest';
 import { errorHandler } from '@backstage/backend-common';
 
+import { createRouter } from './router';
 import {
-  createRouter,
   parseFilterParam,
   parseIntegerParam,
   parseOrderByParam,
-} from './router';
+} from '../lib/utils';
 import { TodoService } from './types';
 
 const mockListBody = {

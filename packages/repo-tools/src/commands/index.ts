@@ -37,6 +37,10 @@ export function registerCommands(program: Command) {
       '-o, --omit-messages <messageCodes>',
       'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
     )
+    .option(
+      '--validate-release-tags',
+      'Turn on release tag validation for the public, beta, and alpha APIs',
+    )
     .description('Generate an API report for selected packages')
     .action(
       lazy(() =>

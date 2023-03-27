@@ -1,5 +1,132 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `azureDevOpsEntityProviderCatalogModule` to `catalogModuleAzureDevOpsEntityProvider` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- c17fa101825: Add branch filter support
+  https://backstage.io/docs/integrations/azure/discovery
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.1.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.1.13
+
+### Patch Changes
+
+- 2890f47517: This will add the ability to use Azure DevOps with multi project with a single value which is a new feature as previously this had to be done manually for each project that you wanted to add.
+
+  Right now you would have to fill in multiple values in the config to use multiple projects:
+
+  ```
+  yourFirstProviderId: # identifies your dataset / provider independent of config changes
+      organization: myorg
+      project: 'firstProject' # this will match the firstProject project
+      repository: '*' # this will match all repos
+      path: /catalog-info.yaml
+  yourSecondProviderId: # identifies your dataset / provider independent of config changes
+      organization: myorg
+      project: 'secondProject' # this will match the secondProject project
+      repository: '*' # this will match all repos
+      path: /catalog-info.yaml
+  ```
+
+  With this change you can actually have all projects available where your PAT determines which you have access to, so that includes multiple projects:
+
+  ```
+  yourFirstProviderId: # identifies your dataset / provider independent of config changes
+      organization: myorg
+      project: '*' # this will match all projects where your PAT has access to
+      repository: '*' # this will match all repos
+      path: /catalog-info.yaml
+  ```
+
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
 ## 0.1.13-next.2
 
 ### Patch Changes

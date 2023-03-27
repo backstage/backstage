@@ -25,7 +25,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '../../lib/files';
-import { TemplateFilter, TemplateGlobal } from '../../lib/templating';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
@@ -94,6 +94,8 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
+      const abortSignal = new AbortController().signal;
+
       const result = await workflowRunner.execute({
         spec: {
           ...input.spec,
@@ -117,6 +119,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
         done: false,
         isDryRun: true,
         getWorkspaceName: async () => `dry-run-${dryRunId}`,
+        cancelSignal: abortSignal,
         async emitLog(message: string, logMetadata?: JsonObject) {
           if (logMetadata?.stepId === dryRunId) {
             return;
@@ -128,7 +131,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             },
           });
         },
-        async complete() {
+        complete: async () => {
           throw new Error('Not implemented');
         },
       });

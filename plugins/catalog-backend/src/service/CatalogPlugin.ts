@@ -19,9 +19,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
-  CatalogProcessor,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
+import {
+  CatalogProcessor,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';

@@ -84,7 +84,7 @@ export const DocsTable: {
     createStarEntityAction(
       isStarredEntity: Function,
       toggleStarredEntity: Function,
-    ): ({ entity }: DocsTableRow) => {
+    ): (row: DocsTableRow) => {
       cellStyle: {
         paddingLeft: string;
       };
@@ -121,9 +121,9 @@ export const EmbeddedDocsRouter: (
 ) => JSX.Element | null;
 
 // @public
-export const EntityListDocsGrid: ({
-  groups,
-}: EntityListDocsGridPageProps) => JSX.Element;
+export const EntityListDocsGrid: (
+  props: EntityListDocsGridPageProps,
+) => JSX.Element;
 
 // @public
 export type EntityListDocsGridPageProps = {
@@ -147,7 +147,7 @@ export const EntityListDocsTable: {
     createStarEntityAction(
       isStarredEntity: Function,
       toggleStarredEntity: Function,
-    ): ({ entity }: DocsTableRow) => {
+    ): (row: DocsTableRow) => {
       cellStyle: {
         paddingLeft: string;
       };
@@ -315,10 +315,9 @@ export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderLayout: ({
-  withSearch,
-  withHeader,
-}: TechDocsReaderLayoutProps) => JSX.Element;
+export const TechDocsReaderLayout: (
+  props: TechDocsReaderLayoutProps,
+) => JSX.Element;
 
 // @public
 export type TechDocsReaderLayoutProps = {
@@ -375,9 +374,9 @@ export const TechDocsReaderPageSubheader: (props: {
 }) => JSX.Element | null;
 
 // @public
-export const TechDocsReaderProvider: ({
-  children,
-}: TechDocsReaderProviderProps) => JSX.Element;
+export const TechDocsReaderProvider: (
+  props: TechDocsReaderProviderProps,
+) => JSX.Element;
 
 // @public
 export type TechDocsReaderProviderProps = {
@@ -406,7 +405,7 @@ export const TechDocsSearchResultListItem: (
 
 // @public
 export type TechDocsSearchResultListItemProps = {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: any) => ReactNode);
   result?: any;
   highlight?: ResultHighlight;
   rank?: number;

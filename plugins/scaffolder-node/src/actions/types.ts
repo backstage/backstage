@@ -16,22 +16,22 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue, JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
+import { Schema } from 'jsonschema';
 
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<TActionInput extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
+  input: TActionInput;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -60,10 +60,15 @@ export type ActionContext<TInput extends JsonObject> = {
      */
     ref?: string;
   };
+
+  /**
+   * Implement the signal to make your custom step abortable https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal
+   */
+  signal?: AbortSignal;
 };
 
 /** @public */
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<TActionInput = unknown> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -72,5 +77,5 @@ export type TemplateAction<TInput extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
 };

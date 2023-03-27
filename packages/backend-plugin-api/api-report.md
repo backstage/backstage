@@ -72,30 +72,26 @@ export interface BackendPluginRegistrationPoints {
 }
 
 // @public
-export interface CacheClient {
+export interface CacheService {
   delete(key: string): Promise<void>;
-  get(key: string): Promise<JsonValue | undefined>;
+  get<TValue extends JsonValue>(key: string): Promise<TValue | undefined>;
   set(
     key: string,
     value: JsonValue,
-    options?: CacheClientSetOptions,
+    options?: CacheServiceSetOptions,
   ): Promise<void>;
+  withOptions(options: CacheServiceOptions): CacheService;
 }
 
 // @public
-export type CacheClientOptions = {
+export type CacheServiceOptions = {
   defaultTtl?: number;
 };
 
 // @public
-export type CacheClientSetOptions = {
+export type CacheServiceSetOptions = {
   ttl?: number;
 };
-
-// @public
-export interface CacheService {
-  getClient: (options?: CacheClientOptions) => CacheClient;
-}
 
 // @public (undocumented)
 export interface ConfigService extends Config {}
@@ -363,11 +359,13 @@ export type ReadTreeResponseDirOptions = {
 export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
 };
 
 // @public
 export type ReadUrlOptions = {
   etag?: string;
+  lastModifiedAfter?: Date;
   signal?: AbortSignal;
 };
 
@@ -376,6 +374,7 @@ export type ReadUrlResponse = {
   buffer(): Promise<Buffer>;
   stream?(): Readable;
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public (undocumented)
@@ -424,6 +423,7 @@ export type SearchResponse = {
 export type SearchResponseFile = {
   url: string;
   content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
 };
 
 // @public (undocumented)

@@ -1,5 +1,59 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.1
+
+## 0.2.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.0
+
+## 0.2.15
+
+### Patch Changes
+
+- d72866f0cc: Internal refactor to use the new `@backstage/plugin-scaffolder-node` package for some functionality
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
 ## 0.2.15-next.2
 
 ### Patch Changes

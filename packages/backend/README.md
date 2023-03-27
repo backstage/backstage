@@ -44,7 +44,7 @@ To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 If you want to use the catalog functionality, you need to add so called
 locations to the backend. These are places where the backend can find some
 entity descriptor data to consume and serve. For more information, see
-[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog).
 
 For convenience we already include some statically configured example locations
 in `app-config.yaml` under `catalog.locations`. For local development you can override these in your own `app-config.local.yaml`.
@@ -58,4 +58,4 @@ Read more about the [auth-backend](https://github.com/backstage/backstage/blob/m
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

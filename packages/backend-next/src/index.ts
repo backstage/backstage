@@ -14,14 +14,35 @@
  * limitations under the License.
  */
 
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
 import { createBackend } from '@backstage/backend-defaults';
-import { appPlugin } from '@backstage/plugin-app-backend';
+import { appPlugin } from '@backstage/plugin-app-backend/alpha';
+import { todoPlugin } from '@backstage/plugin-todo-backend';
+import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
+import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
+import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
+import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 
 const backend = createBackend();
 
+backend.add(appPlugin({ appPackageName: 'example-app' }));
+
+// Todo
+backend.add(todoPlugin());
+
+// Techdocs
+backend.add(techdocsPlugin());
+
+// Catalog
 backend.add(catalogPlugin());
 backend.add(catalogModuleTemplateKind());
-backend.add(appPlugin({ appPackageName: 'example-app' }));
+
+// Search
+backend.add(searchPlugin());
+backend.add(searchModuleCatalogCollator());
+backend.add(searchModuleTechDocsCollator());
+backend.add(searchModuleExploreCollator());
+
 backend.start();

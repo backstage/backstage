@@ -28,7 +28,7 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export namespace mockServices {
   // (undocumented)
   export namespace cache {
@@ -126,7 +126,7 @@ export function setupRequestMockHandlers(worker: {
   resetHandlers: () => void;
 }): void;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -134,12 +134,12 @@ export function startTestBackend<
   options: TestBackendOptions<TServices, TExtensionPoints>,
 ): Promise<TestBackend>;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface TestBackend extends Backend {
   readonly server: ExtendedHttpServer;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface TestBackendOptions<
   TServices extends any[],
   TExtensionPoints extends any[],

@@ -34,6 +34,7 @@ export interface CodeSearchResultItem {
   project: {
     name: string;
   };
+  branch?: string;
 }
 
 const isCloud = (host: string) => host === 'dev.azure.com';

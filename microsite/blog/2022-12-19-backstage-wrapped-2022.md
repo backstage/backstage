@@ -20,7 +20,7 @@ Last year we celebrated 75 [public adopters](https://github.com/backstage/backst
 
 ![Accelerated growth of Public Backstage Adopters, from January 2021–December 2022.](assets/2022-12-19/public-backstage-adopters-2022.png)
 
-Not only are our adopters growing at an exponential rate, but so too are our contributors. Our [Discord server](https://discord.gg/backstage-687207715902193673) is a perfect example of the worlds of our adopters and contributors melding. On average, at any given hour of the day or night, there are more than 500 people online available to talk and provide support on any Backstage topic. Discord discussions run a full gamut of topics – from technical support questions to best practices for onboarding engineers to Backstage – basically, anything and everything an adopter may be interested to know and learn. At the very beginning of 2022, we “only” had 4k Discord members. Today, we have a growing membership of 8.2k.
+Not only are our adopters growing at an exponential rate, but so too are our contributors. Our [Discord server](https://discord.gg/backstage-687207715902193673-687207715902193673) is a perfect example of the worlds of our adopters and contributors melding. On average, at any given hour of the day or night, there are more than 500 people online available to talk and provide support on any Backstage topic. Discord discussions run a full gamut of topics – from technical support questions to best practices for onboarding engineers to Backstage – basically, anything and everything an adopter may be interested to know and learn. At the very beginning of 2022, we “only” had 4k Discord members. Today, we have a growing membership of 8.2k.
 
 Isn’t it what we can call a great and vibrant community of enthusiasts?
 

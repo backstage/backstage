@@ -25,7 +25,7 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import {
   createOrUpdateMetadata,
   getGeneratorKey,
-  getMkDocsYml,
+  getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
   storeEtagMetadata,
@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
 const mockEntity = {
@@ -517,7 +517,7 @@ describe('helpers', () => {
     });
   });
 
-  describe('getMkDocsYml', () => {
+  describe('getMkdocsYml', () => {
     const inputDir = resolvePath(__filename, '../__fixtures__/');
     const siteOptions = {
       name: mockEntity.metadata.title,
@@ -530,7 +530,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkDocsYml(inputDir, siteOptions);
+      } = await getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
@@ -544,7 +544,7 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkDocsYml(inputDir, siteOptions);
+      } = await getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
       expect(configIsTemporary).toBe(false);
@@ -562,16 +562,18 @@ describe('helpers', () => {
         path: mkdocsPath,
         content,
         configIsTemporary,
-      } = await getMkDocsYml(inputDir, defaultSiteOptions);
+      } = await getMkdocsYml(inputDir, defaultSiteOptions);
 
       expect(mkdocsPath).toBe(key);
-      expect(content).toBe(mkdocsDefaultYml.toString());
+      expect(content.split(/[\r\n]+/g)).toEqual(
+        mkdocsDefaultYml.toString().split(/[\r\n]+/g),
+      );
       expect(configIsTemporary).toBe(true);
     });
 
     it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkDocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
         /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });

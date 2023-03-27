@@ -1,5 +1,3 @@
-import { useApi } from '@backstage/core-plugin-api';
-
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -15,8 +13,11 @@ import { useApi } from '@backstage/core-plugin-api';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api/ref';
+import { useApi } from '@backstage/core-plugin-api';
+import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha
@@ -28,5 +29,5 @@ export const useTemplateParameterSchema = (templateRef: string) => {
     [scaffolderApi, templateRef],
   );
 
-  return { manifest: value, loading, error };
+  return { manifest: value as TemplateParameterSchema, loading, error };
 };

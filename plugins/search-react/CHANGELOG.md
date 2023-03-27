@@ -1,5 +1,88 @@
 # @backstage/plugin-search-react
 
+## 1.5.2-next.0
+
+### Patch Changes
+
+- b2e182cdfa4: Fixes a UI bug in search result item which rendered the item text with incorrect font size and color
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.5.1
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 553f3c95011: Correctly disable next button in `SearchPagination` on last page
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.5.1-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 553f3c95011: Correctly disable next button in `SearchPagination` on last page
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.5.0
+
+### Minor Changes
+
+- 0eaa579f89: - Create the search results extensions, for more details see the documentation [here](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions);
+  - Update the `SearchResult`, `SearchResultList` and `SearchResultGroup` components to use extensions and default their props to optionally accept a query, when the query is not passed, the component tries to get it from the search context.
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.5.0-next.1
 
 ### Patch Changes

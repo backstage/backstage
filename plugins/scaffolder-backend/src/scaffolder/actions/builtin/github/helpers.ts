@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
@@ -134,6 +134,10 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   const user = await client.rest.users.getByUsername({
     username: owner,
   });
+
+  if (access?.startsWith(`${owner}/`)) {
+    await validateAccessTeam(client, access);
+  }
 
   const repoCreationPromise =
     user.data.type === 'Organization'
@@ -350,4 +354,23 @@ function extractCollaboratorName(
   if ('username' in collaborator) return collaborator.username;
   if ('user' in collaborator) return collaborator.user;
   return collaborator.team;
+}
+
+async function validateAccessTeam(client: Octokit, access: string) {
+  const [org, team_slug] = access.split('/');
+  try {
+    // Below rule disabled because of a 'getByName' check for a different library
+    // incorrectly triggers here.
+    // eslint-disable-next-line testing-library/no-await-sync-query
+    await client.rest.teams.getByName({
+      org,
+      team_slug,
+    });
+  } catch (e) {
+    if (e.response.data.message === 'Not Found') {
+      const message = `Received 'Not Found' from the API; one of org:
+        ${org} or team: ${team_slug} was not found within GitHub.`;
+      throw new NotFoundError(message);
+    }
+  }
 }

@@ -21,6 +21,26 @@ import { ConfigReader } from '@backstage/config';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { StackOverflowIcon } from '../../icons';
+import { stackOverflowApiRef } from '../../api';
+
+const mockStackOverflowApi = {
+  listQuestions: async () => [
+    {
+      title: 'Customizing Spotify backstage UI',
+      link: 'stackoverflow.question/1',
+      answer_count: 0,
+      tags: ['backstage'],
+      owner: { 'some owner': 'name' },
+    },
+    {
+      title: 'Customizing Spotify backstage UI',
+      link: 'stackoverflow.question/1',
+      answer_count: 0,
+      tags: ['backstage'],
+      owner: { 'some owner': 'name' },
+    },
+  ],
+};
 
 export default {
   title: 'Plugins/Home/Components/StackOverflow',
@@ -39,6 +59,7 @@ export default {
                   },
                 }),
               ],
+              [stackOverflowApiRef, mockStackOverflowApi],
             ]}
           >
             <Story />

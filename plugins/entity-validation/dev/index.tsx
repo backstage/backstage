@@ -16,9 +16,18 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { entityValidationPlugin, EntityValidationPage } from '../src/plugin';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 createDevApp()
   .registerPlugin(entityValidationPlugin)
+  .registerApi({
+    api: catalogApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        getEntities: () => ({}),
+      } as CatalogApi),
+  })
   .addPage({
     element: <EntityValidationPage />,
     title: 'Root Page',

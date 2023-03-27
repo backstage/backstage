@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { coreServices } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+
+// Think this file will probably go away once we move to backend system
+// And restructure into the /dev folder
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { createBackend } from '@backstage/backend-defaults';
 import {
-  IncrementalEntityProvider,
-  incrementalIngestionEntityProviderCatalogModule,
-} from '.';
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
+import { IncrementalEntityProvider } from '.';
+import { catalogModuleIncrementalIngestionEntityProvider } from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
@@ -46,25 +51,33 @@ async function main() {
     },
   };
 
-  await startTestBackend({
-    services: [[coreServices.config, new ConfigReader(config)]],
-    extensionPoints: [],
-    features: [
-      catalogPlugin(),
-      incrementalIngestionEntityProviderCatalogModule({
-        providers: [
-          {
-            provider: provider,
-            options: {
-              burstInterval: { seconds: 1 },
-              burstLength: { seconds: 10 },
-              restLength: { seconds: 10 },
-            },
-          },
-        ],
+  const backend = createBackend({
+    services: [
+      createServiceFactory({
+        service: coreServices.config,
+        deps: {},
+        factory: () => new ConfigReader(config),
       }),
     ],
   });
+
+  backend.add(catalogPlugin());
+  backend.add(
+    catalogModuleIncrementalIngestionEntityProvider({
+      providers: [
+        {
+          provider: provider,
+          options: {
+            burstInterval: { seconds: 1 },
+            burstLength: { seconds: 10 },
+            restLength: { seconds: 10 },
+          },
+        },
+      ],
+    }),
+  );
+
+  await backend.start();
 }
 
 main().catch(error => {

@@ -33,7 +33,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.0
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -63,7 +63,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.0
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -181,7 +181,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.0
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

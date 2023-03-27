@@ -15,10 +15,15 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  CacheService,
+  CacheServiceOptions,
+} from '@backstage/backend-plugin-api';
 
 export type {
-  CacheService as PluginCacheManager,
-  CacheClientOptions,
+  CacheService as CacheClient,
+  CacheServiceSetOptions as CacheClientSetOptions,
+  CacheServiceOptions as CacheClientOptions,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -38,3 +43,10 @@ export type CacheManagerOptions = {
    */
   onError?: (err: Error) => void;
 };
+
+/**
+ * @public
+ */
+export interface PluginCacheManager {
+  getClient(options?: CacheServiceOptions): CacheService;
+}

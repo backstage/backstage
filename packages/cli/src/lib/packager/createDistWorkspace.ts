@@ -37,7 +37,7 @@ import {
   getOutputsForRole,
   Output,
 } from '../builder';
-import { copyPackageDist } from './copyPackageDist';
+import { productionPack } from './productionPack';
 import { getRoleInfo } from '../role';
 import { runParallelWorkers } from '../parallel';
 
@@ -178,6 +178,7 @@ export async function createDistWorkspace(
       if (outputs.size > 0) {
         standardBuilds.push({
           targetDir: pkg.dir,
+          packageJson: pkg.packageJson,
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           // No need to detect these for the backend builds, we assume no minification or types
@@ -257,7 +258,10 @@ async function moveToDistWorkspace(
 
       const outputDir = relativePath(paths.targetRoot, target.dir);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
-      await copyPackageDist(target.dir, absoluteOutputPath);
+      await productionPack({
+        packageDir: target.dir,
+        targetDir: absoluteOutputPath,
+      });
     }),
   );
 

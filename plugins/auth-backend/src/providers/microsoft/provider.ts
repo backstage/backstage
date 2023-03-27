@@ -50,6 +50,8 @@ import {
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 
+const BACKSTAGE_SESSION_EXPIRATION = 3600;
+
 type PrivateInfo = {
   refreshToken: string;
 };
@@ -145,12 +147,17 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
 
     const { profile } = await this.authHandler(result, this.resolverContext);
 
+    const expiresInSeconds =
+      result.params.expires_in === undefined
+        ? BACKSTAGE_SESSION_EXPIRATION
+        : Math.min(result.params.expires_in, BACKSTAGE_SESSION_EXPIRATION);
+
     const response: OAuthResponse = {
       providerInfo: {
         idToken: result.params.id_token,
         accessToken: result.accessToken,
         scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
+        expiresInSeconds,
       },
       profile,
     };

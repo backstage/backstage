@@ -91,7 +91,7 @@ describe('fetch:rails', () => {
 
   beforeEach(() => {
     mockFs({ [`${mockContext.workspacePath}/result`]: {} });
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {

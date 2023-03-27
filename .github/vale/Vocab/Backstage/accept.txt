@@ -33,6 +33,7 @@ Blackbox
 bool
 boolean
 Brex
+bugfixes
 builtins
 callout
 CDNs
@@ -81,6 +82,7 @@ Debounce
 debuggability
 declaratively
 deduplicated
+deliverables
 dependabot
 deps
 destructured
@@ -157,6 +159,7 @@ img
 incentivised
 Indal
 indexable
+ingestors
 inlined
 inlinehilite
 integrator's
@@ -240,6 +243,7 @@ OAuth
 octokit
 oidc
 Okta
+Olausson
 Oldsberg
 onboarding
 Onboarding
@@ -365,6 +369,7 @@ templaters
 Templaters
 TFRecord
 theia
+threenager
 thumbsup
 todo
 todos
@@ -401,6 +406,7 @@ validator
 validators
 varchar
 VMware
+Vodafone
 VPCs
 VSCode
 Wayfair

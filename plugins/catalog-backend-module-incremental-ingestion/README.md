@@ -41,7 +41,7 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 ## Installation
 
-1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn workspace backend add @backstage/plugin-catalog-backend-module-incremental-ingestion`
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
 2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
 ```ts
@@ -102,6 +102,7 @@ If you want to manage your incremental entity providers via REST endpoints, the 
 | Method | Path                                       | Description                                                                                                                 |
 | ------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/incremental/health`                      | Checks the health of all incremental providers. Returns array of any unhealthy ones.                                        |
+| GET    | `/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
 | GET    | `/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
 | POST   | `/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
 | POST   | `/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |

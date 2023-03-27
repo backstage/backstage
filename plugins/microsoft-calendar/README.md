@@ -1,7 +1,6 @@
 # Microsoft-Calendar Plugin
 
-Welcome to the Microsoft calendar plugin!
-_This plugin was created through the Backstage CLI_
+This plugin is contributed by [StatusNeo](https://statusneo.com/)
 
 ## Features
 
@@ -25,7 +24,7 @@ The following sections will help you set up the Microsoft calendar plugin.
 1. Install the plugin by running this command
 
 ```bash
-# From the Backstage repository root
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-microsoft-calendar
 ```
 

@@ -56,7 +56,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       titleTypographyProps={{ component: 'h3' }}
       deepLink={{
         title: 'Learn more about the Software Catalog',
-        link: 'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
+        link: 'https://backstage.io/docs/features/software-catalog/',
       }}
     >
       <Typography variant="body2" paragraph>

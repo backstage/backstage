@@ -1,5 +1,49 @@
 # @backstage/catalog-model
 
+## 1.2.1
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- d51668882d: Adds the tRPC API type to the catalog.
+
+### Patch Changes
+
+- aece6c57d2: Add additional validation for location references.
+- 2518ef5b8a: Add deprecation tag to kubernetes constants in catalog, constants are now defined in plugin-kubernetes-common
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 1.2.0-next.1
 
 ### Minor Changes

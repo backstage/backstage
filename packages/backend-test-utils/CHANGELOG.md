@@ -1,5 +1,94 @@
 # @backstage/backend-test-utils
 
+## 0.1.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.1.35-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.35-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+
+## 0.1.34
+
+### Patch Changes
+
+- baf6e4c96a: Removed unnecessary `@backstage/cli` dependency.
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 1835311713: Added explicit return type signature for `mockServices.config()`.
+- e716946103: Updated usage of the lifecycle service.
+- 7e7557a2be: Updated the `mockServices.rootLogger` options to accept a single level option instead.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- b86efa2d04: Updated usage of `ServiceFactory`.
+- 17b573e4be: The new backend system testing utilities have now been marked as stable API.
+- f1adb2e36b: Removed the `ref` from all `mockServices`.
+- d0901c9ba4: All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+
 ## 0.1.34-next.2
 
 ### Patch Changes

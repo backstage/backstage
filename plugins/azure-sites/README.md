@@ -44,10 +44,11 @@ azure.com/microsoft-web-sites: func-testapp
 
 ### Install the component
 
-1. Install the plugin in the `packages/app` directory
+1. Install the plugin
 
 ```sh
-yarn add @backstage/plugin-azure-sites
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-azure-sites
 ```
 
 2. Add widget component to your Backstage instance:

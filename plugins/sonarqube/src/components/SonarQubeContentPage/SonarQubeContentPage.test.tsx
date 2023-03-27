@@ -18,10 +18,10 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
-  isSonarQubeAvailable,
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
   SonarQubeApi,
   sonarQubeApiRef,
+  isSonarQubeAvailable,
+  SONARQUBE_PROJECT_KEY_ANNOTATION,
 } from '@backstage/plugin-sonarqube-react';
 
 const Providers = ({

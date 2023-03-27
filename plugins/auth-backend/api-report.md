@@ -7,7 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheClient } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -130,6 +130,19 @@ export type BitbucketPassportProfile = Profile & {
       };
     };
   };
+};
+
+// @public (undocumented)
+export type BitbucketServerOAuthResult = {
+  fullProfile: Profile;
+  params: {
+    scope: string;
+    access_token?: string;
+    token_type?: string;
+    expires_in?: number;
+  };
+  accessToken: string;
+  refreshToken?: string;
 };
 
 // @public
@@ -385,6 +398,8 @@ export type OAuthState = {
   env: string;
   origin?: string;
   scope?: string;
+  redirectUrl?: string;
+  flow?: string;
 };
 
 // @public
@@ -480,13 +495,30 @@ export const providers: Readonly<{
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
+  bitbucketServer: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<BitbucketServerOAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<BitbucketServerOAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<BitbucketServerOAuthResult>;
+    }>;
+  }>;
   cfAccess: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheClient | undefined;
+      cache?: CacheService | undefined;
     }) => AuthProviderFactory;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;

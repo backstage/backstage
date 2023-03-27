@@ -22,11 +22,10 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import { type IChangeEvent, withTheme } from '@rjsf/core-v5';
+import { type IChangeEvent } from '@rjsf/core-v5';
 import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { TemplateParameterSchema } from '../../../types';
 import {
   createAsyncValidators,
   type FormValidation,
@@ -36,9 +35,14 @@ import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
-import { LayoutOptions } from '../../../layouts';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
+import * as FieldOverrides from './FieldOverrides';
+import { Form } from '../Form';
+import {
+  TemplateParameterSchema,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -73,11 +77,6 @@ export type StepperProps = {
   };
   layouts?: LayoutOptions[];
 };
-
-// TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
-// which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
-// of the re-writing we're doing. Once we've migrated, we can import this the exact same as before.
-const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
 
 /**
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
@@ -175,7 +174,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             schema={currentStep.schema}
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
-            fields={extensions}
+            fields={{ ...FieldOverrides, ...extensions }}
             showErrorList={false}
             onChange={handleChange}
             {...(props.FormProps ?? {})}

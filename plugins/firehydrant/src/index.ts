@@ -20,4 +20,8 @@
  * @packageDocumentation
  */
 
-export { firehydrantPlugin, FirehydrantCard } from './plugin';
+export {
+  firehydrantPlugin,
+  FirehydrantCard,
+  isFireHydrantAvailable,
+} from './plugin';

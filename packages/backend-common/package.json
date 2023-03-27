@@ -1,14 +1,26 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.18.2-next.2",
+  "version": "0.18.4-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "node-library"
@@ -24,7 +36,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -34,6 +46,10 @@
     "test:kubernetes": "backstage-cli package test -t KubernetesContainerRunner --no-watch"
   },
   "dependencies": {
+    "@aws-sdk/abort-controller": "^3.208.0",
+    "@aws-sdk/client-s3": "^3.208.0",
+    "@aws-sdk/credential-providers": "^3.208.0",
+    "@aws-sdk/types": "^3.208.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -42,6 +58,7 @@
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^6.0.0",
     "@keyv/memcache": "^1.3.5",
@@ -55,7 +72,6 @@
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.15.2",
     "archiver": "^5.0.2",
-    "aws-sdk": "^2.840.0",
     "base64-stream": "^1.0.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
@@ -78,6 +94,7 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
     "node-forge": "^1.3.1",
+    "pg": "^8.3.0",
     "raw-body": "^2.4.1",
     "request": "^2.88.2",
     "selfsigned": "^2.0.0",
@@ -98,6 +115,7 @@
     }
   },
   "devDependencies": {
+    "@aws-sdk/util-stream-node": "^3.208.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/archiver": "^5.1.0",
@@ -110,17 +128,19 @@
     "@types/mock-fs": "^4.13.0",
     "@types/morgan": "^1.9.0",
     "@types/node-forge": "^1.3.0",
+    "@types/pg": "^8.6.6",
     "@types/recursive-readdir": "^2.2.0",
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/tar": "^6.1.1",
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",
+    "aws-sdk-client-mock": "^2.0.0",
     "aws-sdk-mock": "^5.2.1",
     "better-sqlite3": "^8.0.0",
     "http-errors": "^2.0.0",
     "mock-fs": "^5.1.0",
-    "msw": "^0.49.0",
+    "msw": "^1.0.0",
     "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",
     "supertest": "^6.1.3"

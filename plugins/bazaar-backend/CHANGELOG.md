@@ -1,5 +1,73 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/config@1.0.7
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.12-next.0
+
+## 0.2.5
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- 5b7cd5580d: Moving the backend-test-utils to devDependencies.
+- 4a6f38a535: Added a Backend System plugin feature
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.11
+
 ## 0.2.5-next.2
 
 ### Patch Changes

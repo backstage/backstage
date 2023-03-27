@@ -1,5 +1,72 @@
 # @backstage/integration-react
 
+## 1.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/theme@0.2.18
+
+## 1.1.11
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+
+## 1.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.1.11-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+
+## 1.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.17
+
+## 1.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/integration@1.4.2
+
 ## 1.1.10-next.1
 
 ### Patch Changes

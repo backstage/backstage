@@ -6,21 +6,20 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import aws from 'aws-sdk';
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheClient } from '@backstage/backend-plugin-api';
-import { CacheClientOptions } from '@backstage/backend-plugin-api';
-import { CacheClientSetOptions } from '@backstage/backend-plugin-api';
+import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
+import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
+import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
 import Docker from 'dockerode';
-import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { GerritIntegration } from '@backstage/integration';
@@ -38,7 +37,6 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { CacheService as PluginCacheManager } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
@@ -69,9 +67,9 @@ import { Writable } from 'stream';
 // @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
+    credsManager: AwsCredentialsManager,
     integration: AwsS3Integration,
     deps: {
-      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
@@ -199,35 +197,17 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
+// @public (undocumented)
+export function cacheToPluginCacheManager(
+  cache: CacheClient,
+): PluginCacheManager;
+
 // @public
 export const coloredFormat: winston.Logform.Format;
 
 // @public
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
-}
-
-// @alpha
-export interface Context {
-  readonly abortSignal: AbortSignal;
-  readonly deadline: Date | undefined;
-  value<T = unknown>(key: string): T | undefined;
-}
-
-// @alpha
-export class Contexts {
-  static root(): Context;
-  static withAbort(
-    parentCtx: Context,
-    source: AbortController | AbortSignal,
-  ): Context;
-  static withTimeoutDuration(parentCtx: Context, timeout: Duration): Context;
-  static withTimeoutMillis(parentCtx: Context, timeout: number): Context;
-  static withValue(
-    parentCtx: Context,
-    key: string,
-    value: unknown | ((previous: unknown | undefined) => unknown),
-  ): Context;
 }
 
 // @public
@@ -321,6 +301,7 @@ export class FetchUrlReader implements UrlReader {
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
+  lastModifiedAt?: Date;
 }>;
 
 // @public
@@ -528,7 +509,7 @@ export const legacyPlugin: (
     default: LegacyCreateRouter<
       TransformedEnv<
         {
-          cache: PluginCacheManager;
+          cache: CacheClient;
           config: ConfigService;
           database: PluginDatabaseManager;
           discovery: PluginEndpointDiscovery;
@@ -541,6 +522,7 @@ export const legacyPlugin: (
         },
         {
           logger: (log: LoggerService) => Logger;
+          cache: (cache: CacheClient) => PluginCacheManager;
         }
       >
     >;
@@ -581,7 +563,11 @@ export function makeLegacyPlugin<
 // @public
 export function notFoundHandler(): RequestHandler;
 
-export { PluginCacheManager };
+// @public (undocumented)
+export interface PluginCacheManager {
+  // (undocumented)
+  getClient(options?: CacheClientOptions): CacheClient;
+}
 
 export { PluginDatabaseManager };
 
@@ -650,6 +636,7 @@ export class ReadUrlResponseFactory {
 // @public
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public

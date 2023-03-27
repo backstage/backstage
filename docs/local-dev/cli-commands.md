@@ -73,7 +73,7 @@ Build packages in the project, excluding bundled app and backend packages.
 
 Options:
   --all          Build all packages, including bundled app and backend packages.
-  --since &lt;ref&gt;  Only build packages and their dev dependents that changed since the specified ref
+  --since <ref>  Only build packages and their dev dependents that changed since the specified ref
 ```
 
 ## repo lint
@@ -86,8 +86,8 @@ Usage: backstage-cli repo lint [options]
 Lint all packages in the project
 
 Options:
-  --format &lt;format&gt;  Lint report output format (default: "eslint-formatter-friendly")
-  --since &lt;ref&gt;      Only lint packages that changed since the specified ref
+  --format <format>  Lint report output format (default: "eslint-formatter-friendly")
+  --since <ref>      Only lint packages that changed since the specified ref
   --fix              Attempt to automatically fix violations
 ```
 
@@ -101,8 +101,8 @@ Usage: backstage-cli package start [options]
 Start a package for local development
 
 Options:
-  --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
-  --role &lt;name&gt;    Run the command with an explicit package role
+  --config <path>  Config files to load instead of app-config.yaml (default: [])
+  --role <name>    Run the command with an explicit package role
   --check          Enable type checking and linting if available
   --inspect        Enable debugger in Node.js environments
   --inspect-brk    Enable debugger in Node.js environments, breaking before code starts
@@ -118,12 +118,11 @@ Usage: backstage-cli package build [options]
 Build a package for production deployment or publishing
 
 Options:
-  --role &lt;name&gt;              Run the command with an explicit package role
+  --role <name>              Run the command with an explicit package role
   --minify                   Minify the generated code. Does not apply to app or backend packages.
-  --experimental-type-build  Enable experimental type build. Does not apply to app or backend packages.
   --skip-build-dependencies  Skip the automatic building of local dependencies. Applies to backend packages only.
   --stats                    If bundle stats are available, write them to the output directory. Applies to app packages only.
-  --config &lt;path&gt;            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
+  --config <path>            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
 ```
 
 ## package lint
@@ -139,7 +138,7 @@ Usage: backstage-cli package lint [options]
 Lint a package
 
 Options:
-  --format &lt;format&gt;  Lint report output format (default: "eslint-formatter-friendly")
+  --format <format>  Lint report output format (default: "eslint-formatter-friendly")
   --fix              Attempt to automatically fix violations
 ```
 
@@ -213,14 +212,13 @@ backstage-cli new --select plugin --option id=foo
 ```
 
 This command is typically added as script in the root `package.json` to be
-executed with `yarn backstage-create`, using options that are appropriate for
-the organization that owns the app repo. For example you may have it set up like
-this:
+executed with `yarn new`, using options that are appropriate for the organization
+that owns the app repo. For example you may have it set up like this:
 
 ```json
 {
   "scripts": {
-    "backstage-create": "backstage-cli create --scope internal --no-private --npm-registry https://acme.org/npm"
+    "new": "backstage-cli new --scope internal --no-private --npm-registry https://acme.org/npm"
   }
 }
 ```
@@ -229,10 +227,10 @@ this:
 Usage: backstage-cli create [options]
 
 Options:
-  --select &lt;name&gt;          Select the thing you want to be creating upfront
-  --option &lt;name&gt;=&lt;value&gt;  Pre-fill options for the creation process (default: [])
-  --scope &lt;scope&gt;          The scope to use for new packages
-  --npm-registry &lt;URL&gt;     The package registry to use for new packages
+  --select <name>          Select the thing you want to be creating upfront
+  --option <name>=<value>  Pre-fill options for the creation process (default: [])
+  --scope <scope>          The scope to use for new packages
+  --npm-registry <URL>     The package registry to use for new packages
   --no-private             Do not mark new packages as private
   -h, --help               display help for command
 ```
@@ -250,7 +248,7 @@ Usage: backstage-cli config:docs [options]
 Browse the configuration reference documentation
 
 Options:
-  --package &lt;name&gt;  Only include the schema that applies to the given package
+  --package <name>  Only include the schema that applies to the given package
   -h, --help        display help for command
 ```
 
@@ -270,12 +268,12 @@ yarn backstage-cli config:print --frontend --package my-app
 Usage: backstage-cli config:print [options]
 
 Options:
-  --package &lt;name&gt;   Only load config schema that applies to the given package
+  --package <name>   Only load config schema that applies to the given package
   --lax              Do not require environment variables to be set
   --frontend         Print only the frontend configuration
   --with-secrets     Include secrets in the printed configuration
-  --format &lt;format&gt;  Format to print the configuration in, either json or yaml [yaml]
-  --config &lt;path&gt;    Config files to load instead of app-config.yaml (default: [])
+  --format <format>  Format to print the configuration in, either json or yaml [yaml]
+  --config <path>    Config files to load instead of app-config.yaml (default: [])
   -h, --help         display help for command
 ```
 
@@ -289,11 +287,11 @@ local packages in the repo.
 Usage: backstage-cli config:check [options]
 
 Options:
-  --package &lt;name&gt;  Only load config schema that applies to the given package
+  --package <name>  Only load config schema that applies to the given package
   --lax             Do not require environment variables to be set
   --frontend        Only validate the frontend configuration
   --deprecated      List all deprecated configuration settings
-  --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
+  --config <path>   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
 ```
 
@@ -311,8 +309,8 @@ Usage: backstage-cli config:schema [options]
 Print configuration schema
 
 Options:
-  --package &lt;name&gt;   Only output config schema that applies to the given package
-  --format &lt;format&gt;  Format to print the schema in, either json or yaml [yaml]
+  --package <name>   Only output config schema that applies to the given package
+  --format <format>  Format to print the schema in, either json or yaml [yaml]
   -h, --help         display help for command
 ```
 
@@ -327,8 +325,8 @@ Usage: backstage-cli versions:bump [options]
 
 Options:
   -h, --help        display help for command
-  --pattern &lt;glob&gt;  Override glob for matching packages to upgrade
-  --release &lt;version|next|main&gt; Bump to a specific Backstage release line or version (default: "main")
+  --pattern <glob>  Override glob for matching packages to upgrade
+  --release <version|next|main> Bump to a specific Backstage release line or version (default: "main")
 ```
 
 ## versions:check
@@ -355,7 +353,7 @@ package. This essentially calls `yarn pack` in each included package and unpacks
 the resulting archive in the target `workspace-dir`.
 
 ```text
-Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
+Usage: backstage-cli build-workspace [options] <workspace-dir>
 ```
 
 ## create-github-app
@@ -368,7 +366,7 @@ Launches a browser to create the App through GitHub and saves the result as a
 YAML file that can be referenced in the GitHub integration configuration.
 
 ```text
-Usage: backstage-cli create-github-app &lt;github-org&gt;
+Usage: backstage-cli create-github-app <github-org>
 ```
 
 ## info

@@ -1,5 +1,143 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 259d3407b9b: Move `CategoryPicker` from `scaffolder` into `scaffolder-react`
+  Move `ContextMenu` into `scaffolder-react` and rename it to `ScaffolderPageContextMenu`
+- 2cfd03d7376: To offer better customization options, `ScaffolderPageContextMenu` takes callbacks as props instead of booleans
+- 48da4c46e45: `scaffolder/next`: Export the `TemplateGroupFilter` and `TemplateGroups` and make an extensible component
+
+### Patch Changes
+
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- 7a6b16cc506: `scaffolder/next`: Bump `@rjsf/*` deps to 5.3.1
+- f84fc7fd040: Updated dependency `@rjsf/validator-ajv8` to `5.3.0`.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.2.0
+
+### Minor Changes
+
+- 8f4d13f21cf: Move `useTaskStream`, `TaskBorder`, `TaskLogStream` and `TaskSteps` into `scaffolder-react`.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- c8d78b9ae9d: fix bug with `hasErrors` returning false when dealing with empty objects
+- 9b8c374ace5: Remove timer for skipped steps in Scaffolder Next's TaskSteps
+- 44941fc97eb: scaffolder/next: Move the `uiSchema` to its own property in the validation `context` to align with component development and access of `ui:options`
+- d9893263ba9: scaffolder/next: Fix for steps without properties
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- cc418d652a7: scaffolder/next: Added the ability to get the fields definition in the schema in the validation function
+- d4100d0ec42: Fix alignment bug for owners on `TemplateCard`
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.6
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 3c96e77b513: Make scaffolder adhere to page themes by using page `fontColor` consistently. If your theme overwrites template list or card headers, review those styles.
+- d9893263ba9: scaffolder/next: Fix for steps without properties
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 8f4d13f21cf: Move `useTaskStream`, `TaskBorder`, `TaskLogStream` and `TaskSteps` into `scaffolder-react`.
+
+### Patch Changes
+
+- 44941fc97eb: scaffolder/next: Move the `uiSchema` to its own property in the validation `context` to align with component development and access of `ui:options`
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- c8d78b9ae9: fix bug with `hasErrors` returning false when dealing with empty objects
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- cc418d652a: scaffolder/next: Added the ability to get the fields definition in the schema in the validation function
+- d4100d0ec4: Fix alignment bug for owners on `TemplateCard`
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- a07750745b: Added `DescriptionField` field override to the `next/scaffolder`
+- a521379688: Migrating the `TemplateEditorPage` to work with the new components from `@backstage/plugin-scaffolder-react`
+- 8c2966536b: Embed scaffolder workflow in other components
+- 5555e17313: refactor `createAsyncValidators` to be recursive to ensure validators are called in nested schemas.
+
+### Patch Changes
+
+- 04f717a8e1: `scaffolder/next`: bump `react-jsonschema-form` libraries to `v5-stable`
+- b46f385eff: scaffolder/next: Implementing a simple `OngoingTask` page
+- cbab8ac107: lock versions of `@rjsf/*-beta` packages
+- 346d6b6630: Upgrade `@rjsf` version 5 dependencies to `beta.18`
+- ccbf91051b: bump `@rjsf` `v5` dependencies to 5.1.0
+- d2ddde2108: Add `ScaffolderLayouts` to `NextScaffolderPage`
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-scaffolder-common@1.2.5
+
 ## 1.1.0-next.2
 
 ### Minor Changes

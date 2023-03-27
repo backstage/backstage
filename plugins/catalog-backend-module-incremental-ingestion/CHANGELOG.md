@@ -1,5 +1,124 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+  - @backstage/plugin-events-node@0.2.5-next.0
+  - @backstage/plugin-permission-common@0.7.4
+
+## 0.3.0
+
+### Minor Changes
+
+- a811bd246c4: Added endpoint to get a list of known incremental entity providers
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `incrementalIngestionEntityProviderCatalogModule` to `catalogModuleIncrementalIngestionEntityProvider` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- bf611cf019a: Fix missing `dependencies` in `package.json`
+- 6e612b58577: Move `@backstage/backend-defaults` to `devDependencies`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-events-node@0.2.4
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/plugin-events-node@0.2.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- a811bd246c4: Added endpoint to get a list of known incremental entity providers
+
+### Patch Changes
+
+- 6e612b58577: Move `@backstage/backend-defaults` to `devDependencies`
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-events-node@0.2.4-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- bf611cf019: Fix missing `dependencies` in `package.json`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-defaults@0.1.8-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/plugin-events-node@0.2.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.2.0
+
+### Minor Changes
+
+- 1ba120faa3: Added new mechanism to handle deltas in incremental providers
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 407dc01fc9: Removing extra imports for `run` script as `TestBackend` auto loads the default factories
+- b7e36660d5: Return `EventSubscriber` from `addIncrementalEntityProvider` to hook up to `EventsBackend`
+- 5b7cd5580d: Moving the backend-test-utils to devDependencies.
+- 77c41b6924: Updated README to include newer API options for incremental entity providers
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-common@0.7.3
+
 ## 0.2.0-next.2
 
 ### Patch Changes

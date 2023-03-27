@@ -1,0 +1,28 @@
+.communityPage {
+  // --ifm-spacing-horizontal: 2rem;
+
+  font-size: 1.25rem;
+
+  h1 {
+    font-size: 54px;
+    line-height: 56px;
+    word-break: break-word;
+  }
+
+  p {
+    text-align: justify;
+  }
+}
+
+.listContainer {
+  height: 100%;
+  align-items: stretch !important;
+  grid-template-rows: auto 1fr;
+
+  ul {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}

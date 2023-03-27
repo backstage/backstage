@@ -1,5 +1,79 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.5-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a5de745ac17: Renamed `awsSqsConsumingEventPublisherEventsModule` to `eventsModuleAwsSqsConsumingEventPublisher` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/plugin-events-node@0.2.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-events-node@0.2.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.4-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/plugin-events-node@0.2.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-events-node@0.2.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
 ## 0.1.4-next.2
 
 ### Patch Changes

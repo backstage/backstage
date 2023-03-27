@@ -44,6 +44,7 @@ import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
+import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
 import explore from './plugins/explore';
 import kubernetes from './plugins/kubernetes';
@@ -63,6 +64,7 @@ import permission from './plugins/permission';
 import playlist from './plugins/playlist';
 import adr from './plugins/adr';
 import lighthouse from './plugins/lighthouse';
+import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -147,6 +149,9 @@ async function main() {
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
+  const entityFeedbackEnv = useHotMemoize(module, () =>
+    createEnv('entityFeedback'),
+  );
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
@@ -154,6 +159,7 @@ async function main() {
   const eventBasedEntityProviders = await catalogEventBasedProviders(
     catalogEnv,
   );
+  const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
 
   const apiRouter = Router();
   apiRouter.use(
@@ -179,7 +185,9 @@ async function main() {
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use('/playlist', await playlist(playlistEnv));
   apiRouter.use('/explore', await explore(exploreEnv));
+  apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
+  apiRouter.use('/linguist', await linguist(linguistEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

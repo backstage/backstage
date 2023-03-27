@@ -38,10 +38,13 @@ across your project. This will automatically convert all module imports in your
 source code to use one of the three new core packages instead. For example, the
 following change might occur:
 
-```diff
--import { useApi, configApiRef, InfoCard } from '@backstage/core';
-+import { useApi, configApiRef } from '@backstage/core-plugin-api';
-+import { InfoCard } from '@backstage/core-components';
+```ts
+/* highlight-remove-next-line */
+import { useApi, configApiRef, InfoCard } from '@backstage/core';
+/* highlight-add-start */
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { InfoCard } from '@backstage/core-components';
+/* highlight-add-end */
 ```
 
 In a typical app created with `@backstage/create-app`, you would run the

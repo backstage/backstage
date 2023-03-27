@@ -1,5 +1,172 @@
 # @backstage/plugin-catalog-backend
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- 899ebfd8e02: Add full text search support to the `by-query` endpoint.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.8.0
+
+### Minor Changes
+
+- 7f4ea3d3602: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- e675f902980: Add deprecations for symbols that were moved to `@backstage/plugin-catalog-node` a long time ago:
+
+  - `CatalogProcessor`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorResult`
+  - `DeferredEntity`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `EntityRelationSpec`
+  - `processingResult`
+
+  Also moved over and deprecated the following symbols:
+
+  - `locationSpecToLocationEntity`
+  - `locationSpecToMetadataName`
+
+- ac8929f2f31: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.8.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.8.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 7f4ea3d360: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- ac8929f2f3: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.6-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2
+
+### Patch Changes
+
+- 071354eb7d: Add additional validation as security precations for output entities.
+- b977c2e69f: Minor improvements to the descriptions provided with permission rules schemas
+- 2380506364: The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](https://backstage.io/docs/features/search/how-to-guides#how-to-customize-fields-in-the-software-catalog-index).
+- 9573651919: The previous migration that adds the `search.original_value` column may leave some of the entities not updated. Add a migration script to trigger a reprocessing of the entities.
+- 9f71a2fd20: Location rule target patterns now also match hidden files, i.e. path components with a leading dot.
+- e716946103: Updated usage of the lifecycle service.
+- 1aec041c34: Fixed an issue where entities sometimes were not properly deleted during a full mutation.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- fc73f6aae5: Switched the order of reprocessing statements retroactively in migrations. This only improves the experience for those who at a later time perform a large upgrade of an old Backstage installation.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.5
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.7.2-next.2
 
 ### Patch Changes

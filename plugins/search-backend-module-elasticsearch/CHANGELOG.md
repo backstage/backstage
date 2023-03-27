@@ -1,5 +1,61 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.5-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.1.4
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.4
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-search-backend-node@1.1.4-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.4-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.3
+
+### Patch Changes
+
+- 896566906b: Export `decodeElasticSearchPageCursor` utility function
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.3
+  - @backstage/plugin-search-common@1.2.1
+
 ## 1.1.3-next.2
 
 ### Patch Changes

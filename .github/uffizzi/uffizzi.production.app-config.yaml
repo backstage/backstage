@@ -9,13 +9,17 @@ backend:
   baseUrl: ${UFFIZZI_URL}
   auth:
     keys:
-      # random mock key for uffizi deployments
+      # random mock key for Uffizzi deployments
       - secret: 5TXvdjVZFxF7qf9K5RAYRDoGrLzJooqa
   listen:
     port: 7007
   database:
-    client: better-sqlite3
-    connection: ':memory:'
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
   cache:
     store: memory
   cors:

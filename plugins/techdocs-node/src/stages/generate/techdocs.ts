@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import {
   createOrUpdateMetadata,
-  getMkDocsYml,
+  getMkdocsYml,
   patchIndexPreBuild,
   runCommand,
   storeEtagMetadata,
@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import {
   GeneratorBase,
   GeneratorConfig,
@@ -100,7 +100,7 @@ export class TechdocsGenerator implements GeneratorBase {
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const { path: mkdocsYmlPath, content } = await getMkDocsYml(
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(
       inputDir,
       siteOptions,
     );

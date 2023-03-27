@@ -10,9 +10,10 @@ services:
     image: '${BACKSTAGE_IMAGE}'
 
     environment:
-      POSTGRES_HOST: db
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: kiTMoTsiEuyQ43GrL4Hv
       NODE_ENV: production
     deploy:
       resources:
@@ -26,4 +27,8 @@ services:
   db:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: kiTMoTsiEuyQ43GrL4Hv
+    deploy:
+      resources:
+        limits:
+          memory: 250M

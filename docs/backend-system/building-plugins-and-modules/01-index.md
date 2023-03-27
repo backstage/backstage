@@ -6,16 +6,14 @@ sidebar_label: Overview
 description: Building backend plugins and modules using the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 > NOTE: If you have an existing backend and/or backend plugins that are not yet
 > using the new backend system, see [migrating](./08-migrating.md).
 
-## Overview
-
-Backend [plugins](../architecture/04-plugins.md) and
-[modules](../architecture/06-modules.md), sometimes collectively referred to as
-backend _features_, are the building blocks that adopters add to their
+This section covers how to build your own backend [plugins](../architecture/04-plugins.md) and
+[modules](../architecture/06-modules.md). They are sometimes collectively referred to as
+backend _features_, and are the building blocks that adopters add to their
 [backends](../architecture/02-backends.md).
 
 ## Creating a new Plugin
@@ -74,7 +72,7 @@ Backend modules are used to extend [plugins](../architecture/04-plugins.md) with
 additional features or change existing behavior. They must always be installed
 in the same backend instance as the plugin that they extend, and may only extend
 a single plugin. Modules interact with their target plugin using the [extension
-points](./05-extension-points.md) registered by the plugin, while also being
+points](../architecture/05-extension-points.md) registered by the plugin, while also being
 able to depend on the [services](../architecture/03-services.md) of that plugin.
 That last point is worth reiterating: injected `plugin` scoped services will be
 the exact
@@ -170,7 +168,61 @@ Whenever you want to allow modules to configure your plugin dynamically, for
 example in the way that the catalog backend lets catalog modules inject
 additional entity providers, you can use the extension points mechanism. This is
 described in detail with code examples in [the extension points architecture
-article](../architecture/05-extension-points.md).
+article](../architecture/05-extension-points.md), while the following is a more
+slim example of how to implement an extension point for a plugin:
+
+```ts
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
+
+// This is the extension point interface, which is how modules interact with your plugin.
+export interface ExamplesExtensionPoint {
+  addExample(example: Example): void;
+}
+
+// This is the extension point reference that encapsulates the above interface.
+export const examplesExtensionPoint =
+  createExtensionPoint<ExamplesExtensionPoint>({
+    id: 'example.examples',
+  });
+
+// This is the implementation of the extension point, which is internal to your plugin.
+class ExamplesExtension implements ExamplesExtensionPoint {
+  #examples: Example[] = [];
+
+  addExample(example: Example): void {
+    this.#examples.push(example);
+  }
+
+  // Note that this method is internal to this implementation
+  getRegisteredExamples() {
+    return this.#examples;
+  }
+}
+
+// The following shows how your plugin would register the extension point
+// and use the features that other modules have registered.
+export const examplePlugin = createBackendPlugin({
+  pluginId: 'example',
+  register(env) {
+    const examplesExtensions = new ExamplesExtension();
+    env.registerExtensionPoint(examplesExtensionPoint, examplesExtensions);
+
+    env.registerInit({
+      deps: { logger: coreServices.logger },
+      async init({ logger }) {
+        // We can access `examplesExtension` directly, giving us access to the internal interface.
+        const examples = examplesExtension.getRegisteredExamples();
+
+        logger.info(`The following examples have been registered: ${examples}`);
+      },
+    });
+  },
+});
+```
+
+This is a very common type of extension point, one where modules are given the opportunity to register features to be used by the plugin. In this case modules are able to register examples that are then used by our examples plugin.
+
+Note that the public extension point interface only needs to expose the `addExample` method, while the `getRegisteredExamples()` method is kept internal to the plugin.
 
 ### Configuration
 

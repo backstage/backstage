@@ -22,4 +22,3 @@
 
 export { AzureDevOpsDiscoveryProcessor } from './processors';
 export { AzureDevOpsEntityProvider } from './providers';
-export { azureDevOpsEntityProviderCatalogModule } from './service/AzureDevOpsEntityProviderCatalogModule';

@@ -5,10 +5,9 @@
 ```ts
 /// <reference types="express" />
 
-import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
-import type { DeferredEntity } from '@backstage/plugin-catalog-backend';
+import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import type { DurationObjectUnits } from 'luxon';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -79,14 +78,6 @@ export interface IncrementalEntityProviderOptions {
   rejectRemovalsAbovePercentage?: number;
   restLength: DurationObjectUnits;
 }
-
-// @alpha
-export const incrementalIngestionEntityProviderCatalogModule: (options: {
-  providers: {
-    provider: IncrementalEntityProvider<unknown, unknown>;
-    options: IncrementalEntityProviderOptions;
-  }[];
-}) => BackendFeature;
 
 // @public (undocumented)
 export type PluginEnvironment = {

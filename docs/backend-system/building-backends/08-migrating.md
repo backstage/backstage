@@ -6,7 +6,7 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. As such, it is not considered stable, and it is not recommended to migrate production backends to the new backend system until it has a stable release.**
 
 ## Overview
 
@@ -72,8 +72,7 @@ comment out its old contents, or renaming the old file to `index.backup.ts` for
 reference and making a new blank one to work on - whichever works best for you.
 These are our new blank contents in the index file:
 
-```ts
-// packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -95,13 +94,15 @@ backend start` command locally and seeing some logs scroll by. But it'll just be
 a blank service with no real features added. So let's stop it with `Ctrl+C` and
 reintroduce some plugins into the mix.
 
-```diff
- import { createBackend } from '@backstage/backend-defaults';
-+import { legacyPlugin } from '@backstage/backend-common';
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+/* highlight-add-next-line */
+import { legacyPlugin } from '@backstage/backend-common';
 
- const backend = createBackend();
-+backend.add(legacyPlugin('todo', import('./plugins/todo')));
- backend.start();
+const backend = createBackend();
+/* highlight-add-next-line */
+backend.add(legacyPlugin('todo', import('./plugins/todo')));
+backend.start();
 ```
 
 The `todo` plugin used above is just an example and you may not have it enabled
@@ -128,34 +129,42 @@ environment was changed from the defaults, perhaps with your own custom
 additions. If this is the case in your installation, you still aren't out of
 luck - you can build a customized `legacyPlugin` function.
 
-```diff
- import { createBackend } from '@backstage/backend-defaults';
--import { legacyPlugin } from '@backstage/backend-common';
-+import { makeLegacyPlugin, loggerToWinstonLogger } from '@backstage/backend-common';
-+import { coreServices } from '@backstage/backend-plugin-api';
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+/* highlight-remove-next-line */
+import { legacyPlugin } from '@backstage/backend-common';
+/* highlight-add-start */
+import {
+  makeLegacyPlugin,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
+import { coreServices } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
 
-+const legacyPlugin = makeLegacyPlugin(
-+  {
-+    cache: coreServices.cache,
-+    config: coreServices.config,
-+    database: coreServices.database,
-+    discovery: coreServices.discovery,
-+    logger: coreServices.logger,
-+    permissions: coreServices.permissions,
-+    scheduler: coreServices.scheduler,
-+    tokenManager: coreServices.tokenManager,
-+    reader: coreServices.urlReader,
-+    identity: coreServices.identity,
-+    // ... and your own additions
-+  },
-+  {
-+    logger: log => loggerToWinstonLogger(log),
-+  },
-+);
+/* highlight-add-start */
+const legacyPlugin = makeLegacyPlugin(
+  {
+    cache: coreServices.cache,
+    config: coreServices.config,
+    database: coreServices.database,
+    discovery: coreServices.discovery,
+    logger: coreServices.logger,
+    permissions: coreServices.permissions,
+    scheduler: coreServices.scheduler,
+    tokenManager: coreServices.tokenManager,
+    reader: coreServices.urlReader,
+    identity: coreServices.identity,
+    // ... and your own additions
+  },
+  {
+    logger: log => loggerToWinstonLogger(log),
+  },
+);
+/* highlight-add-end */
 
- const backend = createBackend();
- backend.add(legacyPlugin('todo', import('./plugins/todo')));
- backend.start();
+const backend = createBackend();
+backend.add(legacyPlugin('todo', import('./plugins/todo')));
+backend.start();
 ```
 
 The first argument to `makeLegacyPlugin` is the mapping from environment keys to
@@ -177,18 +186,20 @@ in question.
 In this example, we'll assume that your added environment field is named
 `example`, and the created ref is named `exampleServiceRef`.
 
-```diff
-+import { exampleServiceRef } from '<somewhere>'; // if the definition is elsewhere
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { exampleServiceRef } from '<somewhere>'; // if the definition is elsewhere
 
- const legacyPlugin = makeLegacyPlugin(
-   {
-     // ... the above core services still go here
-+    example: exampleServiceRef
-   },
-   {
-     logger: log => loggerToWinstonLogger(log),
-   },
- );
+const legacyPlugin = makeLegacyPlugin(
+  {
+    // ... the above core services still go here
+    /* highlight-add-next-line */
+    example: exampleServiceRef,
+  },
+  {
+    logger: log => loggerToWinstonLogger(log),
+  },
+);
 ```
 
 After this, your backend will know how to instantiate your thing on demand and
@@ -220,12 +231,13 @@ such migrations you can make.
 The app backend plugin that serves the frontend from the backend can trivially
 be used in its new form.
 
-```diff
- // packages/backend/src/index.ts
-+import { appPlugin } from '@backstage/plugin-app-backend';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { appPlugin } from '@backstage/plugin-app-backend';
 
- const backend = createBackend();
-+backend.add(appPlugin({ appPackageName: 'app' }));
+const backend = createBackend();
+/* highlight-add-next-line */
+backend.add(appPlugin({ appPackageName: 'app' }));
 ```
 
 This is an example of how options can be passed into some backend plugins. The
@@ -239,14 +251,17 @@ You should be able to delete the `plugins/app.ts` file at this point.
 
 A basic installation of the catalog plugin looks as follows.
 
-```diff
- // packages/backend/src/index.ts
-+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
+/* highlight-add-end */
 
- const backend = createBackend();
-+backend.add(catalogPlugin());
-+backend.add(catalogModuleTemplateKind());
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(catalogPlugin());
+backend.add(catalogModuleTemplateKind());
+/* highlight-add-end */
 ```
 
 Note that this also installs a module from the scaffolder, namely the one which
@@ -262,34 +277,38 @@ mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
 depends on the appropriate extension point and interacts with it.
 
-```diff
- // packages/backend/src/index.ts
-+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
-+import { createBackendModule } from '@backstage/backend-plugin-api';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
 
-+const catalogModuleCustomExtensions = createBackendModule({
-+  pluginId: 'catalog',  // name of the plugin that the module is targeting
-+  moduleId: 'customExtensions',
-+  register(env) {
-+    env.registerInit({
-+      deps: {
-+        catalog: catalogProcessingExtensionPoint,
-+        // ... and other dependencies as needed
-+      },
-+      init({ catalog /* ..., other dependencies */ }) {
-+        // Here you have the opportunity to interact with the extension
-+        // point before the plugin itself gets instantiated
-+        catalog.addEntityProvider(new MyEntityProvider()); // just an example
-+        catalog.addProcessor(new MyProcessor());           // just an example
-+      },
-+    });
-+  },
-+});
+/* highlight-add-start */
+const catalogModuleCustomExtensions = createBackendModule({
+  pluginId: 'catalog', // name of the plugin that the module is targeting
+  moduleId: 'customExtensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      init({ catalog /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        catalog.addEntityProvider(new MyEntityProvider()); // just an example
+        catalog.addProcessor(new MyProcessor()); // just an example
+      },
+    });
+  },
+});
+/* highlight-add-end */
 
- const backend = createBackend();
- backend.add(catalogPlugin());
- backend.add(catalogModuleTemplateKind());
-+backend.add(catalogModuleCustomExtensions());
+const backend = createBackend();
+backend.add(catalogPlugin());
+backend.add(catalogModuleTemplateKind());
+/* highlight-add-next-line */
+backend.add(catalogModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,
@@ -310,12 +329,13 @@ implementations that they represent, and being exported from there.
 
 A basic installation of the events plugin looks as follows.
 
-```diff
- // packages/backend/src/index.ts
-+import { eventsPlugin } from '@backstage/plugin-events-backend';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { eventsPlugin } from '@backstage/plugin-events-backend';
 
- const backend = createBackend();
-+backend.add(eventsPlugin());
+const backend = createBackend();
+/* highlight-add-next-line */
+backend.add(eventsPlugin());
 ```
 
 If you have other customizations made to `plugins/events.ts`, such as adding
@@ -327,32 +347,36 @@ mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
 depends on the appropriate extension point and interacts with it.
 
-```diff
- // packages/backend/src/index.ts
-+import { eventsExtensionPoint } from '@backstage/plugin-events-node';
-+import { createBackendModule } from '@backstage/backend-plugin-api';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
 
-+const eventsModuleCustomExtensions = createBackendModule({
-+  pluginId: 'events',  // name of the plugin that the module is targeting
-+  moduleId: 'customExtensions',
-+  register(env) {
-+    env.registerInit({
-+      deps: {
-+        events: eventsExtensionPoint,
-+        // ... and other dependencies as needed
-+      },
-+      init({ events /* ..., other dependencies */ }) {
-+        // Here you have the opportunity to interact with the extension
-+        // point before the plugin itself gets instantiated
-+        events.addSubscribers(new MySubscriber()); // just an example
-+      },
-+    });
-+  },
-+});
+/* highlight-add-start */
+const eventsModuleCustomExtensions = createBackendModule({
+  pluginId: 'events', // name of the plugin that the module is targeting
+  moduleId: 'customExtensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      init({ events /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        events.addSubscribers(new MySubscriber()); // just an example
+      },
+    });
+  },
+});
+/* highlight-add-end */
 
- const backend = createBackend();
- backend.add(eventsPlugin());
-+backend.add(eventsModuleCustomExtensions());
+const backend = createBackend();
+backend.add(eventsPlugin());
+/* highlight-add-next-line */
+backend.add(eventsModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,
@@ -373,12 +397,13 @@ implementations that they represent, and being exported from there.
 
 A basic installation of the scaffolder plugin looks as follows.
 
-```diff
- // packages/backend/src/index.ts
-+import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
 
- const backend = createBackend();
-+backend.add(scaffolderPlugin());
+const backend = createBackend();
+/* highlight-add-next-line */
+backend.add(scaffolderPlugin());
 ```
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
@@ -390,32 +415,36 @@ mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
 depends on the appropriate extension point and interacts with it.
 
-```diff
- // packages/backend/src/index.ts
-+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
-+import { createBackendModule } from '@backstage/backend-plugin-api';
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
 
-+const scaffolderModuleCustomExtensions = createBackendModule({
-+  pluginId: 'scaffolder',  // name of the plugin that the module is targeting
-+  moduleId: 'customExtensions',
-+  register(env) {
-+    env.registerInit({
-+      deps: {
-+        scaffolder: scaffolderActionsExtensionPoint,
-+        // ... and other dependencies as needed
-+      },
-+      init({ scaffolder /* ..., other dependencies */ }) {
-+        // Here you have the opportunity to interact with the extension
-+        // point before the plugin itself gets instantiated
-+        scaffolder.addActions(new MyAction()); // just an example
-+      },
-+    });
-+  },
-+});
+/* highlight-add-start */
+const scaffolderModuleCustomExtensions = createBackendModule({
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
+  moduleId: 'customExtensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderActionsExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      init({ scaffolder /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        scaffolder.addActions(new MyAction()); // just an example
+      },
+    });
+  },
+});
+/* highlight-add-end */
 
- const backend = createBackend();
- backend.add(scaffolderPlugin());
-+backend.add(scaffolderModuleCustomExtensions());
+const backend = createBackend();
+backend.add(scaffolderPlugin());
+/* highlight-add-next-line */
+backend.add(scaffolderModuleCustomExtensions());
 ```
 
 This also requires that you have a dependency on the corresponding node package,

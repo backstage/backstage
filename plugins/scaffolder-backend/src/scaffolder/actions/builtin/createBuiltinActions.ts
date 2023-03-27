@@ -22,7 +22,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   createCatalogRegisterAction,
@@ -31,8 +30,12 @@ import {
 } from './catalog';
 
 import { TemplateFilter, TemplateGlobal } from '../../../lib';
-import { createDebugLogAction } from './debug';
-import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
+import { createDebugLogAction, createWaitAction } from './debug';
+import {
+  createFetchPlainAction,
+  createFetchPlainFileAction,
+  createFetchTemplateAction,
+} from './fetch';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -95,7 +98,7 @@ export interface CreateBuiltInActionsOptions {
  */
 export const createBuiltinActions = (
   options: CreateBuiltInActionsOptions,
-): TemplateAction<JsonObject>[] => {
+): TemplateAction[] => {
   const {
     reader,
     integrations,
@@ -110,6 +113,10 @@ export const createBuiltinActions = (
 
   const actions = [
     createFetchPlainAction({
+      reader,
+      integrations,
+    }),
+    createFetchPlainFileAction({
       reader,
       integrations,
     }),
@@ -160,6 +167,7 @@ export const createBuiltinActions = (
       config,
     }),
     createDebugLogAction(),
+    createWaitAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
     createFetchCatalogEntityAction({ catalogClient }),
     createCatalogWriteAction(),
@@ -188,5 +196,5 @@ export const createBuiltinActions = (
     }),
   ];
 
-  return actions as TemplateAction<JsonObject>[];
+  return actions as TemplateAction[];
 };

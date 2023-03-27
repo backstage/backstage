@@ -49,9 +49,17 @@ import {
   PodStatus,
 } from '@kubernetes/client-node';
 
+const isRejected = (
+  input: PromiseSettledResult<unknown>,
+): input is PromiseRejectedResult => input.status === 'rejected';
+
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>,
+): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+
 /**
  *
- * @alpha
+ * @public
  */
 export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   {
@@ -298,12 +306,12 @@ export class KubernetesFanOutHandler {
     auth: KubernetesRequestAuth,
     requestContext: ServiceLocatorRequestContext,
   ) {
-    const clusterDetails: ClusterDetails[] = await (
+    const clusterDetails: ClusterDetails[] = (
       await this.serviceLocator.getClustersByEntity(entity, requestContext)
     ).clusters;
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
-    return await Promise.all(
+    const promiseResults = await Promise.allSettled(
       clusterDetails.map(cd => {
         const kubernetesAuthTranslator: KubernetesAuthTranslator =
           this.getAuthTranslator(cd.authProvider);
@@ -313,6 +321,11 @@ export class KubernetesFanOutHandler {
         );
       }),
     );
+
+    promiseResults.filter(isRejected).map(item => {
+      this.logger.info(`Failed to decorate cluster details: ${item.reason}`);
+    });
+    return promiseResults.filter(isFulfilled).map(item => item.value);
   }
 
   toObjectsByEntityResponse(
@@ -324,7 +337,7 @@ export class KubernetesFanOutHandler {
           (item.errors !== undefined && item.errors.length >= 1) ||
           (item.resources !== undefined &&
             item.resources.length >= 1 &&
-            item.resources.some(fr => fr.resources.length >= 1)),
+            item.resources.some(fr => fr.resources?.length >= 1)),
       ),
     };
   }

@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.11-next.0
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 0.5.10
+
+### Patch Changes
+
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.5.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
 ## 0.5.9-next.2
 
 ### Patch Changes

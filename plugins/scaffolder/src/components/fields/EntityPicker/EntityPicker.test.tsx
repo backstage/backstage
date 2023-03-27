@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityFilterQuery } from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -22,6 +22,7 @@ import { FieldProps } from '@rjsf/core';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
+import { EntityPickerProps } from './schema';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -34,15 +35,7 @@ describe('<EntityPicker />', () => {
   const onChange = jest.fn();
   const schema = {};
   const required = false;
-  let uiSchema: {
-    'ui:options': {
-      allowedKinds?: string[];
-      defaultKind?: string;
-      allowArbitraryValues?: boolean;
-      defaultNamespace?: string | false;
-      catalogFilter?: EntityFilterQuery;
-    };
-  };
+  let uiSchema: EntityPickerProps['uiSchema'];
   const rawErrors: string[] = [];
   const formData = undefined;
 
@@ -192,6 +185,59 @@ describe('<EntityPicker />', () => {
         ],
       });
     });
+    it('allow single top level filter', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: {
+            kind: ['Group'],
+            'metadata.name': 'test-entity',
+          },
+        },
+      };
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} uiSchema={uiSchema} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: ['Group'],
+          'metadata.name': 'test-entity',
+        },
+      });
+    });
+
+    it('search for entitities containing an specific key', async () => {
+      const uiSchemaWithBoolean = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['User'],
+              'metadata.annotation.some/anotation': { exists: true },
+            },
+          ],
+        },
+      };
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} uiSchema={uiSchemaWithBoolean} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: ['User'],
+            'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
+          },
+        ],
+      });
+    });
   });
 
   describe('catalogFilter should take precedence over allowedKinds', () => {
@@ -234,6 +280,56 @@ describe('<EntityPicker />', () => {
           },
         ],
       });
+    });
+  });
+
+  describe('uses full entity ref', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('returns the full entityRef when entity exists in the list', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
+    });
+
+    it('returns the full entityRef when entity does not exist in the list', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-b' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith('group:default/team-b');
     });
   });
 });

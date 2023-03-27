@@ -1,5 +1,61 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
+## 0.1.9
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+
+## 0.1.8
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+
 ## 0.1.8-next.1
 
 ### Patch Changes

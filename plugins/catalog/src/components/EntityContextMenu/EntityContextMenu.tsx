@@ -30,8 +30,8 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import React, { useCallback, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react';
-import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { BackstageTheme } from '@backstage/theme';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
@@ -90,9 +90,13 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const alertApi = useApi(alertApiRef);
 
   const copyToClipboard = useCallback(() => {
-    window.navigator.clipboard
-      .writeText(window.location.toString())
-      .then(() => alertApi.post({ message: 'Copied!', severity: 'info' }));
+    window.navigator.clipboard.writeText(window.location.toString()).then(() =>
+      alertApi.post({
+        message: 'Copied!',
+        severity: 'info',
+        display: 'transient',
+      }),
+    );
   }, [alertApi]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [

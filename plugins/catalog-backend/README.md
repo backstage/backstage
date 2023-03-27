@@ -1,7 +1,7 @@
 # Catalog Backend
 
 This is the backend for the default Backstage [software
-catalog](http://backstage.io/docs/features/software-catalog/software-catalog-overview).
+catalog](http://backstage.io/docs/features/software-catalog/).
 This provides an API for consumers such as the frontend [catalog
 plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog).
 

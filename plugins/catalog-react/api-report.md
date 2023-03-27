@@ -20,7 +20,6 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
-import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -28,13 +27,9 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 
 // @public
-export const AsyncEntityProvider: ({
-  children,
-  entity,
-  loading,
-  error,
-  refresh,
-}: AsyncEntityProviderProps) => JSX.Element;
+export const AsyncEntityProvider: (
+  props: AsyncEntityProviderProps,
+) => JSX.Element;
 
 // @public
 export interface AsyncEntityProviderProps {
@@ -225,9 +220,9 @@ export type EntityListContextProps<
 };
 
 // @public
-export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
+export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
 
 // @public (undocumented)
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -413,9 +408,7 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityTagPicker: (
-  props: EntityTagPickerProps,
-) => JSX.Element | null;
+export const EntityTagPicker: (props: EntityTagPickerProps) => JSX.Element;
 
 // @public (undocumented)
 export type EntityTagPickerProps = {
@@ -496,16 +489,14 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): JSX.Element | null;
 
-// @alpha
-export function isOwnerOf(owner: Entity, entity: Entity): boolean;
-
 // @public (undocumented)
-export const MockEntityListContextProvider: ({
-  children,
-  value,
-}: React_2.PropsWithChildren<{
-  value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
-}>) => JSX.Element;
+export function MockEntityListContextProvider<
+  T extends DefaultEntityFilters = DefaultEntityFilters,
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityListContextProps<T>>;
+  }>,
+): JSX.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
@@ -556,15 +547,6 @@ export function useEntityList<
 export function useEntityOwnership(): {
   loading: boolean;
   isOwnedEntity: (entity: Entity) => boolean;
-};
-
-// @alpha
-export function useEntityPermission(
-  permission: ResourcePermission<'catalog-entity'>,
-): {
-  loading: boolean;
-  allowed: boolean;
-  error?: Error;
 };
 
 // @public

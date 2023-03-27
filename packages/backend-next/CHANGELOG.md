@@ -1,5 +1,72 @@
 # example-backend-next
 
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.1-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-defaults@0.1.9-next.0
+  - @backstage/plugin-app-backend@0.3.44-next.0
+  - @backstage/plugin-techdocs-backend@1.6.1-next.0
+  - @backstage/plugin-todo-backend@0.1.41-next.0
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/plugin-todo-backend@0.1.40
+  - @backstage/plugin-techdocs-backend@1.6.0
+  - @backstage/backend-defaults@0.1.8
+  - @backstage/plugin-app-backend@0.3.43
+
+## 0.0.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0-next.2
+  - @backstage/backend-defaults@0.1.8-next.2
+  - @backstage/plugin-app-backend@0.3.43-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-todo-backend@0.1.40-next.2
+
+## 0.0.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.12.0-next.1
+  - @backstage/plugin-app-backend@0.3.43-next.1
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/plugin-todo-backend@0.1.40-next.1
+  - @backstage/backend-defaults@0.1.8-next.1
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-todo-backend@0.1.40-next.0
+  - @backstage/plugin-scaffolder-backend@1.11.1-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-defaults@0.1.8-next.0
+  - @backstage/plugin-app-backend@0.3.43-next.0
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/plugin-scaffolder-backend@1.11.0
+  - @backstage/plugin-app-backend@0.3.42
+  - @backstage/backend-defaults@0.1.7
+
 ## 0.0.8-next.2
 
 ### Patch Changes

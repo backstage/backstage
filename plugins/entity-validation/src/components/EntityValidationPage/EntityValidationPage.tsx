@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useState } from 'react';
-import { Button, Content, Header, Page } from '@backstage/core-components';
+import { Content, Header, LinkButton, Page } from '@backstage/core-components';
 import { EntityTextArea } from '../EntityTextArea';
 import { Grid, TextField } from '@material-ui/core';
 import { CatalogProcessorResult } from '../../types';
@@ -47,7 +48,7 @@ export const EntityValidationPage = (props: {
 
   const [catalogYaml, setCatalogYaml] = useState(defaultYaml);
   const [yamlFiles, setYamlFiles] = useState<CatalogProcessorResult[]>();
-  const [locationUrl, setLocationUrl] = useState('');
+  const [locationUrl, setLocationUrl] = useState(defaultLocation);
 
   const parseYaml = () => {
     const parsedFiles = [
@@ -66,15 +67,15 @@ export const EntityValidationPage = (props: {
         subtitle="Tool to validate catalog-info.yaml files"
       />
       <Content>
-        <Grid container direction="row">
+        <Grid container>
           <Grid item md={9} xs={12}>
             <TextField
-              style={{ width: '100%' }}
+              fullWidth
               label="File Location"
               margin="normal"
               variant="outlined"
               required
-              value={defaultLocation}
+              value={locationUrl}
               placeholder={defaultLocation}
               helperText="Location where you catalog-info.yaml file is, or will be, located"
               onChange={e => setLocationUrl(e.target.value)}
@@ -83,14 +84,9 @@ export const EntityValidationPage = (props: {
           <Grid item md={3} xs={12}>
             <Grid container alignItems="center" style={{ height: '100%' }}>
               <Grid item>
-                <Button
-                  style={{ textDecoration: 'none' }}
-                  variant="outlined"
-                  to="#"
-                  onClick={parseYaml}
-                >
+                <LinkButton size="large" onClick={parseYaml} to="#">
                   Validate
-                </Button>
+                </LinkButton>
               </Grid>
             </Grid>
           </Grid>

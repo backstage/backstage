@@ -20,11 +20,14 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
-import lodash from 'lodash';
 import { Knex } from 'knex';
+import { isEqual, chunk as lodashChunk } from 'lodash';
+import { Logger } from 'winston';
+import { z } from 'zod';
 import {
   EntitiesBatchRequest,
   EntitiesBatchResponse,
+  Cursor,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
@@ -34,6 +37,9 @@ import {
   EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
+  EntityOrder,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -43,7 +49,20 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
+
 import { Stitcher } from '../stitching/Stitcher';
+
+import {
+  isQueryEntitiesCursorRequest,
+  isQueryEntitiesInitialRequest,
+} from './util';
+
+const defaultSortField: EntityOrder = {
+  field: 'metadata.uid',
+  order: 'asc',
+};
+
+const DEFAULT_LIMIT = 20;
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -168,10 +187,15 @@ function parseFilter(
 }
 
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
-  constructor(
-    private readonly database: Knex,
-    private readonly stitcher: Stitcher,
-  ) {}
+  private readonly database: Knex;
+  private readonly logger: Logger;
+  private readonly stitcher: Stitcher;
+
+  constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
+    this.database = options.database;
+    this.logger = options.logger;
+    this.stitcher = options.stitcher;
+  }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
@@ -283,19 +307,29 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   ): Promise<EntitiesBatchResponse> {
     const lookup = new Map<string, Entity>();
 
-    for (const chunk of lodash.chunk(request.entityRefs, 200)) {
+    for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .innerJoin<DbRefreshStateRow>('refresh_state', {
-          'refresh_state.entity_id': 'final_entities.entity_id',
-        })
+        .innerJoin<DbRefreshStateRow>(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
         .select({
           entityRef: 'refresh_state.entity_ref',
           entity: 'final_entities.final_entity',
         })
         .whereIn('refresh_state.entity_ref', chunk);
+
       if (request?.filter) {
-        query = parseFilter(request.filter, query, this.database);
+        query = parseFilter(
+          request.filter,
+          query,
+          this.database,
+          false,
+          'refresh_state.entity_id',
+        );
       }
+
       for (const row of await query) {
         lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
       }
@@ -308,6 +342,180 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return { items };
+  }
+
+  async queryEntities(
+    request: QueryEntitiesRequest,
+  ): Promise<QueryEntitiesResponse> {
+    const db = this.database;
+
+    const limit = request.limit ?? DEFAULT_LIMIT;
+
+    const cursor: Omit<Cursor, 'orderFieldValues'> & {
+      orderFieldValues?: (string | null)[];
+    } = {
+      orderFields: [defaultSortField],
+      isPrevious: false,
+      ...parseCursorFromRequest(request),
+    };
+
+    const isFetchingBackwards = cursor.isPrevious;
+
+    if (cursor.orderFields.length > 1) {
+      this.logger.warn(`Only one sort field is supported, ignoring the rest`);
+    }
+
+    const sortField: EntityOrder = {
+      ...defaultSortField,
+      ...cursor.orderFields[0],
+    };
+
+    const [prevItemOrderFieldValue, prevItemUid] =
+      cursor.orderFieldValues || [];
+
+    const dbQuery = db('search')
+      .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
+      .where('search.key', sortField.field);
+
+    if (cursor.filter) {
+      parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
+    }
+
+    const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
+    if (normalizedFullTextFilterTerm) {
+      if (
+        textFilterFields.length === 1 &&
+        textFilterFields[0] === sortField.field
+      ) {
+        // If there is one item, apply the like query to the top level query which is already
+        //   filtered based on the singular sortField.
+        dbQuery.andWhereRaw(
+          'value like ?',
+          `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+        );
+      } else {
+        const matchQuery = db<DbSearchRow>('search')
+          .select('search.entity_id')
+          .whereIn('key', textFilterFields)
+          .andWhere(function keyFilter() {
+            this.andWhereRaw(
+              'value like ?',
+              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            );
+          });
+        dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+      }
+    }
+
+    const countQuery = dbQuery.clone();
+
+    const isOrderingDescending = sortField.order === 'desc';
+
+    if (prevItemOrderFieldValue) {
+      dbQuery.andWhere(
+        'value',
+        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+        prevItemOrderFieldValue,
+      );
+      dbQuery.orWhere(function nested() {
+        this.where('value', '=', prevItemOrderFieldValue).andWhere(
+          'search.entity_id',
+          isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+          prevItemUid,
+        );
+      });
+    }
+
+    dbQuery
+      .orderBy([
+        {
+          column: 'value',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+        },
+        {
+          column: 'search.entity_id',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+        },
+      ])
+      // fetch an extra item to check if there are more items.
+      .limit(isFetchingBackwards ? limit : limit + 1);
+
+    countQuery.count('search.entity_id', { as: 'count' });
+
+    const [rows, [{ count }]] = await Promise.all([
+      dbQuery,
+      // for performance reasons we invoke the countQuery
+      // only on the first request.
+      // The result is then embedded into the cursor
+      // for subsequent requests.
+      typeof cursor.totalItems === 'undefined'
+        ? countQuery
+        : [{ count: cursor.totalItems }],
+    ]);
+
+    const totalItems = Number(count);
+
+    if (isFetchingBackwards) {
+      rows.reverse();
+    }
+    const hasMoreResults =
+      limit > 0 && (isFetchingBackwards || rows.length > limit);
+
+    // discard the extra item only when fetching forward.
+    if (rows.length > limit) {
+      rows.length -= 1;
+    }
+
+    const isInitialRequest = cursor.firstSortFieldValues === undefined;
+
+    const firstRow = rows[0];
+    const lastRow = rows[rows.length - 1];
+
+    const firstSortFieldValues = cursor.firstSortFieldValues || [
+      firstRow?.value,
+      firstRow?.entity_id,
+    ];
+
+    const nextCursor: Cursor | undefined = hasMoreResults
+      ? {
+          ...cursor,
+          orderFieldValues: sortFieldsFromRow(lastRow),
+          firstSortFieldValues,
+          isPrevious: false,
+          totalItems,
+        }
+      : undefined;
+
+    const prevCursor: Cursor | undefined =
+      !isInitialRequest &&
+      rows.length > 0 &&
+      !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
+        ? {
+            ...cursor,
+            orderFieldValues: sortFieldsFromRow(firstRow),
+            firstSortFieldValues: cursor.firstSortFieldValues,
+            isPrevious: true,
+            totalItems,
+          }
+        : undefined;
+
+    const items = rows
+      .map(e => JSON.parse(e.final_entity!))
+      .map(e => (request.fields ? request.fields(e) : e));
+
+    return {
+      items,
+      pageInfo: {
+        ...(!!prevCursor && { prevCursor }),
+        ...(!!nextCursor && { nextCursor }),
+      },
+      totalItems,
+    };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
@@ -489,4 +697,52 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     return { facets };
   }
+}
+
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+  z
+    .object({
+      key: z.string(),
+      values: z.array(z.string()).optional(),
+    })
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
+);
+
+export const cursorParser: z.ZodSchema<Cursor> = z.object({
+  orderFields: z.array(
+    z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
+  ),
+  orderFieldValues: z.array(z.string().or(z.null())),
+  filter: entityFilterParser.optional(),
+  isPrevious: z.boolean(),
+  query: z.string().optional(),
+  firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
+  totalItems: z.number().optional(),
+});
+
+function parseCursorFromRequest(
+  request?: QueryEntitiesRequest,
+): Partial<Cursor> {
+  if (isQueryEntitiesInitialRequest(request)) {
+    const {
+      filter,
+      orderFields: sortFields = [defaultSortField],
+      fullTextFilter,
+    } = request;
+    return { filter, orderFields: sortFields, fullTextFilter };
+  }
+  if (isQueryEntitiesCursorRequest(request)) {
+    return request.cursor;
+  }
+  return {};
+}
+
+function invertOrder(order: EntityOrder['order']) {
+  return order === 'asc' ? 'desc' : 'asc';
+}
+
+function sortFieldsFromRow(row: DbSearchRow) {
+  return [row.value, row.entity_id];
 }

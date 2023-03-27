@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, posix as posixPath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
@@ -36,6 +36,8 @@ import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 import yn from 'yn';
+import { readEntryPoints } from '../monorepo/entryPoints';
+import { ExtendedPackage } from '../monorepo';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -100,7 +102,7 @@ export async function createConfig(
       }),
       new ESLintPlugin({
         context: paths.targetPath,
-        files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+        files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
       }),
     );
   }
@@ -232,7 +234,10 @@ export async function createBackendConfig(
 
   // Find all local monorepo packages and their node_modules, and mark them as external.
   const { packages } = await getPackages(cliPaths.targetDir);
-  const localPackageNames = packages.map(p => p.packageJson.name);
+  const localPackageEntryPoints = packages.flatMap(p => {
+    const entryPoints = readEntryPoints((p as ExtendedPackage).packageJson);
+    return entryPoints.map(e => posixPath.join(p.packageJson.name, e.mount));
+  });
   const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));
   // See frontend config
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
@@ -261,7 +266,7 @@ export async function createBackendConfig(
       nodeExternalsWithResolve({
         modulesDir: paths.rootNodeModules,
         additionalModuleDirs: moduleDirs,
-        allowlist: ['webpack/hot/poll?100', ...localPackageNames],
+        allowlist: ['webpack/hot/poll?100', ...localPackageEntryPoints],
       }),
     ],
     target: 'node' as const,
@@ -325,7 +330,7 @@ export async function createBackendConfig(
               typescript: { configFile: paths.targetTsConfig },
             }),
             new ESLintPlugin({
-              files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+              files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
             }),
           ]
         : []),

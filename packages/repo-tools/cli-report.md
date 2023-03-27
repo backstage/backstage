@@ -29,6 +29,7 @@ Options:
   -a, --allow-warnings <allowWarningsPaths>
   --allow-all-warnings
   -o, --omit-messages <messageCodes>
+  --validate-release-tags
   -h, --help
 ```
 

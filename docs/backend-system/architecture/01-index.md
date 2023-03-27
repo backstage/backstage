@@ -1,12 +1,12 @@
 ---
 id: index
 title: Backend System Architecture
-sidebar_label: System Architecture
+sidebar_label: Overview
 # prettier-ignore
 description: The structure and architecture of the new Backend System and its component parts
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 ## Building Blocks
 

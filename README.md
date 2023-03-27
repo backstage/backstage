@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
 [![Main CI Build](https://github.com/backstage/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/backstage/backstage/actions?query=workflow%3A%22Main+Master+Build%22)
-[![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
+[![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/backstage-687207715902193673)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
@@ -16,13 +16,13 @@
 
 Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
 
-![software-catalog](https://backstage.io/blog/assets/6/header.png)
+![software-catalog](docs/assets/header.png)
 
 Out of the box, Backstage includes:
 
-- [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
-- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
-- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
+- [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
+- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
+- [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
 Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. Read the announcement [here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
@@ -38,14 +38,14 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 ## Documentation
 
 - [Main documentation](https://backstage.io/docs)
-- [Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview)
-- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
+- [Software Catalog](https://backstage.io/docs/features/software-catalog/)
+- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/))
 - [Designing for Backstage](https://backstage.io/docs/dls/design)
 - [Storybook - UI components](https://backstage.io/storybook)
 
 ## Community
 
-- [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
+- [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions

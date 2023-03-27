@@ -6,7 +6,7 @@ sidebar_label: Services
 description: Services for backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is under active development and is not considered stable**
+> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
 
 Backend services provide shared functionality available to all backend plugins and modules. They are made available through service references that embed a type that represents the service interface, similar to how [Utility APIs](../../api/utility-apis.md) work in the Backstage frontend system. To use a service in your plugin or module you request an implementation of that service using the service reference.
 

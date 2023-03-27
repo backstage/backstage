@@ -16,6 +16,7 @@
 
 export * from './ApiExplorerPage';
 export * from './ApiDefinitionCard';
+export * from './ApiDefinitionDialog';
 export * from './ApisCards';
 export * from './AsyncApiDefinitionWidget';
 export * from './ComponentsCards';

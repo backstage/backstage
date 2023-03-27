@@ -1,5 +1,57 @@
 # @backstage/create-app
 
+## 0.4.39-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38
+
+### Patch Changes
+
+- b4627f23b28: Bumped create-app version.
+- 0eceadb9502: Bumped create-app version.
+- 482dae5de1c: Updated link to docs.
+- 6ace2dd2c58: Added to the template `packages/app/.eslintignore` file to packages to ignore the contents of `packages/app/public`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.38-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12-next.0
+
+## 0.4.38-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37
+
+### Patch Changes
+
+- 12a7b316ee: Bumped create-app version.
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
 ## 0.4.37-next.2
 
 ### Patch Changes

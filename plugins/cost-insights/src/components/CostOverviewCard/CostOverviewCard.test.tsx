@@ -15,7 +15,8 @@
  */
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { MockPluginProvider, renderInTestApp } from '@backstage/test-utils';
+import { MockPluginProvider } from '@backstage/test-utils/alpha';
+import { renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewCard } from './CostOverviewCard';
 import { Cost } from '@backstage/plugin-cost-insights-common';
 import {

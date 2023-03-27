@@ -1,12 +1,24 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "web-library"
@@ -24,7 +36,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -57,10 +69,9 @@
     "@types/prop-types": "^15.7.3",
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ]
 }

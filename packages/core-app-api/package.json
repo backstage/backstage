@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "1.4.1-next.0",
+  "version": "1.7.0-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -40,7 +40,7 @@
     "prop-types": "^15.7.2",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
-    "zod": "~3.18.0"
+    "zod": "^3.21.4"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
@@ -57,7 +57,7 @@
     "@types/node": "^16.11.26",
     "@types/zen-observable": "^0.8.0",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0",
+    "msw": "^1.0.0",
     "react-router-beta": "npm:react-router@6.0.0-beta.0",
     "react-router-dom-beta": "npm:react-router-dom@6.0.0-beta.0",
     "react-router-dom-stable": "npm:react-router-dom@^6.3.0",

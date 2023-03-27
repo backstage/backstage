@@ -20,7 +20,7 @@ import {
   EventPublisher,
   EventSubscriber,
   HttpPostIngressOptions,
-} from './api';
+} from '@backstage/plugin-events-node';
 
 /**
  * @alpha

@@ -1,5 +1,51 @@
 # @backstage/repo-tools
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 9129ca8cabb: Log API report instructions when api-report is missing.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
+## 0.1.3
+
+### Patch Changes
+
+- 32a4a05838c: Tweaked type dependency check to trim wildcard type imports.
+- 6ba8faf22ac: The API report generation process is now able to detect and generate reports for additional entry points declared in the package `"exports"` field.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/cli-common@0.1.12
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/cli-common@0.1.12-next.0
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 32a4a05838: Tweaked type dependency check to trim wildcard type imports.
+- 6ba8faf22a: The API report generation process is now able to detect and generate reports for additional entry points declared in the package `"exports"` field.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
+## 0.1.2
+
+### Patch Changes
+
+- ff63acf30a: Packages without a declared `backstage.role` are now ignored.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+
 ## 0.1.2-next.0
 
 ### Patch Changes

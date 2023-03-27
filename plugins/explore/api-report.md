@@ -50,11 +50,7 @@ export const exploreApiRef: ApiRef<ExploreApi>;
 
 // @public
 export class ExploreClient implements ExploreApi {
-  constructor({
-    discoveryApi,
-    fetchApi,
-    exploreToolsConfig,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     exploreToolsConfig?: ExploreToolsConfig;
@@ -135,7 +131,7 @@ export interface ToolSearchResultListItemProps {
   // (undocumented)
   highlight?: ResultHighlight;
   // (undocumented)
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   // (undocumented)
   rank?: number;
   // (undocumented)

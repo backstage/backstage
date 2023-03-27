@@ -16,7 +16,7 @@
 /// <reference types="cypress" />
 describe('TechDocs Live Preview - MkDocs Serve', () => {
   it('successfully serves documentation', () => {
-    cy.visit(Cypress.env('mkDocsBaseUrl'));
+    cy.visit(Cypress.env('mkdocsBaseUrl'));
     cy.contains('hello mock docs');
   });
 
@@ -41,7 +41,7 @@ describe('TechDocs Live Preview - MkDocs Serve', () => {
   });
 
   it('matchImage - MkDocs Page', () => {
-    cy.visit(Cypress.env('mkDocsBaseUrl')).then(() => {
+    cy.visit(Cypress.env('mkdocsBaseUrl')).then(() => {
       cy.document().matchImage();
     });
   });

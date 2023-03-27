@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => {
       '& svg': {
         height: 16,
         width: 16,
-        background: '#fff',
+        background: theme.palette.common.white,
       },
     },
   };

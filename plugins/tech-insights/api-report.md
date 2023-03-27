@@ -18,11 +18,7 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const BooleanCheck: ({
-  checkResult,
-}: {
-  checkResult: CheckResult;
-}) => JSX.Element;
+export const BooleanCheck: (props: { checkResult: CheckResult }) => JSX.Element;
 
 // @public
 export type Check = {
@@ -31,6 +27,8 @@ export type Check = {
   name: string;
   description: string;
   factIds: string[];
+  successMetadata?: Record<string, unknown>;
+  failureMetadata?: Record<string, unknown>;
 };
 
 // @public

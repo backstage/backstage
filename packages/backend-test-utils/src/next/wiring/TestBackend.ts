@@ -36,7 +36,7 @@ import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 
-/** @alpha */
+/** @public */
 export interface TestBackendOptions<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -60,7 +60,7 @@ export interface TestBackendOptions<
   features?: BackendFeature[];
 }
 
-/** @alpha */
+/** @public */
 export interface TestBackend extends Backend {
   /**
    * Provides access to the underling HTTP server for use with utilities
@@ -89,7 +89,7 @@ const defaultServiceFactories = [
 
 const backendInstancesToCleanUp = new Array<Backend>();
 
-/** @alpha */
+/** @public */
 export async function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],

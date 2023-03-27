@@ -37,7 +37,7 @@ const useStyles = makeStyles({
  * @public
  */
 export type TechDocsSearchResultListItemProps = {
-  icon?: ReactNode;
+  icon?: ReactNode | ((result: any) => ReactNode);
   result?: any;
   highlight?: ResultHighlight;
   rank?: number;
@@ -132,6 +132,8 @@ export const TechDocsSearchResultListItem = (
               WebkitLineClamp: lineClamp,
               overflow: 'hidden',
             }}
+            color="textSecondary"
+            variant="body2"
           >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText
@@ -151,7 +153,11 @@ export const TechDocsSearchResultListItem = (
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
       <>
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+        {icon && (
+          <ListItemIcon>
+            {typeof icon === 'function' ? icon(result) : icon}
+          </ListItemIcon>
+        )}
         <div className={classes.flexContainer}>{children}</div>
       </>
     ) : (

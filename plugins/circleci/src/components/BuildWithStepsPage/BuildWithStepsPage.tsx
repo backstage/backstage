@@ -24,7 +24,7 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 import {
   Breadcrumbs,
-  Button,
+  LinkButton,
   InfoCard,
   Progress,
   Link,
@@ -33,9 +33,9 @@ import {
 const BuildName = ({ build }: { build?: BuildWithSteps }) => (
   <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
-    <Button to={build?.build_url || '#'}>
+    <LinkButton to={build?.build_url || '#'}>
       <LaunchIcon />
-    </Button>
+    </LinkButton>
   </Box>
 );
 

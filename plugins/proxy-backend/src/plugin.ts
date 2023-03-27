@@ -27,7 +27,10 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const proxyPlugin = createBackendPlugin(
-  (options?: { skipInvalidProxies?: boolean }) => ({
+  (options?: {
+    skipInvalidProxies?: boolean;
+    reviveConsumedRequestBodies?: boolean;
+  }) => ({
     pluginId: 'proxy',
     register(env) {
       env.registerInit({
@@ -44,6 +47,7 @@ export const proxyPlugin = createBackendPlugin(
               discovery,
               logger: loggerToWinstonLogger(logger),
               skipInvalidProxies: options?.skipInvalidProxies,
+              reviveConsumedRequestBodies: options?.reviveConsumedRequestBodies,
             }),
           );
         },

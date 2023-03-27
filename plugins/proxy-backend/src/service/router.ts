@@ -19,6 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import {
   createProxyMiddleware,
+  fixRequestBody,
   Options,
   RequestHandler,
 } from 'http-proxy-middleware';
@@ -53,11 +54,13 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   skipInvalidProxies?: boolean;
+  reviveConsumedRequestBodies?: boolean;
 }
 
 export interface ProxyConfig extends Options {
   allowedMethods?: string[];
   allowedHeaders?: string[];
+  reviveRequestBody?: boolean;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -67,6 +70,7 @@ export function buildMiddleware(
   logger: Logger,
   route: string,
   config: string | ProxyConfig,
+  reviveConsumedRequestBodies?: boolean,
 ): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
@@ -117,6 +121,11 @@ export function buildMiddleware(
 
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
+  // http-proxy-middleware uses this log level to check if it should log the
+  // requests that it proxies. Setting this to the most verbose log level
+  // ensures that it always logs these requests. Our logger ends up deciding
+  // if the logs are displayed or not.
+  fullConfig.logLevel = 'debug';
 
   // Only return the allowed HTTP headers to not forward unwanted secret headers
   const requestHeaderAllowList = new Set<string>(
@@ -174,6 +183,10 @@ export function buildMiddleware(
       }
     });
   };
+
+  if (reviveConsumedRequestBodies) {
+    fullConfig.onProxyReq = fixRequestBody;
+  }
 
   return createProxyMiddleware(filter, fullConfig);
 }
@@ -242,7 +255,13 @@ function configureMiddlewares(
     try {
       router.use(
         route,
-        buildMiddleware(pathPrefix, options.logger, route, proxyRouteConfig),
+        buildMiddleware(
+          pathPrefix,
+          options.logger,
+          route,
+          proxyRouteConfig,
+          options.reviveConsumedRequestBodies,
+        ),
       );
     } catch (e) {
       if (options.skipInvalidProxies) {

@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.2.0",
+  "version": "0.2.2-next.0",
   "private": true,
   "backstage": {
     "role": "cli"
@@ -28,6 +28,7 @@
   "bin": "bin/e2e-test",
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
+    "@backstage/create-app": "workspace:^",
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",

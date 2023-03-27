@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../../routes';
 import {
-  Button,
+  LinkButton,
   EmptyState,
   Table,
   TableColumn,
@@ -121,13 +121,13 @@ export const DocsTable = (props: DocsTableProps) => {
           title="No documents to show"
           description="Create your own document. Check out our Getting Started Information"
           action={
-            <Button
+            <LinkButton
               color="primary"
               to="https://backstage.io/docs/features/techdocs/getting-started"
               variant="contained"
             >
               DOCS
-            </Button>
+            </LinkButton>
           }
         />
       )}

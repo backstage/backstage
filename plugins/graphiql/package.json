@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.2.47-next.1",
+  "version": "0.2.49-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -37,7 +37,7 @@
     "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "graphiql": "^1.5.12",
     "graphql": "^16.0.0",
     "graphql-ws": "^5.4.1",
@@ -58,7 +58,7 @@
     "@types/codemirror": "^5.0.0",
     "@types/node": "^16.11.26",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

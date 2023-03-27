@@ -21,6 +21,11 @@ const SIDEBAR_WIDTH = '224px';
 export default ({ theme, sidebar }: RuleOptions) => `
 /*==================  Layout  ==================*/
 
+/* mkdocs material v9 compat */
+.md-nav__title {
+  color: var(--md-default-fg-color);
+}
+
 .md-grid {
   max-width: 100%;
   margin: 0;
@@ -108,7 +113,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   pointer-events: none;
 }
 
-.md-footer-nav__link {
+.md-footer-nav__link, .md-footer__link {
   pointer-events: all;
 }
 

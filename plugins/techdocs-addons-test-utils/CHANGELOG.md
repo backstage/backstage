@@ -1,5 +1,106 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.12-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/plugin-catalog@1.10.0-next.0
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-app-api@1.7.0-next.0
+  - @backstage/test-utils@1.3.0-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-techdocs@1.6.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.5-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
+## 1.0.11
+
+### Patch Changes
+
+- 2b00d8a225c: Fix bug/problem with test helper
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-techdocs-react@1.1.4
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/plugin-techdocs@1.6.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/test-utils@1.2.6
+  - @backstage/core-app-api@1.6.0
+  - @backstage/integration-react@1.1.11
+  - @backstage/theme@0.2.18
+
+## 1.0.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-techdocs-react@1.1.4-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/plugin-techdocs@1.6.0-next.2
+  - @backstage/core-app-api@1.6.0-next.2
+  - @backstage/plugin-catalog@1.9.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/integration-react@1.1.11-next.2
+  - @backstage/test-utils@1.2.6-next.2
+
+## 1.0.11-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.9.0-next.1
+  - @backstage/plugin-techdocs@1.6.0-next.1
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/plugin-techdocs-react@1.1.4-next.1
+  - @backstage/core-app-api@1.5.1-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/test-utils@1.2.6-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
+## 1.0.11-next.0
+
+### Patch Changes
+
+- 2b00d8a225: Fix bug/problem with test helper
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.6.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.4-next.0
+  - @backstage/test-utils@1.2.6-next.0
+  - @backstage/plugin-catalog@1.9.0-next.0
+  - @backstage/core-app-api@1.5.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/integration-react@1.1.11-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-search-react@1.5.1-next.0
+
+## 1.0.10
+
+### Patch Changes
+
+- d950d3e217: Depend on `@material-ui/core` version `^4.12.2` like all other in-repo packages
+- Updated dependencies
+  - @backstage/plugin-catalog@1.8.0
+  - @backstage/plugin-techdocs@1.5.0
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-app-api@1.5.0
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-search-react@1.5.0
+  - @backstage/integration-react@1.1.10
+  - @backstage/test-utils@1.2.5
+  - @backstage/plugin-techdocs-react@1.1.3
+
 ## 1.0.10-next.2
 
 ### Patch Changes
