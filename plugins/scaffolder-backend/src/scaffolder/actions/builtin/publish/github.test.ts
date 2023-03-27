@@ -29,6 +29,7 @@ import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
+  familiarizeEntityName,
   initRepoAndPush,
 } from '../helpers';
 import { createPublishGithubAction } from './github';
@@ -68,6 +69,8 @@ describe('publish:github', () => {
     },
   });
 
+  const { familiarizeEntityName: realFamiliarizeEntityName } =
+    jest.requireActual('../helpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
@@ -95,6 +98,11 @@ describe('publish:github', () => {
       config,
       githubCredentialsProvider,
     });
+
+    // restore real implmentation
+    (familiarizeEntityName as jest.MockedFunction).mockImplementation(
+      realFamiliarizeEntityName,
+    );
   });
 
   it('should fail to create if the team is not found in the org', async () => {
@@ -649,6 +657,59 @@ describe('publish:github', () => {
       team_slug: 'robot-2',
       permission: 'push',
     });
+  });
+
+  it('should familiarize entity names while adding collaborators', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        collaborators: [
+          {
+            access: 'pull',
+            user: 'user:robot-1',
+          },
+          {
+            access: 'push',
+            team: 'group:default/robot-2',
+          },
+        ],
+      },
+    });
+
+    const commonProperties = {
+      owner: 'owner',
+      repo: 'repo',
+    };
+
+    expect(mockOctokit.rest.repos.addCollaborator).toHaveBeenCalledWith({
+      ...commonProperties,
+      username: 'robot-1',
+      permission: 'pull',
+    });
+
+    expect(
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg,
+    ).toHaveBeenCalledWith({
+      ...commonProperties,
+      org: 'owner',
+      team_slug: 'robot-2',
+      permission: 'push',
+    });
+
+    expect(familiarizeEntityName).toHaveBeenCalledWith('user:robot-1');
+    expect(familiarizeEntityName).toHaveBeenCalledWith('group:default/robot-2');
   });
 
   it('should ignore failures when adding multiple collaborators', async () => {
