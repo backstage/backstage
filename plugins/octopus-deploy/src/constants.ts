@@ -16,3 +16,4 @@
 
 /** @public */
 export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
+export const OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION = 'octopus.com/space-id';
