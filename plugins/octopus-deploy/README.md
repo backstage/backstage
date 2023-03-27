@@ -44,7 +44,7 @@ const cicdContent = (
 
 3. Add `octopus.com/project-id` and optionally an `octopus.com/space-id` annotation in the catalog descriptor file.
 
-To obtain a projects ID you will have to query the Octopus API. You can get the space ID from the projects url in the octopus deploy UI. In the future we'll add support for using a projects slug as well.
+To obtain a projects ID you will have to query the Octopus API. You can get the space ID from the projects URL in the octopus deploy UI. In the future we'll add support for using a projects slug as well.
 
 ```
 // catalog-info.yaml
