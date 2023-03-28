@@ -74,7 +74,9 @@ export const EntityOwnerPicker = () => {
   );
 
   const [selectedOwners, setSelectedOwners] = useState(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+    queryParamOwners.length
+      ? new EntityOwnerFilter(queryParamOwners).values
+      : filters.owners?.values ?? [],
   );
 
   const {
