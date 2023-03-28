@@ -107,7 +107,7 @@ export const createNewFileAction = () => {
 };
 ```
 
-#### A note on naming conventions
+#### Naming Conventions
 
 Try to keep names consistent for both your own custom actions, and any actions contributed to open source. We've found that a separation of `:` and using a verb as the last part of the name works well.
 We follow `provider:entity:verb` or as close to this as possible for our built in actions. For example, `github:actions:create` or `github:repo:create`.
