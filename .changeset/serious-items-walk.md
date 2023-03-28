@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Removed entity types and namespacing before passing to GitHub API
+Stripped entity types and namespace before passing to GitHub API
