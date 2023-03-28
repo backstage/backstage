@@ -198,7 +198,7 @@ describe('<EntityOwnerPicker/>', () => {
     );
 
     expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['another-owner']),
+      owners: new EntityOwnerFilter(['group:default/another-owner']),
     });
   });
 
@@ -224,7 +224,7 @@ describe('<EntityOwnerPicker/>', () => {
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
     fireEvent.click(screen.getByText('some-owner'));
     expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['some-owner']),
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
   });
 
@@ -245,9 +245,10 @@ describe('<EntityOwnerPicker/>', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['some-owner']),
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
+
     expect(screen.getByLabelText('some-owner')).toBeChecked();
 
     fireEvent.click(screen.getByLabelText('some-owner'));
@@ -272,7 +273,7 @@ describe('<EntityOwnerPicker/>', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['team-a']),
+      owners: new EntityOwnerFilter(['group:default/team-a']),
     });
     rendered.rerender(
       <ApiProvider apis={mockApis}>
@@ -288,7 +289,7 @@ describe('<EntityOwnerPicker/>', () => {
       </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: new EntityOwnerFilter(['team-b']),
+      owners: new EntityOwnerFilter(['group:default/team-b']),
     });
   });
   it('removes owners from filters if there are none available', async () => {

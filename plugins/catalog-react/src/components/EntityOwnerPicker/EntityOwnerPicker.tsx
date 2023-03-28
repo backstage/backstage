@@ -107,14 +107,13 @@ export const EntityOwnerPicker = () => {
       if (entity) {
         return {
           label: humanizeEntity(entity, { defaultKind: 'Group' }),
-          entityRef: humanizeEntityRef(entity, { defaultKind: 'Group' }),
+          entityRef: stringifyEntityRef(entity),
         };
       }
       return {
-        label: humanizeEntityRef(
-          parseEntityRef(ownerEntityRefs[index], { defaultKind: 'Group' }),
-          { defaultKind: 'group' },
-        ),
+        label: humanizeEntityRef(parseEntityRef(ownerEntityRefs[index]), {
+          defaultKind: 'group',
+        }),
         entityRef: ownerEntityRefs[index],
       };
     });
@@ -143,7 +142,8 @@ export const EntityOwnerPicker = () => {
   // external updates to the page location.
   useEffect(() => {
     if (queryParamOwners.length) {
-      setSelectedOwners(queryParamOwners);
+      const filter = new EntityOwnerFilter(queryParamOwners);
+      setSelectedOwners(filter.values);
     }
   }, [queryParamOwners]);
 
