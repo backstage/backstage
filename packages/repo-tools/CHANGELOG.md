@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.1.4-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
 ## 0.1.4-next.0
 
 ### Patch Changes
