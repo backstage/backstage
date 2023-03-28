@@ -39,6 +39,8 @@ const routes = (
 
 ```
 
+`BazaarPage` can be given the optional properties `fullHeight` and `fullWidth` which are used to adjust the cards styling to fit more or less on the page as required (both default to `true`).
+
 Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/app/src/components/Root.tsx` add:
 
 ```diff
