@@ -31,7 +31,7 @@ import { z } from 'zod';
 
 export const createNewFileAction = () => {
   return createTemplateAction({
-    id: 'file:create',
+    id: 'acme:file:create',
     schema: {
       input: z.object({
         contents: z.string().describe('The contents of the file'),
