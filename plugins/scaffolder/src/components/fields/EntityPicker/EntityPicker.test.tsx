@@ -19,13 +19,13 @@ import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
-  apiVersion: 'backstage.io/v1beta1',
+  apiVersion: 'scaffolder.backstage.io/v1beta3',
   kind,
   metadata: { namespace, name },
 });
@@ -330,6 +330,396 @@ describe('<EntityPicker />', () => {
       fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-b');
+    });
+  });
+
+  describe('Required EntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('User enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('team-a');
+    });
+
+    it('User selects item and enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'team-a' } });
+
+      // Close the dropdown by clicking outside the Autocomplete component
+      const outside = screen.getByTestId('outside');
+      fireEvent.mouseDown(outside);
+
+      // Click back into the Autocomplete component
+      fireEvent.click(input);
+
+      // Verify that the selected option is displayed in the input
+      expect(input).toHaveValue('team-a');
+
+      // Click the Clear button to clear the input
+      const clearButton = screen.getByLabelText('Clear');
+      fireEvent.click(clearButton);
+
+      // Verify that the input is empty
+      expect(input).toHaveValue('');
+
+      // Verify that the handleChange function was called with null
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('Optional EntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: false,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('User enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('team-a');
+    });
+
+    it('User selects item and enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'team-a' } });
+
+      // Close the dropdown by clicking outside the Autocomplete component
+      const outside = screen.getByTestId('outside');
+      fireEvent.mouseDown(outside);
+
+      // Click back into the Autocomplete component
+      fireEvent.click(input);
+
+      // Verify that the selected option is displayed in the input
+      expect(input).toHaveValue('team-a');
+
+      // Click the Clear button to clear the input
+      const clearButton = screen.getByLabelText('Clear');
+      fireEvent.click(clearButton);
+
+      // Verify that the input is empty
+      expect(input).toHaveValue('');
+
+      // Verify that the handleChange function was called with null
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('Required Free Solo', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        allowArbitraryValues: true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('User enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('team-a');
+    });
+
+    it('User selects item and enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'team-a' } });
+
+      // Close the dropdown by clicking outside the Autocomplete component
+      const outside = screen.getByTestId('outside');
+      fireEvent.mouseDown(outside);
+
+      // Click back into the Autocomplete component
+      fireEvent.click(input);
+
+      // Verify that the selected option is displayed in the input
+      expect(input).toHaveValue('team-a');
+
+      // Click the Clear button to clear the input
+      const clearButton = screen.getByLabelText('Clear');
+      fireEvent.click(clearButton);
+
+      // Verify that the input is empty
+      expect(input).toHaveValue('');
+
+      // Verify that the handleChange function was called with null
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('Optional Free Solo', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        allowArbitraryValues: true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: false,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('User enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('team-a');
+    });
+
+    it('User selects item and enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'team-a' } });
+
+      // Close the dropdown by clicking outside the Autocomplete component
+      const outside = screen.getByTestId('outside');
+      fireEvent.mouseDown(outside);
+
+      // Click back into the Autocomplete component
+      fireEvent.click(input);
+
+      // Verify that the selected option is displayed in the input
+      expect(input).toHaveValue('team-a');
+
+      // Click the Clear button to clear the input
+      const clearButton = screen.getByLabelText('Clear');
+      fireEvent.click(clearButton);
+
+      // Verify that the input is empty
+      expect(input).toHaveValue('');
+
+      // Verify that the handleChange function was called with null
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 });
