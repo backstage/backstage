@@ -17,6 +17,5 @@
 export {
   createTemplateAction,
   type TemplateActionOptions,
-  type ActionOutputType,
 } from './createTemplateAction';
 export { type ActionContext, type TemplateAction } from './types';

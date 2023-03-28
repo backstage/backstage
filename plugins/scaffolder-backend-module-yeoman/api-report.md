@@ -13,6 +13,6 @@ export function createRunYeomanAction(): TemplateAction<
     args?: string[] | undefined;
     options?: JsonObject | undefined;
   },
-  unknown
+  JsonObject
 >;
 ```

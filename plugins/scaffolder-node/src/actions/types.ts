@@ -16,7 +16,7 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
@@ -28,24 +28,16 @@ import { Schema } from 'jsonschema';
  */
 export type ActionContext<
   TActionInput extends JsonObject,
-  TActionOutput extends JsonObject | unknown | undefined = unknown,
+  TActionOutput extends JsonObject = JsonObject,
 > = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  output<KEY extends keyof TActionOutput>(
-    name: TActionOutput extends JsonObject
-      ? KEY
-      : TActionOutput extends undefined
-      ? never
-      : string,
-    value: TActionOutput extends JsonObject
-      ? TActionOutput[KEY]
-      : TActionOutput extends undefined
-      ? never
-      : JsonValue,
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
   ): void;
 
   /**
@@ -82,7 +74,10 @@ export type ActionContext<
 };
 
 /** @public */
-export type TemplateAction<TActionInput = unknown, TActionOutput = unknown> = {
+export type TemplateAction<
+  TActionInput = unknown,
+  TActionOutput = JsonObject,
+> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];

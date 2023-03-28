@@ -18,23 +18,14 @@ import { ActionContext, TemplateAction } from './types';
 import { z } from 'zod';
 import { Schema } from 'jsonschema';
 import zodToJsonSchema from 'zod-to-json-schema';
-
-/** @public */
-export type ActionOutputType<
-  TOutputSchema,
-  FallbackOutput = unknown,
-> = TOutputSchema extends z.ZodType<any, any, infer IReturn>
-  ? IReturn
-  : TOutputSchema extends undefined
-  ? undefined
-  : FallbackOutput;
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export type TemplateActionOptions<
   TActionInput = {},
+  TActionOutput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
-  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 > = {
   id: string;
   description?: string;
@@ -53,23 +44,22 @@ export type TemplateActionOptions<
  * @public
  */
 export const createTemplateAction = <
-  TInputParams,
-  TOutputParams = unknown,
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TInputParams,
-  TActionOutput extends ActionOutputType<
-    TOutputSchema,
-    TOutputParams
-  > = ActionOutputType<TOutputSchema, TOutputParams>,
+  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn>
+    ? IReturn
+    : TOutputParams,
 >(
   action: TemplateActionOptions<
     TActionInput,
+    TActionOutput,
     TInputSchema,
-    TOutputSchema,
-    TActionOutput
+    TOutputSchema
   >,
 ): TemplateAction<TActionInput, TActionOutput> => {
   const inputSchema =

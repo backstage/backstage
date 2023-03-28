@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
@@ -17,7 +18,7 @@ export function createSentryCreateProjectAction(options: {
     slug?: string | undefined;
     authToken?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // (No @packageDocumentation comment for this package)

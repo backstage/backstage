@@ -7,7 +7,6 @@
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { Schema } from 'jsonschema';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
@@ -18,24 +17,16 @@ import { z } from 'zod';
 // @public
 export type ActionContext<
   TActionInput extends JsonObject,
-  TActionOutput extends JsonObject | unknown | undefined = unknown,
+  TActionOutput extends JsonObject = JsonObject,
 > = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  output<KEY extends keyof TActionOutput>(
-    name: TActionOutput extends JsonObject
-      ? KEY
-      : TActionOutput extends undefined
-      ? never
-      : string,
-    value: TActionOutput extends JsonObject
-      ? TActionOutput[KEY]
-      : TActionOutput extends undefined
-      ? never
-      : JsonValue,
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
   ): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
@@ -47,35 +38,24 @@ export type ActionContext<
   signal?: AbortSignal;
 };
 
-// @public (undocumented)
-export type ActionOutputType<
-  TOutputSchema,
-  FallbackOutput = unknown,
-> = TOutputSchema extends z.ZodType<any, any, infer IReturn>
-  ? IReturn
-  : TOutputSchema extends undefined
-  ? undefined
-  : FallbackOutput;
-
 // @public
 export const createTemplateAction: <
-  TInputParams,
-  TOutputParams = unknown,
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
     ? IReturn
     : TInputParams,
-  TActionOutput extends ActionOutputType<
-    TOutputSchema,
-    TOutputParams
-  > = ActionOutputType<TOutputSchema, TOutputParams>,
+  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn_1>
+    ? IReturn_1
+    : TOutputParams,
 >(
   action: TemplateActionOptions<
     TActionInput,
+    TActionOutput,
     TInputSchema,
-    TOutputSchema,
-    TActionOutput
+    TOutputSchema
   >,
 ) => TemplateAction<TActionInput, TActionOutput>;
 
@@ -94,7 +74,10 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<TActionInput = unknown, TActionOutput = unknown> = {
+export type TemplateAction<
+  TActionInput = unknown,
+  TActionOutput = JsonObject,
+> = {
   id: string;
   description?: string;
   examples?: {
@@ -112,9 +95,9 @@ export type TemplateAction<TActionInput = unknown, TActionOutput = unknown> = {
 // @public (undocumented)
 export type TemplateActionOptions<
   TActionInput = {},
+  TActionOutput = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
-  TActionOutput extends ActionOutputType<TOutputSchema> = ActionOutputType<TOutputSchema>,
 > = {
   id: string;
   description?: string;

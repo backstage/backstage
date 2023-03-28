@@ -6,7 +6,6 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
-import { ActionOutputType } from '@backstage/plugin-scaffolder-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
@@ -80,16 +79,18 @@ export function createCatalogRegisterAction(options: {
       catalogInfoPath?: string | undefined;
       optional?: boolean | undefined;
     },
-  unknown
+  JsonObject
 >;
 
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<
   {
+    entity: {} & {
+      [k: string]: unknown;
+    };
     filePath?: string | undefined;
-    entity: {};
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -98,7 +99,7 @@ export function createDebugLogAction(): TemplateAction_2<
     message?: string | undefined;
     listWorkspace?: boolean | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -106,13 +107,13 @@ export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
 }): TemplateAction_2<
   {
-    optional?: boolean | undefined;
     entityRef?: string | undefined;
     entityRefs?: string[] | undefined;
+    optional?: boolean | undefined;
   },
   {
-    entities?: any[] | undefined;
     entity?: any;
+    entities?: any[] | undefined;
   }
 >;
 
@@ -125,7 +126,7 @@ export function createFetchPlainAction(options: {
     url: string;
     targetPath?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -137,7 +138,7 @@ export function createFetchPlainFileAction(options: {
     url: string;
     targetPath: string;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -157,7 +158,7 @@ export function createFetchTemplateAction(options: {
     cookiecutterCompat?: boolean | undefined;
     replace?: boolean | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -165,7 +166,7 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
   {
     files: string[];
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -177,7 +178,7 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
       overwrite?: boolean;
     }>;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -196,7 +197,7 @@ export function createGithubActionsDispatchAction(options: {
       | undefined;
     token?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -210,7 +211,7 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -298,7 +299,7 @@ export function createGithubRepoCreateAction(options: {
     topics?: string[] | undefined;
     requireCommitSigning?: boolean | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -340,7 +341,7 @@ export function createGithubRepoPushAction(options: {
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -359,7 +360,7 @@ export function createGithubWebhookAction(options: {
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -377,7 +378,7 @@ export function createPublishAzureAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public @deprecated
@@ -397,7 +398,7 @@ export function createPublishBitbucketAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -413,7 +414,7 @@ export function createPublishBitbucketCloudAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -433,7 +434,7 @@ export function createPublishBitbucketServerAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -450,7 +451,7 @@ export function createPublishGerritAction(options: {
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -466,7 +467,7 @@ export function createPublishGerritReviewAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -542,7 +543,7 @@ export function createPublishGithubAction(options: {
     topics?: string[] | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -561,7 +562,7 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -581,7 +582,7 @@ export function createPublishGitlabAction(options: {
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -601,7 +602,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
   },
-  unknown
+  JsonObject
 >;
 
 // @public
@@ -609,30 +610,29 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export const createTemplateAction: <
-  TInputParams,
-  TOutputParams = unknown,
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
     ? IReturn
     : TInputParams,
-  TActionOutput extends ActionOutputType<
-    TOutputSchema,
-    TOutputParams
-  > = ActionOutputType<TOutputSchema, TOutputParams>,
+  TActionOutput = TOutputSchema extends ZodType<any, any, infer IReturn_1>
+    ? IReturn_1
+    : TOutputParams,
 >(
   action: TemplateActionOptions<
     TActionInput,
+    TActionOutput,
     TInputSchema,
-    TOutputSchema,
-    TActionOutput
+    TOutputSchema
   >,
 ) => TemplateAction_2<TActionInput, TActionOutput>;
 
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction_2<HumanDuration, unknown>;
+}): TemplateAction_2<HumanDuration, JsonObject>;
 
 // @public
 export type CreateWorkerOptions = {

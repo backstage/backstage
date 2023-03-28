@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
@@ -18,6 +19,6 @@ export const createConfluenceToMarkdownAction: (options: {
     confluenceUrls: string[];
     repoUrl: string;
   },
-  unknown
+  JsonObject
 >;
 ```
