@@ -18,6 +18,7 @@ import { Pod, IContainerStatus, IContainer } from 'kubernetes-models/v1';
 import { DetectedError, ErrorMapper } from './types';
 import { detectErrorsInObjects } from './common';
 import lodash from 'lodash';
+import { DateTime } from 'luxon';
 
 function isPodReadinessProbeUnready({
   container,
@@ -30,22 +31,20 @@ function isPodReadinessProbeUnready({
   ) {
     return false;
   }
-  const startDateTime: Date = new Date(
+  const startDateTime = DateTime.fromISO(
     containerStatus.state?.running?.startedAt,
-  );
-  // Add initial delay
-  startDateTime.setSeconds(
-    startDateTime.getSeconds() +
-      (container.readinessProbe?.initialDelaySeconds ?? 0),
-  );
-  // Add failure threshold
-  startDateTime.setSeconds(
-    startDateTime.getSeconds() +
-      (container.readinessProbe?.periodSeconds ?? 0) *
+  )
+    // Add initial delay
+    .plus({
+      seconds: container.readinessProbe?.initialDelaySeconds ?? 0,
+    })
+    // Add failure threshold
+    .plus({
+      seconds:
+        (container.readinessProbe?.periodSeconds ?? 0) *
         (container.readinessProbe?.failureThreshold ?? 0),
-  );
-  const now: Date = new Date();
-  return startDateTime < now;
+    });
+  return startDateTime < DateTime.now();
 }
 
 interface ContainerSpecAndStatus {
