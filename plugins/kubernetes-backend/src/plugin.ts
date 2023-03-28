@@ -36,14 +36,16 @@ export const kubernetesPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.config,
         catalogApi: catalogServiceRef,
+        permissions: coreServices.permissions,
       },
-      async init({ http, logger, config, catalogApi }) {
+      async init({ http, logger, config, catalogApi, permissions }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
         const { router } = await KubernetesBuilder.createBuilder({
           logger: winstonLogger,
           config,
           catalogApi,
+          permissions,
         }).build();
         http.use(router);
       },
