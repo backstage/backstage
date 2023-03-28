@@ -78,49 +78,68 @@ export function createCatalogRegisterAction(options: {
       repoContentsUrl: string;
       catalogInfoPath?: string | undefined;
       optional?: boolean | undefined;
-    }
+    },
+  JsonObject
 >;
 
 // @public
-export function createCatalogWriteAction(): TemplateAction_2<{
-  entity: {} & {
-    [k: string]: unknown;
-  };
-  filePath?: string | undefined;
-}>;
+export function createCatalogWriteAction(): TemplateAction_2<
+  {
+    entity: {} & {
+      [k: string]: unknown;
+    };
+    filePath?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
-export function createDebugLogAction(): TemplateAction_2<{
-  message?: string | undefined;
-  listWorkspace?: boolean | undefined;
-}>;
+export function createDebugLogAction(): TemplateAction_2<
+  {
+    message?: string | undefined;
+    listWorkspace?: boolean | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
-}): TemplateAction_2<{
-  entityRef?: string | undefined;
-  entityRefs?: string[] | undefined;
-  optional?: boolean | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    entityRef?: string | undefined;
+    entityRefs?: string[] | undefined;
+    optional?: boolean | undefined;
+  },
+  {
+    entity?: any;
+    entities?: any[] | undefined;
+  }
+>;
 
 // @public
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-}): TemplateAction_2<{
-  url: string;
-  targetPath?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    url: string;
+    targetPath?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createFetchPlainFileAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-}): TemplateAction_2<{
-  url: string;
-  targetPath: string;
-}>;
+}): TemplateAction_2<
+  {
+    url: string;
+    targetPath: string;
+  },
+  JsonObject
+>;
 
 // @public
 export function createFetchTemplateAction(options: {
@@ -128,57 +147,72 @@ export function createFetchTemplateAction(options: {
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-}): TemplateAction_2<{
-  url: string;
-  targetPath?: string | undefined;
-  values: any;
-  templateFileExtension?: string | boolean | undefined;
-  copyWithoutRender?: string[] | undefined;
-  copyWithoutTemplating?: string[] | undefined;
-  cookiecutterCompat?: boolean | undefined;
-  replace?: boolean | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    url: string;
+    targetPath?: string | undefined;
+    values: any;
+    templateFileExtension?: string | boolean | undefined;
+    copyWithoutRender?: string[] | undefined;
+    copyWithoutTemplating?: string[] | undefined;
+    cookiecutterCompat?: boolean | undefined;
+    replace?: boolean | undefined;
+  },
+  JsonObject
+>;
 
 // @public
-export const createFilesystemDeleteAction: () => TemplateAction_2<{
-  files: string[];
-}>;
+export const createFilesystemDeleteAction: () => TemplateAction_2<
+  {
+    files: string[];
+  },
+  JsonObject
+>;
 
 // @public
-export const createFilesystemRenameAction: () => TemplateAction_2<{
-  files: Array<{
-    from: string;
-    to: string;
-    overwrite?: boolean;
-  }>;
-}>;
+export const createFilesystemRenameAction: () => TemplateAction_2<
+  {
+    files: Array<{
+      from: string;
+      to: string;
+      overwrite?: boolean;
+    }>;
+  },
+  JsonObject
+>;
 
 // @public
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  workflowId: string;
-  branchOrTagName: string;
-  workflowInputs?:
-    | {
-        [key: string]: string;
-      }
-    | undefined;
-  token?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    workflowId: string;
+    branchOrTagName: string;
+    workflowInputs?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  number: number;
-  labels: string[];
-  token?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    number: number;
+    labels: string[];
+    token?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export interface CreateGithubPullRequestActionOptions {
@@ -203,354 +237,402 @@ export type CreateGithubPullRequestClientFactoryInput = {
 export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  homepage?: string | undefined;
-  access?: string | undefined;
-  deleteBranchOnMerge?: boolean | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-  allowRebaseMerge?: boolean | undefined;
-  allowSquashMerge?: boolean | undefined;
-  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
-  squashMergeCommitMessage?:
-    | 'PR_BODY'
-    | 'COMMIT_MESSAGES'
-    | 'BLANK'
-    | undefined;
-  allowMergeCommit?: boolean | undefined;
-  allowAutoMerge?: boolean | undefined;
-  requireCodeOwnerReviews?: boolean | undefined;
-  bypassPullRequestAllowances?:
-    | {
-        users?: string[] | undefined;
-        teams?: string[] | undefined;
-        apps?: string[] | undefined;
-      }
-    | undefined;
-  requiredApprovingReviewCount?: number | undefined;
-  restrictions?:
-    | {
-        users: string[];
-        teams: string[];
-        apps?: string[] | undefined;
-      }
-    | undefined;
-  requiredStatusCheckContexts?: string[] | undefined;
-  requireBranchesToBeUpToDate?: boolean | undefined;
-  requiredConversationResolution?: boolean | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-  collaborators?:
-    | (
-        | {
-            user: string;
-            access: string;
-          }
-        | {
-            team: string;
-            access: string;
-          }
-        | {
-            username: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-          }
-      )[]
-    | undefined;
-  hasProjects?: boolean | undefined;
-  hasWiki?: boolean | undefined;
-  hasIssues?: boolean | undefined;
-  token?: string | undefined;
-  topics?: string[] | undefined;
-  requireCommitSigning?: boolean | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    homepage?: string | undefined;
+    access?: string | undefined;
+    deleteBranchOnMerge?: boolean | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    allowRebaseMerge?: boolean | undefined;
+    allowSquashMerge?: boolean | undefined;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+    squashMergeCommitMessage?:
+      | 'PR_BODY'
+      | 'COMMIT_MESSAGES'
+      | 'BLANK'
+      | undefined;
+    allowMergeCommit?: boolean | undefined;
+    allowAutoMerge?: boolean | undefined;
+    requireCodeOwnerReviews?: boolean | undefined;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[] | undefined;
+          teams?: string[] | undefined;
+          apps?: string[] | undefined;
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number | undefined;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[] | undefined;
+        }
+      | undefined;
+    requiredStatusCheckContexts?: string[] | undefined;
+    requireBranchesToBeUpToDate?: boolean | undefined;
+    requiredConversationResolution?: boolean | undefined;
+    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    collaborators?:
+      | (
+          | {
+              user: string;
+              access: string;
+            }
+          | {
+              team: string;
+              access: string;
+            }
+          | {
+              username: string;
+              access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            }
+        )[]
+      | undefined;
+    hasProjects?: boolean | undefined;
+    hasWiki?: boolean | undefined;
+    hasIssues?: boolean | undefined;
+    token?: string | undefined;
+    topics?: string[] | undefined;
+    requireCommitSigning?: boolean | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createGithubRepoPushAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  defaultBranch?: string | undefined;
-  protectDefaultBranch?: boolean | undefined;
-  protectEnforceAdmins?: boolean | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-  requireCodeOwnerReviews?: boolean | undefined;
-  dismissStaleReviews?: boolean | undefined;
-  bypassPullRequestAllowances?:
-    | {
-        users?: string[];
-        teams?: string[];
-        apps?: string[];
-      }
-    | undefined;
-  requiredApprovingReviewCount?: number | undefined;
-  restrictions?:
-    | {
-        users: string[];
-        teams: string[];
-        apps?: string[];
-      }
-    | undefined;
-  requiredStatusCheckContexts?: string[] | undefined;
-  requireBranchesToBeUpToDate?: boolean | undefined;
-  requiredConversationResolution?: boolean | undefined;
-  sourcePath?: string | undefined;
-  token?: string | undefined;
-  requiredCommitSigning?: boolean | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    protectDefaultBranch?: boolean | undefined;
+    protectEnforceAdmins?: boolean | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    requireCodeOwnerReviews?: boolean | undefined;
+    dismissStaleReviews?: boolean | undefined;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number | undefined;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredStatusCheckContexts?: string[] | undefined;
+    requireBranchesToBeUpToDate?: boolean | undefined;
+    requiredConversationResolution?: boolean | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    requiredCommitSigning?: boolean | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  webhookUrl: string;
-  webhookSecret?: string | undefined;
-  events?: string[] | undefined;
-  active?: boolean | undefined;
-  contentType?: 'form' | 'json' | undefined;
-  insecureSsl?: boolean | undefined;
-  token?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    webhookUrl: string;
+    webhookSecret?: string | undefined;
+    events?: string[] | undefined;
+    active?: boolean | undefined;
+    contentType?: 'form' | 'json' | undefined;
+    insecureSsl?: boolean | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  defaultBranch?: string | undefined;
-  sourcePath?: string | undefined;
-  token?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public @deprecated
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
-  sourcePath?: string | undefined;
-  enableLFS?: boolean | undefined;
-  token?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    sourcePath?: string | undefined;
+    enableLFS?: boolean | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishBitbucketCloudAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
-  sourcePath?: string | undefined;
-  token?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishBitbucketServerAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  defaultBranch?: string | undefined;
-  repoVisibility?: 'private' | 'public' | undefined;
-  sourcePath?: string | undefined;
-  enableLFS?: boolean | undefined;
-  token?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    sourcePath?: string | undefined;
+    enableLFS?: boolean | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishGerritAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description: string;
-  defaultBranch?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-  sourcePath?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description: string;
+    defaultBranch?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    sourcePath?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishGerritReviewAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  branch?: string | undefined;
-  sourcePath?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    branch?: string | undefined;
+    sourcePath?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
-}): TemplateAction_2<{
-  repoUrl: string;
-  description?: string | undefined;
-  homepage?: string | undefined;
-  access?: string | undefined;
-  defaultBranch?: string | undefined;
-  protectDefaultBranch?: boolean | undefined;
-  protectEnforceAdmins?: boolean | undefined;
-  deleteBranchOnMerge?: boolean | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-  allowRebaseMerge?: boolean | undefined;
-  allowSquashMerge?: boolean | undefined;
-  squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
-  squashMergeCommitMessage?:
-    | 'PR_BODY'
-    | 'COMMIT_MESSAGES'
-    | 'BLANK'
-    | undefined;
-  allowMergeCommit?: boolean | undefined;
-  allowAutoMerge?: boolean | undefined;
-  sourcePath?: string | undefined;
-  bypassPullRequestAllowances?:
-    | {
-        users?: string[];
-        teams?: string[];
-        apps?: string[];
-      }
-    | undefined;
-  requiredApprovingReviewCount?: number | undefined;
-  restrictions?:
-    | {
-        users: string[];
-        teams: string[];
-        apps?: string[];
-      }
-    | undefined;
-  requireCodeOwnerReviews?: boolean | undefined;
-  dismissStaleReviews?: boolean | undefined;
-  requiredStatusCheckContexts?: string[] | undefined;
-  requireBranchesToBeUpToDate?: boolean | undefined;
-  requiredConversationResolution?: boolean | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-  collaborators?:
-    | (
-        | {
-            user: string;
-            access: string;
-          }
-        | {
-            team: string;
-            access: string;
-          }
-        | {
-            username: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-          }
-      )[]
-    | undefined;
-  hasProjects?: boolean | undefined;
-  hasWiki?: boolean | undefined;
-  hasIssues?: boolean | undefined;
-  token?: string | undefined;
-  topics?: string[] | undefined;
-  requiredCommitSigning?: boolean | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    description?: string | undefined;
+    homepage?: string | undefined;
+    access?: string | undefined;
+    defaultBranch?: string | undefined;
+    protectDefaultBranch?: boolean | undefined;
+    protectEnforceAdmins?: boolean | undefined;
+    deleteBranchOnMerge?: boolean | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    allowRebaseMerge?: boolean | undefined;
+    allowSquashMerge?: boolean | undefined;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+    squashMergeCommitMessage?:
+      | 'PR_BODY'
+      | 'COMMIT_MESSAGES'
+      | 'BLANK'
+      | undefined;
+    allowMergeCommit?: boolean | undefined;
+    allowAutoMerge?: boolean | undefined;
+    sourcePath?: string | undefined;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number | undefined;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requireCodeOwnerReviews?: boolean | undefined;
+    dismissStaleReviews?: boolean | undefined;
+    requiredStatusCheckContexts?: string[] | undefined;
+    requireBranchesToBeUpToDate?: boolean | undefined;
+    requiredConversationResolution?: boolean | undefined;
+    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    collaborators?:
+      | (
+          | {
+              user: string;
+              access: string;
+            }
+          | {
+              team: string;
+              access: string;
+            }
+          | {
+              username: string;
+              access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            }
+        )[]
+      | undefined;
+    hasProjects?: boolean | undefined;
+    hasWiki?: boolean | undefined;
+    hasIssues?: boolean | undefined;
+    token?: string | undefined;
+    topics?: string[] | undefined;
+    requiredCommitSigning?: boolean | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export const createPublishGithubPullRequestAction: (
   options: CreateGithubPullRequestActionOptions,
-) => TemplateAction_2<{
-  title: string;
-  branchName: string;
-  description: string;
-  repoUrl: string;
-  draft?: boolean | undefined;
-  targetPath?: string | undefined;
-  sourcePath?: string | undefined;
-  token?: string | undefined;
-  reviewers?: string[] | undefined;
-  teamReviewers?: string[] | undefined;
-}>;
+) => TemplateAction_2<
+  {
+    title: string;
+    branchName: string;
+    description: string;
+    repoUrl: string;
+    draft?: boolean | undefined;
+    targetPath?: string | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    reviewers?: string[] | undefined;
+    teamReviewers?: string[] | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
-}): TemplateAction_2<{
-  repoUrl: string;
-  defaultBranch?: string | undefined;
-  repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-  sourcePath?: string | undefined;
-  token?: string | undefined;
-  gitCommitMessage?: string | undefined;
-  gitAuthorName?: string | undefined;
-  gitAuthorEmail?: string | undefined;
-  setUserAsOwner?: boolean | undefined;
-  topics?: string[] | undefined;
-}>;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    defaultBranch?: string | undefined;
+    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    setUserAsOwner?: boolean | undefined;
+    topics?: string[] | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
-}) => TemplateAction_2<{
-  repoUrl: string;
-  title: string;
-  description: string;
-  branchName: string;
-  sourcePath?: string | undefined;
-  targetPath?: string | undefined;
-  token?: string | undefined;
-  commitAction?: 'update' | 'delete' | 'create' | undefined;
-  projectid?: string | undefined;
-  removeSourceBranch?: boolean | undefined;
-  assignee?: string | undefined;
-}>;
+}) => TemplateAction_2<
+  {
+    repoUrl: string;
+    title: string;
+    description: string;
+    branchName: string;
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    projectid?: string | undefined;
+    removeSourceBranch?: boolean | undefined;
+    assignee?: string | undefined;
+  },
+  JsonObject
+>;
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export const createTemplateAction: <
-  TParams,
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
     ? IReturn
-    : TParams,
+    : TInputParams,
+  TActionOutput = TOutputSchema extends ZodType<any, any, infer IReturn_1>
+    ? IReturn_1
+    : TOutputParams,
 >(
-  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
-) => TemplateAction_2<TActionInput>;
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema
+  >,
+) => TemplateAction_2<TActionInput, TActionOutput>;
 
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction_2<HumanDuration>;
+}): TemplateAction_2<HumanDuration, JsonObject>;
 
 // @public
 export type CreateWorkerOptions = {

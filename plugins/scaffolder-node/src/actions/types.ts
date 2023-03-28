@@ -16,8 +16,8 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonObject, JsonValue } from '@backstage/types';
-import { TaskSecrets } from '../tasks/types';
+import { JsonObject } from '@backstage/types';
+import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
@@ -26,13 +26,19 @@ import { Schema } from 'jsonschema';
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TActionInput extends JsonObject> = {
+export type ActionContext<
+  TActionInput extends JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  output(name: string, value: JsonValue): void;
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
+  ): void;
 
   /**
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
@@ -68,7 +74,10 @@ export type ActionContext<TActionInput extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<TActionInput = unknown> = {
+export type TemplateAction<
+  TActionInput = unknown,
+  TActionOutput = JsonObject,
+> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -77,5 +86,5 @@ export type TemplateAction<TActionInput = unknown> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
