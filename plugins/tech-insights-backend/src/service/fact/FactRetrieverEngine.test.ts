@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   FactRetriever,
   FactRetrieverRegistration,
@@ -34,6 +35,7 @@ import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
+jest.setTimeout(60_000);
 jest.useFakeTimers();
 
 const testFactRetriever: FactRetriever = {
@@ -175,7 +177,6 @@ describe('FactRetrieverEngine', () => {
       );
       expect(schemaAssertionCallback).toHaveBeenCalled();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -227,6 +228,5 @@ describe('FactRetrieverEngine', () => {
         }),
       );
     },
-    60_000,
   );
 });
