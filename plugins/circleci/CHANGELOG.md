@@ -1,5 +1,18 @@
 # @backstage/plugin-circleci
 
+## 0.3.17-next.1
+
+### Patch Changes
+
+- 7d75f6d9b8f: chore: Improve API Reference documentation
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-model@1.2.1
+
 ## 0.3.17-next.0
 
 ### Patch Changes

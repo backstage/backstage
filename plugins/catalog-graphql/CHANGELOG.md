@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.20-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.3.20-next.0
 
 ### Patch Changes
