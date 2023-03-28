@@ -18,6 +18,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { JsonValue } from '@backstage/types';
 import { TemplateFilter } from '..';
 import { parseRepoUrl } from '../../scaffolder/actions/builtin/publish/util';
+import get from 'lodash/get';
 
 export const createDefaultFilters = ({
   integrations,
@@ -27,19 +28,7 @@ export const createDefaultFilters = ({
   return {
     parseRepoUrl: url => parseRepoUrl(url as string, integrations),
     parseEntityRef: ref => parseEntityRef(ref as string),
-    pick: (obj: JsonValue, key: JsonValue) => {
-      if (
-        typeof obj === 'object' &&
-        !Array.isArray(obj) &&
-        typeof key === 'string'
-      ) {
-        return obj?.[key];
-      }
-
-      throw new Error(
-        `Invalid arguments to pick filter, expected object and string, got ${typeof obj} and ${typeof key}`,
-      );
-    },
+    pick: (obj: JsonValue, key: JsonValue) => get(obj, key as string),
     projectSlug: repoUrl => {
       const { owner, repo } = parseRepoUrl(repoUrl as string, integrations);
       return `${owner}/${repo}`;

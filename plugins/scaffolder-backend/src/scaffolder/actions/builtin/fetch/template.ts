@@ -50,10 +50,7 @@ export function createFetchTemplateAction(options: {
     additionalTemplateGlobals,
   } = options;
 
-  const templateFilters = {
-    ...createDefaultFilters({ integrations }),
-    ...additionalTemplateFilters,
-  };
+  const defaultTemplateFilters = createDefaultFilters({ integrations });
 
   return createTemplateAction<{
     url: string;
@@ -237,7 +234,10 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        templateFilters,
+        templateFilters: {
+          ...defaultTemplateFilters,
+          ...additionalTemplateFilters,
+        },
         templateGlobals: additionalTemplateGlobals,
       });
 

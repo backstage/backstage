@@ -750,6 +750,36 @@ describe('DefaultWorkflowRunner', () => {
 
       expect(output.foo).toEqual('component');
     });
+
+    it('should allow deep nesting of picked objects', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | pick("something.deeply.nested") }}',
+        },
+        parameters: {
+          entity: {
+            something: {
+              deeply: {
+                nested: 'component',
+              },
+            },
+          },
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
+    });
   });
 
   describe('dry run', () => {
