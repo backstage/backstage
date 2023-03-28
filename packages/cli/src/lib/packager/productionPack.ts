@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { join as joinPath, resolve as resolvePath } from 'path';
+import { resolve as resolvePath, posix as posixPath } from 'path';
 import { ExtendedPackageJSON } from '../monorepo';
 import { readEntryPoints } from '../monorepo/entryPoints';
 
@@ -142,7 +142,7 @@ export async function revertProductionPack(packageDir: string) {
 
 function resolveEntrypoint(pkg: any, name: string) {
   const targetEntry = pkg.publishConfig[name] || pkg[name];
-  return targetEntry && joinPath('..', targetEntry);
+  return targetEntry && posixPath.join('..', targetEntry);
 }
 
 // Writes e.g. alpha/package.json
@@ -160,7 +160,7 @@ async function writeReleaseStageEntrypoint(
       main: resolveEntrypoint(pkg, 'main'),
       module: resolveEntrypoint(pkg, 'module'),
       browser: resolveEntrypoint(pkg, 'browser'),
-      types: joinPath('..', pkg.publishConfig![`${stage}Types`]!),
+      types: posixPath.join('..', pkg.publishConfig![`${stage}Types`]!),
     },
     { encoding: 'utf8', spaces: 2 },
   );
@@ -202,7 +202,7 @@ async function prepareExportsEntryPoints(
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
       if (distFiles.includes(name)) {
-        exp[key] = `./${joinPath(`dist`, name)}`;
+        exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
     }
     exp.default = exp.require ?? exp.import;
@@ -228,9 +228,9 @@ async function prepareExportsEntryPoints(
           {
             name: pkg.name,
             version: pkg.version,
-            ...(exp.default ? { main: joinPath('..', exp.default) } : {}),
-            ...(exp.import ? { module: joinPath('..', exp.import) } : {}),
-            ...(exp.types ? { types: joinPath('..', exp.types) } : {}),
+            ...(exp.default ? { main: posixPath.join('..', exp.default) } : {}),
+            ...(exp.import ? { module: posixPath.join('..', exp.import) } : {}),
+            ...(exp.types ? { types: posixPath.join('..', exp.types) } : {}),
           },
           { encoding: 'utf8', spaces: 2 },
         );
