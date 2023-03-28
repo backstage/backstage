@@ -23,10 +23,14 @@ export const isOctopusDeployAvailable: (entity: Entity) => boolean;
 export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
 
 // @public (undocumented)
+export const OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION = 'octopus.com/space-id';
+
+// @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
   getReleaseProgression(
     projectId: string,
+    spaceId: string | null,
     releaseHistoryCount: number,
   ): Promise<OctopusProgression>;
 }
@@ -44,6 +48,7 @@ export class OctopusDeployClient implements OctopusDeployApi {
   // (undocumented)
   getReleaseProgression(
     projectId: string,
+    spaceId: string | null,
     releaseHistoryCount: number,
   ): Promise<OctopusProgression>;
 }
