@@ -104,3 +104,20 @@ export function defaultScmResolveUrl(options: {
   }
   return updated.toString();
 }
+
+/**
+ * Sets up handlers for request mocking
+ *
+ * Copied from test-utils, as that is a frontend-only package
+ *
+ * @param worker - service worker
+ */
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
+}

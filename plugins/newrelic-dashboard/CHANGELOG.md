@@ -1,5 +1,17 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.2.10-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+
 ## 0.2.10-next.0
 
 ### Patch Changes

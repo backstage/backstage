@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.1.4-next.0",
+  "version": "0.1.4-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -48,6 +48,7 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
+    "@types/node": "^16.11.26",
     "mock-fs": "^5.1.0"
   },
   "peerDependencies": {

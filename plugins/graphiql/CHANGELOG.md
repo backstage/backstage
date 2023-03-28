@@ -1,5 +1,16 @@
 # @backstage/plugin-graphiql
 
+## 0.2.49-next.1
+
+### Patch Changes
+
+- 8b9e8ece403: Allow to pass lazy GraphQL endpoint URL
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/theme@0.2.19-next.0
+
 ## 0.2.49-next.0
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.6-next.0",
+  "version": "0.22.6-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -50,6 +50,7 @@
     "@spotify/eslint-config-react": "^14.0.0",
     "@spotify/eslint-config-typescript": "^14.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@svgr/core": "6.5.x",
     "@svgr/plugin-jsx": "6.5.x",
     "@svgr/plugin-svgo": "6.5.x",
     "@svgr/rollup": "6.5.x",
