@@ -14,77 +14,58 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityNamespacePicker } from './EntityNamespacePicker';
+import { TestApiProvider } from '@backstage/test-utils';
+import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
 
-const sampleEntities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-1',
-      namespace: 'namespace-1',
-    },
-    spec: {
-      lifecycle: 'production',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-2',
-      namespace: 'namespace-2',
-    },
-    spec: {
-      lifecycle: 'experimental',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-3',
-      namespace: 'namespace-3',
-    },
-    spec: {
-      lifecycle: 'experimental',
-    },
-  },
-];
+const namespaces = ['namespace-1', 'namespace-2', 'namespace-3'];
 
 describe('<EntityNamespacePicker/>', () => {
-  it('renders all namespaces', () => {
+  const mockCatalogApiRef = {
+    getEntityFacets: async () => ({
+      facets: {
+        'metadata.namespace': namespaces.map((value, idx) => ({
+          value,
+          count: idx,
+        })),
+      },
+    }),
+  } as unknown as CatalogApi;
+
+  it('renders all namespaces', async () => {
     render(
-      <MockEntityListContextProvider
-        value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(screen.getByText('Namespace')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText('Namespace')).toBeInTheDocument(),
+    );
 
     fireEvent.click(screen.getByTestId('namespace-picker-expand'));
-    sampleEntities
-      .map(e => e.metadata.namespace!)
-      .forEach(namespace => {
-        expect(screen.getByText(namespace as string)).toBeInTheDocument();
-      });
+    namespaces.forEach(namespace => {
+      expect(screen.getByText(namespace as string)).toBeInTheDocument();
+    });
   });
 
-  it('renders unique namespaces in alphabetical order', () => {
+  it('renders unique namespaces in alphabetical order', async () => {
     render(
-      <MockEntityListContextProvider
-        value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(screen.getByText('Namespace')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText('Namespace')).toBeInTheDocument(),
+    );
 
     fireEvent.click(screen.getByTestId('namespace-picker-expand'));
 
@@ -95,43 +76,47 @@ describe('<EntityNamespacePicker/>', () => {
     ]);
   });
 
-  it('respects the query parameter filter value', () => {
+  it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { namespace: ['namespace-1'] };
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
-          updateFilters,
-          queryParameters,
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: new EntityNamespaceFilter(['namespace-1']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        namespace: new EntityNamespaceFilter(['namespace-1']),
+      }),
+    );
   });
 
-  it('adds namespaces to filters', () => {
+  it('adds namespaces to filters', async () => {
     const updateFilters = jest.fn();
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
-          updateFilters,
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: undefined,
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        namespace: undefined,
+      }),
+    );
 
     fireEvent.click(screen.getByTestId('namespace-picker-expand'));
     fireEvent.click(screen.getByText('namespace-2'));
@@ -140,23 +125,26 @@ describe('<EntityNamespacePicker/>', () => {
     });
   });
 
-  it('removes namespaces from filters', () => {
+  it('removes namespaces from filters', async () => {
     const updateFilters = jest.fn();
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
-          updateFilters,
-          filters: { namespace: new EntityNamespaceFilter(['namespace-2']) },
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { namespace: new EntityNamespaceFilter(['namespace-2']) },
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: new EntityNamespaceFilter(['namespace-2']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        namespace: new EntityNamespaceFilter(['namespace-2']),
+      }),
+    );
+
     fireEvent.click(screen.getByTestId('namespace-picker-expand'));
     expect(screen.getByLabelText('namespace-2')).toBeChecked();
 
@@ -166,69 +154,67 @@ describe('<EntityNamespacePicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', () => {
+  it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { namespace: ['namespace-1'] },
-          backendEntities: sampleEntities,
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { namespace: ['namespace-1'] },
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: new EntityNamespaceFilter(['namespace-1']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        namespace: new EntityNamespaceFilter(['namespace-1']),
+      }),
+    );
     rendered.rerender(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { namespace: ['namespace-2'] },
-          backendEntities: sampleEntities,
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { namespace: ['namespace-2'] },
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       namespace: new EntityNamespaceFilter(['namespace-2']),
     });
   });
-  it('removes namespaces from filters if there are no available namespaces', () => {
+  it('removes namespaces from filters if there are no available namespaces', async () => {
     const updateFilters = jest.fn();
+    const mockCatalogApiRefNoNamespace = {
+      getEntityFacets: async () => ({
+        facets: {
+          'metadata.tags': {},
+        },
+      }),
+    } as unknown as CatalogApi;
+
     render(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { namespace: ['namespace-1'] },
-          backendEntities: [],
-        }}
-      >
-        <EntityNamespacePicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRefNoNamespace]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { namespace: ['namespace-1'] },
+          }}
+        >
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: undefined,
-    });
-  });
-  it('responds to initialFilter prop', () => {
-    const updateFilters = jest.fn();
-    render(
-      <MockEntityListContextProvider
-        value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
-          updateFilters,
-        }}
-      >
-        <EntityNamespacePicker initialFilter={['namespace-2']} />
-      </MockEntityListContextProvider>,
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        namespace: undefined,
+      }),
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      namespace: new EntityNamespaceFilter(['namespace-2']),
-    });
   });
 });
