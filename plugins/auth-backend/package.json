@@ -32,6 +32,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
@@ -53,8 +54,12 @@
     "@types/passport": "^1.0.3",
     "compression": "^1.7.4",
     "connect-session-knex": "^3.0.1",
+    "cookie": "^0.5.0",
     "cookie-parser": "^1.4.5",
+    "cookie-signature": "^1.2.1",
     "cors": "^2.8.5",
+    "d": "^1.0.1",
+    "e": "^0.2.32",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
@@ -81,6 +86,7 @@
     "passport-onelogin-oauth": "^0.0.1",
     "passport-saml": "^3.1.2",
     "uuid": "^8.0.0",
+    "v": "^0.3.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
