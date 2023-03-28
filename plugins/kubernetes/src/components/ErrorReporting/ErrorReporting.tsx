@@ -15,84 +15,64 @@
  */
 import * as React from 'react';
 import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
-import { Chip } from '@material-ui/core';
 import { Table, TableColumn } from '@backstage/core-components';
 
 type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
 };
 
-const columns: TableColumn<DetectedError>[] = [
+const columns: TableColumn<Row>[] = [
   {
     title: 'cluster',
     width: '10%',
-    render: (detectedError: DetectedError) => detectedError.cluster,
+    render: (row: Row) => row.clusterName,
   },
   {
     title: 'namespace',
     width: '10%',
-    render: (detectedError: DetectedError) => detectedError.namespace,
+    render: (row: Row) => row.error.sourceRef.namespace,
   },
   {
     title: 'kind',
     width: '10%',
-    render: (detectedError: DetectedError) => detectedError.kind,
+    render: (row: Row) => row.error.sourceRef.kind,
   },
   {
     title: 'name',
     width: '30%',
-    render: (detectedError: DetectedError) => {
-      const errorCount = detectedError.names.length;
-
-      if (errorCount === 0) {
-        // This shouldn't happen
-        return null;
-      }
-
-      const displayName = detectedError.names[0];
-
-      const otherErrorCount = errorCount - 1;
-
-      return (
-        <>
-          {displayName}{' '}
-          {otherErrorCount > 0 && (
-            <Chip
-              label={`+ ${otherErrorCount} other${
-                otherErrorCount > 1 ? 's' : ''
-              }`}
-              size="small"
-            />
-          )}
-        </>
-      );
+    render: (row: Row) => {
+      return <>{row.error.sourceRef.name} </>;
     },
   },
   {
     title: 'messages',
     width: '40%',
-    render: (detectedError: DetectedError) => (
-      <>
-        {detectedError.message.map((m, i) => (
-          <div key={i}>{m}</div>
-        ))}
-      </>
-    ),
+    render: (row: Row) => row.error.message,
   },
 ];
 
-const sortBySeverity = (a: DetectedError, b: DetectedError) => {
-  if (a.severity < b.severity) {
+interface Row {
+  clusterName: string;
+  error: DetectedError;
+}
+
+const sortBySeverity = (a: Row, b: Row) => {
+  if (a.error.severity < b.error.severity) {
     return 1;
-  } else if (b.severity < a.severity) {
+  } else if (b.error.severity < a.error.severity) {
     return -1;
   }
   return 0;
 };
 
 export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
-  const errors = Array.from(detectedErrors.values())
-    .flat()
+  const errors = Array.from(detectedErrors.entries())
+    .flatMap(([clusterName, resourceErrors]) => {
+      return resourceErrors.map(e => ({
+        clusterName,
+        error: e,
+      }));
+    })
     .sort(sortBySeverity);
 
   return (

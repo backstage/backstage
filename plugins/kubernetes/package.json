@@ -47,6 +47,7 @@
     "@types/react": "^16.13.1 || ^17.0.0",
     "cronstrue": "^2.2.0",
     "js-yaml": "^4.0.0",
+    "kubernetes-models": "^4.1.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "react-use": "^17.2.4"
