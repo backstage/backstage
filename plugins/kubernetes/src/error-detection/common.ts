@@ -22,7 +22,7 @@ export const detectErrorsInObjects = <T>(
   objects: T[],
   errorMappers: ErrorMapper<T>[],
 ): DetectedError[] => {
-  return errorMappers.flatMap(errorMapper => {
-    return objects.flatMap(o => errorMapper.detectErrors(o));
+  return objects.flatMap(o => {
+    return errorMappers.flatMap(em => em.detectErrors(o));
   });
 };
