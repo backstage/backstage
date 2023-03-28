@@ -75,7 +75,7 @@ import { writeFile } from 'fs';
 
 export const createNewFileAction = () => {
   return createTemplateAction<{ contents: string; filename: string }>({
-    id: 'file:create',
+    id: 'acme:file:create',
     schema: {
       input: {
         required: ['contents', 'filename'],
@@ -112,7 +112,7 @@ export const createNewFileAction = () => {
 Try to keep names consistent for both your own custom actions, and any actions contributed to open source. We've found that a separation of `:` and using a verb as the last part of the name works well.
 We follow `provider:entity:verb` or as close to this as possible for our built in actions. For example, `github:actions:create` or `github:repo:create`.
 
-Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create`.
+Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create` like above.
 
 Prefer to use `camelCase` over `snake-case` for these actions if possible, which leads to better reading and writing of template entity definitions.
 
