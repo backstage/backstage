@@ -16,6 +16,9 @@ export const createGitlabGroupEnsureExistsAction: (options: {
     token?: string | undefined;
   } & {
     path: string[];
+  },
+  {
+    groupId?: number | undefined;
   }
 >;
 
@@ -25,13 +28,16 @@ export const createGitlabProjectAccessTokenAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
-    name: string;
-    accessLevel: number;
-    scopes: string[];
     token?: string | undefined;
+  } & {
+    projectId: string | number;
+    name?: string | undefined;
+    accessLevel?: string | undefined;
+    scopes?: string[] | undefined;
   },
-  JsonObject
+  {
+    access_token: string;
+  }
 >;
 
 // @public
@@ -40,13 +46,17 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
-    name: string;
-    username: string;
-    scopes: string[];
     token?: string | undefined;
+  } & {
+    name: string;
+    projectId: string | number;
+    username?: string | undefined;
+    scopes?: string[] | undefined;
   },
-  JsonObject
+  {
+    user: string;
+    deploy_token: string;
+  }
 >;
 
 // @public
@@ -65,8 +75,7 @@ export const createGitlabProjectVariableAction: (options: {
     masked?: boolean | undefined;
     raw?: boolean | undefined;
     environmentScope?: string | undefined;
-  }
-,
+  },
   JsonObject
 >;
 ```

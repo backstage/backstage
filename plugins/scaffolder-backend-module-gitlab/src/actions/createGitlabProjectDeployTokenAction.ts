@@ -23,20 +23,6 @@ import { getToken } from '../util';
 import { InputError } from '@backstage/errors';
 import { z } from 'zod';
 
-const input = commonGitlabConfig.and(
-  z.object({
-    projectId: z.union([z.number(), z.string()], { description: 'Project ID' }),
-    name: z.string({ description: 'Deploy Token Name' }),
-    username: z.string({ description: 'Deploy Token Username' }).optional(),
-    scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
-  }),
-);
-
-const output = z.object({
-  deploy_token: z.string({ description: 'Deploy Token' }),
-  user: z.string({ description: 'User' }),
-});
-
 /**
  * Creates a `gitlab:projectDeployToken:create` Scaffolder action.
  *
@@ -47,9 +33,26 @@ export const createGitlabProjectDeployTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<z.infer<typeof input>>({
+  return createTemplateAction({
     id: 'gitlab:projectDeployToken:create',
-    schema: { input, output },
+    schema: {
+      input: commonGitlabConfig.and(
+        z.object({
+          projectId: z.union([z.number(), z.string()], {
+            description: 'Project ID',
+          }),
+          name: z.string({ description: 'Deploy Token Name' }),
+          username: z
+            .string({ description: 'Deploy Token Username' })
+            .optional(),
+          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+        }),
+      ),
+      output: z.object({
+        deploy_token: z.string({ description: 'Deploy Token' }),
+        user: z.string({ description: 'User' }),
+      }),
+    },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
       const { projectId, name, username, scopes } = ctx.input;

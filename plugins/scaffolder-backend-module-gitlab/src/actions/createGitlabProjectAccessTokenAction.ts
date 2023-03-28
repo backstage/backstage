@@ -20,21 +20,6 @@ import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { z } from 'zod';
 
-const input = commonGitlabConfig.and(
-  z.object({
-    projectId: z.union([z.number(), z.string()], { description: 'Project ID' }),
-    name: z.string({ description: 'Deploy Token Name' }).optional(),
-    accessLevel: z
-      .string({ description: 'Access Level of the Token' })
-      .optional(),
-    scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
-  }),
-);
-
-const output = z.object({
-  access_token: z.string({ description: 'Access Token' }),
-});
-
 /**
  * Creates a `gitlab:projectAccessToken:create` Scaffolder action.
  *
@@ -45,9 +30,25 @@ export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<z.infer<typeof input>>({
+  return createTemplateAction({
     id: 'gitlab:projectAccessToken:create',
-    schema: { input, output },
+    schema: {
+      input: commonGitlabConfig.and(
+        z.object({
+          projectId: z.union([z.number(), z.string()], {
+            description: 'Project ID',
+          }),
+          name: z.string({ description: 'Deploy Token Name' }).optional(),
+          accessLevel: z
+            .string({ description: 'Access Level of the Token' })
+            .optional(),
+          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+        }),
+      ),
+      output: z.object({
+        access_token: z.string({ description: 'Access Token' }),
+      }),
+    },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
       const { projectId, name, accessLevel, scopes } = ctx.input;

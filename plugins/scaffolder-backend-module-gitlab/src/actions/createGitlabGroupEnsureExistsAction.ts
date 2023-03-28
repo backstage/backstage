@@ -22,20 +22,6 @@ import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { z } from 'zod';
 
-const input = commonGitlabConfig.and(
-  z.object({
-    path: z
-      .array(z.string(), {
-        description: 'A path of group names that is ensured to exist',
-      })
-      .min(1),
-  }),
-);
-
-const output = z.object({
-  groupId: z.string({ description: 'The id of the innermost sub-group' }),
-});
-
 /**
  * Creates an `gitlab:group:ensureExists` Scaffolder action.
  *
@@ -46,10 +32,25 @@ export const createGitlabGroupEnsureExistsAction = (options: {
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<z.infer<typeof input>>({
+  return createTemplateAction({
     id: 'gitlab:group:ensureExists',
     description: 'Ensures a Gitlab group exists',
-    schema: { input, output },
+    schema: {
+      input: commonGitlabConfig.and(
+        z.object({
+          path: z
+            .array(z.string(), {
+              description: 'A path of group names that is ensured to exist',
+            })
+            .min(1),
+        }),
+      ),
+      output: z.object({
+        groupId: z
+          .number({ description: 'The id of the innermost sub-group' })
+          .optional(),
+      }),
+    },
     async handler(ctx) {
       const { path } = ctx.input;
       const { token, integrationConfig } = getToken(ctx.input, integrations);
