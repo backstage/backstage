@@ -244,9 +244,7 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityNamespacePicker: (props: {
-  initialFilter?: string[];
-}) => JSX.Element | null;
+export const EntityNamespacePicker: () => JSX.Element;
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
