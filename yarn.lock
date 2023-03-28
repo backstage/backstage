@@ -3714,6 +3714,7 @@ __metadata:
     "@spotify/eslint-config-react": ^14.0.0
     "@spotify/eslint-config-typescript": ^14.0.0
     "@sucrase/webpack-loader": ^2.0.0
+    "@svgr/core": 6.5.x
     "@svgr/plugin-jsx": 6.5.x
     "@svgr/plugin-svgo": 6.5.x
     "@svgr/rollup": 6.5.x
@@ -3894,14 +3895,17 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
+    history: ^5.0.0
     msw: ^1.0.0
     prop-types: ^15.7.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
@@ -3912,8 +3916,8 @@ __metadata:
     zen-observable: ^0.10.0
     zod: ^3.21.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -3980,11 +3984,13 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -3997,6 +4003,7 @@ __metadata:
     "@types/dagre": ^0.7.44
     "@types/google-protobuf": ^3.7.2
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-helmet": ^6.1.0
     "@types/react-sparklines": ^1.7.0
     "@types/react-syntax-highlighter": ^15.0.0
@@ -4032,7 +4039,6 @@ __metadata:
     zen-observable: ^0.10.0
     zod: ^3.21.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4049,12 +4055,14 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
@@ -4062,8 +4070,8 @@ __metadata:
     prop-types: ^15.7.2
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4110,14 +4118,15 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4199,15 +4208,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4219,7 +4232,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
@@ -4290,19 +4302,21 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-markdown: ^8.0.0
     react-use: ^17.2.4
     remark-gfm: ^3.0.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4343,15 +4357,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4372,15 +4389,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4400,16 +4420,21 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
+    prop-types: ^15.7.2
     react-ga: ^3.3.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4426,16 +4451,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4449,6 +4478,8 @@ __metadata:
     grpc-docs: ^1.1.2
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4470,10 +4501,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.1.1
     cross-fetch: ^3.1.5
     graphiql: ^1.8.8
@@ -4484,8 +4517,8 @@ __metadata:
     react-use: ^17.2.4
     swagger-ui-react: ^4.11.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4504,16 +4537,20 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4560,7 +4597,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@davidzemon/passport-okta-oauth": ^0.0.5
     "@google-cloud/firestore": ^6.0.0
@@ -4681,10 +4717,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
@@ -4692,6 +4730,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4743,16 +4782,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4795,15 +4838,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4848,6 +4894,7 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
     "@testing-library/jest-dom": ^5.10.1
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     material-ui-search-bar: ^1.0.0
@@ -4855,6 +4902,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -4887,10 +4936,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -4901,6 +4952,8 @@ __metadata:
     recharts: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5323,18 +5376,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     lodash: ^4.17.15
     p-limit: ^3.1.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5355,6 +5410,7 @@ __metadata:
     "@graphql-codegen/typescript": ^3.0.0
     "@graphql-codegen/typescript-resolvers": ^3.0.0
     "@graphql-tools/schema": ^9.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     graphql: ^16.0.0
     graphql-modules: ^2.0.0
     graphql-tag: ^2.11.0
@@ -5362,6 +5418,10 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     winston: ^3.2.1
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5387,10 +5447,12 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     js-base64: ^3.6.0
@@ -5400,8 +5462,8 @@ __metadata:
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5480,11 +5542,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/jwt-decode": ^3.1.0
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
@@ -5497,8 +5561,8 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5527,9 +5591,11 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
     lodash: ^4.17.21
@@ -5538,8 +5604,8 @@ __metadata:
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5554,8 +5620,13 @@ __metadata:
     "@backstage/plugin-cicd-statistics": "workspace:^"
     "@gitbeaker/browser": ^35.6.0
     "@gitbeaker/core": ^35.6.0
+    "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     p-limit: ^4.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5578,10 +5649,13 @@ __metadata:
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
     luxon: ^3.0.0
+    prop-types: ^15.7.2
     react-use: ^17.3.1
     recharts: ^2.1.5
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5601,11 +5675,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     circleci-api: ^4.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.0
@@ -5615,6 +5691,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5635,10 +5712,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -5646,6 +5725,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5665,12 +5745,14 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
@@ -5678,6 +5760,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5728,11 +5811,13 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.11.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/highlightjs": ^10.1.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     highlight.js: ^10.6.0
@@ -5742,6 +5827,7 @@ __metadata:
     recharts: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5762,16 +5848,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5793,10 +5882,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     jsonschema: ^1.2.6
     msw: ^1.0.0
@@ -5804,6 +5895,8 @@ __metadata:
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5834,11 +5927,13 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.9.6
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/pluralize": ^0.0.29
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
     "@types/yup": ^0.29.13
@@ -5855,8 +5950,8 @@ __metadata:
     regression: ^2.0.1
     yup: ^0.32.9
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5876,16 +5971,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     express: ^4.18.1
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@backstage/plugin-catalog-react": "workspace:^"
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -5940,17 +6039,19 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -5978,10 +6079,12 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
@@ -5990,6 +6093,8 @@ __metadata:
     yaml: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6164,12 +6269,18 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-explore-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6195,17 +6306,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6226,16 +6339,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6256,10 +6373,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -6267,6 +6386,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6287,11 +6408,13 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@maxim_mazurok/gapi.client.calendar": ^3.0.20220408
     "@tanstack/react-query": ^4.1.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.3.3
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
     cross-fetch: ^3.1.5
@@ -6303,6 +6426,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6321,14 +6446,17 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6349,11 +6477,13 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -6362,8 +6492,8 @@ __metadata:
     react-use: ^17.2.4
     recharts: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6386,16 +6516,19 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6420,16 +6553,20 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/graphql": ^5.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6451,7 +6588,7 @@ __metadata:
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@spotify/prettier-config": ^14.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -6464,6 +6601,8 @@ __metadata:
     react-use: ^17.4.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6484,6 +6623,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -6497,6 +6637,7 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6515,15 +6656,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6545,12 +6689,14 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/lodash": ^4.14.173
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -6559,6 +6705,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6576,11 +6724,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     graphiql: ^1.5.12
     graphql: ^16.0.0
@@ -6589,6 +6739,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6632,16 +6783,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     graphql-voyager: ^1.0.0-rc.31
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6685,17 +6840,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6719,17 +6876,22 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
     msw: ^1.0.0
+    prop-types: ^15.7.2
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -6787,10 +6949,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/testing-library__jest-dom": ^5.9.1
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -6798,6 +6962,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6842,17 +7007,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     jest-when: ^3.1.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6933,6 +7101,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -6948,6 +7117,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -6995,6 +7165,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -7006,6 +7177,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7067,10 +7239,12 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^2.0.2
     msw: ^1.0.0
@@ -7078,6 +7252,8 @@ __metadata:
     slugify: ^1.6.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7097,10 +7273,12 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@microsoft/microsoft-graph-types": ^2.25.0
     "@tanstack/react-query": ^4.1.3
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     cross-fetch: ^3.1.5
     dompurify: ^2.3.6
@@ -7111,6 +7289,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7134,6 +7314,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7151,15 +7333,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7179,15 +7365,19 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7208,15 +7398,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7237,10 +7431,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     p-limit: ^3.1.0
@@ -7249,6 +7445,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7270,18 +7467,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7323,11 +7522,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -7335,6 +7536,7 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -7413,12 +7615,13 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     react-use: ^17.2.4
     swr: ^2.0.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7484,11 +7687,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -7498,6 +7703,7 @@ __metadata:
     swr: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7571,6 +7777,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -7584,6 +7791,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7593,13 +7801,13 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     fs-extra: 10.1.0
     git-url-parse: ^13.1.0
@@ -7827,6 +8035,7 @@ __metadata:
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.3.1"
     "@rjsf/utils": 5.3.1
     "@rjsf/validator-ajv8": 5.3.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -7834,6 +8043,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/luxon": ^3.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     humanize-duration: ^3.25.1
     immer: ^9.0.1
@@ -7848,8 +8058,8 @@ __metadata:
     zod: ^3.21.4
     zod-to-json-schema: ^3.20.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7889,6 +8099,7 @@ __metadata:
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/utils": 5.3.1
     "@rjsf/validator-ajv8": 5.3.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -7896,6 +8107,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
@@ -7915,8 +8127,8 @@ __metadata:
     zod: ^3.21.4
     zod-to-json-schema: ^3.20.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8103,16 +8315,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     qs: ^6.9.4
     react-use: ^17.3.2
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8139,18 +8353,20 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8168,10 +8384,12 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -8185,6 +8403,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8204,10 +8423,12 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.2
     cross-fetch: ^3.1.5
     msw: ^1.0.0
@@ -8217,6 +8438,7 @@ __metadata:
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8226,10 +8448,10 @@ __metadata:
   resolution: "@backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.12
     express: ^4.18.1
@@ -8249,8 +8471,11 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
+    "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8272,16 +8497,20 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     rc-progress: 3.4.1
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8301,11 +8530,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
@@ -8313,6 +8544,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8351,18 +8583,21 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8380,15 +8615,19 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8489,17 +8728,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8518,6 +8759,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -8533,6 +8775,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8555,16 +8799,17 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
     testing-library__dom: ^7.29.4-beta.1
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8625,6 +8870,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -8637,6 +8883,8 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8702,13 +8950,14 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
     jss: ~10.10.0
     lodash: ^4.17.21
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8738,6 +8987,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
@@ -8745,6 +8995,7 @@ __metadata:
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     canvas: ^2.10.2
     cross-fetch: ^3.1.5
     dompurify: ^2.2.9
@@ -8756,7 +9007,6 @@ __metadata:
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -8805,15 +9055,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8858,6 +9111,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -8869,6 +9123,7 @@ __metadata:
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -8917,15 +9172,19 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8944,11 +9203,13 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -8957,6 +9218,8 @@ __metadata:
     recharts: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -8985,6 +9248,7 @@ __metadata:
     "@microsoft/api-extractor": ^7.33.7
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
+    "@types/node": ^16.11.26
     chalk: ^4.0.0
     commander: ^9.1.0
     fs-extra: 10.1.0
@@ -9021,15 +9285,16 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
     zen-observable: ^0.10.0
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -9042,6 +9307,10 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@material-ui/core": ^4.12.2
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -9064,9 +9333,11 @@ __metadata:
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/react-hooks": ^8.0.0
-  peerDependencies:
     "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -11020,6 +11291,8 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -11075,14 +11348,18 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -13765,7 +14042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/core@npm:^6.5.0":
+"@svgr/core@npm:6.5.x, @svgr/core@npm:^6.5.0":
   version: 6.5.0
   resolution: "@svgr/core@npm:6.5.0"
   dependencies:
@@ -23087,6 +23364,7 @@ __metadata:
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
     "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
     "@testing-library/cypress": ^9.0.0
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
@@ -23102,6 +23380,7 @@ __metadata:
     prop-types: ^15.7.2
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-router: ^6.3.0
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
     start-server-and-test: ^1.10.11
@@ -34262,7 +34541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.9.0":
+"react-router@npm:6.9.0, react-router@npm:^6.3.0":
   version: 6.9.0
   resolution: "react-router@npm:6.9.0"
   dependencies:
@@ -37543,10 +37822,12 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
+    "@types/react": "*"
     "@types/react-dom": "*"
     cross-env: ^7.0.0
     cypress: ^10.0.0

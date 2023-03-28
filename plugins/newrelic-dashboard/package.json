@@ -32,6 +32,11 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "react-use": "^17.2.4"
   },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
@@ -41,8 +46,5 @@
   },
   "files": [
     "dist"
-  ],
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
-  }
+  ]
 }

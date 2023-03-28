@@ -20,7 +20,7 @@ import {
   SonarqubeConfig,
 } from './sonarqubeInfoProvider';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest, RestRequest } from 'msw';
 
 describe('SonarqubeConfig', () => {

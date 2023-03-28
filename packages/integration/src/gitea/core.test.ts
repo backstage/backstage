@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { GiteaIntegrationConfig } from './config';
 import {
   getGiteaEditContentsUrl,

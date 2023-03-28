@@ -48,6 +48,7 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/mock-fs": "^4.13.0",
+    "@types/node": "^16.11.26",
     "mock-fs": "^5.1.0"
   },
   "peerDependencies": {
