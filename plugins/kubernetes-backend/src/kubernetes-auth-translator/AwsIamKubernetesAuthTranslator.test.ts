@@ -47,7 +47,6 @@ jest.mock('@aws-sdk/signature-v4', () => ({
 const fromTemporaryCredentials = jest.fn();
 jest.mock('@aws-sdk/credential-providers', () => ({
   fromTemporaryCredentials: (opts: any) => {
-    console.log(`got: ${JSON.stringify(opts)}`);
     return fromTemporaryCredentials(opts);
   },
 }));

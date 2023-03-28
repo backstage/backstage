@@ -53,7 +53,6 @@ export class AwsIamKubernetesAuthTranslator
     assumeRole?: string,
     externalId?: string,
   ): Promise<string> {
-    console.log(`here ${clusterName}, ${assumeRole} ${externalId}`);
     const region = process.env.AWS_REGION ?? defaultRegion;
 
     let credentials = (await this.credsManager.getCredentialProvider())
