@@ -45,10 +45,10 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
  */
 export interface EntityGenericPickerProps {
   name: string;
-  filterValue: string;
+  filterValue: string[];
 }
 
-function useEntityFieldFilter(opts: { filterValue: string }): {
+function useEntityFieldFilter(opts: { filterValue: string[] }): {
   availableOptions: { [k: string]: number } | undefined;
   selectedOptions: string[];
   setSelectedOptions: (option: string[]) => void;
@@ -85,7 +85,7 @@ function useEntityFieldFilter(opts: { filterValue: string }): {
 
   const catalogApi = useApi(catalogApiRef);
   const { value: availableOptions } = useAsync(async () => {
-    const facet = opts.filterValue;
+    const facet = opts.filterValue.join('.');
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
       filter: filters.kind?.getCatalogFilters(),
