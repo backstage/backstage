@@ -44,9 +44,10 @@ Team: @backstage/kubernetes-maintainers
 
 Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
-| Name           | Organization | Team | GitHub                                   | Discord      |
-| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
-| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
+| Name           | Organization | Team | GitHub                                         | Discord           |
+| -------------- | ------------ | ---- | ---------------------------------------------- | ----------------- |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47)       | mclarke#0725      |
+| Jamie Klassen  | VMware       |      | [jamieklassen](http://github.com/jamieklassen) | jamieklassen#3047 |
 
 ### TechDocs
 
