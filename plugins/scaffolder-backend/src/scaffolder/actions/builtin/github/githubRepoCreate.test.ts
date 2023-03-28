@@ -28,6 +28,7 @@ import {
 import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
+import { familiarizeEntityName } from '../helpers';
 
 const mockOctokit = {
   rest: {
@@ -83,14 +84,16 @@ describe('github:repo:create', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoCreateAction({
       integrations,
       githubCredentialsProvider,
     });
+    (familiarizeEntityName as jest.Mock).mockImplementation((s: string) => s);
   });
+
+  afterEach(jest.resetAllMocks);
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({

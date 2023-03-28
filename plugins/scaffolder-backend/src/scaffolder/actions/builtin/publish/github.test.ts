@@ -90,7 +90,6 @@ describe('publish:github', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createPublishGithubAction({
@@ -104,6 +103,8 @@ describe('publish:github', () => {
       realFamiliarizeEntityName,
     );
   });
+
+  afterEach(jest.resetAllMocks);
 
   it('should fail to create if the team is not found in the org', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
