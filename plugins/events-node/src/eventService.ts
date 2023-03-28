@@ -22,10 +22,6 @@ import {
 import { EventBroker } from './api/EventBroker';
 import { InMemoryEventBroker } from './api/InMemoryEventBroker';
 
-export interface EventFactoryOptions {
-  eventBroker: EventBroker;
-}
-
 /**
  * A service to publish and subscribe to events.
  * @alpha
@@ -33,14 +29,13 @@ export interface EventFactoryOptions {
 export const eventServiceRef = createServiceRef<EventBroker>({
   id: 'events',
   defaultFactory: async service =>
-    createServiceFactory((options?: EventFactoryOptions) => ({
+    createServiceFactory({
       service,
       deps: {
         logger: coreServices.logger,
       },
       async factory({ logger }) {
-        // need to update events-backend to use this service
-        return options?.eventBroker ?? new InMemoryEventBroker(logger);
+        return new InMemoryEventBroker(logger);
       },
-    })),
+    }),
 });
