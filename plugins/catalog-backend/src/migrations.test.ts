@@ -239,4 +239,69 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20230328132101_deliveries.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20230328132101_deliveries.js');
+
+      // TODO(freben): Add legacy-format data and make sure it's migrated to the new tables
+
+      await migrateUpOnce(knex);
+
+      // Should handle large blobs
+      await knex
+        .insert({
+          etag: 'a',
+          touched_at: knex.fn.now(),
+          data: 'b'.repeat(100000),
+        })
+        .into('blobs');
+      await expect(knex('blobs')).resolves.toEqual([
+        {
+          etag: 'a',
+          touched_at: expect.anything(),
+          data: 'b'.repeat(100000),
+        },
+      ]);
+
+      await knex
+        .insert({
+          provider_name: 'p',
+          action: 'upsert',
+          started_at: knex.fn.now(),
+          ended_at: knex.fn.now(),
+        })
+        .into('deliveries');
+      const deliveryId = await knex
+        .from('deliveries')
+        .max('id', { as: 'id' })
+        .first()
+        .then(r => r.id);
+
+      await knex
+        .insert({
+          delivery_id: deliveryId,
+          value: 'v',
+          blob_etag: 'a',
+        })
+        .into('delivery_entries');
+
+      await expect(
+        knex
+          .insert({
+            delivery_id: deliveryId,
+            value: 'v',
+            blob_etag: 'not-a-valid-blob',
+          })
+          .into('delivery_entries'),
+      ).rejects.toThrow(/FOREIGN/i);
+
+      await migrateDownOnce(knex);
+
+      await knex.destroy();
+    },
+  );
 });
