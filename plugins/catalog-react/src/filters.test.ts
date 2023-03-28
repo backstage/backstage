@@ -161,7 +161,7 @@ describe('EntityOwnerFilter', () => {
     expect(filter.values).toStrictEqual(['group:default/my-user']);
   });
 
-  it('should also handle full entityRefs', () => {
+  it('should handle full entityRefs', () => {
     const filter = new EntityOwnerFilter(['group:default/my-user']);
     expect(
       filter.filterEntity({
@@ -176,7 +176,7 @@ describe('EntityOwnerFilter', () => {
     expect(filter.values).toStrictEqual(['group:default/my-user']);
   });
 
-  it('should also gracefully reject non-entity refs', () => {
+  it('should gracefully reject non-entity refs', () => {
     const filter = new EntityOwnerFilter(['group:default/my-user', '']);
     expect(
       filter.filterEntity({
@@ -189,5 +189,20 @@ describe('EntityOwnerFilter', () => {
       } as Entity),
     ).toBeTruthy();
     expect(filter.values).toStrictEqual(['group:default/my-user']);
+  });
+
+  it('should handle non group full entity refs', () => {
+    const filter = new EntityOwnerFilter(['user:default/my-user', '']);
+    expect(
+      filter.filterEntity({
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'user:default/my-user',
+          },
+        ],
+      } as Entity),
+    ).toBeTruthy();
+    expect(filter.values).toStrictEqual(['user:default/my-user']);
   });
 });
