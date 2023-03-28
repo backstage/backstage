@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  EventBroker,
-  EventParams,
-  EventSubscriber,
-} from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventBroker } from './EventBroker';
+import { EventParams } from './EventParams';
+import { EventSubscriber } from './EventSubscriber';
 
 /**
  * In-memory event broker which will pass the event to all registered subscribers
@@ -28,7 +26,7 @@ import { Logger } from 'winston';
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
 export class InMemoryEventBroker implements EventBroker {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: LoggerService) {}
 
   private readonly subscribers: {
     [topic: string]: EventSubscriber[];

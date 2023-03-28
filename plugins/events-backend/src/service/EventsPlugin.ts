@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  eventServiceRef,
   eventsExtensionPoint,
   EventsExtensionPoint,
 } from '@backstage/plugin-events-node/alpha';
@@ -29,7 +30,6 @@ import {
   EventSubscriber,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
-import { InMemoryEventBroker } from './InMemoryEventBroker';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
 
@@ -92,8 +92,9 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.config,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
+        eventService: eventServiceRef,
       },
-      async init({ config, logger, router }) {
+      async init({ config, logger, router, eventService }) {
         const winstonLogger = loggerToWinstonLogger(logger);
 
         const ingresses = Object.fromEntries(
@@ -112,13 +113,10 @@ export const eventsPlugin = createBackendPlugin({
         http.bind(eventsRouter);
         router.use(eventsRouter);
 
-        const eventBroker =
-          extensionPoint.eventBroker ?? new InMemoryEventBroker(winstonLogger);
-
-        eventBroker.subscribe(extensionPoint.subscribers);
+        eventService.subscribe(extensionPoint.subscribers);
         [extensionPoint.publishers, http]
           .flat()
-          .forEach(publisher => publisher.setEventBroker(eventBroker));
+          .forEach(publisher => publisher.setEventBroker(eventService));
       },
     });
   },

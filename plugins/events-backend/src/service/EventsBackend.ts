@@ -18,9 +18,9 @@ import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
+  InMemoryEventBroker,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { InMemoryEventBroker } from './InMemoryEventBroker';
 
 /**
  * A builder that helps wire up all component parts of the event management.
