@@ -235,6 +235,55 @@ describe('KubernetesFetcher', () => {
         ],
       });
     });
+    it('localKubectlProxy authProvider fetches resources correctly', async () => {
+      worker.use(
+        rest.get(
+          'http://localhost:9999/k8s/clusters/1234/api/v1/services',
+          (req, res, ctx) =>
+            res(
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'service-name' } }],
+              }),
+            ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999/k8s/clusters/1234',
+          authProvider: 'localKubectlProxy',
+        },
+        objectTypesToFetch: new Set([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'services',
+            objectType: 'services',
+          },
+        ]),
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'services',
+            resources: [
+              {
+                metadata: {
+                  name: 'service-name',
+                  labels: { 'backstage.io/kubernetes-id': 'some-service' },
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
     it('should return pods, services', async () => {
       worker.use(
         rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) =>
