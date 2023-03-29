@@ -28,7 +28,7 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const googleAuthToken: string = await this.getBearerToken();
+    const googleAuthToken: string = (await this.getCredentials()).token;
     if ('auth' in requestBody) {
       requestBody.auth!.google = googleAuthToken;
     } else {
@@ -36,9 +36,11 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
     }
     return requestBody;
   }
-  async getBearerToken(): Promise<string> {
-    return await this.authProvider.getAccessToken(
-      'https://www.googleapis.com/auth/cloud-platform',
-    );
+  async getCredentials(): Promise<{ token: string }> {
+    return {
+      token: await this.authProvider.getAccessToken(
+        'https://www.googleapis.com/auth/cloud-platform',
+      ),
+    };
   }
 }

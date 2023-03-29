@@ -92,12 +92,12 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     );
   }
 
-  async getBearerToken(authProvider: string): Promise<string> {
+  async getCredentials(authProvider: string): Promise<{ token: string }> {
     const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
       this.kubernetesAuthProviderMap.get(authProvider);
 
     if (kubernetesAuthProvider) {
-      return await kubernetesAuthProvider.getBearerToken();
+      return await kubernetesAuthProvider.getCredentials();
     }
 
     if (authProvider.startsWith('oidc.')) {

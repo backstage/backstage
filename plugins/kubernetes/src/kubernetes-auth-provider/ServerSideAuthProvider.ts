@@ -32,7 +32,7 @@ export class ServerSideKubernetesAuthProvider
     return requestBody;
   }
 
-  async getBearerToken(): Promise<string> {
-    return '';
+  async getCredentials(): Promise<{ token: string }> {
+    return { token: '' };
   }
 }

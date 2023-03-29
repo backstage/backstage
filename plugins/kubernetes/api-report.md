@@ -185,7 +185,9 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
-  getBearerToken(): Promise<string>;
+  getCredentials(): Promise<{
+    token: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "GroupedResponses" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -290,7 +292,9 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
-  getBearerToken(authProvider: string): Promise<string>;
+  getCredentials(authProvider: string): Promise<{
+    token: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesAuthProvidersApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -303,7 +307,9 @@ export interface KubernetesAuthProvidersApi {
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
-  getBearerToken(authProvider: string): Promise<string>;
+  getCredentials(authProvider: string): Promise<{
+    token: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesAuthProvidersApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -436,7 +442,9 @@ export class ServerSideKubernetesAuthProvider
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
-  getBearerToken(): Promise<string>;
+  getCredentials(): Promise<{
+    token: string;
+  }>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ServicesAccordionsProps" needs to be exported by the entry point index.d.ts

@@ -87,8 +87,10 @@ export class KubernetesBackendClient implements KubernetesApi {
     return cluster;
   }
 
-  private async getBearerToken(authProvider: string): Promise<string> {
-    return await this.kubernetesAuthProvidersApi.getBearerToken(authProvider);
+  private async getCredentials(
+    authProvider: string,
+  ): Promise<{ token: string }> {
+    return await this.kubernetesAuthProvidersApi.getCredentials(authProvider);
   }
 
   async getObjectsByEntity(
@@ -138,25 +140,20 @@ export class KubernetesBackendClient implements KubernetesApi {
     init?: RequestInit;
   }): Promise<Response> {
     const { authProvider } = await this.getCluster(options.clusterName);
-    const k8sToken = await this.getBearerToken(authProvider);
+    const { token: k8sToken } = await this.getCredentials(authProvider);
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
       options.path
     }`;
     const identityResponse = await this.identityApi.getCredentials();
-    const headers = identityResponse.token
-      ? {
-          ...options.init?.headers,
-          [`Backstage-Kubernetes-Cluster`]: options.clusterName,
-          [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
-          Authorization: `Bearer ${identityResponse.token}`,
-        }
-      : {
-          ...options.init?.headers,
-          [`Backstage-Kubernetes-Cluster`]: options.clusterName,
-          [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
-        };
-    const response = await fetch(url, { ...options.init, headers });
+    const headers = {
+      ...options.init?.headers,
+      [`Backstage-Kubernetes-Cluster`]: options.clusterName,
+      [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+      ...(identityResponse.token && {
+        Authorization: `Bearer ${identityResponse.token}`,
+      }),
+    };
 
-    return this.handleResponse(response);
+    return await fetch(url, { ...options.init, headers });
   }
 }
