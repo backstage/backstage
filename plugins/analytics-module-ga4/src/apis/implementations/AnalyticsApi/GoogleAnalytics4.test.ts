@@ -1,3 +1,18 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { ConfigReader } from '@backstage/config';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import ReactGA from 'react-ga4';
@@ -19,12 +34,6 @@ fnSet.mockImplementation((fieldObject: any) => {
   return;
 });
 
-const fnSend = jest.spyOn(ReactGA, 'send');
-// @ts-ignore
-fnSend.mockImplementation((fieldObject: any) => {
-  return;
-});
-
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -38,7 +47,9 @@ describe('GoogleAnalytics4', () => {
   };
   const measurementId = 'G-000000-0';
   const basicValidConfig = new ConfigReader({
-    app: { analytics: { ga4: { measurementId: measurementId, testMode: true } } },
+    app: {
+      analytics: { ga4: { measurementId: measurementId, testMode: true } },
+    },
   });
 
   describe('fromConfig', () => {
@@ -59,9 +70,10 @@ describe('GoogleAnalytics4', () => {
         subject: '/',
         context,
       });
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/',
+        category: 'App',
       });
     });
   });
@@ -107,6 +119,19 @@ describe('GoogleAnalytics4', () => {
       },
     });
 
+    const allowAllContextsAndAttrsConfig = new ConfigReader({
+      app: {
+        analytics: {
+          ga4: {
+            measurementId: measurementId,
+            testMode: true,
+            allowedContexts: ['*'],
+            allowedAttributes: ['*'],
+          },
+        },
+      },
+    });
+
     it('testing content grouping', () => {
       const api = GoogleAnalytics4.fromConfig(configWithContentGrouping);
       api.captureEvent({
@@ -115,9 +140,11 @@ describe('GoogleAnalytics4', () => {
         context,
       });
 
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/a-page',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/a-page',
+        category: 'App',
+        value: undefined,
         content_group: context.pluginId,
       });
     });
@@ -133,12 +160,11 @@ describe('GoogleAnalytics4', () => {
         value: expectedValue,
         context,
       });
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'event',
-        eventAction: 'search',
-        eventCategory: 'App',
-        eventLabel: 'search-term',
-        eventValue: 42,
+      expect(fnEvent).toHaveBeenCalledWith('search', {
+        action: 'search',
+        category: 'App',
+        label: 'search-term',
+        value: 42,
         search_term: 'search-term',
       });
     });
@@ -156,12 +182,11 @@ describe('GoogleAnalytics4', () => {
         context,
       });
 
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'event',
-        eventCategory: context.extension,
-        eventAction: expectedAction,
-        eventLabel: expectedLabel,
-        eventValue: expectedValue,
+      expect(fnEvent).toHaveBeenCalledWith('click', {
+        action: 'click',
+        category: context.extension,
+        label: 'on something',
+        value: expectedValue,
       });
     });
 
@@ -173,11 +198,38 @@ describe('GoogleAnalytics4', () => {
         context,
       });
 
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/a-page',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/a-page',
+        category: 'App',
+        value: undefined,
         c_pluginId: context.pluginId,
         c_releaseNum: context.releaseNum,
+      });
+    });
+
+    it('captures all dimensions/metrics on pageviews', () => {
+      const api = GoogleAnalytics4.fromConfig(allowAllContextsAndAttrsConfig);
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/a-page',
+        context,
+        attributes: {
+          'attr-1': 'attr-value-1',
+          'attr-2': 'attr-value-2',
+        },
+      });
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        category: 'App',
+        label: '/a-page',
+        value: undefined,
+        c_pluginId: context.pluginId,
+        c_releaseNum: context.releaseNum,
+        c_routeRef: context.routeRef,
+        c_extension: context.extension,
+        'a_attr-1': 'attr-value-1',
+        'a_attr-2': 'attr-value-2',
       });
     });
 
@@ -198,12 +250,11 @@ describe('GoogleAnalytics4', () => {
         context,
       });
 
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'event',
-        eventCategory: context.extension,
-        eventAction: expectedAction,
-        eventLabel: expectedLabel,
-        eventValue: expectedValue,
+      expect(fnEvent).toHaveBeenCalledWith('search', {
+        action: 'search',
+        category: context.extension,
+        label: expectedLabel,
+        value: expectedValue,
         c_pluginId: context.pluginId,
         c_releaseNum: context.releaseNum,
         search_term: expectedLabel,
@@ -223,9 +274,9 @@ describe('GoogleAnalytics4', () => {
       });
 
       expect(fnEvent).not.toHaveBeenCalledWith({
-        eventCategory: context.extension,
-        eventAction: 'verb',
-        eventLabel: 'noun',
+        category: context.extension,
+        action: 'verb',
+        label: 'noun',
         c_pluginId: context.pluginId,
         c_releaseNum: context.releaseNum,
         c_extraMetric: 'not a number',
@@ -262,7 +313,11 @@ describe('GoogleAnalytics4', () => {
       const optionalConfig = new ConfigReader({
         app: {
           analytics: {
-            ga4: { measurementId: measurementId, testMode: true, identity: 'optional' },
+            ga4: {
+              measurementId: measurementId,
+              testMode: true,
+              identity: 'optional',
+            },
           },
         },
       });
@@ -288,7 +343,11 @@ describe('GoogleAnalytics4', () => {
       const optionalConfig = new ConfigReader({
         app: {
           analytics: {
-            ga4: { measurementId: measurementId, testMode: true, identity: 'optional' },
+            ga4: {
+              measurementId: measurementId,
+              testMode: true,
+              identity: 'optional',
+            },
           },
         },
       });
@@ -317,7 +376,11 @@ describe('GoogleAnalytics4', () => {
       const disabledConfig = new ConfigReader({
         app: {
           analytics: {
-            ga4: { measurementId: measurementId, testMode: true, identity: 'disabled' },
+            ga4: {
+              measurementId: measurementId,
+              testMode: true,
+              identity: 'disabled',
+            },
           },
         },
       });
@@ -332,9 +395,11 @@ describe('GoogleAnalytics4', () => {
       await new Promise(resolve => setTimeout(resolve));
 
       // A pageview should have been fired immediately.
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/',
+        category: 'App',
+        value: undefined,
       });
 
       // There should not have been a UserID set.
@@ -346,7 +411,11 @@ describe('GoogleAnalytics4', () => {
       const requiredConfig = new ConfigReader({
         app: {
           analytics: {
-            ga4: { measurementId: measurementId, testMode: true, identity: 'required' },
+            ga4: {
+              measurementId: measurementId,
+              testMode: true,
+              identity: 'required',
+            },
           },
         },
       });
@@ -359,7 +428,11 @@ describe('GoogleAnalytics4', () => {
       const requiredConfig = new ConfigReader({
         app: {
           analytics: {
-            ga4: { measurementId: measurementId, testMode: true, identity: 'required' },
+            ga4: {
+              measurementId: measurementId,
+              testMode: true,
+              identity: 'required',
+            },
           },
         },
       });
@@ -387,20 +460,21 @@ describe('GoogleAnalytics4', () => {
       });
 
       // Then a pageview should have been fired with a queue time.
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/',
         timestamp_micros: expect.any(Number),
+        value: undefined,
+        category: 'App',
       });
 
       // Then an event should have been fired with a queue time.
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'event',
+      expect(fnEvent).toHaveBeenCalledWith('test', {
+        action: 'test',
         timestamp_micros: expect.any(Number),
-        eventAction: 'test',
-        eventCategory: 'App',
-        eventLabel: 'some label',
-        eventValue: undefined,
+        label: 'some label',
+        category: 'App',
+        value: undefined,
       });
 
       // And subsequent hits should not have a queue time.
@@ -410,9 +484,11 @@ describe('GoogleAnalytics4', () => {
         context,
       });
 
-      expect(fnSend).toHaveBeenCalledWith({
-        hitType: 'pageview',
-        page: '/page-2',
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/page-2',
+        category: 'App',
+        value: undefined,
       });
     });
   });

@@ -1,15 +1,28 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import ReactGA from 'react-ga4';
 
 import { UaEventOptions } from 'react-ga4/types/ga4';
 
 type Hit = {
+  hitType: string;
   data: {
-    hitType: 'pageview' | 'event';
     [x: string]: any;
   };
 };
-
-const PageViewEvent = 'pageview';
 
 /**
  * A wrapper around ReactGA that can optionally handle latent capture logic.
@@ -47,32 +60,6 @@ export class DeferredCapture {
   }
 
   /**
-   * Either forwards the pageview directly to GA, or (if configured) enqueues
-   * the pageview hit to be captured when ready.
-   * @param path pageview path
-   * @param metadata any object that can be passed as additional parameter to the event
-   */
-  pageview(path: string, metadata: any = {}) {
-    if (this.queue) {
-      this.queue.push({
-        data: {
-          hitType: PageViewEvent,
-          timestamp_micros: Date.now() * 1000,
-          page: path,
-          ...metadata,
-        },
-      });
-      return;
-    }
-
-    ReactGA.send({
-      hitType: PageViewEvent,
-      page: path,
-      ...metadata,
-    });
-  }
-
-  /**
    * Either forwards the event directly to GA, or (if configured) enqueues the
    * event hit to be captured when ready.
    * @param eventDetails type of UaEventOptions object
@@ -80,15 +67,12 @@ export class DeferredCapture {
    */
   event(eventDetails: UaEventOptions, metadata: any = {}) {
     const data = {
-      hitType: 'event',
-      eventCategory: eventDetails.category,
-      eventLabel: eventDetails.label!,
-      eventAction: eventDetails.action,
-      eventValue: eventDetails.value,
+      ...eventDetails,
       ...metadata,
     };
     if (this.queue) {
       this.queue.push({
+        hitType: eventDetails.action,
         data: {
           ...data,
           timestamp_micros: Date.now() * 1000,
@@ -96,7 +80,7 @@ export class DeferredCapture {
       });
       return;
     }
-    ReactGA.send(data);
+    ReactGA.event(eventDetails.action, data);
   }
 
   /**
@@ -105,7 +89,7 @@ export class DeferredCapture {
    */
   private sendDeferred(hit: Hit) {
     // Send the hit with the appropriate queue time (`qt`).
-    ReactGA.send({
+    ReactGA.event(hit.hitType, {
       ...hit.data,
     });
   }

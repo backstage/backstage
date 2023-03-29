@@ -62,9 +62,8 @@ backend:
 
 ## Configuration
 
-In order to be able to analyze usage of your Backstage instance _by plugin_, we
-strongly recommend configuring at least one [custom dimension][what-is-a-custom-dimension]
-to capture Plugin IDs associated with events, including page views.
+In order to be able to analyze usage of your Backstage instance by plugin, we recommend configuring [a content grouping](#enabling-content-grouping).
+Additional dimensional data can be captured using custom dimensions, like this:
 
 1. First, [configure the custom dimension in GA] [configure-custom-dimension].
    Be sure to set the Scope to `Event`, and name it `dimension1`.

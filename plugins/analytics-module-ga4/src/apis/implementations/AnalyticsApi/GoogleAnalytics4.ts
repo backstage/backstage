@@ -1,3 +1,18 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import ReactGA from 'react-ga4';
 import {
   AnalyticsApi,
@@ -7,7 +22,7 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
-import { DeferredCapture } from '../../../util';
+import { DeferredCapture } from '../../../util/DeferredCapture';
 
 /**
  * Google Analytics API provider for the Backstage Analytics API.
@@ -21,7 +36,6 @@ export class GoogleAnalytics4 implements AnalyticsApi {
   private readonly contentGroupBy?: string;
   private readonly allowedContexts?: string[];
   private readonly allowedAttributes?: string[];
-
   /**
    * Instantiate the implementation and initialize ReactGA.
    * @param options initializes Google Analytics module with the config
@@ -60,9 +74,8 @@ export class GoogleAnalytics4 implements AnalyticsApi {
     });
 
     this.contentGroupBy = contentGroupBy;
-    this.allowedContexts = allowedContexts;
     this.allowedAttributes = allowedAttributes;
-
+    this.allowedContexts = allowedContexts;
     // If identity is required, defer event capture until identity is known.
     this.capture = new DeferredCapture({ defer: identity === 'required' });
 
@@ -82,8 +95,8 @@ export class GoogleAnalytics4 implements AnalyticsApi {
 
   /**
    * Instantiate a fully configured GA Analytics API implementation.
-   * @param config - Config object from app config
-   * @param options - options with identityApi and userIdTransform config
+   * @param config Config object from app config
+   * @param options options with identityApi and userIdTransform config
    */
   static fromConfig(
     config: Config,
@@ -135,7 +148,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
    * Primary event capture implementation. Handles core navigate event as a
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).
-   * @param event - AnalyticsEvent type captured
+   * @param event AnalyticsEvent type captured
    */
   captureEvent(event: AnalyticsEvent) {
     const { context, action, subject, value, attributes } = event;
@@ -145,7 +158,15 @@ export class GoogleAnalytics4 implements AnalyticsApi {
     }
 
     if (action === 'navigate' && context.extension === 'App') {
-      this.capture.pageview(subject, customEventData);
+      this.capture.event(
+        {
+          category: context.extension || 'App',
+          action: 'page_view',
+          label: subject,
+          value,
+        },
+        customEventData,
+      );
       return;
     }
 
@@ -178,17 +199,27 @@ export class GoogleAnalytics4 implements AnalyticsApi {
       [x: string]: string | number | boolean | undefined;
     } = {};
 
-    this.allowedContexts?.forEach(ctx => {
+    const contextKeys =
+      this.allowedContexts?.join('') === '*'
+        ? Object.keys(context)
+        : this.allowedContexts;
+
+    contextKeys?.forEach(ctx => {
       if (context[ctx]) {
         customEventParameters[`c_${ctx}`] = context[ctx];
       }
     });
 
-    this.allowedAttributes?.forEach(attr => {
+    const attrKeys =
+      this.allowedAttributes?.join('') === '*'
+        ? Object.keys(attributes)
+        : this.allowedAttributes;
+    attrKeys?.forEach(attr => {
       if (attributes[attr]) {
         customEventParameters[`a_${attr}`] = attributes[attr];
       }
     });
+
     return customEventParameters;
   }
 

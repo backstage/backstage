@@ -47,38 +47,6 @@ export interface Config {
         identity?: 'disabled' | 'optional' | 'required';
 
         /**
-         * Controls whether to send virtual pageviews on `search` events.
-         * Can be used to enable Site Search in GA.
-         */
-        virtualSearchPageView?: {
-          /**
-           * - `disabled`: (Default) no virtual pageviews are sent
-           * - `only`: Sends virtual pageview _instead_ of the `search` event
-           * - `both`: Sends both the `search` event _and_ the virtual pageview
-           * @visibility frontend
-           */
-          mode?: 'disabled' | 'only' | 'both';
-          /**
-           * Specifies on which path the main Search page is mounted.
-           * Defaults to `/search`.
-           * @visibility frontend
-           */
-          mountPath?: string;
-          /**
-           * Specifies which query param is used for the term query in the virtual pageview URL.
-           * Defaults to `query`.
-           * @visibility frontend
-           */
-          searchQuery?: string;
-          /**
-           * Specifies which query param is used for the category query in the virtual pageview URL.
-           * Skipped by default.
-           * @visibility frontend
-           */
-          categoryQuery?: string;
-        };
-
-        /**
          * Whether to log analytics debug statements to the console.
          * Defaults to false.
          *
@@ -114,14 +82,14 @@ export interface Config {
          * context-name will be prefixed by c_, for example, pluginId will be c_pluginId in the event.
          *
          */
-        allowedContexts?: Array<string>;
+        allowedContexts?: string[] | ['*'];
         /**
          *
          * Attributes that will be sent as parameters in the event
          * attribute-name will be prefixed by a_, for example , testAttribute will be c_testAttribute in the event.
          *
          */
-        allowedAttributes?: Array<string>;
+        allowedAttributes?: string[] | ['*'];
       };
     };
   };
