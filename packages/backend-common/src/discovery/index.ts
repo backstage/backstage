@@ -15,4 +15,5 @@
  */
 
 export { SingleHostDiscovery } from './SingleHostDiscovery';
+export { HostDiscovery } from './HostDiscovery';
 export type { PluginEndpointDiscovery } from './types';

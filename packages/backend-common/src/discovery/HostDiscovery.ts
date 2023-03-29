@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import { PluginEndpointDiscovery } from './types';
 import { readHttpServerOptions } from '@backstage/backend-app-api';
 
 /**
- * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
+ * HostDiscovery is a basic PluginEndpointDiscovery implementation
  * that assumes that all plugins are hosted in a single deployment.
  *
  * The deployment may be scaled horizontally, as long as the external URL
@@ -27,14 +27,16 @@ import { readHttpServerOptions } from '@backstage/backend-app-api';
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
- * @deprecated Use `HostDiscovery` instead
  */
-export class SingleHostDiscovery implements PluginEndpointDiscovery {
+
+export class HostDiscovery implements PluginEndpointDiscovery {
   /**
-   * Creates a new SingleHostDiscovery discovery instance by reading
+   * Creates a new HostDiscovery discovery instance by reading
    * from the `backend` config section, specifically the `.baseUrl` for
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
+   *
+   * Can be overridden by in config by providing a `backend.discovery` section with a `<pluginId>` key.
    *
    * The basePath defaults to `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
@@ -64,22 +66,32 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
 
     const internalBaseUrl = `${protocol}://${host}:${listenPort}`;
 
-    return new SingleHostDiscovery(
+    return new HostDiscovery(
       internalBaseUrl + basePath,
       externalBaseUrl + basePath,
+      config.getOptionalConfig('backend.discovery'),
     );
   }
 
   private constructor(
     private readonly internalBaseUrl: string,
     private readonly externalBaseUrl: string,
+    private readonly discoveryConfig: Config | undefined,
   ) {}
 
   async getBaseUrl(pluginId: string): Promise<string> {
+    if (this.discoveryConfig?.has(pluginId)) {
+      return this.discoveryConfig.getString(pluginId);
+    }
+
     return `${this.internalBaseUrl}/${pluginId}`;
   }
 
   async getExternalBaseUrl(pluginId: string): Promise<string> {
+    if (this.discoveryConfig?.has(pluginId)) {
+      return this.discoveryConfig.getString(pluginId);
+    }
+
     return `${this.externalBaseUrl}/${pluginId}`;
   }
 }
