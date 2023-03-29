@@ -27,8 +27,15 @@ export interface ReadConfigDataOptions {
   signal?: AbortSignal;
 }
 
+export interface AsyncConfigSourceIterator
+  extends AsyncIterator<{ data: ConfigSourceData[] }, void, void> {
+  [Symbol.asyncIterator](): AsyncIterator<
+    { data: ConfigSourceData[] },
+    void,
+    void
+  >;
+}
+
 export interface ConfigSource {
-  readConfigData(
-    options?: ReadConfigDataOptions,
-  ): AsyncIterator<{ data: ConfigSourceData[] }, void, void>;
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
 }

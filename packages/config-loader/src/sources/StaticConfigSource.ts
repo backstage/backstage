@@ -15,47 +15,112 @@
  */
 
 import { JsonObject, Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
-import { ConfigSource, ConfigSourceData } from './types';
+import {
+  AsyncConfigSourceIterator,
+  ConfigSource,
+  ReadConfigDataOptions,
+} from './types';
+import { simpleDefer } from './utils';
+
+export interface StaticConfigSourceOptions {
+  data:
+    | JsonObject
+    | Observable<JsonObject>
+    | PromiseLike<JsonObject>
+    | AsyncIterable<JsonObject>;
+  context?: string;
+}
+
+/** @internal */
+class StaticObservableConfigSource implements ConfigSource {
+  constructor(
+    private readonly data: Observable<JsonObject>,
+    private readonly context: string,
+  ) {}
+
+  async *readConfigData(
+    options?: ReadConfigDataOptions | undefined,
+  ): AsyncConfigSourceIterator {
+    const queue = new Array<JsonObject>();
+    let deferred = simpleDefer<void>();
+
+    const sub = this.data.subscribe({
+      next(value) {
+        queue.push(value);
+        deferred.resolve();
+        deferred = simpleDefer();
+      },
+      complete() {
+        queue.length = 0;
+        deferred.resolve();
+      },
+    });
+
+    options?.signal?.addEventListener('abort', () => {
+      sub.unsubscribe();
+      queue.length = 0;
+      deferred.resolve();
+    });
+
+    for (;;) {
+      await deferred.promise;
+      if (queue.length === 0) {
+        return;
+      }
+      while (queue.length > 0) {
+        yield { data: [{ data: queue.shift()!, context: this.context }] };
+      }
+    }
+  }
+}
+
+function isObservable<T>(value: {}): value is Observable<T> {
+  return 'subscribe' in value && typeof (value as any).subscribe === 'function';
+}
+
+function isAsyncIterable<T>(value: {}): value is AsyncIterable<T> {
+  return Symbol.asyncIterator in value;
+}
 
 export class StaticConfigSource implements ConfigSource {
-  static create(options: {
-    data: JsonObject | Observable<JsonObject> | Promise<JsonObject>;
-    context?: string;
-  }): ConfigSource {
+  static create(options: StaticConfigSourceOptions): ConfigSource {
     const { data, context = 'static-config' } = options;
     if (!data) {
-      return new StaticConfigSource(ObservableImpl.of({}), context);
+      return {
+        async *readConfigData(): AsyncConfigSourceIterator {
+          yield { data: [] };
+          return;
+        },
+      };
     }
 
-    if ('subscribe' in data && typeof data.subscribe === 'function') {
-      return new StaticConfigSource(
-        ObservableImpl.from(data as Observable<JsonObject>),
-        context,
-      );
-    }
-    if ('then' in data && typeof data.then === 'function') {
-      return new StaticConfigSource(
-        new ObservableImpl(subscriber => {
-          (data as Promise<JsonObject>).then(
-            value => subscriber.next(value),
-            error => subscriber.error(error),
-          );
-          return () => {};
-        }),
+    if (isObservable(data)) {
+      return new StaticObservableConfigSource(
+        data as Observable<JsonObject>,
         context,
       );
     }
 
-    return new StaticConfigSource(
-      ObservableImpl.of(data as JsonObject),
-      context,
-    );
+    if (isAsyncIterable(data)) {
+      return {
+        async *readConfigData(): AsyncConfigSourceIterator {
+          for await (const value of data) {
+            yield { data: [{ data: value, context }] };
+          }
+        },
+      };
+    }
+
+    return new StaticConfigSource(data, context);
   }
 
-  readonly data$: Observable<ConfigSourceData[]>;
+  private constructor(
+    private readonly promise: JsonObject | PromiseLike<JsonObject>,
+    private readonly context: string,
+  ) {}
 
-  private constructor(observable: ObservableImpl<JsonObject>, context: string) {
-    this.data$ = observable.map(data => [{ context, data }]);
+  async *readConfigData(): AsyncConfigSourceIterator {
+    yield { data: [{ data: await this.promise, context: this.context }] };
+    return;
   }
 }

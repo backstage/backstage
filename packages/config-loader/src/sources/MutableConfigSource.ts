@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { JsonObject, Observable } from '@backstage/types';
-import { SimpleBehaviorSubject } from './SimpleBehaviorSubject';
-import { ConfigSource, ConfigSourceData } from './types';
+import { JsonObject } from '@backstage/types';
+import {
+  AsyncConfigSourceIterator,
+  ConfigSource,
+  ReadConfigDataOptions,
+} from './types';
+import { simpleDefer, SimpleDeferred, waitOrAbort } from './utils';
 
 export class MutableConfigSource implements ConfigSource {
   static create(options: { data: JsonObject; context?: string }): ConfigSource {
@@ -26,15 +30,34 @@ export class MutableConfigSource implements ConfigSource {
     );
   }
 
-  private subject: SimpleBehaviorSubject<JsonObject>;
-  readonly data$: Observable<ConfigSourceData[]>;
+  #currentData: JsonObject;
+  #deferred: SimpleDeferred<void>;
+  readonly #context: string;
 
   private constructor(initialData: JsonObject, context: string) {
-    this.subject = new SimpleBehaviorSubject(initialData);
-    this.data$ = this.subject.observable.map(data => [{ context, data }]);
+    this.#currentData = initialData;
+    this.#context = context;
+    this.#deferred = simpleDefer();
+  }
+
+  async *readConfigData(
+    options?: ReadConfigDataOptions | undefined,
+  ): AsyncConfigSourceIterator {
+    yield { data: [{ data: this.#currentData, context: this.#context }] };
+
+    for (;;) {
+      const [ok] = await waitOrAbort(this.#deferred.promise, options?.signal);
+      if (!ok) {
+        return;
+      }
+
+      yield { data: [{ data: this.#currentData, context: this.#context }] };
+    }
   }
 
   setData(data: JsonObject) {
-    this.subject.next(data);
+    this.#currentData = data;
+    this.#deferred.resolve();
+    this.#deferred = simpleDefer();
   }
 }

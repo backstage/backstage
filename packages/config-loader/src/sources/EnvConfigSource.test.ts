@@ -15,15 +15,29 @@
  */
 
 import { EnvConfigSource, readEnvConfig } from './EnvConfigSource';
-import ObservableImpl from 'zen-observable';
+import { ConfigSource, ConfigSourceData } from './types';
+
+async function readAll(source: ConfigSource) {
+  const entries = new Array<{ data: ConfigSourceData[] }>();
+  for await (const item of source.readConfigData()) {
+    entries.push(item);
+  }
+  return entries;
+}
 
 describe('EnvConfigSource', () => {
   it('should return empty config for empty env', async () => {
     const source = EnvConfigSource.create({ env: {} });
-    const spy = jest.fn();
-    await ObservableImpl.from(source.configData$).forEach(d => spy(d));
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ data: [] });
+
+    await expect(readAll(source)).resolves.toEqual([{ data: [] }]);
+  });
+
+  it('should forward config values', async () => {
+    const source = EnvConfigSource.create({ env: { APP_CONFIG_foo: 'bar' } });
+
+    await expect(readAll(source)).resolves.toEqual([
+      { data: [{ context: 'env', data: { foo: 'bar' } }] },
+    ]);
   });
 });
 

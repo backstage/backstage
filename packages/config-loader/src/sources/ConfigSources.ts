@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import ObservableImpl from 'zen-observable';
-import { LoadConfigOptionsRemote } from './loader';
-import parseArgs from 'minimist';
-import { ConfigSource, ConfigSourceData } from './types';
-import { RemoteConfigSource } from './RemoteConfigSource';
-import { FileConfigSource } from './FileConfigSource';
-import { EnvConfigSource } from './EnvConfigSource';
 import { Config, ConfigReader } from '@backstage/config';
+import parseArgs from 'minimist';
+import { EnvConfigSource } from './EnvConfigSource';
+import { FileConfigSource } from './FileConfigSource';
+import { MergeConfigSource } from './MergedConfigSource';
+import { RemoteConfigSource } from './RemoteConfigSource';
+import { ConfigSource } from './types';
+import { ObservableConfigProxy } from './ObservableConfigProxy';
+import { LoadConfigOptionsRemote } from '../loader';
 
 export class ConfigSources {
   static parseArgs(
@@ -62,46 +63,28 @@ export class ConfigSources {
   }
 
   static merge(sources: ConfigSource[]): ConfigSource {
-    return {
-      configData$: new ObservableImpl<ConfigSourceData[]>(observer => {
-        const dataArr = new Array<ConfigSourceData[]>(sources.length);
-        let gotAll = false;
-        const subscriptions = sources.map((source, i) =>
-          source.configData$.subscribe({
-            next({ data }) {
-              dataArr[i] = data;
-              if (gotAll || dataArr.every(Boolean)) {
-                gotAll = true;
-                observer.next(dataArr.flat(1));
-              }
-            },
-            error(error) {
-              observer.error(error);
-            },
-          }),
-        );
-        return () =>
-          subscriptions.forEach(subscription => subscription.unsubscribe());
-      }),
-    };
+    return MergeConfigSource.fromConfigSources(sources);
   }
 
   static toConfig(source: ConfigSource): Promise<LiveConfig> {
-    return new Promise((resolve, reject) => {
-      let config: Config | undefined = undefined;
-      source.configData$.subscribe({
-        next({ data }) {
+    return new Promise(async (resolve, reject) => {
+      let config: ObservableConfigProxy | undefined = undefined;
+      try {
+        const abortController = new AbortController();
+        for await (const { data } of source.readConfigData({
+          signal: abortController.signal,
+        })) {
           if (config) {
             config.setConfig(ConfigReader.fromConfigs(data));
           } else {
-            config = ConfigReader.fromConfigs(data);
+            config = ObservableConfigProxy.create(abortController);
+            config!.setConfig(ConfigReader.fromConfigs(data));
             resolve(config);
           }
-        },
-        error(error) {
-          reject(error);
-        },
-      });
+        }
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }
