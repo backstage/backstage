@@ -93,7 +93,6 @@ export class StackOverflowQuestionsCollatorFactory
     const apiAccessToken = config.getOptionalString(
       'stackoverflow.apiAccessToken',
     );
-    const pat = config.getOptionalString('stackoverflow.pat');
     const teamName = config.getOptionalString('stackoverflow.teamName');
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
