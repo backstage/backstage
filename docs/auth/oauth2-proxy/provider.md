@@ -80,3 +80,14 @@ const app = createApp({
 ```
 
 See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.
+
+## Signing out using the provider
+
+There is an optional config value `signOutUrl` within the `app-config.yaml` to enable the ability to sign out when using `oauth2Proxy`. Specifying this value will allow backstage to redirect to the sign out page of the authentication provider that is being used.
+
+```yaml title="app-config.yaml"
+app:
+  signOutUrl: http://localhost:4180/oauth2/sign_out?rd=http%3A%2F%2Fmy-provider.com%2Fend_session_endpoint
+```
+
+Note the above example has `oauth2Proxy` running on port 4180. There is also the requirement of using an encoded url for the redirect to the authentication provider's sign out page. The `end_session_endpoint` should be the end session endpoint of the provider.

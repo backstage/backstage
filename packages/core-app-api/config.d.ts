@@ -65,6 +65,12 @@ export interface Config {
         }>;
       }>;
     };
+
+    /**
+     * An optional sign out url that can be used with oauth2 proxy
+     * @visibility frontend
+     */
+    signOutUrl?: string;
   };
 
   /**

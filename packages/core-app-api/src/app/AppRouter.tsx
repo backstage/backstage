@@ -71,13 +71,14 @@ function SignInPageWrapper({
   const [identityApi, setIdentityApi] = useState<IdentityApi>();
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
+  const optionalSignOut = configApi.getOptionalString('app.signOutUrl');
 
   if (!identityApi) {
     return <Component onSignInSuccess={setIdentityApi} />;
   }
 
   appIdentityProxy.setTarget(identityApi, {
-    signOutTargetUrl: basePath || '/',
+    signOutTargetUrl: optionalSignOut || basePath || '/',
   });
   return <>{children}</>;
 }
