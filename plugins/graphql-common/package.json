@@ -34,7 +34,6 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@apollo/server": "^4.0.0",
     "@backstage/backend-common": "workspace:^",
     "@graphql-tools/code-file-loader": "^7.3.17",
     "@graphql-tools/graphql-file-loader": "^7.5.0",
@@ -45,21 +44,13 @@
     "@graphql-tools/utils": "^9.1.4",
     "dataloader": "^2.1.0",
     "graphql": "^16.6.0",
+    "graphql-modules": "^2.1.0",
     "lodash": "^4.17.21",
     "pascal-case": "^3.1.2",
-    "reflect-metadata": "^0.1.13",
-    "winston": "^3.2.1"
-  },
-  "peerDependencies": {
-    "graphql": ">15.0.0",
-    "graphql-modules": "^2.1.0",
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@effection/jest": "^2.0.4",
     "@envelop/core": "^3.0.4",
     "@envelop/dataloader": "^4.0.4",
@@ -71,9 +62,7 @@
     "@graphql-codegen/schema-ast": "^3.0.0",
     "@graphql-codegen/typescript": "^3.0.0",
     "@graphql-codegen/typescript-resolvers": "^3.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "effection": "^2.0.6",
-    "graphql-modules": "^2.1.0"
+    "effection": "^2.0.6"
   },
   "files": [
     "dist",
