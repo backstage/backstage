@@ -6790,6 +6790,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-graphql-catalog": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
+    "@envelop/core": ^3.0.6
     "@envelop/dataloader": ^4.0.4
     "@envelop/graphql-modules": ^4.0.4
     "@types/express": ^4.17.6
@@ -6839,10 +6840,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-graphql-common@workspace:plugins/graphql-common"
   dependencies:
-    "@apollo/server": ^4.0.0
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@effection/jest": ^2.0.4
     "@envelop/core": ^3.0.4
     "@envelop/dataloader": ^4.0.4
@@ -6861,7 +6860,6 @@ __metadata:
     "@graphql-tools/merge": ^8.3.15
     "@graphql-tools/schema": ^9.0.13
     "@graphql-tools/utils": ^9.1.4
-    "@types/react": ^16.13.1 || ^17.0.0
     dataloader: ^2.1.0
     effection: ^2.0.6
     graphql: ^16.6.0
@@ -6869,13 +6867,6 @@ __metadata:
     lodash: ^4.17.21
     pascal-case: ^3.1.2
     reflect-metadata: ^0.1.13
-    winston: ^3.2.1
-  peerDependencies:
-    graphql: ">15.0.0"
-    graphql-modules: ^2.1.0
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -10382,13 +10373,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:3.0.4, @envelop/core@npm:^3.0.4":
+"@envelop/core@npm:3.0.4":
   version: 3.0.4
   resolution: "@envelop/core@npm:3.0.4"
   dependencies:
     "@envelop/types": 3.0.1
     tslib: 2.4.0
   checksum: 87184b432e80f947d96119acd3e769bbaeb052324d84d2f4a3ae27e7bfb4f8f913c364055e7a5ca04ef48439181bc5762450920a299f882763a7e2f788c52818
+  languageName: node
+  linkType: hard
+
+"@envelop/core@npm:^3.0.4, @envelop/core@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@envelop/core@npm:3.0.6"
+  dependencies:
+    "@envelop/types": 3.0.2
+    tslib: ^2.5.0
+  checksum: ccc1d1964875a7be0771ad76f057689699ae398e74a6526c2f70d37a3770fb1cacb1356aaeaef3d17084042331161273c8e2d8e4713cc62fd7f4f770d8f8a5d3
   languageName: node
   linkType: hard
 
@@ -10436,6 +10437,15 @@ __metadata:
   dependencies:
     tslib: ^2.4.0
   checksum: f9e4ed76efc5b7fba09fe8fecaf589f0e03167683d2c8f18c290af03c6425a8bcf7e23bf699988469c63eb1e38dd91ac160ab753ec563ac5f4b26ba65d1a87b3
+  languageName: node
+  linkType: hard
+
+"@envelop/types@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@envelop/types@npm:3.0.2"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: 605e63bd3a0be3ec0f465735531b8575151f508d02c02e07213e5a30a740e74d0bf5827dcac86432ecf95b782f7bc82de806188dda5ba24407680c495012ebb9
   languageName: node
   linkType: hard
 
