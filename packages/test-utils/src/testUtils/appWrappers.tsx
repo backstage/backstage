@@ -208,7 +208,7 @@ export function wrapInTestApp(
 
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = React.createElement(Component as ComponentType);
   } else {
     wrappedElement = Component as React.ReactElement;
   }
@@ -233,7 +233,7 @@ export async function renderInTestApp(
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = React.createElement(Component as ComponentType);
   } else {
     wrappedElement = Component as React.ReactElement;
   }

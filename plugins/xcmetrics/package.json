@@ -33,7 +33,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "react-use": "^17.2.4",
-    "recharts": "^2.0.0"
+    "recharts": "^2.5.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",

@@ -172,8 +172,9 @@ export const PlaylistListProvider = <
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
-          const filter: PlaylistFilter | undefined =
-            requestedFilters[key as keyof PlaylistFilters];
+          const filter = requestedFilters[key as keyof PlaylistFilters] as
+            | PlaylistFilter
+            | undefined;
           if (filter?.toQueryValue) {
             params[key] = filter.toQueryValue();
           }

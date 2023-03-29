@@ -66,9 +66,6 @@ createDevApp()
             <EntityGridItem xs={12} md={6} entity={entity('passed')}>
               <EntitySonarQubeCard />
             </EntityGridItem>
-            <EntityGridItem xs={12} entity={entity(undefined)}>
-              <EntitySonarQubeCard />
-            </EntityGridItem>
           </Grid>
         </Content>
       </Page>
@@ -79,7 +76,7 @@ createDevApp()
     deps: {},
     factory: () =>
       ({
-        getFindingSummary: async componentKey => {
+        getFindingSummary: async ({ componentKey }) => {
           switch (componentKey) {
             case 'error':
               throw new Error('Error!');

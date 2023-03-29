@@ -769,10 +769,12 @@ export function useRouteRefParams<Params extends AnyParams>(
 ): Params;
 
 // @public
-export function withApis<T>(apis: TypesToApiRefs<T>): <P extends T>(
-  WrappedComponent: React_2.ComponentType<P>,
+export function withApis<T extends {}>(
+  apis: TypesToApiRefs<T>,
+): <TProps extends T>(
+  WrappedComponent: React_2.ComponentType<TProps>,
 ) => {
-  (props: React_2.PropsWithChildren<Omit<P, keyof T>>): JSX.Element;
+  (props: React_2.PropsWithChildren<Omit<TProps, keyof T>>): JSX.Element;
   displayName: string;
 };
 ```

@@ -75,8 +75,8 @@ export type ActionContext<
 
 /** @public */
 export type TemplateAction<
-  TActionInput = unknown,
-  TActionOutput = JsonObject,
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
 > = {
   id: string;
   description?: string;
