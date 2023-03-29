@@ -3470,7 +3470,7 @@ __metadata:
     http-errors: ^2.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
-    minimatch: ^5.1.1
+    minimatch: ^5.0.0
     minimist: ^1.2.5
     morgan: ^1.10.0
     node-forge: ^1.3.1
@@ -3552,7 +3552,7 @@ __metadata:
     lodash: ^4.17.21
     logform: ^2.3.2
     luxon: ^3.0.0
-    minimatch: ^5.1.1
+    minimatch: ^5.0.0
     minimist: ^1.2.5
     mock-fs: ^5.1.0
     morgan: ^1.10.0
@@ -4162,7 +4162,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
     eslint: ^8.33.0
-    minimatch: ^5.1.1
+    minimatch: ^5.1.2
   languageName: unknown
   linkType: soft
 
@@ -4611,7 +4611,7 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.1.1
+    minimatch: ^5.0.0
     morgan: ^1.10.0
     msw: ^1.0.0
     node-cache: ^5.1.2
@@ -5100,7 +5100,7 @@ __metadata:
     git-url-parse: ^13.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.1.1
+    minimatch: ^5.1.2
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
@@ -5299,7 +5299,7 @@ __metadata:
     knex: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.1.1
+    minimatch: ^5.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
@@ -30218,12 +30218,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1, minimatch@npm:^5.1.0, minimatch@npm:^5.1.1":
-  version: 5.1.2
-  resolution: "minimatch@npm:5.1.2"
+"minimatch@npm:^5.0.0, minimatch@npm:^5.0.1, minimatch@npm:^5.1.0, minimatch@npm:^5.1.1, minimatch@npm:^5.1.2":
+  version: 5.1.6
+  resolution: "minimatch@npm:5.1.6"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: 32ffda25b9fb8270a1c1beafdb7489dc0e411af553495136509a945691f63c9b6b000eeeaaf8bffe3efa609c1d6d3bc0f5a106f6c3443b5c05da649100ded964
+  checksum: 7564208ef81d7065a370f788d337cd80a689e981042cb9a1d0e6580b6c6a8c9279eba80010516e258835a988363f99f54a6f711a315089b8b42694f5da9d0d77
   languageName: node
   linkType: hard
 
