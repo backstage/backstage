@@ -203,13 +203,25 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+  };
 
+  /** Discovery options. */
+  discovery?: {
     /**
-     * Discovery options.
+     * Endpoints
      *
-     * The keys are the plugin IDs, and the values are their endpoint URLs which
-     * will be used by `HostDiscovery` implementation.
+     * A list of target baseUrls and the associated plugins.
      */
-    discovery?: { [pluginId: string]: string };
+    endpoints: {
+      /**
+       * The target baseUrl to use for the plugin
+       *
+       * Can be either a string or an object with internal and external keys.
+       * Targets with `{pluginId}` in the url will be replaced with the pluginId.
+       */
+      target: string | { internal: string; external: string };
+      /** Array of plugins which use the target baseUrl. */
+      plugins: string[];
+    }[];
   };
 }

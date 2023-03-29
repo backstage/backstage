@@ -18,6 +18,8 @@ import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from './types';
 import { readHttpServerOptions } from '@backstage/backend-app-api';
 
+type Target = string | { internal: string; external: string };
+
 /**
  * HostDiscovery is a basic PluginEndpointDiscovery implementation
  * that assumes that all plugins are hosted in a single deployment.
@@ -28,7 +30,6 @@ import { readHttpServerOptions } from '@backstage/backend-app-api';
  *
  * @public
  */
-
 export class HostDiscovery implements PluginEndpointDiscovery {
   /**
    * Creates a new HostDiscovery discovery instance by reading
@@ -79,17 +80,39 @@ export class HostDiscovery implements PluginEndpointDiscovery {
     private readonly discoveryConfig: Config | undefined,
   ) {}
 
+  private getTargetFromConfig(pluginId: string, type: 'internal' | 'external') {
+    const endpoints = this.discoveryConfig?.getOptionalConfigArray('endpoints');
+
+    const target = endpoints
+      ?.find(endpoint => endpoint.getStringArray('plugins').includes(pluginId))
+      ?.get<Target>('target');
+
+    if (!target) {
+      return null;
+    }
+
+    if (typeof target === 'string') {
+      return target.replace('{pluginId}', pluginId);
+    }
+
+    return target[type].replace('{pluginId}', pluginId);
+  }
+
   async getBaseUrl(pluginId: string): Promise<string> {
-    if (this.discoveryConfig?.has(pluginId)) {
-      return this.discoveryConfig.getString(pluginId);
+    const target = this.getTargetFromConfig(pluginId, 'internal');
+
+    if (target) {
+      return target;
     }
 
     return `${this.internalBaseUrl}/${pluginId}`;
   }
 
   async getExternalBaseUrl(pluginId: string): Promise<string> {
-    if (this.discoveryConfig?.has(pluginId)) {
-      return this.discoveryConfig.getString(pluginId);
+    const target = this.getTargetFromConfig(pluginId, 'external');
+
+    if (target) {
+      return target;
     }
 
     return `${this.externalBaseUrl}/${pluginId}`;

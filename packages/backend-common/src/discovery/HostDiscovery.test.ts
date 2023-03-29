@@ -82,7 +82,7 @@ describe('HostDiscovery', () => {
     );
   });
 
-  it('uses plugin specific baseUrl from config if provided', async () => {
+  it('uses plugin specific targets from config if provided', async () => {
     const discovery = HostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
@@ -90,7 +90,41 @@ describe('HostDiscovery', () => {
           listen: { port: 80, host: 'localhost' },
         },
         discovery: {
-          catalog: 'http://catalog-backend:8080/api/catalog',
+          endpoints: [
+            {
+              target: {
+                internal: 'http://catalog-backend-internal:8080/api/catalog',
+                external: 'http://catalog-backend-external:8080/api/catalog',
+              },
+              plugins: ['catalog'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://catalog-backend-internal:8080/api/catalog',
+    );
+    await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
+      'http://catalog-backend-external:8080/api/catalog',
+    );
+  });
+
+  it('uses a single target for internal and external for a plugin', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+          listen: { port: 80, host: 'localhost' },
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: 'http://catalog-backend:8080/api/catalog',
+              plugins: ['catalog'],
+            },
+          ],
         },
       }),
     );
@@ -100,6 +134,77 @@ describe('HostDiscovery', () => {
     );
     await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
       'http://catalog-backend:8080/api/catalog',
+    );
+  });
+
+  it('defaults to the backend baseUrl when there is not an endpoint for a plugin', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+          listen: { port: 80, host: 'localhost' },
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: 'http://catalog-backend:8080/api/catalog',
+              plugins: ['catalog'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('scaffolder')).resolves.toBe(
+      'http://localhost:80/api/scaffolder',
+    );
+    await expect(discovery.getExternalBaseUrl('scaffolder')).resolves.toBe(
+      'http://localhost:40/api/scaffolder',
+    );
+  });
+
+  it('replaces {pluginId} in the target', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+          listen: { port: 80, host: 'localhost' },
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: 'http://common-backend:8080/api/{pluginId}',
+              plugins: ['catalog', 'docs'],
+            },
+            {
+              target: {
+                internal: 'http://scaffolder-internal:8080/api/{pluginId}',
+                external: 'http://scaffolder-external:8080/api/{pluginId}',
+              },
+              plugins: ['scaffolder'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://common-backend:8080/api/catalog',
+    );
+    await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
+      'http://common-backend:8080/api/catalog',
+    );
+    await expect(discovery.getBaseUrl('docs')).resolves.toBe(
+      'http://common-backend:8080/api/docs',
+    );
+    await expect(discovery.getExternalBaseUrl('docs')).resolves.toBe(
+      'http://common-backend:8080/api/docs',
+    );
+    await expect(discovery.getBaseUrl('scaffolder')).resolves.toBe(
+      'http://scaffolder-internal:8080/api/scaffolder',
+    );
+    await expect(discovery.getExternalBaseUrl('scaffolder')).resolves.toBe(
+      'http://scaffolder-external:8080/api/scaffolder',
     );
   });
 });
