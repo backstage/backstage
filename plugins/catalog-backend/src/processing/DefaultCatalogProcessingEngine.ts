@@ -19,9 +19,11 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { BackstageEvent, EventBroker } from '@backstage/backend-common';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { metrics } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
@@ -48,11 +50,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
+    eventBroker: EventBroker,
     private readonly onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
     }) => Promise<void> | void,
-    private readonly tracker: ProgressTracker = progressTracker(),
+    private readonly tracker: ProgressTracker = progressTracker(eventBroker),
   ) {}
 
   async start() {
@@ -257,7 +260,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker() {
+function progressTracker(eventBroker: EventBroker) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
@@ -344,6 +347,19 @@ function progressTracker() {
       processorsDuration.record(endTime(), {
         result: result.ok ? 'ok' : 'failed',
       });
+
+      // TODO(timbonicus): how do we know if this is a new entity or an update?
+      const event: BackstageEvent = {
+        uuid: uuid(),
+        timestamp: Date.now(),
+        topic: 'backstage',
+        type: 'catalog.entity.processed',
+        originatingEntityRef: result.ok
+          ? stringifyEntityRef(result.completedEntity)
+          : undefined,
+        payload: result,
+      };
+      eventBroker.publish(event);
     }
 
     function markSuccessfulWithNoChanges() {

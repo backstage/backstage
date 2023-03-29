@@ -76,6 +76,7 @@ export const catalogPlugin = createBackendPlugin({
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
+        events: coreServices.events,
       },
       async init({
         logger,
@@ -85,6 +86,7 @@ export const catalogPlugin = createBackendPlugin({
         permissions,
         httpRouter,
         lifecycle,
+        events,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -93,6 +95,7 @@ export const catalogPlugin = createBackendPlugin({
           permissions,
           database,
           logger: winstonLogger,
+          eventBroker: events,
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);

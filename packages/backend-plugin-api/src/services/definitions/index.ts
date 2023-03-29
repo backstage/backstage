@@ -23,6 +23,7 @@ export type {
 export type { ConfigService } from './ConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
+export type { EventService } from './EventService';
 export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,

@@ -59,6 +59,15 @@ export namespace coreServices {
   >({ id: 'core.discovery' });
 
   /**
+   * The service reference for the root scoped {@link EventService}.
+   *
+   * @public
+   */
+  export const events = createServiceRef<import('./EventService').EventService>(
+    { id: 'core.events' },
+  );
+
+  /**
    * The service reference for the plugin scoped {@link HttpRouterService}.
    *
    * @public

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageEvent, EventBroker } from '@backstage/backend-common';
 import {
   Entity,
   parseEntityRef,
@@ -22,6 +23,7 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
@@ -190,11 +192,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: Logger;
   private readonly stitcher: Stitcher;
+  private readonly eventBroker: EventBroker;
 
-  constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
+  constructor(options: {
+    database: Knex;
+    logger: Logger;
+    stitcher: Stitcher;
+    eventBroker: EventBroker;
+  }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
+    this.eventBroker = options.eventBroker;
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -605,6 +614,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
+
+    const event: BackstageEvent = {
+      uuid: uuid(),
+      timestamp: Date.now(),
+      topic: 'backstage',
+      type: 'catalog.entity.delete',
+      originatingEntityRef: uid,
+    };
+    this.eventBroker.publish(event);
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

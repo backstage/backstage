@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  EventBroker,
+  PluginDatabaseManager,
+  UrlReader,
+} from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -115,6 +119,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  eventBroker: EventBroker;
 };
 
 /**
@@ -465,6 +470,7 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
+      eventBroker: this.env.eventBroker,
     });
 
     let permissionEvaluator: PermissionEvaluator;
@@ -524,6 +530,7 @@ export class CatalogBuilder {
       stitcher,
       () => createHash('sha1'),
       1000,
+      this.env.eventBroker,
       event => {
         this.onProcessingError?.(event);
       },
