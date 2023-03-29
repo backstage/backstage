@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'cross-fetch';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
   buildGerritGitilesUrl,

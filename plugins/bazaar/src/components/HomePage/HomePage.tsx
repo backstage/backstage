@@ -23,16 +23,18 @@ import { About } from '../About';
 export type HomePageProps = {
   title?: string;
   subtitle?: string;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
 };
 
 export const HomePage = (props: HomePageProps) => {
-  const { title, subtitle } = props;
+  const { title, subtitle, fullWidth, fullHeight } = props;
 
   const tabContent = [
     {
       path: '/',
       title: 'Home',
-      children: <SortView />,
+      children: <SortView fullWidth={fullWidth} fullHeight={fullHeight} />,
     },
     {
       path: '/about',

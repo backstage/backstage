@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- a7eb36c6e38: Improve type-check for scaffolder output parameters
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
 ## 0.1.2-next.0
 
 ### Patch Changes

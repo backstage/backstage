@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.7-next.1
+
+### Patch Changes
+
+- d7c8d8c52dd: Allow the title of the group profile card to use the title of the entity, if it is set.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-model@1.2.1
+
 ## 0.6.7-next.0
 
 ### Patch Changes
