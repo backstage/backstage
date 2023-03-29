@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import '@testing-library/jest-dom';
 
-import { PodDrawer } from './PodDrawer';
+import { PodDrawer } from '.';
 
 describe('PodDrawer', () => {
   it('Should show title and container names', async () => {

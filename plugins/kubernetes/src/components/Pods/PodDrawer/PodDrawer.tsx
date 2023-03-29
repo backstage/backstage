@@ -29,8 +29,9 @@ import { Pod } from 'kubernetes-models/v1';
 
 import { ContainerCard } from './ContainerCard';
 
-import { PodAndErrors } from './types';
-import { KubernetesDrawer } from '../KubernetesDrawer';
+import { PodAndErrors } from '../types';
+import { KubernetesDrawer } from '../../KubernetesDrawer';
+import { PendingPodContent } from './PendingPodContent';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -82,36 +83,41 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
       }
     >
       <div className={classes.content}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="h5">Containers</Typography>
+        {podAndErrors.pod.status?.phase === 'Pending' && (
+          <PendingPodContent pod={podAndErrors.pod} />
+        )}
+        {podAndErrors.pod.status?.containerStatuses?.length && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h5">Containers</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <ItemCardGrid>
+                {podAndErrors.pod.status?.containerStatuses?.map(
+                  (containerStatus, i) => {
+                    const containerSpec = getContainerSpecByName(
+                      podAndErrors.pod,
+                      containerStatus.name,
+                    );
+                    return (
+                      <ContainerCard
+                        key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
+                        logContext={{
+                          podName: podAndErrors.pod.metadata?.name ?? 'unknown',
+                          podNamespace:
+                            podAndErrors.pod.metadata?.namespace ?? 'unknown',
+                          clusterName: podAndErrors.clusterName,
+                        }}
+                        containerSpec={containerSpec}
+                        containerStatus={containerStatus}
+                      />
+                    );
+                  },
+                )}
+              </ItemCardGrid>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <ItemCardGrid>
-              {podAndErrors.pod.status?.containerStatuses?.map(
-                (containerStatus, i) => {
-                  const containerSpec = getContainerSpecByName(
-                    podAndErrors.pod,
-                    containerStatus.name,
-                  );
-                  return (
-                    <ContainerCard
-                      key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
-                      logContext={{
-                        podName: podAndErrors.pod.metadata?.name ?? 'unknown',
-                        podNamespace:
-                          podAndErrors.pod.metadata?.namespace ?? 'unknown',
-                        clusterName: podAndErrors.clusterName,
-                      }}
-                      containerSpec={containerSpec}
-                      containerStatus={containerStatus}
-                    />
-                  );
-                },
-              )}
-            </ItemCardGrid>
-          </Grid>
-        </Grid>
+        )}
       </div>
     </KubernetesDrawer>
   );
