@@ -85,9 +85,7 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction_2<
   {
-    entity: {} & {
-      [k: string]: unknown;
-    };
+    entity: Record<string, any>;
     filePath?: string | undefined;
   },
   JsonObject
