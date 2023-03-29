@@ -70,20 +70,21 @@ Scope: The TechDocs plugin and related tooling
 
 ## Organization Members
 
-| Name               | Organization              | GitHub                                          | Discord                        |
-| ------------------ | ------------------------- | ----------------------------------------------- | ------------------------------ |
-| Adam Harvey        | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
-| Andre Wanlin       | Keyloop                   | [awanlin](https://github.com/awanlin)           | `Ahhhndre#3095`                |
-| Andrew Thauer      | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
-| Brian Fletcher     | RoadieHQ                  | [punkle](https://github.com/punkle)             | `Brian Fletcher#7051`          |
-| David Tuite        | Roadie                    | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
-| Himanshu Mishra    | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)     | `OrkoHunter#1520`              |
-| Jamie Klassen      | VMware                    | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047`            |
-| Jussi Hallila      | Roadie                    | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
-| Mark Avery         | Cvent                     | [webark](https://github.com/webark)             | `webark#8471`                  |
-| Patrick Jungermann | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)   | `pjungermann#6933`             |
-| Phil Kuang         | FactSet Research Systems  | [kuangp](https://github.com/kuangp)             | `pkuang#3202`                  |
-| Taras Mankovski    | Frontside                 | [taras](https://github.com/taras)               | `tarasm#1256`                  |
+| Name                           | Organization              | GitHub                                          | Discord                        |
+| ------------------------------ | ------------------------- | ----------------------------------------------- | ------------------------------ |
+| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
+| Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)           | `Ahhhndre#3095`                |
+| Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
+| Brian Fletcher                 | RoadieHQ                  | [punkle](https://github.com/punkle)             | `Brian Fletcher#7051`          |
+| Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)     | `luchillo17#8777`              |
+| David Tuite                    | Roadie                    | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
+| Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)     | `OrkoHunter#1520`              |
+| Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047`            |
+| Jussi Hallila                  | Roadie                    | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
+| Mark Avery                     | Cvent                     | [webark](https://github.com/webark)             | `webark#8471`                  |
+| Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)   | `pjungermann#6933`             |
+| Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)             | `pkuang#3202`                  |
+| Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)               | `tarasm#1256`                  |
 
 ## Emeritus Core Maintainers
 
