@@ -4,33 +4,23 @@
 
 ```ts
 import type { CatalogClient } from '@backstage/catalog-client';
-import { default as default_2 } from 'dataloader';
 import { Entity } from '@backstage/catalog-model';
+import { GraphQLError } from 'graphql';
 import { Module } from 'graphql-modules';
-import { Options } from 'dataloader';
-import type { ResolverContext as ResolverContext_2 } from '@backstage/plugin-graphql-common';
 
 // @public (undocumented)
 export const Catalog: Module;
 
 // @public (undocumented)
-export function createLoader(
-  {
-    catalog,
-  }: {
-    catalog: CatalogClient;
-  },
-  options?: Options<string, Entity>,
-): default_2<string, Entity, string>;
+export const CATALOG_SOURCE = 'Catalog';
+
+// @public (undocumented)
+export const createEntitiesLoadFn: (
+  catalog: CatalogClient,
+) => (entityRefs: readonly string[]) => Promise<Array<Entity | GraphQLError>>;
 
 // @public (undocumented)
 export const Relation: Module;
-
-// @public (undocumented)
-export interface ResolverContext extends ResolverContext_2 {
-  // (undocumented)
-  catalog: CatalogClient;
-}
 
 // (No @packageDocumentation comment for this package)
 ```

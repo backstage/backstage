@@ -4,34 +4,48 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import DataLoader from 'dataloader';
 import express from 'express';
+import { GraphQLContext } from '@backstage/plugin-graphql-common';
+import { GraphQLError } from 'graphql';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
+import { Options } from 'dataloader';
 import { Plugin as Plugin_2 } from 'graphql-yoga';
-import { ResolverContext } from '@backstage/plugin-graphql-catalog';
 
 // @public (undocumented)
-export function createRouter({
+export type BatchLoadFn<Context extends GraphQLContext> = (
+  keys: ReadonlyArray<string>,
+  context: Context,
+) => PromiseLike<ArrayLike<any | GraphQLError>>;
+
+// @public (undocumented)
+export function createRouter<TContext extends Record<string, any>>({
   config,
   logger,
   schema,
   modules,
   plugins,
-  createLoader,
+  loaders,
+  dataloaderOptions,
+  additionalContext,
   generateOpaqueTypes,
-}: RouterOptions): Promise<express.Router>;
+}: RouterOptions<TContext>): Promise<express.Router>;
 
 // @public (undocumented)
-export interface RouterOptions {
+export interface RouterOptions<TContext extends Record<string, any>> {
+  // (undocumented)
+  additionalContext?:
+    | ((initialContext: GraphQLContext) => TContext | Promise<TContext>)
+    | Promise<TContext>
+    | TContext;
   // (undocumented)
   config: Config;
   // (undocumented)
-  createLoader?: (
-    context: Omit<ResolverContext, 'loader'>,
-  ) => DataLoader<string, any>;
+  dataloaderOptions?: Options<string, any>;
   // (undocumented)
   generateOpaqueTypes?: boolean;
+  // (undocumented)
+  loaders?: Record<string, BatchLoadFn<TContext & GraphQLContext>>;
   // (undocumented)
   logger: Logger;
   // (undocumented)

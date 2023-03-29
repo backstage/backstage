@@ -15,12 +15,15 @@
  */
 import { createModule } from 'graphql-modules';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
-import { ResolverContext } from '../types';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
-import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
+import {
+  createDirectiveMapperProvider,
+  ResolverContext,
+} from '@backstage/plugin-graphql-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import { resolvePackagePath } from '@backstage/backend-common';
+import { CATALOG_SOURCE } from '../constants';
 
 /** @public */
 export const Catalog = createModule({
@@ -50,7 +53,7 @@ export const Catalog = createModule({
         { encodeId }: ResolverContext,
       ): { id: string } => ({
         id: encodeId({
-          source: 'Catalog',
+          source: CATALOG_SOURCE,
           typename: 'Entity',
           ref: stringifyEntityRef({ name, kind, namespace }),
         }),

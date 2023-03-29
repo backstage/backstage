@@ -25,11 +25,22 @@ import { Application } from 'graphql-modules';
 export type PromiseOrValue<T> = T | Promise<T>;
 
 /** @public */
-export interface ResolverContext {
+export interface NodeId {
+  source: string;
+  typename: string;
+  ref: string;
+}
+
+/** @public */
+export interface GraphQLContext {
   application: Application;
+  encodeId: (obj: NodeId) => string;
+  decodeId: (id: string) => NodeId;
+}
+
+/** @public */
+export interface ResolverContext extends GraphQLContext {
   loader: DataLoader<any, any>;
-  encodeId: (obj: { source: string; typename: string; ref: string }) => string;
-  decodeId: (id: string) => { source: string; typename: string; ref: string };
 }
 
 /** @public */

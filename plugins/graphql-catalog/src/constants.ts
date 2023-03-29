@@ -13,12 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { CatalogClient } from '@backstage/catalog-client';
-import type { ResolverContext as CommonResolverContext } from '@backstage/plugin-graphql-common';
-
-export type PromiseOrValue<T> = T | Promise<T>;
-
 /** @public */
-export interface ResolverContext extends CommonResolverContext {
-  catalog: CatalogClient;
-}
+export const CATALOG_SOURCE = 'Catalog';

@@ -19,8 +19,10 @@ export * from './core';
 export { transformSchema } from './transformSchema';
 export { createDirectiveMapperProvider } from './mapperProvider';
 export type {
+  GraphQLContext,
   ResolverContext,
   FieldDirectiveMapper,
   DirectiveMapperAPI,
   OmitFirst,
+  NodeId,
 } from './types';

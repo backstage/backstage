@@ -17,14 +17,16 @@
 /* eslint-disable func-names */
 /* eslint-disable jest/no-standalone-expect */
 
-import { transformSchema } from '@backstage/plugin-graphql-common';
+import {
+  GraphQLContext,
+  transformSchema,
+} from '@backstage/plugin-graphql-common';
 import { describe, it } from '@effection/jest';
 import DataLoader from 'dataloader';
 import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './setupTests';
 import { Relation } from './relation/relation';
-import { ResolverContext } from './types';
 
 describe('mapRelationDirective', () => {
   const transform = (source: DocumentNode) =>
@@ -254,7 +256,7 @@ describe('mapRelationDirective', () => {
       kind: 'Group',
       name: 'Team A',
     };
-    const loader = ({ decodeId }: ResolverContext) =>
+    const loader = ({ decodeId }: GraphQLContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);
@@ -319,7 +321,7 @@ describe('mapRelationDirective', () => {
     const mark = { kind: 'User', name: 'Mark' };
     const teamA = { kind: 'Group', name: 'Team A' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = ({ decodeId }: ResolverContext) =>
+    const loader = ({ decodeId }: GraphQLContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);
@@ -405,7 +407,7 @@ describe('mapRelationDirective', () => {
     const mark = { kind: 'User', name: 'Mark' };
     const teamA = { kind: 'Group', name: 'Team A' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = ({ decodeId }: ResolverContext) =>
+    const loader = ({ decodeId }: GraphQLContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);
@@ -514,7 +516,7 @@ describe('mapRelationDirective', () => {
     const backend = { kind: 'Component', name: 'Backend' };
     const website = { kind: 'Resource', name: 'example.com' };
     const teamB = { kind: 'Group', name: 'Team B' };
-    const loader = ({ decodeId }: ResolverContext) =>
+    const loader = ({ decodeId }: GraphQLContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);

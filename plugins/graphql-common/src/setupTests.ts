@@ -21,14 +21,14 @@ import { createGraphQLApp } from './createGraphQLApp';
 import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
-import { PromiseOrValue, ResolverContext } from './types';
+import { GraphQLContext, PromiseOrValue } from './types';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 
 export function createGraphQLAPI(
   TestModule: Module,
-  loader: (context: ResolverContext) => DataLoader<any, any>,
+  loader: (context: GraphQLContext) => DataLoader<any, any>,
   generateOpaqueTypes?: boolean,
 ) {
   const context = {

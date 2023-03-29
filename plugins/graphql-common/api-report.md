@@ -57,6 +57,26 @@ export type FieldDirectiveMapper = (
 ) => void;
 
 // @public (undocumented)
+export interface GraphQLContext {
+  // (undocumented)
+  application: Application;
+  // (undocumented)
+  decodeId: (id: string) => NodeId;
+  // (undocumented)
+  encodeId: (obj: NodeId) => string;
+}
+
+// @public (undocumented)
+export interface NodeId {
+  // (undocumented)
+  ref: string;
+  // (undocumented)
+  source: string;
+  // (undocumented)
+  typename: string;
+}
+
+// @public (undocumented)
 export type OmitFirst<T extends Array<any>> = T extends [
   x: any,
   ...args: infer R,
@@ -65,17 +85,7 @@ export type OmitFirst<T extends Array<any>> = T extends [
   : [];
 
 // @public (undocumented)
-export interface ResolverContext {
-  // (undocumented)
-  application: Application;
-  // (undocumented)
-  decodeId: (id: string) => {
-    source: string;
-    typename: string;
-    ref: string;
-  };
-  // (undocumented)
-  encodeId: (obj: { source: string; typename: string; ref: string }) => string;
+export interface ResolverContext extends GraphQLContext {
   // (undocumented)
   loader: DataLoader<any, any>;
 }

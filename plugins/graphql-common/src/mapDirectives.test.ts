@@ -23,7 +23,7 @@ import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './setupTests';
 import { transformSchema } from './transformSchema';
-import { ResolverContext } from './types';
+import { GraphQLContext, NodeId } from './types';
 
 describe('mapDirectives', () => {
   const transform = (source: DocumentNode, generateOpaqueTypes?: boolean) =>
@@ -715,7 +715,7 @@ describe('mapDirectives', () => {
       name: 'backend-system',
       spec: { type: 'backend' },
     };
-    const loader = ({ decodeId }: ResolverContext) =>
+    const loader = ({ decodeId }: GraphQLContext) =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);
@@ -727,7 +727,7 @@ describe('mapDirectives', () => {
         }),
       );
     const query = createGraphQLAPI(TestModule, loader, true);
-    const queryNode = (id: { source: string; typename: string; ref: string }) =>
+    const queryNode = (id: NodeId) =>
       query(/* GraphQL */ `
         node(id: ${JSON.stringify(JSON.stringify(id))}) {
           id
