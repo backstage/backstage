@@ -16,20 +16,24 @@
 import type { JsonObject } from '@backstage/types';
 import type { Operation } from 'effection';
 
-import { createGraphQLApp } from '@backstage/plugin-graphql-common';
+import {
+  createGraphQLApp,
+  GraphQLContext,
+} from '@backstage/plugin-graphql-common';
 
 import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
-import { PromiseOrValue, ResolverContext } from './types';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { Relation } from './relation';
 
+type PromiseOrValue<T> = T | Promise<T>;
+
 export function createGraphQLAPI(
   TestModule: Module,
-  loader: (context: ResolverContext) => DataLoader<any, any>,
+  loader: (context: GraphQLContext) => DataLoader<any, any>,
   generateOpaqueTypes?: boolean,
 ) {
   const context = {

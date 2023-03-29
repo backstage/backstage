@@ -209,7 +209,9 @@ import { Catalog } from '@backstage/plugin-graphql-catalog';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { MyModule } from '../modules/my-module/my-module';
 
-export default printSchemaWithDirectives(transformSchema([Catalog, MyModule]));
+export const schema = printSchemaWithDirectives(
+  transformSchema([Catalog, MyModule]),
+);
 ```
 
 2. Then you need to update `schema` option in your `codegen.ts`

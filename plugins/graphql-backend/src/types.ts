@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { GraphQLContext } from '@backstage/plugin-graphql-common';
+import { GraphQLError } from 'graphql';
 
-/**
- * An experimental Backstage backend plugin for GraphQL
- *
- * @packageDocumentation
- */
+/** @public */
+export type BatchLoadFn<Context extends GraphQLContext> = (
+  keys: ReadonlyArray<string>,
+  context: Context,
+) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
-export * from './service/router';
-export type { BatchLoadFn } from './types';
+export type UnboxReturnedPromise<T extends (...args: any) => Promise<any>> =
+  ReturnType<T> extends Promise<infer U> ? U : never;

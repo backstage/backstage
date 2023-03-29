@@ -33,8 +33,11 @@ import {
   isObjectType,
   isUnionType,
 } from 'graphql';
-import { ResolverContext } from './types';
-import { DirectiveMapperAPI } from '@backstage/plugin-graphql-common';
+import {
+  DirectiveMapperAPI,
+  ResolverContext,
+} from '@backstage/plugin-graphql-common';
+import { CATALOG_SOURCE } from './constants';
 
 function isConnectionType(type: unknown): type is GraphQLInterfaceType {
   return (
@@ -207,14 +210,17 @@ export function relationDirectiveMapper(
     });
     field.args = fieldArgs;
 
-    field.resolve = async ({ id }, args, { loader, encodeId, decodeId }) => {
-      const { source } = decodeId(id);
+    field.resolve = async ({ id }, args, { loader, encodeId }) => {
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
         directive.kind,
       ).map(ref => ({
-        id: encodeId({ source, typename: directive.nodeType ?? 'Node', ref }),
+        id: encodeId({
+          source: CATALOG_SOURCE,
+          typename: directive.nodeType ?? 'Node',
+          ref,
+        }),
       }));
       return {
         ...connectionFromArray(ids, args),
@@ -222,15 +228,14 @@ export function relationDirectiveMapper(
       };
     };
   } else {
-    field.resolve = async ({ id }, _, { loader, encodeId, decodeId }) => {
-      const { source } = decodeId(id);
+    field.resolve = async ({ id }, _, { loader, encodeId }) => {
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
         directive.kind,
       ).map(ref => ({
         id: encodeId({
-          source,
+          source: CATALOG_SOURCE,
           typename: unboxNamedType(field.type).name,
           ref,
         }),

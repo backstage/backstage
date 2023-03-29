@@ -19,43 +19,54 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
-import { createGraphQLApp } from '@backstage/plugin-graphql-common';
 import {
-  ResolverContext,
-  createLoader as createCatalogLoader,
+  createGraphQLApp,
+  GraphQLContext,
+  NodeId,
+} from '@backstage/plugin-graphql-common';
+import {
+  CATALOG_SOURCE,
+  createEntitiesLoadFn,
 } from '@backstage/plugin-graphql-catalog';
 import helmet from 'helmet';
-import DataLoader from 'dataloader';
 import { CatalogClient } from '@backstage/catalog-client';
 import { createYoga, Plugin, YogaServerInstance } from 'graphql-yoga';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
 import { Config } from '@backstage/config';
 import { printSchema } from 'graphql';
+import { BatchLoadFn, UnboxReturnedPromise } from '../types';
+import { createLoader } from '../createLoader';
+import { Options as DataLoaderOptions } from 'dataloader';
 
 /** @public */
-export interface RouterOptions {
+export interface RouterOptions<TContext extends Record<string, any>> {
   config: Config;
   logger: Logger;
   schema?: string | string[];
   modules?: Module[];
   plugins?: Plugin[];
-  createLoader?: (
-    context: Omit<ResolverContext, 'loader'>,
-  ) => DataLoader<string, any>;
+  loaders?: Record<string, BatchLoadFn<TContext & GraphQLContext>>;
+  dataloaderOptions?: DataLoaderOptions<string, any>;
+  additionalContext?:
+    | ((initialContext: GraphQLContext) => TContext | Promise<TContext>)
+    | Promise<TContext>
+    | TContext;
   generateOpaqueTypes?: boolean;
 }
 
 /** @public */
-export async function createRouter({
+export async function createRouter<TContext extends Record<string, any>>({
   config,
   logger,
   schema,
   modules,
   plugins,
-  createLoader,
+  loaders,
+  dataloaderOptions,
+  additionalContext,
   generateOpaqueTypes,
-}: RouterOptions): Promise<express.Router> {
+}: RouterOptions<TContext>): Promise<express.Router> {
   let yoga: YogaServerInstance<any, any> | null = null;
 
   const router = Router();
@@ -66,6 +77,22 @@ export async function createRouter({
     generateOpaqueTypes,
     schema,
   });
+  const initialContext: GraphQLContext = {
+    application,
+    encodeId: (x: NodeId) => JSON.stringify(x),
+    decodeId: (x: string): NodeId => JSON.parse(x),
+  };
+  const context = async (yogaContext: Record<string, any>) => ({
+    ...yogaContext,
+    ...initialContext,
+    ...(await (additionalContext instanceof Function
+      ? additionalContext(initialContext)
+      : additionalContext)),
+  });
+  const loader = createLoader<UnboxReturnedPromise<typeof context>>(
+    { [CATALOG_SOURCE]: createEntitiesLoadFn(catalog), ...loaders },
+    dataloaderOptions,
+  );
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
@@ -92,10 +119,10 @@ export async function createRouter({
       yoga = createYoga({
         plugins: [
           useGraphQLModules(application),
-          useDataLoader('loader', createLoader ?? createCatalogLoader),
+          useDataLoader('loader', loader),
           ...(plugins ?? []),
         ],
-        context: { application, catalog },
+        context,
         logging: logger,
         graphqlEndpoint: req.baseUrl,
       });

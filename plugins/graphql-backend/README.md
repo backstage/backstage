@@ -15,6 +15,7 @@ schema elements to access the [Backstage Catalog][backstage-catalog] via GraphQL
 - [GraphQL Modules](#graphql-modules)
 - [Extending Schema](../graphql-common/README.md#extending-schema)
 - [Envelop Plugins](#envelop-plugins)
+- [GraphQL Context](#graphql-context)
 - [Custom Data loaders](#custom-data-loaders-advanced)
 - [Integrations](#integrations)
   - [Backstage GraphiQL Plugin](#backstage-graphiql-plugin)
@@ -121,92 +122,13 @@ export default async function createPlugin(
 }
 ```
 
-## Custom Data Loaders (Advanced)
+## GraphQL Context
 
-By default, your graphql context will contain a `Dataloader` for retrieving
-records from the Catalog by their GraphQL ID. Most of the time this is all you
-will need. However, sometimes you will need to load data not just from the
-Backstage catalog, but from a different data source entirely. To do this, you
-will need to write a custom data loader.
+The GraphQL context is an object that is passed to every resolver
+function. It is a convenient place to store data that is needed by
+multiple resolvers, such as a database connection or a logger.
 
-> ⚠️Caution! If you find yourself wanting to load data directly from a
-> source other than the catalog, first consider the idea of instead
-> just ingesting that data into the catalog, and then using the
-> default data loader. After consideration, If you still want to load
-> data directly from a source other than the Backstage catalog, then
-> proceed with care.
-
-To implement a custom loader, you will have to provide two things:
-`loader` and `refToId`
-
-1. To properly decide which data source should be used you need to
-   encode something inside node's id. You can do it whatever you'd
-   like. But the GraphQL plugin doesn't know how to encode `Entity`
-   reference to id, so you need to define `refToId` function
-
-```ts
-import {
-  CompoundEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-
-export function refToId(ref: CompoundEntityRef | string) {
-  return Buffer.from(
-    JSON.stringify({
-      source: 'Catalog',
-      ref: stringifyEntityRef(ref),
-    }),
-  ).toString('base64');
-}
-```
-
-2. Next, you need to define custom loader. It's a function that
-   returns a [`DataLoader`](https://github.com/graphql/dataloader)
-   that allows to batch multiple requests to 3rd party APIs and caches
-   responses within a single GraphQL request.
-
-```ts
-import { ResolverContext } from '@backstage/plugin-graphql-common';
-import DataLoader from 'dataloader';
-import { Node } from '../__generated__/graphql';
-
-export function createCustomLoader(context: ResolverContext) {
-  async function fetchFoo(...args) {
-    /* ... */
-  }
-  async function fetchBar(...args) {
-    /* ... */
-  }
-
-  return new DataLoader<string, Node>(
-    async (ids: string[]): Promise<Array<Node | Error>> => {
-      // Note: We disable cache for internal DataLoaders, because ids are already cached
-      const catalogLoader = createLoader(context, { cache: false });
-      const fooLoader = new DataLoader(fetchFoo, { cache: false });
-      const barLoader = new DataLoader(fetchBar, { cache: false });
-
-      return ids.map(id => {
-        const { ref, typename } = JSON.parse(
-          Buffer.from(id, 'base64').toString(),
-        );
-
-        switch (typename) {
-          case 'Entity':
-            return catalogLoader.load(ref);
-          case 'Foo':
-            return fooLoader(ref);
-          case 'Bar':
-            return barLoader(ref);
-          default:
-            new GraphQLError(`There is no loader for type ${typename}`);
-        }
-      });
-    },
-  );
-}
-```
-
-3. Finally pass both functions to GraphQL backend router
+You can add additional data to the context by passing a `additionalContext`
 
 ```ts
 // packages/backend/src/plugins/graphql.ts
@@ -216,17 +138,53 @@ export default async function createPlugin(
   return await createRouter({
     logger: env.logger,
     config: env.config,
-    refToId,
-    createLoader: createCustomLoader,
+    additionalContext: {
+      myContext: 'Hello World',
+    },
+  });
+}
+```
+
+## Custom Data Loaders (Advanced)
+
+By default, your graphql context will contain a `Dataloader` for retrieving
+records from the Catalog by their GraphQL ID. Most of the time this is all you
+will need. However, sometimes you will need to load data not just from the
+Backstage catalog, but from a different data source entirely. To do this, you
+will need to pass batch load functions for each data source.
+
+> ⚠️Caution! If you find yourself wanting to load data directly from a
+> source other than the catalog, first consider the idea of instead
+> just ingesting that data into the catalog, and then using the
+> default data loader. After consideration, If you still want to load
+> data directly from a source other than the Backstage catalog, then
+> proceed with care.
+
+Load functions are be added via the `loaders` option. Each load function
+is stored under a unique key which is encoded inside node's id as a data
+source name
+
+```ts
+// packages/backend/src/plugins/graphql.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    loaders: {
+      MyAPI: async (keys: readonly string[], context: GraphQLContext) => {
+        /* Fetch */
+      },
+    },
   });
 }
 ```
 
 > ⚠️Heads up! Currently
 > [`@relation`](../graphql-common/README.md#relation) directive can't
-> resolve relationships for non-Entity objects. As a workaround, you
-> can prepare data from 3rd party source by adding `relations` field
-> with the same structure as it's in `Entity`
+> resolve relationships from non-Catalog data sources. There hasn't
+> workaround for this yet, but we are working on it.
 
 ## Integrations
 
