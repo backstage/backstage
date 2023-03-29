@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, TokenManager } from '@backstage/backend-common';
+import {
+  EventParams,
+  getVoidLogger,
+  TokenManager,
+} from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -122,7 +126,7 @@ describe('BitbucketCloudEntityProvider', () => {
       ],
     },
   };
-  const repoPushEventParams = {
+  const repoPushEventParams: EventParams<Events.RepoPushEvent> = {
     topic: 'bitbucketCloud.repo:push',
     eventPayload: repoPushEvent,
     metadata: { 'x-event-key': 'repo:push' },

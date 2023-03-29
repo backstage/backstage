@@ -3429,6 +3429,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
@@ -5341,6 +5342,8 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
@@ -6170,6 +6173,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-azure@workspace:plugins/events-backend-module-azure"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6184,6 +6188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-bitbucket-cloud@workspace:plugins/events-backend-module-bitbucket-cloud"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6198,6 +6203,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-gerrit@workspace:plugins/events-backend-module-gerrit"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6212,6 +6218,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-github@workspace:plugins/events-backend-module-github"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6228,6 +6235,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-gitlab@workspace:plugins/events-backend-module-gitlab"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6243,6 +6251,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
   languageName: unknown
@@ -6271,8 +6280,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-node@workspace:plugins/events-node"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -23451,6 +23462,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"

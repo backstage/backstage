@@ -53,6 +53,7 @@ import {
 import { RefreshStateItem } from './database/types';
 import { DefaultProviderDatabase } from './database/DefaultProviderDatabase';
 import { InputError } from '@backstage/errors';
+import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 
 const voidLogger = getVoidLogger();
 
@@ -268,10 +269,12 @@ class TestHarness {
       legacySingleProcessorValidation: false,
     });
     const stitcher = new Stitcher(db, logger);
+    const eventBroker = new TestEventBroker();
     const catalog = new DefaultEntitiesCatalog({
       database: db,
       logger,
       stitcher,
+      eventBroker,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -284,6 +287,7 @@ class TestHarness {
       stitcher,
       () => createHash('sha1'),
       50,
+      eventBroker,
       event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },

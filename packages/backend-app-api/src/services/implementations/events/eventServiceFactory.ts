@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { InMemoryEventBroker } from '@backstage/plugin-events-node';
 
-/**
- * Handles received events.
- * This may include triggering refreshes of catalog entities
- * or other actions to react on events.
- *
- * @public
- */
-export interface EventSubscriber {
-  /**
-   * Supported event topics like "github", "bitbucketCloud", etc.
-   */
-  supportsEventTopics(): string[];
-
-  /**
-   * React on a received event.
-   *
-   * @param params - parameters for the to be received event.
-   */
-  onEvent(params: EventParams): Promise<void>;
-}
+/** @public */
+export const eventServiceFactory = createServiceFactory({
+  service: coreServices.events,
+  deps: {
+    logger: coreServices.logger,
+  },
+  async factory({ logger }) {
+    return new InMemoryEventBroker(logger);
+  },
+});

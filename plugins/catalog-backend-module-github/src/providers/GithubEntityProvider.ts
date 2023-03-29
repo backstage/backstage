@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
@@ -42,7 +43,6 @@ import {
 import { getOrganizationRepositories } from '../lib/github';
 import { satisfiesTopicFilter, satisfiesForkFilter } from '../lib/util';
 
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
 import { Minimatch } from 'minimatch';
 

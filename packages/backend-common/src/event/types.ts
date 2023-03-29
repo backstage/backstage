@@ -14,15 +14,45 @@
  * limitations under the License.
  */
 
-export type Event<TPayload = unknown> = {
-  uuid: string;
-  timestamp: number;
+/**
+ * @public
+ */
+export type EventParams<TPayload = unknown> = {
+  /**
+   * Topic for which the event should be published.
+   */
   topic: string;
-  type?: string;
-  payload?: TPayload;
+
+  /**
+   * Event-specific data to send.
+   */
+  eventPayload: TPayload;
+
+  /**
+   * Metadata (e.g., HTTP headers and similar for events received from external).
+   */
+  metadata?: Record<string, string | string[] | undefined>;
 };
 
-export type BackstageEvent<TPayload = unknown> = Event<TPayload> & {
+/**
+ * Base payload for Backstage events. The `type` should be prefix by the plugin name to prevent
+ * collisions, e.g. "catalog.entity.delete".
+ *
+ * @public
+ */
+export type BackstageEventPayload = {
+  type: string;
+};
+
+/**
+ * An event emitted from Backstage. This is the base type for all events emitted from Backstage core
+ * libraries and plugins.
+ *
+ * @public
+ */
+export type BackstageEvent<
+  TPayload extends BackstageEventPayload = BackstageEventPayload,
+> = EventParams<TPayload> & {
   topic: 'backstage';
   originatingEntityRef?: string;
 };
@@ -36,9 +66,9 @@ export interface EventSubscriber {
   /**
    * React on a received event.
    *
-   * @param event - the event to be received.
+   * @param params - parameters for the to be received event.
    */
-  onEvent(event: Event): Promise<void>;
+  onEvent(params: EventParams): Promise<void>;
 }
 
 /**
@@ -54,7 +84,7 @@ export interface EventBroker {
    *
    * @param params - parameters for the to be published event.
    */
-  publish(params: Event): Promise<void>;
+  publish(params: EventParams): Promise<void>;
 
   /**
    * Adds new subscribers for {@link EventSubscriber#supportsEventTopics | interested topics}.

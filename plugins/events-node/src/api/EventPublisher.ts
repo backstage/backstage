@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventBroker } from './EventBroker';
+import { EventBroker } from '@backstage/backend-common';
 
 /**
  * Publishes events to be consumed by subscribers for their topic.

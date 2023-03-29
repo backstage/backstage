@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { EventParams, getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -24,7 +24,6 @@ import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
-import { EventParams } from '@backstage/plugin-events-node';
 
 jest.mock('../lib/github', () => {
   return {

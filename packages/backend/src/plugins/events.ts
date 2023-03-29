@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { EventSubscriber } from '@backstage/backend-common';
 import {
   EventsBackend,
   HttpPostIngressEventPublisher,
 } from '@backstage/plugin-events-backend';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 

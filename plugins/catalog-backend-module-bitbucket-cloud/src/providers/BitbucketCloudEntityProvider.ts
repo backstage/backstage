@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
+import {
+  EventParams,
+  EventSubscriber,
+  TokenManager,
+} from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
@@ -35,7 +39,6 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,

@@ -15,10 +15,10 @@
  */
 
 import {
-  EventBroker,
   EventParams,
+  EventBroker,
   EventSubscriber,
-} from '@backstage/plugin-events-node';
+} from '@backstage/backend-common';
 
 /** @public */
 export class TestEventBroker implements EventBroker {

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { EventBroker, EventSubscriber } from '@backstage/backend-common';
 import {
-  EventBroker,
   EventPublisher,
-  EventSubscriber,
   InMemoryEventBroker,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';

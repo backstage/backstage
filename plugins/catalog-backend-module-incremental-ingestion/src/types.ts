@@ -15,6 +15,7 @@
  */
 
 import type {
+  EventParams,
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
@@ -27,7 +28,6 @@ import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams } from '@backstage/plugin-events-node';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';

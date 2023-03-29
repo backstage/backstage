@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 import { PluginEnvironment } from '../types';
 

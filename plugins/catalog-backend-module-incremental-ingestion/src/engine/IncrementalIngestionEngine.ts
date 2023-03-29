@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
@@ -21,7 +22,6 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
 export class IncrementalIngestionEngine
   implements IterationEngine, EventSubscriber

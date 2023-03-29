@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { EventBroker, EventSubscriber } from '@backstage/backend-common';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
-  EventBroker,
   EventPublisher,
-  EventSubscriber,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 

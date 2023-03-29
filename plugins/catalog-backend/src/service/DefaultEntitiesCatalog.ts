@@ -23,7 +23,6 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
-import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
@@ -616,11 +615,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
 
     const event: BackstageEvent = {
-      uuid: uuid(),
-      timestamp: Date.now(),
       topic: 'backstage',
-      type: 'catalog.entity.delete',
       originatingEntityRef: uid,
+      eventPayload: { type: 'catalog.entity.delete' },
     };
     this.eventBroker.publish(event);
   }

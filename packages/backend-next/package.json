@@ -28,6 +28,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",

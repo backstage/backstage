@@ -40,6 +40,7 @@
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",

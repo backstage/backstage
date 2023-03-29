@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
+import { EventParams } from '@backstage/backend-common';
 import { EventRouter } from './EventRouter';
 
 /**

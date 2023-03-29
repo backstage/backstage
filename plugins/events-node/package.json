@@ -36,10 +36,12 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
   },
   "files": [
     "dist"

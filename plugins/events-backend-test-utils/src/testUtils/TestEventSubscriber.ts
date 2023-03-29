@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 
 /** @public */
 export class TestEventSubscriber implements EventSubscriber {

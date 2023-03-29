@@ -16,7 +16,7 @@
 
 export type {
   BackstageEvent,
-  Event,
+  EventParams,
   EventBroker,
   EventSubscriber,
 } from './types';

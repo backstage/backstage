@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  SubTopicEventRouter,
-} from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-common';
+import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 /**
  * Subscribes to the generic `bitbucketCloud` topic

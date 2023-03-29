@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { EventBroker } from './EventBroker';
-import { EventParams } from './EventParams';
+import {
+  EventParams,
+  EventBroker,
+  EventSubscriber,
+} from '@backstage/backend-common';
 import { EventPublisher } from './EventPublisher';
-import { EventSubscriber } from './EventSubscriber';
 
 /**
  * Subscribes to a topic and - depending on a set of conditions -

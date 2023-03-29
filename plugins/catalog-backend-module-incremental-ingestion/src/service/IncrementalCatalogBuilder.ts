@@ -19,6 +19,7 @@ import {
   IncrementalEntityProviderOptions,
   PluginEnvironment,
 } from '../types';
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import { CatalogBuilder as CoreCatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Duration } from 'luxon';
 import { Knex } from 'knex';
@@ -27,7 +28,6 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { IncrementalProviderRouter } from '../router/routes';
 import { Deferred } from '../util';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
 /** @public */
 export class IncrementalCatalogBuilder {

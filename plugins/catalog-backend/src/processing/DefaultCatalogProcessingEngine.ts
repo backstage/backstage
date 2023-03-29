@@ -23,7 +23,6 @@ import { BackstageEvent, EventBroker } from '@backstage/backend-common';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
-import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { metrics } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
@@ -350,14 +349,11 @@ function progressTracker(eventBroker: EventBroker) {
 
       // TODO(timbonicus): how do we know if this is a new entity or an update?
       const event: BackstageEvent = {
-        uuid: uuid(),
-        timestamp: Date.now(),
         topic: 'backstage',
-        type: 'catalog.entity.processed',
         originatingEntityRef: result.ok
           ? stringifyEntityRef(result.completedEntity)
           : undefined,
-        payload: result,
+        eventPayload: { type: 'catalog.entity.processed' },
       };
       eventBroker.publish(event);
     }

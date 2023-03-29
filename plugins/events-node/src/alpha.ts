@@ -16,4 +16,3 @@
 
 export type { EventsExtensionPoint } from './extensions';
 export { eventsExtensionPoint } from './extensions';
-export { eventServiceRef } from './eventService';

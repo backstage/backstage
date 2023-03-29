@@ -17,6 +17,7 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
+  EventBroker,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -38,4 +39,5 @@ export type PluginEnvironment = {
   permissions: PermissionEvaluator;
   scheduler: PluginTaskScheduler;
   identity: IdentityApi;
+  eventBroker: EventBroker;
 };

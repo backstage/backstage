@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -28,8 +29,6 @@ import {
   ScmIntegrations,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
-import { EventParams } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import {
   EntityProvider,
   EntityProviderConnection,
