@@ -194,7 +194,7 @@ describe('<EntityNamespacePicker/>', () => {
     const mockCatalogApiRefNoNamespace = {
       getEntityFacets: async () => ({
         facets: {
-          'metadata.tags': {},
+          'metadata.namespace': {},
         },
       }),
     } as unknown as CatalogApi;
@@ -215,6 +215,31 @@ describe('<EntityNamespacePicker/>', () => {
       expect(updateFilters).toHaveBeenLastCalledWith({
         namespace: undefined,
       }),
+    );
+  });
+  it('namespace picker is invisible if there are only 1 available option', async () => {
+    const defaultNamespaces = ['default', 'default', 'default'];
+    const mockCatalogApiRefDefaultNamespace = {
+      getEntityFacets: async () => ({
+        facets: {
+          'metadata.namespace': defaultNamespaces.map((value, idx) => ({
+            value,
+            count: idx,
+          })),
+        },
+      }),
+    } as unknown as CatalogApi;
+    render(
+      <TestApiProvider
+        apis={[[catalogApiRef, mockCatalogApiRefDefaultNamespace]]}
+      >
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.queryByText('Namespace')).not.toBeInTheDocument(),
     );
   });
 });
