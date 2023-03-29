@@ -121,8 +121,8 @@ export function EntityAutocompletePicker<
     return null;
   }
 
-  // hides picker if only option available is 'default'
-  if (availableOptions.every(namespace => namespace === 'default')) return null;
+  // Hide if there are 1 or fewer options; nothing to pick from
+  if (availableOptions.length <= 1) return null;
 
   return (
     <Box pb={1} pt={1}>
