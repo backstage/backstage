@@ -20,23 +20,19 @@ import { startPostgresContainer } from './startPostgresContainer';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
+jest.setTimeout(60_000);
+
 describe('startPostgresContainer', () => {
-  itIfDocker(
-    'successfully launches the container',
-    async () => {
-      const { stop, ...connection } = await startPostgresContainer(
-        'postgres:13',
-      );
-      const db = createConnection({ client: 'pg', connection });
-      try {
-        const result = await db.select(db.raw('version()'));
-        // eslint-disable-next-line jest/no-standalone-expect
-        expect(result[0]?.version).toContain('PostgreSQL');
-      } finally {
-        await db.destroy();
-        await stop();
-      }
-    },
-    60_000,
-  );
+  itIfDocker('successfully launches the container', async () => {
+    const { stop, ...connection } = await startPostgresContainer('postgres:13');
+    const db = createConnection({ client: 'pg', connection });
+    try {
+      const result = await db.select(db.raw('version()'));
+      // eslint-disable-next-line jest/no-standalone-expect
+      expect(result[0]?.version).toContain('PostgreSQL');
+    } finally {
+      await db.destroy();
+      await stop();
+    }
+  });
 });

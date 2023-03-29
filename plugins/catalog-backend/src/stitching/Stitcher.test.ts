@@ -27,6 +27,8 @@ import {
 } from '../database/tables';
 import { Stitcher } from './Stitcher';
 
+jest.setTimeout(60_000);
+
 describe('Stitcher', () => {
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -267,6 +269,5 @@ describe('Stitcher', () => {
         ]),
       );
     },
-    60_000,
   );
 });

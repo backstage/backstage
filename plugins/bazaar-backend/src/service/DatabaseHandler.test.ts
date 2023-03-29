@@ -31,6 +31,8 @@ const bazaarProject: any = {
   responsible: 'r',
 };
 
+jest.setTimeout(60_000);
+
 describe('DatabaseHandler', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -96,6 +98,5 @@ describe('DatabaseHandler', () => {
         res[0].members_count === '1' || res[0].members_count === 1,
       ).toBeTruthy();
     },
-    60_000,
   );
 });
