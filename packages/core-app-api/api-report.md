@@ -116,9 +116,11 @@ export const ApiProvider: {
   (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
-      PropTypes.InferProps<{
-        get: PropTypes.Validator<(...args: any[]) => any>;
-      }>
+      NonNullable<
+        PropTypes.InferProps<{
+          get: PropTypes.Validator<(...args: any[]) => any>;
+        }>
+      >
     >;
     children: PropTypes.Requireable<PropTypes.ReactNodeLike>;
   };

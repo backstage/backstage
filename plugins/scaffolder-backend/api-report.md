@@ -614,10 +614,18 @@ export const createTemplateAction: <
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
   TOutputSchema extends ZodType<any, ZodTypeDef, any> | Schema = {},
-  TActionInput = TInputSchema extends ZodType<any, any, infer IReturn>
+  TActionInput extends JsonObject = TInputSchema extends ZodType<
+    any,
+    any,
+    infer IReturn
+  >
     ? IReturn
     : TInputParams,
-  TActionOutput = TOutputSchema extends ZodType<any, any, infer IReturn_1>
+  TActionOutput extends JsonObject = TOutputSchema extends ZodType<
+    any,
+    any,
+    infer IReturn_1
+  >
     ? IReturn_1
     : TOutputParams,
 >(

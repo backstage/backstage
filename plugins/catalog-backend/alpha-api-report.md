@@ -79,9 +79,7 @@ export const catalogPlugin: () => BackendFeature;
 // @alpha
 export const createCatalogConditionalDecision: (
   permission: ResourcePermission<'catalog-entity'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'catalog-entity', PermissionRuleParams>
-  >,
+  conditions: PermissionCriteria<PermissionCondition<'catalog-entity'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha

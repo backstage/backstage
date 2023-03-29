@@ -44,10 +44,18 @@ export const createTemplateAction: <
   TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
   TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
-  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
     ? IReturn
     : TInputParams,
-  TActionOutput = TOutputSchema extends z.ZodType<any, any, infer IReturn_1>
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn_1
+  >
     ? IReturn_1
     : TOutputParams,
 >(
@@ -75,8 +83,8 @@ export type TaskSecrets = Record<string, string> & {
 
 // @public (undocumented)
 export type TemplateAction<
-  TActionInput = unknown,
-  TActionOutput = JsonObject,
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
 > = {
   id: string;
   description?: string;
@@ -94,8 +102,8 @@ export type TemplateAction<
 
 // @public (undocumented)
 export type TemplateActionOptions<
-  TActionInput = {},
-  TActionOutput = {},
+  TActionInput extends JsonObject = {},
+  TActionOutput extends JsonObject = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 > = {
