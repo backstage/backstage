@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
    *
-   * Can be overridden by in config by providing a `backend.discovery` section with a `<pluginId>` key.
+   * Can be overridden by in config by providing a `discovery` section with a `<pluginId>` key.
    *
    * The basePath defaults to `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
@@ -69,7 +69,7 @@ export class HostDiscovery implements PluginEndpointDiscovery {
     return new HostDiscovery(
       internalBaseUrl + basePath,
       externalBaseUrl + basePath,
-      config.getOptionalConfig('backend.discovery'),
+      config.getOptionalConfig('discovery'),
     );
   }
 

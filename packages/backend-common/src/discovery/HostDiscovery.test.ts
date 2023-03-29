@@ -88,9 +88,9 @@ describe('HostDiscovery', () => {
         backend: {
           baseUrl: 'http://localhost:40',
           listen: { port: 80, host: 'localhost' },
-          discovery: {
-            catalog: 'http://catalog-backend:8080/api/catalog',
-          },
+        },
+        discovery: {
+          catalog: 'http://catalog-backend:8080/api/catalog',
         },
       }),
     );
