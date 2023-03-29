@@ -61,10 +61,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    const providerConfigs = readGitlabConfigs(
-      config,
-      options.logger.child({ target: 'GitlabDiscoveryEntityProvider' }),
-    );
+    const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
 
@@ -181,6 +178,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       if (
+        !this.config.branch &&
         this.config.fallbackBranch === '*' &&
         project.default_branch === undefined
       ) {
@@ -188,7 +186,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       const project_branch =
-        project.default_branch ?? this.config.fallbackBranch;
+        this.config.branch ??
+        project.default_branch ??
+        this.config.fallbackBranch;
 
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
@@ -211,7 +211,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(project: GitLabProject): LocationSpec {
-    const project_branch = project.default_branch ?? this.config.fallbackBranch;
+    const project_branch =
+      this.config.branch ??
+      project.default_branch ??
+      this.config.fallbackBranch;
     return {
       type: 'url',
       target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,

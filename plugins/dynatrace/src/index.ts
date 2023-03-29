@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Dynatrace.
+ *
+ * @packageDocumentation
+ */
+
 export { dynatracePlugin, DynatraceTab, isDynatraceAvailable } from './plugin';

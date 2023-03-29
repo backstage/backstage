@@ -25,6 +25,7 @@ import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -115,9 +116,11 @@ export const ApiProvider: {
   (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
-      PropTypes.InferProps<{
-        get: PropTypes.Validator<(...args: any[]) => any>;
-      }>
+      NonNullable<
+        PropTypes.InferProps<{
+          get: PropTypes.Validator<(...args: any[]) => any>;
+        }>
+      >
     >;
     children: PropTypes.Requireable<PropTypes.ReactNodeLike>;
   };
@@ -264,6 +267,7 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
+  configApi?: ConfigApi;
 };
 
 // @public
@@ -533,6 +537,7 @@ export class OneLoginAuth {
 
 // @public
 export type OneLoginAuthCreateOptions = {
+  configApi?: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;

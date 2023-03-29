@@ -17,6 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
+import { z } from 'zod';
 
 const id = 'catalog:fetch';
 
@@ -63,55 +64,46 @@ export function createFetchCatalogEntityAction(options: {
 }) {
   const { catalogClient } = options;
 
-  return createTemplateAction<{
-    entityRef?: string;
-    entityRefs?: string[];
-    optional?: boolean;
-  }>({
+  return createTemplateAction({
     id,
     description:
       'Returns entity or entities from the catalog by entity reference(s)',
     examples,
     schema: {
-      input: {
-        type: 'object',
-        properties: {
-          entityRef: {
-            type: 'string',
-            title: 'Entity reference',
+      input: z.object({
+        entityRef: z
+          .string({
             description: 'Entity reference of the entity to get',
-          },
-          entityRefs: {
-            type: 'array',
-            title: 'Entity references',
+          })
+          .optional(),
+        entityRefs: z
+          .array(z.string(), {
             description: 'Entity references of the entities to get',
-          },
-          optional: {
-            title: 'Optional',
+          })
+          .optional(),
+        optional: z
+          .boolean({
             description:
               'Allow the entity or entities to optionally exist. Default: false',
-            type: 'boolean',
-          },
-        },
-      },
-      output: {
-        type: 'object',
-        properties: {
-          entity: {
-            title: 'Entity found by the entity reference',
-            type: 'object',
+          })
+          .optional(),
+      }),
+      output: z.object({
+        entity: z
+          .any({
             description:
               'Object containing same values used in the Entity schema. Only when used with `entityRef` parameter.',
-          },
-          entities: {
-            title: 'Entities found by the entity references',
-            type: 'array',
-            items: { type: 'object' },
-            description:
-              'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
-          },
-        },
-      },
+          })
+          .optional(),
+        entities: z
+          .array(
+            z.any({
+              description:
+                'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
+            }),
+          )
+          .optional(),
+      }),
     },
     async handler(ctx) {
       const { entityRef, entityRefs, optional } = ctx.input;

@@ -22,7 +22,6 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -47,8 +46,9 @@ export type ScaffolderPageProps = {
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;
-    filter: (entity: Entity) => boolean;
+    filter: (entity: TemplateEntityV1beta3) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
@@ -64,13 +64,14 @@ export type ScaffolderPageProps = {
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
     title: groups ? 'Other Templates' : 'Templates',
-    filter: (entity: Entity) => {
+    filter: (entity: TemplateEntityV1beta3) => {
       const filtered = (groups ?? []).map(group => group.filter(entity));
       return !filtered.some(result => result === true);
     },
@@ -123,11 +124,13 @@ export const ScaffolderPageContents = ({
                   key={index}
                   TemplateCardComponent={TemplateCardComponent}
                   group={group}
+                  templateFilter={templateFilter}
                 />
               ))}
             <TemplateList
               key="other"
               TemplateCardComponent={TemplateCardComponent}
+              templateFilter={templateFilter}
               group={otherTemplatesGroup}
             />
           </CatalogFilterLayout.Content>
@@ -140,6 +143,7 @@ export const ScaffolderPageContents = ({
 export const ScaffolderPage = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
   headerOptions,
 }: ScaffolderPageProps) => (
@@ -147,6 +151,7 @@ export const ScaffolderPage = ({
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
       groups={groups}
+      templateFilter={templateFilter}
       contextMenu={contextMenu}
       headerOptions={headerOptions}
     />

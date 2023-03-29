@@ -13,4 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Integrates Apollo Explorer graphs as a tool to browse GraphQL API endpoints inside Backstage.
+ *
+ * @packageDocumentation
+ */
 export { apolloExplorerPlugin, ApolloExplorerPage } from './plugin';

@@ -134,7 +134,7 @@ export const StarredRatingButtons = (props: StarredRatingButtonsProps) => {
   return (
     <>
       {Object.values(FeedbackRatings)
-        .filter(o => typeof o === 'number')
+        .filter((o): o is number => typeof o === 'number')
         .map(starRating => (
           <IconButton
             key={starRating}

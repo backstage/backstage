@@ -45,7 +45,7 @@ export type BootErrorPageProps = {
  */
 export type SignInPageProps = {
   /**
-   * Set the IdentityApi on successful sign in. This should only be called once.
+   * Set the IdentityApi on successful sign-in. This should only be called once.
    */
   onSignInSuccess(identityApi: IdentityApi): void;
 };

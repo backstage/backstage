@@ -1,5 +1,24 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.1.8
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 
 import { Logger } from 'winston';
-import camelcaseKeys from 'camelcase-keys';
+import camelize from 'camelize-ts';
 import { buildQuery } from '../util';
 import {
   RollbarItemCount,
@@ -104,22 +104,25 @@ export class RollbarApi {
     );
   }
 
-  private async get<T>(url: string, accessToken?: string) {
+  private async get<T extends {}>(
+    url: string,
+    accessToken?: string,
+  ): Promise<T> {
     const fullUrl = buildUrl(url);
 
     if (this.logger) {
       this.logger.info(`Calling Rollbar REST API, ${fullUrl}`);
     }
 
-    return fetch(
+    const res = await fetch(
       fullUrl,
       getRequestHeaders(accessToken || this.accessToken || ''),
-    )
-      .then(response => response.json())
-      .then(json => camelcaseKeys<T>(json?.result, { deep: true }));
+    );
+    const data = await res.json();
+    return camelize(data?.result) as T;
   }
 
-  private async getForProject<T>(
+  private async getForProject<T extends {}>(
     url: string,
     projectName: string,
     useProjectToken = true,

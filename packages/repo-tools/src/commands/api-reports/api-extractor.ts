@@ -487,6 +487,9 @@ export async function runApiExtraction({
       showVerboseMessages: false,
       showDiagnostics: false,
       messageCallback(message) {
+        if (message.text.includes('The API report file is missing')) {
+          shouldLogInstructions = true;
+        }
         if (
           message.text.includes(
             'You have changed the public API signature for this project.',
@@ -506,7 +509,11 @@ export async function runApiExtraction({
 
     // This release tag validation makes sure that the release tag of known entry points match expectations.
     // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
-    if (validateReleaseTags && !usesExperimentalTypeBuild) {
+    if (
+      validateReleaseTags &&
+      !usesExperimentalTypeBuild &&
+      fs.pathExistsSync(extractorConfig.reportFilePath)
+    ) {
       if (['index', 'alpha', 'beta'].includes(name)) {
         const report = await fs.readFile(
           extractorConfig.reportFilePath,

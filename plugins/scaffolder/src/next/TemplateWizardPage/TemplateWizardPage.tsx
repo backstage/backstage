@@ -41,6 +41,9 @@ import {
   selectedTemplateRouteRef,
 } from '../../routes';
 
+/**
+ * @alpha
+ */
 export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];

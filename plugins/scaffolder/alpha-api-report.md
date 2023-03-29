@@ -5,13 +5,15 @@
 ```ts
 /// <reference types="react" />
 
-import { Entity } from '@backstage/catalog-model';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_3 } from '@rjsf/core-v5';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react/alpha';
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -29,8 +31,11 @@ export type NextRouterProps = {
     TemplateOutputsComponent?: React_2.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
+    TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
+    TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   FormProps?: FormProps_2;
   contextMenu?: {
     editor?: boolean;
@@ -45,9 +50,24 @@ export const NextScaffolderPage: (
 ) => JSX.Element;
 
 // @alpha (undocumented)
-export type TemplateGroupFilter = {
-  title?: React_2.ReactNode;
-  filter: (entity: Entity) => boolean;
+export type TemplateListPageProps = {
+  TemplateCardComponent?: React_2.ComponentType<{
+    template: TemplateEntityV1beta3;
+  }>;
+  groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    tasks?: boolean;
+  };
+};
+
+// @alpha (undocumented)
+export type TemplateWizardPageProps = {
+  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
+  FormProps?: FormProps_2;
 };
 
 // (No @packageDocumentation comment for this package)

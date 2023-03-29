@@ -75,4 +75,12 @@
   border-left: 3px solid rgba(255, 0, 0, 0.5);
 }
 
+.code-block-highlight-line {
+  background-color: rgba(255, 255, 255, 0.08);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid rgb(255, 255, 255, 0.5);
+}
+
 /* #endregion */

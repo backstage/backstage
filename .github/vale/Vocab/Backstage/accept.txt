@@ -82,6 +82,7 @@ Debounce
 debuggability
 declaratively
 deduplicated
+deliverables
 dependabot
 deps
 destructured
@@ -266,6 +267,7 @@ permissioning
 plantuml
 Platformize
 Podman
+posix
 postgres
 postpack
 pre

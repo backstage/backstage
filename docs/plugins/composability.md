@@ -196,14 +196,14 @@ const App = () => (
 There are a couple of naming patterns to adhere to as you build plugins, which
 helps clarify the intent and usage of the exports.
 
-| Description           | Pattern           | Examples                                             |
-| --------------------- | ----------------- | ---------------------------------------------------- |
-| Top-level Pages       | `\*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
-| Entity Tab Content    | `Entity\*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
-| Entity Overview Card  | `Entity\*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
-| Entity Conditional    | `is\*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
-| Plugin Instance       | `\*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |
-| Utility API Reference | `\*ApiRef`        | `configApiRef`, `catalogApiRef`                      |
+| Description           | Pattern          | Examples                                             |
+| --------------------- | ---------------- | ---------------------------------------------------- |
+| Top-level Pages       | `*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
+| Entity Tab Content    | `Entity*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
+| Entity Overview Card  | `Entity*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
+| Entity Conditional    | `is*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
+| Plugin Instance       | `*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |
+| Utility API Reference | `*ApiRef`        | `configApiRef`, `catalogApiRef`                      |
 
 ### Routing System
 
@@ -480,7 +480,7 @@ function isKind(kind: string) {
 ```
 
 The `@backstage/catalog` plugin provides a couple of built-in conditions,
-`isKind`, `isComponentType`, and `isNamespace`.
+`isKind`, `isComponentType`, `isResourceType`, `isEntityWith`, and `isNamespace`.
 
 In addition to the `EntitySwitch` component, the catalog plugin also exports a
 new `EntityLayout` component. It is a tweaked version and replacement for the

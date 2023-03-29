@@ -71,7 +71,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 // @public
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions extends {} = {},
+  TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
   // (undocumented)
   uiSchema: FieldProps['uiSchema'] & {
@@ -316,7 +316,7 @@ export type TemplateParameterSchema = {
 
 // @public
 export const useCustomFieldExtensions: <
-  TComponentDataType = FieldExtensionOptions<unknown, unknown>,
+  TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
 ) => TComponentDataType[];

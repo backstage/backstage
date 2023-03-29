@@ -69,8 +69,7 @@ export function createCatalogWriteAction() {
           .describe('Defaults to catalog-info.yaml'),
         // TODO: this should reference an zod entity validator if it existed.
         entity: z
-          .object({})
-          .passthrough()
+          .record(z.any())
           .describe(
             'You can provide the same values used in the Entity schema.',
           ),

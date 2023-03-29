@@ -31,7 +31,11 @@ import {
 
 import { TemplateFilter, TemplateGlobal } from '../../../lib';
 import { createDebugLogAction, createWaitAction } from './debug';
-import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
+import {
+  createFetchPlainAction,
+  createFetchPlainFileAction,
+  createFetchTemplateAction,
+} from './fetch';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -109,6 +113,10 @@ export const createBuiltinActions = (
 
   const actions = [
     createFetchPlainAction({
+      reader,
+      integrations,
+    }),
+    createFetchPlainFileAction({
       reader,
       integrations,
     }),

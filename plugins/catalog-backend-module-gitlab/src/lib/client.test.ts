@@ -19,7 +19,7 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
 import { graphql, rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import { setupServer, SetupServer } from 'msw/node';
 import { GitLabClient, paginated } from './client';
 import { GitLabGroup, GitLabUser } from './types';
 
@@ -37,7 +37,7 @@ const MOCK_CONFIG = readGitLabIntegrationConfig(
 const FAKE_PAGED_ENDPOINT = `/some-endpoint`;
 const FAKE_PAGED_URL = `${MOCK_CONFIG.apiBaseUrl}${FAKE_PAGED_ENDPOINT}`;
 
-function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
+function setupFakeFourPageURL(srv: SetupServer, url: string) {
   srv.use(
     rest.get(url, (req, res, ctx) => {
       const page = req.url.searchParams.get('page');
@@ -57,7 +57,7 @@ function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
 }
 
 function setupFakeGroupProjectsEndpoint(
-  srv: SetupServerApi,
+  srv: SetupServer,
   apiBaseUrl: string,
   groupID: string,
 ) {
@@ -79,7 +79,7 @@ function setupFakeGroupProjectsEndpoint(
 }
 
 function setupFakeInstanceProjectsEndpoint(
-  srv: SetupServerApi,
+  srv: SetupServer,
   apiBaseUrl: string,
 ) {
   srv.use(
@@ -105,7 +105,7 @@ function setupFakeInstanceProjectsEndpoint(
   );
 }
 
-function setupFakeHasFileEndpoint(srv: SetupServerApi, apiBaseUrl: string) {
+function setupFakeHasFileEndpoint(srv: SetupServer, apiBaseUrl: string) {
   srv.use(
     rest.head(
       `${apiBaseUrl}/projects/group%2Frepo/repository/files/catalog-info.yaml`,

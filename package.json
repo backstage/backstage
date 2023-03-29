@@ -8,7 +8,7 @@
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
-    "build:backend": "yarn workspace backend build",
+    "build:backend": "yarn workspace example-backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
@@ -47,7 +47,7 @@
     "@types/react": "^17",
     "@types/react-dom": "^17"
   },
-  "version": "1.12.0",
+  "version": "1.13.0-next.1",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"
@@ -81,7 +81,7 @@
     "semver": "^7.3.2",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~4.7.0"
+    "typescript": "~5.0.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

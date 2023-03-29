@@ -1,5 +1,39 @@
 # @backstage/cli
 
+## 0.22.6-next.1
+
+### Patch Changes
+
+- 24432ae52fb: Fix the build for packages with multiple entry points to avoid duplicated modules.
+- 79e91d4c30a: Support importing `.md` files in build loader
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- b588ab73972: Ensure that the `package prepack` command and backend bundling uses posix paths in `package.json` on all OSes.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.0
+
+### Patch Changes
+
+- b9839d7135c: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+- c07c3b7364b: Add `onboard` command. While still in development, this command aims to guide users in setting up their Backstage App.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.22.4
 
 ### Patch Changes

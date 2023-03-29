@@ -16,9 +16,11 @@
 
 export { EntitySwitch } from './EntitySwitch';
 export type { EntitySwitchProps, EntitySwitchCaseProps } from './EntitySwitch';
+export type { EntityPredicates } from './conditions';
 export {
   isKind,
   isNamespace,
   isComponentType,
   isResourceType,
+  isEntityWith,
 } from './conditions';
