@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
-  FormControlLabel,
   makeStyles,
   TextField,
   Typography,
@@ -112,16 +111,14 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
             setSelectedLifecycles(value)
           }
           renderOption={(option, { selected }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  checked={selected}
-                />
-              }
-              label={option}
-            />
+            <div>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                checked={selected}
+              />
+              {option}
+            </div>
           )}
           size="small"
           popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
