@@ -51,7 +51,6 @@ class StaticObservableConfigSource implements ConfigSource {
         deferred = simpleDefer();
       },
       complete() {
-        queue.length = 0;
         deferred.resolve();
       },
     });
