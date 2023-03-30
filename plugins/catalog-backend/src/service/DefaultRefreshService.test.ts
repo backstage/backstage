@@ -34,6 +34,8 @@ import { EntityProcessingRequest } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { DefaultRefreshService } from './DefaultRefreshService';
 
+jest.setTimeout(60_000);
+
 describe('DefaultRefreshService', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
@@ -221,7 +223,6 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -275,7 +276,6 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -337,6 +337,5 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 });

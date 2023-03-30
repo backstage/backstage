@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.6-next.0",
+  "version": "0.22.6-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -50,6 +50,7 @@
     "@spotify/eslint-config-react": "^14.0.0",
     "@spotify/eslint-config-typescript": "^14.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@svgr/core": "6.5.x",
     "@svgr/plugin-jsx": "6.5.x",
     "@svgr/plugin-svgo": "6.5.x",
     "@svgr/rollup": "6.5.x",
@@ -128,7 +129,7 @@
     "yaml": "^2.0.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0",
-    "zod": "~3.18.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -160,7 +161,8 @@
     "mock-fs": "^5.1.0",
     "msw": "^1.0.0",
     "nodemon": "^2.0.2",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "type-fest": "^2.19.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor": "^7.21.2"

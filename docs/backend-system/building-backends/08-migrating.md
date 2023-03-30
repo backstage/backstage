@@ -121,7 +121,7 @@ given prefix.
 
 In the simple case, what we did above is sufficient, TypeScript is happy, and
 the backend runs with the new feature. If they do, feel free to skip this entire
-section, and deleting `types.ts`.
+section, and delete `types.ts`.
 
 Sometimes though, type errors can be reported on the newly added line, saying
 that parts of the `PluginEnvironment` type do not match. This happens when the

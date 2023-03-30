@@ -15,3 +15,4 @@
  */
 
 export { SortView } from './SortView';
+export type { SortViewProps } from './SortView';

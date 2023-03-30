@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RuleOptions } from './types';
 import { alpha, lighten } from '@material-ui/core';
+import { RuleOptions } from './types';
 
 export default ({ theme }: RuleOptions) => `
 /*==================  Variables  ==================*/
@@ -133,7 +133,7 @@ export default ({ theme }: RuleOptions) => `
   /* TYPESET */
   --md-typeset-font-size: 1rem;
   --md-typeset-color: var(--md-default-fg-color);
-  --md-typeset-a-color: var(--md-accent-fg-color);
+  --md-typeset-a-color: ${theme.palette.link};
   --md-typeset-table-color: ${theme.palette.text.primary};
   --md-typeset-del-color: ${
     theme.palette.type === 'dark'

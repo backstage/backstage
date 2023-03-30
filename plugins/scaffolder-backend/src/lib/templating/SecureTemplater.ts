@@ -18,7 +18,6 @@ import { VM } from 'vm2';
 import { resolvePackagePath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
-import { RepoSpec } from '../../scaffolder/actions/builtin/publish/util';
 
 // language=JavaScript
 const mkScript = (nunjucksSource: string) => `
@@ -46,26 +45,14 @@ const { render, renderCompat } = (() => {
   });
   compatEnv.addFilter('jsonify', compatEnv.getFilter('dump'));
 
-  if (typeof parseRepoUrl !== 'undefined') {
-    const safeHelperRef = parseRepoUrl;
-
-    env.addFilter('parseRepoUrl', repoUrl => {
-      return JSON.parse(safeHelperRef(repoUrl))
-    });
-    env.addFilter('projectSlug', repoUrl => {
-      const { owner, repo } = JSON.parse(safeHelperRef(repoUrl));
-      return owner + '/' + repo;
-    });
-  }
-
-  if (typeof additionalTemplateFilters !== 'undefined') {
-    for (const [filterName, filterFn] of Object.entries(additionalTemplateFilters)) {
+  if (typeof templateFilters !== 'undefined') {
+    for (const [filterName, filterFn] of Object.entries(templateFilters)) {
       env.addFilter(filterName, (...args) => JSON.parse(filterFn(...args)));
     }
   }
 
-  if (typeof additionalTemplateGlobals !== 'undefined') {
-    for (const [globalName, global] of Object.entries(additionalTemplateGlobals)) {
+  if (typeof templateGlobals !== 'undefined') {
+    for (const [globalName, global] of Object.entries(templateGlobals)) {
       if (typeof global === 'function') {
         env.addGlobal(globalName, (...args) => JSON.parse(global(...args)));
       } else {
@@ -114,16 +101,12 @@ export type TemplateGlobal =
   | JsonValue;
 
 export interface SecureTemplaterOptions {
-  /* Optional implementation of the parseRepoUrl filter */
-  parseRepoUrl?(repoUrl: string): RepoSpec;
-
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
-
   /* Extra user-provided nunjucks filters */
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  templateFilters?: Record<string, TemplateFilter>;
   /* Extra user-provided nunjucks globals */
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  templateGlobals?: Record<string, TemplateGlobal>;
 }
 
 export type SecureTemplateRenderer = (
@@ -133,21 +116,12 @@ export type SecureTemplateRenderer = (
 
 export class SecureTemplater {
   static async loadRenderer(options: SecureTemplaterOptions = {}) {
-    const {
-      parseRepoUrl,
-      cookiecutterCompat,
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
-    } = options;
+    const { cookiecutterCompat, templateFilters, templateGlobals } = options;
     const sandbox: Record<string, any> = {};
 
-    if (parseRepoUrl) {
-      sandbox.parseRepoUrl = (url: string) => JSON.stringify(parseRepoUrl(url));
-    }
-
-    if (additionalTemplateFilters) {
-      sandbox.additionalTemplateFilters = Object.fromEntries(
-        Object.entries(additionalTemplateFilters)
+    if (templateFilters) {
+      sandbox.templateFilters = Object.fromEntries(
+        Object.entries(templateFilters)
           .filter(([_, filterFunction]) => !!filterFunction)
           .map(([filterName, filterFunction]) => [
             filterName,
@@ -155,9 +129,9 @@ export class SecureTemplater {
           ]),
       );
     }
-    if (additionalTemplateGlobals) {
-      sandbox.additionalTemplateGlobals = Object.fromEntries(
-        Object.entries(additionalTemplateGlobals)
+    if (templateGlobals) {
+      sandbox.templateGlobals = Object.fromEntries(
+        Object.entries(templateGlobals)
           .filter(([_, global]) => !!global)
           .map(([globalName, global]) => {
             if (typeof global === 'function') {

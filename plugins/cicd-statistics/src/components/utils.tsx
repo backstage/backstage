@@ -95,8 +95,12 @@ export function tickFormatterY(duration: number) {
     .replace(/year.*/, 'y');
 }
 
-export function tooltipValueFormatter(durationOrCount: number, name: string) {
+export function tooltipValueFormatter(
+  durationOrCount: number,
+  name: string,
+): [any, any] {
   return [
+    // TODO(Rugvip): Types don't allow returning elements, but it was here before so presumably works
     <Typography component="span" style={infoText}>
       {capitalize(name)}:{' '}
       {name.endsWith(' count')

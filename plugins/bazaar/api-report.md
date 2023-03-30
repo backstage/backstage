@@ -30,6 +30,8 @@ export const BazaarPage: (props: BazaarPageProps) => JSX.Element;
 export type BazaarPageProps = {
   title?: string;
   subtitle?: string;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
 };
 
 // @public (undocumented)
@@ -53,7 +55,13 @@ export const isBazaarAvailable: (
 ) => Promise<boolean>;
 
 // @public (undocumented)
-export const SortView: () => JSX.Element;
+export const SortView: (props: SortViewProps) => JSX.Element;
+
+// @public (undocumented)
+export type SortViewProps = {
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -16,6 +16,8 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { queryPostgresMajorVersion } from './util';
 
+jest.setTimeout(60_000);
+
 describe('util', () => {
   describe('unsupported', () => {
     const databases = TestDatabases.create({
@@ -31,7 +33,6 @@ describe('util', () => {
           async () => await queryPostgresMajorVersion(knex),
         ).rejects.toThrow();
       },
-      60_000,
     );
   });
 
@@ -56,7 +57,6 @@ describe('util', () => {
           expectedVersion,
         );
       },
-      60_000,
     );
   });
 });

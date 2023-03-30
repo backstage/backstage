@@ -24,6 +24,8 @@ import { DefaultProviderDatabase } from './DefaultProviderDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 
+jest.setTimeout(60_000);
+
 describe('DefaultProviderDatabase', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
@@ -184,7 +186,6 @@ describe('DefaultProviderDatabase', () => {
           ),
         ).toBeTruthy();
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -321,7 +322,6 @@ describe('DefaultProviderDatabase', () => {
           ),
         ).toBeFalsy();
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -392,7 +392,6 @@ describe('DefaultProviderDatabase', () => {
           ),
         ).toBeTruthy();
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -443,7 +442,6 @@ describe('DefaultProviderDatabase', () => {
           }),
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -493,7 +491,6 @@ describe('DefaultProviderDatabase', () => {
           ),
         ).toBeFalsy();
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -560,7 +557,6 @@ describe('DefaultProviderDatabase', () => {
           }),
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -688,7 +684,6 @@ describe('DefaultProviderDatabase', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -743,7 +738,6 @@ describe('DefaultProviderDatabase', () => {
           ]),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -777,7 +771,6 @@ describe('DefaultProviderDatabase', () => {
         const state = await knex<DbRefreshStateRow>('refresh_state').select();
         expect(state).toEqual([]);
       },
-      60_000,
     );
   });
 });
