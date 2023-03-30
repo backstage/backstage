@@ -35,13 +35,18 @@ export const Catalog = createModule({
     ),
   ),
   resolvers: {
-    Lifecycle: {
-      EXPERIMENTAL: 'experimental',
-      PRODUCTION: 'production',
-      DEPRECATED: 'deprecated',
-    },
     JSON: GraphQLJSON,
     JSONObject: GraphQLJSONObject,
+    Entity: {
+      labels: (labels: Record<string, string>) =>
+        labels
+          ? Object.entries(labels).map(([key, value]) => ({ key, value }))
+          : null,
+      annotations: (annotations: Record<string, string>) =>
+        annotations
+          ? Object.entries(annotations).map(([key, value]) => ({ key, value }))
+          : null,
+    },
     Query: {
       entity: (
         _: any,

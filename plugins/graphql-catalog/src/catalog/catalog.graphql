@@ -7,10 +7,9 @@ directive @relation(
 scalar JSON
 scalar JSONObject
 
-enum Lifecycle {
-  EXPERIMENTAL
-  PRODUCTION
-  DEPRECATED
+type KeyValuePair {
+  key: String!
+  value: String!
 }
 
 union Ownable = API | Component | Domain | Resource | System | Template
@@ -23,8 +22,11 @@ interface Entity
   name: String! @field(at: "metadata.name")
   kind: String! @field(at: "kind")
   namespace: String! @field(at: "metadata.namespace", default: "default")
-  title: String! @field(at: "metadata.title", default: "")
-  description: String! @field(at: "metadata.description", default: "")
+  apiVersion: String! @field(at: "apiVersion")
+  title: String @field(at: "metadata.title")
+  description: String @field(at: "metadata.description")
+  labels: [KeyValuePair!] @field(at: "metadata.labels")
+  annotations: [KeyValuePair!] @field(at: "metadata.annotations")
   tags: [String!] @field(at: "metadata.tags")
   links: [EntityLink!] @field(at: "metadata.links")
 }
@@ -33,6 +35,7 @@ type EntityLink {
   url: String!
   title: String
   icon: String
+  type: String
 }
 
 interface Location
@@ -43,6 +46,7 @@ interface Location
   type: String @field(at: "spec.type")
   target: String @field(at: "spec.target")
   targets: [String!] @field(at: "spec.targets")
+  presence: String @field(at: "spec.presence")
 }
 
 interface API
@@ -52,12 +56,13 @@ interface API
   @discriminationAlias(value: "asyncapi", type: "AsyncAPI")
   @discriminationAlias(value: "graphql", type: "GraphQL")
   @discriminationAlias(value: "grpc", type: "GRPC") {
-  lifecycle: Lifecycle! @field(at: "spec.lifecycle")
+  type: String! @field(at: "spec.type")
+  lifecycle: String! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   definition: String! @field(at: "spec.definition")
   system: System @relation(name: "partOf")
-  consumers: Connection @relation(name: "apiConsumedBy", nodeType: "Component")
-  providers: Connection @relation(name: "apiProvidedBy", nodeType: "Component")
+  apiConsumedBy: Connection @relation(nodeType: "Component")
+  apiProvidedBy: Connection @relation(nodeType: "Component")
 }
 
 interface Component
@@ -66,14 +71,16 @@ interface Component
   @discriminationAlias(value: "service", type: "Service")
   @discriminationAlias(value: "website", type: "Website")
   @discriminationAlias(value: "library", type: "Library") {
-  lifecycle: Lifecycle! @field(at: "spec.lifecycle")
+  type: String! @field(at: "spec.type")
+  lifecycle: String! @field(at: "spec.lifecycle")
   owner: Owner! @relation(name: "ownedBy")
   system: System @relation(name: "partOf", kind: "system")
-  component: Component @relation(name: "partOf", kind: "component")
-  subComponents: Connection @relation(name: "hasPart", nodeType: "Component")
-  providesApi: Connection @relation(name: "providesApi", nodeType: "API")
-  consumesApi: Connection @relation(name: "consumesApi", nodeType: "API")
-  dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
+  subComponentOf: Component @relation(name: "partOf", kind: "component")
+  providesApis: Connection @relation(name: "providesApi", nodeType: "API")
+  consumesApis: Connection @relation(name: "consumesApi", nodeType: "API")
+  dependsOn: Connection @relation(nodeType: "Dependency")
+  dependencyOf: Connection @relation(nodeType: "Dependency")
+  components: Connection @relation(name: "hasPart", nodeType: "Component")
 }
 
 type Domain @implements(interface: "Entity") {
@@ -85,15 +92,17 @@ interface Resource
   @implements(interface: "Entity")
   @discriminates(with: "spec.type", opaqueType: "OpaqueResource")
   @discriminationAlias(value: "database", type: "Database") {
+  type: String! @field(at: "spec.type")
   owner: Owner! @relation(name: "ownedBy")
-  dependencies: Connection @relation(name: "dependsOn", nodeType: "Dependency")
-  dependents: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
+  dependsOn: Connection @relation(nodeType: "Dependency")
+  dependencyOf: Connection @relation(nodeType: "Dependency")
   system: System @relation(name: "partOf")
 }
 
 type System @implements(interface: "Entity") {
   owner: Owner! @relation(name: "ownedBy")
   domain: Domain @relation(name: "partOf")
+  apis: Connection @relation(name: "hasPart", nodeType: "API", kind: "api")
   components: Connection
     @relation(name: "hasPart", nodeType: "Component", kind: "component")
   resources: Connection
@@ -111,10 +120,16 @@ type Step {
 interface Template
   @implements(interface: "Entity")
   @discriminates(with: "spec.type", opaqueType: "OpaqueTemplate") {
+  type: String! @field(at: "spec.type")
   parameters: JSONObject @field(at: "spec.parameters")
   steps: [Step!]! @field(at: "spec.steps")
-  output: JSONObject @field(at: "spec.output")
   owner: Owner @relation(name: "ownedBy")
+}
+
+type GroupProfile {
+  displayName: String
+  email: String
+  picture: String
 }
 
 interface Group
@@ -124,21 +139,24 @@ interface Group
   @discriminationAlias(value: "sub-department", type: "SubDepartment")
   @discriminationAlias(value: "department", type: "Department")
   @discriminationAlias(value: "organization", type: "Organization") {
-  displayName: String @field(at: "spec.profile.displayName")
-  email: String @field(at: "spec.profile.email")
-  picture: String @field(at: "spec.profile.picture")
+  type: String! @field(at: "spec.type")
+  profile: GroupProfile @field(at: "spec.profile")
   parent: Group @relation(name: "childOf")
   children: Connection @relation(name: "parentOf", nodeType: "Group")
   members: Connection @relation(name: "hasMember", nodeType: "User")
-  ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
+  ownerOf: Connection @relation(nodeType: "Ownable")
+}
+
+type UserProfile {
+  displayName: String
+  email: String
+  picture: String
 }
 
 type User @implements(interface: "Entity") {
-  displayName: String @field(at: "spec.profile.displayName")
-  email: String @field(at: "spec.profile.email")
-  picture: String @field(at: "spec.profile.picture")
-  memberOf: Connection @relation(name: "memberOf", nodeType: "Group")
-  ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
+  profile: UserProfile @field(at: "spec.profile")
+  memberOf: Connection @relation(nodeType: "Group")
+  ownerOf: Connection @relation(nodeType: "Ownable")
 }
 
 extend type Query {
