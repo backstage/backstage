@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
 import { ConfigSource, ConfigSourceData } from '../types';
 
 export function isResolved(
@@ -48,4 +49,17 @@ export async function readAll(
   }
 
   return results;
+}
+
+export function simpleSource(
+  data: JsonObject[],
+  context: string = 'mock-source',
+): ConfigSource {
+  return {
+    async *readConfigData() {
+      for (const d of data) {
+        yield { data: [{ data: d, context }] };
+      }
+    },
+  };
 }

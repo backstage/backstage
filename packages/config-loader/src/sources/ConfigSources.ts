@@ -18,7 +18,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import parseArgs from 'minimist';
 import { EnvConfigSource } from './EnvConfigSource';
 import { FileConfigSource } from './FileConfigSource';
-import { MergeConfigSource } from './MergedConfigSource';
+import { MergedConfigSource } from './MergedConfigSource';
 import { RemoteConfigSource } from './RemoteConfigSource';
 import { ConfigSource } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
@@ -63,7 +63,7 @@ export class ConfigSources {
   }
 
   static merge(sources: ConfigSource[]): ConfigSource {
-    return MergeConfigSource.fromConfigSources(sources);
+    return MergedConfigSource.from(sources);
   }
 
   static toConfig(source: ConfigSource): Promise<LiveConfig> {

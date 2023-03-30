@@ -21,9 +21,9 @@ import {
   ReadConfigDataOptions,
 } from './types';
 
-export class MergeConfigSource implements ConfigSource {
-  static fromConfigSources(sources: ConfigSource[]): ConfigSource {
-    return new MergeConfigSource(sources);
+export class MergedConfigSource implements ConfigSource {
+  static from(sources: ConfigSource[]): ConfigSource {
+    return new MergedConfigSource(sources);
   }
 
   private constructor(private readonly sources: ConfigSource[]) {}
@@ -53,7 +53,7 @@ export class MergeConfigSource implements ConfigSource {
 
     while (results.some(Boolean)) {
       try {
-        const [i, result] = (await Promise.race(results))!;
+        const [i, result] = (await Promise.race(results.filter(Boolean)))!;
         if (result.done) {
           results[i] = undefined;
         } else {
