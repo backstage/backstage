@@ -1,4 +1,4 @@
-#Architecting your Catalog
+# Architecting your Catalog
 
 ## Overview
 
