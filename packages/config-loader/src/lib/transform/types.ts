@@ -20,9 +20,13 @@ export type EnvFunc = (name: string) => Promise<string | undefined>;
 
 export type ReadFileFunc = (path: string) => Promise<string>;
 
+export interface TransformContext {
+  dir?: string;
+}
+
 export type TransformFunc = (
   value: JsonValue,
-  baseDir: string,
+  context: TransformContext,
 ) => Promise<
   | {
       applied: false;
@@ -30,6 +34,6 @@ export type TransformFunc = (
   | {
       applied: true;
       value: JsonValue | undefined;
-      newBaseDir?: string | undefined;
+      newDir?: string | undefined;
     }
 >;

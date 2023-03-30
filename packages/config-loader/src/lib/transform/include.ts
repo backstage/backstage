@@ -37,7 +37,11 @@ export function createIncludeTransform(
   readFile: ReadFileFunc,
   substitute: TransformFunc,
 ): TransformFunc {
-  return async (input: JsonValue, baseDir: string) => {
+  return async (input, context) => {
+    const { dir } = context;
+    if (!dir) {
+      throw new Error('Include transform requires a base directory');
+    }
     if (!isObject(input)) {
       return { applied: false };
     }
@@ -59,7 +63,7 @@ export function createIncludeTransform(
       throw new Error(`${includeKey} include value is not a string`);
     }
 
-    const substituteResults = await substitute(rawIncludedValue, baseDir);
+    const substituteResults = await substitute(rawIncludedValue, { dir });
     const includeValue = substituteResults.applied
       ? substituteResults.value
       : rawIncludedValue;
@@ -72,7 +76,7 @@ export function createIncludeTransform(
     switch (includeKey) {
       case '$file':
         try {
-          const value = await readFile(resolvePath(baseDir, includeValue));
+          const value = await readFile(resolvePath(dir, includeValue));
           return { applied: true, value: value.trimEnd() };
         } catch (error) {
           throw new Error(`failed to read file ${includeValue}, ${error}`);
@@ -95,9 +99,9 @@ export function createIncludeTransform(
           );
         }
 
-        const path = resolvePath(baseDir, filePath);
+        const path = resolvePath(dir, filePath);
         const content = await readFile(path);
-        const newBaseDir = dirname(path);
+        const newDir = dirname(path);
 
         const parts = dataPath ? dataPath.split('.') : [];
 
@@ -124,7 +128,7 @@ export function createIncludeTransform(
         return {
           applied: true,
           value,
-          newBaseDir: newBaseDir !== baseDir ? newBaseDir : undefined,
+          newDir: newDir !== dir ? newDir : undefined,
         };
       }
 

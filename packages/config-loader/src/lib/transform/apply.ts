@@ -16,34 +16,36 @@
 
 import { JsonObject, JsonValue } from '@backstage/types';
 import { assertError } from '@backstage/errors';
-import { TransformFunc } from './types';
+import { EnvFunc, TransformContext, TransformFunc } from './types';
 import { isObject } from './utils';
+import { createSubstitutionTransform } from './substitution';
+import { createIncludeTransform } from './include';
 
 /**
  * Applies a set of transforms to raw configuration data.
  */
 export async function applyConfigTransforms(
-  initialDir: string,
   input: JsonValue,
+  context: { dir?: string },
   transforms: TransformFunc[],
 ): Promise<JsonObject> {
   async function transform(
     inputObj: JsonValue,
     path: string,
-    baseDir: string,
+    baseDir?: string,
   ): Promise<JsonValue | undefined> {
     let obj = inputObj;
     let dir = baseDir;
 
     for (const tf of transforms) {
       try {
-        const result = await tf(inputObj, baseDir);
+        const result = await tf(inputObj, { dir });
         if (result.applied) {
           if (result.value === undefined) {
             return undefined;
           }
           obj = result.value;
-          dir = result.newBaseDir ?? dir;
+          dir = result?.newDir ?? dir;
           break;
         }
       } catch (error) {
@@ -84,9 +86,36 @@ export async function applyConfigTransforms(
     return out;
   }
 
-  const finalData = await transform(input, '', initialDir);
+  const finalData = await transform(input, '', context?.dir);
   if (!isObject(finalData)) {
     throw new TypeError('expected object at config root');
   }
   return finalData;
+}
+
+/** @internal */
+export type ConfigTransformer = (
+  input: JsonObject,
+  context?: TransformContext,
+) => Promise<JsonObject>;
+
+/** @internal */
+export function createConfigTransformer(options: {
+  envFunc?: EnvFunc;
+  readFile?(path: string): Promise<string>;
+}): ConfigTransformer {
+  const { envFunc = async name => process.env[name], readFile } = options;
+  const substitutionTransform = createSubstitutionTransform(envFunc);
+  const transforms = [substitutionTransform];
+  if (readFile) {
+    const includeTransform = createIncludeTransform(
+      envFunc,
+      readFile,
+      substitutionTransform,
+    );
+    transforms.push(includeTransform);
+  }
+
+  return async (input, ctx) =>
+    applyConfigTransforms(input, ctx ?? {}, transforms);
 }
