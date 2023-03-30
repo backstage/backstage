@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './events';
 export type { DeferredEntity } from './types';

@@ -16,6 +16,7 @@
 
 export type {
   BackstageEvent,
+  BackstageEventPayload,
   EventBroker,
   EventParams,
   EventPublisher,

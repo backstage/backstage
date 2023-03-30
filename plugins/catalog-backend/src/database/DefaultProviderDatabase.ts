@@ -19,16 +19,16 @@ import {
   isDatabaseConflictError,
 } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  createDeleteEvent,
-  createInsertEvent,
-  createUpdateEvent,
-  DeferredEntity,
-} from '@backstage/plugin-catalog-node';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
+import {
+  createDeleteEvent,
+  createInsertEvent,
+  createUpdateEvent,
+} from '../processing/events';
 import { rethrowError } from './conversion';
 import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';

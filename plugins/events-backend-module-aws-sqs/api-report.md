@@ -4,8 +4,8 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventPublisher } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/backend-common';
+import { EventPublisher } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 

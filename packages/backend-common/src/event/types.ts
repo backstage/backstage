@@ -57,6 +57,7 @@ export type BackstageEvent<
   originatingEntityRef?: string;
 };
 
+/** @public */
 export interface EventSubscriber {
   /**
    * Supported event topics like "backstage", "github", "bitbucketCloud", etc.

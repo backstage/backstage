@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { Config } from '@backstage/config';
+import { EventBroker } from '@backstage/backend-common';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
@@ -102,6 +103,7 @@ export namespace coreServices {
   const config: ServiceRef<ConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const events: ServiceRef<EventService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;
@@ -244,6 +246,9 @@ export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
+
+// @public (undocumented)
+export interface EventService extends EventBroker {}
 
 // @public
 export type ExtensionPoint<T> = {

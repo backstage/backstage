@@ -4,7 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EventParams } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-common';
 import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 

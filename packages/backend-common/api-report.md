@@ -111,6 +111,19 @@ export class AzureUrlReader implements UrlReader {
 }
 
 // @public
+export type BackstageEvent<
+  TPayload extends BackstageEventPayload = BackstageEventPayload,
+> = EventParams<TPayload> & {
+  topic: 'backstage';
+  originatingEntityRef?: string;
+};
+
+// @public
+export type BackstageEventPayload = {
+  type: string;
+};
+
+// @public
 export class BitbucketCloudUrlReader implements UrlReader {
   constructor(
     integration: BitbucketCloudIntegration,
@@ -282,6 +295,33 @@ export type ErrorHandlerOptions = {
   logger?: LoggerService;
   logClientErrors?: boolean;
 };
+
+// @public
+export interface EventBroker {
+  publish(params: EventParams): Promise<void>;
+  subscribe(
+    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
+  ): void;
+}
+
+// @public (undocumented)
+export type EventParams<TPayload = unknown> = {
+  topic: string;
+  eventPayload: TPayload;
+  metadata?: Record<string, string | string[] | undefined>;
+};
+
+// @public
+export interface EventPublisher {
+  // (undocumented)
+  setEventBroker(eventBroker: EventBroker): Promise<void>;
+}
+
+// @public (undocumented)
+export interface EventSubscriber {
+  onEvent(params: EventParams): Promise<void>;
+  supportsEventTopics(): string[];
+}
 
 // @public
 export class FetchUrlReader implements UrlReader {

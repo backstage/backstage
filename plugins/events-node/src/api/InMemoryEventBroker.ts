@@ -23,8 +23,9 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * In-memory event broker which will pass the event to all registered subscribers
- * interested in it.
- * Events will not be persisted in any form.
+ * interested in it. Events will not be persisted in any form.
+ *
+ * @public
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
 export class InMemoryEventBroker implements EventBroker {

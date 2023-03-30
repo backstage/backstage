@@ -33,6 +33,7 @@ import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-no
 import { EntityProviderConnection as EntityProviderConnection_2 } from '@backstage/plugin-catalog-node';
 import { EntityProviderMutation as EntityProviderMutation_2 } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec as EntityRelationSpec_2 } from '@backstage/plugin-catalog-node';
+import { EventBroker } from '@backstage/backend-common';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
@@ -172,6 +173,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  eventBroker: EventBroker;
 };
 
 // @public

@@ -8,6 +8,10 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { EventBroker } from '@backstage/backend-common';
+import { EventParams } from '@backstage/backend-common';
+import { EventPublisher } from '@backstage/backend-common';
+import { EventSubscriber } from '@backstage/backend-common';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
@@ -184,5 +188,42 @@ export class TestDatabases {
   init(id: TestDatabaseId): Promise<Knex>;
   // (undocumented)
   supports(id: TestDatabaseId): boolean;
+}
+
+// @public (undocumented)
+export class TestEventBroker implements EventBroker {
+  // (undocumented)
+  publish(params: EventParams): Promise<void>;
+  // (undocumented)
+  readonly published: EventParams[];
+  // (undocumented)
+  subscribe(
+    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
+  ): void;
+  // (undocumented)
+  readonly subscribed: EventSubscriber[];
+}
+
+// @public (undocumented)
+export class TestEventPublisher implements EventPublisher {
+  // (undocumented)
+  get eventBroker(): EventBroker | undefined;
+  // (undocumented)
+  setEventBroker(eventBroker: EventBroker): Promise<void>;
+}
+
+// @public (undocumented)
+export class TestEventSubscriber implements EventSubscriber {
+  constructor(name: string, topics: string[]);
+  // (undocumented)
+  readonly name: string;
+  // (undocumented)
+  onEvent(params: EventParams): Promise<void>;
+  // (undocumented)
+  readonly receivedEvents: Record<string, EventParams[]>;
+  // (undocumented)
+  supportsEventTopics(): string[];
+  // (undocumented)
+  readonly topics: string[];
 }
 ```

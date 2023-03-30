@@ -20,6 +20,7 @@ import { ConflictError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
+import { createInsertEvent, createUpdateEvent } from '../processing/events';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
@@ -40,11 +41,7 @@ import {
   UpdateProcessedEntityOptions,
 } from './types';
 
-import {
-  createInsertEvent,
-  createUpdateEvent,
-  DeferredEntity,
-} from '@backstage/plugin-catalog-node';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';

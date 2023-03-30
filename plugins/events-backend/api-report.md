@@ -4,9 +4,9 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventPublisher } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/backend-common';
+import { EventPublisher } from '@backstage/backend-common';
+import { EventSubscriber } from '@backstage/backend-common';
 import express from 'express';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';

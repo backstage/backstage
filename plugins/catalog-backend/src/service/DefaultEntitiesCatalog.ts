@@ -20,7 +20,6 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { createDeleteEvent } from '@backstage/plugin-catalog-node';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
@@ -51,6 +50,7 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
+import { createDeleteEvent } from '../processing/events';
 
 import { Stitcher } from '../stitching/Stitcher';
 
