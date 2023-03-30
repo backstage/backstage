@@ -37,7 +37,20 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
    *
-   * Can be overridden by in config by providing a `discovery` section with a `<pluginId>` key.
+   * Can be overridden by in config by providing a target and corresponding plugin in `discovery.endpoint`.
+   * eg.
+   * ```yaml
+   * discovery:
+   *  endpoints:
+   *    - target: https://internal.example.com/internal-catalog
+   *      plugins: [catalog]
+   *    - target: https://internal.example.com/secure/api/{{pluginId}}
+   *      plugins: [auth, permissions]
+   *    - target:
+   *        internal: https://internal.example.com/search
+   *        external: https://example.com/search
+   *      plugins: [search]
+   * ```
    *
    * The basePath defaults to `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
@@ -92,10 +105,10 @@ export class HostDiscovery implements PluginEndpointDiscovery {
     }
 
     if (typeof target === 'string') {
-      return target.replace('{pluginId}', pluginId);
+      return target.replace(/\{\{\s*pluginId\s*\}\}/, pluginId);
     }
 
-    return target[type].replace('{pluginId}', pluginId);
+    return target[type].replace(/\{\{\s*pluginId\s*\}\}/, pluginId);
   }
 
   async getBaseUrl(pluginId: string): Promise<string> {

@@ -163,7 +163,7 @@ describe('HostDiscovery', () => {
     );
   });
 
-  it('replaces {pluginId} in the target', async () => {
+  it('replaces {{pluginId}} or {{ pluginId }} in the target', async () => {
     const discovery = HostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
@@ -173,13 +173,13 @@ describe('HostDiscovery', () => {
         discovery: {
           endpoints: [
             {
-              target: 'http://common-backend:8080/api/{pluginId}',
+              target: 'http://common-backend:8080/api/{{pluginId}}',
               plugins: ['catalog', 'docs'],
             },
             {
               target: {
-                internal: 'http://scaffolder-internal:8080/api/{pluginId}',
-                external: 'http://scaffolder-external:8080/api/{pluginId}',
+                internal: 'http://scaffolder-internal:8080/api/{{ pluginId }}',
+                external: 'http://scaffolder-external:8080/api/{{ pluginId }}',
               },
               plugins: ['scaffolder'],
             },

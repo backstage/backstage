@@ -217,7 +217,7 @@ export interface Config {
        * The target baseUrl to use for the plugin
        *
        * Can be either a string or an object with internal and external keys.
-       * Targets with `{pluginId}` in the url will be replaced with the pluginId.
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the url will be replaced with the pluginId.
        */
       target: string | { internal: string; external: string };
       /** Array of plugins which use the target baseUrl. */
