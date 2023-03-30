@@ -118,9 +118,6 @@ export type CatalogEnvironment = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
 };
 
-/** @public */
-export const catalogConflictsTopic = 'catalog.conflict';
-
 /**
  * A builder that helps wire up all of the component parts of the catalog.
  *

@@ -113,6 +113,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
   validateEntityKind(entity: Entity): Promise<boolean>;
 }
 
+// @public (undocumented)
+export const CATALOG_CONFLICTS_TOPIC = 'catalog.conflict';
+
 // @public
 export class CatalogBuilder {
   addEntityPolicy(
@@ -166,9 +169,6 @@ export class CatalogBuilder {
 // @public @deprecated (undocumented)
 export type CatalogCollatorEntityTransformer =
   CatalogCollatorEntityTransformer_2;
-
-// @public (undocumented)
-export const catalogConflictsTopic = 'catalog.conflict';
 
 // @public (undocumented)
 export type CatalogEnvironment = {
