@@ -5,12 +5,8 @@
 ```ts
 import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/core-plugin-api';
-
-// @public @deprecated (undocumented)
-export const analyticsModuleGA4: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export class GoogleAnalytics4 implements AnalyticsApi {

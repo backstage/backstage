@@ -95,8 +95,8 @@ export class GoogleAnalytics4 implements AnalyticsApi {
 
   /**
    * Instantiate a fully configured GA Analytics API implementation.
-   * @param config Config object from app config
-   * @param options options with identityApi and userIdTransform config
+   * @param config - Config object from app config
+   * @param options - options with identityApi and userIdTransform config
    */
   static fromConfig(
     config: Config,
@@ -148,7 +148,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
    * Primary event capture implementation. Handles core navigate event as a
    * pageview and the rest as custom events. All custom dimensions/metrics are
    * applied as they should be (set on pageview, merged object on events).
-   * @param event AnalyticsEvent type captured
+   * @param event - AnalyticsEvent type captured
    */
   captureEvent(event: AnalyticsEvent) {
     const { context, action, subject, value, attributes } = event;
