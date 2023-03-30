@@ -118,3 +118,16 @@ export class HostDiscovery implements PluginEndpointDiscovery {
     return `${this.externalBaseUrl}/${pluginId}`;
   }
 }
+
+/**
+ * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
+ * that assumes that all plugins are hosted in a single deployment.
+ *
+ * The deployment may be scaled horizontally, as long as the external URL
+ * is the same for all instances. However, internal URLs will always be
+ * resolved to the same host, so there won't be any balancing of internal traffic.
+ *
+ * @public
+ * @deprecated Use {@link HostDiscovery} instead
+ */
+export const SingleHostDiscovery = HostDiscovery;
