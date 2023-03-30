@@ -17,8 +17,9 @@
 import { MergedConfigSource } from './MergedConfigSource';
 import { MutableConfigSource } from './MutableConfigSource';
 import { isResolved, readAll, simpleSource } from './__testUtils__/testUtils';
+import { ConfigSource } from './types';
 
-describe('MergeConfigSource', () => {
+describe('MergedConfigSource', () => {
   it('should forward from a single source', async () => {
     const source = simpleSource([{ a: 1 }, { a: 2 }, { a: 3 }]);
     const merged = MergedConfigSource.from([source]);
@@ -103,5 +104,48 @@ describe('MergeConfigSource', () => {
     await expect(last).resolves.toEqual({
       done: true,
     });
+  });
+
+  it('should be flattened', async () => {
+    const sym = Symbol.for(
+      '@backstage/config-loader#MergedConfigSource.sources',
+    );
+    const sourceA: ConfigSource = {
+      async *readConfigData() {
+        yield { data: [] };
+      },
+    };
+    const sourceD: ConfigSource = {
+      async *readConfigData() {
+        yield { data: [] };
+      },
+    };
+    const sourceB: ConfigSource = {
+      async *readConfigData() {
+        yield { data: [] };
+      },
+    };
+    const sourceC: ConfigSource = {
+      async *readConfigData() {
+        yield { data: [] };
+      },
+    };
+
+    const sourceAB = MergedConfigSource.from([sourceA, sourceB]);
+    const sourceABC = MergedConfigSource.from([sourceAB, sourceC]);
+    const sourceABCD = MergedConfigSource.from([sourceABC, sourceD]);
+
+    expect((sourceAB as any)[sym]).toEqual([sourceA, sourceB]);
+    expect((sourceABC as any)[sym]).toEqual([sourceA, sourceB, sourceC]);
+    expect((sourceABCD as any)[sym]).toEqual([
+      sourceA,
+      sourceB,
+      sourceC,
+      sourceD,
+    ]);
+
+    await expect(readAll(sourceAB)).resolves.toEqual([[]]);
+    await expect(readAll(sourceABC)).resolves.toEqual([[]]);
+    await expect(readAll(sourceABCD)).resolves.toEqual([[]]);
   });
 });

@@ -21,12 +21,28 @@ import {
   ReadConfigDataOptions,
 } from './types';
 
+const sourcesSymbol = Symbol.for(
+  '@backstage/config-loader#MergedConfigSource.sources',
+);
+
 export class MergedConfigSource implements ConfigSource {
+  // An optimization to flatten nested merged sources to avid unnecessary microtasks
+  static #flattenSources(sources: ConfigSource[]): ConfigSource[] {
+    return sources.flatMap(source => {
+      if (sourcesSymbol in source) {
+        return this.#flattenSources(source[sourcesSymbol] as ConfigSource[]);
+      }
+      return source;
+    });
+  }
+
   static from(sources: ConfigSource[]): ConfigSource {
-    return new MergedConfigSource(sources);
+    return new MergedConfigSource(this.#flattenSources(sources));
   }
 
   private constructor(private readonly sources: ConfigSource[]) {}
+
+  [sourcesSymbol] = this.sources;
 
   async *readConfigData(
     options?: ReadConfigDataOptions,
