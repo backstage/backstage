@@ -29,15 +29,15 @@ export async function deleteWithEagerPruningOfChildren(options: {
   tx: Knex.Transaction;
   entityRefs: string[];
   sourceKey: string;
-}): Promise<number> {
+}): Promise<string[]> {
   const { tx, entityRefs, sourceKey } = options;
 
   // Split up the operation by (large) chunks, so that we do not hit database
   // limits for the number of permitted bindings on a precompiled statement
-  let removedCount = 0;
+  const removedEntityRefs: string[] = [];
   for (const refs of lodash.chunk(entityRefs, 1000)) {
-    removedCount += await tx
-      .delete()
+    const chunkRemovedEntityRefs = await tx
+      .delete('entity_ref')
       .from('refresh_state')
       .whereIn('entity_ref', orphans =>
         orphans
@@ -183,6 +183,8 @@ export async function deleteWithEagerPruningOfChildren(options: {
           .whereNull('retained.entity_ref'),
       );
 
+    removedEntityRefs.concat(chunkRemovedEntityRefs);
+
     // Delete the references that originate only from this entity provider. Note
     // that there may be more than one entity provider making a "claim" for a
     // given root entity, if they emit with the same location key.
@@ -192,5 +194,5 @@ export async function deleteWithEagerPruningOfChildren(options: {
       .delete();
   }
 
-  return removedCount;
+  return removedEntityRefs;
 }

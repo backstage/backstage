@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import { isDatabaseConflictError } from '@backstage/backend-common';
+import {
+  EventBroker,
+  isDatabaseConflictError,
+} from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import {
+  createDeleteEvent,
+  createInsertEvent,
+  createUpdateEvent,
+  DeferredEntity,
+} from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -46,6 +54,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   constructor(
     private readonly options: {
       database: Knex;
+      eventBroker: EventBroker;
       logger: Logger;
     },
   ) {}
@@ -80,13 +89,18 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
-      const removedCount = await deleteWithEagerPruningOfChildren({
+      const removedEntityRefs = await deleteWithEagerPruningOfChildren({
         tx,
         entityRefs: toRemove,
         sourceKey: options.sourceKey,
       });
+      removedEntityRefs.forEach(ref =>
+        this.options.eventBroker.publish(createDeleteEvent(ref)),
+      );
       this.options.logger.debug(
-        `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
+        `removed, ${removedEntityRefs.length} entities: ${JSON.stringify(
+          toRemove,
+        )}`,
       );
     }
 
@@ -124,6 +138,11 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             })),
             BATCH_SIZE,
           );
+          chunk.forEach(item =>
+            this.options.eventBroker.publish(
+              createInsertEvent(item.deferred.entity),
+            ),
+          );
         } catch (error) {
           if (!isDatabaseConflictError(error)) {
             throw error;
@@ -151,7 +170,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             hash,
             locationKey,
           });
-          if (!ok) {
+          if (ok) {
+            this.options.eventBroker.publish(createUpdateEvent(entity));
+          } else {
             ok = await insertUnprocessedEntity({
               tx,
               entity,
@@ -159,6 +180,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               locationKey,
               logger: this.options.logger,
             });
+            if (ok) {
+              this.options.eventBroker.publish(createInsertEvent(entity));
+            }
           }
 
           await tx<DbRefreshStateReferencesRow>('refresh_state_references')

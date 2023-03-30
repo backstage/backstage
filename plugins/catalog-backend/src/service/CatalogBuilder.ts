@@ -443,11 +443,13 @@ export class CatalogBuilder {
 
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
+      eventBroker: this.env.eventBroker,
       logger,
       refreshInterval: this.processingInterval,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
+      eventBroker: this.env.eventBroker,
       logger,
     });
     const catalogDatabase = new DefaultCatalogDatabase({

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { BackstageEvent, EventBroker } from '@backstage/backend-common';
+import { EventBroker } from '@backstage/backend-common';
 import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { createDeleteEvent } from '@backstage/plugin-catalog-node';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
@@ -613,13 +614,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
-
-    const event: BackstageEvent = {
-      topic: 'backstage',
-      originatingEntityRef: uid,
-      eventPayload: { type: 'catalog.entity.delete' },
-    };
-    this.eventBroker.publish(event);
+    this.eventBroker.publish(createDeleteEvent(uid));
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

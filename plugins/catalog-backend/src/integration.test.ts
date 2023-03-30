@@ -218,6 +218,7 @@ class TestHarness {
       },
     );
     const logger = options?.logger ?? getVoidLogger();
+    const eventBroker = new TestEventBroker();
     const db =
       options?.db ??
       (await DatabaseManager.fromConfig(config, { logger })
@@ -232,10 +233,12 @@ class TestHarness {
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: db,
+      eventBroker,
       logger,
     });
     const processingDatabase = new DefaultProcessingDatabase({
       database: db,
+      eventBroker,
       logger,
       refreshInterval: () => 0.05,
     });
@@ -269,7 +272,6 @@ class TestHarness {
       legacySingleProcessorValidation: false,
     });
     const stitcher = new Stitcher(db, logger);
-    const eventBroker = new TestEventBroker();
     const catalog = new DefaultEntitiesCatalog({
       database: db,
       logger,

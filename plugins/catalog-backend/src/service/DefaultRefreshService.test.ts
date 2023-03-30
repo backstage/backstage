@@ -54,6 +54,7 @@ describe('DefaultRefreshService', () => {
       knex,
       processingDb: new DefaultProcessingDatabase({
         database: knex,
+        eventBroker: new TestEventBroker(),
         logger,
         refreshInterval: () => 100,
       }),

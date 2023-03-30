@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EventBroker } from '@backstage/backend-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -39,7 +40,11 @@ import {
   UpdateProcessedEntityOptions,
 } from './types';
 
-import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import {
+  createInsertEvent,
+  createUpdateEvent,
+  DeferredEntity,
+} from '@backstage/plugin-catalog-node';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
@@ -55,6 +60,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
     private readonly options: {
       database: Knex;
+      eventBroker: EventBroker;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
     },
@@ -312,8 +318,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
-    const stateReferences = new Array<string>();
+    // Keeps track of the entities upserted to update refresh_state_references afterwards
+    const upsertedEntityRefs: Record<string, string[]> = {
+      inserted: [],
+      updated: [],
+    };
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -328,7 +337,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         locationKey,
       });
       if (updated) {
-        stateReferences.push(entityRef);
+        upsertedEntityRefs.updated.push(entityRef);
         continue;
       }
 
@@ -340,7 +349,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         logger: this.options.logger,
       });
       if (inserted) {
-        stateReferences.push(entityRef);
+        upsertedEntityRefs.inserted.push(entityRef);
         continue;
       }
 
@@ -359,6 +368,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
     }
 
+    upsertedEntityRefs.inserted.forEach(entityRef =>
+      this.options.eventBroker.publish(createInsertEvent(entityRef)),
+    );
+    upsertedEntityRefs.updated.forEach(entityRef =>
+      this.options.eventBroker.publish(createUpdateEvent(entityRef)),
+    );
+
+    const stateReferences = [
+      upsertedEntityRefs.inserted,
+      upsertedEntityRefs.updated,
+    ].flat();
     // Replace all references for the originating entity or source and then create new ones
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
       .andWhere({ source_entity_ref: options.sourceEntityRef })

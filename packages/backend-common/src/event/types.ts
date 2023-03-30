@@ -35,7 +35,7 @@ export type EventParams<TPayload = unknown> = {
 };
 
 /**
- * Base payload for Backstage events. The `type` should be prefix by the plugin name to prevent
+ * Base payload for Backstage events. The `type` should be prefixed by the plugin name to prevent
  * collisions, e.g. "catalog.entity.delete".
  *
  * @public

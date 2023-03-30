@@ -347,15 +347,15 @@ function progressTracker(eventBroker: EventBroker) {
         result: result.ok ? 'ok' : 'failed',
       });
 
-      // TODO(timbonicus): how do we know if this is a new entity or an update?
-      const event: BackstageEvent = {
-        topic: 'backstage',
-        originatingEntityRef: result.ok
-          ? stringifyEntityRef(result.completedEntity)
-          : undefined,
-        eventPayload: { type: 'catalog.entity.processed' },
-      };
-      eventBroker.publish(event);
+      if (result.ok) {
+        // TODO(timbonicus): do we need this event? should it only fire if there are changes?
+        const event: BackstageEvent = {
+          topic: 'backstage',
+          originatingEntityRef: stringifyEntityRef(result.completedEntity),
+          eventPayload: { type: 'catalog.entity.processed' },
+        };
+        eventBroker.publish(event);
+      }
     }
 
     function markSuccessfulWithNoChanges() {

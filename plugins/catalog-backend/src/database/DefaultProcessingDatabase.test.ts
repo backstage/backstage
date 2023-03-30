@@ -17,6 +17,7 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -51,6 +52,7 @@ describe('DefaultProcessingDatabase', () => {
       knex,
       db: new DefaultProcessingDatabase({
         database: knex,
+        eventBroker: new TestEventBroker(),
         logger,
         refreshInterval: createRandomProcessingInterval({
           minSeconds: 100,
