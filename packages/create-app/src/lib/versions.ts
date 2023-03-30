@@ -57,6 +57,7 @@ import { version as pluginCatalogBackend } from '../../../../plugins/catalog-bac
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
+import { version as pluginEventsNode } from '../../../../plugins/events-node/package.json';
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
@@ -105,6 +106,7 @@ export const packageVersions = {
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,
+  '@backstage/plugin-events-node': pluginEventsNode,
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
