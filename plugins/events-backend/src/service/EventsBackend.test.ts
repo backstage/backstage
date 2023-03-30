@@ -19,7 +19,7 @@ import {
   TestEventBroker,
   TestEventPublisher,
   TestEventSubscriber,
-} from '@backstage/plugin-events-backend-test-utils';
+} from '@backstage/backend-test-utils';
 import { EventsBackend } from './EventsBackend';
 
 const logger = getVoidLogger();

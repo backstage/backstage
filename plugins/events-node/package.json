@@ -40,8 +40,8 @@
     "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/plugin-events-backend-test-utils": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"

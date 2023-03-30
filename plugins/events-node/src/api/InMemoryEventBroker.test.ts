@@ -19,7 +19,7 @@ import {
   EventSubscriber,
   getVoidLogger,
 } from '@backstage/backend-common';
-import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
+import { TestEventSubscriber } from '@backstage/backend-test-utils';
 import { InMemoryEventBroker } from './InMemoryEventBroker';
 
 const logger = getVoidLogger();

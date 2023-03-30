@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import {
   EventBroker,
+  EventPublisher,
   EventSubscriber,
   loggerToWinstonLogger,
 } from '@backstage/backend-common';
@@ -27,10 +28,7 @@ import {
   eventsExtensionPoint,
   EventsExtensionPoint,
 } from '@backstage/plugin-events-node/alpha';
-import {
-  EventPublisher,
-  HttpPostIngressOptions,
-} from '@backstage/plugin-events-node';
+import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
 

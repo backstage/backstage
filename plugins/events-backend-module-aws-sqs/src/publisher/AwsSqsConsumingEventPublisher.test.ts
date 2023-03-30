@@ -21,8 +21,8 @@ import {
 } from '@aws-sdk/client-sqs';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TestEventBroker } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AwsSqsConsumingEventPublisher } from './AwsSqsConsumingEventPublisher';
 

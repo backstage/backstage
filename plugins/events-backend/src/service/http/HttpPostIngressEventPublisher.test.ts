@@ -15,8 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { TestEventBroker } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';

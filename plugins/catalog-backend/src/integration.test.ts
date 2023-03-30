@@ -20,6 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { CatalogProcessingEngine, EntityProvider } from './index';
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
+import { TestEventBroker } from '@backstage/backend-test-utils';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   Entity,
@@ -53,7 +54,6 @@ import {
 import { RefreshStateItem } from './database/types';
 import { DefaultProviderDatabase } from './database/DefaultProviderDatabase';
 import { InputError } from '@backstage/errors';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 
 const voidLogger = getVoidLogger();
 

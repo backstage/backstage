@@ -20,13 +20,13 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import {
+  startTestBackend,
   TestEventBroker,
   TestEventPublisher,
   TestEventSubscriber,
-} from '@backstage/plugin-events-backend-test-utils';
+} from '@backstage/backend-test-utils';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';

@@ -21,6 +21,7 @@
  */
 
 export * from './database';
+export * from './events';
 export * from './msw';
 export * from './next';
 export * from './util';

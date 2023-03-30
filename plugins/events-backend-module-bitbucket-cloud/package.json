@@ -43,7 +43,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/plugin-events-backend-test-utils": "workspace:^",
     "supertest": "^6.1.3"
   },
   "files": [

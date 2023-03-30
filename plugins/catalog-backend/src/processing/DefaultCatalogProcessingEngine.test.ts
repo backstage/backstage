@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { TestEventBroker } from '@backstage/backend-test-utils';
 import { Hash } from 'crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
@@ -22,7 +23,6 @@ import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/Stitcher';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {

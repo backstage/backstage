@@ -15,9 +15,12 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  TestEventBroker,
+} from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';

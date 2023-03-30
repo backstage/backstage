@@ -48,7 +48,6 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/events-backend-module-gerrit               @backstage/maintainers @pjungermann
 /plugins/events-backend-module-github               @backstage/maintainers @pjungermann
 /plugins/events-backend-module-gitlab               @backstage/maintainers @pjungermann
-/plugins/events-backend-test-utils                  @backstage/maintainers @pjungermann
 /plugins/events-node                                @backstage/maintainers @pjungermann
 /plugins/explore                                    @backstage/maintainers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/maintainers @backstage/sda-se-reviewers

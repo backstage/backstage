@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
+import { TestEventBroker } from '@backstage/backend-test-utils';
 import { BitbucketCloudEventRouter } from './BitbucketCloudEventRouter';
 
 describe('BitbucketCloudEventRouter', () => {

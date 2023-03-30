@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export type { EventPublisher } from './EventPublisher';
 export { EventRouter } from './EventRouter';
 export * from './http';
 export { InMemoryEventBroker } from './InMemoryEventBroker';

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { EventBroker, EventSubscriber } from '@backstage/backend-common';
 import {
+  EventBroker,
   EventPublisher,
-  InMemoryEventBroker,
-} from '@backstage/plugin-events-node';
+  EventSubscriber,
+} from '@backstage/backend-common';
+import { InMemoryEventBroker } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
 /**

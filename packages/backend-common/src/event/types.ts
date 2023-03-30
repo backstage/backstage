@@ -95,3 +95,15 @@ export interface EventBroker {
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void;
 }
+
+/**
+ * Publishes events to be consumed by subscribers for their topic.
+ * The events can come from different (external) sources
+ * like emitted themselves, received via HTTP endpoint (i.e. webhook)
+ * or from event brokers, queues, etc.
+ *
+ * @public
+ */
+export interface EventPublisher {
+  setEventBroker(eventBroker: EventBroker): Promise<void>;
+}

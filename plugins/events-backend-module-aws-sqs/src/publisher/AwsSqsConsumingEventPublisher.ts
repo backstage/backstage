@@ -21,10 +21,9 @@ import {
   ReceiveMessageCommandInput,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { EventBroker } from '@backstage/backend-common';
+import { EventBroker, EventPublisher } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { EventPublisher } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 import { AwsSqsEventSourceConfig, readConfig } from './config';
 

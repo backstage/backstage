@@ -15,11 +15,11 @@
  */
 
 import {
-  EventParams,
   EventBroker,
+  EventParams,
+  EventPublisher,
   EventSubscriber,
 } from '@backstage/backend-common';
-import { EventPublisher } from './EventPublisher';
 
 /**
  * Subscribes to a topic and - depending on a set of conditions -

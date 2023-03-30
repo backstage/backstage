@@ -15,7 +15,11 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  TestEventBroker,
+} from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid, v4 } from 'uuid';
@@ -34,7 +38,6 @@ import { Stitcher } from '../stitching/Stitcher';
 import { buildEntitySearch } from '../stitching/buildEntitySearch';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 
 jest.setTimeout(60_000);
 
