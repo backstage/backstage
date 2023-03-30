@@ -168,6 +168,9 @@ export type CatalogCollatorEntityTransformer =
   CatalogCollatorEntityTransformer_2;
 
 // @public (undocumented)
+export const catalogConflictsTopic = 'catalog.conflict';
+
+// @public (undocumented)
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;

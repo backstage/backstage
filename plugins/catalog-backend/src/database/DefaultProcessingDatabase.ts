@@ -46,6 +46,7 @@ import { updateUnprocessedEntity } from './operations/refreshState/updateUnproce
 import { generateStableHash } from './util';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
+import { catalogConflictsTopic } from '../service';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -361,7 +362,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         );
         if (this.options.eventBroker) {
           await this.options.eventBroker?.publish({
-            topic: 'catalog.conflicts',
+            topic: catalogConflictsTopic,
             eventPayload: {
               entity,
               entityRef,
