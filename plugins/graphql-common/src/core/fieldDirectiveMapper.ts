@@ -31,9 +31,10 @@ export function fieldDirectiveMapper(
       `The "at" argument of @field directive must be a string or an array of strings`,
     );
   }
+  const fieldResolve = (field.resolve ?? (x => x)) as (value: any) => any;
   field.resolve = async ({ id }, _, { loader }) => {
     const entity = await loader.load(id);
     if (!entity) return null;
-    return get(entity, directive.at) ?? directive.default;
+    return fieldResolve(get(entity, directive.at) ?? directive.default);
   };
 }
