@@ -16,24 +16,7 @@
 
 import { ConfigSources } from './ConfigSources';
 import { MutableConfigSource } from './MutableConfigSource';
-import { ConfigSource, ConfigSourceData } from './types';
-
-function isResolved(promise: Promise<unknown>): Promise<boolean> {
-  return Promise.race([promise.then(() => true), Promise.resolve(false)]);
-}
-
-async function readAll(
-  source: ConfigSource,
-  signal?: AbortSignal,
-): Promise<ConfigSourceData[][]> {
-  const results: ConfigSourceData[][] = [];
-
-  for await (const { data } of source.readConfigData({ signal })) {
-    results.push(data);
-  }
-
-  return results;
-}
+import { isResolved, readAll } from './__testUtils__/testUtils';
 
 describe('MutableConfigSource', () => {
   it('should be initialized with data', async () => {
