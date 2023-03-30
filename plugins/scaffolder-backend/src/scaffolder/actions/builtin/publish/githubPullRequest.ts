@@ -206,7 +206,7 @@ export const createPublishGithubPullRequestAction = (
           commitMessage: {
             type: 'string',
             title: 'Commit Message',
-            description: 'The commit message for the PR commit',
+            description: 'The commit message for the pull request commit',
           },
         },
       },
@@ -305,7 +305,7 @@ export const createPublishGithubPullRequestAction = (
           changes: [
             {
               files,
-              commit: commitMessage || title,
+              commit: commitMessage ?? title,
             },
           ],
           body: description,
