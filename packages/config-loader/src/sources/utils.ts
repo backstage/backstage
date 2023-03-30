@@ -32,22 +32,26 @@ export function simpleDefer<T>(): SimpleDeferred<T> {
 /** @internal */
 export async function waitOrAbort<T>(
   promise: PromiseLike<T>,
-  signal?: AbortSignal,
+  signal?: AbortSignal | Array<AbortSignal | undefined>,
 ): Promise<[ok: true, value: T] | [ok: false]> {
+  const signals = [signal].flat().filter((x): x is AbortSignal => !!x);
   return new Promise((resolve, reject) => {
+    if (signals.some(s => s.aborted)) {
+      resolve([false]);
+    }
     const onAbort = () => {
       resolve([false]);
     };
     promise.then(
       value => {
         resolve([true, value]);
-        signal?.removeEventListener('abort', onAbort);
+        signals.forEach(s => s.removeEventListener('abort', onAbort));
       },
       error => {
         reject(error);
-        signal?.removeEventListener('abort', onAbort);
+        signals.forEach(s => s.removeEventListener('abort', onAbort));
       },
     );
-    signal?.addEventListener('abort', onAbort);
+    signals.forEach(s => s.addEventListener('abort', onAbort));
   });
 }
