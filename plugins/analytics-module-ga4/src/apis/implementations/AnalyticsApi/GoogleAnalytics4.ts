@@ -273,7 +273,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
    * @param value value to be hashed
    */
   private async hash(value: string): Promise<string> {
-    const digest = await crypto.subtle.digest(
+    const digest = await window.crypto.subtle.digest(
       'sha-256',
       new TextEncoder().encode(value),
     );
