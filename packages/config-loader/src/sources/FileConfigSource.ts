@@ -16,7 +16,7 @@
 
 import chokidar, { FSWatcher } from 'chokidar';
 import fs from 'fs-extra';
-import { basename, isAbsolute } from 'path';
+import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
 import yaml from 'yaml';
 import {
   AsyncConfigSourceIterator,
@@ -24,9 +24,18 @@ import {
   ConfigSourceData,
   ReadConfigDataOptions,
 } from './types';
+import { createConfigTransformer } from '../lib/transform/apply';
+import { EnvFunc } from '../lib/transform/types';
 
 export interface FileConfigSourceOptions {
+  /**
+   * The path to the config file that should be loaded.
+   */
   path: string;
+  /**
+   * Function used to resolve environment variables.
+   */
+  envFunc?: EnvFunc;
 }
 
 export class FileConfigSource implements ConfigSource {
@@ -38,26 +47,53 @@ export class FileConfigSource implements ConfigSource {
   }
 
   readonly #path: string;
+  readonly #envFunc?: EnvFunc;
 
   private constructor(options: FileConfigSourceOptions) {
     this.#path = options.path;
+    this.#envFunc = options.envFunc;
   }
 
+  // Work is duplicated across each read, in practice that should not
+  // have any impact since there won't be multiple consumers. If that
+  // changes it might be worth refactoring this to avoid duplicate work.
   async *readConfigData(
     options?: ReadConfigDataOptions,
   ): AsyncConfigSourceIterator {
     const signal = options?.signal;
     const configFileName = basename(this.#path);
 
-    const readConfigFile = async (): Promise<ConfigSourceData> => {
-      const content = await fs.readFile(this.#path, 'utf8');
-      const data = yaml.parse(content);
-      return { data, context: configFileName, path: this.#path };
-    };
-
+    // Keep track of watched paths, since this is simpler than resetting the watcher
+    const watchedPaths = new Array<string>();
     const watcher = chokidar.watch(this.#path, {
       usePolling: process.env.NODE_ENV === 'test',
     });
+
+    const dir = dirname(this.#path);
+    const transformer = createConfigTransformer({
+      envFunc: this.#envFunc,
+      async readFile(path) {
+        const fullPath = resolvePath(dir, path);
+        // Any files discovered while reading this config should be watched too
+        watcher.add(fullPath);
+        watchedPaths.push(fullPath);
+
+        return fs.readFile(fullPath, 'utf8');
+      },
+    });
+
+    // This is the entry point for reading the file, called initially and on change
+    const readConfigFile = async (): Promise<ConfigSourceData> => {
+      // We clear the watched files every time we initiate a new read
+      watcher.unwatch(watchedPaths);
+      watchedPaths.length = 0;
+
+      watcher.add(this.#path);
+      watchedPaths.push(this.#path);
+      const content = await fs.readFile(this.#path, 'utf8');
+      const data = await transformer(yaml.parse(content), { dir });
+      return { data, context: configFileName, path: this.#path };
+    };
 
     signal?.addEventListener('abort', () => {
       watcher.close();
@@ -72,6 +108,10 @@ export class FileConfigSource implements ConfigSource {
       }
       yield { data: [await readConfigFile()] };
     }
+  }
+
+  toString() {
+    return `FileConfigSource{path="${this.#path}"}`;
   }
 
   #waitForEvent(
