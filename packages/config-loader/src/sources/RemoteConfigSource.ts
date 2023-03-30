@@ -23,12 +23,18 @@ import isEqual from 'lodash/isEqual';
 import yaml from 'yaml';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
+import {
+  ConfigTransformer,
+  createConfigTransformer,
+} from '../lib/transform/apply';
+import { EnvFunc } from '../lib/transform/types';
 
 const DEFAULT_RELOAD_INTERVAL_SECONDS = 60;
 
 export interface RemoteConfigSourceOptions {
   url: string;
   reloadIntervalSeconds?: number;
+  envFunc?: EnvFunc;
 }
 
 export class RemoteConfigSource implements ConfigSource {
@@ -46,11 +52,13 @@ export class RemoteConfigSource implements ConfigSource {
 
   readonly #url: string;
   readonly #reloadIntervalSeconds: number;
+  readonly #transformer: ConfigTransformer;
 
   private constructor(options: RemoteConfigSourceOptions) {
     this.#url = options.url;
     this.#reloadIntervalSeconds =
       options.reloadIntervalSeconds ?? DEFAULT_RELOAD_INTERVAL_SECONDS;
+    this.#transformer = createConfigTransformer({ envFunc: options.envFunc });
   }
 
   async *readConfigData(
@@ -88,7 +96,7 @@ export class RemoteConfigSource implements ConfigSource {
     }
 
     const content = await res.text();
-    const data = yaml.parse(content);
+    const data = await this.#transformer(yaml.parse(content));
     if (data === null) {
       throw new Error('configuration data is null');
     } else if (typeof data !== 'object') {
