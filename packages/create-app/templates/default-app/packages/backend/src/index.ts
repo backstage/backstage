@@ -31,6 +31,7 @@ import search from './plugins/search';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { InMemoryEventBroker } from '@backstage/plugin-events-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -56,6 +57,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
+    const eventBroker = new InMemoryEventBroker(logger);
     return {
       logger,
       database,
@@ -67,6 +69,7 @@ function makeCreateEnv(config: Config) {
       scheduler,
       permissions,
       identity,
+      eventBroker,
     };
   };
 }
