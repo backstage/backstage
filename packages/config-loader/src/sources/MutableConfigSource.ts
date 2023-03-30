@@ -23,18 +23,22 @@ import {
 import { simpleDefer, SimpleDeferred, waitOrAbort } from './utils';
 
 export class MutableConfigSource implements ConfigSource {
-  static create(options: { data: JsonObject; context?: string }): ConfigSource {
+  static create(options?: {
+    data?: JsonObject;
+    context?: string;
+  }): MutableConfigSource {
     return new MutableConfigSource(
-      options.data,
-      options.context ?? 'mutable-config',
+      options?.context ?? 'mutable-config',
+      options?.data,
     );
   }
 
-  #currentData: JsonObject;
+  #currentData?: JsonObject;
   #deferred: SimpleDeferred<void>;
   readonly #context: string;
+  readonly #abortController = new AbortController();
 
-  private constructor(initialData: JsonObject, context: string) {
+  private constructor(context: string, initialData?: JsonObject) {
     this.#currentData = initialData;
     this.#context = context;
     this.#deferred = simpleDefer();
@@ -43,21 +47,39 @@ export class MutableConfigSource implements ConfigSource {
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
   ): AsyncConfigSourceIterator {
-    yield { data: [{ data: this.#currentData, context: this.#context }] };
+    let deferredPromise = this.#deferred.promise;
+
+    if (this.#currentData !== undefined) {
+      yield { data: [{ data: this.#currentData, context: this.#context }] };
+    }
 
     for (;;) {
-      const [ok] = await waitOrAbort(this.#deferred.promise, options?.signal);
+      const [ok] = await waitOrAbort(deferredPromise, [
+        options?.signal,
+        this.#abortController.signal,
+      ]);
       if (!ok) {
         return;
       }
+      deferredPromise = this.#deferred.promise;
 
-      yield { data: [{ data: this.#currentData, context: this.#context }] };
+      if (this.#currentData !== undefined) {
+        yield { data: [{ data: this.#currentData, context: this.#context }] };
+      }
     }
   }
 
-  setData(data: JsonObject) {
-    this.#currentData = data;
-    this.#deferred.resolve();
-    this.#deferred = simpleDefer();
+  setData(data: JsonObject): void {
+    if (!this.#abortController.signal.aborted) {
+      this.#currentData = data;
+      const oldDeferred = this.#deferred;
+      this.#deferred = simpleDefer();
+      oldDeferred.resolve();
+    }
+  }
+
+  close(): void {
+    this.#currentData = undefined;
+    this.#abortController.abort();
   }
 }
