@@ -7,7 +7,7 @@ Attempt to load entity owner names in the EntityOwnerPicker through the `by-refs
 **BREAKING**: `EntityOwnerFilter` now uses the full entity ref instead of the `humanizeEntityRef`. If you rely on `EntityOwnerFilter.values` or the `queryParameters.owners` of `useEntityList`, you will need to adjust your code like the following.
 
 ```tsx
-const {queryParameters: {owners: oldEntityOwnerFilterRef}} = useEntityList();
+const {queryParameters: {owners}} = useEntityList();
 // or
 const {filter: {owners}} = useEntityList();
 
