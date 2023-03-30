@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'path';
+import fs from 'fs-extra';
 import { Config, ConfigReader } from '@backstage/config';
 import parseArgs from 'minimist';
 import { EnvConfigSource } from './EnvConfigSource';
@@ -23,6 +25,7 @@ import { RemoteConfigSource } from './RemoteConfigSource';
 import { ConfigSource } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { LoadConfigOptionsRemote } from '../loader';
+import { EnvFunc } from '../lib/transform/types';
 
 export class ConfigSources {
   static parseArgs(
@@ -40,13 +43,13 @@ export class ConfigSources {
     });
   }
 
-  static default(options: {
-    logger: Logger;
-    argv?: string[];
+  static defaultForTargets(options: {
+    rootDir: string;
+    targets: Array<{ type: 'url' | 'path'; target: string }>;
     remote?: LoadConfigOptionsRemote;
-    env?: Record<string, string>;
+    envFunc?: EnvFunc;
   }): ConfigSource {
-    const argSources = this.parseArgs(options.argv).map(arg => {
+    const argSources = options.targets.map(arg => {
       if (arg.type === 'url') {
         if (!options.remote) {
           throw new Error(
@@ -57,9 +60,39 @@ export class ConfigSources {
       }
       return FileConfigSource.create({ ...options, path: arg.target });
     });
+
+    if (argSources.length === 0) {
+      const defaultPath = resolvePath(options.rootDir, 'app-config.yaml');
+      const localPath = resolvePath(options.rootDir, 'app-config.local.yaml');
+
+      argSources.push(
+        FileConfigSource.create({ ...options, path: defaultPath }),
+      );
+      if (fs.pathExistsSync(localPath)) {
+        argSources.push(
+          FileConfigSource.create({ ...options, path: localPath }),
+        );
+      }
+    }
+
+    return this.merge(argSources);
+  }
+
+  static default(options: {
+    rootDir: string;
+    argv?: string[];
+    remote?: LoadConfigOptionsRemote;
+    env?: Record<string, string>;
+    envFunc?: EnvFunc;
+  }): ConfigSource {
+    const argSource = this.defaultForTargets({
+      ...options,
+      targets: this.parseArgs(options.argv),
+    });
+
     const envSource = EnvConfigSource.create(options);
 
-    return this.merge([...argSources, envSource]);
+    return this.merge([argSource, envSource]);
   }
 
   static merge(sources: ConfigSource[]): ConfigSource {
