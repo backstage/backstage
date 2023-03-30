@@ -111,11 +111,12 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
             setSelectedLifecycles(value)
           }
           renderOption={(option, { selected }) => (
-            <div>
+            <div data-testid={`lifecycle-checkbox-label-${option}`}>
               <Checkbox
                 icon={icon}
                 checkedIcon={checkedIcon}
                 checked={selected}
+                data-testid={`lifecycle-checkbox-${option}`}
               />
               {option}
             </div>

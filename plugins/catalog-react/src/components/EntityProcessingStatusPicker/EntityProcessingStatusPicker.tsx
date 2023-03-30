@@ -82,7 +82,7 @@ export const EntityProcessingStatusPicker = () => {
             errorChange(value.includes('Has Error'));
           }}
           renderOption={(option, { selected }) => (
-            <div>
+            <div data-testid={`processing-status-checkbox-label-${option}`}>
               <Checkbox
                 icon={icon}
                 checkedIcon={checkedIcon}

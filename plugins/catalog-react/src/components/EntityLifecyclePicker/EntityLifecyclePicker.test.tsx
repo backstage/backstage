@@ -154,9 +154,13 @@ describe('<EntityLifecyclePicker/>', () => {
       lifecycles: new EntityLifecycleFilter(['production']),
     });
     fireEvent.click(screen.getByTestId('lifecycle-picker-expand'));
-    expect(screen.getByLabelText('production')).toBeChecked();
+    expect(
+      screen
+        .getByTestId('lifecycle-checkbox-production')
+        .querySelector('input[type="checkbox"]'),
+    ).toBeChecked();
 
-    fireEvent.click(screen.getByLabelText('production'));
+    fireEvent.click(screen.getByTestId('lifecycle-checkbox-label-production'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       lifecycles: undefined,
     });

@@ -123,7 +123,10 @@ describe('<EntityProcessingStatusPicker/>', () => {
     );
 
     fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
-    fireEvent.click(screen.getByText('Is Orphan'));
+
+    fireEvent.click(
+      screen.getByTestId('processing-status-checkbox-label-Is Orphan'),
+    );
     expect(updateFilters).toHaveBeenCalledWith({
       orphan: undefined,
     });
