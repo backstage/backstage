@@ -90,4 +90,4 @@ app:
   signOutUrl: http://localhost:4180/oauth2/sign_out?rd=http%3A%2F%2Fmy-provider.com%2Fend_session_endpoint
 ```
 
-Note the above example has `oauth2Proxy` running on port 4180. There is also the requirement of using an encoded url for the redirect to the authentication provider's sign out page. The `end_session_endpoint` should be the end session endpoint of the provider.
+Note the above example has `oauth2Proxy` running on port 4180. There is also the requirement of using an encoded URL for the redirect to the authentication provider's sign out page. The `end_session_endpoint` should be the end session endpoint of the provider.
