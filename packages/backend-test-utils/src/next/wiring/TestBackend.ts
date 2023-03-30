@@ -75,6 +75,7 @@ const defaultServiceFactories = [
   mockServices.cache.factory(),
   mockServices.config.factory(),
   mockServices.database.factory(),
+  mockServices.events.factory(),
   mockServices.httpRouter.factory(),
   mockServices.identity.factory(),
   mockServices.lifecycle.factory(),

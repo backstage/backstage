@@ -11,6 +11,7 @@ import { DatabaseService } from '@backstage/backend-plugin-api';
 import { EventBroker } from '@backstage/backend-common';
 import { EventParams } from '@backstage/backend-common';
 import { EventPublisher } from '@backstage/backend-common';
+import { EventService } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/backend-common';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -56,6 +57,13 @@ export namespace mockServices {
   export namespace database {
     const // (undocumented)
       factory: () => ServiceFactory<DatabaseService, 'plugin'>;
+  }
+  // (undocumented)
+  export function events(): EventService;
+  // (undocumented)
+  export namespace events {
+    const // (undocumented)
+      factory: () => ServiceFactory<EventService, 'plugin'>;
   }
   // (undocumented)
   export namespace httpRouter {

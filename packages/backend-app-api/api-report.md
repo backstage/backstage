@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
+import { EventService } from '@backstage/backend-plugin-api';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
 import { Handler } from 'express';
@@ -114,6 +115,9 @@ export const discoveryServiceFactory: () => ServiceFactory<
   PluginEndpointDiscovery,
   'plugin'
 >;
+
+// @public (undocumented)
+export const eventServiceFactory: () => ServiceFactory<EventService, 'plugin'>;
 
 // @public
 export interface ExtendedHttpServer extends http.Server {

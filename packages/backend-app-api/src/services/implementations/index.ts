@@ -18,6 +18,7 @@ export * from './cache';
 export * from './config';
 export * from './database';
 export * from './discovery';
+export * from './events';
 export * from './httpRouter';
 export * from './identity';
 export * from './lifecycle';

@@ -18,6 +18,7 @@ import {
   ConfigService,
   coreServices,
   createServiceFactory,
+  EventService,
   IdentityService,
   LoggerService,
   ServiceFactory,
@@ -37,6 +38,7 @@ import {
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { TestEventBroker } from '../../events';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 
@@ -105,6 +107,14 @@ export namespace mockServices {
   }
   export namespace identity {
     export const factory = simpleFactory(coreServices.identity, identity);
+  }
+
+  export function events(): EventService {
+    return new TestEventBroker();
+  }
+
+  export namespace events {
+    export const factory = simpleFactory(coreServices.events, events);
   }
 
   // TODO(Rugvip): Not all core services have implementations available here yet.

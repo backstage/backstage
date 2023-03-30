@@ -72,6 +72,7 @@ describe('eventPlugin', () => {
       extensionPoints: [],
       services: [
         [coreServices.config, config],
+        [coreServices.events, eventBroker],
         [coreServices.httpRouter, httpRouter],
         [coreServices.logger, getVoidLogger()],
       ],
