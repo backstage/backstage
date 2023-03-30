@@ -73,23 +73,21 @@ Additional dimensional data can be captured using custom dimensions, like this:
 3. `allowedContexts` config accepts array of string, where each entry is a context parameter that will be sent in the event.
    context names will be prefixed by `c_`.
 4. `allowedAttributes` config accepts array of string, where each entry is an attribute that will be sent in the event.
-attribute names will be prefixed by `a_`.
+   attribute names will be prefixed by `a_`.
 
 ```yaml
 app:
   analytics:
     ga4:
       measurementId: G-0000000-0
-      allowedContexts: [ 'pluginId']
+      allowedContexts: ['pluginId']
 ```
-
-
 
 ```yaml
 app:
   analytics:
     ga4:
-      allowedContexts: [ 'pluginId']
+      allowedContexts: ['pluginId']
       allowedAttributes: ['someEventContextAttr']
 ```
 
@@ -150,21 +148,21 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-
 ### Enabling content grouping
 
 Content groups enable you to categorize pages and screens into custom buckets which you can see
 metrics for related groups of information.
 More about content grouping here [content groups][content-grouping].
 It's recommended to enable content grouping by PluginId. `contentGrouping` supports `routeRef` and extension.
+
 ```yaml
 app:
   analytics:
     ga4:
       contentGrouping: pluginId
 ```
-Please note, content grouping takes 24hrs to show up in the Google Analytics dashboard.
 
+Please note, content grouping takes 24hrs to show up in the Google Analytics dashboard.
 
 ### Debugging and Testing
 
@@ -204,7 +202,7 @@ app:
       measurementId: G-0000000-0
       debug: true
       testMode: true
-      allowedContexts: [ 'pluginId']
+      allowedContexts: ['pluginId']
 ```
 
 [what-is-a-custom-dimension]: https://support.google.com/analytics/answer/2709828
