@@ -1,32 +1,30 @@
-# Architecting your Catalog
+#Architecting your Catalog
 
 ## Overview
 
-The Software Catalog in Backstage is intended to capture entities relevant to humans and have a clear mental model around them rather than an exhaustive inventory of all possible things. The focus is on attaching functionality and visual views centered around these entities. Determining the "edge" where the catalog ends and the external world begins is crucial to ensure that the catalog's scope is appropriate.
-The Backstage software catalog is a centralized hub for organizing and discovering software components and services. However, there may not be better tools for keeping track of the dynamic relationships between these components and services in real-time. Its primary objective is to offer a high-level overview of concepts rather than runtime aspects and to provide a user-friendly interface. To integrate data from external sources, it is recommended to attach tooling to the nodes in the graph using annotations. A front-end plugin can also be developed to showcase deployment information and other real-time data.
-It is worth noting that the Catalog should not be considered the ultimate source of truth. Instead, it is advisable to use the Backstage Catalog as a caching mechanism that utilizes a REST API to convey information to the catalog UI and other Backstage plugins. Adopting a GitOps approach is recommended to modify YAML files in Backstage, treating YAML files in repositories as the primary source of truth and using Scaffolder to make changes via the UI and generate a pull request in the repository with the updated changes.
+The Software Catalog in Backstage is intended to capture human mental models using entities and their relationships rather than an exhaustive inventory of all possible things. The focus is on attaching functionality and views centered around these entities. Determining the "edge" where the catalog ends and the external world begins is crucial to ensure that the catalog's scope is appropriate.
+The Backstage software catalog serves as a centralized hub for organizing and discovering software components and services. While it excels at providing a high-level overview of these concepts, it may not be the ideal solution for tracking dynamic relationships between components and services in real-time. You can achieve real time views by attaching appropriate tooling to the nodes in the graph through [annotations](https://backstage.io/docs/features/software-catalog/well-known-annotations) and developing custom front-end plugins that display deployment information and other real-time data.
+It is worth noting that the Backstage database should not be considered the ultimate source of truth. Instead, it is advisable to use the Backstage Catalog as a caching mechanism that utilizes a REST API to convey information to the catalog UI and other Backstage plugins. Adopting a GitOps approach is recommended to modify YAML files in Backstage, treating YAML files in repositories as the primary source of truth and using Scaffolder to make changes via the UI and generate a pull request in the repository with the updated changes.
 
 ### Descriptor Components used to build the Catalog Graph
 
-**Entities:** An entity refers to a node in the graph that represents a distinct object, concept, or thing. Nodes are the fundamental building blocks of a graph database and are used to represent entities and their properties.
+[**Entities:**](https://backstage.io/docs/features/software-catalog/system-model) An entity refers to a node in the graph that represents a distinct object, concept, or thing. Nodes are the fundamental building blocks of a graph database and are used to represent entities and their properties.
 
-![](../../assets/software-catalog/entity.svg)
+![](../../assets/software-catalog/entity.drawio.svg)
 
-**Kinds:** These are broad categories used to group related entities. Kinds are used to provide a high-level categorization of entities, such as "service", "database", or "team". Kinds are often used to provide a way to filter entities in the catalog and to provide a high-level overview of the types of entities that are being managed.
+[**Kinds:**](https://backstage.io/docs/features/software-catalog/descriptor-format#contents) These are broad categories used to group related entities. Kinds are used to provide a high-level categorization of entities, such as "service", "database", or "team". Kinds are often used to provide a way to filter entities in the catalog and to provide a high-level overview of the types of entities that are being managed.
 
-**Relations:** These are links between different entities in the catalog. Relations express the relationships between different entities, such as dependencies or ownership. Adopters can use relations to help users navigate the catalog and understand the relationships between different entities.
+[**Relations:**](https://backstage.io/docs/features/software-catalog/descriptor-format#common-to-all-kinds-relations) These are links between different entities in the catalog. Relations express the relationships between different entities, such as dependencies or ownership. Adopters can use relations to help users navigate the catalog and understand the relationships between different entities.
 
-**Spec:** A specification or "spec" is a schema that outlines the data structure of an entity in the Backstage catalog. It defines the properties, relationships, data types, and constraints for an entity, ensuring consistency and accuracy of data while allowing for easy sharing and consumption of data across components and plugins. Specs are useful when creating or extending entities and can help make data more reusable and interoperable. The spec section is fully customizable, and users can create their own components and plugins to render the information.
+[**Spec:**](https://backstage.io/docs/features/software-catalog/descriptor-format#spec-varies) A specification or "spec" is a schema that outlines the data structure of an entity in the Backstage catalog. It defines the properties, relationships, data types, and constraints for an entity, ensuring consistency and accuracy of data while allowing for easy sharing and consumption of data across components and plugins. Specs are useful when creating or extending entities and can help make data more reusable and interoperable. The spec section is fully customizable, and users can create their own components and plugins to render the information.
 
-**Types:** These are more specific categories used to classify entities within a given Kind. Types provide a more granular categorization of entities, such as "frontend-service" or "backend-service.". Types are often used to provide additional context and information about an entity and to help users understand the role and function of the entity within the broader system.
+[**Types:**](https://backstage.io/docs/features/software-catalog/system-model#type) These are more specific categories used to classify entities within a given Kind. Types provide a more granular categorization of entities, such as "frontend-service" or "backend-service.". Types are often used to provide additional context and information about an entity and to help users understand the role and function of the entity within the broader system.
 
-**Annotations:** These key-value pairs can be attached to an entity in the catalog. They are typically used to add additional information or metadata to an entity. Annotations are often used to provide information that is used by automated tools or scripts and to provide further context to humans working with the entity or refer plugins to the external world.
-
-**Statuses:** These indicators represent an entity's current state. They are typically used to show whether an entity is healthy or not, whether it is up-to-date or out-of-date, or whether it is passing or failing various checks or tests.
+[**Annotations:**](https://backstage.io/docs/features/software-catalog/well-known-annotations) These key-value pairs can be attached to an entity in the catalog. They are typically used to add additional information or metadata to an entity. Annotations are often used to provide information that is used by automated tools or scripts and to provide further context to humans working with the entity or refer plugins to the external world.
 
 ## Use cases out of the box
 
-The catalog builds a graph using descriptors as nodes and relations as edges. Out of the box you get the following use cases:
+The catalog builds a graph using [descriptors](https://backstage.io/docs/features/software-catalog/descriptor-format) as nodes and [relations](https://backstage.io/docs/features/software-catalog/descriptor-format#common-to-all-kinds-relations) as edges. Out of the box you get the following use cases:
 
 - Ownership tracking
 - Inventory
@@ -42,7 +40,7 @@ The recommended approach would be to represent information in catalog-info files
 
 ### Well-known trackable assets
 
-**Software Components**
+**Components**
 
 - Services
 - Websites
@@ -50,12 +48,13 @@ The recommended approach would be to represent information in catalog-info files
 - Data Pipelines
 - Machine Learning Models
 - Third-party software components: It is recommended to have a separate repo for all 3d party catalog-info files.
-
-**Systems**
-
 - Jira installation
 - Pagerduty
+
+**Resources**
+
 - Physical resources: This is probably more useful for longer-lived ones (For example servers).
+- Cloud Infrastructure services
 
 **Ownership - users - groups by**
 
@@ -84,7 +83,7 @@ The recommended approach would be to represent information in catalog-info files
 
 APIs Could list networked services or libraries and it’s particularly useful to identify APIs that form boundaries between systems. There are some considerations to keep in mind:
 
-**API versions:** It’s not recommended to have multiple entity instances (e.g., metadata.name: my-api-v1 and metadata.name: my-api-v2).
+**API versions:** Major API versions can be treated as distinct APIs, and it is possible to create separate entity instances for each (e.g., metadata.name: my-api-v1 and metadata.name: my-api-v2). However, this approach is not recommended for minor or patch-level variations
 
 **Detail:** It’s not recommended going too granular because the catalog in its current form won't perhaps be a great platform to express it.
 
