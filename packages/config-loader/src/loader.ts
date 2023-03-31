@@ -17,10 +17,16 @@
 import { AppConfig } from '@backstage/config';
 import { ConfigSources } from './sources';
 
-/** @public */
+/**
+ * @public
+ * @deprecated
+ */
 export type ConfigTarget = { path: string } | { url: string };
 
-/** @public */
+/**
+ * @public
+ * @deprecated
+ */
 export type LoadConfigOptionsWatch = {
   /**
    * A listener that is called when a config file is changed.
@@ -33,7 +39,10 @@ export type LoadConfigOptionsWatch = {
   stopSignal?: Promise<void>;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated
+ */
 export type LoadConfigOptionsRemote = {
   /**
    * A remote config reloading period, in seconds
@@ -45,6 +54,7 @@ export type LoadConfigOptionsRemote = {
  * Options that control the loading of configuration files in the backend.
  *
  * @public
+ * @deprecated
  */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
@@ -74,6 +84,7 @@ export type LoadConfigOptions = {
 /**
  * Results of loading configuration files.
  * @public
+ * @deprecated
  */
 export type LoadConfigResult = {
   /**
