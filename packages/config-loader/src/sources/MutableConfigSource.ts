@@ -22,11 +22,27 @@ import {
 } from './types';
 import { simpleDefer, SimpleDeferred, waitOrAbort } from './utils';
 
+/**
+ * Options for {@link MutableConfigSource.create}.
+ */
+export interface MutableConfigSourceOptions {
+  data?: JsonObject;
+  context?: string;
+}
+
+/**
+ * A config source that can be updated with new data.
+ *
+ * @public
+ */
 export class MutableConfigSource implements ConfigSource {
-  static create(options?: {
-    data?: JsonObject;
-    context?: string;
-  }): MutableConfigSource {
+  /**
+   * Creates a new mutable config source.
+   *
+   * @param options - Options for the config source.
+   * @returns A new mutable config source.
+   */
+  static create(options?: MutableConfigSourceOptions): MutableConfigSource {
     return new MutableConfigSource(
       options?.context ?? 'mutable-config',
       options?.data,
@@ -71,6 +87,11 @@ export class MutableConfigSource implements ConfigSource {
     }
   }
 
+  /**
+   * Set the data of the config source.
+   *
+   * @param data - The new data to set
+   */
   setData(data: JsonObject): void {
     if (!this.#abortController.signal.aborted) {
       this.#currentData = data;
@@ -80,6 +101,9 @@ export class MutableConfigSource implements ConfigSource {
     }
   }
 
+  /**
+   * Close the config source, preventing any further updates.
+   */
   close(): void {
     this.#currentData = undefined;
     this.#abortController.abort();
