@@ -18,6 +18,7 @@ import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import {
   Box,
   Checkbox,
+  FormControlLabel,
   makeStyles,
   TextField,
   Typography,
@@ -82,14 +83,17 @@ export const EntityProcessingStatusPicker = () => {
             errorChange(value.includes('Has Error'));
           }}
           renderOption={(option, { selected }) => (
-            <div data-testid={`processing-status-checkbox-label-${option}`}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-              {option}
-            </div>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              onClick={event => event.preventDefault()}
+              label={option}
+            />
           )}
           size="small"
           popupIcon={
