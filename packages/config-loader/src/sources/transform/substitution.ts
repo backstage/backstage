@@ -15,7 +15,8 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { TransformFunc, EnvFunc } from './types';
+import { TransformFunc } from './types';
+import { EnvFunc } from '../types';
 
 /**
  * A environment variable substitution transform that transforms e.g. 'token ${MY_TOKEN}'

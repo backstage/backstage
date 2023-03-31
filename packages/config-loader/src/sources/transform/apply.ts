@@ -16,10 +16,11 @@
 
 import { JsonObject, JsonValue } from '@backstage/types';
 import { assertError } from '@backstage/errors';
-import { EnvFunc, TransformContext, TransformFunc } from './types';
+import { TransformContext, TransformFunc } from './types';
 import { isObject } from './utils';
 import { createSubstitutionTransform } from './substitution';
 import { createIncludeTransform } from './include';
+import { EnvFunc } from '../types';
 
 /**
  * Applies a set of transforms to raw configuration data.

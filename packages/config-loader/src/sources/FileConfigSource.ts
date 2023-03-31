@@ -22,10 +22,10 @@ import {
   AsyncConfigSourceIterator,
   ConfigSource,
   ConfigSourceData,
+  EnvFunc,
   ReadConfigDataOptions,
 } from './types';
 import { createConfigTransformer } from './transform';
-import { EnvFunc } from './transform';
 
 export interface FileConfigSourceOptions {
   /**

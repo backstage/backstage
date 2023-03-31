@@ -16,9 +16,4 @@
 
 export { createConfigTransformer } from './apply';
 export type { ConfigTransformer } from './apply';
-export type {
-  EnvFunc,
-  ReadFileFunc,
-  TransformContext,
-  TransformFunc,
-} from './types';
+export type { ReadFileFunc, TransformContext, TransformFunc } from './types';

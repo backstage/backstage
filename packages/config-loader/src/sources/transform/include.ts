@@ -18,7 +18,8 @@ import yaml from 'yaml';
 import { extname, dirname, resolve as resolvePath } from 'path';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { isObject } from './utils';
-import { TransformFunc, EnvFunc, ReadFileFunc } from './types';
+import { TransformFunc, ReadFileFunc } from './types';
+import { EnvFunc } from '../types';
 
 // Parsers for each type of included file
 const includeFileParser: {

@@ -39,3 +39,5 @@ export interface AsyncConfigSourceIterator
 export interface ConfigSource {
   readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
 }
+
+export type EnvFunc = (name: string) => Promise<string | undefined>;

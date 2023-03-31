@@ -20,10 +20,10 @@ import isEqual from 'lodash/isEqual';
 import fetch from 'node-fetch';
 import yaml from 'yaml';
 import { ConfigTransformer, createConfigTransformer } from './transform';
-import { EnvFunc } from './transform/types';
 import {
   AsyncConfigSourceIterator,
   ConfigSource,
+  EnvFunc,
   ReadConfigDataOptions,
 } from './types';
 

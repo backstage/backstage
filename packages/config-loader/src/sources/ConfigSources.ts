@@ -22,10 +22,9 @@ import { EnvConfigSource } from './EnvConfigSource';
 import { FileConfigSource } from './FileConfigSource';
 import { MergedConfigSource } from './MergedConfigSource';
 import { RemoteConfigSource } from './RemoteConfigSource';
-import { ConfigSource } from './types';
+import { ConfigSource, EnvFunc } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { LoadConfigOptionsRemote } from '../loader';
-import { EnvFunc } from './transform';
 
 export class ConfigSources {
   static parseArgs(
