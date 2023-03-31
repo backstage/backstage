@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import yaml from 'yaml';
-import chokidar from 'chokidar';
-import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
 import { AppConfig } from '@backstage/config';
-import { ForwardedError } from '@backstage/errors';
-import {
-  applyConfigTransforms,
-  createIncludeTransform,
-  createSubstitutionTransform,
-  isValidUrl,
-  readEnvConfig,
-} from './lib';
-import fetch from 'node-fetch';
+import { ConfigSources } from './sources';
 
 /** @public */
 export type ConfigTarget = { path: string } | { url: string };
@@ -98,227 +86,53 @@ export type LoadConfigResult = {
  * Load configuration data.
  *
  * @public
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<LoadConfigResult> {
-  const { configRoot, experimentalEnvFunc: envFunc, watch, remote } = options;
+  const source = ConfigSources.default({
+    envFunc: options.experimentalEnvFunc,
+    remote: options.remote,
+    rootDir: options.configRoot,
+    argv: options.configTargets.flatMap(t => [
+      '--config',
+      'url' in t ? t.url : t.path,
+    ]),
+  });
 
-  const configPaths: string[] = options.configTargets
-    .slice()
-    .filter((e): e is { path: string } => e.hasOwnProperty('path'))
-    .map(configTarget => configTarget.path);
+  return new Promise<LoadConfigResult>((resolve, reject) => {
+    async function loadConfigReaderLoop() {
+      let loaded = false;
 
-  const configUrls: string[] = options.configTargets
-    .slice()
-    .filter((e): e is { url: string } => e.hasOwnProperty('url'))
-    .map(configTarget => configTarget.url);
-
-  if (remote === undefined) {
-    if (configUrls.length > 0) {
-      throw new Error(
-        `Please make sure you are passing the remote option when loading remote configurations. See https://backstage.io/docs/conf/writing#configuration-files for detailed info.`,
-      );
-    }
-  } else if (remote.reloadIntervalSeconds <= 0) {
-    throw new Error(
-      `Remote config must be contain a non zero reloadIntervalSeconds: <seconds> value`,
-    );
-  }
-
-  // If no paths are provided, we default to reading
-  // `app-config.yaml` and, if it exists, `app-config.local.yaml`
-  if (configPaths.length === 0 && configUrls.length === 0) {
-    configPaths.push(resolvePath(configRoot, 'app-config.yaml'));
-
-    const localConfig = resolvePath(configRoot, 'app-config.local.yaml');
-    if (await fs.pathExists(localConfig)) {
-      configPaths.push(localConfig);
-    }
-  }
-
-  const env = envFunc ?? (async (name: string) => process.env[name]);
-
-  const loadConfigFiles = async () => {
-    const fileConfigs = [];
-    const loadedPaths = new Set<string>();
-
-    for (const configPath of configPaths) {
-      if (!isAbsolute(configPath)) {
-        throw new Error(`Config load path is not absolute: '${configPath}'`);
-      }
-
-      const dir = dirname(configPath);
-      const readFile = (path: string) => {
-        const fullPath = resolvePath(dir, path);
-        // if we read a file when building configuration,
-        // we should include that file when watching for
-        // changes, too.
-        loadedPaths.add(fullPath);
-
-        return fs.readFile(fullPath, 'utf8');
-      };
-
-      const input = yaml.parse(await readFile(configPath));
-
-      // A completely empty file ends up as a null return value
-      if (input !== null) {
-        const substitutionTransform = createSubstitutionTransform(env);
-        const data = await applyConfigTransforms(dir, input, [
-          createIncludeTransform(env, readFile, substitutionTransform),
-          substitutionTransform,
-        ]);
-
-        fileConfigs.push({ data, context: basename(configPath) });
-      }
-    }
-
-    return { fileConfigs, loadedPaths };
-  };
-
-  const loadRemoteConfigFiles = async () => {
-    const configs: AppConfig[] = [];
-
-    const readConfigFromUrl = async (url: string) => {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Could not read config file at ${url}`);
-      }
-
-      return await response.text();
-    };
-
-    for (let i = 0; i < configUrls.length; i++) {
-      const configUrl = configUrls[i];
-      if (!isValidUrl(configUrl)) {
-        throw new Error(`Config load path is not valid: '${configUrl}'`);
-      }
-
-      const remoteConfigContent = await readConfigFromUrl(configUrl);
-      if (!remoteConfigContent) {
-        throw new Error(`Config is not valid`);
-      }
-      const configYaml = yaml.parse(remoteConfigContent);
-      const substitutionTransform = createSubstitutionTransform(env);
-      const data = await applyConfigTransforms(configRoot, configYaml, [
-        substitutionTransform,
-      ]);
-
-      configs.push({ data, context: configUrl });
-    }
-
-    return configs;
-  };
-
-  let fileConfigs: AppConfig[];
-  let loadedPaths: Set<string>;
-  try {
-    ({ fileConfigs, loadedPaths } = await loadConfigFiles());
-  } catch (error) {
-    throw new ForwardedError('Failed to read static configuration file', error);
-  }
-
-  let remoteConfigs: AppConfig[] = [];
-  if (remote) {
-    try {
-      remoteConfigs = await loadRemoteConfigFiles();
-    } catch (error) {
-      throw new ForwardedError(
-        `Failed to read remote configuration file`,
-        error,
-      );
-    }
-  }
-
-  const envConfigs = readEnvConfig(process.env);
-
-  const watchConfigFile = (watchProp: LoadConfigOptionsWatch) => {
-    let watchedFiles = Array.from(loadedPaths);
-
-    const watcher = chokidar.watch(watchedFiles, {
-      usePolling: process.env.NODE_ENV === 'test',
-    });
-
-    let currentSerializedConfig = JSON.stringify(fileConfigs);
-    watcher.on('change', async () => {
       try {
-        const { fileConfigs: newConfigs, loadedPaths: newLoadedPaths } =
-          await loadConfigFiles();
+        const abortController = new AbortController();
+        options.watch?.stopSignal?.then(() => abortController.abort());
 
-        // Replace watches to handle any added or removed
-        // $include or $file expressions.
-        watcher.unwatch(watchedFiles);
-        watchedFiles = Array.from(newLoadedPaths);
-        watcher.add(watchedFiles);
+        for await (const { data } of source.readConfigData({
+          signal: abortController.signal,
+        })) {
+          if (loaded) {
+            options.watch?.onChange(data);
+          } else {
+            resolve({ appConfigs: data });
+            loaded = true;
 
-        const newSerializedConfig = JSON.stringify(newConfigs);
-
-        if (currentSerializedConfig === newSerializedConfig) {
-          return;
+            if (options.watch) {
+              options.watch.stopSignal?.then(() => abortController.abort());
+            } else {
+              abortController.abort();
+            }
+          }
         }
-        currentSerializedConfig = newSerializedConfig;
-
-        watchProp.onChange([...remoteConfigs, ...newConfigs, ...envConfigs]);
       } catch (error) {
-        console.error(`Failed to reload configuration files, ${error}`);
+        if (loaded) {
+          console.error(`Failed to reload configuration, ${error}`);
+        } else {
+          reject(error);
+        }
       }
-    });
-
-    if (watchProp.stopSignal) {
-      watchProp.stopSignal.then(() => {
-        watcher.close();
-      });
     }
-  };
-
-  const watchRemoteConfig = (
-    watchProp: LoadConfigOptionsWatch,
-    remoteProp: LoadConfigOptionsRemote,
-  ) => {
-    const hasConfigChanged = async (
-      oldRemoteConfigs: AppConfig[],
-      newRemoteConfigs: AppConfig[],
-    ) => {
-      return (
-        JSON.stringify(oldRemoteConfigs) !== JSON.stringify(newRemoteConfigs)
-      );
-    };
-
-    let handle: NodeJS.Timeout | undefined;
-    try {
-      handle = setInterval(async () => {
-        const newRemoteConfigs = await loadRemoteConfigFiles();
-        if (await hasConfigChanged(remoteConfigs, newRemoteConfigs)) {
-          remoteConfigs = newRemoteConfigs;
-          watchProp.onChange([...remoteConfigs, ...fileConfigs, ...envConfigs]);
-        }
-      }, remoteProp.reloadIntervalSeconds * 1000);
-    } catch (error) {
-      console.error(`Failed to reload configuration files, ${error}`);
-    }
-
-    if (watchProp.stopSignal) {
-      watchProp.stopSignal.then(() => {
-        if (handle !== undefined) {
-          clearInterval(handle);
-          handle = undefined;
-        }
-      });
-    }
-  };
-
-  // Set up config file watching if requested by the caller
-  if (watch) {
-    watchConfigFile(watch);
-  }
-
-  if (watch && remote) {
-    watchRemoteConfig(watch, remote);
-  }
-
-  return {
-    appConfigs: remote
-      ? [...remoteConfigs, ...fileConfigs, ...envConfigs]
-      : [...fileConfigs, ...envConfigs],
-  };
+    loadConfigReaderLoop();
+  });
 }
