@@ -126,6 +126,13 @@ export function createIncludeTransform(
           value = value[part];
         }
 
+        if (typeof value === 'string') {
+          const substituted = await substitute(value, { dir: newDir });
+          if (substituted.applied) {
+            value = substituted.value;
+          }
+        }
+
         return {
           applied: true,
           value,

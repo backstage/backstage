@@ -41,9 +41,33 @@ export async function readAll(
   const results: ConfigSourceData[][] = [];
 
   try {
-    for await (const { configs: data } of source.readConfigData({ signal })) {
-      results.push(data);
+    for await (const { configs } of source.readConfigData({ signal })) {
+      results.push(configs);
     }
+  } catch (error) {
+    throw error;
+  }
+
+  return results;
+}
+
+export async function readN(
+  source: ConfigSource,
+  n: number,
+): Promise<ConfigSourceData[][]> {
+  const results: ConfigSourceData[][] = [];
+
+  try {
+    const controller = new AbortController();
+    for await (const { configs } of source.readConfigData({
+      signal: controller.signal,
+    })) {
+      results.push(configs);
+      if (results.length >= n) {
+        break;
+      }
+    }
+    controller.abort();
   } catch (error) {
     throw error;
   }

@@ -26,6 +26,7 @@ import {
   ReadConfigDataOptions,
 } from './types';
 import { createConfigTransformer } from './transform';
+import { NotFoundError } from '@backstage/errors';
 
 /**
  * Options for {@link FileConfigSource.create}.
@@ -42,6 +43,17 @@ export interface FileConfigSourceOptions {
    * A substitution function to use instead of the default environment substitution.
    */
   substitutionFunc?: SubstitutionFunc;
+}
+
+async function readFile(path: string): Promise<string | undefined> {
+  try {
+    return await fs.readFile(path, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return undefined;
+    }
+    throw error;
+  }
 }
 
 /**
@@ -62,7 +74,7 @@ export class FileConfigSource implements ConfigSource {
    */
   static create(options: FileConfigSourceOptions): ConfigSource {
     if (!isAbsolute(options.path)) {
-      throw new Error(`Config load path is not absolute: '${options.path}'`);
+      throw new Error(`Config load path is not absolute: "${options.path}"`);
     }
     return new FileConfigSource(options);
   }
@@ -93,13 +105,19 @@ export class FileConfigSource implements ConfigSource {
     const dir = dirname(this.#path);
     const transformer = createConfigTransformer({
       substitutionFunc: this.#substitutionFunc,
-      async readFile(path) {
+      readFile: async path => {
         const fullPath = resolvePath(dir, path);
         // Any files discovered while reading this config should be watched too
         watcher.add(fullPath);
         watchedPaths.push(fullPath);
 
-        return fs.readFile(fullPath, 'utf8');
+        const data = await readFile(fullPath);
+        if (data === undefined) {
+          throw new NotFoundError(
+            `failed to include "${fullPath}", file does not exist`,
+          );
+        }
+        return data;
       },
     });
 
@@ -111,13 +129,22 @@ export class FileConfigSource implements ConfigSource {
 
       watcher.add(this.#path);
       watchedPaths.push(this.#path);
-      const content = await fs.readFile(this.#path, 'utf8');
+      const content = await readFile(this.#path);
+      if (content === undefined) {
+        throw new NotFoundError(`Config file "${this.#path}" does not exist`);
+      }
       const parsed = yaml.parse(content);
       if (parsed === null) {
         return [];
       }
-      const data = await transformer(parsed, { dir });
-      return [{ data, context: configFileName, path: this.#path }];
+      try {
+        const data = await transformer(parsed, { dir });
+        return [{ data, context: configFileName, path: this.#path }];
+      } catch (error) {
+        throw new Error(
+          `Failed to read config file at "${this.#path}", ${error.message}`,
+        );
+      }
     };
 
     signal?.addEventListener('abort', () => {
@@ -133,10 +160,6 @@ export class FileConfigSource implements ConfigSource {
       }
       yield { configs: await readConfigFile() };
     }
-  }
-
-  toString() {
-    return `FileConfigSource{path="${this.#path}"}`;
   }
 
   #waitForEvent(
