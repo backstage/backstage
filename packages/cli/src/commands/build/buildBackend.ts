@@ -18,6 +18,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
+import { paths } from '../../lib/paths';
 import { createDistWorkspace } from '../../lib/packager';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
@@ -42,11 +43,18 @@ export async function buildBackend(options: BuildBackendOptions) {
     outputs: new Set([Output.cjs]),
   });
 
+  const resolvedConfigPaths = configPaths?.map(p => {
+    let path = paths.resolveTarget(p);
+    if (!fs.pathExistsSync(path)) {
+      path = paths.resolveOwnRoot(p);
+    }
+    return path;
+  });
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
-      configPaths,
+      configPaths: resolvedConfigPaths,
       buildDependencies: !skipBuildDependencies,
       buildExcludes: [pkg.name],
       parallelism: getEnvironmentParallelism(),
