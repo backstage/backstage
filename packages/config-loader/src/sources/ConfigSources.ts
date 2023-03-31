@@ -25,7 +25,7 @@ import { RemoteConfigSource } from './RemoteConfigSource';
 import { ConfigSource } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { LoadConfigOptionsRemote } from '../loader';
-import { EnvFunc } from '../lib/transform/types';
+import { EnvFunc } from './transform';
 
 export class ConfigSources {
   static parseArgs(

@@ -19,11 +19,8 @@ import { JsonObject } from '@backstage/types';
 import isEqual from 'lodash/isEqual';
 import fetch from 'node-fetch';
 import yaml from 'yaml';
-import {
-  ConfigTransformer,
-  createConfigTransformer,
-} from '../lib/transform/apply';
-import { EnvFunc } from '../lib/transform/types';
+import { ConfigTransformer, createConfigTransformer } from './transform';
+import { EnvFunc } from './transform/types';
 import {
   AsyncConfigSourceIterator,
   ConfigSource,

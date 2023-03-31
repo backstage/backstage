@@ -24,8 +24,8 @@ import {
   ConfigSourceData,
   ReadConfigDataOptions,
 } from './types';
-import { createConfigTransformer } from '../lib/transform/apply';
-import { EnvFunc } from '../lib/transform/types';
+import { createConfigTransformer } from './transform';
+import { EnvFunc } from './transform';
 
 export interface FileConfigSourceOptions {
   /**

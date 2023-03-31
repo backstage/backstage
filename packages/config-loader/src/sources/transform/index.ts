@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export { readEnvConfig } from './env';
-export * from './transform';
-export * from './schema';
+export { createConfigTransformer } from './apply';
+export type { ConfigTransformer } from './apply';
+export type {
+  EnvFunc,
+  ReadFileFunc,
+  TransformContext,
+  TransformFunc,
+} from './types';
