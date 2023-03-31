@@ -43,9 +43,9 @@ export interface ReadConfigDataOptions {
  * @public
  */
 export interface AsyncConfigSourceIterator
-  extends AsyncIterator<{ data: ConfigSourceData[] }, void, void> {
+  extends AsyncIterator<{ configs: ConfigSourceData[] }, void, void> {
   [Symbol.asyncIterator](): AsyncIterator<
-    { data: ConfigSourceData[] },
+    { configs: ConfigSourceData[] },
     void,
     void
   >;
@@ -64,7 +64,7 @@ export interface AsyncConfigSourceIterator
  * class MyConfigSource implements ConfigSource {
  *   async *readConfigData() {
  *     yield {
- *       data: [{
+ *       config: [{
  *         context: 'example',
  *         data: { backend: { baseUrl: 'http://localhost' } }
  *       }]

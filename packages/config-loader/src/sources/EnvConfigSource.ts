@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { ConfigSource, ConfigSourceData } from './types';
+import { AsyncConfigSourceIterator, ConfigSource } from './types';
 
 export class EnvConfigSource implements ConfigSource {
   static create(options: {
@@ -32,9 +32,9 @@ export class EnvConfigSource implements ConfigSource {
     private readonly env: { [name: string]: string | undefined },
   ) {}
 
-  async *readConfigData(): AsyncIterableIterator<{ data: ConfigSourceData[] }> {
-    const data = readEnvConfig(this.env);
-    yield { data };
+  async *readConfigData(): AsyncConfigSourceIterator {
+    const configs = readEnvConfig(this.env);
+    yield { configs };
     return;
   }
 }

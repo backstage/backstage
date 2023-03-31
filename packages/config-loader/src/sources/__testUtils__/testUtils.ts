@@ -41,7 +41,7 @@ export async function readAll(
   const results: ConfigSourceData[][] = [];
 
   try {
-    for await (const { data } of source.readConfigData({ signal })) {
+    for await (const { configs: data } of source.readConfigData({ signal })) {
       results.push(data);
     }
   } catch (error) {
@@ -58,7 +58,7 @@ export function simpleSource(
   return {
     async *readConfigData() {
       for (const d of data) {
-        yield { data: [{ data: d, context }] };
+        yield { configs: [{ data: d, context }] };
       }
     },
   };

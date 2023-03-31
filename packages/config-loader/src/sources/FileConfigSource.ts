@@ -103,14 +103,14 @@ export class FileConfigSource implements ConfigSource {
       watcher.close();
     });
 
-    yield { data: await readConfigFile() };
+    yield { configs: await readConfigFile() };
 
     for (;;) {
       const event = await this.#waitForEvent(watcher, signal);
       if (event === 'abort') {
         return;
       }
-      yield { data: await readConfigFile() };
+      yield { configs: await readConfigFile() };
     }
   }
 

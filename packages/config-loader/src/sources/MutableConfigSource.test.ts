@@ -107,7 +107,7 @@ describe('MutableConfigSource', () => {
     const source = MutableConfigSource.create({ data: { a: 1 } });
     const resultsPromise = readAll(source);
 
-    for await (const { data } of source.readConfigData()) {
+    for await (const { configs: data } of source.readConfigData()) {
       const a = data[0].data.a as number;
       if (a < 3) {
         source.setData({ a: a + 1 });

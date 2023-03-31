@@ -112,22 +112,22 @@ describe('MergedConfigSource', () => {
     );
     const sourceA: ConfigSource = {
       async *readConfigData() {
-        yield { data: [] };
+        yield { configs: [] };
       },
     };
     const sourceD: ConfigSource = {
       async *readConfigData() {
-        yield { data: [] };
+        yield { configs: [] };
       },
     };
     const sourceB: ConfigSource = {
       async *readConfigData() {
-        yield { data: [] };
+        yield { configs: [] };
       },
     };
     const sourceC: ConfigSource = {
       async *readConfigData() {
-        yield { data: [] };
+        yield { configs: [] };
       },
     };
 

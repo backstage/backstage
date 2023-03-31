@@ -66,7 +66,7 @@ export class RemoteConfigSource implements ConfigSource {
   ): AsyncConfigSourceIterator {
     let data = await this.#load();
 
-    yield { data: [{ data, context: this.#url }] };
+    yield { configs: [{ data, context: this.#url }] };
 
     for (;;) {
       if (options?.signal?.aborted) {
@@ -78,7 +78,7 @@ export class RemoteConfigSource implements ConfigSource {
         const newData = await this.#load(options?.signal);
         if (newData && !isEqual(data, newData)) {
           data = newData;
-          yield { data: [{ data, context: this.#url }] };
+          yield { configs: [{ data, context: this.#url }] };
         }
       } catch (error) {
         console.error(`Failed to read config from ${this.#url}, ${error}`);

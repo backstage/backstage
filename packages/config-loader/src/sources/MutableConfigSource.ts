@@ -50,7 +50,7 @@ export class MutableConfigSource implements ConfigSource {
     let deferredPromise = this.#deferred.promise;
 
     if (this.#currentData !== undefined) {
-      yield { data: [{ data: this.#currentData, context: this.#context }] };
+      yield { configs: [{ data: this.#currentData, context: this.#context }] };
     }
 
     for (;;) {
@@ -64,7 +64,9 @@ export class MutableConfigSource implements ConfigSource {
       deferredPromise = this.#deferred.promise;
 
       if (this.#currentData !== undefined) {
-        yield { data: [{ data: this.#currentData, context: this.#context }] };
+        yield {
+          configs: [{ data: this.#currentData, context: this.#context }],
+        };
       }
     }
   }

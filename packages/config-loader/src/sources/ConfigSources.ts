@@ -240,14 +240,14 @@ export class ConfigSources {
       let config: ObservableConfigProxy | undefined = undefined;
       try {
         const abortController = new AbortController();
-        for await (const { data } of source.readConfigData({
+        for await (const { configs } of source.readConfigData({
           signal: abortController.signal,
         })) {
           if (config) {
-            config.setConfig(ConfigReader.fromConfigs(data));
+            config.setConfig(ConfigReader.fromConfigs(configs));
           } else {
             config = ObservableConfigProxy.create(abortController);
-            config!.setConfig(ConfigReader.fromConfigs(data));
+            config!.setConfig(ConfigReader.fromConfigs(configs));
             resolve(config);
           }
         }

@@ -120,13 +120,13 @@ export async function loadConfig(
         const abortController = new AbortController();
         options.watch?.stopSignal?.then(() => abortController.abort());
 
-        for await (const { data } of source.readConfigData({
+        for await (const { configs } of source.readConfigData({
           signal: abortController.signal,
         })) {
           if (loaded) {
-            options.watch?.onChange(data);
+            options.watch?.onChange(configs);
           } else {
-            resolve({ appConfigs: data });
+            resolve({ appConfigs: configs });
             loaded = true;
 
             if (options.watch) {

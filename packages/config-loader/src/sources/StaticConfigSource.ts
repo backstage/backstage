@@ -67,7 +67,7 @@ class StaticObservableConfigSource implements ConfigSource {
         return;
       }
       while (queue.length > 0) {
-        yield { data: [{ data: queue.shift()!, context: this.context }] };
+        yield { configs: [{ data: queue.shift()!, context: this.context }] };
       }
     }
   }
@@ -87,7 +87,7 @@ export class StaticConfigSource implements ConfigSource {
     if (!data) {
       return {
         async *readConfigData(): AsyncConfigSourceIterator {
-          yield { data: [] };
+          yield { configs: [] };
           return;
         },
       };
@@ -104,7 +104,7 @@ export class StaticConfigSource implements ConfigSource {
       return {
         async *readConfigData(): AsyncConfigSourceIterator {
           for await (const value of data) {
-            yield { data: [{ data: value, context }] };
+            yield { configs: [{ data: value, context }] };
           }
         },
       };
@@ -119,7 +119,7 @@ export class StaticConfigSource implements ConfigSource {
   ) {}
 
   async *readConfigData(): AsyncConfigSourceIterator {
-    yield { data: [{ data: await this.promise, context: this.context }] };
+    yield { configs: [{ data: await this.promise, context: this.context }] };
     return;
   }
 }

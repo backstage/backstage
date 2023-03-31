@@ -49,20 +49,23 @@ export class MergedConfigSource implements ConfigSource {
   ): AsyncConfigSourceIterator {
     const its = this.sources.map(source => source.readConfigData(options));
     const initialResults = await Promise.all(its.map(it => it.next()));
-    const data = initialResults.map((result, i) => {
+    const configs = initialResults.map((result, i) => {
       if (result.done) {
         throw new Error(
           `Config source ${String(this.sources[i])} returned no data`,
         );
       }
-      return result.value.data;
+      return result.value.configs;
     });
 
-    yield { data: data.flat(1) };
+    yield { configs: configs.flat(1) };
 
     const results: Array<
       | Promise<
-          readonly [number, IteratorResult<{ data: ConfigSourceData[] }, void>]
+          readonly [
+            number,
+            IteratorResult<{ configs: ConfigSourceData[] }, void>,
+          ]
         >
       | undefined
     > = its.map((it, i) => nextWithIndex(it, i));
@@ -74,8 +77,8 @@ export class MergedConfigSource implements ConfigSource {
           results[i] = undefined;
         } else {
           results[i] = nextWithIndex(its[i], i);
-          data[i] = result.value.data;
-          yield { data: data.flat(1) };
+          configs[i] = result.value.configs;
+          yield { configs: configs.flat(1) };
         }
       } catch (error) {
         const source = this.sources[error.index];
