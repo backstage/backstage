@@ -22,6 +22,11 @@ import {
 } from './types';
 import { simpleDefer } from './utils';
 
+/**
+ * Options for {@link StaticConfigSource.create}.
+ *
+ * @public
+ */
 export interface StaticConfigSourceOptions {
   data:
     | JsonObject
@@ -81,7 +86,18 @@ function isAsyncIterable<T>(value: {}): value is AsyncIterable<T> {
   return Symbol.asyncIterator in value;
 }
 
+/**
+ * A configuration source that reads from a static object, promise, iterable, or observable.
+ *
+ * @public
+ */
 export class StaticConfigSource implements ConfigSource {
+  /**
+   * Creates a new {@link StaticConfigSource}.
+   *
+   * @param options - Options for the config source
+   * @returns A new static config source
+   */
   static create(options: StaticConfigSourceOptions): ConfigSource {
     const { data, context = 'static-config' } = options;
     if (!data) {

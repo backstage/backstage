@@ -29,13 +29,42 @@ import {
 
 const DEFAULT_RELOAD_INTERVAL_SECONDS = 60;
 
+/**
+ * Options for {@link RemoteConfigSource.create}.
+ *
+ * @public
+ */
 export interface RemoteConfigSourceOptions {
+  /**
+   * The URL to load the config from.
+   */
   url: string;
+
+  /**
+   * The interval in seconds to reload the config from the remote URL.
+   *
+   * Set to Infinity to disable reloading.
+   */
   reloadIntervalSeconds?: number;
+
+  /**
+   * A substitution function to use instead of the default environment substitution.
+   */
   substitutionFunc?: SubstitutionFunc;
 }
 
+/**
+ * A config source that loads configuration from a remote URL.
+ *
+ * @public
+ */
 export class RemoteConfigSource implements ConfigSource {
+  /**
+   * Creates a new {@link RemoteConfigSource}.
+   *
+   * @param options - Options for the source.
+   * @returns A new remote config source.
+   */
   static create(options: RemoteConfigSourceOptions): ConfigSource {
     try {
       // eslint-disable-next-line no-new

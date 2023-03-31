@@ -27,18 +27,39 @@ import {
 } from './types';
 import { createConfigTransformer } from './transform';
 
+/**
+ * Options for {@link FileConfigSource.create}.
+ *
+ * @public
+ */
 export interface FileConfigSourceOptions {
   /**
    * The path to the config file that should be loaded.
    */
   path: string;
+
   /**
-   * Function used to resolve environment variables.
+   * A substitution function to use instead of the default environment substitution.
    */
   substitutionFunc?: SubstitutionFunc;
 }
 
+/**
+ * A config source that loads configuration from a local file.
+ *
+ * @public
+ */
 export class FileConfigSource implements ConfigSource {
+  /**
+   * Creates a new config source that loads configuration from the given path.
+   *
+   * @remarks
+   *
+   * The source will watch the file for changes, as well as any referenced files.
+   *
+   * @param options - Options for the config source.
+   * @returns A new config source that loads from the given path.
+   */
   static create(options: FileConfigSourceOptions): ConfigSource {
     if (!isAbsolute(options.path)) {
       throw new Error(`Config load path is not absolute: '${options.path}'`);
