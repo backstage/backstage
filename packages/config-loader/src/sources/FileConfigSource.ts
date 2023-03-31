@@ -83,7 +83,7 @@ export class FileConfigSource implements ConfigSource {
     });
 
     // This is the entry point for reading the file, called initially and on change
-    const readConfigFile = async (): Promise<ConfigSourceData> => {
+    const readConfigFile = async (): Promise<ConfigSourceData[]> => {
       // We clear the watched files every time we initiate a new read
       watcher.unwatch(watchedPaths);
       watchedPaths.length = 0;
@@ -91,22 +91,26 @@ export class FileConfigSource implements ConfigSource {
       watcher.add(this.#path);
       watchedPaths.push(this.#path);
       const content = await fs.readFile(this.#path, 'utf8');
-      const data = await transformer(yaml.parse(content), { dir });
-      return { data, context: configFileName, path: this.#path };
+      const parsed = yaml.parse(content);
+      if (parsed === null) {
+        return [];
+      }
+      const data = await transformer(parsed, { dir });
+      return [{ data, context: configFileName, path: this.#path }];
     };
 
     signal?.addEventListener('abort', () => {
       watcher.close();
     });
 
-    yield { data: [await readConfigFile()] };
+    yield { data: await readConfigFile() };
 
     for (;;) {
       const event = await this.#waitForEvent(watcher, signal);
       if (event === 'abort') {
         return;
       }
-      yield { data: [await readConfigFile()] };
+      yield { data: await readConfigFile() };
     }
   }
 
