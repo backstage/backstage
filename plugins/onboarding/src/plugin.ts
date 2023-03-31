@@ -17,7 +17,6 @@ import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
-  createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
@@ -25,6 +24,9 @@ import {
 import { onboardingApiRef, OnboardingClient } from './api';
 import { rootRouteRef } from './routes';
 
+/**
+ * @public
+ */
 export const onboardingPlugin = createPlugin({
   id: 'onboarding',
   routes: {
@@ -44,13 +46,10 @@ export const onboardingPlugin = createPlugin({
   ],
 });
 
+/**
+ * @public
+ */
 export const Onboarding = onboardingPlugin.provide(
-  // createRoutableExtension({
-  //   name: 'OnboardingPage',
-  //   component: () =>
-  //     import('./components/Onboarding').then(m => m.default),
-  //   mountPoint: rootRouteRef,
-  // }),
   createComponentExtension({
     name: 'Onboarding',
     component: {

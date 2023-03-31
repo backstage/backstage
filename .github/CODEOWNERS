@@ -63,6 +63,7 @@
 /plugins/microsoft-calendar                       @backstage/maintainers @abhay-soni-developer
 /plugins/newrelic-dashboard                       @backstage/maintainers @mufaddal7
 /plugins/onboarding                               @backstage/maintainers @shubhamkourav
+/plugins/onboarding-backend                       @backstage/maintainers @shubhamkourav
 /plugins/playlist                                 @backstage/maintainers @kuangp
 /plugins/playlist-*                               @backstage/maintainers @kuangp
 /plugins/rollbar                                  @backstage/maintainers @andrewthauer

@@ -19,7 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: any) => ({
   root: {
@@ -46,25 +45,6 @@ const useStyles = makeStyles((theme: any) => ({
     height: '70px',
   },
 }));
-
-type TabLabelProps = {
-  label: string;
-  completed?: number;
-  total?: number;
-  classes: string;
-};
-const TabLabel = ({ label, completed, total, classes }: TabLabelProps) => {
-  return (
-    <div>
-      {label}
-      {completed && total && (
-        <Typography className={classes}>
-          {completed}/{total}
-        </Typography>
-      )}
-    </div>
-  );
-};
 
 type TabBarProps = {
   tabs: string[];
@@ -96,16 +76,7 @@ export const TabBar: React.FC<TabBarProps> = ({
                 key={index}
                 value={item}
                 className={classes.tab}
-                label={
-                  <TabLabel
-                    label={item?.toLocaleUpperCase('en-US')}
-                    completed={0}
-                    total={0}
-                    classes={`${classes.tabTitle} ${
-                      selectedTab === item ? classes.activeTab : null
-                    }`}
-                  />
-                }
+                label={item?.toLocaleUpperCase('en-US')}
               />
             );
           })}

@@ -1,0 +1,28 @@
+metadata:
+  group: group-name
+checklists:
+  - id: group-name_100  # 100 is unique id
+    forRoles:
+      - roleName # name of roles the checklist will represent 
+    title: checklistName # name of checklist
+    checklistItems:
+      - id: group-name_100_1000
+        title: Lorem ipsum dolor sit amet
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        url: https://statusneo.com
+      - id: group-name_100_1001
+        title: Excepteur sint occaecat cupidatat
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        url: https://statusneo.com
+  - id: group-name_101
+    forRoles:
+      - backend
+    title: Backend Dev.
+    checklistItems:
+      - id: group-name_101_1000
+        title: Lorem ipsum dolor sit amet
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      - id: group-name_101_1001
+        title: Lorem ipsum dolor sit amet 
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        url: https://statusneo.com

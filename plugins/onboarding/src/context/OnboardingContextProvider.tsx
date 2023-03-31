@@ -15,16 +15,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { onboardingApiRef } from '../api';
 
 import { OnboardingContext } from './OnboardingContext';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 export const OnboardingContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [modal, setModal] = useState<boolean>(true);
+  const [modal, setModal] = useState<boolean>(false);
   const [groups, setGroups] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [subGroups, setSubGroups] = useState<string[]>([]);
@@ -32,13 +32,23 @@ export const OnboardingContextProvider: React.FC<{
   const [dataList, setDataList] = useState<any[]>([]);
 
   const onboardingApi = useApi(onboardingApiRef);
+  const userRef = useApi(identityApiRef);
 
   const {
     value: list,
     loading,
     retry,
   } = useAsyncRetry(async () => {
-    const response = await onboardingApi.getChecklist();
+    const userIdentity = await userRef.getBackstageIdentity();
+    const userInfo = await onboardingApi.getUserInfo(
+      userIdentity?.userEntityRef?.split('/')[1] || '',
+    );
+    const user = await userInfo.json();
+
+    const userGroups = user?.spec?.memberOf?.join(',') || '';
+    const userRoles = user?.spec?.profile?.roles?.join(',') || '';
+
+    const response = await onboardingApi.getChecklist(userGroups, userRoles);
     const result = await response.json();
     return { ...result };
   }, [onboardingApi]);

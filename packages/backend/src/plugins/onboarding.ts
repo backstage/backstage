@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { onboardingPlugin, OnboardingPage } from '../src/plugin';
+import { createRouter } from '@backstage/plugin-onboarding-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
-createDevApp()
-  .registerPlugin(onboardingPlugin)
-  .addPage({
-    element: <OnboardingPage />,
-    title: 'Root Page',
-    path: '/onboarding',
-  })
-  .render();
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // Here is where you will add all of the required initialization code that
+  // your backend plugin needs to be able to start!
+
+  // The env contains a lot of goodies, but our router currently only
+  // needs a logger
+  return await createRouter({
+    database: env.database,
+    logger: env.logger,
+    config: env.config,
+    identity: env.identity,
+  });
+}

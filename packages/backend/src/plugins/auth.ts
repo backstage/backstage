@@ -18,6 +18,7 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { NotFoundError } from '@backstage/errors';
 import {
   createRouter,
   providers,
@@ -80,8 +81,30 @@ export default async function createPlugin(
       }),
       microsoft: providers.microsoft.create({
         signIn: {
-          resolver:
-            providers.microsoft.resolvers.emailMatchingUserEntityAnnotation(),
+          resolver: async ({ profile: { email } }, ctx) => {
+            const [id] = email?.split('@') ?? '';
+            const entityRef = {
+              kind: 'User',
+              namespace: DEFAULT_NAMESPACE,
+              name: id,
+            };
+            try {
+              await ctx.findCatalogUser({ entityRef });
+            } catch (error) {
+              if (error instanceof NotFoundError) {
+                // findCatalogUser will throw a NotFoundError if the User is not found in the Catalog
+                const userEntityRef = stringifyEntityRef(entityRef);
+                return ctx.issueToken({
+                  claims: {
+                    sub: userEntityRef,
+                    ent: [userEntityRef],
+                  },
+                });
+              }
+            }
+            // User exists sign them in with their Catalog User
+            return ctx.signInWithCatalogUser({ entityRef });
+          },
         },
       }),
       google: providers.google.create({

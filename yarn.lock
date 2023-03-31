@@ -7004,6 +7004,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-onboarding-backend@^1.0.0, @backstage/plugin-onboarding-backend@workspace:plugins/onboarding-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-onboarding-backend@workspace:plugins/onboarding-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@types/bcrypt": ^5.0.0
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    axios: ^1.3.4
+    bcrypt: ^5.1.0
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    js-yaml: ^4.1.0
+    knex: ^2.4.2
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-onboarding@^1.0.0, @backstage/plugin-onboarding@workspace:plugins/onboarding":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-onboarding@workspace:plugins/onboarding"
@@ -11408,6 +11433,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mapbox/node-pre-gyp@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@mapbox/node-pre-gyp@npm:1.0.10"
+  dependencies:
+    detect-libc: ^2.0.0
+    https-proxy-agent: ^5.0.0
+    make-dir: ^3.1.0
+    node-fetch: ^2.6.7
+    nopt: ^5.0.0
+    npmlog: ^5.0.1
+    rimraf: ^3.0.2
+    semver: ^7.3.5
+    tar: ^6.1.11
+  bin:
+    node-pre-gyp: bin/node-pre-gyp
+  checksum: 1a98db05d955b74dad3814679593df293b9194853698f3f5f1ed00ecd93128cdd4b14fb8767fe44ac6981ef05c23effcfdc88710e7c1de99ccb6f647890597c8
+  languageName: node
+  linkType: hard
+
 "@material-table/core@npm:^3.1.0":
   version: 3.1.0
   resolution: "@material-table/core@npm:3.1.0"
@@ -14106,6 +14150,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 4cba1a7dedfb8bef8517a8c9ba47672835342e075de50e9cd00ea52985cb882afa85170756a6983796326c026f62253bbcf4401a25c5ca461b4783194ace2bb5
+  languageName: node
+  linkType: hard
+
+"@types/bcrypt@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/bcrypt@npm:5.0.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 063c32c7a519d64768dfc0169a319b8244d6a6cb50a355c93992b3c5fee1dbc236526a1111f0e7bb25abc8b0473e5f40a5edfeb8b33cad2a6ea35aa2d7d7db14
   languageName: node
   linkType: hard
 
@@ -17435,6 +17488,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "axios@npm:1.3.4"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 7440edefcf8498bc3cdf39de00443e8101f249972c83b739c6e880d9d669fea9486372dbe8739e88b3bf8bb1ad15f6106693f206f078f4516fe8fd47b1c3093c
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^3.1.1":
   version: 3.1.1
   resolution: "axobject-query@npm:3.1.1"
@@ -17756,6 +17820,16 @@ __metadata:
   dependencies:
     tweetnacl: ^0.14.3
   checksum: 4edfc9fe7d07019609ccf797a2af28351736e9d012c8402a07120c4453a3b789a15f2ee1530dc49eee8f7eb9379331a8dd4b3766042b9e502f74a68e7f662291
+  languageName: node
+  linkType: hard
+
+"bcrypt@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "bcrypt@npm:5.1.0"
+  dependencies:
+    "@mapbox/node-pre-gyp": ^1.0.10
+    node-addon-api: ^5.0.0
+  checksum: a590b65d276d75d861dc85acc3128508b8f78c87431719658ea3be7996368b34b397b6efefe6bca0a3d555bf41a9267307fd4ce04e956598fca3ba81199c6706
   languageName: node
   linkType: hard
 
@@ -22661,6 +22735,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
@@ -22682,6 +22757,7 @@ __metadata:
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
+    "@backstage/plugin-onboarding-backend": ^1.0.0
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -23437,7 +23513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -27896,7 +27972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0":
+"knex@npm:^2.0.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:
@@ -32913,7 +32989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-from-env@npm:1.1.0":
+"proxy-from-env@npm:1.1.0, proxy-from-env@npm:^1.1.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
   checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4

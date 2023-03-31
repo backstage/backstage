@@ -68,6 +68,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import onboarding from './plugins/onboarding';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -160,7 +161,7 @@ async function main() {
     catalogEnv,
   );
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
-
+  const onboardingEnv = useHotMemoize(module, () => createEnv('onboarding'));
   const apiRouter = Router();
   apiRouter.use(
     '/catalog',
@@ -187,7 +188,10 @@ async function main() {
   apiRouter.use('/explore', await explore(exploreEnv));
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
+  apiRouter.use('/onboarding', await onboarding(onboardingEnv));
+
   apiRouter.use('/linguist', await linguist(linguistEnv));
+
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

@@ -26,8 +26,9 @@ export const onboardingApiRef = createApiRef<OnboardingApi>({
 });
 
 export interface OnboardingApi {
-  getChecklist(group?: string): Promise<any>;
+  getChecklist(groups: string, roles: string): Promise<any>;
   updateChecklistStatus(body: any): Promise<any>;
+  getUserInfo(ref: string): Promise<any>;
 }
 
 export class OnboardingClient implements OnboardingApi {
@@ -43,10 +44,18 @@ export class OnboardingClient implements OnboardingApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async getChecklist(group?: string): Promise<any> {
+  async getUserInfo(ref: string): Promise<any> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
+    return await this.fetchApi.fetch(
+      `${baseUrl}/entities/by-name/user/default/${ref}`,
+      { method: 'GET' },
+    );
+  }
+
+  async getChecklist(groups: string, roles: string): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('onboarding');
     return await this.fetchApi.fetch(
-      `${baseUrl}/getChecklists?groups=rp-rearportal-group&roles=backend`,
+      `${baseUrl}/getChecklists?groups=${groups}&roles=${roles}`,
       {
         method: 'GET',
         headers: {
@@ -59,7 +68,7 @@ export class OnboardingClient implements OnboardingApi {
   async updateChecklistStatus(body: any): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('onboarding');
     return await this.fetchApi.fetch(`${baseUrl}/updateStatus`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
