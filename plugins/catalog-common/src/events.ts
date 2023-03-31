@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-export type {
-  EventBroker,
-  EventParams,
-  EventPublisher,
-  EventSubscriber,
-} from './types';
+import { EventParams } from '@backstage/backend-common';
+
+/**
+ * Base type for all events emitted from the Backstage software catalog (catalog-backend).
+ * @public
+ */
+export type CatalogEvent<
+  TPayload extends CatalogEventPayload = CatalogEventPayload,
+> = EventParams<TPayload> & {
+  topic: 'backstage.catalog';
+};
+
+/**
+ * Payload for catalog events; contains minimally a type (e.g. `catalog.entity.insert`), and often
+ * a related entityRef.
+ * @public
+ */
+export type CatalogEventPayload = {
+  type: string;
+  originatingEntityRef?: string;
+};

@@ -24,3 +24,4 @@
 export * from './search';
 export * from './ingestion';
 export type { LocationSpec } from './common';
+export type { CatalogEvent, CatalogEventPayload } from './events';

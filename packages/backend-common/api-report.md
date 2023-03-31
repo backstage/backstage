@@ -111,19 +111,6 @@ export class AzureUrlReader implements UrlReader {
 }
 
 // @public
-export type BackstageEvent<
-  TPayload extends BackstageEventPayload = BackstageEventPayload,
-> = EventParams<TPayload> & {
-  topic: 'backstage';
-  originatingEntityRef?: string;
-};
-
-// @public
-export type BackstageEventPayload = {
-  type: string;
-};
-
-// @public
 export class BitbucketCloudUrlReader implements UrlReader {
   constructor(
     integration: BitbucketCloudIntegration,

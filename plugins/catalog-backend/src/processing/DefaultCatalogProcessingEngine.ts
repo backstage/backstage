@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { CatalogEvent } from '@backstage/plugin-catalog-common';
 import {
   ANNOTATION_LOCATION,
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { BackstageEvent, EventBroker } from '@backstage/backend-common';
+import { EventBroker } from '@backstage/backend-common';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -349,10 +350,12 @@ function progressTracker(eventBroker: EventBroker) {
 
       if (result.ok) {
         // TODO(timbonicus): do we need this event? should it only fire if there are changes?
-        const event: BackstageEvent = {
-          topic: 'backstage',
-          originatingEntityRef: stringifyEntityRef(result.completedEntity),
-          eventPayload: { type: 'catalog.entity.processed' },
+        const event: CatalogEvent = {
+          topic: 'backstage.catalog',
+          eventPayload: {
+            type: 'catalog.entity.processed',
+            originatingEntityRef: stringifyEntityRef(result.completedEntity),
+          },
         };
         eventBroker.publish(event);
       }

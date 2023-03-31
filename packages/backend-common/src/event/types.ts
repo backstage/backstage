@@ -34,29 +34,6 @@ export type EventParams<TPayload = unknown> = {
   metadata?: Record<string, string | string[] | undefined>;
 };
 
-/**
- * Base payload for Backstage events. The `type` should be prefixed by the plugin name to prevent
- * collisions, e.g. "catalog.entity.delete".
- *
- * @public
- */
-export type BackstageEventPayload = {
-  type: string;
-};
-
-/**
- * An event emitted from Backstage. This is the base type for all events emitted from Backstage core
- * libraries and plugins.
- *
- * @public
- */
-export type BackstageEvent<
-  TPayload extends BackstageEventPayload = BackstageEventPayload,
-> = EventParams<TPayload> & {
-  topic: 'backstage';
-  originatingEntityRef?: string;
-};
-
 /** @public */
 export interface EventSubscriber {
   /**

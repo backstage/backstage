@@ -4,6 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import { EventParams } from '@backstage/backend-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 
 // @public (undocumented)
@@ -57,6 +58,19 @@ export interface CatalogEntityDocument extends IndexableDocument {
   // (undocumented)
   type: string;
 }
+
+// @public
+export type CatalogEvent<
+  TPayload extends CatalogEventPayload = CatalogEventPayload,
+> = EventParams<TPayload> & {
+  topic: 'backstage.catalog';
+};
+
+// @public
+export type CatalogEventPayload = {
+  type: string;
+  originatingEntityRef?: string;
+};
 
 // @public
 export type LocationSpec = {

@@ -5399,6 +5399,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-common@workspace:plugins/catalog-common"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"

@@ -14,62 +14,56 @@
  * limitations under the License.
  */
 
-import { BackstageEvent } from '@backstage/backend-common';
+import { CatalogEvent } from '@backstage/plugin-catalog-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
-export function createInsertEvent(entity: Entity): BackstageEvent;
-export function createInsertEvent(entityRef: string): BackstageEvent;
-export function createInsertEvent(
-  entityOrRef: Entity | string,
-): BackstageEvent {
+export function createInsertEvent(entity: Entity): CatalogEvent;
+export function createInsertEvent(entityRef: string): CatalogEvent;
+export function createInsertEvent(entityOrRef: Entity | string): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
 
   return {
-    topic: 'backstage',
+    topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityRef: entityRef,
       type: 'catalog.entity.insert',
     },
-    originatingEntityRef: entityRef,
   };
 }
 
-export function createUpdateEvent(entity: Entity): BackstageEvent;
-export function createUpdateEvent(entityRef: string): BackstageEvent;
-export function createUpdateEvent(
-  entityOrRef: Entity | string,
-): BackstageEvent {
+export function createUpdateEvent(entity: Entity): CatalogEvent;
+export function createUpdateEvent(entityRef: string): CatalogEvent;
+export function createUpdateEvent(entityOrRef: Entity | string): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
 
   return {
-    topic: 'backstage',
+    topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityRef: entityRef,
       type: 'catalog.entity.update',
     },
-    originatingEntityRef: entityRef,
   };
 }
 
-export function createDeleteEvent(entity: Entity): BackstageEvent;
-export function createDeleteEvent(entityRef: string): BackstageEvent;
-export function createDeleteEvent(
-  entityOrRef: Entity | string,
-): BackstageEvent {
+export function createDeleteEvent(entity: Entity): CatalogEvent;
+export function createDeleteEvent(entityRef: string): CatalogEvent;
+export function createDeleteEvent(entityOrRef: Entity | string): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
 
   return {
-    topic: 'backstage',
+    topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityRef: entityRef,
       type: 'catalog.entity.delete',
     },
-    originatingEntityRef: entityRef,
   };
 }
