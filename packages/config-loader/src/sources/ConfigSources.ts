@@ -28,6 +28,11 @@ import {
 import { ConfigSource, SubstitutionFunc } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 
+/**
+ * A target to read configuration from.
+ *
+ * @public
+ */
 export type ConfigSourceTarget =
   | {
       type: 'path';
@@ -38,28 +43,71 @@ export type ConfigSourceTarget =
       target: string;
     };
 
+/**
+ * A config implementation that can be closed.
+ *
+ * @remarks
+ *
+ * Closing the configuration instance will stop the reading from the underlying source.
+ *
+ * @public
+ */
 export interface ClosableConfig extends Config {
+  /**
+   * Closes the configuration instance.
+   *
+   * @remarks
+   *
+   * The configuration instance will still be usable after closing, but it will
+   * no longer be updated with new values from the underlying source.
+   */
   close(): void;
 }
 
+/**
+ * Common options for the default Backstage configuration sources.
+ *
+ * @public
+ */
 export interface BaseConfigSourcesOptions {
   rootDir: string;
   remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
   substitutionFunc?: SubstitutionFunc;
 }
 
+/**
+ * Options for {@link ConfigSources.defaultForTargets}.
+ *
+ * @public
+ */
 export interface ConfigSourcesDefaultForTargetsOptions
   extends BaseConfigSourcesOptions {
   targets: ConfigSourceTarget[];
 }
 
+/**
+ * Options for {@link ConfigSources.default}.
+ *
+ * @public
+ */
 export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
   argv?: string[];
   env?: Record<string, string>;
 }
 
+/**
+ * A collection of utilities for working with and creating {@link ConfigSource}s.
+ *
+ * @public
+ */
 export class ConfigSources {
-  static parseArgs(argv: string[] = process.argv): Array<ConfigSourceTarget> {
+  /**
+   * Parses command line arguments and returns the config targets.
+   *
+   * @param argv - The command line arguments to parse. Defaults to `process.argv`
+   * @returns A list of config targets
+   */
+  static parseArgs(argv: string[] = process.argv): ConfigSourceTarget[] {
     const args: string[] = [parseArgs(argv).config].flat().filter(Boolean);
     return args.map(target => {
       try {
@@ -72,6 +120,21 @@ export class ConfigSources {
     });
   }
 
+  /**
+   * Creates the default config sources for the provided targets.
+   *
+   * @remarks
+   *
+   * This will create {@link FileConfigSource}s and {@link RemoteConfigSource}s
+   * for the provided targets, and merge them together to a single source.
+   * If no targets are provided it will fall back to `app-config.yaml` and
+   * `app-config.local.yaml`.
+   *
+   * URL targets are only supported if the `remote` option is provided.
+   *
+   * @param options - Options
+   * @returns A config source for the provided targets
+   */
   static defaultForTargets(
     options: ConfigSourcesDefaultForTargetsOptions,
   ): ConfigSource {
@@ -117,6 +180,20 @@ export class ConfigSources {
     return this.merge(argSources);
   }
 
+  /**
+   * Creates the default config source for Backstage.
+   *
+   * @remarks
+   *
+   * This will read from `app-config.yaml` and `app-config.local.yaml` by
+   * default, as well as environment variables prefixed with `APP_CONFIG_`.
+   * If `--config <path|url>` command line arguments are passed, these will
+   * override the default configuration file paths. URLs are only supported
+   * if the `remote` option is provided.
+   *
+   * @param options - Options
+   * @returns The default Backstage config source
+   */
   static default(options: ConfigSourcesDefaultOptions): ConfigSource {
     const argSource = this.defaultForTargets({
       ...options,
@@ -128,10 +205,36 @@ export class ConfigSources {
     return this.merge([argSource, envSource]);
   }
 
+  /**
+   * Merges multiple config sources into a single source that reads from all
+   * sources and concatenates the result.
+   *
+   * @param sources - The config sources to merge
+   * @returns A single config source that concatenates the data from the given sources
+   */
   static merge(sources: ConfigSource[]): ConfigSource {
     return MergedConfigSource.from(sources);
   }
 
+  /**
+   * Creates an observable {@link @backstage/config#Config} implementation from a {@link ConfigSource}.
+   *
+   * @remarks
+   *
+   * If you only want to read the config once you can close the returned config immediately.
+   *
+   * @example
+   *
+   * ```ts
+   * const sources = ConfigSources.default(...)
+   * const config = await ConfigSources.toConfig(source)
+   * config.close()
+   * const example = config.getString(...)
+   * ```
+   *
+   * @param source - The config source to read from
+   * @returns A promise that resolves to a closable config
+   */
   static toConfig(source: ConfigSource): Promise<ClosableConfig> {
     return new Promise(async (resolve, reject) => {
       let config: ObservableConfigProxy | undefined = undefined;
