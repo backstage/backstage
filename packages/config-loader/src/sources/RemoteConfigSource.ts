@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  AsyncConfigSourceIterator,
-  ConfigSource,
-  ReadConfigDataOptions,
-} from './types';
-import isEqual from 'lodash/isEqual';
-import yaml from 'yaml';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
+import isEqual from 'lodash/isEqual';
+import fetch from 'node-fetch';
+import yaml from 'yaml';
 import {
   ConfigTransformer,
   createConfigTransformer,
 } from '../lib/transform/apply';
 import { EnvFunc } from '../lib/transform/types';
+import {
+  AsyncConfigSourceIterator,
+  ConfigSource,
+  ReadConfigDataOptions,
+} from './types';
 
 const DEFAULT_RELOAD_INTERVAL_SECONDS = 60;
 
@@ -90,7 +91,9 @@ export class RemoteConfigSource implements ConfigSource {
   }
 
   async #load(signal?: AbortSignal): Promise<JsonObject> {
-    const res = await fetch(this.#url, { signal });
+    const res = await fetch(this.#url, {
+      signal: signal as import('node-fetch').RequestInit['signal'],
+    });
     if (!res.ok) {
       throw ResponseError.fromResponse(res);
     }
