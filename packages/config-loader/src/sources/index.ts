@@ -18,7 +18,6 @@ export { ConfigSources } from './ConfigSources';
 export { EnvConfigSource, readEnvConfig } from './EnvConfigSource';
 export { FileConfigSource } from './FileConfigSource';
 export type { FileConfigSourceOptions } from './FileConfigSource';
-export { MergedConfigSource } from './MergedConfigSource';
 export { MutableConfigSource } from './MutableConfigSource';
 export { RemoteConfigSource } from './RemoteConfigSource';
 export type { RemoteConfigSourceOptions } from './RemoteConfigSource';

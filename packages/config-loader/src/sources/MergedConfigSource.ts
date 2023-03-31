@@ -25,6 +25,7 @@ const sourcesSymbol = Symbol.for(
   '@backstage/config-loader#MergedConfigSource.sources',
 );
 
+/** @internal */
 export class MergedConfigSource implements ConfigSource {
   // An optimization to flatten nested merged sources to avid unnecessary microtasks
   static #flattenSources(sources: ConfigSource[]): ConfigSource[] {
