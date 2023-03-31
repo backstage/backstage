@@ -56,9 +56,16 @@ export class ConfigSources {
             `Config argument '${arg.target}' looks like a URL but remote configuration is not enabled. Enable it by passing the \`remote\` option`,
           );
         }
-        return RemoteConfigSource.create({ ...options, url: arg.target });
+        return RemoteConfigSource.create({
+          url: arg.target,
+          envFunc: options.envFunc,
+          reloadIntervalSeconds: options.remote.reloadIntervalSeconds,
+        });
       }
-      return FileConfigSource.create({ ...options, path: arg.target });
+      return FileConfigSource.create({
+        path: arg.target,
+        envFunc: options.envFunc,
+      });
     });
 
     if (argSources.length === 0) {
@@ -66,11 +73,17 @@ export class ConfigSources {
       const localPath = resolvePath(options.rootDir, 'app-config.local.yaml');
 
       argSources.push(
-        FileConfigSource.create({ ...options, path: defaultPath }),
+        FileConfigSource.create({
+          path: defaultPath,
+          envFunc: options.envFunc,
+        }),
       );
       if (fs.pathExistsSync(localPath)) {
         argSources.push(
-          FileConfigSource.create({ ...options, path: localPath }),
+          FileConfigSource.create({
+            path: localPath,
+            envFunc: options.envFunc,
+          }),
         );
       }
     }
