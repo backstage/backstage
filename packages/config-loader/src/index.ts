@@ -36,3 +36,4 @@ export type {
   LoadConfigOptionsRemote,
   LoadConfigResult,
 } from './loader';
+export * from './sources';
