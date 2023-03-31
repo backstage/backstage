@@ -25,6 +25,4 @@ export class GoogleAnalytics implements AnalyticsApi {
     },
   ): GoogleAnalytics;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

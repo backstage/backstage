@@ -22,6 +22,7 @@ import {
   discoveryApiRef,
   googleAuthApiRef,
   useApi,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 const CLUSTER_NAME = ''; // use a known cluster name
@@ -32,6 +33,10 @@ const token = await googleAuthApi.getAccessToken(
   'https://www.googleapis.com/auth/cloud-platform',
 );
 
+// get a backstage ID token
+const identityApi = useApi(identityApiRef);
+const { token: userToken } = await identityApi.getCredentials();
+
 const discoveryApi = useApi(discoveryApiRef);
 const kubernetesBaseUrl = await discoveryApi.getBaseUrl('kubernetes');
 const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
@@ -40,8 +45,9 @@ const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
 await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
   method: 'GET',
   headers: {
-    'X-Kubernetes-Cluster': CLUSTER_NAME,
-    Authorization: `Bearer ${token}`,
+    'Backstage-Kubernetes-Cluster': CLUSTER_NAME,
+    'Backstage-Kubernetes-Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${userToken}`,
   },
 });
 ```
@@ -49,16 +55,19 @@ await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
 ## How it works
 
 The proxy will interpret the
-[`X-Kubernetes-Cluster`
-header](https://backstage.io/docs/reference/plugin-kubernetes-backend.header_kubernetes_cluster)
-as the name of the cluster to target. This name will be compared to each cluster
+[`Backstage-Kubernetes-Cluster`](https://backstage.io/docs/reference/plugin-kubernetes-backend.header_kubernetes_cluster)
+header as the name of the cluster to target. This name will be compared to each cluster
 returned by all the configured [cluster
 locators](https://backstage.io/docs/features/kubernetes/configuration#clusterlocatormethods)
 -- the first cluster whose [`name` field](https://backstage.io/docs/features/kubernetes/configuration#clustersname) matches
 the value in the header will be targeted.
 
-Then the request will be forwarded verbatim (but with the endpoint's base URL
-prefix stripped) to the cluster.
+Then the request will be forwarded to the cluster.
+
+Overall, the only changes to each request are:
+
+- the endpoint's base URL prefix is stripped.
+- the `Backstage-Kubernetes-Authorization` header becomes the `Authorization` header that is used when forwarding the request.
 
 ## Authentication
 
@@ -73,9 +82,59 @@ providers](https://backstage.io/docs/features/kubernetes/authentication#client-s
 The proxy has no provisions for mTLS, so it cannot be used to connect to
 clusters using the [x509 Client
 Certs](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#x509-client-certs)
-authentication strategy. [Bearer
-tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#putting-a-bearer-token-in-a-request)
-will be forwarded as-is.
+authentication strategy.\
+The current `/proxy` Implementation expects a
+[Bearer
+token](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#putting-a-bearer-token-in-a-request)
+to be provided as a `Backstage-Kubernetes-Authorization` header for a target cluster. This token will be used as the `Authorization` header when forwarding a request to a target cluster.
+
+## How to disable the proxy endpoint via PermissionPolicy
+
+The kubernetes plugin can disable the use of the `proxy` endpoint by leveraging the permission framework. This integration allows admins to use well defined PermissionPolicies to restrict the use of the endpoint all together. The `proxy` endpoint can return 403 errors even if it has a valid ID token attached that a cluster would authorize thus allowing integrators the confidence that Backstage is not accessing kubernetes clusters on behalf of undesired parties.
+
+This feature assumes your backstage instance has enabled the [permissions framework](https://backstage.io/docs/permissions/getting-started)
+
+A sample policy like:
+
+[packages/backend/src/plugins/permissions.ts](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/permission.ts)
+
+```typescript
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  AuthorizeResult,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+
+class KubernetesDenyAllProxyEndpointPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (request.permission.name === 'kubernetes.proxy') {
+      return {
+        result: AuthorizeResult.DENY,
+      };
+    }
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+would leverage the permission framework to return the following response:
+
+```json
+{
+  "error": {
+    "name": "NotAllowedError"
+  }
+}
+```
+
+even if a valid ID token was attached that a cluster would authorize.
 
 ## Other known limitations
 

@@ -11,6 +11,11 @@ import { KindValidator } from '@backstage/catalog-model';
 import type { UserEntity } from '@backstage/catalog-model';
 
 // @public
+export const isTemplateEntityV1beta3: (
+  entity: Entity,
+) => entity is TemplateEntityV1beta3;
+
+// @public
 export type TaskSpec = TaskSpecV1beta3;
 
 // @public
@@ -38,19 +43,29 @@ export interface TaskStep {
 }
 
 // @public
+export interface TemplateEntityStepV1beta3 extends JsonObject {
+  // (undocumented)
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+  // (undocumented)
+  action: string;
+  // (undocumented)
+  id?: string;
+  // (undocumented)
+  if?: string | boolean;
+  // (undocumented)
+  input?: JsonObject;
+  // (undocumented)
+  name?: string;
+}
+
+// @public
 export interface TemplateEntityV1beta3 extends Entity {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   kind: 'Template';
   spec: {
     type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
+    parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
+    steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
     };
@@ -69,4 +84,16 @@ export type TemplateInfo = {
     metadata: EntityMeta;
   };
 };
+
+// @public
+export interface TemplateParametersV1beta3 extends JsonObject {
+  // (undocumented)
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+}
+
+// @public
+export interface TemplatePermissionsV1beta3 extends JsonObject {
+  // (undocumented)
+  tags?: string[];
+}
 ```

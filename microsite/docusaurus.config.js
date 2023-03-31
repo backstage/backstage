@@ -16,6 +16,11 @@
 
 // @ts-check
 
+/** @type{import('prism-react-renderer').PrismTheme} **/
+// @ts-ignore
+const prismTheme = require('prism-react-renderer/themes/vsDark');
+prismTheme.plain.backgroundColor = '#232323';
+
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: 'Backstage Software Catalog and Developer Platform',
@@ -55,7 +60,7 @@ module.exports = {
           path: 'blog',
         },
         theme: {
-          customCss: 'src/css/customTheme.css',
+          customCss: 'src/theme/customTheme.scss',
         },
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
@@ -158,7 +163,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.11.0',
+            to: 'docs/releases/v1.12.0',
             label: 'Releases',
             position: 'left',
           },
@@ -266,10 +271,11 @@ module.exports = {
         searchParameters: {},
       },
       prism: {
+        theme: prismTheme,
         magicComments: [
           // Extend the default highlight class name
           {
-            className: 'theme-code-block-highlighted-line',
+            className: 'code-block-highlight-line',
             line: 'highlight-next-line',
             block: { start: 'highlight-start', end: 'highlight-end' },
           },

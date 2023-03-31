@@ -72,10 +72,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    const providerConfigs = readGitlabConfigs(
-      config,
-      options.logger.child({ target: 'GitlabOrgDiscoveryEntityProvider' }),
-    );
+    const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabOrgDiscoveryEntityProvider[] = [];
 
@@ -185,7 +182,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
     );
 
-    const idMappedGroup: { [groupId: number]: GitLabGroup } = {};
+    const idMappedUser: { [userId: number]: GitLabUser } = {};
 
     const res: Result = {
       scanned: 0,
@@ -196,6 +193,21 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       scanned: 0,
       matches: [],
     };
+
+    for await (const user of users) {
+      if (!this.config.userPattern.test(user.email ?? user.username ?? '')) {
+        continue;
+      }
+
+      res.scanned++;
+
+      if (user.state !== 'active') {
+        continue;
+      }
+
+      idMappedUser[user.id] = user;
+      res.matches.push(user);
+    }
 
     for await (const group of groups) {
       if (!this.config.groupPattern.test(group.full_path ?? '')) {
@@ -212,35 +224,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupRes.scanned++;
       groupRes.matches.push(group);
 
-      idMappedGroup[group.id] = group;
-    }
-
-    for await (const user of users) {
-      if (!this.config.userPattern.test(user.email ?? user.username ?? '')) {
-        continue;
-      }
-
-      res.scanned++;
-
-      if (user.state !== 'active') {
-        continue;
-      }
-
-      const memberships = await client.getUserMemberships(user.id);
-      const userGroups: GitLabGroup[] = [];
-
-      for (const i of memberships) {
-        if (
-          i.source_type === 'Namespace' &&
-          idMappedGroup.hasOwnProperty(i.source_id)
-        ) {
-          userGroups.push(idMappedGroup[i.source_id]);
+      for (const id of await client.getGroupMembers(group.full_path)) {
+        const user = idMappedUser[id];
+        if (user) {
+          user.groups = (user.groups ?? []).concat(group);
         }
       }
-
-      user.groups = userGroups;
-
-      res.matches.push(user);
     }
 
     const groupsWithUsers = groupRes.matches.filter(group => {

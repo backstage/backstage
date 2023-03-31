@@ -167,6 +167,8 @@ const Demos = () => {
         {demoItems.map((demoItem, index) => (
           <BannerSection
             key={index}
+            diagonalBottomBorder={index === 0}
+            diagonalBorder={index > 0 && index < demoItems.length - 1}
             greyBackground={index % 2 === 0}
             className={demosStyles.banner}
           >

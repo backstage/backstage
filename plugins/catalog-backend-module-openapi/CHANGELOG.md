@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
 ## 0.1.9
 
 ### Patch Changes

@@ -81,6 +81,8 @@ export const DefaultResultListItemComponent = ({
               WebkitLineClamp: lineClamp,
               overflow: 'hidden',
             }}
+            color="textSecondary"
+            variant="body2"
           >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText

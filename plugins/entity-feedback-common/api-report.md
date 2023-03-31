@@ -10,9 +10,7 @@ export interface EntityRatingsData {
   // (undocumented)
   entityTitle?: string;
   // (undocumented)
-  ratings: {
-    [ratingValue: string]: number;
-  };
+  ratings: Ratings;
 }
 
 // @public (undocumented)
@@ -37,5 +35,11 @@ export interface Rating {
   rating: string;
   // (undocumented)
   userRef: string;
+}
+
+// @public (undocumented)
+export interface Ratings {
+  // (undocumented)
+  [ratingValue: string]: number;
 }
 ```

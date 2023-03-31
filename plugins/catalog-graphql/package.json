@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-graphql",
   "description": "An experimental Backstage catalog GraphQL module",
-  "version": "0.3.19",
+  "version": "0.3.20-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -34,16 +34,22 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@apollo/client": "^3.0.0",
+    "@apollo/server": "^4.0.0",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/types": "workspace:^",
-    "apollo-server": "^3.0.0",
     "graphql": "^16.0.0",
     "graphql-modules": "^2.0.0",
     "graphql-tag": "^2.11.0",
     "graphql-type-json": "^0.3.2",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -53,6 +59,7 @@
     "@graphql-codegen/typescript": "^3.0.0",
     "@graphql-codegen/typescript-resolvers": "^3.0.0",
     "@graphql-tools/schema": "^9.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "msw": "^1.0.0"
   },
   "files": [

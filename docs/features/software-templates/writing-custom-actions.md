@@ -31,7 +31,7 @@ import { z } from 'zod';
 
 export const createNewFileAction = () => {
   return createTemplateAction({
-    id: 'mycompany:create-file',
+    id: 'acme:file:create',
     schema: {
       input: z.object({
         contents: z.string().describe('The contents of the file'),
@@ -71,11 +71,11 @@ You can also choose to define your custom action using JSON schema instead of `z
 
 ```ts title="With JSON Schema"
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import fs from 'fs-extra';
+import { writeFile } from 'fs';
 
 export const createNewFileAction = () => {
   return createTemplateAction<{ contents: string; filename: string }>({
-    id: 'mycompany:create-file',
+    id: 'acme:file:create',
     schema: {
       input: {
         required: ['contents', 'filename'],
@@ -95,14 +95,28 @@ export const createNewFileAction = () => {
       },
     },
     async handler(ctx) {
-      await fs.outputFile(
+      const { signal } = ctx;
+      await writeFile(
         `${ctx.workspacePath}/${ctx.input.filename}`,
         ctx.input.contents,
+        { signal },
+        _ => {},
       );
     },
   });
 };
 ```
+
+#### Naming Conventions
+
+Try to keep names consistent for both your own custom actions, and any actions contributed to open source. We've found that a separation of `:` and using a verb as the last part of the name works well.
+We follow `provider:entity:verb` or as close to this as possible for our built in actions. For example, `github:actions:create` or `github:repo:create`.
+
+Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create` like above.
+
+Prefer to use `camelCase` over `snake-case` for these actions if possible, which leads to better reading and writing of template entity definitions.
+
+> We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
 ### The context object
 

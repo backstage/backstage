@@ -32,6 +32,8 @@ function defer() {
   return { promise, resolve };
 }
 
+jest.setTimeout(60_000);
+
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -77,7 +79,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -98,7 +99,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
   });
 
@@ -125,7 +125,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -146,7 +145,6 @@ describe('PluginTaskManagerImpl', () => {
           NotFoundError,
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -172,7 +170,6 @@ describe('PluginTaskManagerImpl', () => {
           ConflictError,
         );
       },
-      60_000,
     );
   });
 
@@ -300,7 +297,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
   });
 
@@ -340,7 +336,6 @@ describe('PluginTaskManagerImpl', () => {
           },
         ]);
       },
-      60_000,
     );
   });
 

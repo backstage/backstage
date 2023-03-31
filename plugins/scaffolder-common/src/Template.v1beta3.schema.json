@@ -16,6 +16,9 @@
         "owner": "artist-relations-team",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
+          "backstage:permissions": {
+            "tags": ["one", "two"]
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -41,6 +44,9 @@
             "action": "fetch:plain",
             "parameters": {
               "url": "./template"
+            },
+            "backstage:permissions": {
+              "tags": ["one", "two"]
             }
           },
           {
@@ -92,14 +98,42 @@
               "oneOf": [
                 {
                   "type": "object",
-                  "description": "The JSONSchema describing the inputs for the template."
+                  "description": "The JSONSchema describing the inputs for the template.",
+                  "properties": {
+                    "backstage:permissions": {
+                      "type": "object",
+                      "description": "Object used for authorizing the parameter",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
                 {
                   "type": "array",
                   "description": "A list of separate forms to collect parameters.",
                   "items": {
                     "type": "object",
-                    "description": "The JSONSchema describing the inputs for the template."
+                    "description": "The JSONSchema describing the inputs for the template.",
+                    "properties": {
+                      "backstage:permissions": {
+                        "type": "object",
+                        "description": "Object used for authorizing the parameter",
+                        "properties": {
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               ]
@@ -131,6 +165,18 @@
                   "if": {
                     "type": ["string", "boolean"],
                     "description": "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+                  },
+                  "backstage:permissions": {
+                    "type": "object",
+                    "description": "Object used for authorizing the step",
+                    "properties": {
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
                   }
                 }
               }

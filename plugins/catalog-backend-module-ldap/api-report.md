@@ -11,7 +11,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';

@@ -1,4 +1,4 @@
-$desktopUpBreakpoint: 997px;
+@use '../../theme/variables.scss';
 
 .homePage {
   font-size: 1.25rem;
@@ -70,7 +70,7 @@ $desktopUpBreakpoint: 997px;
 }
 
 .catalogContainer {
-  @media (min-width: $desktopUpBreakpoint) {
+  @media (min-width: variables.$desktopUpBreakpoint) {
     grid-template-columns: repeat(4, 1fr);
 
     picture {
@@ -85,7 +85,7 @@ $desktopUpBreakpoint: 997px;
 }
 
 .softwareTemplatesContainer {
-  @media (min-width: $desktopUpBreakpoint) {
+  @media (min-width: variables.$desktopUpBreakpoint) {
     grid: repeat(2, auto) / repeat(4, 1fr);
 
     picture {

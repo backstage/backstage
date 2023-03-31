@@ -1,4 +1,4 @@
-$desktopUpBreakpoint: 997px;
+@use 'src/theme/variables';
 
 .sectionGridContainer {
   gap: 2rem;
@@ -14,7 +14,7 @@ $desktopUpBreakpoint: 997px;
   display: grid;
   align-items: center;
 
-  @media (min-width: $desktopUpBreakpoint) {
+  @media (min-width: variables.$desktopUpBreakpoint) {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }

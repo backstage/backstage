@@ -39,10 +39,73 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
   }
 }
 
+jest.setTimeout(60_000);
+
 describe('migrations', () => {
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
+
+  it.each(databases.eachSupportedId())(
+    'latest version correctly cascades deletions, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      await knex
+        .insert({
+          entity_id: 'i1',
+          entity_ref: 'k:ns/n1',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date(),
+          last_discovery_at: new Date(),
+        })
+        .into('refresh_state');
+      await knex
+        .insert({
+          entity_id: 'i2',
+          entity_ref: 'k:ns/n2',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date(),
+          last_discovery_at: new Date(),
+        })
+        .into('refresh_state');
+      await knex
+        .insert({ entity_id: 'i1', key: 'k1', value: 'v1' })
+        .into('search');
+      await knex
+        .insert({
+          source_entity_ref: 'k:ns/n1',
+          target_entity_ref: 'k:ns/n2',
+        })
+        .into('refresh_state_references');
+      await knex
+        .insert({
+          originating_entity_id: 'i1',
+          source_entity_ref: 'k:ns/n1',
+          target_entity_ref: 'k:ns/n2',
+          type: 't',
+        })
+        .into('relations');
+      await knex
+        .insert({
+          entity_id: 'i1',
+          hash: 'h',
+          stitch_ticket: '',
+          final_entity: '{}',
+        })
+        .into('final_entities');
+
+      await knex.delete().from('refresh_state').where({ entity_id: 'i1' });
+
+      await expect(knex('search')).resolves.toEqual([]);
+      await expect(knex('refresh_state_references')).resolves.toEqual([]);
+      await expect(knex('relations')).resolves.toEqual([]);
+      await expect(knex('final_entities')).resolves.toEqual([]);
+    },
+  );
 
   it.each(databases.eachSupportedId())(
     '20221109192547_search_add_original_value_column.js, %p',
@@ -98,7 +161,6 @@ describe('migrations', () => {
 
       await knex.destroy();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -176,6 +238,5 @@ describe('migrations', () => {
 
       await knex.destroy();
     },
-    60_000,
   );
 });

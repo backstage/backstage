@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.2.7-next.1
+
+### Patch Changes
+
+- 65e989f4018: Added permissions for authorizing parameters and steps
+- 65e989f4018: Define optional `backstage:permissions` property to parameters and steps used to authorize part of the template using the permission framework
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 1.2.7-next.0
+
+### Patch Changes
+
+- 48da4c46e45: Export `typeguard` for `isTemplateEntityV1beta3`
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
 ## 1.2.6
 
 ### Patch Changes

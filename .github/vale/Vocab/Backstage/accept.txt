@@ -82,6 +82,7 @@ Debounce
 debuggability
 declaratively
 deduplicated
+deliverables
 dependabot
 deps
 destructured
@@ -158,6 +159,7 @@ img
 incentivised
 Indal
 indexable
+ingestors
 inlined
 inlinehilite
 integrator's
@@ -265,6 +267,7 @@ permissioning
 plantuml
 Platformize
 Podman
+posix
 postgres
 postpack
 pre
@@ -367,6 +370,7 @@ templaters
 Templaters
 TFRecord
 theia
+threenager
 thumbsup
 todo
 todos
@@ -403,6 +407,7 @@ validator
 validators
 varchar
 VMware
+Vodafone
 VPCs
 VSCode
 Wayfair

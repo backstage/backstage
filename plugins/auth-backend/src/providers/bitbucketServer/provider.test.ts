@@ -23,7 +23,7 @@ import {
   BitbucketServerOAuthResult,
 } from './provider';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {

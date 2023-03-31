@@ -71,7 +71,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 // @public
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions extends {} = {},
+  TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
   // (undocumented)
   uiSchema: FieldProps['uiSchema'] & {
@@ -113,7 +113,7 @@ export type ListActionsResponse = Array<Action>;
 
 // @public
 export type LogEvent = {
-  type: 'log' | 'completion';
+  type: 'log' | 'completion' | 'cancelled';
   body: {
     message: string;
     stepId?: string;
@@ -126,6 +126,7 @@ export type LogEvent = {
 
 // @public
 export interface ScaffolderApi {
+  cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
@@ -266,10 +267,11 @@ export type ScaffolderTaskOutput = {
 
 // @public
 export type ScaffolderTaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
   | 'open'
   | 'processing'
-  | 'failed'
-  | 'completed'
   | 'skipped';
 
 // @public
@@ -287,6 +289,7 @@ export const SecretsContextProvider: (
 
 // @public
 export type TaskStream = {
+  cancelled: boolean;
   loading: boolean;
   error?: Error;
   stepLogs: {
@@ -313,7 +316,7 @@ export type TemplateParameterSchema = {
 
 // @public
 export const useCustomFieldExtensions: <
-  TComponentDataType = FieldExtensionOptions<unknown, unknown>,
+  TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
 ) => TComponentDataType[];

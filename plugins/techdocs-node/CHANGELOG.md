@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs-node
 
+## 1.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-search-common@1.2.2
+
 ## 1.6.0
 
 ### Minor Changes

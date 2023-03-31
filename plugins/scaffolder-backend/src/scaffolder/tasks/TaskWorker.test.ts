@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
@@ -23,7 +23,14 @@ import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { TaskBroker, TaskContext, WorkflowRunner } from './types';
+import {
+  SerializedTaskEvent,
+  TaskBroker,
+  TaskContext,
+  WorkflowRunner,
+} from './types';
+import ObservableImpl from 'zen-observable';
+import waitForExpect from 'wait-for-expect';
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -198,6 +205,67 @@ describe('Concurrent TaskWorker', () => {
   });
 });
 
+describe('Cancellable TaskWorker', () => {
+  let storage: DatabaseTaskStore;
+  const integrations: ScmIntegrations = {} as ScmIntegrations;
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
+  const workingDirectory = os.tmpdir();
+
+  let myTask: TaskContext | undefined = undefined;
+
+  const workflowRunner: NunjucksWorkflowRunner = {
+    execute: (task: TaskContext) => {
+      myTask = task;
+    },
+  } as unknown as NunjucksWorkflowRunner;
+
+  beforeAll(async () => {
+    storage = await createStore();
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
+  });
+
+  const logger = getVoidLogger();
+
+  it('should be able to cancel the running task', async () => {
+    const taskBroker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker,
+      actionRegistry,
+    });
+
+    const steps = [...Array(10)].map(n => ({
+      id: `test${n}`,
+      name: `test${n}`,
+      action: 'not-found-action',
+    }));
+
+    const { taskId } = await taskBroker.dispatch({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps,
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        parameters: {},
+      },
+    });
+
+    await taskWorker.start();
+    await taskBroker.cancel(taskId);
+
+    await waitForExpect(() => {
+      expect(myTask?.cancelSignal.aborted).toBeTruthy();
+    });
+  });
+});
+
 describe('TaskWorker internals', () => {
   const TaskWorkerConstructor = TaskWorker as unknown as {
     new (options: TaskWorkerOptions): TaskWorker;
@@ -219,10 +287,24 @@ describe('TaskWorker internals', () => {
       },
     };
 
+    const subscribers = new Set<
+      ZenObservable.SubscriptionObserver<{ events: SerializedTaskEvent[] }>
+    >();
+
     let claimedTaskCount = 0;
     const taskWorker = new TaskWorkerConstructor({
       runners: { workflowRunner },
       taskBroker: {
+        event$() {
+          return new ObservableImpl<{ events: SerializedTaskEvent[] }>(
+            subscriber => {
+              subscribers.add(subscriber);
+              return () => {
+                subscribers.delete(subscriber);
+              };
+            },
+          );
+        },
         async claim() {
           claimedTaskCount++;
           return {
@@ -233,7 +315,7 @@ describe('TaskWorker internals', () => {
             async complete(_result, _metadata) {},
           } as TaskContext;
         },
-      } as TaskBroker,
+      } as unknown as TaskBroker,
       concurrentTasksLimit: 2,
     });
 

@@ -107,7 +107,7 @@ export const TechDocsReaderPageSubheader = (props: {
               onClose={handleClose}
               keepMounted
             >
-              {settingsAddons}
+              <div>{settingsAddons}</div>
             </Menu>
           </>
         ) : null}

@@ -27,21 +27,9 @@ export class RollbarApi {
       environment: string;
       item_id?: number;
     },
-  ): Promise<
-    {
-      count: number;
-      timestamp: number;
-    }[]
-  >;
+  ): Promise<RollbarItemCount[]>;
   // (undocumented)
-  getAllProjects(): Promise<
-    {
-      id: number;
-      name: string;
-      status: string;
-      accountId: number;
-    }[]
-  >;
+  getAllProjects(): Promise<RollbarProject[]>;
   // (undocumented)
   getOccuranceCounts(
     projectName: string,
@@ -49,25 +37,11 @@ export class RollbarApi {
       environment: string;
       item_id?: number;
     },
-  ): Promise<
-    {
-      count: number;
-      timestamp: number;
-    }[]
-  >;
+  ): Promise<RollbarItemCount[]>;
   // (undocumented)
-  getProject(projectName: string): Promise<{
-    id: number;
-    name: string;
-    status: string;
-    accountId: number;
-  }>;
+  getProject(projectName: string): Promise<RollbarProject>;
   // (undocumented)
-  getProjectItems(projectName: string): Promise<{
-    page: number;
-    items: RollbarItem[];
-    totalCount: number;
-  }>;
+  getProjectItems(projectName: string): Promise<RollbarItemsResponse>;
   // (undocumented)
   getTopActiveItems(
     projectName: string,
@@ -75,23 +49,7 @@ export class RollbarApi {
       hours: number;
       environment: string;
     },
-  ): Promise<
-    {
-      item: {
-        id: number;
-        counter: number;
-        environment: string;
-        framework: RollbarFrameworkId;
-        lastOccurrenceTimestamp: number;
-        level: number;
-        occurrences: number;
-        projectId: number;
-        title: string;
-        uniqueOccurrences: number;
-      };
-      counts: number[];
-    }[]
-  >;
+  ): Promise<RollbarTopActiveItem[]>;
 }
 
 // @public (undocumented)

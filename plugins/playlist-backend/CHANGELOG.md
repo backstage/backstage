@@ -1,5 +1,36 @@
 # @backstage/plugin-playlist-backend
 
+## 0.2.7-next.1
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.1
+  - @backstage/plugin-playlist-common@0.1.6-next.0
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-playlist-common@0.1.5
+
 ## 0.2.6
 
 ### Patch Changes

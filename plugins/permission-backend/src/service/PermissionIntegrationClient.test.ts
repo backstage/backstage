@@ -18,7 +18,7 @@ import { AddressInfo } from 'net';
 import { Server } from 'http';
 import express, { Router, RequestHandler } from 'express';
 import { RestContext, rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import { setupServer, SetupServer } from 'msw/node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   AuthorizeResult,
@@ -34,7 +34,7 @@ import { z } from 'zod';
 
 describe('PermissionIntegrationClient', () => {
   describe('applyConditions', () => {
-    let server: SetupServerApi;
+    let server: SetupServer;
 
     const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {

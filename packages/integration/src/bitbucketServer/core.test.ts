@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { BitbucketServerIntegrationConfig } from './config';
 import {
   getBitbucketServerDefaultBranch,

@@ -70,10 +70,14 @@ function countTriggersPerDay(builds: ReadonlyArray<Build>) {
   const values = Object.entries(days).map(([epoch, buildsThisDay]) => {
     const datapoint = Object.fromEntries(
       triggerReasons
-        .map(reason => [
-          reason,
-          buildsThisDay.filter(build => build.triggeredBy === reason).length,
-        ])
+        .map(
+          reason =>
+            [
+              reason,
+              buildsThisDay.filter(build => build.triggeredBy === reason)
+                .length,
+            ] as const,
+        )
         .filter(([_type, count]) => count > 0),
     ) as Omit<TriggerReasonsDatapoint, '__epoch'>;
 

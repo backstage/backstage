@@ -70,6 +70,7 @@ describe('DefaultWorkflowRunner', () => {
     complete: async () => {},
     done: false,
     emitLog: async () => {},
+    cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
   });
 
@@ -119,7 +120,7 @@ describe('DefaultWorkflowRunner', () => {
             foo: z.number(),
           }),
         },
-      }) as TemplateAction<unknown>,
+      }) as TemplateAction,
     );
 
     actionRegistry.register({
@@ -166,7 +167,7 @@ describe('DefaultWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+        /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
     });
 
@@ -696,6 +697,88 @@ describe('DefaultWorkflowRunner', () => {
         owner: 'owner',
         repo: 'repo',
       });
+    });
+
+    it('provides the parseEntityRef filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | parseEntityRef }}',
+        },
+        parameters: {
+          entity: 'component:default/ben',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual({
+        kind: 'component',
+        namespace: 'default',
+        name: 'ben',
+      });
+    });
+
+    it('provides the pick filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | parseEntityRef | pick("kind") }}',
+        },
+        parameters: {
+          entity: 'component:default/ben',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
+    });
+
+    it('should allow deep nesting of picked objects', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | pick("something.deeply.nested") }}',
+        },
+        parameters: {
+          entity: {
+            something: {
+              deeply: {
+                nested: 'component',
+              },
+            },
+          },
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
     });
   });
 

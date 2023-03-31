@@ -84,11 +84,13 @@ export const useShadowRootSelection = (waitMillis: number = 0) => {
 
   useEffect(() => {
     window.document.addEventListener('selectionchange', handleSelectionChange);
-    return () =>
+    return () => {
+      handleSelectionChange.cancel();
       window.document.removeEventListener(
         'selectionchange',
         handleSelectionChange,
       );
+    };
   }, [handleSelectionChange]);
 
   return selection;

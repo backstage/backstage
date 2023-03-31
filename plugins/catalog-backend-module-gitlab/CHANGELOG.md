@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+
+## 0.2.0-next.0
+
+### Minor Changes
+
+- f64345108a0: **BREAKING**: The configuration of the `GitlabDiscoveryEntityProvider` has changed as follows:
+
+  - The configuration key `branch` is now used to define the branch from which the catalog-info should be discovered.
+  - The old configuration key `branch` is now called `fallbackBranch`. This value specifies which branch should be used
+    if no default branch is defined on the project itself.
+
+  To migrate to the new configuration value, rename `branch` to `fallbackBranch`
+
+### Patch Changes
+
+- 7b1b7bfdb7b: The gitlab org data integration now makes use of the GraphQL API to determine
+  the relationships between imported User and Group entities, effectively making
+  this integration usable without an administrator account's Personal Access
+  Token.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
 ## 0.1.14
 
 ### Patch Changes
