@@ -92,7 +92,7 @@ export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<LoadConfigResult> {
   const source = ConfigSources.default({
-    envFunc: options.experimentalEnvFunc,
+    substitutionFunc: options.experimentalEnvFunc,
     remote: options.remote,
     rootDir: options.configRoot,
     argv: options.configTargets.flatMap(t => [

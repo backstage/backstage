@@ -22,7 +22,7 @@ import {
   AsyncConfigSourceIterator,
   ConfigSource,
   ConfigSourceData,
-  EnvFunc,
+  SubstitutionFunc,
   ReadConfigDataOptions,
 } from './types';
 import { createConfigTransformer } from './transform';
@@ -35,7 +35,7 @@ export interface FileConfigSourceOptions {
   /**
    * Function used to resolve environment variables.
    */
-  envFunc?: EnvFunc;
+  substitutionFunc?: SubstitutionFunc;
 }
 
 export class FileConfigSource implements ConfigSource {
@@ -47,11 +47,11 @@ export class FileConfigSource implements ConfigSource {
   }
 
   readonly #path: string;
-  readonly #envFunc?: EnvFunc;
+  readonly #substitutionFunc?: SubstitutionFunc;
 
   private constructor(options: FileConfigSourceOptions) {
     this.#path = options.path;
-    this.#envFunc = options.envFunc;
+    this.#substitutionFunc = options.substitutionFunc;
   }
 
   // Work is duplicated across each read, in practice that should not
@@ -71,7 +71,7 @@ export class FileConfigSource implements ConfigSource {
 
     const dir = dirname(this.#path);
     const transformer = createConfigTransformer({
-      envFunc: this.#envFunc,
+      substitutionFunc: this.#substitutionFunc,
       async readFile(path) {
         const fullPath = resolvePath(dir, path);
         // Any files discovered while reading this config should be watched too

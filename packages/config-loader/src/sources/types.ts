@@ -40,4 +40,4 @@ export interface ConfigSource {
   readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
 }
 
-export type EnvFunc = (name: string) => Promise<string | undefined>;
+export type SubstitutionFunc = (name: string) => Promise<string | undefined>;

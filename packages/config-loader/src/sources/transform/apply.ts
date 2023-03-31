@@ -20,7 +20,7 @@ import { TransformContext, TransformFunc } from './types';
 import { isObject } from './utils';
 import { createSubstitutionTransform } from './substitution';
 import { createIncludeTransform } from './include';
-import { EnvFunc } from '../types';
+import { SubstitutionFunc } from '../types';
 
 /**
  * Applies a set of transforms to raw configuration data.
@@ -102,15 +102,16 @@ export type ConfigTransformer = (
 
 /** @internal */
 export function createConfigTransformer(options: {
-  envFunc?: EnvFunc;
+  substitutionFunc?: SubstitutionFunc;
   readFile?(path: string): Promise<string>;
 }): ConfigTransformer {
-  const { envFunc = async name => process.env[name], readFile } = options;
-  const substitutionTransform = createSubstitutionTransform(envFunc);
+  const { substitutionFunc = async name => process.env[name], readFile } =
+    options;
+  const substitutionTransform = createSubstitutionTransform(substitutionFunc);
   const transforms = [substitutionTransform];
   if (readFile) {
     const includeTransform = createIncludeTransform(
-      envFunc,
+      substitutionFunc,
       readFile,
       substitutionTransform,
     );

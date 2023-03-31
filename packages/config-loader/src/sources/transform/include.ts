@@ -19,7 +19,7 @@ import { extname, dirname, resolve as resolvePath } from 'path';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { isObject } from './utils';
 import { TransformFunc, ReadFileFunc } from './types';
-import { EnvFunc } from '../types';
+import { SubstitutionFunc } from '../types';
 
 // Parsers for each type of included file
 const includeFileParser: {
@@ -34,7 +34,7 @@ const includeFileParser: {
  * Transforms a include description into the actual included value.
  */
 export function createIncludeTransform(
-  env: EnvFunc,
+  env: SubstitutionFunc,
   readFile: ReadFileFunc,
   substitute: TransformFunc,
 ): TransformFunc {

@@ -23,7 +23,7 @@ import { ConfigTransformer, createConfigTransformer } from './transform';
 import {
   AsyncConfigSourceIterator,
   ConfigSource,
-  EnvFunc,
+  SubstitutionFunc,
   ReadConfigDataOptions,
 } from './types';
 
@@ -32,7 +32,7 @@ const DEFAULT_RELOAD_INTERVAL_SECONDS = 60;
 export interface RemoteConfigSourceOptions {
   url: string;
   reloadIntervalSeconds?: number;
-  envFunc?: EnvFunc;
+  substitutionFunc?: SubstitutionFunc;
 }
 
 export class RemoteConfigSource implements ConfigSource {
@@ -56,7 +56,9 @@ export class RemoteConfigSource implements ConfigSource {
     this.#url = options.url;
     this.#reloadIntervalSeconds =
       options.reloadIntervalSeconds ?? DEFAULT_RELOAD_INTERVAL_SECONDS;
-    this.#transformer = createConfigTransformer({ envFunc: options.envFunc });
+    this.#transformer = createConfigTransformer({
+      substitutionFunc: options.substitutionFunc,
+    });
   }
 
   async *readConfigData(

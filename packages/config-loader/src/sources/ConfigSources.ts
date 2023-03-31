@@ -21,15 +21,45 @@ import parseArgs from 'minimist';
 import { EnvConfigSource } from './EnvConfigSource';
 import { FileConfigSource } from './FileConfigSource';
 import { MergedConfigSource } from './MergedConfigSource';
-import { RemoteConfigSource } from './RemoteConfigSource';
-import { ConfigSource, EnvFunc } from './types';
+import {
+  RemoteConfigSource,
+  RemoteConfigSourceOptions,
+} from './RemoteConfigSource';
+import { ConfigSource, SubstitutionFunc } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
-import { LoadConfigOptionsRemote } from '../loader';
+
+export type ConfigSourceTarget =
+  | {
+      type: 'path';
+      target: string;
+    }
+  | {
+      type: 'url';
+      target: string;
+    };
+
+export interface ClosableConfig extends Config {
+  close(): void;
+}
+
+export interface BaseConfigSourcesOptions {
+  rootDir: string;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
+  substitutionFunc?: SubstitutionFunc;
+}
+
+export interface ConfigSourcesDefaultForTargetsOptions
+  extends BaseConfigSourcesOptions {
+  targets: ConfigSourceTarget[];
+}
+
+export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
+  argv?: string[];
+  env?: Record<string, string>;
+}
 
 export class ConfigSources {
-  static parseArgs(
-    argv: string[] = process.argv,
-  ): Array<{ type: 'url' | 'path'; target: string }> {
+  static parseArgs(argv: string[] = process.argv): Array<ConfigSourceTarget> {
     const args: string[] = [parseArgs(argv).config].flat().filter(Boolean);
     return args.map(target => {
       try {
@@ -42,12 +72,9 @@ export class ConfigSources {
     });
   }
 
-  static defaultForTargets(options: {
-    rootDir: string;
-    targets: Array<{ type: 'url' | 'path'; target: string }>;
-    remote?: LoadConfigOptionsRemote;
-    envFunc?: EnvFunc;
-  }): ConfigSource {
+  static defaultForTargets(
+    options: ConfigSourcesDefaultForTargetsOptions,
+  ): ConfigSource {
     const argSources = options.targets.map(arg => {
       if (arg.type === 'url') {
         if (!options.remote) {
@@ -57,13 +84,13 @@ export class ConfigSources {
         }
         return RemoteConfigSource.create({
           url: arg.target,
-          envFunc: options.envFunc,
+          substitutionFunc: options.substitutionFunc,
           reloadIntervalSeconds: options.remote.reloadIntervalSeconds,
         });
       }
       return FileConfigSource.create({
         path: arg.target,
-        envFunc: options.envFunc,
+        substitutionFunc: options.substitutionFunc,
       });
     });
 
@@ -74,14 +101,14 @@ export class ConfigSources {
       argSources.push(
         FileConfigSource.create({
           path: defaultPath,
-          envFunc: options.envFunc,
+          substitutionFunc: options.substitutionFunc,
         }),
       );
       if (fs.pathExistsSync(localPath)) {
         argSources.push(
           FileConfigSource.create({
             path: localPath,
-            envFunc: options.envFunc,
+            substitutionFunc: options.substitutionFunc,
           }),
         );
       }
@@ -90,13 +117,7 @@ export class ConfigSources {
     return this.merge(argSources);
   }
 
-  static default(options: {
-    rootDir: string;
-    argv?: string[];
-    remote?: LoadConfigOptionsRemote;
-    env?: Record<string, string>;
-    envFunc?: EnvFunc;
-  }): ConfigSource {
+  static default(options: ConfigSourcesDefaultOptions): ConfigSource {
     const argSource = this.defaultForTargets({
       ...options,
       targets: this.parseArgs(options.argv),
@@ -111,7 +132,7 @@ export class ConfigSources {
     return MergedConfigSource.from(sources);
   }
 
-  static toConfig(source: ConfigSource): Promise<LiveConfig> {
+  static toConfig(source: ConfigSource): Promise<ClosableConfig> {
     return new Promise(async (resolve, reject) => {
       let config: ObservableConfigProxy | undefined = undefined;
       try {
@@ -132,8 +153,4 @@ export class ConfigSources {
       }
     });
   }
-}
-
-interface LiveConfig extends Config {
-  close(): void;
 }

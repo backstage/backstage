@@ -25,7 +25,7 @@ export type { RemoteConfigSourceOptions } from './RemoteConfigSource';
 export { StaticConfigSource } from './StaticConfigSource';
 export type { StaticConfigSourceOptions } from './StaticConfigSource';
 export type {
-  EnvFunc,
+  SubstitutionFunc as EnvFunc,
   ConfigSource,
   ConfigSourceData,
   ReadConfigDataOptions,
