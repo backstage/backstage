@@ -31,7 +31,7 @@ export class ConfigSources {
   static parseArgs(
     argv: string[] = process.argv,
   ): Array<{ type: 'url' | 'path'; target: string }> {
-    const args: string[] = parseArgs(argv).config ?? [];
+    const args: string[] = [parseArgs(argv).config].flat().filter(Boolean);
     return args.map(target => {
       try {
         // eslint-disable-next-line no-new
