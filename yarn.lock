@@ -4977,7 +4977,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
-    "@types/recharts": ^1.8.15
+    "@types/recharts": ^1.8.14
     cross-fetch: ^3.1.5
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -5864,7 +5864,7 @@ __metadata:
     "@types/highlightjs": ^10.1.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
-    "@types/recharts": ^1.8.15
+    "@types/recharts": ^1.8.14
     cross-fetch: ^3.1.5
     highlight.js: ^10.6.0
     luxon: ^3.0.0
@@ -6530,7 +6530,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
-    "@types/recharts": ^1.8.15
+    "@types/recharts": ^1.8.14
     cross-fetch: ^3.1.5
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -16375,7 +16375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/recharts@npm:^1.8.14, @types/recharts@npm:^1.8.15":
+"@types/recharts@npm:^1.8.14":
   version: 1.8.23
   resolution: "@types/recharts@npm:1.8.23"
   dependencies:
