@@ -8247,7 +8247,7 @@ __metadata:
     "@opensearch-project/opensearch": ^2.0.0
     "@short.io/opensearch-mock": ^0.3.1
     aws-os-connection: ^0.2.0
-    aws-sdk: ^2.948.0
+    aws-sdk: ^2.840.0
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
     uuid: ^8.3.2
@@ -18155,7 +18155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1231.0, aws-sdk@npm:^2.840.0, aws-sdk@npm:^2.948.0":
+"aws-sdk@npm:^2.1231.0, aws-sdk@npm:^2.840.0":
   version: 2.1279.0
   resolution: "aws-sdk@npm:2.1279.0"
   dependencies:
