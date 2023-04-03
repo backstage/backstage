@@ -20,7 +20,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { useUpdateEffect } from 'react-use';
+import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 
 /**
  * The state of the search modal, as well as functions for changing the modal's
@@ -136,14 +136,15 @@ export function useSearchModal(initialState = false) {
   const parentContextValue = parentContext?.atVersion(1);
   const isParentContextPresent = !!parentContextValue?.state;
 
-  // Monitor route pathname changes to automatically hide the modal.
-  const { pathname } = useLocation();
+  // Monitor route changes to automatically hide the modal.
+  const location = useLocation();
+  const locationKey = `${location.pathname}${location.search}${location.hash}`;
   useUpdateEffect(() => {
     setState(prevState => ({
       open: prevState.open,
       hidden: true,
     }));
-  }, [pathname]);
+  }, [locationKey]);
 
   // Inherit from parent context, if set.
   return isParentContextPresent
