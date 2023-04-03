@@ -18,7 +18,7 @@ import { EnvConfigSource, readEnvConfig } from './EnvConfigSource';
 import { ConfigSource, ConfigSourceData } from './types';
 
 async function readAll(source: ConfigSource) {
-  const entries = new Array<{ data: ConfigSourceData[] }>();
+  const entries = new Array<{ configs: ConfigSourceData[] }>();
   for await (const item of source.readConfigData()) {
     entries.push(item);
   }
