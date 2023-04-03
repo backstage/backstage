@@ -43,8 +43,8 @@ __metadata:
   linkType: hard
 
 "@apollo/client@npm:^3.0.0":
-  version: 3.7.10
-  resolution: "@apollo/client@npm:3.7.10"
+  version: 3.7.11
+  resolution: "@apollo/client@npm:3.7.11"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.0
@@ -52,7 +52,7 @@ __metadata:
     "@wry/trie": ^0.3.0
     graphql-tag: ^2.12.6
     hoist-non-react-statics: ^3.3.2
-    optimism: ^0.16.1
+    optimism: ^0.16.2
     prop-types: ^15.7.2
     response-iterator: ^0.2.6
     symbol-observable: ^4.0.0
@@ -74,7 +74,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: d74a68f8042e76e3a81990c79a89aefc07c8899d354f3b469591356508001005106bba0fa953652c3ec19756d44bdec6730ac98f62fa836bd76acbcb7eff42ce
+  checksum: 56fa501dc27b68b01c054ffd5642fcfedb16ee4653e819fb92d1b6cae834160f1274a961f335812f4781bbbbdf3bb6f851f07a7351f95d8945740cc79fa2d58f
   languageName: node
   linkType: hard
 
@@ -140,8 +140,8 @@ __metadata:
   linkType: hard
 
 "@apollo/server@npm:^4.0.0":
-  version: 4.5.0
-  resolution: "@apollo/server@npm:4.5.0"
+  version: 4.6.0
+  resolution: "@apollo/server@npm:4.6.0"
   dependencies:
     "@apollo/cache-control-types": ^1.0.2
     "@apollo/server-gateway-interface": ^1.1.0
@@ -171,7 +171,7 @@ __metadata:
     whatwg-mimetype: ^3.0.0
   peerDependencies:
     graphql: ^16.6.0
-  checksum: 193b5f6913c945aafb8fc6b5b75fcfff250e5b84dc2727f6a0472b304da08a6cd90a21ae45591e6408e9413e8bee323bbf4c9586b511a4f426b562da5328e4d0
+  checksum: 309d22df0caa73671d856c31f53d0eb8a5505a6dd0c1691223891e0fa2931667c7ccd680e418a678e1d2570f54596bcc514775854cbc16bfff9009c7cfe9febe
   languageName: node
   linkType: hard
 
@@ -31885,7 +31885,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.16.1":
+"optimism@npm:^0.16.2":
   version: 0.16.2
   resolution: "optimism@npm:0.16.2"
   dependencies:
