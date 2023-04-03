@@ -24,7 +24,6 @@ import type {
   ObjectWithContentSchema,
   RequiredDoc,
   DocOperation,
-  DocPath,
   DocPathMethod,
   DocPathTemplate,
   PathTemplate,
@@ -33,11 +32,14 @@ import type {
 } from './common';
 import { ImmutableReferenceObject, ImmutableResponseObject } from './immutable';
 
-type Response<
+/**
+ * @public
+ */
+export type Response<
   Doc extends RequiredDoc,
   Path extends keyof Doc['paths'],
   Method extends keyof Doc['paths'][Path],
-  StatusCode extends keyof Doc['paths'][Path]['responses'],
+  StatusCode extends keyof DocOperation<Doc, Path, Method>['responses'],
 > = DocOperation<
   Doc,
   Path,
@@ -52,43 +54,27 @@ type Response<
     : never
   : DocOperation<Doc, Path, Method>['responses'][StatusCode];
 
-type Responses<
+/**
+ * @public
+ */
+export type ResponseSchemas<
   Doc extends RequiredDoc,
-  Path extends keyof Doc['paths'],
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPathTemplate<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
 > = {
   [StatusCode in keyof DocOperation<Doc, Path, Method>['responses']]: Response<
     Doc,
     Path,
     Method,
     StatusCode
-  >;
-};
-
-type ResponseSchema<
-  Doc extends RequiredDoc,
-  Object extends ImmutableResponseObject,
-> = ObjectWithContentSchema<Doc, Object>;
-
-type ResponseSchemas<
-  Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
-  Method extends DocPathMethod<Doc, Path>,
-> = {
-  [StatusCode in keyof Responses<Doc, DocPath<Doc, Path>, Method>]: Responses<
-    Doc,
-    DocPath<Doc, Path>,
-    Method
-  >[StatusCode] extends ImmutableResponseObject
-    ? ResponseSchema<
-        Doc,
-        Responses<Doc, DocPath<Doc, Path>, Method>[StatusCode]
-      >
+  > extends ImmutableResponseObject
+    ? ObjectWithContentSchema<Doc, Response<Doc, Path, Method, StatusCode>>
     : never;
 };
 
 /**
  * Transform the OpenAPI request body schema to a typesafe JSON schema.
+ * @public
  */
 export type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,

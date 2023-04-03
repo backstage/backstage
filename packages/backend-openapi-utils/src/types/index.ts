@@ -14,32 +14,9 @@
  * limitations under the License.
  */
 
-import type { RequiredDoc } from './common';
-import type { DocRequestMatcher } from './express';
-
-/**
- * @public
- */
-export namespace core {
-  /**
-   * @internal
-   */
-  export type Spec = RequiredDoc;
-
-  /**
-   * @internal
-   */
-  export type RequestMatcher<
-    Doc extends RequiredDoc,
-    T,
-    Method extends
-      | 'all'
-      | 'get'
-      | 'post'
-      | 'put'
-      | 'delete'
-      | 'patch'
-      | 'options'
-      | 'head',
-  > = DocRequestMatcher<Doc, T, Method>;
-}
+export * from './common';
+export * from './express';
+export * from './immutable';
+export * from './params';
+export * from './requests';
+export * from './responses';

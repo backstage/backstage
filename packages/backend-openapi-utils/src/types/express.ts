@@ -21,8 +21,9 @@ import { ResponseBodyToJsonSchema } from './responses';
 
 /**
  * Typed express request handler.
+ * @public
  */
-type DocRequestHandler<
+export type DocRequestHandler<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
@@ -36,8 +37,9 @@ type DocRequestHandler<
 
 /**
  * Typed express error handler / request handler union type.
+ * @public
  */
-type DocRequestHandlerParams<
+export type DocRequestHandlerParams<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
@@ -51,6 +53,7 @@ type DocRequestHandlerParams<
 
 /**
  * Superset of the express router path matcher that enforces typed request and response bodies.
+ * @public
  */
 export interface DocRequestMatcher<
   Doc extends RequiredDoc,
