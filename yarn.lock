@@ -16030,11 +16030,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.1
-  resolution: "@types/node-forge@npm:1.3.1"
+  version: 1.3.2
+  resolution: "@types/node-forge@npm:1.3.2"
   dependencies:
     "@types/node": "*"
-  checksum: 88d1f85b5e2edfbb475d34c4a47b964edab408b20cec508dc4443b36258971062c2fef760d1eeb3f544fdb5321c710a4e5e2cd8a1a5923e81c53ca1cf6f3a722
+  checksum: f532326a616e946e5f6733d1461e7b8d31911bbdfbc480a6337c422053d79c1e22a0776d114a325439e26ae382a640f939d0abf156e24a3c3ca5079d04aa73f6
   languageName: node
   linkType: hard
 
