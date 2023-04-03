@@ -32,16 +32,10 @@ import {
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-backend';
-import { actionExecutePermission } from '@backstage/plugin-scaffolder-common';
+} from '@backstage/plugin-scaffolder-backend/alpha';
+import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { Router } from 'express';
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { PluginEnvironment } from '../types';
-
-const inputSchema = zodToJsonSchema(
-  z.object({ message: z.enum(['hello']) }).strict(),
-);
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
@@ -55,18 +49,18 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     }
 
     if (isPermission(request.permission, actionExecutePermission)) {
-      return createScaffolderActionConditionalDecision(
-        request.permission,
-        scaffolderActionConditions.hasInputProperty({
-          action: 'debug:log',
-          key: 'message',
-          value: 'Test',
-        }),
-        // scaffolderActionConditions.matchesInput({
-        //   action: 'debug:log',
-        //   schema: inputSchema,
-        // }),
-      );
+      return createScaffolderActionConditionalDecision(request.permission, {
+        allOf: [
+          scaffolderActionConditions.hasInputProperty({
+            key: 'message',
+            value: 'Test',
+          }),
+          scaffolderActionConditions.hasInputProperty({
+            key: 'message',
+            value: 'Hello ddd',
+          }),
+        ],
+      });
     }
 
     return {
