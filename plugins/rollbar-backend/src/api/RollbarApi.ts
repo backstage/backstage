@@ -31,15 +31,12 @@ const baseUrl = 'https://api.rollbar.com/api/1';
 const buildUrl = (url: string) => `${baseUrl}${url}`;
 
 function camelize<T extends unknown>(val: T): T {
-  if (typeof val === 'string') {
-    return camelCase(val) as T;
-  }
   if (Array.isArray(val)) {
     return val.map(camelize) as T;
   }
   if (val && typeof val === 'object') {
     return Object.fromEntries(
-      Object.entries(val).map(([k, v]) => [camelize(k), camelize(v)]),
+      Object.entries(val).map(([k, v]) => [camelCase(k), camelize(v)]),
     ) as T;
   }
   return val;
