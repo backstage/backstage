@@ -83,3 +83,5 @@ yarn.lock                                           @backstage/maintainers @back
 /tech-insights-backend-module-jsonfc                @backstage/maintainers @xantier @iain-b
 /tech-insights-tech-insights-common                 @backstage/maintainers @xantier @iain-b
 /tech-insights-tech-insights-node                   @backstage/maintainers @xantier @iain-b
+/plugins/onboarding                                 @backstage/maintainers @shubhamkouarav
+/plugins/onboarding-backend                         @backstage/maintainers @shubhamkouarav
