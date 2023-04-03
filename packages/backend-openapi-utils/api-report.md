@@ -4,7 +4,7 @@
 
 ```ts
 import type { ContentObject } from 'openapi3-ts';
-import { default as core_2 } from 'express-serve-static-core';
+import type { default as core_2 } from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema7 } from 'json-schema-to-ts';
 import type { OpenAPIObject } from 'openapi3-ts';
