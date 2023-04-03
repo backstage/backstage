@@ -25,6 +25,8 @@ import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-mo
 import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
 import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
+import { permissionPlugin } from '@backstage/plugin-permission-backend/alpha';
+import { ExamplePermissionPolicy } from './ExamplePermissionPolicy';
 
 const backend = createBackend();
 
@@ -48,4 +50,8 @@ backend.add(searchModuleExploreCollator());
 
 // Kubernetes
 backend.add(kubernetesPlugin());
+
+// Permissions
+backend.add(permissionPlugin({ policy: new ExamplePermissionPolicy() }));
+
 backend.start();
