@@ -120,6 +120,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
                   checked={selected}
                 />
               }
+              onClick={event => event.preventDefault()}
               label={option}
             />
           )}
