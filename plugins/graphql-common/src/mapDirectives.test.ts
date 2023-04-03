@@ -21,7 +21,7 @@ import { describe, it } from '@effection/jest';
 import DataLoader from 'dataloader';
 import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
-import { createGraphQLAPI } from './setupTests';
+import { createGraphQLAPI } from './__testUtils__';
 import { transformSchema } from './transformSchema';
 import { GraphQLContext, NodeId } from './types';
 

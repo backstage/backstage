@@ -16,15 +16,16 @@
 import type { JsonObject } from '@backstage/types';
 import type { Operation } from 'effection';
 
-import { createGraphQLApp } from './createGraphQLApp';
+import { createGraphQLApp } from '../createGraphQLApp';
 
 import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
-import { GraphQLContext, PromiseOrValue } from './types';
+import { GraphQLContext } from '../types';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
+import { unwrap } from './helpers';
 
 export function createGraphQLAPI(
   TestModule: Module,
@@ -72,17 +73,4 @@ export function createGraphQLAPI(
       }
     };
   };
-}
-
-function isPromise<T>(x: PromiseOrValue<T>): x is Promise<T> {
-  return typeof (x as Promise<T>).then === 'function';
-}
-
-function* unwrap<T>(promiseOrValue: PromiseOrValue<T> | Operation<T>): {
-  [Symbol.iterator](): Iterator<Operation<T>, T, any>;
-} {
-  if (isPromise(promiseOrValue)) {
-    return yield promiseOrValue;
-  }
-  return promiseOrValue as T;
 }
