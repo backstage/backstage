@@ -85,8 +85,7 @@
     "pg-connection-string": "^2.3.0",
     "prom-client": "^14.0.1",
     "winston": "^3.2.1",
-    "zod": "~3.18.0",
-    "zod-to-json-schema": "~3.18.0"
+    "zod": "~3.18.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
