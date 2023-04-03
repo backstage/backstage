@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-exports.up = async function (knex) {
+exports.up = async knex => {
   await knex.schema.createTable('checklists', table => {
     table.string('group').index();
     table.string('title').notNullable();
@@ -48,4 +48,7 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 
-exports.down = function (knex) {};
+exports.down = async knex => {
+  await knex.schema.dropTable('checklists');
+  await knex.schema.dropTable('checklistResponse');
+};
