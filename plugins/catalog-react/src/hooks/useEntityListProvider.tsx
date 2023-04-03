@@ -40,12 +40,7 @@ import {
   EntityTextFilter,
   EntityTypeFilter,
   UserListFilter,
-<<<<<<< HEAD
   EntityNamespaceFilter,
-  EntityGenericFilter,
-=======
-  EntityFieldFilter,
->>>>>>> 47f9a507cf (addressed requested changes)
 } from '../filters';
 import { EntityFilter } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
@@ -63,7 +58,6 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
-  option?: EntityGenericFilter;
 };
 
 /** @public */

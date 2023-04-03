@@ -28,7 +28,7 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import useAsync from 'react-use/lib/useAsync';
-import { EntityFieldFilter } from '../../filters';
+import { CustomFilters, EntityFieldFilter } from '../../filters';
 import { catalogApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -57,7 +57,7 @@ function useEntityFieldFilter(opts: { filterValue: string[] }): {
     filters,
     queryParameters: { option: optionParameter },
     updateFilters,
-  } = useEntityList();
+  } = useEntityList<CustomFilters>();
 
   const queryParamGenres = useMemo(() => {
     return [optionParameter].flat().filter(Boolean) as string[];
