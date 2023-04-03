@@ -44,7 +44,7 @@ describe('RollbarApi', () => {
         name: 'xyz',
         account_id: 1,
         status: 'enabled',
-        extra_nested: { nested_value: [{ value_here: 1 }] },
+        extra_nested: { nested_value: [{ value_here: 'hello_world' }] },
       },
     ];
 
@@ -67,7 +67,7 @@ describe('RollbarApi', () => {
           name: 'xyz',
           accountId: 1,
           status: 'enabled',
-          extraNested: { nestedValue: [{ valueHere: 1 }] },
+          extraNested: { nestedValue: [{ valueHere: 'hello_world' }] },
         },
       ]);
     });
