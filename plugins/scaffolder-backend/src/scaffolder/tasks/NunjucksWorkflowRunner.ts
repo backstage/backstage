@@ -48,7 +48,10 @@ import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { createDefaultFilters } from '../../lib/templating/filters';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 
@@ -59,7 +62,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi: PermissionEvaluator;
+  permissionApi?: PermissionEvaluator;
 };
 
 type TemplateContext = {
@@ -292,10 +295,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
-      const [decision] = await this.options.permissionApi.authorizeConditional(
-        [{ permission: actionExecutePermission }],
-        { token: task.secrets?.backstageToken },
-      );
+      const [decision] =
+        (await this.options.permissionApi?.authorizeConditional(
+          [{ permission: actionExecutePermission }],
+          { token: task.secrets?.backstageToken },
+        )) || [{ result: AuthorizeResult.ALLOW }];
 
       if (!isActionAuthorized(decision, { action: action.id, input })) {
         throw new InputError(

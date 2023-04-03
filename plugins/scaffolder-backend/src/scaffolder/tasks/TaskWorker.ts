@@ -30,11 +30,11 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
  */
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
-  permissionApi: PermissionEvaluator;
   runners: {
     workflowRunner: WorkflowRunner;
   };
   concurrentTasksLimit: number;
+  permissionApi?: PermissionEvaluator;
 };
 
 /**
@@ -44,7 +44,6 @@ export type TaskWorkerOptions = {
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
-  permissionApi: PermissionEvaluator;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
@@ -64,6 +63,7 @@ export type CreateWorkerOptions = {
    */
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissionApi?: PermissionEvaluator;
 };
 
 /**
