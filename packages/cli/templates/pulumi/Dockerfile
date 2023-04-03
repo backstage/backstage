@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # Stage 1 - Create yarn install skeleton layer
 FROM --platform=linux/amd64 node:16-bullseye-slim AS packages
 
@@ -83,11 +81,10 @@ COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
 COPY --chown=node:node app-config.yaml ./
 
 # To make sure we are not running Docker in Docker for the deployment
-COPY --chown=node:node <<-EOT app-config.deployment.yaml
-techdocs:
-  generator:
-    runIn: 'local'
-EOT
+RUN echo "techdocs:" >> app-config.deployment.yaml
+RUN echo "    generator:" >> app-config.deployment.yaml
+RUN echo "        runIn: 'local'" >> app-config.deployment.yaml
+
 
 # This switches many Node.js dependencies to development mode.
 ENV NODE_ENV development
