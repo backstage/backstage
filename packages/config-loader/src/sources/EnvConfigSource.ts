@@ -26,7 +26,7 @@ import { AsyncConfigSourceIterator, ConfigSource } from './types';
  */
 export interface EnvConfigSourceOptions {
   /**
-   * The environment variables to use, defaults to {@link process.env}.
+   * The environment variables to use, defaults to `process.env`.
    */
   env?: Record<string, string | undefined>;
 }

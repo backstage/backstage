@@ -15,10 +15,19 @@
  */
 
 export { ConfigSources } from './ConfigSources';
+export type {
+  BaseConfigSourcesOptions,
+  ClosableConfig,
+  ConfigSourceTarget,
+  ConfigSourcesDefaultForTargetsOptions,
+  ConfigSourcesDefaultOptions,
+} from './ConfigSources';
 export { EnvConfigSource, readEnvConfig } from './EnvConfigSource';
+export type { EnvConfigSourceOptions } from './EnvConfigSource';
 export { FileConfigSource } from './FileConfigSource';
 export type { FileConfigSourceOptions } from './FileConfigSource';
 export { MutableConfigSource } from './MutableConfigSource';
+export type { MutableConfigSourceOptions } from './MutableConfigSource';
 export { RemoteConfigSource } from './RemoteConfigSource';
 export type { RemoteConfigSourceOptions } from './RemoteConfigSource';
 export { StaticConfigSource } from './StaticConfigSource';

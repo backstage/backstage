@@ -24,6 +24,8 @@ import { simpleDefer, SimpleDeferred, waitOrAbort } from './utils';
 
 /**
  * Options for {@link MutableConfigSource.create}.
+ *
+ * @public
  */
 export interface MutableConfigSourceOptions {
   data?: JsonObject;

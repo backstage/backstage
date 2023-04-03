@@ -19,13 +19,13 @@ import { ConfigSources } from './sources';
 
 /**
  * @public
- * @deprecated
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export type ConfigTarget = { path: string } | { url: string };
 
 /**
  * @public
- * @deprecated
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export type LoadConfigOptionsWatch = {
   /**
@@ -41,7 +41,7 @@ export type LoadConfigOptionsWatch = {
 
 /**
  * @public
- * @deprecated
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export type LoadConfigOptionsRemote = {
   /**
@@ -54,7 +54,7 @@ export type LoadConfigOptionsRemote = {
  * Options that control the loading of configuration files in the backend.
  *
  * @public
- * @deprecated
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
@@ -84,7 +84,7 @@ export type LoadConfigOptions = {
 /**
  * Results of loading configuration files.
  * @public
- * @deprecated
+ * @deprecated Use {@link ConfigSources.default} instead.
  */
 export type LoadConfigResult = {
   /**
