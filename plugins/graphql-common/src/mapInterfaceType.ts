@@ -18,6 +18,7 @@ import { pascalCase } from 'pascal-case';
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNamedType,
   GraphQLObjectType,
   GraphQLTypeResolver,
   isInterfaceType,
@@ -25,6 +26,18 @@ import {
   isUnionType,
 } from 'graphql';
 import { DirectiveMapperAPI, NamedType, ResolverContext } from './types';
+
+function isRelatedType(
+  resolvedType: GraphQLObjectType,
+  sourceType: GraphQLNamedType,
+) {
+  return (
+    resolvedType.name === sourceType.name ||
+    resolvedType.getInterfaces().find(i => i.name === sourceType.name) ||
+    (isUnionType(sourceType) &&
+      sourceType.getTypes().find(t => t.name === resolvedType.name))
+  );
+}
 
 function validateDiscriminatesDirective(
   interfaceName: string,
@@ -193,10 +206,12 @@ function defineResolver(
 
   return async (source, context, info, _abstractType) => {
     const { schema } = info;
+    const { id } = source;
+    const { loader, decodeId } = context;
+    const { typename: sourceTypename } = decodeId(id);
+    const sourceType = schema.getType(sourceTypename);
+
     if (directive && 'with' in directive) {
-      const { id } = source;
-      const { loader, decodeId } = context;
-      const { typename: sourceTypename } = decodeId(id);
       const node = await loader.load(id);
 
       if (!node) return undefined;
@@ -236,13 +251,7 @@ function defineResolver(
             return type.resolveType?.(source, context, info, type);
           }
 
-          const sourceType = schema.getType(sourceTypename);
-          if (
-            typename === sourceTypename ||
-            type.getInterfaces().find(i => i.name === sourceTypename) ||
-            (isUnionType(sourceType) &&
-              sourceType.getTypes().find(t => t.name === typename))
-          ) {
+          if (sourceType && isRelatedType(type, sourceType)) {
             return typename;
           }
           throw new Error(
@@ -256,9 +265,17 @@ function defineResolver(
       }
     }
     const opaqueType = schema.getType(opaqueTypeName);
-    return isInterfaceType(opaqueType)
-      ? opaqueType.resolveType?.(source, context, info, opaqueType)
-      : opaqueTypeName;
+    if (isInterfaceType(opaqueType)) {
+      opaqueType.resolveType?.(source, context, info, opaqueType);
+    }
+    if (
+      sourceType &&
+      isObjectType(opaqueType) &&
+      isRelatedType(opaqueType, sourceType)
+    ) {
+      return opaqueTypeName;
+    }
+    return undefined;
   };
 }
 
