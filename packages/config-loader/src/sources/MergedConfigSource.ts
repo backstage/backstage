@@ -30,8 +30,13 @@ export class MergedConfigSource implements ConfigSource {
   // An optimization to flatten nested merged sources to avid unnecessary microtasks
   static #flattenSources(sources: ConfigSource[]): ConfigSource[] {
     return sources.flatMap(source => {
-      if (sourcesSymbol in source && Array.isArray(source[sourcesSymbol])) {
-        return this.#flattenSources(source[sourcesSymbol] as ConfigSource[]);
+      if (
+        sourcesSymbol in source &&
+        Array.isArray((source as any)[sourcesSymbol])
+      ) {
+        return this.#flattenSources(
+          (source as any)[sourcesSymbol] as ConfigSource[],
+        );
       }
       return source;
     });
@@ -41,9 +46,11 @@ export class MergedConfigSource implements ConfigSource {
     return new MergedConfigSource(this.#flattenSources(sources));
   }
 
-  private constructor(private readonly sources: ConfigSource[]) {}
+  [sourcesSymbol]: ConfigSource[];
 
-  [sourcesSymbol] = this.sources;
+  private constructor(private readonly sources: ConfigSource[]) {
+    this[sourcesSymbol] = this.sources;
+  }
 
   async *readConfigData(
     options?: ReadConfigDataOptions,
