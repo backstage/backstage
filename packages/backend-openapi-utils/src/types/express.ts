@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import core from 'express-serve-static-core';
+import type core from 'express-serve-static-core';
 import { DocPathTemplate, MethodAwareDocPath, RequiredDoc } from './common';
 import { PathSchema, QuerySchema } from './params';
 import { RequestBodyToJsonSchema } from './requests';
