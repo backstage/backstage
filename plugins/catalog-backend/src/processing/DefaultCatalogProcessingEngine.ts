@@ -214,7 +214,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               });
             oldRelationSources = new Map(
               previous.relations.map(r => [
-                `${r.source_entity_ref}:${r.target_entity_ref}:${r.type}`,
+                `${r.source_entity_ref}:${r.type}`,
                 r.source_entity_ref,
               ]),
             );
@@ -223,12 +223,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           const newRelationSources = new Map<string, string>(
             result.relations.map(relation => {
               const sourceEntityRef = stringifyEntityRef(relation.source);
-              return [
-                `${sourceEntityRef}:${stringifyEntityRef(relation.target)}:${
-                  relation.type
-                }`,
-                sourceEntityRef,
-              ];
+              return [`${sourceEntityRef}:${relation.type}`, sourceEntityRef];
             }),
           );
 
