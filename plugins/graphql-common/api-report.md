@@ -6,12 +6,21 @@
 import { Application } from 'graphql-modules';
 import DataLoader from 'dataloader';
 import { getDirective } from '@graphql-tools/utils';
+import { GraphQLContext as GraphQLContext_2 } from '@backstage/plugin-graphql-common';
+import { GraphQLError } from 'graphql';
 import { GraphQLFieldConfig } from 'graphql';
 import { GraphQLNamedType } from 'graphql';
 import { GraphQLObjectType } from 'graphql';
 import { GraphQLSchema } from 'graphql';
 import { Module } from 'graphql-modules';
+import { Options } from 'dataloader';
 import { TypeProvider } from 'graphql-modules';
+
+// @public (undocumented)
+export type BatchLoadFn<Context extends GraphQLContext> = (
+  keys: ReadonlyArray<string>,
+  context: Context,
+) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
 // @public (undocumented)
 export const Core: Module;
@@ -31,6 +40,12 @@ export type createGraphQLAppOptions = {
   modules?: Module[];
   generateOpaqueTypes?: boolean;
 };
+
+// @public (undocumented)
+export const createLoader: <Context extends GraphQLContext_2>(
+  loaders: Record<string, BatchLoadFn<Context>>,
+  options?: Options<string, any>,
+) => (context: Context) => DataLoader<string, any, string>;
 
 // @public (undocumented)
 export interface DirectiveMapperAPI {

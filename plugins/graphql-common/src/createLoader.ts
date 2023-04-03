@@ -18,6 +18,7 @@ import DataLoader, { Options } from 'dataloader';
 import { GraphQLError } from 'graphql';
 import { BatchLoadFn } from './types';
 
+/** @public */
 export const createLoader = <Context extends GraphQLContext>(
   loaders: Record<string, BatchLoadFn<Context>>,
   options?: Options<string, any>,
@@ -25,15 +26,13 @@ export const createLoader = <Context extends GraphQLContext>(
   return (context: Context) => {
     async function fetch(ids: readonly string[]) {
       const { decodeId } = context;
-      const idsBySources = ids
-        .map(decodeId)
-        .reduce(
-          (s: Record<string, Map<number, string>>, { source, ref }, index) => ({
-            ...s,
-            [source]: (s[source] ?? new Map()).set(index, ref),
-          }),
-          {},
-        );
+      const idsBySources = ids.map(decodeId).reduce(
+        (s: Record<string, Map<number, string>>, { source, ref }, index) => ({
+          ...s,
+          [source]: (s[source] ?? new Map()).set(index, ref),
+        }),
+        {},
+      );
       const result: any[] = [];
       await Promise.all(
         Object.entries(idsBySources).map(async ([source, refs]) => {
