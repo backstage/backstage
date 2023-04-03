@@ -16,6 +16,7 @@
 import { getDirective } from '@graphql-tools/utils';
 import DataLoader from 'dataloader';
 import {
+  GraphQLError,
   GraphQLFieldConfig,
   GraphQLNamedType,
   GraphQLObjectType,
@@ -30,6 +31,12 @@ export interface NodeId {
   typename: string;
   ref: string;
 }
+
+/** @public */
+export type BatchLoadFn<Context extends GraphQLContext> = (
+  keys: ReadonlyArray<string>,
+  context: Context,
+) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
 /** @public */
 export interface GraphQLContext {

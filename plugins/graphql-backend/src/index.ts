@@ -21,4 +21,3 @@
  */
 
 export * from './service/router';
-export type { BatchLoadFn } from './types';

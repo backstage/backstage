@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './createLoader';
 export * from './createGraphQLApp';
 export * from './core';
 export { transformSchema } from './transformSchema';
@@ -23,6 +24,7 @@ export type {
   ResolverContext,
   FieldDirectiveMapper,
   DirectiveMapperAPI,
+  BatchLoadFn,
   OmitFirst,
   NodeId,
 } from './types';

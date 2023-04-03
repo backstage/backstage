@@ -20,8 +20,10 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
 import {
+  createLoader,
   createGraphQLApp,
   GraphQLContext,
+  BatchLoadFn,
   NodeId,
 } from '@backstage/plugin-graphql-common';
 import {
@@ -35,8 +37,7 @@ import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useDataLoader } from '@envelop/dataloader';
 import { Config } from '@backstage/config';
 import { printSchema } from 'graphql';
-import { BatchLoadFn, UnboxReturnedPromise } from '../types';
-import { createLoader } from '../createLoader';
+import { UnboxReturnedPromise } from '../types';
 import { Options as DataLoaderOptions } from 'dataloader';
 
 /** @public */
