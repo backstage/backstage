@@ -44,6 +44,7 @@ export interface BackendRegisterInit {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
+  mode: 'standard' | 'declarative';
   services: ServiceFactoryOrFunction[];
 }
 

@@ -89,7 +89,7 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
   config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions): InternalBackendFeature => {
+  const factory = (...options: TOptions): InternalBackendFeature => {
     const c = configCallback(...options);
 
     let registrations: InternalBackendPluginRegistration[];
@@ -144,6 +144,7 @@ export function createBackendPlugin<TOptions extends [options?: object] = []>(
       },
     };
   };
+  return Object.assign(factory, { $$type: '@backstage/BackendFeatureFactory' });
 }
 
 /**
@@ -178,7 +179,7 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
   config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
 ): (...params: TOptions) => BackendFeature {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (...options: TOptions): InternalBackendFeature => {
+  const factory = (...options: TOptions): InternalBackendFeature => {
     const c = configCallback(...options);
 
     let registrations: InternalBackendModuleRegistration[];
@@ -223,4 +224,5 @@ export function createBackendModule<TOptions extends [options?: object] = []>(
       },
     };
   };
+  return Object.assign(factory, { $$type: '@backstage/BackendFeatureFactory' });
 }

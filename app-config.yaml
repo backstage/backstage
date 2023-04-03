@@ -49,6 +49,24 @@ backend:
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
+  features:
+    - import: '@backstage/plugin-app-backend/alpha'
+      options:
+        appPackageName: 'example-app'
+    - import: '@backstage/plugin-todo-backend'
+    - import: '@backstage/plugin-techdocs-backend/alpha'
+    - import: '@backstage/plugin-catalog-backend/alpha'
+    - import: '@backstage/plugin-scaffolder-backend/alpha'
+      name: catalogModuleTemplateKind
+    - import: '@backstage/plugin-search-backend/alpha'
+    - import: '@backstage/plugin-search-backend-module-catalog/alpha'
+      name: searchModuleCatalogCollator
+    - import: '@backstage/plugin-search-backend-module-techdocs/alpha'
+      name: searchModuleTechDocsCollator
+    - import: '@backstage/plugin-search-backend-module-explore/alpha'
+      name: searchModuleExploreCollator
+    - import: '@backstage/plugin-kubernetes-backend/alpha'
+
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   '/circleci/api':

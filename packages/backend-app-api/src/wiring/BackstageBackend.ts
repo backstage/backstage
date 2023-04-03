@@ -20,10 +20,15 @@ import { ServiceRegistry } from './ServiceRegistry';
 import { Backend } from './types';
 
 export class BackstageBackend implements Backend {
+  #mode: 'standard' | 'declarative';
   #services: ServiceRegistry;
   #initializer: BackendInitializer;
 
-  constructor(apiFactories: ServiceFactory[]) {
+  constructor(
+    apiFactories: ServiceFactory[],
+    mode: 'standard' | 'declarative',
+  ) {
+    this.#mode = mode;
     this.#services = new ServiceRegistry(apiFactories);
     this.#initializer = new BackendInitializer(this.#services);
   }
@@ -33,7 +38,7 @@ export class BackstageBackend implements Backend {
   }
 
   async start(): Promise<void> {
-    await this.#initializer.start();
+    await this.#initializer.start(this.#mode);
   }
 
   async stop(): Promise<void> {

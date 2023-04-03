@@ -66,6 +66,7 @@ export const defaultServiceFactories = [
  */
 export interface CreateBackendOptions {
   env?: SharedBackendEnvironment;
+  declarative?: boolean;
   services?: ServiceFactoryOrFunction[];
 }
 
@@ -103,5 +104,8 @@ export function createBackend(options?: CreateBackendOptions): Backend {
   );
   services.push(...defaultServices);
 
-  return createSpecializedBackend({ services });
+  return createSpecializedBackend({
+    services,
+    mode: options?.declarative ? 'declarative' : 'standard',
+  });
 }

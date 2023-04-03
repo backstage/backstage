@@ -95,7 +95,7 @@ export class BackendInitializer {
     this.#features.push(internalFeature);
   }
 
-  async start(): Promise<void> {
+  async start(mode: 'standard' | 'declarative'): Promise<void> {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
@@ -118,16 +118,20 @@ export class BackendInitializer {
     process.addListener('SIGINT', exitHandler);
     process.addListener('beforeExit', exitHandler);
 
-    this.#startPromise = this.#doStart();
+    this.#startPromise = this.#doStart(mode);
     await this.#startPromise;
   }
 
-  async #doStart(): Promise<void> {
+  async #doStart(mode: 'standard' | 'declarative'): Promise<void> {
     // Initialize all root scoped services
     for (const ref of this.#serviceHolder.getServiceRefs()) {
       if (ref.scope === 'root') {
         await this.#serviceHolder.get(ref, 'root');
       }
+    }
+
+    if (mode === 'declarative') {
+      await this.#loadDeclaredFeatures();
     }
 
     // Initialize all features
@@ -236,6 +240,50 @@ export class BackendInitializer {
       await lifecycleService.shutdown();
     } else {
       throw new Error('Unexpected lifecycle service implementation');
+    }
+  }
+
+  async #loadDeclaredFeatures(): Promise<void> {
+    const config = await this.#serviceHolder.get(coreServices.config, 'root');
+    const logger = await this.#serviceHolder.get(
+      coreServices.rootLogger,
+      'root',
+    );
+    const declaredFeatures = config
+      ?.getOptionalConfigArray('backend.features')
+      ?.map(c => ({
+        import: c.getString('import'),
+        name: c.getOptionalString('name'),
+        options: c.getOptional('options'),
+      }));
+
+    for (const feature of declaredFeatures ?? []) {
+      const module = require(feature.import);
+
+      if (feature.name) {
+        logger?.info(
+          `Loading feature '${feature.name}' from '${feature.import}'`,
+        );
+        this.#features.push(module[feature.name](feature.options));
+        continue;
+      }
+
+      const detectedFeatures: any = Object.entries(module).filter(
+        ([_, f]: any[]) => f?.$$type === '@backstage/BackendFeatureFactory',
+      );
+      if (detectedFeatures.length === 0) {
+        throw new Error(
+          `Failed to load declared feature, no feature found in module '${feature.import}'`,
+        );
+      }
+      if (detectedFeatures.length > 1) {
+        throw new Error(
+          `Failed to load declared feature, multiple features found in module '${feature.import}'. Please specify a name.`,
+        );
+      }
+      const [name, value] = detectedFeatures[0];
+      logger?.info(`Loading feature '${name}' from '${feature.import}'`);
+      this.#features.push(value(feature.options));
     }
   }
 }

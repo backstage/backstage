@@ -47,5 +47,5 @@ export function createSpecializedBackend(
     );
   }
 
-  return new BackstageBackend(services);
+  return new BackstageBackend(services, options.mode);
 }
