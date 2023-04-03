@@ -101,7 +101,8 @@ export class RemoteConfigSource implements ConfigSource {
       if (options?.signal?.aborted) {
         return;
       }
-      const loadStart = Date.now();
+
+      await this.#wait(options?.signal);
 
       try {
         const newData = await this.#load(options?.signal);
@@ -112,9 +113,6 @@ export class RemoteConfigSource implements ConfigSource {
       } catch (error) {
         console.error(`Failed to read config from ${this.#url}, ${error}`);
       }
-      const loadTime = Date.now() - loadStart;
-
-      await this.#wait(loadTime, options?.signal);
     }
   }
 
@@ -140,12 +138,9 @@ export class RemoteConfigSource implements ConfigSource {
     return data;
   }
 
-  async #wait(loadTimeMs: number, signal?: AbortSignal) {
+  async #wait(signal?: AbortSignal) {
     return new Promise<void>(resolve => {
-      const timeoutId = setTimeout(
-        onDone,
-        Math.max(0, this.#reloadIntervalSeconds * 1000 - loadTimeMs),
-      );
+      const timeoutId = setTimeout(onDone, this.#reloadIntervalSeconds * 1000);
       signal?.addEventListener('abort', onDone);
 
       function onDone() {
