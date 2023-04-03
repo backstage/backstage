@@ -75,15 +75,10 @@ export const hasInputProperty = createActionPermissionRule({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
   description: `Matches the key and value of the input of an action`,
   paramsSchema: z.object({
-    action: z.string().describe('Name of the actionId to match on'),
     key: z.string().describe('Name of the property to match on'),
     value: z.string().describe('Value of the property to match on').optional(),
   }),
-  apply: (resource, { action, key, value }) => {
-    if (resource.action !== action) {
-      return true;
-    }
-
+  apply: (resource, { key, value }) => {
     const foundValue = get(resource.input, key);
 
     if (Array.isArray(foundValue)) {
