@@ -11890,12 +11890,12 @@ __metadata:
   linkType: hard
 
 "@keyv/memcache@npm:^1.3.5":
-  version: 1.3.6
-  resolution: "@keyv/memcache@npm:1.3.6"
+  version: 1.3.7
+  resolution: "@keyv/memcache@npm:1.3.7"
   dependencies:
     json-buffer: ^3.0.1
-    memjs: ^1.3.0
-  checksum: 3360055b6e22d1be7a77341dc99bafb5434d3288dace94067f3307f6d9498f984dcb0d8452a5b2d97ddca8f8c973caf7cc1332e0ffada1c6dbfb0b2a2d42451a
+    memjs: ^1.3.1
+  checksum: 61c836c1b0c264c35281a38dbc380a102b2899eab46226a0e31614d3d7c4708ecdb06d8858f711893212ae5b357a79213c7a7b7a81b6196e56dd889dd1ca498b
   languageName: node
   linkType: hard
 
@@ -29973,10 +29973,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memjs@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "memjs@npm:1.3.0"
-  checksum: 5c7679c649ab18a7b29c8bf8795bd591df480e7ca96eec5958f56c5c3c87d919530a7b61c80ddf73f05975c929d88153d41df28e11ff680d2c6c4bb6dd668d2d
+"memjs@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "memjs@npm:1.3.1"
+  checksum: cb70879055151f15292e95ab57765e745c84d2fedd363b453afc3e2f48bf185e3771eecf9544f95009a3a374e810e34c1e18948134e814d791c2f0f35359ddeb
   languageName: node
   linkType: hard
 
