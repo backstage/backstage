@@ -138,4 +138,8 @@ export class StaticConfigSource implements ConfigSource {
     yield { configs: [{ data: await this.promise, context: this.context }] };
     return;
   }
+
+  toString() {
+    return `StaticConfigSource{}`;
+  }
 }

@@ -108,4 +108,8 @@ export class MutableConfigSource implements ConfigSource {
     this.#currentData = undefined;
     this.#abortController.abort();
   }
+
+  toString() {
+    return `MutableConfigSource{}`;
+  }
 }

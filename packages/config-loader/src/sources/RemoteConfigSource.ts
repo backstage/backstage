@@ -116,6 +116,10 @@ export class RemoteConfigSource implements ConfigSource {
     }
   }
 
+  toString() {
+    return `RemoteConfigSource{path="${this.#url}"}`;
+  }
+
   async #load(signal?: AbortSignal): Promise<JsonObject> {
     const res = await fetch(this.#url, {
       signal: signal as import('node-fetch').RequestInit['signal'],

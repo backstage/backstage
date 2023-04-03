@@ -162,6 +162,10 @@ export class FileConfigSource implements ConfigSource {
     }
   }
 
+  toString() {
+    return `FileConfigSource{path="${this.#path}"}`;
+  }
+
   #waitForEvent(
     watcher: FSWatcher,
     signal?: AbortSignal,

@@ -73,6 +73,13 @@ export class EnvConfigSource implements ConfigSource {
     yield { configs };
     return;
   }
+
+  toString() {
+    const keys = Object.keys(this.env).filter(key =>
+      key.startsWith('APP_CONFIG_'),
+    );
+    return `EnvConfigSource{count=${keys.length}}`;
+  }
 }
 
 const ENV_PREFIX = 'APP_CONFIG_';

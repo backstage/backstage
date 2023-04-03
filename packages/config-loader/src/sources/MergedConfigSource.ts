@@ -97,6 +97,10 @@ export class MergedConfigSource implements ConfigSource {
       }
     }
   }
+
+  toString() {
+    return `MergedConfigSource{${this.sources.map(String).join(', ')}}`;
+  }
 }
 
 // Helper to wait for the next value of the iterator, while decorating the value
