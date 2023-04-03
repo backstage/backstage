@@ -27,6 +27,7 @@ import {
 } from './RemoteConfigSource';
 import { ConfigSource, SubstitutionFunc } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
+import { findPaths } from '@backstage/cli-common';
 
 /**
  * A target to read configuration from.
@@ -70,7 +71,7 @@ export interface ClosableConfig extends Config {
  * @public
  */
 export interface BaseConfigSourcesOptions {
-  rootDir: string;
+  rootDir?: string;
   remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
   substitutionFunc?: SubstitutionFunc;
 }
@@ -138,6 +139,8 @@ export class ConfigSources {
   static defaultForTargets(
     options: ConfigSourcesDefaultForTargetsOptions,
   ): ConfigSource {
+    const rootDir = options.rootDir ?? findPaths(process.cwd()).targetRoot;
+
     const argSources = options.targets.map(arg => {
       if (arg.type === 'url') {
         if (!options.remote) {
@@ -158,8 +161,8 @@ export class ConfigSources {
     });
 
     if (argSources.length === 0) {
-      const defaultPath = resolvePath(options.rootDir, 'app-config.yaml');
-      const localPath = resolvePath(options.rootDir, 'app-config.local.yaml');
+      const defaultPath = resolvePath(rootDir, 'app-config.yaml');
+      const localPath = resolvePath(rootDir, 'app-config.local.yaml');
 
       argSources.push(
         FileConfigSource.create({
