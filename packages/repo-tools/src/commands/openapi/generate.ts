@@ -19,26 +19,34 @@ import YAML from 'js-yaml';
 import chalk from 'chalk';
 import { resolve } from 'path';
 import { runner } from './runner';
+import { TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from './constants';
+import { promisify } from 'util';
+import { exec as execCb } from 'child_process';
+
+const exec = promisify(execCb);
 
 async function generate(
   directoryPath: string,
   config?: { skipMissingYamlFile: boolean },
 ) {
   const { skipMissingYamlFile } = config ?? {};
-  const openapiPath = resolve(directoryPath, 'openapi.yaml');
+  const openapiPath = resolve(directoryPath, YAML_SCHEMA_PATH);
   if (!(await fs.pathExists(openapiPath))) {
     if (skipMissingYamlFile) {
       return;
     }
-    throw new Error('Could not find openapi.yaml in root of directory.');
+    throw new Error(`Could not find ${YAML_SCHEMA_PATH} in root of directory.`);
   }
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
 
-  // For now, we're not adding a header or linting after pasting.
+  const tsPath = resolve(directoryPath, TS_SCHEMA_PATH);
+
   await fs.writeFile(
-    resolve(directoryPath, 'schema/openapi.ts'),
+    tsPath,
     `export default ${JSON.stringify(yaml, null, 2)} as const`,
   );
+
+  await exec(`yarn backstage-cli package lint --fix ${tsPath}`);
 }
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {

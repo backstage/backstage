@@ -90,10 +90,10 @@ export async function getWorkspacePackagePathPatterns(): Promise<
 }
 
 /**
- * Given a list of paths from the user or none and return the listing package directories from the
- *  workspace.
- * @param cliPaths
- * @returns
+ * Given a list of paths from the user, returns the listing package directories from the
+ *  workspace. Returns all directories if no paths are given.
+ * @param cliPaths User given paths from CLI.
+ * @returns Matching package directories or all if no cli paths passed in.
  */
 export async function getMatchingWorkspacePaths(cliPaths: string[]) {
   const isAllPackages = !cliPaths?.length;

@@ -23,9 +23,10 @@ import { relative as relativePath, resolve as resolvePath } from 'path';
 import Parser from '@apidevtools/swagger-parser';
 import { runner } from './runner';
 import { paths as cliPaths } from '../../lib/paths';
+import { TS_MODULE, TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from './constants';
 
 async function verify(directoryPath: string) {
-  const openapiPath = join(directoryPath, 'openapi.yaml');
+  const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
   if (!(await fs.pathExists(openapiPath))) {
     return;
   }
@@ -33,30 +34,27 @@ async function verify(directoryPath: string) {
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
   await Parser.validate(cloneDeep(yaml) as any);
 
-  const schemaPath = join(directoryPath, 'schema/openapi.ts');
+  const schemaPath = join(directoryPath, TS_SCHEMA_PATH);
   if (!(await fs.pathExists(schemaPath))) {
-    throw new Error('No `schema/openapi.ts` file found.');
+    throw new Error(`No \`${TS_SCHEMA_PATH}\` file found.`);
   }
 
-  const schema = await import(
-    resolvePath(join(directoryPath, 'schema/openapi'))
-  );
+  const schema = await import(resolvePath(join(directoryPath, TS_MODULE)));
 
   if (!schema.default) {
-    throw new Error('`schemas/openapi.ts` needs to have a default export.');
+    throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a default export.`);
   }
   if (!isEqual(schema.default, yaml)) {
     throw new Error(
-      `\`openapi.yaml\` and \`schema/openapi.ts\` do not match. Please run \`yarn --cwd ${relativePath(
+      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn --cwd ${relativePath(
         cliPaths.targetRoot,
         directoryPath,
-      )} schema:openapi:generate\` to regenerate \`schema/openapi.ts\`.`,
+      )} schema:openapi:generate\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
 }
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {
-  console.log(paths);
   const resultsList = await runner(paths, dir => verify(dir));
 
   let failed = false;
