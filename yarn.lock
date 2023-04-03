@@ -7429,6 +7429,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-onboarding-backend@workspace:^, @backstage/plugin-onboarding-backend@workspace:plugins/onboarding-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-onboarding-backend@workspace:plugins/onboarding-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@types/bcrypt": ^5.0.0
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    axios: ^1.3.4
+    bcrypt: ^5.1.0
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    js-yaml: ^4.1.0
+    knex: ^2.4.2
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-org-react@workspace:plugins/org-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-org-react@workspace:plugins/org-react"
@@ -11994,22 +12019,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/node-pre-gyp@npm:^1.0.0":
-  version: 1.0.5
-  resolution: "@mapbox/node-pre-gyp@npm:1.0.5"
+"@mapbox/node-pre-gyp@npm:^1.0.0, @mapbox/node-pre-gyp@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@mapbox/node-pre-gyp@npm:1.0.10"
   dependencies:
-    detect-libc: ^1.0.3
+    detect-libc: ^2.0.0
     https-proxy-agent: ^5.0.0
     make-dir: ^3.1.0
-    node-fetch: ^2.6.1
+    node-fetch: ^2.6.7
     nopt: ^5.0.0
-    npmlog: ^4.1.2
+    npmlog: ^5.0.1
     rimraf: ^3.0.2
-    semver: ^7.3.4
-    tar: ^6.1.0
+    semver: ^7.3.5
+    tar: ^6.1.11
   bin:
     node-pre-gyp: bin/node-pre-gyp
-  checksum: c1f182a707f5782e47b77a76e9d6a073fb043999cf9ad965bc86732e88db27ad00926d1602918edb7105f05cde67871b84a178ee9844eb742319ade419636675
+  checksum: 1a98db05d955b74dad3814679593df293b9194853698f3f5f1ed00ecd93128cdd4b14fb8767fe44ac6981ef05c23effcfdc88710e7c1de99ccb6f647890597c8
   languageName: node
   linkType: hard
 
@@ -15064,6 +15089,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 4cba1a7dedfb8bef8517a8c9ba47672835342e075de50e9cd00ea52985cb882afa85170756a6983796326c026f62253bbcf4401a25c5ca461b4783194ace2bb5
+  languageName: node
+  linkType: hard
+
+"@types/bcrypt@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/bcrypt@npm:5.0.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: 063c32c7a519d64768dfc0169a319b8244d6a6cb50a355c93992b3c5fee1dbc236526a1111f0e7bb25abc8b0473e5f40a5edfeb8b33cad2a6ea35aa2d7d7db14
   languageName: node
   linkType: hard
 
@@ -18217,7 +18251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:=1.3.4":
+"axios@npm:=1.3.4, axios@npm:^1.3.4":
   version: 1.3.4
   resolution: "axios@npm:1.3.4"
   dependencies:
@@ -18568,6 +18602,16 @@ __metadata:
   dependencies:
     tweetnacl: ^0.14.3
   checksum: 4edfc9fe7d07019609ccf797a2af28351736e9d012c8402a07120c4453a3b789a15f2ee1530dc49eee8f7eb9379331a8dd4b3766042b9e502f74a68e7f662291
+  languageName: node
+  linkType: hard
+
+"bcrypt@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "bcrypt@npm:5.1.0"
+  dependencies:
+    "@mapbox/node-pre-gyp": ^1.0.10
+    node-addon-api: ^5.0.0
+  checksum: a590b65d276d75d861dc85acc3128508b8f78c87431719658ea3be7996368b34b397b6efefe6bca0a3d555bf41a9267307fd4ce04e956598fca3ba81199c6706
   languageName: node
   linkType: hard
 
@@ -23485,6 +23529,7 @@ __metadata:
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
+    "@backstage/plugin-onboarding-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -28729,7 +28774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0":
+"knex@npm:^2.0.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:
@@ -31537,7 +31582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npmlog@npm:^4.0.1, npmlog@npm:^4.1.2":
+"npmlog@npm:^4.0.1":
   version: 4.1.2
   resolution: "npmlog@npm:4.1.2"
   dependencies:

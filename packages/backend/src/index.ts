@@ -68,6 +68,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import onboarding from './plugins/onboarding';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -152,6 +153,8 @@ async function main() {
   const entityFeedbackEnv = useHotMemoize(module, () =>
     createEnv('entityFeedback'),
   );
+  const onboardingEnv = useHotMemoize(module, () => createEnv('onboarding'));
+
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
@@ -188,6 +191,8 @@ async function main() {
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use('/linguist', await linguist(linguistEnv));
+  apiRouter.use('/onboarding', await onboarding(onboardingEnv));
+
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);
