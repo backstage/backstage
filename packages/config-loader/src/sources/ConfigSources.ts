@@ -142,7 +142,7 @@ export class ConfigSources {
       if (arg.type === 'url') {
         if (!options.remote) {
           throw new Error(
-            `Config argument '${arg.target}' looks like a URL but remote configuration is not enabled. Enable it by passing the \`remote\` option`,
+            `Config argument "${arg.target}" looks like a URL but remote configuration is not enabled. Enable it by passing the \`remote\` option`,
           );
         }
         return RemoteConfigSource.create({
@@ -200,7 +200,9 @@ export class ConfigSources {
       targets: this.parseArgs(options.argv),
     });
 
-    const envSource = EnvConfigSource.create(options);
+    const envSource = EnvConfigSource.create({
+      env: options.env,
+    });
 
     return this.merge([argSource, envSource]);
   }
