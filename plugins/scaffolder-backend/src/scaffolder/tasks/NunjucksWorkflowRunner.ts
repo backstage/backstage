@@ -76,7 +76,6 @@ type TemplateContext = {
     entity?: UserEntity;
     ref?: string;
   };
-  token?: string;
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
