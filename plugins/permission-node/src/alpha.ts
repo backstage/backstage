@@ -13,23 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import {
-  AuthorizeResult,
-  PolicyDecision,
-} from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
 
-export class ExamplePermissionPolicy implements PermissionPolicy {
-  async handle(
-    _request: PolicyQuery,
-    _user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    return {
-      result: AuthorizeResult.ALLOW,
-    };
-  }
-}
+export { type PolicyExtensionPoint, policyExtensionPoint } from './plugin';
