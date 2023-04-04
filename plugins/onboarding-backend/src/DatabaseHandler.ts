@@ -33,5 +33,5 @@ export const databaseConnection = async (options: Options) => {
       directory: migrationsDir,
     });
   }
-  return client;
+  return client || {};
 };
