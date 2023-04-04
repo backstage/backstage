@@ -54,15 +54,4 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
   // (undocumented)
   setEventBroker(eventBroker: EventBroker): Promise<void>;
 }
-
-// @public
-export class InMemoryEventBroker implements EventBroker {
-  constructor(logger: Logger);
-  // (undocumented)
-  publish(params: EventParams): Promise<void>;
-  // (undocumented)
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
-}
 ```
