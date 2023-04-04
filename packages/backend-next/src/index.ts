@@ -16,15 +16,19 @@
 
 import { createBackend } from '@backstage/backend-defaults';
 import { appPlugin } from '@backstage/plugin-app-backend/alpha';
-import { todoPlugin } from '@backstage/plugin-todo-backend';
-import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
-import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
-import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
+import {
+  permissionModuleAllowAllPolicy,
+  permissionPlugin,
+} from '@backstage/plugin-permission-backend/alpha';
+import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
+import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
+import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
+import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
+import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
+import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
+import { todoPlugin } from '@backstage/plugin-todo-backend';
 
 const backend = createBackend();
 
@@ -48,4 +52,9 @@ backend.add(searchModuleExploreCollator());
 
 // Kubernetes
 backend.add(kubernetesPlugin());
+
+// Permissions
+backend.add(permissionPlugin());
+backend.add(permissionModuleAllowAllPolicy());
+
 backend.start();

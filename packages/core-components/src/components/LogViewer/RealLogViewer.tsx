@@ -77,8 +77,8 @@ export function RealLogViewer(props: RealLogViewerProps) {
           <FixedSizeList
             ref={listRef}
             className={classes.log}
-            height={height - HEADER_SIZE}
-            width={width}
+            height={(height || 480) - HEADER_SIZE}
+            width={width || 640}
             itemData={search.lines}
             itemSize={20}
             itemCount={search.lines.length}

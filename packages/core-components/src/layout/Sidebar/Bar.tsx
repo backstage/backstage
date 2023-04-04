@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -39,7 +40,7 @@ import { useSidebarPinState } from './SidebarPinStateContext';
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
   theme => ({
-    drawer: props => ({
+    drawer: {
       display: 'flex',
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
@@ -52,7 +53,6 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
-      width: props.sidebarConfig.drawerWidthClosed,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.shortest,
@@ -63,6 +63,9 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       '&::-webkit-scrollbar': {
         display: 'none',
       },
+    },
+    drawerWidth: props => ({
+      width: props.sidebarConfig.drawerWidthClosed,
     }),
     drawerOpen: props => ({
       width: props.sidebarConfig.drawerWidthOpen,
@@ -174,7 +177,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   /**
-   * Close/Open Sidebar directily without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
+   * Close/Open Sidebar directly without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
    */
   const setOpen = (open: boolean) => {
     if (open) {
@@ -199,7 +202,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
           onBlur={disableExpandOnHover ? () => {} : handleClose}
         >
           <Box
-            className={classnames(classes.drawer, {
+            className={classnames(classes.drawer, classes.drawerWidth, {
               [classes.drawerOpen]: isOpen,
             })}
           >

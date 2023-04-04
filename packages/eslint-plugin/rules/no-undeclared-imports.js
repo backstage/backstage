@@ -180,7 +180,7 @@ module.exports = {
           // The security implication of this is a bit interesting, as crafted add-import
           // directives could be used to install malicious packages. However, the same is true
           // for adding malicious packages to package.json, so there's significant difference.
-          execFileSync('yarn', ['add', ...(flag || []), ...names], {
+          execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...names], {
             cwd: localPkg.dir,
             stdio: 'inherit',
           });
