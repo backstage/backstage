@@ -269,11 +269,12 @@ export class KubernetesFanOutHandler {
     const namespace =
       entity.metadata?.annotations?.['backstage.io/kubernetes-namespace'];
 
+    let customResourcesArr = customResources;
+
     return Promise.all(
       clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
-        let profileCustomResources: CustomResource[] = [];
         if (clusterDetailsItem.customResourceProfile) {
-          profileCustomResources = this.config
+          const profileCustomResources = this.config
             .getConfig(`kubernetes.customResourceProfiles`)
             .getConfigArray(`${clusterDetailsItem.customResourceProfile}`)
             .map(
@@ -284,8 +285,9 @@ export class KubernetesFanOutHandler {
                   plural: c.getString('plural'),
                 } as CustomResource),
             );
+          // cant rename a parameter so need to find another way to prioritize this......
+          customResourcesArr = profileCustomResources;
         }
-
         // console.log('im here');
         return this.fetcher
           .fetchObjectsForService({
@@ -294,10 +296,9 @@ export class KubernetesFanOutHandler {
             objectTypesToFetch: objectTypesToFetch,
             labelSelector,
             customResources: (
-              customResources ||
+              customResourcesArr ||
               clusterDetailsItem.customResources ||
-              this.customResources ||
-              profileCustomResources
+              this.customResources
             ).map(c => ({
               ...c,
               objectType: 'customresources',

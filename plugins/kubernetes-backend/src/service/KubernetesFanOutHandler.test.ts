@@ -95,7 +95,6 @@ const cluster1 = {
       plural: 'some-crd-only-on-this-cluster',
     },
   ],
-  customResourceProfile: 'build',
 };
 
 const cluster2 = {
@@ -108,7 +107,6 @@ const cluster2 = {
       plural: 'crd-two-plural',
     },
   ],
-  customResourceProfile: 'run',
 };
 
 const config = new ConfigReader({
@@ -1010,7 +1008,7 @@ describe('getCustomResourcesByEntity', () => {
       },
     ]);
 
-    await sut.getCustomResourcesByEntity({
+    const response = await sut.getCustomResourcesByEntity({
       entity,
       auth: {},
       customResources: [
@@ -1031,10 +1029,23 @@ describe('getCustomResourcesByEntity', () => {
     ).toBe('parameter-crd.example.com');
   });
 
-  it.skip('retrieves objects for one cluster defined by CRD profiles in the config', async () => {
+  it('prioritizes retrieving objects for one cluster defined by CRD profiles in the config', async () => {
     getClustersByEntity.mockImplementation(() =>
       Promise.resolve({
-        clusters: [cluster1],
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+            customResources: [
+              {
+                group: 'some-other-crd.example.com',
+                apiVersion: 'v1alpha1',
+                plural: 'some-crd-only-on-this-cluster',
+              },
+            ],
+            customResourceProfile: 'build',
+          },
+        ],
       }),
     );
 
