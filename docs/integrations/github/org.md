@@ -79,25 +79,21 @@ Additionally, you need to decide how you want to receive events from external so
 
 Set up your provider
 
-```ts title="packages/backend/src/plugins/catalogEventBasedProviders.ts"
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 /* highlight-add-next-line */
 import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
-import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-export default async function createCatalogEventBasedProviders(
-  /* highlight-remove-next-line */
-  _: PluginEnvironment,
-  /* highlight-add-next-line */
+
+export default async function createPlugin(
   env: PluginEnvironment,
-): Promise<Array<EntityProvider & EventSubscriber>> {
-  const providers: Array<
-    (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-  > = [];
-  // add your event-based entity providers here
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
-  providers.push(
-    GithubOrgEntityProvider.fromConfig(env.config, {
+  const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
       id: 'production',
       orgUrl: 'https://github.com/backstage',
       logger: env.logger,
@@ -105,10 +101,12 @@ export default async function createCatalogEventBasedProviders(
         frequency: { minutes: 60 },
         timeout: { minutes: 15 },
       }),
-    }),
-  );
+  env.eventBroker.subscribe(githubOrgProvider);
+  builder.addEntityProvider(githubOrgProvider);
   /* highlight-add-end */
-  return providers.flat();
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
 }
 ```
 
