@@ -39,13 +39,12 @@ export async function command(opts: OptionValues): Promise<void> {
         configPaths,
         writeStats: Boolean(opts.stats),
       });
-    } else {
-      return buildBackend({
-        targetDir: paths.targetDir,
-        configPaths,
-        skipBuildDependencies: Boolean(opts.skipBuildDependencies),
-      });
     }
+    return buildBackend({
+      targetDir: paths.targetDir,
+      configPaths,
+      skipBuildDependencies: Boolean(opts.skipBuildDependencies),
+    });
   }
 
   const roleInfo = getRoleInfo(role);
