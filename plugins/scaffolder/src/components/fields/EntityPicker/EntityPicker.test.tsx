@@ -425,7 +425,7 @@ describe('<EntityPicker />', () => {
       // Verify that the input is empty
       expect(input).toHaveValue('');
 
-      // Verify that the handleChange function was called with null
+      // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -522,7 +522,7 @@ describe('<EntityPicker />', () => {
       // Verify that the input is empty
       expect(input).toHaveValue('');
 
-      // Verify that the handleChange function was called with null
+      // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -620,7 +620,7 @@ describe('<EntityPicker />', () => {
       // Verify that the input is empty
       expect(input).toHaveValue('');
 
-      // Verify that the handleChange function was called with null
+      // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -718,7 +718,7 @@ describe('<EntityPicker />', () => {
       // Verify that the input is empty
       expect(input).toHaveValue('');
 
-      // Verify that the handleChange function was called with null
+      // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
