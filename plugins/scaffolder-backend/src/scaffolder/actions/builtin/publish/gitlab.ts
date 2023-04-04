@@ -125,6 +125,10 @@ export function createPublishGitlabAction(options: {
             title: 'The ID of the project',
             type: 'string',
           },
+          commitHash: {
+            title: 'The commithash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },

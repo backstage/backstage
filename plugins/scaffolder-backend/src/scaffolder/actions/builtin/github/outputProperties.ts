@@ -23,5 +23,11 @@ const repoContentsUrl = {
   type: 'string',
 };
 
+const commitHash = {
+  title: 'The commithash of the initial commit',
+  type: 'string',
+};
+
 export { remoteUrl };
 export { repoContentsUrl };
+export { commitHash };

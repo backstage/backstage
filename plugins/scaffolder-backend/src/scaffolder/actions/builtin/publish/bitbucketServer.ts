@@ -205,6 +205,10 @@ export function createPublishBitbucketServerAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          commitHash: {
+            title: 'The commithash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },

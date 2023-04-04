@@ -156,6 +156,7 @@ export function createPublishGithubAction(options: {
         properties: {
           remoteUrl: outputProps.remoteUrl,
           repoContentsUrl: outputProps.repoContentsUrl,
+          commitHash: outputProps.commitHash,
         },
       },
     },

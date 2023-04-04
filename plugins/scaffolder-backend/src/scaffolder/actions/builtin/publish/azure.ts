@@ -108,6 +108,10 @@ export function createPublishAzureAction(options: {
             title: 'The Id of the created repository',
             type: 'string',
           },
+          commitHash: {
+            title: 'The commithash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },
