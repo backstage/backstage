@@ -2,4 +2,4 @@
 '@backstage/plugin-explore': patch
 ---
 
-Extracted generic EntityExplorerContent component so that it is easy to show any component kinds in their own tab in the Explore page.
+Extracted generic `EntityExplorerContent` component so that it is easy to show any component kinds in their own tab in the explore page.
