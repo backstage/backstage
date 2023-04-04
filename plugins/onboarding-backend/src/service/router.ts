@@ -38,7 +38,7 @@ export type User = {
  */
 export interface RouterOptions {
   logger: Logger;
-  database?: PluginDatabaseManager;
+  database: PluginDatabaseManager;
   config?: Config;
   identity?: IdentityApi;
 }
@@ -228,6 +228,10 @@ export async function createRouter(
     } catch (error) {
       res.status(500).send('Internal server error!');
     }
+  });
+  router.get('/health', (_, response) => {
+    logger.info('PONG!');
+    response.send({ status: 'ok' });
   });
   router.use(errorHandler());
   return router;

@@ -13,18 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getVoidLogger,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
 
+function createDatabase(): PluginDatabaseManager {
+  return DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('code-coverage');
+}
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      database: createDatabase(),
     });
     app = express().use(router);
   });
