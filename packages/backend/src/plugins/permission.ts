@@ -51,11 +51,11 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     if (isPermission(request.permission, actionExecutePermission)) {
       return createScaffolderActionConditionalDecision(request.permission, {
         allOf: [
-          scaffolderActionConditions.hasInputProperty({
+          scaffolderActionConditions.hasStringProperty({
             key: 'message',
             value: 'Test',
           }),
-          scaffolderActionConditions.hasInputProperty({
+          scaffolderActionConditions.hasStringProperty({
             key: 'message',
             value: 'Hello ddd',
           }),

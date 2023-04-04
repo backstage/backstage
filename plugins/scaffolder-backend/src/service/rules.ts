@@ -70,13 +70,15 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasInputProperty = createActionPermissionRule({
-  name: 'HAS_INPUT',
+export const hasNumberProperty = createActionPermissionRule({
+  name: `HAS_NUMBER_PROPERTY`,
+  description: `Allow actions with the specified property`,
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  description: `Matches the key and value of the input of an action`,
   paramsSchema: z.object({
-    key: z.string().describe('Name of the property to match on'),
-    value: z.string().describe('Value of the property to match on').optional(),
+    key: z
+      .string()
+      .describe(`Property within the action parameters to match on`),
+    value: z.number().describe(`Value of the given property to match on`),
   }),
   apply: (resource, { key, value }) => {
     const foundValue = get(resource.input, key);
@@ -87,7 +89,34 @@ export const hasInputProperty = createActionPermissionRule({
       }
       return foundValue.length > 0;
     }
-    if (value !== undefined) {
+    if (value !== undefined && z.number().safeParse(value).success) {
+      return value === foundValue;
+    }
+    return !!foundValue;
+  },
+  toQuery: () => ({}),
+});
+
+export const hasStringProperty = createActionPermissionRule({
+  name: `HAS_STRING_PROPERTY`,
+  description: `Allow actions with the specified property`,
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  paramsSchema: z.object({
+    key: z
+      .string()
+      .describe(`Property within the action parameters to match on`),
+    value: z.string().describe(`Value of the given property to match on`),
+  }),
+  apply: (resource, { key, value }) => {
+    const foundValue = get(resource.input, key);
+
+    if (Array.isArray(foundValue)) {
+      if (value !== undefined) {
+        return foundValue.includes(value);
+      }
+      return foundValue.length > 0;
+    }
+    if (value !== undefined && z.string().safeParse(value).success) {
       return value === foundValue;
     }
     return !!foundValue;
@@ -96,4 +125,8 @@ export const hasInputProperty = createActionPermissionRule({
 });
 
 export const scaffolderTemplateRules = { hasTag };
-export const scaffolderActionRules = { hasActionId, hasInputProperty };
+export const scaffolderActionRules = {
+  hasActionId,
+  hasNumberProperty,
+  hasStringProperty,
+};
