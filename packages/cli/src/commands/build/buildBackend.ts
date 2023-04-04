@@ -28,10 +28,11 @@ const SKELETON_FILE = 'skeleton.tar.gz';
 interface BuildBackendOptions {
   targetDir: string;
   skipBuildDependencies: boolean;
+  configPaths?: string[];
 }
 
 export async function buildBackend(options: BuildBackendOptions) {
-  const { targetDir, skipBuildDependencies } = options;
+  const { targetDir, skipBuildDependencies, configPaths } = options;
   const pkg = await fs.readJson(resolvePath(targetDir, 'package.json'));
 
   // We build the target package without generating type declarations.
@@ -45,6 +46,7 @@ export async function buildBackend(options: BuildBackendOptions) {
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
+      configPaths,
       buildDependencies: !skipBuildDependencies,
       buildExcludes: [pkg.name],
       parallelism: getEnvironmentParallelism(),
