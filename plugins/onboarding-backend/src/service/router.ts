@@ -56,7 +56,9 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, identity, database, config } = options;
-  const dbClient = await databaseConnection({ database } as any);
+  const dbClient = await databaseConnection({ database } as {
+    database: PluginDatabaseManager;
+  });
   dbClient
     .raw('select 1+1 as result')
     .then(() => {})
