@@ -61,6 +61,11 @@ type Options = {
   targetDir?: string;
 
   /**
+   * Configuration files to load during packaging.
+   */
+  configPaths?: string[];
+
+  /**
    * Files to copy into the target workspace.
    *
    * Defaults to ['yarn.lock', 'package.json'].
@@ -127,13 +132,18 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
+    const configPaths = options.configPaths ?? [];
 
     const toBuild = new Set(
       targets.map(_ => _.name).filter(name => !exclude.includes(name)),
     );
 
     const standardBuilds = new Array<BuildOptions>();
-    const customBuild = new Array<{ dir: string; name: string }>();
+    const customBuild = new Array<{
+      dir: string;
+      name: string;
+      args?: string[];
+    }>();
 
     for (const pkg of packages) {
       if (!toBuild.has(pkg.packageJson.name)) {
@@ -166,7 +176,10 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
-        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
+        const args = buildScript.includes('--config')
+          ? []
+          : configPaths.map(p => ['--config', p]).flat();
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name, args });
         continue;
       }
 
@@ -193,8 +206,8 @@ export async function createDistWorkspace(
     if (customBuild.length > 0) {
       await runParallelWorkers({
         items: customBuild,
-        worker: async ({ name, dir }) => {
-          await run('yarn', ['run', 'build'], {
+        worker: async ({ name, dir, args }) => {
+          await run('yarn', ['run', 'build', ...(args || [])], {
             cwd: dir,
             stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
             stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),

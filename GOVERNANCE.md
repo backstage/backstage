@@ -208,12 +208,12 @@ In all cases in this document where voting is mentioned, the voting process is a
 
 It is important for contributors to be and stay active to set an example and show commitment to the project. Inactivity is harmful to the project as it may lead to unexpected delays, contributor attrition, and a loss of trust in the project.
 
-Inactivity is measured by periods of no contributions for longer than:
+Inactivity is measured by periods of no contributions without explanation, for longer than:
 
 - Core Maintainer: 2 months
 - Project Area Maintainer: 4 months
 - Plugin Maintainer: 6 months
-- Organization Member: 8 months
+- Organization Member: 12 months
 
 Consequences of being inactive include:
 

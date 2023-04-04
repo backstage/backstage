@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import type { AppConfig } from '@backstage/config';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
@@ -178,6 +179,7 @@ export const lifecycleServiceFactory: () => ServiceFactory<
 export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
+  additionalConfigs?: AppConfig[];
 }): Promise<{
   config: Config;
 }>;

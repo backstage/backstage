@@ -18,13 +18,11 @@ import {
   EventsBackend,
   HttpPostIngressEventPublisher,
 } from '@backstage/plugin-events-backend';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
-  subscribers: EventSubscriber[],
 ): Promise<Router> {
   const eventsRouter = Router();
 
@@ -35,8 +33,8 @@ export default async function createPlugin(
   http.bind(eventsRouter);
 
   await new EventsBackend(env.logger)
+    .setEventBroker(env.eventBroker)
     .addPublishers(http)
-    .addSubscribers(subscribers)
     .start();
 
   return eventsRouter;

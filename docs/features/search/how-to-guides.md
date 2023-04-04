@@ -376,7 +376,7 @@ There are other more specific search results layout components that also accept 
 
 Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
 
-In packages/backend-next/index.ts
+In "packages/backend-next/index.ts", install the search plugin [1], the search engine [2], and the search collators/decorators modules [3]:
 
 ```ts
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
@@ -386,14 +386,27 @@ import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-m
 import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
 
 const backend = createBackend();
-// adding the search plugin to the backend
+// [1] adding the search plugin to the backend
 backend.add(searchPlugin());
-// (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
+// [2] (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
 backend.add(searchModuleElasticsearchEngine());
-// extending search with collator modules to start index documents, take in optional schedule parameters.
+// [3] extending search with collator modules to start index documents, take in optional schedule parameters.
 backend.add(searchModuleCatalogCollator());
 backend.add(searchModuleTechDocsCollator());
 backend.add(searchModuleExploreCollator());
 
 backend.start();
 ```
+
+To create your own collators/decorators modules, please use the [searchModuleCatalogCollator](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-catalog/src/alpha.ts#L49) as an example, we recommend that modules are separated by plugin packages (e.g. `search-backend-module-<plugin-id>`). You can also find the available search engines and collator/decorator modules documentation in the Alpha API reports:
+
+**Search engine modules**
+
+- Postgres [module](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-pg/alpha-api-report.md);
+- Elasticsearch [module](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-elasticsearch/alpha-api-report.md).
+
+**Search collator/decorator modules**
+
+- Catalog [module](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-catalog/alpha-api-report.md);
+- Explore [module](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-explore/alpha-api-report.md);
+- TechDocs [module](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-techdocs/alpha-api-report.md).

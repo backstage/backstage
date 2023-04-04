@@ -91,7 +91,7 @@ This enables decisions based on characteristics of the resource, but it's import
 Install the missing module:
 
 ```bash
-$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node zod@~3.18.0
+$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node zod
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:

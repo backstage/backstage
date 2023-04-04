@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useSearchModal } from './useSearchModal';
+import { BrowserRouter, Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 
 describe('useSearchModal', () => {
   it.each([
@@ -24,14 +26,18 @@ describe('useSearchModal', () => {
   ])(
     'should return the correct state when initial state is %s',
     (initialState, result) => {
-      const rendered = renderHook(() => useSearchModal(initialState));
+      const rendered = renderHook(() => useSearchModal(initialState), {
+        wrapper: BrowserRouter,
+      });
 
       expect(rendered.result.current.state).toEqual(result);
     },
   );
 
   it('should keep open forever to true once modal is toggled', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
     act(() => rendered.result.current.toggleModal());
 
     expect(rendered.result.current.state).toEqual({
@@ -47,7 +53,9 @@ describe('useSearchModal', () => {
   });
 
   it('should keep open to false if setOpen(false) is invoked on an initially closed modal', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
     act(() => rendered.result.current.setOpen(false));
     expect(rendered.result.current.state).toEqual({
       open: false,
@@ -56,7 +64,9 @@ describe('useSearchModal', () => {
   });
 
   it('should keep open forever to true even when the modal transition from opened to closed', () => {
-    const rendered = renderHook(() => useSearchModal());
+    const rendered = renderHook(() => useSearchModal(), {
+      wrapper: BrowserRouter,
+    });
 
     act(() => rendered.result.current.setOpen(true));
     expect(rendered.result.current.state).toEqual({
@@ -69,5 +79,22 @@ describe('useSearchModal', () => {
       open: true,
       hidden: true,
     });
+  });
+
+  it('should hide when location changes', () => {
+    const history = createMemoryHistory({ initialEntries: ['/'] });
+
+    const rendered = renderHook(() => useSearchModal(true), {
+      wrapper: ({ children }) => (
+        <Router location={history.location} navigator={history}>
+          {children}
+        </Router>
+      ),
+    });
+
+    expect(rendered.result.current.state.hidden).toBe(false);
+    act(() => history.push('/new/path'));
+    rendered.rerender();
+    expect(rendered.result.current.state.hidden).toBe(true);
   });
 });

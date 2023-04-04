@@ -16,7 +16,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 describe('AnnotateScmSlugEntityProcessor', () => {
   describe('github', () => {

@@ -13,6 +13,17 @@ import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
 // @public
+export class DefaultEventBroker implements EventBroker {
+  constructor(logger: Logger);
+  // (undocumented)
+  publish(params: EventParams): Promise<void>;
+  // (undocumented)
+  subscribe(
+    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
+  ): void;
+}
+
+// @public
 export class EventsBackend {
   constructor(logger: Logger);
   // (undocumented)
