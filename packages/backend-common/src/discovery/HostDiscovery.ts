@@ -37,7 +37,7 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
    *
-   * Can be overridden by in config by providing a target and corresponding plugin in `discovery.endpoint`.
+   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoint`.
    * eg.
    * ```yaml
    * discovery:
@@ -101,34 +101,31 @@ export class HostDiscovery implements PluginEndpointDiscovery {
       ?.get<Target>('target');
 
     if (!target) {
-      return null;
+      const baseUrl =
+        type === 'external' ? this.externalBaseUrl : this.internalBaseUrl;
+
+      return `${baseUrl}/${encodeURIComponent(pluginId)}`;
     }
 
     if (typeof target === 'string') {
-      return target.replace(/\{\{\s*pluginId\s*\}\}/, pluginId);
+      return target.replace(
+        /\{\{\s*pluginId\s*\}\}/g,
+        encodeURIComponent(pluginId),
+      );
     }
 
-    return target[type].replace(/\{\{\s*pluginId\s*\}\}/, pluginId);
+    return target[type].replace(
+      /\{\{\s*pluginId\s*\}\}/g,
+      encodeURIComponent(pluginId),
+    );
   }
 
   async getBaseUrl(pluginId: string): Promise<string> {
-    const target = this.getTargetFromConfig(pluginId, 'internal');
-
-    if (target) {
-      return target;
-    }
-
-    return `${this.internalBaseUrl}/${pluginId}`;
+    return this.getTargetFromConfig(pluginId, 'internal');
   }
 
   async getExternalBaseUrl(pluginId: string): Promise<string> {
-    const target = this.getTargetFromConfig(pluginId, 'external');
-
-    if (target) {
-      return target;
-    }
-
-    return `${this.externalBaseUrl}/${pluginId}`;
+    return this.getTargetFromConfig(pluginId, 'external');
   }
 }
 

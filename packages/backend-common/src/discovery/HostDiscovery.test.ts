@@ -207,4 +207,33 @@ describe('HostDiscovery', () => {
       'http://scaffolder-external:8080/api/scaffolder',
     );
   });
+
+  it('encodes the pluginId', async () => {
+    const discovery = HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+          listen: { port: 80, host: 'localhost' },
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: 'http://common-backend:8080/api/{{pluginId}}',
+              plugins: ['plugin/beta'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('plugin/beta')).resolves.toBe(
+      'http://common-backend:8080/api/plugin%2Fbeta',
+    );
+    await expect(discovery.getBaseUrl('plugin/alpha')).resolves.toBe(
+      'http://localhost:80/api/plugin%2Falpha',
+    );
+    await expect(discovery.getExternalBaseUrl('plugin/alpha')).resolves.toBe(
+      'http://localhost:40/api/plugin%2Falpha',
+    );
+  });
 });
