@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
+import { TestApiProvider } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
 
 import { MockPlaylistListProvider } from '../../testUtils';
 import { PlaylistList } from './PlaylistList';
+
+const mockConfigApi = {
+  getOptionalString: () => undefined,
+} as Partial<ConfigApi>;
 
 jest.mock('../PlaylistCard', () => ({
   PlaylistCard: ({ playlist }: { playlist: Playlist }) => (
@@ -30,9 +36,11 @@ jest.mock('../PlaylistCard', () => ({
 describe('<PlaylistList/>', () => {
   it('renders error on error', () => {
     const rendered = render(
-      <MockPlaylistListProvider value={{ error: new Error('Test Error') }}>
-        <PlaylistList />
-      </MockPlaylistListProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfigApi]]}>
+        <MockPlaylistListProvider value={{ error: new Error('Test Error') }}>
+          <PlaylistList />
+        </MockPlaylistListProvider>
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('Test Error')).toBeInTheDocument();
@@ -40,9 +48,11 @@ describe('<PlaylistList/>', () => {
 
   it('handles no playlists', () => {
     const rendered = render(
-      <MockPlaylistListProvider value={{ playlists: [] }}>
-        <PlaylistList />
-      </MockPlaylistListProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfigApi]]}>
+        <MockPlaylistListProvider value={{ playlists: [] }}>
+          <PlaylistList />
+        </MockPlaylistListProvider>
+      </TestApiProvider>,
     );
 
     expect(
@@ -52,32 +62,34 @@ describe('<PlaylistList/>', () => {
 
   it('renders playlists', () => {
     const rendered = render(
-      <MockPlaylistListProvider
-        value={{
-          playlists: [
-            {
-              id: 'id1',
-              name: 'playlist-1',
-              owner: 'group:default/some-owner',
-              public: true,
-              entities: 1,
-              followers: 2,
-              isFollowing: false,
-            },
-            {
-              id: 'id2',
-              name: 'playlist-2',
-              owner: 'group:default/another-owner',
-              public: true,
-              entities: 2,
-              followers: 1,
-              isFollowing: true,
-            },
-          ],
-        }}
-      >
-        <PlaylistList />
-      </MockPlaylistListProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfigApi]]}>
+        <MockPlaylistListProvider
+          value={{
+            playlists: [
+              {
+                id: 'id1',
+                name: 'playlist-1',
+                owner: 'group:default/some-owner',
+                public: true,
+                entities: 1,
+                followers: 2,
+                isFollowing: false,
+              },
+              {
+                id: 'id2',
+                name: 'playlist-2',
+                owner: 'group:default/another-owner',
+                public: true,
+                entities: 2,
+                followers: 1,
+                isFollowing: true,
+              },
+            ],
+          }}
+        >
+          <PlaylistList />
+        </MockPlaylistListProvider>
+      </TestApiProvider>,
     );
 
     expect(rendered.getByText('playlist-1')).toBeInTheDocument();

@@ -42,6 +42,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "lodash": "^4.17.21",
+    "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "react-hook-form": "^7.13.0",
     "react-use": "^17.2.4"
@@ -68,6 +69,8 @@
     "swr": "^2.0.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

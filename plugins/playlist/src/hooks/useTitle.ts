@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export * from './usePlaylistList';
-export * from './useTitle';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import pluralize from 'pluralize';
+
+interface UseTitleOptions {
+  pluralize?: boolean;
+  lowerCase?: boolean;
+}
+
+export function useTitle(opts: UseTitleOptions) {
+  const configApi = useApi(configApiRef);
+  let title = configApi.getOptionalString('playlist.title') ?? 'Playlist';
+
+  if (opts.pluralize) {
+    title = pluralize(title);
+  }
+
+  return opts.lowerCase ? title.toLocaleLowerCase('en-US') : title;
+}
