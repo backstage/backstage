@@ -3644,7 +3644,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-client@^1.4.0, @backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
+"@backstage/catalog-client@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@backstage/catalog-client@npm:1.4.0"
+  dependencies:
+    "@backstage/catalog-model": ^1.2.1
+    "@backstage/errors": ^1.1.5
+    cross-fetch: ^3.1.5
+  checksum: 8ffa95d74b2be83247beafce3aebe06cb688b018ada8ce4364b48ca09500293b1057cb48b90650a44b6252775bc3e09eeafcef79b8d8db4114271f8ec31bec80
+  languageName: node
+  linkType: hard
+
+"@backstage/catalog-client@workspace:^, @backstage/catalog-client@workspace:packages/catalog-client":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-client@workspace:packages/catalog-client"
   dependencies:
