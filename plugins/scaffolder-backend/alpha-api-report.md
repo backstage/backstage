@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
+import { JsonObject } from '@backstage/types';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -20,20 +21,53 @@ import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 // @alpha
 export const catalogModuleTemplateKind: () => BackendFeature;
 
+// @alpha (undocumented)
+export const createScaffolderActionConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-action'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
+) => ConditionalPolicyDecision;
+
 // @alpha
-export const createScaffolderConditionalDecision: (
+export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha
-export const scaffolderConditions: Conditions<{
-  hasTag: PermissionRule<
-    TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
-    {},
-    'scaffolder-template',
+export const scaffolderActionConditions: Conditions<{
+  hasActionId: PermissionRule<
     {
-      tag: string;
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      actionId: string;
+    }
+  >;
+  hasNumberProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      value: number;
+      key: string;
+    }
+  >;
+  hasStringProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      value: string;
+      key: string;
     }
   >;
 }>;
@@ -51,6 +85,18 @@ export type ScaffolderPluginOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
+
+// @alpha
+export const scaffolderTemplateConditions: Conditions<{
+  hasTag: PermissionRule<
+    TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+    {},
+    'scaffolder-template',
+    {
+      tag: string;
+    }
+  >;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```
