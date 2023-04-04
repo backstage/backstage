@@ -25,7 +25,6 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "@types/bcrypt": "^5.0.0",
     "@types/express": "*",
     "axios": "^1.3.4",
     "bcrypt": "^5.1.0",
@@ -39,6 +38,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@types/bcrypt": "^5.0.0",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"

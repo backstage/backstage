@@ -27,7 +27,7 @@ type Options = {
 };
 export const databaseConnection = async (options: Options) => {
   const { database } = options;
-  const client = await database.getClient();
+  const client = await database?.getClient();
   if (!database.migrations?.skip) {
     await client.migrate.latest({
       directory: migrationsDir,
