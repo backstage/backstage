@@ -15,12 +15,12 @@
  */
 
 import chalk from 'chalk';
-import inquirer from 'inquirer';
+import inquirer, { Answers } from 'inquirer';
 import { AnyFactory, Prompt } from './types';
 import * as factories from './factories';
 import partition from 'lodash/partition';
 
-function applyPromptMessageTransforms<T>(
+function applyPromptMessageTransforms<T extends Answers>(
   prompt: Prompt<T>,
   transforms: {
     message: (msg: string) => string;

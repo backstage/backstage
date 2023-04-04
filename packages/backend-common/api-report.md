@@ -6,6 +6,7 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
+import { AppConfig } from '@backstage/config';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
@@ -533,6 +534,7 @@ export const legacyPlugin: (
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
+  additionalConfig?: AppConfig;
   argv: string[];
 }): Promise<Config>;
 

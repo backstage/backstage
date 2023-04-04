@@ -186,7 +186,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
             </Grid>
           </Grid>
           <Grid item xs>
-            <SearchResult onClick={toggleModal}>
+            <SearchResult>
               <CatalogSearchResultListItem icon={<CatalogIcon />} />
               <TechDocsSearchResultListItem icon={<DocsIcon />} />
               <ToolSearchResultListItem icon={<BuildIcon />} />
