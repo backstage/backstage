@@ -51,6 +51,7 @@ import { createDefaultFilters } from '../../lib/templating/filters';
 import {
   AuthorizeResult,
   PermissionEvaluator,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
@@ -212,6 +213,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     renderTemplate: (template: string, values: unknown) => string,
     taskTrack: TaskTrackType,
     workspacePath: string,
+    decision: PolicyDecision,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
 
@@ -295,17 +297,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
-      const [decision] =
-        (await this.options.permissionApi?.authorizeConditional(
-          [{ permission: actionExecutePermission }],
-          { token: task.secrets?.backstageToken },
-        )) || [{ result: AuthorizeResult.ALLOW }];
-
       if (!isActionAuthorized(decision, { action: action.id, input })) {
         throw new InputError(
           `Unauthorized action: ${
             action.id
-          }. The input is not allowed. Input: ${JSON.stringify(
+          }. The action is not allowed. Input: ${JSON.stringify(
             input,
             null,
             2,
@@ -387,6 +383,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         user: task.spec.user,
       };
 
+      const [decision]: PolicyDecision[] =
+        this.options.permissionApi && task.spec.steps.length
+          ? await this.options.permissionApi.authorizeConditional(
+              [{ permission: actionExecutePermission }],
+              { token: task.secrets?.backstageToken },
+            )
+          : [{ result: AuthorizeResult.ALLOW }];
+
       for (const step of task.spec.steps) {
         await this.executeStep(
           task,
@@ -395,6 +399,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           renderTemplate,
           taskTrack,
           workspacePath,
+          decision,
         );
       }
 
