@@ -307,7 +307,7 @@ export async function initRepoPushAndProtect(
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 
-  const commitHash = await initRepoAndPush({
+  const { commitHash } = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
     defaultBranch,
