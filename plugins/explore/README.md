@@ -117,10 +117,10 @@ export const ExplorePage = () => {
       subtitle="Browse our ecosystem"
     >
       <ExploreLayout.Route path="domains" title="Domains">
-        <EntityExplorerContent kind="domain" />
+        <CatalogKindExploreContent kind="domain" />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="systems" title="Systems">
-        <EntityExplorerContent kind="system" />
+        <CatalogKindExploreContent kind="system" />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="inner-source" title="InnerSource">
         <AcmeInnserSourceExplorerContent />
