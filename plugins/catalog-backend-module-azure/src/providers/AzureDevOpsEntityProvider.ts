@@ -20,9 +20,9 @@ import { AzureIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { readAzureDevOpsConfigs } from './config';
 import { Logger } from 'winston';
 import { AzureDevOpsConfig } from './types';

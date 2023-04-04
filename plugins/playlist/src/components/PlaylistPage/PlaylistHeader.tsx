@@ -45,6 +45,7 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
+import { useTitle } from '../../hooks';
 
 const useStyles = makeStyles({
   buttonWrapper: {
@@ -109,6 +110,11 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
     }
   }, [playlistApi]);
 
+  const singularTitle = useTitle({
+    pluralize: false,
+    lowerCase: false,
+  });
+
   return (
     <Header
       type={!playlist.public ? 'private' : undefined}
@@ -143,7 +149,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
             onClick: () => setOpenEditDialog(true),
           },
           {
-            label: 'Delete Playlist',
+            label: `Delete ${singularTitle}`,
             icon: <DeleteIcon />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),

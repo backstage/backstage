@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { playlistApiRef } from '../../api';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
+import { useTitle } from '../../hooks';
 
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
@@ -55,13 +56,18 @@ export const CreatePlaylistButton = () => {
     [errorApi, navigate, playlistApi, playlistRoute],
   );
 
+  const singularTitle = useTitle({
+    pluralize: false,
+    lowerCase: false,
+  });
+
   return (
     <>
       {isXSScreen ? (
         <IconButton
           disabled={!allowed}
           color="primary"
-          title="Create Playlist"
+          title={`Create ${singularTitle}`}
           size="small"
           onClick={() => setOpenDialog(true)}
         >
@@ -74,7 +80,7 @@ export const CreatePlaylistButton = () => {
           color="primary"
           onClick={() => setOpenDialog(true)}
         >
-          Create Playlist
+          Create {singularTitle}
         </Button>
       )}
       <PlaylistEditDialog

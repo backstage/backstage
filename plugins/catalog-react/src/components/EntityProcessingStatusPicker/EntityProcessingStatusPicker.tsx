@@ -91,6 +91,7 @@ export const EntityProcessingStatusPicker = () => {
                   checked={selected}
                 />
               }
+              onClick={event => event.preventDefault()}
               label={option}
             />
           )}

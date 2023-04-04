@@ -23,18 +23,24 @@ import {
 } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 
-import { usePlaylistList } from '../../hooks';
+import { useTitle, usePlaylistList } from '../../hooks';
 import { PlaylistCard } from '../PlaylistCard';
 
 export const PlaylistList = () => {
   const { loading, error, playlists } = usePlaylistList();
+  const pluralTitleLowerCase = useTitle({
+    pluralize: true,
+    lowerCase: true,
+  });
 
   return (
     <>
       {loading && <Progress />}
 
       {error && (
-        <WarningPanel title="Oops! Something went wrong loading playlists">
+        <WarningPanel
+          title={`Oops! Something went wrong loading ${pluralTitleLowerCase}`}
+        >
           {error.message}
         </WarningPanel>
       )}

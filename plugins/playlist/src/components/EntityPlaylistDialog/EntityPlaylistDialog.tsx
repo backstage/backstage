@@ -51,6 +51,7 @@ import { useNavigate } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
+import { useTitle } from '../../hooks';
 import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 
@@ -104,6 +105,19 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
     [playlistApi],
   );
 
+  const singularTitle = useTitle({
+    pluralize: true,
+    lowerCase: false,
+  });
+  const singularTitleLowerCase = useTitle({
+    pluralize: false,
+    lowerCase: true,
+  });
+  const pluralTitleLowerCase = useTitle({
+    pluralize: true,
+    lowerCase: true,
+  });
+
   useEffect(() => {
     if (open) {
       loadPlaylists();
@@ -120,12 +134,19 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         navigate(playlistRoute({ playlistId }));
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to playlist: ${e}`,
+          message: `Failed to add entity to ${singularTitleLowerCase}: ${e}`,
           severity: 'error',
         });
       }
     },
-    [alertApi, entity, navigate, playlistApi, playlistRoute],
+    [
+      alertApi,
+      entity,
+      navigate,
+      playlistApi,
+      playlistRoute,
+      singularTitleLowerCase,
+    ],
   );
 
   const [{ loading: addEntityLoading }, addToPlaylist] = useAsyncFn(
@@ -141,12 +162,12 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         });
       } catch (e) {
         alertApi.post({
-          message: `Failed to add entity to playlist: ${e}`,
+          message: `Failed to add entity to ${singularTitleLowerCase}: ${e}`,
           severity: 'error',
         });
       }
     },
-    [alertApi, closeDialog, entity, playlistApi],
+    [alertApi, closeDialog, entity, playlistApi, singularTitleLowerCase],
   );
 
   return (
@@ -160,7 +181,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
       >
         {(loading || addEntityLoading) && <LinearProgress />}
         <DialogTitle className={classes.dialogTitle}>
-          Add to Playlist
+          Add to {singularTitle}
           <TextField
             fullWidth
             data-testid="entity-playlist-dialog-search"
@@ -191,7 +212,10 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
           {error && (
-            <ResponseErrorPanel title="Error loading playlists" error={error} />
+            <ResponseErrorPanel
+              title={`Error loading ${pluralTitleLowerCase}`}
+              error={error}
+            />
           )}
           {playlists && entity && (
             <List>
@@ -205,7 +229,9 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
                   <ListItemIcon>
                     <PlaylistAddIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Create new playlist" />
+                  <ListItemText
+                    primary={`Create new ${singularTitleLowerCase}`}
+                  />
                 </ListItem>
               )}
               {playlists
