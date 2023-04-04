@@ -278,7 +278,7 @@
           "auth/auth0/provider",
           "auth/atlassian/provider",
           "auth/microsoft/provider",
-          "auth/microsoft/easyauth",
+          "auth/microsoft/easy-auth",
           "auth/bitbucket/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
