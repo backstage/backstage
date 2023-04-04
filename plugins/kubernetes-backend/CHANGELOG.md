@@ -1,5 +1,27 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.10.0-next.2
+
+### Minor Changes
+
+- e6c7c850129: Plugins that instantiate the `KubernetesProxy` must now provide a parameter of the type `KubernetesProxyOptions` which includes providing a `KubernetesAuthTranslator`. The `KubernetesBuilder` now builds its own `KubernetesAuthTranslatorMap` that it provides to the `KubernetesProxy`. The `DispatchingKubernetesAuthTranslator` expects a `KubernetesTranslatorMap` to be provided as a parameter. The `KubernetesBuilder` now has a method called `setAuthTranslatorMap` which allows integrators to bring their own `KubernetesAuthTranslator's` to the `KubernetesPlugin`.
+
+### Patch Changes
+
+- 76e8f08fa24: fix localKubectlProxy auth provider fetching
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-catalog-node@1.3.5-next.2
+  - @backstage/plugin-kubernetes-common@0.6.2-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
 ## 0.10.0-next.1
 
 ### Minor Changes

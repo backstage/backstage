@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.22.6-next.2
+
+### Patch Changes
+
+- 8075b67e64c: When building a backend package with dependencies any `--config <path>` options will now be forwarded to any dependent app package builds, unless the build script in the app package already contains a `--config` option.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
 ## 0.22.6-next.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "1.5.1-next.0",
+  "version": "1.5.1-next.1",
   "publishConfig": {
     "access": "public"
   },
