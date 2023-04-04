@@ -13,15 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRootLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getRootLogger,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import yn from 'yn';
 import { startStandaloneServer } from './service/standaloneServer';
 
 const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
+function createDatabase(): PluginDatabaseManager {
+  return DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('onboarding');
+}
 
-startStandaloneServer({ port, enableCors, logger }).catch(err => {
+startStandaloneServer({
+  port,
+  enableCors,
+  logger,
+  database: createDatabase(),
+}).catch(err => {
   logger.error(err);
   process.exit(1);
 });

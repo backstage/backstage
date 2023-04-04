@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -21,6 +24,7 @@ import { createRouter } from './router';
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
+  database: PluginDatabaseManager;
   logger: Logger;
 }
 
@@ -31,6 +35,7 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    database: options.database,
   });
 
   let service = createServiceBuilder(module)

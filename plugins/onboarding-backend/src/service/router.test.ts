@@ -34,7 +34,7 @@ function createDatabase(): PluginDatabaseManager {
         },
       },
     }),
-  ).forPlugin('code-coverage');
+  ).forPlugin('onboarding');
 }
 describe('createRouter', () => {
   let app: express.Express;
