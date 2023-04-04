@@ -57,7 +57,7 @@ describe('<Select />', () => {
 
   it('display the placeholder value when selected props updated to undefined', async () => {
     const { getByTestId, rerender } = render(
-      <Select {...minProps} selected="test 1" />,
+      <Select {...minProps} selected="test_1" />,
     );
 
     expect(getByTestId('select').textContent).toBe('test 1');
