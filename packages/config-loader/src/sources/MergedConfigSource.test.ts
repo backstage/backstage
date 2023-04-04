@@ -74,7 +74,7 @@ describe('MergedConfigSource', () => {
 
     await expect(first).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           { data: { a: 1 }, context: 'a' },
           { data: { b: 1 }, context: 'b' },
         ],
@@ -86,7 +86,7 @@ describe('MergedConfigSource', () => {
 
     await expect(it.next()).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           { data: { a: 1 }, context: 'a' },
           { data: { b: 2 }, context: 'b' },
         ],

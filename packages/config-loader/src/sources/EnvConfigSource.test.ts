@@ -29,14 +29,14 @@ describe('EnvConfigSource', () => {
   it('should return empty config for empty env', async () => {
     const source = EnvConfigSource.create({ env: {} });
 
-    await expect(readAll(source)).resolves.toEqual([{ data: [] }]);
+    await expect(readAll(source)).resolves.toEqual([{ configs: [] }]);
   });
 
   it('should forward config values', async () => {
     const source = EnvConfigSource.create({ env: { APP_CONFIG_foo: 'bar' } });
 
     await expect(readAll(source)).resolves.toEqual([
-      { data: [{ context: 'env', data: { foo: 'bar' } }] },
+      { configs: [{ context: 'env', data: { foo: 'bar' } }] },
     ]);
   });
 });

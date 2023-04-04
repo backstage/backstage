@@ -34,7 +34,7 @@ describe('MutableConfigSource', () => {
     source.setData({ a: 1 });
     await expect(first).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           {
             data: { a: 1 },
             context: 'mutable-config',
@@ -52,7 +52,7 @@ describe('MutableConfigSource', () => {
     const it = source.readConfigData();
     await expect(it.next()).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           {
             data: { a: 1 },
             context: 'mutable-config',
@@ -66,7 +66,7 @@ describe('MutableConfigSource', () => {
     source.setData({ a: 2 });
     await expect(next2).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           {
             data: { a: 2 },
             context: 'mutable-config',
@@ -80,7 +80,7 @@ describe('MutableConfigSource', () => {
     source.setData({ a: 3 });
     await expect(next3).resolves.toEqual({
       value: {
-        data: [
+        configs: [
           {
             data: { a: 3 },
             context: 'mutable-config',
@@ -107,8 +107,8 @@ describe('MutableConfigSource', () => {
     const source = MutableConfigSource.create({ data: { a: 1 } });
     const resultsPromise = readAll(source);
 
-    for await (const { configs: data } of source.readConfigData()) {
-      const a = data[0].data.a as number;
+    for await (const { configs } of source.readConfigData()) {
+      const a = configs[0].data.a as number;
       if (a < 3) {
         source.setData({ a: a + 1 });
       } else {
