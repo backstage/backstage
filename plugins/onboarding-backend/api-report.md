@@ -17,7 +17,7 @@ export interface RouterOptions {
   // (undocumented)
   config?: Config;
   // (undocumented)
-  database?: PluginDatabaseManager;
+  database: PluginDatabaseManager;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
