@@ -4,17 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 // @alpha
-export const permissionPlugin: (
-  options: PermissionPluginOptions,
-) => BackendFeature;
+export const permissionModuleAllowAllPolicy: () => BackendFeature;
 
 // @alpha
-export type PermissionPluginOptions = {
-  policy: PermissionPolicy;
-};
+export const permissionPlugin: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```
