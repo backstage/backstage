@@ -3,6 +3,7 @@
 ---
 
 - Finished TODO to remove code snippet that was supposed to be removed in April 2022
+- Removed test for the TODO code snippet
 - Refactored `parsePagination()`, `stringifyPagination()`, and `addCondition()` to be more readable
 - In `parseFilter()`, the `isNegationEntityFilter` check is earlier for faster recursion
 
@@ -180,4 +181,76 @@ index ba165f96af..2023c19e13 100644
      return {
        entities,
        pageInfo,
+```
+
+```diff
+diff --git a/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts b/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
+index 08ae295834..31d4d06971 100644
+--- a/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
++++ b/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
+@@ -507,64 +507,6 @@ describe('DefaultEntitiesCatalog', () => {
+       },
+     );
+
+-    it.each(databases.eachSupportedId())(
+-      'should return both target and targetRef for entities',
+-      async databaseId => {
+-        await createDatabase(databaseId);
+-        await addEntity(
+-          {
+-            apiVersion: 'a',
+-            kind: 'k',
+-            metadata: { name: 'one' },
+-            spec: {},
+-            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
+-          },
+-          [],
+-        );
+-        await addEntity(
+-          {
+-            apiVersion: 'a',
+-            kind: 'k',
+-            metadata: { name: 'two' },
+-            spec: {},
+-            relations: [
+-              {
+-                type: 'r',
+-                target: { kind: 'x', namespace: 'y', name: 'z' },
+-              } as any,
+-            ],
+-          },
+-          [],
+-        );
+-        const catalog = new DefaultEntitiesCatalog({
+-          database: knex,
+-          logger: getVoidLogger(),
+-          stitcher,
+-        });
+-
+-        const { entities } = await catalog.entities();
+-
+-        expect(
+-          entities.find(e => e.metadata.name === 'one')!.relations,
+-        ).toEqual([
+-          {
+-            type: 'r',
+-            targetRef: 'x:y/z',
+-            target: { kind: 'x', namespace: 'y', name: 'z' },
+-          },
+-        ]);
+-        expect(
+-          entities.find(e => e.metadata.name === 'two')!.relations,
+-        ).toEqual([
+-          {
+-            type: 'r',
+-            targetRef: 'x:y/z',
+-            target: { kind: 'x', namespace: 'y', name: 'z' },
+-          },
+-        ]);
+-      },
+-    );
+-
+     it.each(databases.eachSupportedId())(
+       'can order and combine with filtering, %p',
+       async databaseId => {
 ```
