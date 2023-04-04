@@ -59,7 +59,7 @@ export const TemplateList = ({
   const templateEntities = entities.filter(isTemplateEntityV1beta3);
   const maybeFilteredEntities = (
     group ? templateEntities.filter(group.filter) : templateEntities
-  ).filter(e => (templateFilter ? !templateFilter(e) : true));
+  ).filter(e => (templateFilter ? templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {
