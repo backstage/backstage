@@ -107,7 +107,7 @@ const useStyles = makeStyles<
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
     padding: '0.25rem',
-    color: theme.palette.common.white,
+    color: ({ fontColor }) => fontColor,
   },
 }));
 
