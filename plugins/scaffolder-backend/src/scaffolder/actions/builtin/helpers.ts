@@ -297,6 +297,6 @@ export function getGitCommitMessage(
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 }
 
-export function familiarizeEntityName(name: string): string {
+export function entityRefToName(name: string): string {
   return name.replace(/^.*[:/]/g, '');
 }

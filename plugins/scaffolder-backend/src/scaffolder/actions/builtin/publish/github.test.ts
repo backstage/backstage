@@ -29,7 +29,7 @@ import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
-  familiarizeEntityName,
+  entityRefToName,
   initRepoAndPush,
 } from '../helpers';
 import { createPublishGithubAction } from './github';
@@ -69,7 +69,7 @@ describe('publish:github', () => {
     },
   });
 
-  const { familiarizeEntityName: realFamiliarizeEntityName } =
+  const { entityRefToName: realFamiliarizeEntityName } =
     jest.requireActual('../helpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
@@ -99,7 +99,7 @@ describe('publish:github', () => {
     });
 
     // restore real implmentation
-    (familiarizeEntityName as jest.Mock).mockImplementation(
+    (entityRefToName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
   });
@@ -709,8 +709,8 @@ describe('publish:github', () => {
       permission: 'push',
     });
 
-    expect(familiarizeEntityName).toHaveBeenCalledWith('user:robot-1');
-    expect(familiarizeEntityName).toHaveBeenCalledWith('group:default/robot-2');
+    expect(entityRefToName).toHaveBeenCalledWith('user:robot-1');
+    expect(entityRefToName).toHaveBeenCalledWith('group:default/robot-2');
   });
 
   it('should ignore failures when adding multiple collaborators', async () => {

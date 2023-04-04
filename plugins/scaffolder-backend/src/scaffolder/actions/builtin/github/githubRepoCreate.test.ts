@@ -28,7 +28,7 @@ import {
 import { when } from 'jest-when';
 import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
-import { familiarizeEntityName } from '../helpers';
+import { entityRefToName } from '../helpers';
 
 const mockOctokit = {
   rest: {
@@ -90,7 +90,7 @@ describe('github:repo:create', () => {
       integrations,
       githubCredentialsProvider,
     });
-    (familiarizeEntityName as jest.Mock).mockImplementation((s: string) => s);
+    (entityRefToName as jest.Mock).mockImplementation((s: string) => s);
   });
 
   afterEach(jest.resetAllMocks);
