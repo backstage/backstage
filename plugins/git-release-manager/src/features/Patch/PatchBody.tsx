@@ -182,7 +182,7 @@ export const PatchBody = ({
                   // The selected patch commit's sha is included in the commit message,
                   // which means it's part of a previous patch
                   releaseBranchCommit.commit.message.includes(
-                    getPatchCommitSuffix({ commitHash: commit.sha }),
+                    getPatchCommitSuffix({ commitSha: commit.sha }),
                   ),
               );
             const hasNoParent = !commit.firstParentSha;
