@@ -27,8 +27,12 @@
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-permission-backend": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
