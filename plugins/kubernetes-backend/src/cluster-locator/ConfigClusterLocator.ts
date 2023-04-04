@@ -51,6 +51,11 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
         if (c.has('dashboardParameters')) {
           clusterDetails.dashboardParameters = c.get('dashboardParameters');
         }
+        if (c.getOptionalString('customResourceProfile')) {
+          clusterDetails.customResourceProfile = c.getOptionalString(
+            'customResourceProfile',
+          );
+        }
 
         switch (authProvider) {
           case 'google': {

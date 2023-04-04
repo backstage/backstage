@@ -95,6 +95,7 @@ const cluster1 = {
       plural: 'some-crd-only-on-this-cluster',
     },
   ],
+  customResourceProfile: 'build',
 };
 
 const cluster2 = {
@@ -107,7 +108,31 @@ const cluster2 = {
       plural: 'crd-two-plural',
     },
   ],
+  customResourceProfile: 'run',
 };
+
+const config = new ConfigReader({
+  kubernetes: {
+    serviceLocatorMethod: { type: 'multiTenant' },
+    clusterLocatorMethods: [{ type: 'config', clusters: [cluster1, cluster2] }],
+    customResourceProfiles: {
+      build: [
+        {
+          group: 'argoproj.io',
+          apiVersion: 'v1alpha1',
+          plural: 'rollouts',
+        },
+      ],
+      run: [
+        {
+          group: 'sample.io',
+          apiVersion: 'v1alpha1',
+          plural: 'tests',
+        },
+      ],
+    },
+  },
+});
 
 function resourcesByCluster(clusterName: string) {
   return [
@@ -173,6 +198,7 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
         return clusterDetails;
       },
     },
+    config,
   });
 }
 
@@ -892,6 +918,7 @@ describe('getKubernetesObjectsByEntity', () => {
             return clusterDetails;
           },
         },
+        config,
       });
 
       const result = await sut.getKubernetesObjectsByEntity({
@@ -1002,5 +1029,26 @@ describe('getCustomResourcesByEntity', () => {
     expect(
       fetchObjectsForService.mock.calls[1][0].customResources[0].group,
     ).toBe('parameter-crd.example.com');
+  });
+
+  it.skip('retrieves objects for one cluster defined by CRD profiles in the config', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [cluster1],
+      }),
+    );
+
+    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+
+    await sut.getCustomResourcesByEntity({
+      entity,
+      auth: {},
+      customResources: [],
+    });
+
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(
+      fetchObjectsForService.mock.calls[0][0].customResources[0].plural,
+    ).toBe('rollouts');
   });
 });

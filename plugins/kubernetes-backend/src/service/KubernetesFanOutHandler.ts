@@ -47,6 +47,7 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
+import { Config } from '@backstage/config';
 
 const isRejected = (
   input: PromiseSettledResult<unknown>,
@@ -197,6 +198,7 @@ export class KubernetesFanOutHandler {
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
   private readonly authTranslator: KubernetesAuthTranslator;
+  private readonly config: Config;
 
   constructor({
     logger,
@@ -205,6 +207,7 @@ export class KubernetesFanOutHandler {
     customResources,
     objectTypesToFetch = DEFAULT_OBJECTS,
     authTranslator,
+    config,
   }: KubernetesFanOutHandlerOptions) {
     this.logger = logger;
     this.fetcher = fetcher;
@@ -212,6 +215,7 @@ export class KubernetesFanOutHandler {
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
     this.authTranslator = authTranslator;
+    this.config = config;
   }
 
   async getCustomResourcesByEntity({
@@ -267,6 +271,22 @@ export class KubernetesFanOutHandler {
 
     return Promise.all(
       clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
+        let profileCustomResources: CustomResource[] = [];
+        if (clusterDetailsItem.customResourceProfile) {
+          profileCustomResources = this.config
+            .getConfig(`kubernetes.customResourceProfiles`)
+            .getConfigArray(`${clusterDetailsItem.customResourceProfile}`)
+            .map(
+              c =>
+                ({
+                  group: c.getString('group'),
+                  apiVersion: c.getString('apiVersion'),
+                  plural: c.getString('plural'),
+                } as CustomResource),
+            );
+        }
+
+        // console.log('im here');
         return this.fetcher
           .fetchObjectsForService({
             serviceId: entityName,
@@ -276,7 +296,8 @@ export class KubernetesFanOutHandler {
             customResources: (
               customResources ||
               clusterDetailsItem.customResources ||
-              this.customResources
+              this.customResources ||
+              profileCustomResources
             ).map(c => ({
               ...c,
               objectType: 'customresources',

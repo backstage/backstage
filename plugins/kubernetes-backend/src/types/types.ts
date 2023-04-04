@@ -209,6 +209,12 @@ export interface ClusterDetails {
    * Kubernetes resources.
    */
   customResources?: CustomResourceMatcher[];
+  /**
+   * Specifies which profile name to use when returning an entity's
+   * Kubernetes resources. A profile is a name given to a CustomResourceMatcher[].
+   * @see CustomResourceMatcher
+   */
+  customResourceProfile?: string;
 }
 
 /**
@@ -249,6 +255,7 @@ export interface KubernetesObjectsProviderOptions {
   serviceLocator: KubernetesServiceLocator;
   customResources: CustomResource[];
   objectTypesToFetch?: ObjectToFetch[];
+  config: Config;
 }
 
 /**
