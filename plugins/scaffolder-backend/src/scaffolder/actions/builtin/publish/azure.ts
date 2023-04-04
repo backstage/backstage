@@ -183,7 +183,7 @@ export function createPublishAzureAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         defaultBranch,
@@ -198,6 +198,7 @@ export function createPublishAzureAction(options: {
         gitAuthorInfo,
       });
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('repositoryId', repositoryId);

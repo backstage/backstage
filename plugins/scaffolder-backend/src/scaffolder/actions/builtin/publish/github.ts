@@ -236,7 +236,7 @@ export function createPublishGithubAction(options: {
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
-      await initRepoPushAndProtect(
+      const commitResult = await initRepoPushAndProtect(
         remoteUrl,
         octokitOptions.auth,
         ctx.workspacePath,
@@ -263,6 +263,7 @@ export function createPublishGithubAction(options: {
         requiredCommitSigning,
       );
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

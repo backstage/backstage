@@ -82,7 +82,7 @@
     "fs-extra": "10.1.0",
     "git-url-parse": "^13.0.0",
     "helmet": "^6.0.0",
-    "isomorphic-git": "^1.8.0",
+    "isomorphic-git": "^1.21.0",
     "jose": "^4.6.0",
     "keyv": "^4.5.2",
     "knex": "^2.0.0",

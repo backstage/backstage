@@ -212,7 +212,7 @@ export function createPublishGitlabAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
         defaultBranch,
@@ -227,6 +227,7 @@ export function createPublishGitlabAction(options: {
         gitAuthorInfo,
       });
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('projectId', projectId);

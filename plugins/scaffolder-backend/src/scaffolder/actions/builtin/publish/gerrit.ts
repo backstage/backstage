@@ -201,7 +201,7 @@ export function createPublishGerritAction(options: {
       };
 
       const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
         auth,
@@ -213,6 +213,7 @@ export function createPublishGerritAction(options: {
 
       const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });

@@ -391,7 +391,7 @@ export function createPublishBitbucketAction(options: {
         };
       }
 
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth,
@@ -407,6 +407,7 @@ export function createPublishBitbucketAction(options: {
         await performEnableLFS({ authorization, host, project, repo });
       }
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

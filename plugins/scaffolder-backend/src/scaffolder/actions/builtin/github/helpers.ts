@@ -293,7 +293,7 @@ export async function initRepoPushAndProtect(
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
-) {
+): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
       ? gitAuthorName
@@ -307,7 +307,7 @@ export async function initRepoPushAndProtect(
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 
-  await initRepoAndPush({
+  const commitHash = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
     defaultBranch,
@@ -346,6 +346,8 @@ export async function initRepoPushAndProtect(
       );
     }
   }
+
+  return { commitHash };
 }
 
 function extractCollaboratorName(
