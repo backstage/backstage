@@ -6374,6 +6374,7 @@ __metadata:
     classnames: ^2.2.6
     cross-fetch: ^3.1.5
     msw: ^1.0.0
+    pluralize: ^8.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
