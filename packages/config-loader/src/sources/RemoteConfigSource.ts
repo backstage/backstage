@@ -111,7 +111,9 @@ export class RemoteConfigSource implements ConfigSource {
           yield { configs: [{ data, context: this.#url }] };
         }
       } catch (error) {
-        console.error(`Failed to read config from ${this.#url}, ${error}`);
+        if (error.name !== 'AbortError') {
+          console.error(`Failed to read config from ${this.#url}, ${error}`);
+        }
       }
     }
   }
