@@ -9,7 +9,6 @@ import { Conditions } from '@backstage/plugin-permission-node';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TaskBroker } from '@backstage/plugin-scaffolder-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -24,9 +23,7 @@ export const catalogModuleTemplateKind: () => BackendFeature;
 // @alpha
 export const createScaffolderConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'scaffolder-template', PermissionRuleParams>
-  >,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-template'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha

@@ -136,6 +136,7 @@ export const createPublishGithubPullRequestAction = (
     token?: string;
     reviewers?: string[];
     teamReviewers?: string[];
+    commitMessage?: string;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -202,6 +203,11 @@ export const createPublishGithubPullRequestAction = (
             description:
               'The teams that will be added as reviewers to the pull request',
           },
+          commitMessage: {
+            type: 'string',
+            title: 'Commit Message',
+            description: 'The commit message for the pull request commit',
+          },
         },
       },
       output: {
@@ -233,6 +239,7 @@ export const createPublishGithubPullRequestAction = (
         token: providedToken,
         reviewers,
         teamReviewers,
+        commitMessage,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -298,7 +305,7 @@ export const createPublishGithubPullRequestAction = (
           changes: [
             {
               files,
-              commit: title,
+              commit: commitMessage ?? title,
             },
           ],
           body: description,

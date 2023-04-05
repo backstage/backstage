@@ -35,6 +35,8 @@ import { buildEntitySearch } from '../stitching/buildEntitySearch';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
 
+jest.setTimeout(60_000);
+
 describe('DefaultEntitiesCatalog', () => {
   let knex: Knex;
 
@@ -184,7 +186,6 @@ describe('DefaultEntitiesCatalog', () => {
           ]),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -200,7 +201,6 @@ describe('DefaultEntitiesCatalog', () => {
           catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -273,7 +273,6 @@ describe('DefaultEntitiesCatalog', () => {
           ]),
         );
       },
-      60_000,
     );
   });
 
@@ -313,7 +312,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity2);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -353,7 +351,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity1);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -427,7 +424,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities).toContainEqual(entity2);
         expect(entities).toContainEqual(entity4);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -473,7 +469,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities).toContainEqual(entity1);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -510,7 +505,6 @@ describe('DefaultEntitiesCatalog', () => {
 
         expect(entities.length).toBe(0);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -569,7 +563,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -665,7 +658,6 @@ describe('DefaultEntitiesCatalog', () => {
           }),
         ).resolves.toEqual(['n4', 'n3', 'n1', 'n2']);
       },
-      60_000,
     );
   });
 
@@ -722,7 +714,6 @@ describe('DefaultEntitiesCatalog', () => {
           'k:default/two',
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -767,7 +758,6 @@ describe('DefaultEntitiesCatalog', () => {
           null,
         ]);
       },
-      60_000,
     );
   });
 
@@ -1617,7 +1607,6 @@ describe('DefaultEntitiesCatalog', () => {
           new Set(['k:default/unrelated1', 'k:default/unrelated2']),
         );
       },
-      60_000,
     );
   });
 
@@ -1660,7 +1649,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -1711,7 +1699,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -1757,7 +1744,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
   });
 });

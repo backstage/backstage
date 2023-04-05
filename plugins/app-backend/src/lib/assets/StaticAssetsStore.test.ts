@@ -33,6 +33,8 @@ function createDatabaseManager(
   };
 }
 
+jest.setTimeout(60_000);
+
 describe('StaticAssetsStore', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -78,7 +80,6 @@ describe('StaticAssetsStore', () => {
         store.getAsset('does-not-exist.txt'),
       ).resolves.toBeUndefined();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -130,7 +131,6 @@ describe('StaticAssetsStore', () => {
       const sameBar = await store.getAsset('bar');
       expect(oldBar!.lastModifiedAt).toEqual(sameBar!.lastModifiedAt);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -172,6 +172,5 @@ describe('StaticAssetsStore', () => {
       await expect(store.getAsset('new')).resolves.toBeDefined();
       await expect(store.getAsset('old')).resolves.toBeUndefined();
     },
-    60_000,
   );
 });

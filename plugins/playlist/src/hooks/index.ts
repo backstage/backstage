@@ -15,3 +15,4 @@
  */
 
 export * from './usePlaylistList';
+export * from './useTitle';

@@ -168,6 +168,11 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
       getClustersByEntity,
     },
     customResources: customResources,
+    authTranslator: {
+      decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+        return clusterDetails;
+      },
+    },
   });
 }
 
@@ -882,6 +887,11 @@ describe('getKubernetesObjectsByEntity', () => {
             objectType: 'services',
           },
         ],
+        authTranslator: {
+          decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+            return clusterDetails;
+          },
+        },
       });
 
       const result = await sut.getKubernetesObjectsByEntity({

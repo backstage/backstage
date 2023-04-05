@@ -30,7 +30,6 @@ import {
   ServiceLocatorRequestContext,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
-import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 import {
   ClientContainerStatus,
   ClientCurrentResourceUsage,
@@ -48,7 +47,6 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
-import { Config } from '@backstage/config';
 
 const isRejected = (
   input: PromiseSettledResult<unknown>,
@@ -138,7 +136,9 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
 ];
 
 export interface KubernetesFanOutHandlerOptions
-  extends KubernetesObjectsProviderOptions {}
+  extends KubernetesObjectsProviderOptions {
+  authTranslator: KubernetesAuthTranslator;
+}
 
 export interface KubernetesRequestBody extends ObjectsByEntityRequest {}
 
@@ -196,24 +196,22 @@ export class KubernetesFanOutHandler {
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
-  private readonly authTranslators: Record<string, KubernetesAuthTranslator>;
-  private readonly config: Config;
+  private readonly authTranslator: KubernetesAuthTranslator;
 
   constructor({
-    config,
     logger,
     fetcher,
     serviceLocator,
     customResources,
     objectTypesToFetch = DEFAULT_OBJECTS,
+    authTranslator,
   }: KubernetesFanOutHandlerOptions) {
-    this.config = config;
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
-    this.authTranslators = {};
+    this.authTranslator = authTranslator;
   }
 
   async getCustomResourcesByEntity({
@@ -317,12 +315,7 @@ export class KubernetesFanOutHandler {
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     const promiseResults = await Promise.allSettled(
       clusterDetails.map(cd => {
-        const kubernetesAuthTranslator: KubernetesAuthTranslator =
-          this.getAuthTranslator(cd.authProvider);
-        return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
-          cd,
-          auth,
-        );
+        return this.authTranslator.decorateClusterDetailsWithAuth(cd, auth);
       }),
     );
 
@@ -396,21 +389,5 @@ export class KubernetesFanOutHandler {
 
     result.errors.push(...podMetrics.errors);
     return [result, podMetrics.responses as PodStatusFetchResponse[]];
-  }
-
-  private getAuthTranslator(provider: string): KubernetesAuthTranslator {
-    if (this.authTranslators[provider]) {
-      return this.authTranslators[provider];
-    }
-
-    this.authTranslators[provider] =
-      KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-        provider,
-        {
-          logger: this.logger,
-          config: this.config,
-        },
-      );
-    return this.authTranslators[provider];
   }
 }

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
 ## 0.2.18
 
 ### Patch Changes

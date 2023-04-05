@@ -95,6 +95,25 @@ export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
 // @public (undocumented)
 export const DEFAULT_OBJECTS: ObjectToFetch[];
 
+// @public
+export class DispatchingKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  constructor(options: DispatchingKubernetesAuthTranslatorOptions);
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    auth: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @public (undocumented)
+export type DispatchingKubernetesAuthTranslatorOptions = {
+  authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  };
+};
+
 // @public (undocumented)
 export interface FetchResponseWrapper {
   // (undocumented)
@@ -143,22 +162,14 @@ export interface KubernetesAuthTranslator {
 }
 
 // @public (undocumented)
-export class KubernetesAuthTranslatorGenerator {
-  // (undocumented)
-  static getKubernetesAuthTranslatorInstance(
-    authProvider: string,
-    options: {
-      logger: Logger;
-      config: Config;
-    },
-  ): KubernetesAuthTranslator;
-}
-
-// @public (undocumented)
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
   build(): KubernetesBuilderReturn;
+  // (undocumented)
+  protected buildAuthTranslatorMap(): {
+    [key: string]: KubernetesAuthTranslator;
+  };
   // (undocumented)
   protected buildClusterSupplier(
     refreshInterval: Duration,
@@ -206,6 +217,10 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
   // (undocumented)
+  protected getAuthTranslatorMap(): {
+    [key: string]: KubernetesAuthTranslator;
+  };
+  // (undocumented)
   protected getClusterSupplier(): KubernetesClustersSupplier;
   // (undocumented)
   protected getFetcher(): KubernetesFetcher;
@@ -224,6 +239,10 @@ export class KubernetesBuilder {
   protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
+  // (undocumented)
+  setAuthTranslatorMap(authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  }): void;
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
@@ -247,6 +266,9 @@ export type KubernetesBuilderReturn = Promise<{
   proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
+  authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  };
 }>;
 
 // @public
@@ -333,7 +355,7 @@ export type KubernetesObjectTypes =
 
 // @public
 export class KubernetesProxy {
-  constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
+  constructor(options: KubernetesProxyOptions);
   // (undocumented)
   createRequestHandler(
     options: KubernetesProxyCreateRequestHandlerOptions,
@@ -343,6 +365,13 @@ export class KubernetesProxy {
 // @public
 export type KubernetesProxyCreateRequestHandlerOptions = {
   permissionApi: PermissionEvaluator;
+};
+
+// @public
+export type KubernetesProxyOptions = {
+  logger: Logger;
+  clusterSupplier: KubernetesClustersSupplier;
+  authTranslator: KubernetesAuthTranslator;
 };
 
 // @public

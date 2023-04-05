@@ -18,15 +18,29 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import {
+  EventBroker,
+  EventParams,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { PluginEnvironment } from '../types';
 
-class DemoEventBasedEntityProvider implements EntityProvider, EventSubscriber {
-  constructor(
-    private readonly logger: Logger,
-    private readonly topics: string[],
-  ) {}
+export class DemoEventBasedEntityProvider
+  implements EntityProvider, EventSubscriber
+{
+  private readonly logger: Logger;
+  private readonly topics: string[];
+
+  constructor(opts: {
+    eventBroker: EventBroker;
+    logger: Logger;
+    topics: string[];
+  }) {
+    const { eventBroker, logger, topics } = opts;
+    this.logger = logger;
+    this.topics = topics;
+    eventBroker.subscribe(this);
+  }
 
   async onEvent(params: EventParams): Promise<void> {
     this.logger.info(
@@ -47,15 +61,4 @@ class DemoEventBasedEntityProvider implements EntityProvider, EventSubscriber {
   getProviderName(): string {
     return DemoEventBasedEntityProvider.name;
   }
-}
-
-export default async function createCatalogEventBasedProviders(
-  env: PluginEnvironment,
-): Promise<Array<EntityProvider & EventSubscriber>> {
-  const providers: Array<
-    (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-  > = [];
-  providers.push(new DemoEventBasedEntityProvider(env.logger, ['example']));
-  // add your event-based entity providers here
-  return providers.flat();
 }

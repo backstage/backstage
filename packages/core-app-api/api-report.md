@@ -116,9 +116,11 @@ export const ApiProvider: {
   (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
-      PropTypes.InferProps<{
-        get: PropTypes.Validator<(...args: any[]) => any>;
-      }>
+      NonNullable<
+        PropTypes.InferProps<{
+          get: PropTypes.Validator<(...args: any[]) => any>;
+        }>
+      >
     >;
     children: PropTypes.Requireable<PropTypes.ReactNodeLike>;
   };
@@ -441,7 +443,26 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 // @public
 export class MicrosoftAuth {
   // (undocumented)
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
+  // (undocumented)
+  getAccessToken(
+    scope?: string | string[],
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  // (undocumented)
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
 }
 
 // @public

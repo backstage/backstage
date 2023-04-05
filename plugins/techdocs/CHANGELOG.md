@@ -1,5 +1,47 @@
 # @backstage/plugin-techdocs
 
+## 1.6.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-react@1.1.12-next.2
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+  - @backstage/plugin-search-react@1.5.2-next.2
+  - @backstage/plugin-techdocs-react@1.1.5-next.2
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- 6c809d1a41c: Minor visual tweaks to adapt to changes in mkdocs-material v9
+- 847a1eee3da: Change anchor links color in Techdocs content
+
+  With the color (mkdocs supplied) used for anchor links the background and foreground colors do not have a sufficient contrast ratio. Using the link color from theme palette.
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/integration-react@1.1.12-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.5-next.1
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/plugin-search-react@1.5.2-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-search-common@1.2.3-next.0
+
 ## 1.6.1-next.0
 
 ### Patch Changes

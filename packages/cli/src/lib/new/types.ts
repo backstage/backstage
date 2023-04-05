@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DistinctQuestion } from 'inquirer';
+import { Answers, DistinctQuestion } from 'inquirer';
 
 export interface CreateContext {
   /** The package scope to use for new packages */
@@ -37,7 +37,9 @@ export interface CreateContext {
 
 export type AnyOptions = Record<string, string>;
 
-export type Prompt<TOptions> = DistinctQuestion<TOptions> & { name: string };
+export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
+  name: string;
+};
 
 export interface Factory<TOptions extends AnyOptions> {
   /**

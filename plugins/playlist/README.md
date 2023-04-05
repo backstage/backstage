@@ -131,6 +131,15 @@ const defaultEntityPage = (
 
 Note: the above only shows an example for the `defaultEntityPage` for a full example of this you can look at [this EntityPage](../../packages/app/src/components/catalog/EntityPage.tsx)
 
+## Custom Title
+
+You can define a custom title to be shown in all the components of this plugin to replace the default term "playlist" in the UI. To do this you just need to add some config in your **app-config.yaml**, here's an example:
+
+```yaml
+playlist:
+  title: Collection
+```
+
 ## Features
 
 ### View All Playlists
