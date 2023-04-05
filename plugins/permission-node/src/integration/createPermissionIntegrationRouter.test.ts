@@ -26,6 +26,7 @@ import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,
   createConditionAuthorizer,
+  OptionResources,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -91,20 +92,22 @@ const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptio
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
-const mockedResourceOptions = [
-  {
-    resourceType: 'test-resource',
-    permissions: [testPermission],
-    getResources: defaultMockedGetResources1,
-    rules: [testRule1, testRule2],
-  },
-  {
-    resourceType: 'test-resource-2',
-    permissions: [testPermission2],
-    getResources: defaultMockedGetResources2,
-    rules: [testRule3],
-  },
-];
+const mockedResourceOptions = {
+  resources: [
+    {
+      resourceType: 'test-resource',
+      permissions: [testPermission],
+      getResources: defaultMockedGetResources1,
+      rules: [testRule1, testRule2],
+    },
+    {
+      resourceType: 'test-resource-2',
+      permissions: [testPermission2],
+      getResources: defaultMockedGetResources2,
+      rules: [testRule3],
+    },
+  ],
+};
 
 const createApp = (
   mockedGetResources:
@@ -125,7 +128,7 @@ const createApp = (
 const createAppWithResources = (
   resourceOptions:
     | CreatePermissionIntegrationRouterResourceOptions<string, any>
-    | CreatePermissionIntegrationRouterResourceOptions<string, any>[],
+    | OptionResources<string, any>,
 ) => {
   const router = createPermissionIntegrationRouter(
     resourceOptions as Parameters<typeof createPermissionIntegrationRouter>[0],

@@ -207,6 +207,13 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   ) => Promise<Array<TResource | undefined>>;
 };
 
+export type OptionResources<TResourceType extends string, TResource> = {
+  resources:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>
+    | Array<CreatePermissionIntegrationRouterResourceOptions<string, any>>;
+};
+
 /**
  * Create an express Router which provides an authorization route to allow
  * integration between the permission backend and other Backstage backend
@@ -252,10 +259,14 @@ export function createPermissionIntegrationRouter<
   TResourceType extends string,
   TResource,
 >(
-  options: CreatePermissionIntegrationRouterResourceOptions<
-    TResourceType,
-    TResource
-  >,
+  options:
+    | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>
+    | {
+        resources: CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType,
+          TResource
+        >;
+      },
 ): express.Router;
 
 /**
@@ -264,9 +275,11 @@ export function createPermissionIntegrationRouter<
  * permissions and routes of a plugin.
  * @public
  */
-export function createPermissionIntegrationRouter(options: {
-  permissions: Array<Permission>;
-}): express.Router;
+export function createPermissionIntegrationRouter(
+  options:
+    | { permissions: Array<Permission> }
+    | { resources: { permissions: Array<Permission> } },
+): express.Router;
 
 /**
  *
@@ -280,8 +293,8 @@ export function createPermissionIntegrationRouter<
   TResource1,
   TResourceType2 extends string,
   TResource2,
->(
-  options: [
+>(options: {
+  resources: [
     CreatePermissionIntegrationRouterResourceOptions<
       TResourceType1,
       TResource1
@@ -290,8 +303,8 @@ export function createPermissionIntegrationRouter<
       TResourceType2,
       TResource2
     >,
-  ],
-): express.Router;
+  ];
+}): express.Router;
 
 /**
  *
@@ -307,8 +320,8 @@ export function createPermissionIntegrationRouter<
   TResource2,
   TResourceType3 extends string,
   TResource3,
->(
-  options: [
+>(options: {
+  resources: [
     CreatePermissionIntegrationRouterResourceOptions<
       TResourceType1,
       TResource1
@@ -321,8 +334,8 @@ export function createPermissionIntegrationRouter<
       TResourceType3,
       TResource3
     >,
-  ],
-): express.Router;
+  ];
+}): express.Router;
 
 /**
  * @public
@@ -334,9 +347,15 @@ export function createPermissionIntegrationRouter<
   options:
     | { permissions: Array<Permission> }
     | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>
-    | Array<CreatePermissionIntegrationRouterResourceOptions<string, any>>,
+    | OptionResources<TResourceType, TResource>,
 ): express.Router {
-  const allOptions = [options].flat();
+  const optionsWithResources = options as OptionResources<
+    TResourceType,
+    TResource
+  >;
+  const allOptions = [
+    optionsWithResources.resources ? optionsWithResources.resources : options,
+  ].flat();
   const allRules = allOptions.flatMap(
     option =>
       (
@@ -347,11 +366,29 @@ export function createPermissionIntegrationRouter<
       ).rules || [],
   );
   const allPermissions = allOptions
-    .flatMap(option => option.permissions)
+    .flatMap(
+      option => (option as { permissions: Array<Permission> }).permissions,
+    )
     .filter((p): p is Permission => !!p);
   const allResourceTypes = allOptions.reduce((acc, option) => {
-    if (isCreatePermissionIntegrationRouterResourceOptions(option)) {
-      acc.push(option.resourceType);
+    if (
+      isCreatePermissionIntegrationRouterResourceOptions(
+        option as
+          | { permissions: Array<Permission> }
+          | CreatePermissionIntegrationRouterResourceOptions<
+              TResourceType,
+              TResource
+            >,
+      )
+    ) {
+      acc.push(
+        (
+          option as CreatePermissionIntegrationRouterResourceOptions<
+            TResourceType,
+            TResource
+          >
+        ).resourceType,
+      );
     }
     return acc;
   }, [] as string[]);
@@ -392,7 +429,13 @@ export function createPermissionIntegrationRouter<
         >['getResources']
       > = {};
 
-      for (const option of allOptions) {
+      for (let option of allOptions) {
+        option = option as
+          | { permissions: Array<Permission> }
+          | CreatePermissionIntegrationRouterResourceOptions<
+              TResourceType,
+              TResource
+            >;
         if (isCreatePermissionIntegrationRouterResourceOptions(option)) {
           ruleMapByResourceType[option.resourceType] = createGetRule(
             option.rules,
