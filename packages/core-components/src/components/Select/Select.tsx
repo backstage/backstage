@@ -163,10 +163,8 @@ export function SelectComponent(props: SelectProps) {
   }, [triggerReset, multiple]);
 
   useEffect(() => {
-    if (selected !== undefined) {
-      setValue(selected);
-    }
-  }, [selected]);
+    setValue(selected || (multiple ? [] : ''));
+  }, [selected, multiple]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as SelectedItems);
