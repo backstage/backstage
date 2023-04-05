@@ -45,11 +45,9 @@ async function verify(directoryPath: string) {
     throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a default export.`);
   }
   if (!isEqual(schema.default, yaml)) {
+    const path = relativePath(cliPaths.targetRoot, directoryPath);
     throw new Error(
-      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn --cwd ${relativePath(
-        cliPaths.targetRoot,
-        directoryPath,
-      )} schema:openapi:generate\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
+      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools schema:openapi:generate ${path}\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
 }

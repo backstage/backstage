@@ -4,7 +4,7 @@
 
 ```ts
 import type { ContentObject } from 'openapi3-ts';
-import type { default as core_2 } from 'express-serve-static-core';
+import type core from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
 import { JSONSchema7 } from 'json-schema-to-ts';
 import type { OpenAPIObject } from 'openapi3-ts';
@@ -78,76 +78,6 @@ type CookieSchema<
   Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
-
-declare namespace core {
-  export {
-    RequiredDoc,
-    PathDoc,
-    ValueOf,
-    PathTemplate,
-    DocPath,
-    DocPathTemplate,
-    DocPathMethod,
-    MethodAwareDocPath,
-    DocOperation,
-    ComponentTypes,
-    ComponentRef,
-    SchemaRef,
-    ObjectWithContentSchema,
-    UnionToIntersection,
-    LastOf,
-    Push,
-    TuplifyUnion,
-    ConvertAll,
-    UnknownIfNever,
-    ToTypeSafe,
-    DiscriminateUnion,
-    MapDiscriminatedUnion,
-    PickOptionalKeys,
-    PickRequiredKeys,
-    OptionalMap,
-    RequiredMap,
-    FullMap,
-    Filter,
-    DocRequestHandler,
-    DocRequestHandlerParams,
-    DocRequestMatcher,
-    Immutable,
-    ImmutableObject,
-    ImmutableReferenceObject,
-    ImmutableOpenAPIObject,
-    ImmutableContentObject,
-    ImmutableRequestBodyObject,
-    ImmutableResponseObject,
-    ImmutableParameterObject,
-    HeaderObject,
-    ImmutableHeaderObject,
-    CookieObject,
-    ImmutableCookieObject,
-    QueryObject,
-    ImmutableQueryObject,
-    PathObject,
-    ImmutablePathObject,
-    ImmutableSchemaObject,
-    DocParameter,
-    DocParameters,
-    ResolveDocParameterSchema,
-    ParameterSchema,
-    MapToSchema,
-    ParametersSchema,
-    HeaderSchema,
-    CookieSchema,
-    PathSchema,
-    QuerySchema,
-    RequestBody,
-    RequestBodySchema,
-    RequestBodyToJsonSchema,
-    Response_2 as Response,
-    ResponseSchemas,
-    ResponseBodyToJsonSchema,
-  };
-}
-export { core };
 
 // @public (undocumented)
 type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
@@ -224,7 +154,7 @@ type DocRequestHandler<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
-> = core_2.RequestHandler<
+> = core.RequestHandler<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
@@ -237,7 +167,7 @@ type DocRequestHandlerParams<
   Doc extends RequiredDoc,
   Path extends DocPathTemplate<Doc>,
   Method extends keyof Doc['paths'][Path],
-> = core_2.RequestHandlerParams<
+> = core.RequestHandlerParams<
   PathSchema<Doc, Path, Method>,
   ResponseBodyToJsonSchema<Doc, Path, Method>,
   RequestBodyToJsonSchema<Doc, Path, Method>,
@@ -350,6 +280,76 @@ type ImmutableResponseObject = ImmutableObject<ResponseObject>;
 
 // @public (undocumented)
 type ImmutableSchemaObject = ImmutableObject<SchemaObject>;
+
+declare namespace internal {
+  export {
+    RequiredDoc,
+    PathDoc,
+    ValueOf,
+    PathTemplate,
+    DocPath,
+    DocPathTemplate,
+    DocPathMethod,
+    MethodAwareDocPath,
+    DocOperation,
+    ComponentTypes,
+    ComponentRef,
+    SchemaRef,
+    ObjectWithContentSchema,
+    UnionToIntersection,
+    LastOf,
+    Push,
+    TuplifyUnion,
+    ConvertAll,
+    UnknownIfNever,
+    ToTypeSafe,
+    DiscriminateUnion,
+    MapDiscriminatedUnion,
+    PickOptionalKeys,
+    PickRequiredKeys,
+    OptionalMap,
+    RequiredMap,
+    FullMap,
+    Filter,
+    DocRequestHandler,
+    DocRequestHandlerParams,
+    DocRequestMatcher,
+    Immutable,
+    ImmutableObject,
+    ImmutableReferenceObject,
+    ImmutableOpenAPIObject,
+    ImmutableContentObject,
+    ImmutableRequestBodyObject,
+    ImmutableResponseObject,
+    ImmutableParameterObject,
+    HeaderObject,
+    ImmutableHeaderObject,
+    CookieObject,
+    ImmutableCookieObject,
+    QueryObject,
+    ImmutableQueryObject,
+    PathObject,
+    ImmutablePathObject,
+    ImmutableSchemaObject,
+    DocParameter,
+    DocParameters,
+    ResolveDocParameterSchema,
+    ParameterSchema,
+    MapToSchema,
+    ParametersSchema,
+    HeaderSchema,
+    CookieSchema,
+    PathSchema,
+    QuerySchema,
+    RequestBody,
+    RequestBodySchema,
+    RequestBodyToJsonSchema,
+    Response_2 as Response,
+    ResponseSchemas,
+    ResponseBodyToJsonSchema,
+  };
+}
+export { internal };
 
 // @public (undocumented)
 type LastOf<T> = UnionToIntersection<

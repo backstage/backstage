@@ -19,7 +19,7 @@
  *
  * @packageDocumentation
  */
-import * as core from './types';
+import * as internal from './types';
 
-export { core };
+export { internal };
 export type { ApiRouter } from './router';
