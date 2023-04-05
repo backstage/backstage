@@ -66,7 +66,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         const fullPath = `${currentPath}/${pathElement}`;
         const result = (await api.Groups.search(
           fullPath,
-        )) as any as Array<GroupSchema>;
+        )) as any as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
         const subGroup = result.find(
           searchPathElem => searchPathElem.full_path === fullPath,
         );

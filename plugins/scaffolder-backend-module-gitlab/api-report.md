@@ -32,7 +32,7 @@ export const createGitlabProjectAccessTokenAction: (options: {
   } & {
     projectId: string | number;
     name?: string | undefined;
-    accessLevel?: string | undefined;
+    accessLevel?: number | undefined;
     scopes?: string[] | undefined;
   },
   {

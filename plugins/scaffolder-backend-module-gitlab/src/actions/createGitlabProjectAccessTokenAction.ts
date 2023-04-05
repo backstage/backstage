@@ -40,7 +40,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
           }),
           name: z.string({ description: 'Deploy Token Name' }).optional(),
           accessLevel: z
-            .string({ description: 'Access Level of the Token' })
+            .number({ description: 'Access Level of the Token' })
             .optional(),
           scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
         }),
