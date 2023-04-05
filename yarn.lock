@@ -3731,7 +3731,7 @@ __metadata:
     "@svgr/rollup": 6.5.x
     "@svgr/webpack": 6.5.x
     "@swc/core": ^1.3.9
-    "@swc/helpers": ^0.4.7
+    "@swc/helpers": ^0.5.0
     "@swc/jest": ^0.2.22
     "@types/cross-spawn": ^6.0.2
     "@types/diff": ^5.0.0
@@ -14759,12 +14759,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:^0.4.7":
-  version: 0.4.14
-  resolution: "@swc/helpers@npm:0.4.14"
+"@swc/helpers@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@swc/helpers@npm:0.5.0"
   dependencies:
     tslib: ^2.4.0
-  checksum: 273fd3f3fc461a92f3790cc551ea054745c6d6959afbe1232e6d7aa1c722bbc114d308aab96bef5c78fc0303c85c7b472ef00e2253251cc89737f3b1af56e5a5
+  checksum: 61c9c7dddb707deb58b85328cfe9d211887145f1311ae6a6e6c0fa9f781fb29916a8669a7d479e46e26a32a89d6ef4f293a22dee4925e009c84051e9dd10e8b7
   languageName: node
   linkType: hard
 
