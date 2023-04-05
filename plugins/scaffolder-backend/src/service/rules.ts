@@ -26,8 +26,8 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 
 import { z } from 'zod';
-import { JsonObject } from '@backstage/types';
-import { get } from 'lodash';
+import { JsonObject, JsonPrimitive, JsonValue } from '@backstage/types';
+import { String, get } from 'lodash';
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -70,63 +70,47 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasNumberProperty = createActionPermissionRule({
-  name: `HAS_NUMBER_PROPERTY`,
-  description: `Allow actions with the specified property`,
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  paramsSchema: z.object({
-    key: z
-      .string()
-      .describe(`Property within the action parameters to match on`),
-    value: z.number().describe(`Value of the given property to match on`),
-  }),
-  apply: (resource, { key, value }) => {
-    const foundValue = get(resource.input, key);
+export const hasBooleanProperty = buildHasProperty(z.boolean());
+export const hasNullProperty = buildHasProperty(z.null());
+export const hasNumberProperty = buildHasProperty(z.number());
+export const hasStringProperty = buildHasProperty(z.string());
 
-    if (Array.isArray(foundValue)) {
-      if (value !== undefined) {
-        return foundValue.includes(value);
+function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>(
+  valueSchema: Schema,
+) {
+  return createActionPermissionRule({
+    name: `HAS_STRING_PROPERTY`,
+    description: `Allow actions with the specified property`,
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+    paramsSchema: z.object({
+      key: z
+        .string()
+        .describe(`Property within the action parameters to match on`),
+      value: valueSchema.describe(`Value of the given property to match on`),
+    }) as unknown as z.ZodType<{ key: string; value: z.infer<Schema> }>,
+    apply: (resource, { key, value }) => {
+      const foundValue = get(resource.input, key);
+
+      if (Array.isArray(foundValue)) {
+        if (value !== undefined) {
+          return foundValue.includes(value);
+        }
+        return foundValue.length > 0;
       }
-      return foundValue.length > 0;
-    }
-    if (value !== undefined && z.number().safeParse(value).success) {
-      return value === foundValue;
-    }
-    return !!foundValue;
-  },
-  toQuery: () => ({}),
-});
-
-export const hasStringProperty = createActionPermissionRule({
-  name: `HAS_STRING_PROPERTY`,
-  description: `Allow actions with the specified property`,
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  paramsSchema: z.object({
-    key: z
-      .string()
-      .describe(`Property within the action parameters to match on`),
-    value: z.string().describe(`Value of the given property to match on`),
-  }),
-  apply: (resource, { key, value }) => {
-    const foundValue = get(resource.input, key);
-
-    if (Array.isArray(foundValue)) {
-      if (value !== undefined) {
-        return foundValue.includes(value);
+      if (value !== undefined && z.string().safeParse(value).success) {
+        return value === foundValue;
       }
-      return foundValue.length > 0;
-    }
-    if (value !== undefined && z.string().safeParse(value).success) {
-      return value === foundValue;
-    }
-    return !!foundValue;
-  },
-  toQuery: () => ({}),
-});
+      return !!foundValue;
+    },
+    toQuery: () => ({}),
+  });
+}
 
 export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
+  hasBooleanProperty,
+  hasNullProperty,
   hasNumberProperty,
   hasStringProperty,
 };
