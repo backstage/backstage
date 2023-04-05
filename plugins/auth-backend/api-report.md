@@ -641,7 +641,10 @@ export const providers: Readonly<{
           }
         | undefined,
     ) => AuthProviderFactory;
-    resolvers: never;
+    resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+    }>;
   }>;
   okta: Readonly<{
     create: (
