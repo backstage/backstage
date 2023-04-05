@@ -13714,8 +13714,8 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
-  version: 2.1.7
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.7"
+  version: 2.1.8
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.8"
   dependencies:
     "@backstage/catalog-model": ^1.2.1
     "@backstage/core-components": ^0.12.5
@@ -13735,7 +13735,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 1a00d0128e1bdacac93ffa7b1aa1534ec91b603899d40967ed387e3fd91f35bbc5f9babfc7b811279775d60e28db7747211fd5c0d368db23b5a184b054e918c1
+  checksum: b135750b1fbf6f74743dd9142c2fcdec00379633ffd1b3793649eeea9ef6b015165da0dcb85f5442294364794c77592ef8ec1e83ada9f8bbb66ac394729a6f1a
   languageName: node
   linkType: hard
 
