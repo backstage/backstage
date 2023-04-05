@@ -7,22 +7,31 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { PathParams } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/core-plugin-api';
 
 // @public
-export const isPuppetDbAvailable: (entity: Entity) => true;
+const isPuppetDbAvailable: (entity: Entity) => boolean;
+export { isPuppetDbAvailable as isPluginApplicableToEntity };
+export { isPuppetDbAvailable };
 
 // @public
-export const puppetdbPlugin: BackstagePlugin<
-  {
-    root: RouteRef<undefined>;
-  },
-  {},
-  {}
->;
+export const PuppetDbPage: () => JSX.Element;
 
 // @public
-export const PuppetDbTab: () => JSX.Element;
+const puppetdbPlugin: BackstagePlugin<{}, {}, {}>;
+export { puppetdbPlugin as plugin };
+export { puppetdbPlugin };
+
+// @public (undocumented)
+export const puppetDbReportRouteRef: SubRouteRef<PathParams<'/:hash'>>;
+
+// @public (undocumented)
+export const puppetDbRouteRef: RouteRef<undefined>;
+
+// @public (undocumented)
+export const Router: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
