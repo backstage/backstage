@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  Page,
-  Content,
-  MissingAnnotationEmptyState,
-} from '@backstage/core-components';
+import { ReportsTable } from './ReportsTable';
+import { Page, Content } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { isPuppetDbAvailable } from '../../plugin';
 import { ANNOTATION_PUPPET_CERTNAME } from '../../constants';
-import { ReportsTable } from '../Reports/ReportsTable/ReportsTable';
-import { NodeCard } from '../Node';
 
-export const PuppetDbTab = () => {
+/**
+ * Component to display PuppetDB reports page.
+ *
+ * @public
+ */
+export const ReportsPage = () => {
   const { entity } = useEntity();
-
-  if (!isPuppetDbAvailable(entity)) {
-    return (
-      <MissingAnnotationEmptyState annotation={ANNOTATION_PUPPET_CERTNAME} />
-    );
-  }
-
-  // @ts-ignore
-  // TODO(tdabasinskas): Remove the static value after the testing.
-  const certName = entity.metadata.annotations[ANNOTATION_PUPPET_CERTNAME];
+  const certName =
+    entity?.metadata?.annotations?.[ANNOTATION_PUPPET_CERTNAME] ?? '';
 
   return (
     <Page themeId="tool">

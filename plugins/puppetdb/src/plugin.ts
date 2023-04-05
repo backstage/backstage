@@ -21,51 +21,35 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
-import { Entity } from '@backstage/catalog-model';
-import { ANNOTATION_PUPPET_CERTNAME } from './constants';
 import { puppetDbApiRef, PuppetDbClient } from './api';
+import { puppetDbRouteRef } from './routes';
 
 /**
  * Create the PuppetDB frontend plugin.
+ *
  * @public
- */
+ * */
 export const puppetdbPlugin = createPlugin({
-  id: 'puppetdb',
+  id: 'puppetDb',
   apis: [
     createApiFactory({
       api: puppetDbApiRef,
-      deps: {
-        discoveryApi: discoveryApiRef,
-        fetchApi: fetchApiRef,
-      },
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
-        new PuppetDbClient({
-          discoveryApi,
-          fetchApi,
-        }),
+        new PuppetDbClient({ discoveryApi, fetchApi }),
     }),
   ],
 });
 
 /**
- * Checks if the entity has a puppet certname annotation.
- * @public
- * @param entity - The entity to check for the puppet cername annotation.
- */
-export const isPuppetDbAvailable = (entity: Entity) =>
-  // TODO(tdabasinskas): Remove the `|| true` once testing is done.
-  Boolean(entity.metadata.annotations?.[ANNOTATION_PUPPET_CERTNAME]) || true;
-
-/**
- * Creates a routable extension for the PuppetDB plugin tab.
+ * Creates a routable extension for the PuppetDB plugin content.
+ *
  * @public
  */
-export const PuppetDbTab = puppetdbPlugin.provide(
+export const PuppetDbContent = puppetdbPlugin.provide(
   createRoutableExtension({
-    name: 'PuppetdbPage',
-    component: () =>
-      import('./components/PuppetDbTab').then(m => m.PuppetDbTab),
-    mountPoint: rootRouteRef,
+    name: 'PuppetDbContent',
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: puppetDbRouteRef,
   }),
 );

@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { puppetDbApiRef, PuppetDbReport } from '../../../api';
+import { puppetDbApiRef, PuppetDbReport } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import React from 'react';
 import {
   Link,
   ResponseErrorPanel,
   Table,
-  StatusPending,
-  StatusRunning,
-  StatusOK,
-  StatusAborted,
-  StatusError,
   TableColumn,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
-import { buildRouteRef } from '../../../routes';
+import { puppetDbReportRouteRef } from '../../routes';
+import { StatusField } from '../StatusField';
 
 type ReportsTableProps = {
   certName: string;
@@ -45,10 +41,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * Component for displaying a table of PuppetDB reports for a given node.
+ *
+ * @public
+ */
 export const ReportsTable = (props: ReportsTableProps) => {
   const { certName } = props;
   const puppetDbApi = useApi(puppetDbApiRef);
-  const routeLink = useRouteRef(buildRouteRef);
+  const reportsRouteLink = useRouteRef(puppetDbReportRouteRef);
   const classes = useStyles();
 
   const { value, loading, error } = useAsync(async () => {
@@ -64,8 +65,17 @@ export const ReportsTable = (props: ReportsTableProps) => {
       title: 'Configuration Version',
       field: 'configuration_version',
       render: rowData => (
-        <Link component={RouterLink} to={routeLink({ hash: rowData.hash! })}>
-          <Typography noWrap>{rowData.configuration_version}</Typography>
+        <Link
+          component={RouterLink}
+          to={reportsRouteLink({ hash: rowData.hash! })}
+        >
+          {rowData.configuration_version !== '' ? (
+            <Typography noWrap>{rowData.configuration_version}</Typography>
+          ) : (
+            <Typography noWrap>
+              <em>(N/A)</em>
+            </Typography>
+          )}
         </Link>
       ),
     },
@@ -73,8 +83,9 @@ export const ReportsTable = (props: ReportsTableProps) => {
       title: 'Start Time',
       field: 'start_time',
       align: 'center',
+      width: '300px',
       render: rowData => (
-        <Typography>
+        <Typography noWrap>
           {new Date(Date.parse(rowData.start_time)).toLocaleString()}
         </Typography>
       ),
@@ -83,8 +94,9 @@ export const ReportsTable = (props: ReportsTableProps) => {
       title: 'End Time',
       field: 'end_time',
       align: 'center',
+      width: '300px',
       render: rowData => (
-        <Typography>
+        <Typography noWrap>
           {new Date(Date.parse(rowData.end_time)).toLocaleString()}
         </Typography>
       ),
@@ -92,6 +104,7 @@ export const ReportsTable = (props: ReportsTableProps) => {
     {
       title: 'Run Duration',
       align: 'center',
+      width: '400px',
       render: rowData => {
         const start_date = new Date(Date.parse(rowData.start_time));
         const end_date = new Date(Date.parse(rowData.end_time));
@@ -125,52 +138,7 @@ export const ReportsTable = (props: ReportsTableProps) => {
       title: 'Status',
       field: 'status',
       align: 'center',
-      render: rowData => {
-        if (rowData.noop) {
-          return (
-            <>
-              <StatusAborted />
-              {rowData.status.charAt(0).toLocaleUpperCase() +
-                rowData.status.slice(1)}
-            </>
-          );
-        }
-
-        switch (rowData.status) {
-          case 'failed':
-            return (
-              <>
-                <StatusError />
-                {rowData.status.charAt(0).toLocaleUpperCase() +
-                  rowData.status.slice(1)}
-              </>
-            );
-          case 'changed':
-            return (
-              <>
-                <StatusRunning />
-                {rowData.status.charAt(0).toLocaleUpperCase() +
-                  rowData.status.slice(1)}
-              </>
-            );
-          case 'unchanged':
-            return (
-              <>
-                <StatusPending />
-                {rowData.status.charAt(0).toLocaleUpperCase() +
-                  rowData.status.slice(1)}
-              </>
-            );
-          default:
-            return (
-              <>
-                <StatusOK />
-                {rowData.status.charAt(0).toLocaleUpperCase() +
-                  rowData.status.slice(1)}
-              </>
-            );
-        }
-      },
+      render: rowData => <StatusField status={rowData.status} />,
     },
   ];
 
@@ -198,51 +166,4 @@ export const ReportsTable = (props: ReportsTableProps) => {
       isLoading={loading}
     />
   );
-
-  /*
-  return (
-
-
-
-    <TableContainer className={classes.table}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Start Time</TableCell>
-            <TableCell>End Time</TableCell>
-            <TableCell>Duration</TableCell>
-            <TableCell>Environment</TableCell>
-            <TableCell>Configuration Version</TableCell>
-            <TableCell>Puppet Version</TableCell>
-            <TableCell>NoOp</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {value?.map((report) => {
-            const start_date = new Date(Date.parse(report.start_time));
-            const end_date = new Date(Date.parse(report.end_time));
-            const duration = new Date(end_date.getTime() - start_date.getTime());
-
-            return (<TableRow>
-              <TableCell>{start_date.toLocaleString()}</TableCell>
-              <TableCell>{end_date.toLocaleString()}</TableCell>
-              <TableCell>
-                {duration.getUTCHours().toString().padStart(2, '0')}:
-                {duration.getUTCMinutes().toString().padStart(2, '0')}:
-                {duration.getUTCSeconds().toString().padStart(2, '0')}.
-                {duration.getUTCMilliseconds().toString().padStart(4, '0')}
-              </TableCell>
-              <TableCell>{report.environment}</TableCell>
-              <TableCell>{report.configuration_version}</TableCell>
-              <TableCell>{report.puppet_version}</TableCell>
-              <TableCell>{report.noop ? 'Yes' : 'No'}</TableCell>
-              <TableCell>{report.status}</TableCell>
-            </TableRow>
-          )}
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );*/
 };

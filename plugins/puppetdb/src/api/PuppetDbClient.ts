@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PuppetDbApi, PuppetDbNode, PuppetDbReport } from './types';
+import {
+  PuppetDbApi,
+  PuppetDbReport,
+  PuppetDbReportEvent,
+  PuppetDbReportLog,
+} from './types';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 
@@ -51,19 +56,6 @@ export class PuppetDbClient implements PuppetDbApi {
     throw await ResponseError.fromResponse(response);
   }
 
-  async getPuppetDbNode(
-    puppetDbCertName: string,
-  ): Promise<PuppetDbNode | undefined> {
-    if (!puppetDbCertName) {
-      throw new Error('PuppetDB certname is required');
-    }
-
-    return this.callApi(
-      `/pdb/query/v4/nodes/${encodeURIComponent(puppetDbCertName)}`,
-      {},
-    );
-  }
-
   async getPuppetDbReport(
     puppetDbReportHash: string,
   ): Promise<PuppetDbReport | undefined> {
@@ -82,6 +74,44 @@ export class PuppetDbClient implements PuppetDbApi {
     return reports[0];
   }
 
+  async getPuppetDbReportEvents(
+    puppetDbReportHash: string,
+  ): Promise<PuppetDbReportEvent[] | undefined> {
+    if (!puppetDbReportHash) {
+      throw new Error('PuppetDB report hash is required');
+    }
+
+    const events = (await this.callApi(
+      `/pdb/query/v4/reports/${puppetDbReportHash}/events`,
+      {},
+    )) as PuppetDbReportEvent[];
+
+    if (!events || events.length === 0) {
+      return undefined;
+    }
+
+    return events;
+  }
+
+  async getPuppetDbReportLogs(
+    puppetDbReportHash: string,
+  ): Promise<PuppetDbReportLog[] | undefined> {
+    if (!puppetDbReportHash) {
+      throw new Error('PuppetDB report hash is required');
+    }
+
+    const events = (await this.callApi(
+      `/pdb/query/v4/reports/${puppetDbReportHash}/logs`,
+      {},
+    )) as PuppetDbReportLog[];
+
+    if (!events || events.length === 0) {
+      return undefined;
+    }
+
+    return events;
+  }
+
   async getPuppetDbNodeReports(
     puppetDbCertName: string,
   ): Promise<PuppetDbReport[] | undefined> {
@@ -92,7 +122,7 @@ export class PuppetDbClient implements PuppetDbApi {
     return this.callApi(`/pdb/query/v4/reports`, {
       query: `["=","certname","${puppetDbCertName}"]`,
       order_by: `[{"field": "start_time", "order": "desc"},{"field": "end_time", "order": "desc"}]`,
-      limit: 30,
+      limit: 100,
     });
   }
 }

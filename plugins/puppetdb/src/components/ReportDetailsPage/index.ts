@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type { PuppetDbReport, PuppetDbReportEvent } from './types';
-export { puppetDbApiRef } from './types';
-export { PuppetDbClient } from './PuppetDbClient';
+export { ReportDetailsPage } from './ReportDetailsPage';
+export { ReportDetailsEventsTable } from './ReportDetailsEventsTable';
+export { ReportDetailsLogsTable } from './ReportDetailsLogsTable';

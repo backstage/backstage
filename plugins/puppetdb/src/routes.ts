@@ -15,12 +15,14 @@
  */
 import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
+/** @public */
+export const puppetDbRouteRef = createRouteRef({
   id: 'puppetdb',
 });
 
-export const buildRouteRef = createSubRouteRef({
+/** @public */
+export const puppetDbReportRouteRef = createSubRouteRef({
   id: 'puppetdb/report',
   path: '/:hash',
-  parent: rootRouteRef,
+  parent: puppetDbRouteRef,
 });

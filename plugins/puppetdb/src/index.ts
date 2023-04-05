@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { puppetdbPlugin, PuppetDbTab, isPuppetDbAvailable } from './plugin';
+export {
+  puppetdbPlugin,
+  puppetdbPlugin as plugin,
+  PuppetDbContent,
+} from './plugin';
+export {
+  Router,
+  isPuppetDbAvailable,
+  isPuppetDbAvailable as isPluginApplicableToEntity,
+} from './components/Router';
+export * from './routes';
