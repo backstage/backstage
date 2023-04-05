@@ -61,8 +61,8 @@ interface API
   owner: Owner! @relation(name: "ownedBy")
   definition: String! @field(at: "spec.definition")
   system: System @relation(name: "partOf")
-  apiConsumedBy: Connection @relation(nodeType: "Component")
-  apiProvidedBy: Connection @relation(nodeType: "Component")
+  apiConsumedBy: Connection @relation(name: "apiConsumedBy", nodeType: "Component")
+  apiProvidedBy: Connection @relation(name: "apiProvidedBy", nodeType: "Component")
 }
 
 interface Component
@@ -78,8 +78,8 @@ interface Component
   subComponentOf: Component @relation(name: "partOf", kind: "component")
   providesApis: Connection @relation(name: "providesApi", nodeType: "API")
   consumesApis: Connection @relation(name: "consumesApi", nodeType: "API")
-  dependsOn: Connection @relation(nodeType: "Dependency")
-  dependencyOf: Connection @relation(nodeType: "Dependency")
+  dependsOn: Connection @relation(name: "dependsOn", nodeType: "Dependency")
+  dependencyOf: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
   components: Connection @relation(name: "hasPart", nodeType: "Component")
 }
 
@@ -94,8 +94,8 @@ interface Resource
   @discriminationAlias(value: "database", type: "Database") {
   type: String! @field(at: "spec.type")
   owner: Owner! @relation(name: "ownedBy")
-  dependsOn: Connection @relation(nodeType: "Dependency")
-  dependencyOf: Connection @relation(nodeType: "Dependency")
+  dependsOn: Connection @relation(name: "dependsOn", nodeType: "Dependency")
+  dependencyOf: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
   system: System @relation(name: "partOf")
 }
 
@@ -144,7 +144,7 @@ interface Group
   parent: Group @relation(name: "childOf")
   children: Connection @relation(name: "parentOf", nodeType: "Group")
   members: Connection @relation(name: "hasMember", nodeType: "User")
-  ownerOf: Connection @relation(nodeType: "Ownable")
+  ownerOf: Connection @relation(name: "ownerOf", nodeType: "Ownable")
 }
 
 type UserProfile {

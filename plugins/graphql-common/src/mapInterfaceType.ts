@@ -226,14 +226,14 @@ function defineResolver(
           );
         }
         const typename =
-          aliases.find(alias => alias.value === value)?.type ??
-          pascalCase(value);
-        const type = schema.getType(typename);
+          aliases.find(alias => alias.value === value)?.type ?? value;
+        const type =
+          schema.getType(typename) ?? schema.getType(pascalCase(typename));
 
         if (type) {
           if (!isObjectType(type) && !isInterfaceType(type)) {
             throw new Error(
-              `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface is not an object type or interface`,
+              `Can't resolve type for node with "${id}" id. The "${type.name}" type which was discriminated by ${interfaceName} interface is not an object type or interface`,
             );
           }
 
@@ -243,7 +243,7 @@ function defineResolver(
               .find(({ name: ifaceName }) => ifaceName === interfaceName)
           ) {
             throw new Error(
-              `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface does not implement the "${interfaceName}" interface`,
+              `Can't resolve type for node with "${id}" id. The "${type.name}" type which was discriminated by ${interfaceName} interface does not implement the "${interfaceName}" interface`,
             );
           }
 
@@ -252,10 +252,10 @@ function defineResolver(
           }
 
           if (sourceType && isRelatedType(type, sourceType)) {
-            return typename;
+            return type.name;
           }
           throw new Error(
-            `Can't resolve type for node with "${id}" id. The "${typename}" type which was discriminated by ${interfaceName} interface does not equal to the encoded type "${sourceTypename}" or implement it`,
+            `Can't resolve type for node with "${id}" id. The "${type.name}" type which was discriminated by ${interfaceName} interface does not equal to the encoded type "${sourceTypename}" or implement it`,
           );
         } else if (!opaqueTypeName) {
           throw new Error(
@@ -266,7 +266,7 @@ function defineResolver(
     }
     const opaqueType = schema.getType(opaqueTypeName);
     if (isInterfaceType(opaqueType)) {
-      opaqueType.resolveType?.(source, context, info, opaqueType);
+      return opaqueType.resolveType?.(source, context, info, opaqueType);
     }
     if (
       sourceType &&
