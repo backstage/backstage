@@ -116,10 +116,7 @@ import {
   EntityRollbarContent,
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
-import {
-  PuppetDbContent,
-  isPuppetDbAvailable,
-} from '@backstage/plugin-puppetdb';
+import { PuppetDbPage, isPuppetDbAvailable } from '@backstage/plugin-puppetdb';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
@@ -861,7 +858,7 @@ const resourcePage = (
       title="Puppet"
       if={isPuppetDbAvailable}
     >
-      <PuppetDbContent />
+      <PuppetDbPage />
     </EntityLayout.Route>
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />

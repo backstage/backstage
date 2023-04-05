@@ -46,9 +46,9 @@ export const puppetdbPlugin = createPlugin({
  *
  * @public
  */
-export const PuppetDbContent = puppetdbPlugin.provide(
+export const PuppetDbPage = puppetdbPlugin.provide(
   createRoutableExtension({
-    name: 'PuppetDbContent',
+    name: 'PuppetDbPage',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: puppetDbRouteRef,
   }),

@@ -16,7 +16,7 @@
 export {
   puppetdbPlugin,
   puppetdbPlugin as plugin,
-  PuppetDbContent,
+  PuppetDbPage,
 } from './plugin';
 export {
   Router,
