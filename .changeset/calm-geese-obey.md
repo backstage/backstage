@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes': patch
+'@backstage/plugin-kubernetes': minor
 ---
 
 refactor kubernetes error detection to make way for proposed solutions
