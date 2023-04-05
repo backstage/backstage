@@ -183,7 +183,7 @@ export function createPublishBitbucketCloudAction(options: {
             type: 'string',
           },
           commitHash: {
-            title: 'The commithash of the initial commit',
+            title: 'The git commit hash of the initial commit',
             type: 'string',
           },
         },
