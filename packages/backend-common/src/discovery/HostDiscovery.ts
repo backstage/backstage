@@ -22,7 +22,7 @@ type Target = string | { internal: string; external: string };
 
 /**
  * HostDiscovery is a basic PluginEndpointDiscovery implementation
- * that assumes that all plugins are hosted in a single deployment.
+ * that can handle plugins that are hosted in a single or multiple deployments.
  *
  * The deployment may be scaled horizontally, as long as the external URL
  * is the same for all instances. However, internal URLs will always be
@@ -37,7 +37,7 @@ export class HostDiscovery implements PluginEndpointDiscovery {
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
    *
-   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoint`.
+   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoints`.
    * eg.
    * ```yaml
    * discovery:
