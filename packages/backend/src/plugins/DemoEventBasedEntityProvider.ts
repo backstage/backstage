@@ -37,9 +37,9 @@ export class DemoEventBasedEntityProvider
     topics: string[];
   }) {
     const { eventBroker, logger, topics } = opts;
-    eventBroker.subscribe(this);
     this.logger = logger;
     this.topics = topics;
+    eventBroker.subscribe(this);
   }
 
   async onEvent(params: EventParams): Promise<void> {
