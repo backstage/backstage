@@ -3525,7 +3525,7 @@ __metadata:
     git-url-parse: ^13.0.0
     helmet: ^6.0.0
     http-errors: ^2.0.0
-    isomorphic-git: ^1.21.0
+    isomorphic-git: ^1.23.0
     jose: ^4.6.0
     keyv: ^4.5.2
     knex: ^2.0.0
@@ -8031,7 +8031,7 @@ __metadata:
     git-url-parse: ^13.0.0
     globby: ^11.0.0
     isbinaryfile: ^5.0.0
-    isomorphic-git: ^1.8.0
+    isomorphic-git: ^1.23.0
     jest-when: ^3.1.0
     jsonschema: ^1.2.6
     knex: ^2.0.0
@@ -27103,7 +27103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isomorphic-git@npm:^1.21.0, isomorphic-git@npm:^1.8.0":
+"isomorphic-git@npm:^1.23.0":
   version: 1.23.0
   resolution: "isomorphic-git@npm:1.23.0"
   dependencies:

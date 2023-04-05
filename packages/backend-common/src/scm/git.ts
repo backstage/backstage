@@ -111,7 +111,7 @@ export class Git {
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
-    return await git.commit({ fs, dir, message, author, committer });
+    return git.commit({ fs, dir, message, author, committer });
   }
 
   /** https://isomorphic-git.org/docs/en/clone */

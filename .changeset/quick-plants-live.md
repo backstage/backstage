@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': minor
+'@backstage/backend-common': patch
 ---
 
-**BREAKING** The git commit helper now returns the commitHash of the commit created
+The dependency isomorphic-git is now on version 1.23.0
