@@ -31,6 +31,10 @@ import {
 } from '../helpers';
 import { createPublishGithubAction } from './github';
 
+const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+  Promise<{ commitHash: string }>
+>;
+
 const mockOctokit = {
   rest: {
     users: {
@@ -87,8 +91,7 @@ describe('publish:github', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    // @ts-ignore TS2339 Jest Mock is not detected by Typescript
-    initRepoAndPush.mockResolvedValue({
+    initRepoAndPushMocked.mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     });
 
