@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi, createApiRef } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  createApiRef,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 
 /**
@@ -52,9 +56,17 @@ export interface VaultApi {
  */
 export class VaultClient implements VaultApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
 
-  constructor({ discoveryApi }: { discoveryApi: DiscoveryApi }) {
+  constructor({
+    discoveryApi,
+    fetchApi,
+  }: {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+  }) {
     this.discoveryApi = discoveryApi;
+    this.fetchApi = fetchApi;
   }
 
   private async callApi<T>(
@@ -62,7 +74,7 @@ export class VaultClient implements VaultApi {
     query: { [key in string]: any },
   ): Promise<T> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('vault')}`;
-    const response = await fetch(
+    const response = await this.fetchApi.fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
         headers: {
