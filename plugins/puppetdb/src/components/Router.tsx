@@ -21,7 +21,7 @@ import { ANNOTATION_PUPPET_CERTNAME } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
-import { ReportsPage } from './ReportsPage/ReportsPage';
+import { ReportsPage } from './ReportsPage';
 import { ReportDetailsPage } from './ReportDetailsPage';
 
 /**

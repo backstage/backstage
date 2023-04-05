@@ -62,7 +62,7 @@ export type PuppetDbReport = {
   /** A flag indicating whether any of the report's events remediated configuration drift. */
   corrective_change: boolean;
   /** Report metrics. */
-  metrics: {
+  metrics?: {
     /** Metrics data. */
     data: PuppetDbReportMetric[];
     /** Link to the metrics endpoint. */
@@ -175,16 +175,6 @@ export type PuppetDbApi = {
   getPuppetDbNodeReports(
     puppetDbCertName: string,
   ): Promise<PuppetDbReport[] | undefined>;
-
-  /**
-   * Get a specific PuppetDB report.
-   *
-   * @param puppetDbReportHash - The ID of the report.
-   * @returns A specific PuppetDB report.
-   */
-  getPuppetDbReport(
-    puppetDbReportHash: string,
-  ): Promise<PuppetDbReport | undefined>;
 
   /**
    * Get a specific PuppetDB report events.

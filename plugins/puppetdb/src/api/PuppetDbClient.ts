@@ -56,24 +56,6 @@ export class PuppetDbClient implements PuppetDbApi {
     throw await ResponseError.fromResponse(response);
   }
 
-  async getPuppetDbReport(
-    puppetDbReportHash: string,
-  ): Promise<PuppetDbReport | undefined> {
-    if (!puppetDbReportHash) {
-      throw new Error('PuppetDB report hash is required');
-    }
-
-    const reports = (await this.callApi(`/pdb/query/v4/reports`, {
-      query: `["=","hash","${puppetDbReportHash}"]`,
-    })) as PuppetDbReport[];
-
-    if (!reports || reports.length === 0) {
-      return undefined;
-    }
-
-    return reports[0];
-  }
-
   async getPuppetDbReportEvents(
     puppetDbReportHash: string,
   ): Promise<PuppetDbReportEvent[] | undefined> {

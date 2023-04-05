@@ -15,13 +15,12 @@
  */
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { puppetDbApiRef } from '../../api';
+import { puppetDbApiRef, PuppetDbReportEvent } from '../../api';
 import {
   ResponseErrorPanel,
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { PuppetDbReportEvent } from '../../api/types';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
