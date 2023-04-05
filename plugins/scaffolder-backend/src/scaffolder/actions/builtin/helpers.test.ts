@@ -23,9 +23,9 @@ jest.mock('@backstage/backend-common', () => ({
       init: jest.fn(),
       add: jest.fn(),
       checkout: jest.fn(),
-      commit: jest.fn().mockResolvedValue({
-        commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
-      }),
+      commit: jest
+        .fn()
+        .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
       fetch: jest.fn(),
       addRemote: jest.fn(),
       push: jest.fn(),
@@ -41,6 +41,23 @@ const mockedGit = Git.fromAuth({
 describe('initRepoAndPush', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('resolves the commitHash properly', () => {
+    it('resolves the correct hash', () => {
+      const commitHash = initRepoAndPush({
+        dir: '/test/repo/dir/',
+        remoteUrl: 'git@github.com:test/repo.git',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+        logger: getVoidLogger(),
+      });
+      expect(Promise.resolve(commitHash)).toEqual({
+        commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+      });
+    });
   });
 
   describe('with minimal parameters', () => {
@@ -168,6 +185,23 @@ describe('initRepoAndPush', () => {
 describe('commitAndPushRepo', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('resolves the commitHash properly', () => {
+    it('resolves to the commitHash', () => {
+      const commitHash = commitAndPushRepo({
+        dir: '/test/repo/dir/',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+        logger: getVoidLogger(),
+        commitMessage: 'commit message',
+      });
+      expect(Promise.resolve(commitHash)).toStrictEqual({
+        commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+      });
+    });
   });
 
   describe('with minimal parameters', () => {

@@ -307,7 +307,7 @@ export async function initRepoPushAndProtect(
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 
-  const { commitHash } = await initRepoAndPush({
+  const commitResult = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
     defaultBranch,
@@ -347,7 +347,7 @@ export async function initRepoPushAndProtect(
     }
   }
 
-  return { commitHash };
+  return { commitHash: commitResult.commitHash };
 }
 
 function extractCollaboratorName(

@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-
 jest.mock('../helpers');
 
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -88,6 +86,12 @@ describe('publish:github', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    // @ts-ignore TS2339 Jest Mock is not detected by Typescript
+    initRepoAndPush.mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    });
+
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createPublishGithubAction({
