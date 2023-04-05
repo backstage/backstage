@@ -429,6 +429,18 @@ export class GoogleAuth {
 }
 
 // @public
+export class HostDiscovery implements DiscoveryApi {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
   getRegisteredFlags(): FeatureFlag[];
