@@ -14,42 +14,16 @@ Kubernetes backend plugin's proxy endpoint to allow them to make arbitrary
 requests to the [REST
 API](https://kubernetes.io/docs/reference/using-api/api-concepts/).
 
-Here is a snippet fetching namespaces from a cluster configured with the
-`google` [auth provider](https://backstage.io/docs/features/kubernetes/configuration#clustersauthprovider):
+Here is a snippet fetching namespaces using the `KubernetesBackendClient` library
 
 ```typescript
-import {
-  discoveryApiRef,
-  googleAuthApiRef,
-  useApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes';
 
 const CLUSTER_NAME = ''; // use a known cluster name
 
-// get a bearer token from Google
-const googleAuthApi = useApi(googleAuthApiRef);
-const token = await googleAuthApi.getAccessToken(
-  'https://www.googleapis.com/auth/cloud-platform',
-);
-
-// get a backstage ID token
-const identityApi = useApi(identityApiRef);
-const { token: userToken } = await identityApi.getCredentials();
-
-const discoveryApi = useApi(discoveryApiRef);
-const kubernetesBaseUrl = await discoveryApi.getBaseUrl('kubernetes');
-const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
-
-// fetch namespaces
-await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
-  method: 'GET',
-  headers: {
-    'Backstage-Kubernetes-Cluster': CLUSTER_NAME,
-    'Backstage-Kubernetes-Authorization': `Bearer ${token}`,
-    Authorization: `Bearer ${userToken}`,
-  },
-});
+const kubernetesApi = useApi(kubernetesApiRef);
+await kubernetesApi.proxy(CLUSTER_NAME, '/api/v1/namespaces');
 ```
 
 ## How it works
