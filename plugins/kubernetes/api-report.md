@@ -104,17 +104,21 @@ export interface DeploymentResources {
 // @public
 export interface DetectedError {
   // (undocumented)
-  cluster: string;
+  message: string;
   // (undocumented)
-  kind: ErrorDetectableKind;
+  occuranceCount: number;
+  // Warning: (ae-forgotten-export) The symbol "ProposedFix" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  message: string[];
-  // (undocumented)
-  names: string[];
-  // (undocumented)
-  namespace: string;
+  proposedFix: ProposedFix[];
   // (undocumented)
   severity: ErrorSeverity;
+  // Warning: (ae-forgotten-export) The symbol "ResourceRef" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  sourceRef: ResourceRef;
+  // (undocumented)
+  type: string;
 }
 
 // @public
@@ -136,12 +140,6 @@ export const EntityKubernetesContent: (
 export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
-
-// @public
-export type ErrorDetectableKind =
-  | 'Pod'
-  | 'Deployment'
-  | 'HorizontalPodAutoscaler';
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
