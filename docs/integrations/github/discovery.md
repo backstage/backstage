@@ -167,7 +167,7 @@ catalog:
         organization: 'backstage' # string
         catalogPath: '/catalog-info.yaml' # string
         filters:
-          visibilities:
+          visibility:
             - public
             - internal
       enterpriseProviderId:
@@ -201,6 +201,8 @@ This provider supports multiple organizations via unique provider IDs.
     - **`exclude`** _(optional)_:
       An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
+  - **`visibility`** _(optional)_:
+    An array of strings used to filter results based on their visibility. Available options are `private`, `internal`, `private`. If configured (non empty), only repositories with visibility present in the filter will be ingested
 - **`host`** _(optional)_:
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 - **`organization`**:

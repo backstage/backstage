@@ -107,5 +107,5 @@ export function satisfiesVisibilityFilter(
   if (!visibilities.length) {
     return true;
   }
-  return visibilities.indexOf(visibility) > -1;
+  return visibilities.includes(visibility);
 }

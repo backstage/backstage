@@ -243,7 +243,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const repositoryFilter = this.config.filters?.repository;
     const topicFilters = this.config.filters?.topic;
     const allowForks = this.config.filters?.allowForks ?? true;
-    const visibilities = this.config.filters?.visibilities ?? [];
+    const visibilities = this.config.filters?.visibility ?? [];
 
     const matchingRepositories = repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;

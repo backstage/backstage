@@ -33,7 +33,7 @@ export type GithubEntityProviderConfig = {
     branch?: string;
     topic?: GithubTopicFilters;
     allowForks?: boolean;
-    visibilities?: string[];
+    visibility?: string[];
   };
   validateLocationsExist: boolean;
   schedule?: TaskScheduleDefinition;
@@ -86,9 +86,8 @@ function readProviderConfig(
 
   const catalogPathContainsWildcard = catalogPath.includes('*');
 
-  const visibilitiesInclude = config?.getOptionalStringArray(
-    'filters.visibilities',
-  );
+  const visibilityFilterInclude =
+    config?.getOptionalStringArray('filters.visibility');
 
   if (validateLocationsExist && catalogPathContainsWildcard) {
     throw Error(
@@ -115,7 +114,7 @@ function readProviderConfig(
         include: topicFilterInclude,
         exclude: topicFilterExclude,
       },
-      visibilities: visibilitiesInclude,
+      visibility: visibilityFilterInclude,
     },
     schedule,
     validateLocationsExist,
