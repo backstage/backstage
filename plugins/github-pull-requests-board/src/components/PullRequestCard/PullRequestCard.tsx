@@ -52,21 +52,17 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
   const commentsReviews = getCommentedReviews(reviews);
   const changeRequests = getChangeRequests(reviews);
 
-  // Resolved in this way to satisfy merge - Author: tylerhekman-procore
-  // This information should probably be moved into dedicated CardHeader fields
-  // instead of title prefixes
-  const cardTitleModifiers = [isDraft && '🔧 DRAFT', repositoryIsArchived && '📁 ARCHIVED'].filter(Boolean);
-  const cardTitle = cardTitleModifiers.length > 0 ? `(${cardTitleModifiers.join(' | ')}) - ${title}` : title;
-
   return (
     <Card
-      title={cardTitle}
+      title={title}
       createdAt={createdAt}
       updatedAt={updatedAt}
       authorName={author.login}
       authorAvatar={author.avatarUrl}
       repositoryName={repositoryName}
       prUrl={url}
+      isDraft={isDraft}
+      repositoryIsArchived={repositoryIsArchived}
     >
       {!!approvedReviews.length && (
         <UserHeaderList
