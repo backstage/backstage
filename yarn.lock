@@ -3694,6 +3694,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-node@workspace:packages/cli-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-node@workspace:packages/cli-node"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
