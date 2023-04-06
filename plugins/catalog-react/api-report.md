@@ -242,7 +242,6 @@ export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
