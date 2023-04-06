@@ -3699,6 +3699,15 @@ __metadata:
   resolution: "@backstage/cli-node@workspace:packages/cli-node"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@manypkg/get-packages": ^1.1.3
+    "@yarnpkg/parsers": ^3.0.0-rc.4
+    fs-extra: 10.1.0
+    mock-fs: ^5.2.0
+    semver: ^7.3.2
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 

@@ -21,8 +21,19 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@manypkg/get-packages": "^1.1.3",
+    "@yarnpkg/parsers": "^3.0.0-rc.4",
+    "fs-extra": "10.1.0",
+    "semver": "^7.3.2",
+    "zod": "^3.21.4"
+  },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "mock-fs": "^5.2.0"
   },
   "files": [
     "dist"
