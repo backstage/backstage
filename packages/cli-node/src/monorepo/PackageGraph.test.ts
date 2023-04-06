@@ -18,16 +18,10 @@ import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { Lockfile } from './Lockfile';
-import { listChangedFiles, readFileAtRef } from '../git';
+import { GitUtils } from '../git';
 
-jest.mock('../git');
-
-const mockListChangedFiles = listChangedFiles as jest.MockedFunction<
-  typeof listChangedFiles
->;
-const mockReadFileAtRef = readFileAtRef as jest.MockedFunction<
-  typeof readFileAtRef
->;
+const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
+const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
 jest.mock('../paths', () => ({
   paths: {

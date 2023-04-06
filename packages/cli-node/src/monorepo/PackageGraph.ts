@@ -18,7 +18,7 @@ import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
-import { listChangedFiles, readFileAtRef } from '../git';
+import { GitUtils } from '../git';
 import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
 
@@ -214,7 +214,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     ref: string;
     analyzeLockfile?: boolean;
   }) {
-    const changedFiles = await listChangedFiles(options.ref);
+    const changedFiles = await GitUtils.listChangedFiles(options.ref);
 
     const dirMap = new Map(
       Array.from(this.values()).map(pkg => [
@@ -265,7 +265,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           paths.resolveTargetRoot('yarn.lock'),
         );
         otherLockfile = Lockfile.parse(
-          await readFileAtRef('yarn.lock', options.ref),
+          await GitUtils.readFileAtRef('yarn.lock', options.ref),
         );
       } catch (error) {
         console.warn(

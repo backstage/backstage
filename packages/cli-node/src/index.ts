@@ -19,3 +19,5 @@
  *
  * @packageDocumentation
  */
+
+export * from './git';

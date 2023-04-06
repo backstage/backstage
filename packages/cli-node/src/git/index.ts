@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { listChangedFiles, readFileAtRef } from './git';
+export { GitUtils } from './GitUtils';
