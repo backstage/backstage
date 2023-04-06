@@ -32,8 +32,10 @@ export async function loadLighthouseEntities(
 
   const { token } = await tokenManager.getToken();
 
-  return await catalogClient.getEntities({
-    filter: [filter],
-    token,
-  });
+  return await catalogClient.getEntities(
+    {
+      filter: [filter],
+    },
+    { token },
+  );
 }

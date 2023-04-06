@@ -24,6 +24,7 @@ import { Config } from '@backstage/config';
 import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LighthouseAuditScheduleImpl } from '../config';
+import { TokenManager } from '@backstage/backend-common';
 
 /** @public **/
 export interface CreateLighthouseSchedulerOptions {
@@ -79,10 +80,12 @@ export async function createScheduler(
         logger.info('Running Lighthouse Audit Task');
 
         const { token } = await tokenManager.getToken();
-        const websitesWithUrl = await catalogClient.getEntities({
-          filter: [filter],
-          token,
-        });
+        const websitesWithUrl = await catalogClient.getEntities(
+          {
+            filter: [filter],
+          },
+          { token },
+        );
 
         let index = 0;
         for (const entity of websitesWithUrl.items) {
