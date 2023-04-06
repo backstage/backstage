@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-export type PackageRole =
-  | 'frontend'
-  | 'backend'
-  | 'cli'
-  | 'web-library'
-  | 'node-library'
-  | 'common-library'
-  | 'frontend-plugin'
-  | 'frontend-plugin-module'
-  | 'backend-plugin'
-  | 'backend-plugin-module';
-
-export type PackagePlatform = 'node' | 'web' | 'common';
-export type PackageOutputType = 'bundle' | 'types' | 'esm' | 'cjs';
-
-export interface PackageRoleInfo {
-  role: PackageRole;
-  platform: PackagePlatform;
-  output: PackageOutputType[];
-}
+export type {
+  PackageRoleInfo,
+  PackagePlatform,
+  PackageOutputType,
+  PackageRole,
+} from './types';
+export { PackageRoles } from './PackageRoles';

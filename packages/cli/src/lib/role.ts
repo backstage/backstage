@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-export type {
-  PackageRoleInfo,
-  PackagePlatform,
-  PackageOutputType,
-  PackageRole,
-} from './types';
-export {
-  getRoleInfo,
-  getRoleFromPackage,
-  findRoleFromCommand,
-  detectRoleFromPackage,
-} from './PackageRoles';
+import fs from 'fs-extra';
+import { OptionValues } from 'commander';
+import { paths } from './paths';
+
+export async function findRoleFromCommand(
+  opts: OptionValues,
+): Promise<PackageRole> {
+  if (opts.role) {
+    return getRoleInfo(opts.role)?.role;
+  }
+
+  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
+  const info = getRoleFromPackage(pkg);
+  if (!info) {
+    throw new Error(`Target package must have 'backstage.role' set`);
+  }
+  return info;
+}
