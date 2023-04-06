@@ -21,7 +21,7 @@ import {
   getRoleFromPackage,
   findRoleFromCommand,
   detectRoleFromPackage,
-} from './packageRoles';
+} from './PackageRoles';
 
 describe('getRoleInfo', () => {
   it('provides role info by role', () => {
