@@ -144,7 +144,7 @@ export const CustomFieldExplorer = ({
           </Select>
         </FormControl>
 
-        <IconButton size="medium" onClick={onClose}>
+        <IconButton size="medium" onClick={onClose} aria-label="Close">
           <CloseIcon />
         </IconButton>
       </div>
