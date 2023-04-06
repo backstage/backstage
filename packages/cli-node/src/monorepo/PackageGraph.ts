@@ -19,7 +19,7 @@ import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
 import { listChangedFiles, readFileAtRef } from '../git';
-import { Lockfile } from '../versioning';
+import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
 
 type PackageJSON = Package['packageJson'];

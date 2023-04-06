@@ -17,7 +17,7 @@
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
-import { Lockfile } from '../versioning/Lockfile';
+import { Lockfile } from './Lockfile';
 import { listChangedFiles, readFileAtRef } from '../git';
 
 jest.mock('../git');
