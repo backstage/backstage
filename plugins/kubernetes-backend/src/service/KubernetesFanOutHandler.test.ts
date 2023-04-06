@@ -436,6 +436,221 @@ describe('getKubernetesObjectsByEntity', () => {
     ).toBe('crd-two.example.com');
   });
 
+  it('prioritizes returning customResources defined in cluster details before config defined profileCustomResources and globally defined customResources passed directly into the fanOutHandler', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+            customResourceProfile: 'build',
+            customResources: [
+              {
+                group: 'priority.test.io',
+                apiVersion: 'v1alpha1',
+                plural: 'priority2',
+              },
+            ],
+          },
+        ],
+      }),
+    );
+
+    const sut = mockFetchAndGetKubernetesFanOutHandler([
+      {
+        group: 'priority.test.io',
+        apiVersion: 'v1alpha1',
+        plural: 'priority4',
+        objectType: 'customresources',
+      },
+    ]);
+
+    await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'priority.test.io',
+            apiVersion: 'v1alpha1',
+            plural: 'priority2',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+  });
+
+  it('prioritizes returning customResources defined in config defined customResourceProfiles before globally defined customResources passed directly into the fanOutHandler', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+            customResourceProfile: 'build',
+          },
+        ],
+      }),
+    );
+
+    const sut = mockFetchAndGetKubernetesFanOutHandler([
+      {
+        group: 'priority.test.io',
+        apiVersion: 'v1alpha1',
+        plural: 'priority4',
+        objectType: 'customresources',
+      },
+    ]);
+
+    await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'argoproj.io',
+            apiVersion: 'v1alpha1',
+            plural: 'rollouts',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+  });
+
+  it('returns globally defined customResources passed directly into the fanOutHandler when none are defined in clusterDetails or config defined customResourceProfiles', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
+    );
+
+    const sut = mockFetchAndGetKubernetesFanOutHandler([
+      {
+        group: 'priority.test.io',
+        apiVersion: 'v1alpha1',
+        plural: 'priority4',
+        objectType: 'customresources',
+      },
+    ]);
+
+    await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'priority.test.io',
+            apiVersion: 'v1alpha1',
+            plural: 'priority4',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+  });
+
+  it('retrieves objects for one cluster using customResourceProfiles config definition', async () => {
+    // fanOutHandler checks for any customResources provided in the cluster details, this takes priority two in objects returned. After it checks whether a customResourceProfile is defined in the cluster details and if it is it assigns priority three to returning matching custom resources defined in the config matching that profile name.
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+            customResourceProfile: 'build',
+          },
+        ],
+      }),
+    );
+    // fanOutHandler first checks for any customResources provided directly to the fanouthandler instance, this takes priority one in objects returned.
+    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+
+    await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'argoproj.io',
+            apiVersion: 'v1alpha1',
+            plural: 'rollouts',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+  });
+
+  it('retrieves objects for two clusters using customResourceProfiles config definition', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'profile-cluster-1',
+            authProvider: 'serviceAccount',
+            customResourceProfile: 'build',
+          },
+          {
+            name: 'profile-cluster-2',
+            authProvider: 'serviceAccount',
+            customResourceProfile: 'run',
+          },
+        ],
+      }),
+    );
+
+    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+
+    await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'argoproj.io',
+            apiVersion: 'v1alpha1',
+            plural: 'rollouts',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'sample.io',
+            apiVersion: 'v1alpha1',
+            plural: 'tests',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
+  });
+
   it('dont call top for the same namespace twice', async () => {
     getClustersByEntity.mockImplementation(() =>
       Promise.resolve({
@@ -1008,7 +1223,7 @@ describe('getCustomResourcesByEntity', () => {
       },
     ]);
 
-    const response = await sut.getCustomResourcesByEntity({
+    await sut.getCustomResourcesByEntity({
       entity,
       auth: {},
       customResources: [
@@ -1029,37 +1244,59 @@ describe('getCustomResourcesByEntity', () => {
     ).toBe('parameter-crd.example.com');
   });
 
-  it('prioritizes retrieving objects for one cluster defined by CRD profiles in the config', async () => {
+  it('prioritizes searches for customResources passed directly as a parameter to getCustomResourcesByEntity over CRDs defined globally, in cluster details, or in profiles', async () => {
     getClustersByEntity.mockImplementation(() =>
       Promise.resolve({
         clusters: [
           {
             name: 'profile-cluster-1',
             authProvider: 'serviceAccount',
+            customResourceProfile: 'build',
             customResources: [
               {
-                group: 'some-other-crd.example.com',
+                group: 'priority2.test.io',
                 apiVersion: 'v1alpha1',
-                plural: 'some-crd-only-on-this-cluster',
+                plural: 'priority2',
+                objectType: 'customresources',
               },
             ],
-            customResourceProfile: 'build',
           },
         ],
       }),
     );
 
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+    const sut = mockFetchAndGetKubernetesFanOutHandler([
+      {
+        group: 'priority.test.io',
+        apiVersion: 'v1alpha1',
+        plural: 'priority4',
+        objectType: 'customresources',
+      },
+    ]);
 
     await sut.getCustomResourcesByEntity({
       entity,
       auth: {},
-      customResources: [],
+      customResources: [
+        {
+          group: 'parameter-crd.example.com',
+          apiVersion: 'v1alpha1',
+          plural: 'parameter-crd',
+        },
+      ],
     });
 
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(
-      fetchObjectsForService.mock.calls[0][0].customResources[0].plural,
-    ).toBe('rollouts');
+    expect(fetchObjectsForService).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customResources: [
+          {
+            group: 'parameter-crd.example.com',
+            apiVersion: 'v1alpha1',
+            plural: 'parameter-crd',
+            objectType: 'customresources',
+          },
+        ],
+      }),
+    );
   });
 });
