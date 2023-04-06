@@ -18,4 +18,4 @@ export { EntityRefLink } from './EntityRefLink';
 export type { EntityRefLinkProps } from './EntityRefLink';
 export { EntityRefLinks } from './EntityRefLinks';
 export type { EntityRefLinksProps } from './EntityRefLinks';
-export { humanizeEntityRef, humanizeEntity } from './humanize';
+export { humanizeEntityRef } from './humanize';
