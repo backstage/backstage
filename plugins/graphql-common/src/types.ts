@@ -23,8 +23,6 @@ import {
 } from 'graphql';
 import { Application } from 'graphql-modules';
 
-export type PromiseOrValue<T> = T | Promise<T>;
-
 /** @public */
 export interface NodeId {
   source: string;

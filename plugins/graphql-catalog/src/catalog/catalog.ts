@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createModule } from 'graphql-modules';
+import { createModule, TypeDefs } from 'graphql-modules';
 import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import {
@@ -21,51 +21,61 @@ import {
   ResolverContext,
 } from '@backstage/plugin-graphql-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { loadFilesSync } from '@graphql-tools/load-files';
+import { loadFiles, loadFilesSync } from '@graphql-tools/load-files';
 import { resolvePackagePath } from '@backstage/backend-common';
 import { CATALOG_SOURCE } from '../constants';
 
+const catalogSchemaPath = resolvePackagePath(
+  '@backstage/plugin-graphql-catalog',
+  'src/catalog/catalog.graphql',
+);
+
 /** @public */
-export const Catalog = createModule({
-  id: 'catalog',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-graphql-catalog',
-      'src/catalog/catalog.graphql',
-    ),
-  ),
-  resolvers: {
-    JSON: GraphQLJSON,
-    JSONObject: GraphQLJSONObject,
-    Entity: {
-      labels: (labels: Record<string, string>) =>
-        labels
-          ? Object.entries(labels).map(([key, value]) => ({ key, value }))
-          : null,
-      annotations: (annotations: Record<string, string>) =>
-        annotations
-          ? Object.entries(annotations).map(([key, value]) => ({ key, value }))
-          : null,
-    },
-    Query: {
-      entity: (
-        _: any,
-        {
-          name,
-          kind,
-          namespace = 'default',
-        }: { name: string; kind: string; namespace: string },
-        { encodeId }: ResolverContext,
-      ): { id: string } => ({
-        id: encodeId({
-          source: CATALOG_SOURCE,
-          typename: 'Entity',
-          ref: stringifyEntityRef({ name, kind, namespace }),
+export const CatalogSync = (
+  typeDefs: TypeDefs = loadFilesSync(catalogSchemaPath),
+) =>
+  createModule({
+    id: 'catalog',
+    typeDefs,
+    resolvers: {
+      JSON: GraphQLJSON,
+      JSONObject: GraphQLJSONObject,
+      Entity: {
+        labels: (labels: Record<string, string>) =>
+          labels
+            ? Object.entries(labels).map(([key, value]) => ({ key, value }))
+            : null,
+        annotations: (annotations: Record<string, string>) =>
+          annotations
+            ? Object.entries(annotations).map(([key, value]) => ({
+                key,
+                value,
+              }))
+            : null,
+      },
+      Query: {
+        entity: (
+          _: any,
+          {
+            name,
+            kind,
+            namespace = 'default',
+          }: { name: string; kind: string; namespace: string },
+          { encodeId }: ResolverContext,
+        ): { id: string } => ({
+          id: encodeId({
+            source: CATALOG_SOURCE,
+            typename: 'Entity',
+            ref: stringifyEntityRef({ name, kind, namespace }),
+          }),
         }),
-      }),
+      },
     },
-  },
-  providers: [
-    createDirectiveMapperProvider('relation', relationDirectiveMapper),
-  ],
-});
+    providers: [
+      createDirectiveMapperProvider('relation', relationDirectiveMapper),
+    ],
+  });
+
+/** @public */
+export const Catalog = async () =>
+  CatalogSync(await loadFiles(catalogSchemaPath));

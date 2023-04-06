@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@effection/jest": "^2.0.4",
     "@envelop/core": "^3.0.4",
     "@envelop/dataloader": "^4.0.4",
     "@envelop/graphql-modules": "4.0.4",

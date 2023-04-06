@@ -15,5 +15,6 @@
  */
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { transformSchema } from './transformSchema';
+import { CoreSync } from './core';
 
-export const schema = printSchemaWithDirectives(transformSchema());
+export const schema = printSchemaWithDirectives(transformSchema([CoreSync()]));

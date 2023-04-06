@@ -7,12 +7,16 @@ import type { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { GraphQLError } from 'graphql';
 import { Module } from 'graphql-modules';
+import { TypeDefs } from 'graphql-modules';
 
 // @public (undocumented)
-export const Catalog: Module;
+export const Catalog: () => Promise<Module>;
 
 // @public (undocumented)
 export const CATALOG_SOURCE = 'Catalog';
+
+// @public (undocumented)
+export const CatalogSync: (typeDefs?: TypeDefs) => Module;
 
 // @public (undocumented)
 export const createEntitiesLoadFn: (
@@ -20,7 +24,10 @@ export const createEntitiesLoadFn: (
 ) => (entityRefs: readonly string[]) => Promise<Array<Entity | GraphQLError>>;
 
 // @public (undocumented)
-export const Relation: Module;
+export const Relation: () => Promise<Module>;
+
+// @public (undocumented)
+export const RelationSync: (typeDefs?: TypeDefs) => Module;
 
 // (No @packageDocumentation comment for this package)
 ```

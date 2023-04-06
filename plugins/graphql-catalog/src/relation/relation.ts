@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createModule } from 'graphql-modules';
+import { TypeDefs, createModule } from 'graphql-modules';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import { createDirectiveMapperProvider } from '@backstage/plugin-graphql-common';
-import { loadFilesSync } from '@graphql-tools/load-files';
+import { loadFiles, loadFilesSync } from '@graphql-tools/load-files';
 import { resolvePackagePath } from '@backstage/backend-common';
 
+const relationSchemaPath = resolvePackagePath(
+  '@backstage/plugin-graphql-catalog',
+  'src/relation/relation.graphql',
+);
+
 /** @public */
-export const Relation = createModule({
-  id: 'relation',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-graphql-catalog',
-      'src/relation/relation.graphql',
-    ),
-  ),
-  providers: [
-    createDirectiveMapperProvider('relation', relationDirectiveMapper),
-  ],
-});
+export const RelationSync = (
+  typeDefs: TypeDefs = loadFilesSync(relationSchemaPath),
+) =>
+  createModule({
+    id: 'relation',
+    typeDefs,
+    providers: [
+      createDirectiveMapperProvider('relation', relationDirectiveMapper),
+    ],
+  });
+
+/** @public */
+export const Relation = async () =>
+  RelationSync(await loadFiles(relationSchemaPath));

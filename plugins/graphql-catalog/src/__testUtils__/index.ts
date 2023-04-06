@@ -13,18 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Operation } from 'effection';
-import { PromiseOrValue } from '../types';
-
-export function isPromise<T>(x: PromiseOrValue<T>): x is Promise<T> {
-  return typeof (x as Promise<T>).then === 'function';
-}
-
-export function* unwrap<T>(promiseOrValue: PromiseOrValue<T> | Operation<T>): {
-  [Symbol.iterator](): Iterator<Operation<T>, T, any>;
-} {
-  if (isPromise(promiseOrValue)) {
-    return yield promiseOrValue;
-  }
-  return promiseOrValue as T;
-}
+export * from './createApi';

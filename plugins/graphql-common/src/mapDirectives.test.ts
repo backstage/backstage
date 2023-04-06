@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-/* eslint-disable func-names */
-/* eslint-disable jest/no-standalone-expect */
-
-import { describe, it } from '@effection/jest';
 import DataLoader from 'dataloader';
 import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './__testUtils__';
 import { transformSchema } from './transformSchema';
 import { GraphQLContext, NodeId } from './types';
+import { CoreSync } from './core';
 
 describe('mapDirectives', () => {
   const transform = (source: DocumentNode, generateOpaqueTypes?: boolean) =>
     transformSchema(
       [
+        CoreSync(),
         createModule({
           id: 'mapDirectives',
           typeDefs: source,
@@ -37,7 +35,7 @@ describe('mapDirectives', () => {
       { generateOpaqueTypes },
     );
 
-  it('should add opaque object type if `generateOpaqueTypes` option is true', function* () {
+  it('should add opaque object type if `generateOpaqueTypes` option is true', () => {
     const schema = transform(
       gql`
         interface Entity @discriminates @implements(interface: "Node") {
@@ -56,7 +54,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should add object with name from `opaqueType` argument of @discriminates directive', function* () {
+  it('should add object with name from `opaqueType` argument of @discriminates directive', () => {
     const schema = transform(
       gql`
         interface Entity
@@ -77,7 +75,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should add missing discrimination alias types', function* () {
+  it('should add missing discrimination alias types', () => {
     const schema = transform(
       gql`
         interface Entity
@@ -99,7 +97,7 @@ describe('mapDirectives', () => {
     expect(schema.getType('Location')).toBeDefined();
   });
 
-  it(`shouldn't generate opaque type if there is only one implementation with generateOpaqueTypes: true`, function* () {
+  it(`shouldn't generate opaque type if there is only one implementation with generateOpaqueTypes: true`, () => {
     const schema = transform(
       gql`
         interface Entity @discriminates @implements(interface: "Node") {
@@ -115,7 +113,7 @@ describe('mapDirectives', () => {
     expect(schema.getType('Component')).toBeDefined();
   });
 
-  it('should merge fields from interface in @implements directive type', function* () {
+  it('should merge fields from interface in @implements directive type', () => {
     const schema = transform(gql`
       interface Entity @implements(interface: "Node") {
         name: String!
@@ -131,7 +129,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should add object type with merged fields from interfaces', function* () {
+  it('should add object type with merged fields from interfaces', () => {
     const schema = transform(
       gql`
         interface Entity @discriminates @implements(interface: "Node") {
@@ -150,7 +148,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should merge fields for basic types', function* () {
+  it('should merge fields for basic types', () => {
     const schema = transform(gql`
       interface Connection {
         foobar: String!
@@ -168,7 +166,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should merge union types', function* () {
+  it('should merge union types', () => {
     const schema = transform(
       gql`
         extend interface Node @discriminates(with: "kind")
@@ -191,7 +189,7 @@ describe('mapDirectives', () => {
     ).toEqual(['union Entity = OpaqueComponent | OpaqueResource']);
   });
 
-  it('should merge interface types', function* () {
+  it('should merge interface types', () => {
     const schema = transform(
       gql`
         interface Entity @implements(interface: "Node") {
@@ -220,7 +218,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should implements a types sequence', function* () {
+  it('should implements a types sequence', () => {
     const schema = transform(gql`
       interface Entity
         @discriminates(with: "kind")
@@ -254,7 +252,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('@discriminates directive is optional if there is only one implementation', function* () {
+  it('@discriminates directive is optional if there is only one implementation', () => {
     const schema = transform(gql`
       interface Entity @implements(interface: "Node") {
         name: String!
@@ -278,7 +276,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it(`it's possible to use "implements" keyword to declare implementations of external interfaces`, function* () {
+  it(`it's possible to use "implements" keyword to declare implementations of external interfaces`, () => {
     const schema = transform(gql`
       interface Entity @implements(interface: "Node") {
         name: String!
@@ -302,7 +300,7 @@ describe('mapDirectives', () => {
     ]);
   });
 
-  it('should fail if `at` argument of @field is not a valid type', function* () {
+  it('should fail if `at` argument of @field is not a valid type', () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -314,7 +312,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if `with` argument of @discriminates is not a valid type', function* () {
+  it('should fail if `with` argument of @discriminates is not a valid type', () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -331,7 +329,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it("should fail if @implements interface doesn't exist", function* () {
+  it("should fail if @implements interface doesn't exist", () => {
     expect(() =>
       transform(gql`
         interface Entity @implements(interface: "NonExistingInterface") {
@@ -343,7 +341,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it("should fail if @implements interface isn't an interface", function* () {
+  it("should fail if @implements interface isn't an interface", () => {
     expect(() =>
       transform(gql`
         interface Entity @implements(interface: "String") {
@@ -355,7 +353,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if @discriminates without "with" and without opaque types', function* () {
+  it('should fail if @discriminates without "with" and without opaque types', () => {
     expect(() =>
       transform(gql`
         interface Entity @discriminates @implements(interface: "Node") {
@@ -370,7 +368,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if "opaqueType" is declared`, function* () {
+  it(`should fail if "opaqueType" is declared`, () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -388,7 +386,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if type generated from "generateOpaqueTypes" is declared`, function* () {
+  it(`should fail if type generated from "generateOpaqueTypes" is declared`, () => {
     expect(() =>
       transform(
         gql`
@@ -407,7 +405,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if @discriminationAlias has ambiguous types`, function* () {
+  it(`should fail if @discriminationAlias has ambiguous types`, () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -431,7 +429,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if @discriminationAlias is used without @discriminates`, function* () {
+  it(`should fail if @discriminationAlias is used without @discriminates`, () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -445,7 +443,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it(`should fail if interface has multiple implementations and @discriminates is not specified`, function* () {
+  it(`should fail if interface has multiple implementations and @discriminates is not specified`, () => {
     expect(() =>
       transform(gql`
         interface Component @implements(interface: "Node") {
@@ -460,7 +458,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if Node with empty @discriminates has multiple implementations', function* () {
+  it('should fail if Node with empty @discriminates has multiple implementations', () => {
     expect(() =>
       transform(
         gql`
@@ -480,7 +478,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if interface with empty @discriminates has multiple implementations', function* () {
+  it('should fail if interface with empty @discriminates has multiple implementations', () => {
     expect(() =>
       transform(
         gql`
@@ -500,7 +498,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if an interface is not in @implements chai', function* () {
+  it('should fail if an interface is not in @implements chai', () => {
     expect(() =>
       transform(gql`
         interface Entity @implements(interface: "Node") {
@@ -518,7 +516,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if a type implements some interfaces without @implements directive', function* () {
+  it('should fail if a type implements some interfaces without @implements directive', () => {
     expect(() =>
       transform(gql`
         extend interface Node @discriminates(with: "kind")
@@ -535,7 +533,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it("should fail if an interface with @discriminates doesn't implement any interface", function* () {
+  it("should fail if an interface with @discriminates doesn't implement any interface", () => {
     expect(() =>
       transform(gql`
         interface Entity @discriminates(with: "kind") {
@@ -547,7 +545,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it("should fail if an interface with @discriminates doesn't have any implementations and `generateOpaqueType` is false", function* () {
+  it("should fail if an interface with @discriminates doesn't have any implementations and `generateOpaqueType` is false", () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -561,7 +559,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if an interface with @discriminates has implementations without @implements directive', function* () {
+  it('should fail if an interface with @discriminates has implementations without @implements directive', () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -580,7 +578,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if discrimination alias type does not implement the interface', function* () {
+  it('should fail if discrimination alias type does not implement the interface', () => {
     expect(() =>
       transform(gql`
         interface Entity
@@ -603,7 +601,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should add resolver for @field directive', function* () {
+  it('should add resolver for @field directive', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -619,8 +617,8 @@ describe('mapDirectives', () => {
       spec: { 'path.to.name': 'world' },
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'test' }),
       )}) { ...on Entity { first, second, third } }
@@ -634,7 +632,7 @@ describe('mapDirectives', () => {
     });
   });
 
-  it('should add resolver for @field directive to a field of object type', function* () {
+  it('should add resolver for @field directive to a field of object type', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -656,8 +654,8 @@ describe('mapDirectives', () => {
       metadata: { name: 'hello world' },
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       component(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Component', ref: 'test' }),
       )}) { name }
@@ -669,7 +667,7 @@ describe('mapDirectives', () => {
     });
   });
 
-  it('should resolve types by @discriminates directive', function* () {
+  it('should resolve types by @discriminates directive', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -726,7 +724,7 @@ describe('mapDirectives', () => {
           return null;
         }),
       );
-    const query = createGraphQLAPI(TestModule, loader, true);
+    const query = await createGraphQLAPI(TestModule, loader, true);
     const queryNode = (id: NodeId) =>
       query(/* GraphQL */ `
         node(id: ${JSON.stringify(JSON.stringify(id))}) {
@@ -739,22 +737,22 @@ describe('mapDirectives', () => {
           }
         }
       `);
-    const componentResult = yield queryNode({
+    const componentResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
       ref: 'component:default/backend',
     });
-    const employeeResult = yield queryNode({
+    const employeeResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
       ref: 'employee:default/john',
     });
-    const locationResult = yield queryNode({
+    const locationResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
       ref: 'location:default/home',
     });
-    const systemResult = yield queryNode({
+    const systemResult = await queryNode({
       source: 'Mock',
       typename: 'Node',
       ref: 'system:default/production',
@@ -788,7 +786,7 @@ describe('mapDirectives', () => {
     });
   });
 
-  it('should fail if discriminated value is not a string', function* () {
+  it('should fail if discriminated value is not a string', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -804,7 +802,7 @@ describe('mapDirectives', () => {
       name: 'hello',
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
+    const query = await createGraphQLAPI(TestModule, loader);
     const id = JSON.stringify({
       source: 'Mock',
       typename: 'Entity',
@@ -813,7 +811,7 @@ describe('mapDirectives', () => {
     let error: Error;
 
     try {
-      yield query(/* GraphQL */ `
+      await query(/* GraphQL */ `
       node(id: ${JSON.stringify(id)}) { ...on Entity { name } }
     `);
     } catch (e) {
@@ -826,7 +824,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if discriminated type is not defined in the schema', function* () {
+  it('should fail if discriminated type is not defined in the schema', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -842,7 +840,7 @@ describe('mapDirectives', () => {
       name: 'hello',
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
+    const query = await createGraphQLAPI(TestModule, loader);
     const id = JSON.stringify({
       source: 'Mock',
       typename: 'Entity',
@@ -851,7 +849,7 @@ describe('mapDirectives', () => {
     let error: Error;
 
     try {
-      yield query(/* GraphQL */ `
+      await query(/* GraphQL */ `
       node(id: ${JSON.stringify(id)}) { ...on Entity { name } }
     `);
     } catch (e) {
@@ -864,7 +862,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if discriminated type is not an object or interface', function* () {
+  it('should fail if discriminated type is not an object or interface', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -882,7 +880,7 @@ describe('mapDirectives', () => {
       name: 'hello',
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
+    const query = await createGraphQLAPI(TestModule, loader);
     const id = JSON.stringify({
       source: 'Mock',
       typename: 'Entity',
@@ -891,7 +889,7 @@ describe('mapDirectives', () => {
     let error: Error;
 
     try {
-      yield query(/* GraphQL */ `
+      await query(/* GraphQL */ `
       node(id: ${JSON.stringify(id)}) { ...on Component { name } }
     `);
     } catch (e) {
@@ -904,7 +902,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if discriminated type is does not implement the interface', function* () {
+  it('should fail if discriminated type does not implement the interface', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -933,7 +931,7 @@ describe('mapDirectives', () => {
       name: 'hello',
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
+    const query = await createGraphQLAPI(TestModule, loader);
     const id = JSON.stringify({
       source: 'Mock',
       typename: 'Entity',
@@ -942,7 +940,7 @@ describe('mapDirectives', () => {
     let error: Error;
 
     try {
-      yield query(/* GraphQL */ `
+      await query(/* GraphQL */ `
       node(id: ${JSON.stringify(id)}) { name }
     `);
     } catch (e) {
@@ -955,7 +953,7 @@ describe('mapDirectives', () => {
     );
   });
 
-  it('should fail if discriminated type is not an object or interface', function* () {
+  it('should fail if discriminated type does not related to encoded type', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -977,7 +975,7 @@ describe('mapDirectives', () => {
       name: 'hello',
     };
     const loader = () => new DataLoader(async () => [entity]);
-    const query = createGraphQLAPI(TestModule, loader);
+    const query = await createGraphQLAPI(TestModule, loader);
     const id = JSON.stringify({
       source: 'Mock',
       typename: 'Resource',
@@ -986,7 +984,7 @@ describe('mapDirectives', () => {
     let error: Error;
 
     try {
-      yield query(/* GraphQL */ `
+      await query(/* GraphQL */ `
       node(id: ${JSON.stringify(id)}) { name }
     `);
     } catch (e) {

@@ -25,6 +25,7 @@ import {
   GraphQLContext,
   BatchLoadFn,
   NodeId,
+  Core,
 } from '@backstage/plugin-graphql-common';
 import {
   CATALOG_SOURCE,
@@ -45,7 +46,7 @@ export interface RouterOptions<TContext extends Record<string, any>> {
   config: Config;
   logger: Logger;
   schema?: string | string[];
-  modules?: Module[];
+  modules?: ((() => Module | Promise<Module>) | Module | Promise<Module>)[];
   plugins?: Plugin[];
   loaders?: Record<string, BatchLoadFn<TContext & GraphQLContext>>;
   dataloaderOptions?: DataLoaderOptions<string, any>;
@@ -73,8 +74,11 @@ export async function createRouter<TContext extends Record<string, any>>({
   const router = Router();
   const discovery = SingleHostDiscovery.fromConfig(config);
   const catalog = new CatalogClient({ discoveryApi: discovery });
-  const application = createGraphQLApp({
-    modules,
+  const application = await createGraphQLApp({
+    modules: await Promise.all([
+      Core(),
+      ...(modules?.map(m => (typeof m === 'function' ? m() : m)) ?? []),
+    ]),
     generateOpaqueTypes,
     schema,
   });

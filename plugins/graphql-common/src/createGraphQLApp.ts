@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { createApplication, Module } from 'graphql-modules';
-import { Core } from './core';
 import { transformSchema } from './transformSchema';
 import { loadSchema } from './loadSchema';
 
@@ -26,16 +25,16 @@ export type createGraphQLAppOptions = {
 };
 
 /** @public */
-export function createGraphQLApp(options: createGraphQLAppOptions) {
-  const modules = [Core, ...(options.modules ?? [])];
+export async function createGraphQLApp(options: createGraphQLAppOptions) {
+  const modules = options.modules ?? [];
   if (options.schema) {
-    modules.push(...loadSchema(options.schema));
+    modules.push(...(await loadSchema(options.schema)));
   }
+  const schema = transformSchema(modules, {
+    generateOpaqueTypes: options.generateOpaqueTypes,
+  });
   return createApplication({
-    schemaBuilder: _ =>
-      transformSchema(modules, {
-        generateOpaqueTypes: options.generateOpaqueTypes,
-      }),
+    schemaBuilder: _ => schema,
     modules,
   });
 }

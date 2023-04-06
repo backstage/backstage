@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { JsonObject } from '@backstage/types';
-import type { Operation } from 'effection';
 
 import {
   createGraphQLApp,
@@ -27,11 +26,9 @@ import { Module } from 'graphql-modules';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
-import { Relation } from './relation';
+import { RelationSync } from '../relation';
 
-type PromiseOrValue<T> = T | Promise<T>;
-
-export function createGraphQLAPI(
+export async function createGraphQLAPI(
   TestModule: Module,
   loader: (context: GraphQLContext) => DataLoader<any, any>,
   generateOpaqueTypes?: boolean,
@@ -40,8 +37,8 @@ export function createGraphQLAPI(
     encodeId: (x: unknown) => JSON.stringify(x),
     decodeId: (x: string) => JSON.parse(x),
   };
-  const application = createGraphQLApp({
-    modules: [Relation, TestModule],
+  const application = await createGraphQLApp({
+    modules: [RelationSync(), TestModule],
     generateOpaqueTypes,
   });
 
@@ -53,41 +50,24 @@ export function createGraphQLAPI(
     ],
   });
 
-  return (query: string): Operation<JsonObject> => {
-    return function* Query() {
-      const { parse, validate, contextFactory, execute, schema } = run();
-      const document = parse(`{ ${query} }`);
-      const errors = validate(schema, document);
-      if (errors.length) {
-        throw errors[0];
-      }
-      const contextValue = yield* unwrap(contextFactory(context));
+  return async (query: string): Promise<JsonObject> => {
+    const { parse, validate, contextFactory, execute, schema } = run();
+    const document = parse(`{ ${query} }`);
+    const errors = validate(schema, document);
+    if (errors.length) {
+      throw errors[0];
+    }
+    const contextValue = await contextFactory(context);
 
-      const result = yield* unwrap(
-        execute({
-          schema: application.schema,
-          document,
-          contextValue,
-        }),
-      );
-      if (result.errors) {
-        throw result.errors[0];
-      } else {
-        return result.data as JsonObject;
-      }
-    };
+    const result = await execute({
+      schema: application.schema,
+      document,
+      contextValue,
+    });
+    if (result.errors) {
+      throw result.errors[0];
+    } else {
+      return result.data as JsonObject;
+    }
   };
-}
-
-function isPromise<T>(x: PromiseOrValue<T>): x is Promise<T> {
-  return typeof (x as Promise<T>).then === 'function';
-}
-
-function* unwrap<T>(promiseOrValue: PromiseOrValue<T> | Operation<T>): {
-  [Symbol.iterator](): Iterator<Operation<T>, T, any>;
-} {
-  if (isPromise(promiseOrValue)) {
-    return yield promiseOrValue;
-  }
-  return promiseOrValue as T;
 }

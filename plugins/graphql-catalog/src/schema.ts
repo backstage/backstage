@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { transformSchema } from '@backstage/plugin-graphql-common';
+import { CoreSync, transformSchema } from '@backstage/plugin-graphql-common';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import { Catalog } from './catalog';
+import { CatalogSync } from './catalog';
 
-export const schema = printSchemaWithDirectives(transformSchema([Catalog]));
+export const schema = printSchemaWithDirectives(
+  transformSchema([CoreSync(), CatalogSync()]),
+);
