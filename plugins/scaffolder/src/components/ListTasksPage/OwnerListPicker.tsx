@@ -107,12 +107,13 @@ export const OwnerListPicker = (props: {
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
+            <List disablePadding dense role="menu">
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
                   button
                   divider
+                  ContainerProps={{ role: 'menuitem' }}
                   onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
                   selected={item.id === filter}
                   className={classes.menuItem}
