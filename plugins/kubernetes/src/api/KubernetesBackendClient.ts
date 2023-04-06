@@ -92,24 +92,6 @@ export class KubernetesBackendClient implements KubernetesApi {
     return this.handleResponse(response);
   }
 
-  private async getProxyRequired(
-    path: string,
-    clusterName: string,
-    token: string,
-  ): Promise<Response> {
-    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Backstage-Kubernetes-Cluster': clusterName,
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
-  }
-
   private async getCluster(
     clusterName: string,
   ): Promise<{ name: string; authProvider: string }> {

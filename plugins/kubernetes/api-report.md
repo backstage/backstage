@@ -265,7 +265,6 @@ export interface KubernetesApi {
     namespace: string;
     clusterName: string;
     containerName: string;
-    token: string;
   }): Promise<string>;
   // (undocumented)
   getWorkloadsByEntity(
@@ -355,13 +354,11 @@ export class KubernetesBackendClient implements KubernetesApi {
     namespace,
     clusterName,
     containerName,
-    token,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
-    token: string;
   }): Promise<string>;
   // (undocumented)
   getWorkloadsByEntity(
