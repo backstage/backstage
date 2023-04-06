@@ -5,6 +5,7 @@
 ```ts
 import { AppConfig } from '@backstage/config';
 import { Config } from '@backstage/config';
+import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
@@ -31,7 +32,7 @@ export interface AsyncConfigSourceIterator
 // @public
 export interface BaseConfigSourcesOptions {
   // (undocumented)
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   // (undocumented)
   rootDir?: string;
   // (undocumented)
@@ -246,7 +247,7 @@ export class RemoteConfigSource implements ConfigSource {
 
 // @public
 export interface RemoteConfigSourceOptions {
-  reloadIntervalSeconds?: number;
+  reloadInterval?: HumanDuration;
   substitutionFunc?: EnvFunc;
   url: string;
 }

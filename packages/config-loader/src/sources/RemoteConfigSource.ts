@@ -15,7 +15,7 @@
  */
 
 import { ResponseError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 import isEqual from 'lodash/isEqual';
 import fetch from 'node-fetch';
 import yaml from 'yaml';
@@ -27,7 +27,28 @@ import {
   ReadConfigDataOptions,
 } from './types';
 
-const DEFAULT_RELOAD_INTERVAL_SECONDS = 60;
+const DEFAULT_RELOAD_INTERVAL = { seconds: 60 };
+
+function durationToMs(duration: HumanDuration): number {
+  const {
+    years = 0,
+    months = 0,
+    weeks = 0,
+    days = 0,
+    hours = 0,
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0,
+  } = duration;
+
+  const totalDays = years * 365 + months * 30 + weeks * 7 + days;
+  const totalHours = totalDays * 24 + hours;
+  const totalMinutes = totalHours * 60 + minutes;
+  const totalSeconds = totalMinutes * 60 + seconds;
+  const totalMilliseconds = totalSeconds * 1000 + milliseconds;
+
+  return totalMilliseconds;
+}
 
 /**
  * Options for {@link RemoteConfigSource.create}.
@@ -45,7 +66,7 @@ export interface RemoteConfigSourceOptions {
    *
    * Set to Infinity to disable reloading.
    */
-  reloadIntervalSeconds?: number;
+  reloadInterval?: HumanDuration;
 
   /**
    * A substitution function to use instead of the default environment substitution.
@@ -78,13 +99,14 @@ export class RemoteConfigSource implements ConfigSource {
   }
 
   readonly #url: string;
-  readonly #reloadIntervalSeconds: number;
+  readonly #reloadIntervalMs: number;
   readonly #transformer: ConfigTransformer;
 
   private constructor(options: RemoteConfigSourceOptions) {
     this.#url = options.url;
-    this.#reloadIntervalSeconds =
-      options.reloadIntervalSeconds ?? DEFAULT_RELOAD_INTERVAL_SECONDS;
+    this.#reloadIntervalMs = durationToMs(
+      options.reloadInterval ?? DEFAULT_RELOAD_INTERVAL,
+    );
     this.#transformer = createConfigTransformer({
       substitutionFunc: options.substitutionFunc,
     });
@@ -98,11 +120,11 @@ export class RemoteConfigSource implements ConfigSource {
     yield { configs: [{ data, context: this.#url }] };
 
     for (;;) {
+      await this.#wait(options?.signal);
+
       if (options?.signal?.aborted) {
         return;
       }
-
-      await this.#wait(options?.signal);
 
       try {
         const newData = await this.#load(options?.signal);
@@ -146,7 +168,7 @@ export class RemoteConfigSource implements ConfigSource {
 
   async #wait(signal?: AbortSignal) {
     return new Promise<void>(resolve => {
-      const timeoutId = setTimeout(onDone, this.#reloadIntervalSeconds * 1000);
+      const timeoutId = setTimeout(onDone, this.#reloadIntervalMs);
       signal?.addEventListener('abort', onDone);
 
       function onDone() {

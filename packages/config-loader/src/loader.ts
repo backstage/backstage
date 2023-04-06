@@ -104,7 +104,9 @@ export async function loadConfig(
 ): Promise<LoadConfigResult> {
   const source = ConfigSources.default({
     substitutionFunc: options.experimentalEnvFunc,
-    remote: options.remote,
+    remote: options.remote && {
+      reloadInterval: { seconds: options.remote.reloadIntervalSeconds },
+    },
     rootDir: options.configRoot,
     argv: options.configTargets.flatMap(t => [
       '--config',

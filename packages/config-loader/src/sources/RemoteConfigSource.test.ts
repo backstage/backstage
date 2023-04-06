@@ -74,7 +74,7 @@ app:
 
     const source = RemoteConfigSource.create({
       url: 'http://localhost/config.yaml',
-      reloadIntervalSeconds: 0,
+      reloadInterval: { seconds: 0 },
     });
 
     await expect(readN(source, 2)).resolves.toEqual([

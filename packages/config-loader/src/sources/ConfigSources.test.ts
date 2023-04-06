@@ -135,14 +135,14 @@ describe('ConfigSources', () => {
         ConfigSources.defaultForTargets({
           rootDir: '/',
           targets: [{ type: 'url', target: 'http://example.com/config.yaml' }],
-          remote: { reloadIntervalSeconds: 5 },
+          remote: { reloadInterval: { minutes: 2 } },
         }),
       ),
     ).toEqual([
       {
         name: 'RemoteConfigSource',
         url: 'http://example.com/config.yaml',
-        reloadIntervalSeconds: 5,
+        reloadInterval: { minutes: 2 },
       },
     ]);
   });

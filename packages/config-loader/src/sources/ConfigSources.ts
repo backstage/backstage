@@ -72,7 +72,7 @@ export interface ClosableConfig extends Config {
  */
 export interface BaseConfigSourcesOptions {
   rootDir?: string;
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   substitutionFunc?: SubstitutionFunc;
 }
 
@@ -112,8 +112,12 @@ export class ConfigSources {
     const args: string[] = [parseArgs(argv).config].flat().filter(Boolean);
     return args.map(target => {
       try {
-        // eslint-disable-next-line no-new
-        new URL(target);
+        const url = new URL(target);
+
+        // Some file paths are valid relative URLs, so check if the host is empty too
+        if (!url.host) {
+          return { type: 'path', target };
+        }
         return { type: 'url', target };
       } catch {
         return { type: 'path', target };
@@ -151,7 +155,7 @@ export class ConfigSources {
         return RemoteConfigSource.create({
           url: arg.target,
           substitutionFunc: options.substitutionFunc,
-          reloadIntervalSeconds: options.remote.reloadIntervalSeconds,
+          reloadInterval: options.remote.reloadInterval,
         });
       }
       return FileConfigSource.create({

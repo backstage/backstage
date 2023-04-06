@@ -55,7 +55,7 @@ export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 // @public (undocumented)
 export interface ConfigFactoryOptions {
   argv?: string[];
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
 }
 
 // @public (undocumented)

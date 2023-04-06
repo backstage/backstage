@@ -33,7 +33,7 @@ export interface ConfigFactoryOptions {
   /**
    * Enables and sets options for remote configuration loading.
    */
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadIntervalSeconds'>;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
 }
 
 /** @public */

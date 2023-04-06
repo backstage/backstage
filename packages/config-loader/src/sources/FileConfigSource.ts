@@ -147,9 +147,11 @@ export class FileConfigSource implements ConfigSource {
       }
     };
 
-    signal?.addEventListener('abort', () => {
+    const onAbort = () => {
+      signal?.removeEventListener('abort', onAbort);
       watcher.close();
-    });
+    };
+    signal?.addEventListener('abort', onAbort);
 
     yield { configs: await readConfigFile() };
 
