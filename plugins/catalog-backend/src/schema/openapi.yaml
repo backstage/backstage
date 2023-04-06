@@ -6,6 +6,7 @@ info:
   description: The Backstage backend plugin that provides the Backstage catalog
   license:
     name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
 
 servers:
@@ -14,21 +15,94 @@ servers:
 components:
   examples: {}
   headers: {}
-  parameters: {}
+  parameters:
+    kind:
+      name: kind
+      in: path
+      required: true
+      schema:
+        type: string
+    namespace:
+      name: namespace
+      in: path
+      required: true
+      schema:
+        type: string
+    name:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+    uid:
+      name: uid
+      in: path
+      required: true
+      schema:
+        type: string
+    cursor:
+      name: cursor
+      in: query
+      description: Cursor to a set page of results.
+      required: false
+      schema:
+        type: string
+        minLength: 1
+    after:
+      name: after
+      in: query
+      description: Pointer to the previous page of results.
+      required: false
+      schema:
+        type: string
+        minLength: 1
+    fields:
+      name: fields
+      in: query
+      description: Restrict to just these fields in the response.
+      required: false
+      schema:
+        type: string
+    filter:
+      name: filter
+      in: query
+      description: Filter for just the entities defined by this filter.
+      required: false
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      description: Number of records to skip in the query page.
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      description: Number of records to return in the response.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    sortField:
+      name: sortField
+      in: query
+      description: The fields to sort returned results by.
+      required: false
+      schema:
+        type: array
+        items:
+          type: array
+          items:
+            type: string
+          description: A two-item tuple of [field, order].
+      explode: true
+      style: form
   requestBodies: {}
   responses: {}
   schemas:
-    RefreshOptions:
-      type: object
-      properties:
-        authorizationToken:
-          type: string
-        entityRef:
-          type: string
-          description: The reference to a single entity that should be refreshed
-      required:
-        - entityRef
-      description: Options for requesting a refresh of entities in the catalog.
     JsonObject:
       type: object
       properties: {}
@@ -57,6 +131,7 @@ components:
       required:
         - url
       description: A link to external information that is related to the entity.
+      additionalProperties: false
     EntityMeta:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
@@ -133,6 +208,7 @@ components:
           required:
             - name
       description: Metadata fields common to all versions/kinds of entity.
+      additionalProperties: false
     EntityRelation:
       type: object
       properties:
@@ -146,6 +222,7 @@ components:
         - targetRef
         - type
       description: A relation of a specific type to another entity in the catalog.
+      additionalProperties: false
     Entity:
       type: object
       properties:
@@ -171,6 +248,7 @@ components:
         - kind
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
+      additionalProperties: false
     EntityAncestryResponse:
       type: object
       properties:
@@ -193,35 +271,43 @@ components:
       required:
         - items
         - rootEntityRef
+      additionalProperties: false
     EntitiesBatchResponse:
       type: object
       properties:
         items:
           type: array
           items:
-            allOf:
+            anyOf:
               - $ref: '#/components/schemas/Entity'
-            nullable: true
+              - type: 'null'
           description: |-
             The list of entities, in the same order as the refs in the request. Entries
             that are null signify that no entity existed with that ref.
       required:
         - items
-    EntityFacets:
+      additionalProperties: false
+    EntityFacet:
       type: object
       properties:
         value:
           type: string
         count:
           type: number
-      description: Construct a type with a set of properties K of type T
+      additionalProperties: false
+
     EntityFacetsResponse:
       type: object
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/EntityFacets'
+      properties:
+        facets:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/EntityFacet'
       required:
         - facets
+      additionalProperties: false
     Location:
       type: object
       properties:
@@ -236,6 +322,7 @@ components:
         - type
         - id
       description: Entity location for a specific entity.
+      additionalProperties: false
     LocationSpec:
       type: object
       properties:
@@ -252,6 +339,7 @@ components:
         - target
         - type
       description: Holds the entity location information.
+      additionalProperties: false
     AnalyzeLocationExistingEntity:
       type: object
       properties:
@@ -270,7 +358,94 @@ components:
         read and emitted like this so that the frontend can inform the user that it
         located them and can make sure to register them as well if they weren't
         already
-    RecursivePartial_Entity_:
+      additionalProperties: false
+    RecursivePartialEntityRelation:
+      type: object
+      properties:
+        targetRef:
+          type: string
+          description: The entity ref of the target of this relation.
+        type:
+          type: string
+          description: The type of the relation.
+      description: A relation of a specific type to another entity in the catalog.
+      additionalProperties: false
+    RecursivePartialEntityMeta:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            links:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityLink'
+              description: A list of external hyperlinks related to the entity.
+            tags:
+              type: array
+              items:
+                type: string
+              description: |-
+                A list of single-valued strings, to for example classify catalog entities in
+                various ways.
+            annotations:
+              $ref: '#/components/schemas/MapStringString'
+            labels:
+              $ref: '#/components/schemas/MapStringString'
+            description:
+              type: string
+              description: |-
+                A short (typically relatively few words, on one line) description of the
+                entity.
+            title:
+              type: string
+              description: |-
+                A display name of the entity, to be presented in user interfaces instead
+                of the `name` property above, when available.
+                This field is sometimes useful when the `name` is cumbersome or ends up
+                being perceived as overly technical. The title generally does not have
+                as stringent format requirements on it, so it may contain special
+                characters and be more explanatory. Do keep it very short though, and
+                avoid situations where a title can be confused with the name of another
+                entity, or where two entities share a title.
+                Note that this is only for display purposes, and may be ignored by some
+                parts of the code. Entity references still always make use of the `name`
+                property, not the title.
+            namespace:
+              type: string
+              description: The namespace that the entity belongs to.
+            name:
+              type: string
+              description: |-
+                The name of the entity.
+                Must be unique within the catalog at any given point in time, for any
+                given namespace + kind pair. This value is part of the technical
+                identifier of the entity, and as such it will appear in URLs, database
+                tables, entity references, and similar. It is subject to restrictions
+                regarding what characters are allowed.
+                If you want to use a different, more human readable string with fewer
+                restrictions on it in user interfaces, see the `title` field below.
+            etag:
+              type: string
+              description: |-
+                An opaque string that changes for each update operation to any part of
+                the entity, including metadata.
+                This field can not be set by the user at creation time, and the server
+                will reject an attempt to do so. The field will be populated in read
+                operations. The field can (optionally) be specified when performing
+                update or delete operations, and the server will then reject the
+                operation if it does not match the current stored value.
+            uid:
+              type: string
+              description: |-
+                A globally unique ID for the entity.
+                This field can not be set by the user at creation time, and the server
+                will reject an attempt to do so. The field will be populated in read
+                operations. The field can (optionally) be specified when performing
+                update or delete operations, but the server is free to reject requests
+                that do so in such a way that it breaks semantics.
+          description: Metadata fields common to all versions/kinds of entity.
+      additionalProperties: false
+    RecursivePartialEntity:
       type: object
       properties:
         apiVersion:
@@ -282,15 +457,16 @@ components:
           type: string
           description: The high level entity type being described.
         metadata:
-          $ref: '#/components/schemas/EntityMeta'
+          $ref: '#/components/schemas/RecursivePartialEntityMeta'
         spec:
           $ref: '#/components/schemas/JsonObject'
         relations:
           type: array
           items:
-            $ref: '#/components/schemas/EntityRelation'
+            $ref: '#/components/schemas/RecursivePartialEntityRelation'
           description: The relations that this entity has with other entities.
       description: Makes all keys of an entire hierarchy optional.
+      additionalProperties: false
     AnalyzeLocationEntityField:
       type: object
       properties:
@@ -302,8 +478,9 @@ components:
             field empty; which would currently make it owned by X" where X is taken from the
             codeowners file.
         value:
-          type: string
-          nullable: true
+          type:
+            - string
+            - 'null'
         state:
           type: string
           enum:
@@ -321,6 +498,7 @@ components:
         - value
         - state
         - field
+      additionalProperties: false
     AnalyzeLocationGenerateEntity:
       type: object
       properties:
@@ -329,7 +507,7 @@ components:
           items:
             $ref: '#/components/schemas/AnalyzeLocationEntityField'
         entity:
-          $ref: '#/components/schemas/RecursivePartial_Entity_'
+          $ref: '#/components/schemas/RecursivePartialEntity'
       required:
         - fields
         - entity
@@ -339,6 +517,7 @@ components:
         the frontend. It'll probably contain a (possibly incomplete) entity, plus
         enough info for the frontend to know what form data to show to the user
         for overriding/completing the info.
+      additionalProperties: false
     AnalyzeLocationResponse:
       type: object
       properties:
@@ -353,6 +532,7 @@ components:
       required:
         - generateEntities
         - existingEntityFiles
+      additionalProperties: false
     LocationInput:
       type: object
       properties:
@@ -369,6 +549,7 @@ components:
         - type
         - target
         - presence
+      additionalProperties: false
     SerializedError:
       allOf:
         - $ref: '#/components/schemas/JsonObject'
@@ -390,12 +571,35 @@ components:
             - message
             - name
       description: The serialized form of an Error.
+      additionalProperties: false
+    EntitiesQueryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+          description: |-
+            The list of entities paginated by a specific filter.
+        totalItems:
+          type: number
+        pageInfo:
+          type: object
+          properties:
+            nextCursor:
+              type: string
+              description: |-
+                The cursor for the next batch of entities.
+            prevCursor:
+              type: string
+              description: |-
+                The cursor for the previous batch of entities.
+      additionalProperties: false
   securitySchemes:
     JWT:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
 paths:
   /refresh:
     post:
@@ -404,7 +608,6 @@ paths:
         '200':
           description: Refreshed
       security:
-        # From https://stackoverflow.com/questions/47659324/how-to-specify-an-endpoints-authorization-is-optional-in-openapi-v3
         - {}
         - JWT: []
       parameters: []
@@ -413,8 +616,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshOptions'
-
+              type: object
+              properties:
+                authorizationToken:
+                  type: string
+                entityRef:
+                  type: string
+                  description: The reference to a single entity that should be refreshed
+              required:
+                - entityRef
+              description: Options for requesting a refresh of entities in the catalog.
+              additionalProperties: false
   /entities:
     get:
       operationId: GetEntities
@@ -431,32 +643,11 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: query
-          name: filter
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: fields
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: offset
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: limit
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: after
-          required: false
-          schema:
-            type: string
-
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/after'
   /entities/by-uid/{uid}:
     get:
       operationId: GetEntityByUid
@@ -471,11 +662,7 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: path
-          name: uid
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/uid'
     delete:
       operationId: DeleteEntityByUid
       responses:
@@ -485,12 +672,7 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: path
-          name: uid
-          required: true
-          schema:
-            type: string
-
+        - $ref: '#/components/parameters/uid'
   /entities/by-name/{kind}/{namespace}/{name}:
     get:
       operationId: GetEntityByName
@@ -505,22 +687,9 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: path
-          name: kind
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: namespace
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: name
-          required: true
-          schema:
-            type: string
-
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/namespace'
+        - $ref: '#/components/parameters/name'
   /entities/by-name/{kind}/{namespace}/{name}/ancestry:
     get:
       operationId: GetEntityAncestryByName
@@ -535,22 +704,9 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: path
-          name: kind
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: namespace
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: name
-          required: true
-          schema:
-            type: string
-
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/namespace'
+        - $ref: '#/components/parameters/name'
   /entities/by-refs:
     post:
       operationId: GetEntitiesByRefs
@@ -565,20 +721,58 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - in: query
-          name: fields
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/fields'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: string
-
+              type: object
+              required:
+                - entityRefs
+              properties:
+                entityRefs:
+                  type: array
+                  items:
+                    type: string
+                fields:
+                  type: array
+                  items:
+                    type: string
+  /entities/by-query:
+    get:
+      operationId: GetEntitiesByQuery
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntitiesQueryResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/fields'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sortField'
+        - $ref: '#/components/parameters/cursor'
+        - name: fullTextFilterTerm
+          in: query
+          description: Text search term.
+          required: false
+          schema:
+            type: string
+        - name: fullTextFilterFields
+          in: query
+          description: A comma separated list of fields to sort returned results by.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          explode: false
+          style: form
   /entity-facets:
     get:
       operationId: GetEntityFacets
@@ -598,12 +792,7 @@ paths:
           required: true
           schema:
             type: string
-        - in: query
-          name: filter
-          required: false
-          schema:
-            type: string
-
+        - $ref: '#/components/parameters/filter'
   /locations:
     post:
       operationId: CreateLocation
@@ -634,7 +823,7 @@ paths:
           name: dryRun
           required: false
           schema:
-            type: boolean
+            type: string
       requestBody:
         required: true
         content:
@@ -675,7 +864,6 @@ paths:
         - {}
         - JWT: []
       parameters: []
-
   /locations/{id}:
     get:
       operationId: GetLocation
@@ -709,7 +897,6 @@ paths:
           required: true
           schema:
             type: string
-
   /analyze-location:
     post:
       operationId: AnalyzeLocation
@@ -738,7 +925,6 @@ paths:
               required:
                 - catalogFileName
                 - location
-
   /validate-entity:
     post:
       operationId: ValidateEntity

@@ -50,6 +50,8 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import type { ApiRouter } from '@backstage/backend-openapi-utils';
+import spec from '../schema/openapi';
 
 /**
  * Options used by {@link createRouter}.
@@ -85,7 +87,7 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
   } = options;
-  const router = Router();
+  const router = Router() as ApiRouter<typeof spec>;
   router.use(express.json());
 
   const readonlyEnabled =
