@@ -34,10 +34,10 @@ yarn add --cwd packages/backend @backstage/plugin-events-backend-module-azure
 Add the event router to the `EventsBackend`:
 
 ```diff
-+const githubEventRouter = new AzureDevOpsEventRouter();
++const azureEventRouter = new AzureDevOpsEventRouter();
 
  EventsBackend
-+  .addPublishers(githubEventRouter)
-+  .addSubscribers(githubEventRouter);
++  .addPublishers(azureEventRouter)
++  .addSubscribers(azureEventRouter);
 // [...]
 ```

@@ -21,6 +21,8 @@ import { DefaultCatalogDatabase } from './DefaultCatalogDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 
+jest.setTimeout(60_000);
+
 describe('DefaultCatalogDatabase', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
@@ -105,7 +107,6 @@ describe('DefaultCatalogDatabase', () => {
           'location:default/root-2',
         ]);
       },
-      60_000,
     );
   });
 });

@@ -121,6 +121,7 @@ export const EntityOwnerPicker = () => {
                   checked={selected}
                 />
               }
+              onClick={event => event.preventDefault()}
               label={option}
             />
           )}

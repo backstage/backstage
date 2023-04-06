@@ -18,10 +18,12 @@ import { ActionContext, TemplateAction } from './types';
 import { z } from 'zod';
 import { Schema } from 'jsonschema';
 import zodToJsonSchema from 'zod-to-json-schema';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export type TemplateActionOptions<
-  TActionInput = {},
+  TActionInput extends JsonObject = {},
+  TActionOutput extends JsonObject = {},
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
 > = {
@@ -33,7 +35,7 @@ export type TemplateActionOptions<
     input?: TInputSchema;
     output?: TOutputSchema;
   };
-  handler: (ctx: ActionContext<TActionInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
 
 /**
@@ -42,15 +44,32 @@ export type TemplateActionOptions<
  * @public
  */
 export const createTemplateAction = <
-  TParams,
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
   TInputSchema extends Schema | z.ZodType = {},
   TOutputSchema extends Schema | z.ZodType = {},
-  TActionInput = TInputSchema extends z.ZodType<any, any, infer IReturn>
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
     ? IReturn
-    : TParams,
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TOutputParams,
 >(
-  action: TemplateActionOptions<TActionInput, TInputSchema, TOutputSchema>,
-): TemplateAction<TActionInput> => {
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema
+  >,
+): TemplateAction<TActionInput, TActionOutput> => {
   const inputSchema =
     action.schema?.input && 'safeParseAsync' in action.schema.input
       ? zodToJsonSchema(action.schema.input)
@@ -61,7 +80,7 @@ export const createTemplateAction = <
       ? zodToJsonSchema(action.schema.output)
       : action.schema?.output;
 
-  const templateAction = {
+  return {
     ...action,
     schema: {
       ...action.schema,
@@ -69,6 +88,4 @@ export const createTemplateAction = <
       output: outputSchema,
     },
   };
-
-  return templateAction;
 };

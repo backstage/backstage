@@ -1,9 +1,11 @@
 ---
-id: azure-easy-auth
+id: easy-auth
 title: Azure EasyAuth Provider
-sidebar_label: Azure EasyAuth
+sidebar_label: Azure Easy Auth
 description: Adding Azure's EasyAuth Proxy as an authentication provider in Backstage
 ---
+
+The Backstage `core-plugin-api` package comes with a Microsoft authentication provider that can authenticate users using Azure Active Directory for PaaS service hosted in Azure that support Easy Auth, such as Azure App Services.
 
 ## Backstage Changes
 

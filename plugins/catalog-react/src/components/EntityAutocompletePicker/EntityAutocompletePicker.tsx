@@ -114,8 +114,9 @@ export function EntityAutocompletePicker<
     } as Partial<T>);
   }, [name, shouldAddFilter, selectedOptions, Filter, updateFilters]);
 
+  const filter = filters[name];
   if (
-    (filters[name] && !('values' in filters[name])) ||
+    (filter && typeof filter === 'object' && !('values' in filter)) ||
     !availableOptions.length
   ) {
     return null;

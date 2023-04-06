@@ -15,7 +15,6 @@
  */
 
 import { OptionValues } from 'commander';
-import fs from 'fs-extra';
 import {
   createTemporaryTsConfig,
   categorizePackageDirs,
@@ -23,7 +22,7 @@ import {
   runCliExtraction,
   buildDocs,
 } from './api-extractor';
-import { findPackageDirs, paths as cliPaths } from '../../lib/paths';
+import { getMatchingWorkspacePaths, paths as cliPaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 
 type Options = {
@@ -49,10 +48,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const omitMessages = parseArrayOption(opts.omitMessages);
 
   const isAllPackages = !paths?.length;
-  const selectedPaths = isAllPackages
-    ? await getWorkspacePackagePathPatterns()
-    : paths;
-  const selectedPackageDirs = await findPackageDirs(selectedPaths);
+  const selectedPackageDirs = await getMatchingWorkspacePaths(paths);
 
   if (isAllPackages && !isCiBuild && !isDocsBuild) {
     console.log('');
@@ -110,26 +106,6 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     });
   }
 };
-
-/**
- * Retrieves the list of package names in the "workspaces" field of the `package.json` file in the current workspace root.
- *
- * If the file does not exist, or the "workspaces" field is not present, returns `undefined`.
- *
- * @returns {Promise<string[] | undefined>} The list of package names, or `undefined` if not found.
- */
-async function getWorkspacePackagePathPatterns() {
-  const pkgJson = await fs
-    .readJson(cliPaths.resolveTargetRoot('package.json'))
-    .catch(error => {
-      if (error.code === 'ENOENT') {
-        return undefined;
-      }
-      throw error;
-    });
-  const workspaces = pkgJson?.workspaces?.packages;
-  return workspaces;
-}
 
 /**
  * Splits the input string on comma, and returns an array of the resulting substrings.

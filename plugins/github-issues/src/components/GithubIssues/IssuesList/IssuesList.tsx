@@ -73,7 +73,7 @@ export const IssuesList = ({
   const filteredRepos = React.useMemo(
     () =>
       issuesByRepository && activeFilter.length
-        ? activeFilter.reduce(
+        ? activeFilter.reduce<IssuesByRepo>(
             (acc, val) => ({
               [val]: issuesByRepository[val],
               ...acc,

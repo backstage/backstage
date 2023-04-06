@@ -30,7 +30,6 @@ import { InputError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
-import { parseRepoUrl } from '../actions/builtin/publish/util';
 import { TemplateActionRegistry } from '../actions';
 import {
   TemplateFilter,
@@ -46,6 +45,7 @@ import {
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
+import { createDefaultFilters } from '../../lib/templating/filters';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -103,7 +103,12 @@ const createStepLogger = ({
 };
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
-  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {}
+  private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+  constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
+    this.defaultTemplateFilters = createDefaultFilters({
+      integrations: this.options.integrations,
+    });
+  }
 
   private readonly tracker = scaffoldingTracker();
 
@@ -329,22 +334,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await task.getWorkspaceName(),
     );
 
-    const {
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
-      integrations,
-    } = this.options;
+    const { additionalTemplateFilters, additionalTemplateGlobals } =
+      this.options;
 
     const renderTemplate = await SecureTemplater.loadRenderer({
-      // TODO(blam): let's work out how we can deprecate this.
-      // We shouldn't really need to be exposing these now we can deal with
-      // objects in the params block.
-      // Maybe we can expose a new RepoUrlPicker with secrets for V3 that provides an object already.
-      parseRepoUrl(url: string) {
-        return parseRepoUrl(url, integrations);
+      templateFilters: {
+        ...this.defaultTemplateFilters,
+        ...additionalTemplateFilters,
       },
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
+      templateGlobals: additionalTemplateGlobals,
     });
 
     try {

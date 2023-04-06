@@ -39,6 +39,8 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
   }
 }
 
+jest.setTimeout(60_000);
+
 describe('migrations', () => {
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -159,7 +161,6 @@ describe('migrations', () => {
 
       await knex.destroy();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -237,6 +238,5 @@ describe('migrations', () => {
 
       await knex.destroy();
     },
-    60_000,
   );
 });

@@ -44,6 +44,8 @@ function createDatabaseManager(
   };
 }
 
+jest.setTimeout(60_000);
+
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
     const databases = TestDatabases.create({
@@ -58,7 +60,6 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(false);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -71,7 +72,6 @@ describe('DatabaseDocumentStore', () => {
           async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
       },
-      60_000,
     );
   });
 
@@ -102,7 +102,6 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(true);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -131,7 +130,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '2' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -172,7 +170,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '4' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -219,7 +216,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '0' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -270,7 +266,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -325,7 +320,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -378,7 +372,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -433,7 +426,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -498,7 +490,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -551,7 +542,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -610,7 +600,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
   });
 });

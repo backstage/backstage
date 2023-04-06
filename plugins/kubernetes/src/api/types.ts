@@ -50,4 +50,9 @@ export interface KubernetesApi {
     containerName: string;
     token: string;
   }): Promise<string>;
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }

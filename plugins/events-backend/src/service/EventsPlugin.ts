@@ -29,7 +29,7 @@ import {
   EventSubscriber,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
-import { InMemoryEventBroker } from './InMemoryEventBroker';
+import { DefaultEventBroker } from './DefaultEventBroker';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
 
@@ -113,7 +113,7 @@ export const eventsPlugin = createBackendPlugin({
         router.use(eventsRouter);
 
         const eventBroker =
-          extensionPoint.eventBroker ?? new InMemoryEventBroker(winstonLogger);
+          extensionPoint.eventBroker ?? new DefaultEventBroker(winstonLogger);
 
         eventBroker.subscribe(extensionPoint.subscribers);
         [extensionPoint.publishers, http]

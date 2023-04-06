@@ -161,8 +161,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
-          const filter: EntityFilter | undefined =
-            requestedFilters[key as keyof EntityFilters];
+          const filter = requestedFilters[key as keyof EntityFilters] as
+            | EntityFilter
+            | undefined;
           if (filter?.toQueryValue) {
             params[key] = filter.toQueryValue();
           }

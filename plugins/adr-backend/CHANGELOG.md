@@ -1,5 +1,34 @@
 # @backstage/plugin-adr-backend
 
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/plugin-adr-common@0.2.8-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- 7d75f6d9b8f: chore: Improve API Reference documentation
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-adr-common@0.2.8-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
 ## 0.3.2-next.0
 
 ### Patch Changes

@@ -67,7 +67,14 @@ const getUnlinkedCatalogEntities = (
 };
 
 /** @public */
-export const SortView = () => {
+export type SortViewProps = {
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
+
+/** @public */
+export const SortView = (props: SortViewProps) => {
+  const { fullWidth = true, fullHeight = true } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const classes = useStyles();
@@ -199,7 +206,8 @@ export const SortView = () => {
         bazaarProjects={getSearchResults() || []}
         fetchBazaarProjects={fetchBazaarProjects}
         catalogEntities={unlinkedCatalogEntities || []}
-        height="large"
+        gridSize={fullWidth ? 2 : 4}
+        height={fullHeight ? 'large' : 'small'}
       />
       <Content noPadding className={classes.container} />
     </Content>

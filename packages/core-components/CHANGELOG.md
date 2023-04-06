@@ -1,5 +1,33 @@
 # @backstage/core-components
 
+## 0.12.6-next.2
+
+### Patch Changes
+
+- 67140d9f96f: Upgrade `react-virtualized-auto-sizer´ to version `^1.0.11`
+- 7e60bee2dea: Split the `BackstageSidebar` style `drawer` class, such that the `width` property is in a separate `drawerWidth` class instead. This makes it such that you can style the `drawer` class in your theme again.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 0.12.6-next.1
+
+### Patch Changes
+
+- d0befd3fb23: Fixed a bug that could prevent auth from working when using the `guest` or `custom` auth providers.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.12.6-next.0
 
 ### Patch Changes

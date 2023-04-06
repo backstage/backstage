@@ -115,6 +115,16 @@ class MockKubernetesClient implements KubernetesApi {
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
     return [{ name: 'mock-cluster', authProvider: 'serviceAccount' }];
   }
+
+  async proxy(_options: { clusterName: String; path: String }): Promise<any> {
+    return {
+      kind: 'Namespace',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'mock-ns',
+      },
+    };
+  }
 }
 
 createDevApp()

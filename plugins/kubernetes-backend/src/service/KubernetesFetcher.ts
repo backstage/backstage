@@ -191,7 +191,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     let url: URL;
     let requestInit: RequestInit;
-    if (clusterDetails.serviceAccountToken) {
+    if (
+      clusterDetails.serviceAccountToken ||
+      clusterDetails.authProvider === 'localKubectlProxy'
+    ) {
       [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
     } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
       [url, requestInit] = this.fetchArgsInCluster();

@@ -77,7 +77,7 @@ describe('TemplateList', () => {
       { mountedRoutes: { '/': rootRouteRef } },
     );
 
-    expect(() => screen.getByTestId('t1')).toThrow();
-    expect(screen.getByTestId('t2')).toBeDefined();
+    expect(() => screen.getByTestId('t2')).toThrow();
+    expect(screen.getByTestId('t1')).toBeDefined();
   });
 });

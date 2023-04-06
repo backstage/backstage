@@ -32,6 +32,7 @@ import { bufferFromFileOrString } from '@kubernetes/client-node';
 import type { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger } from 'winston';
+import { KubernetesAuthTranslator } from '../kubernetes-auth-translator';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export const APPLICATION_JSON: string = 'application/json';
@@ -61,17 +62,32 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
 };
 
 /**
+ * Options accepted as a parameter by the KubernetesProxy
+ *
+ * @public
+ */
+export type KubernetesProxyOptions = {
+  logger: Logger;
+  clusterSupplier: KubernetesClustersSupplier;
+  authTranslator: KubernetesAuthTranslator;
+};
+
+/**
  * A proxy that routes requests to the Kubernetes API.
  *
  * @public
  */
 export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();
+  private readonly logger: Logger;
+  private readonly clusterSupplier: KubernetesClustersSupplier;
+  private readonly authTranslator: KubernetesAuthTranslator;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly clusterSupplier: KubernetesClustersSupplier,
-  ) {}
+  constructor(options: KubernetesProxyOptions) {
+    this.logger = options.logger;
+    this.clusterSupplier = options.clusterSupplier;
+    this.authTranslator = options.authTranslator;
+  }
 
   public createRequestHandler(
     options: KubernetesProxyCreateRequestHandlerOptions,
@@ -96,6 +112,12 @@ export class KubernetesProxy {
         return;
       }
 
+      const cluster = await this.getClusterForRequest(req).then(cd =>
+        this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
+      );
+      if (!req.headers.authorization) {
+        req.headers.authorization = `Bearer ${cluster.serviceAccountToken}`;
+      }
       const middleware = await this.getMiddleware(req);
       middleware(req, res, next);
     };
@@ -108,13 +130,6 @@ export class KubernetesProxy {
     const originalCluster = await this.getClusterForRequest(originalReq);
     let middleware = this.middlewareForClusterName.get(originalCluster.name);
     if (!middleware) {
-      // Probably too risky without permissions protecting this endpoint
-      // if (cluster.serviceAccountToken) {
-      //   options.headers = {
-      //     Authorization: `Bearer ${cluster.serviceAccountToken}`,
-      //   };
-      // }
-
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
         logProvider: () => logger,
@@ -146,19 +161,18 @@ export class KubernetesProxy {
             request: { method: req.method, url: req.originalUrl },
             response: { statusCode: 500 },
           };
-
           res.status(500).json(body);
         },
         onProxyReq: (proxyReq, req) => {
           // the kubernetes proxy endpoint expects a header field labeled `Backstage-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an bearer token for the target cluster.
-          const token = req.header(HEADER_KUBERNETES_AUTH) ?? '';
-          proxyReq.setHeader('Authorization', token);
+          if (req.header(HEADER_KUBERNETES_AUTH)) {
+            const token = req.header(HEADER_KUBERNETES_AUTH) ?? '';
+            proxyReq.setHeader('Authorization', token);
+          }
         },
       });
-
       this.middlewareForClusterName.set(originalCluster.name, middleware);
     }
-
     return middleware;
   }
 

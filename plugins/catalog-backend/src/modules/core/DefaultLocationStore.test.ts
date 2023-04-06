@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { v4 as uuid } from 'uuid';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { DefaultLocationStore } from './DefaultLocationStore';
+
+jest.setTimeout(60_000);
 
 describe('DefaultLocationStore', () => {
   const databases = TestDatabases.create({
@@ -42,7 +45,6 @@ describe('DefaultLocationStore', () => {
         entities: [],
       });
     },
-    60_000,
   );
 
   describe('listLocations', () => {
@@ -52,7 +54,6 @@ describe('DefaultLocationStore', () => {
         const { store } = await createLocationStore(databaseId);
         expect(await store.listLocations()).toEqual([]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -77,7 +78,6 @@ describe('DefaultLocationStore', () => {
           ]),
         );
       },
-      60_000,
     );
   });
 
@@ -96,7 +96,6 @@ describe('DefaultLocationStore', () => {
           new RegExp(`Location ${spec.type}:${spec.target} already exists`),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -127,7 +126,6 @@ describe('DefaultLocationStore', () => {
           ]),
         });
       },
-      60_000,
     );
   });
 
@@ -141,7 +139,6 @@ describe('DefaultLocationStore', () => {
           new RegExp(`Found no location with ID ${id}`),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -175,7 +172,6 @@ describe('DefaultLocationStore', () => {
           ],
         });
       },
-      60_000,
     );
   });
 });

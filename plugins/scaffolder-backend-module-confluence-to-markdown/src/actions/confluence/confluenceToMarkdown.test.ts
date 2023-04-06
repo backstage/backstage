@@ -19,7 +19,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import mockFs from 'mock-fs';
 import os from 'os';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';

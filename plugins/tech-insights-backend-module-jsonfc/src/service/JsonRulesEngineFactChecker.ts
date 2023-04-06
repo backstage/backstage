@@ -104,14 +104,13 @@ export class JsonRulesEngineFactChecker
       : await this.checkRegistry.list();
     const factIds = techInsightChecks.flatMap(it => it.factIds);
     const facts = await this.repository.getLatestFactsByIds(factIds, entity);
+
     techInsightChecks.forEach(techInsightCheck => {
       const rule = techInsightCheck.rule;
       rule.name = techInsightCheck.id;
       // Only run checks that have all the facts available:
-      const hasAllFacts = techInsightCheck.factIds.every(
-        factId => facts[factId],
-      );
-      if (hasAllFacts) {
+      const hasFacts = techInsightCheck.factIds.some(factId => facts[factId]);
+      if (hasFacts) {
         engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
       } else {
         this.logger.debug(

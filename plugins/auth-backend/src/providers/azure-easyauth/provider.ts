@@ -38,6 +38,7 @@ type Options = {
   resolverContext: AuthResolverContext;
 };
 
+/** @public */
 export type EasyAuthResult = {
   fullProfile: Profile;
   accessToken?: string;
