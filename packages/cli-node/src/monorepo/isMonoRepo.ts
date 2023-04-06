@@ -17,6 +17,11 @@
 import { paths } from '../paths';
 import fs from 'fs-extra';
 
+/**
+ * Returns try if the current project is a monorepo.
+ *
+ * @public
+ */
 export async function isMonoRepo(): Promise<boolean> {
   const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
   try {

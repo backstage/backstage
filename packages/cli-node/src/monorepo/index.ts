@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { isMonoRepo } from './isMonoRepo';
 export {
   PackageGraph,
   type PackageGraphNode,
