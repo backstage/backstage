@@ -99,7 +99,11 @@ export const OwnerListPicker = (props: {
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography variant="subtitle2" className={classes.title}>
+          <Typography
+            variant="subtitle2"
+            component="span"
+            className={classes.title}
+          >
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
