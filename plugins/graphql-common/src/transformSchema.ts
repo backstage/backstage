@@ -17,7 +17,6 @@ import { DocumentNode, Kind } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { validateSchema } from 'graphql';
 import { Module, Resolvers } from 'graphql-modules';
-import { Core } from './core';
 import { mapDirectives } from './mapDirectives';
 import { FieldDirectiveMapper } from './types';
 import { toPrivateProp } from './mapperProvider';
@@ -28,14 +27,13 @@ export function transformSchema(
   { generateOpaqueTypes }: { generateOpaqueTypes?: boolean } = {},
 ) {
   const directiveMappers: Record<string, FieldDirectiveMapper> = {};
-  const allModules = [Core, ...modules];
-  const typeDefs: DocumentNode[] = allModules.flatMap(module => {
-    const documents = module.typeDefs;
+  const typeDefs: DocumentNode[] = modules.flatMap(gqlModule => {
+    const documents = gqlModule.typeDefs;
     documents.forEach(document => {
       document.definitions.forEach(definition => {
         if (definition.kind !== Kind.DIRECTIVE_DEFINITION) return;
         const directiveName = definition.name.value;
-        const provider = module.providers?.find(
+        const provider = gqlModule.providers?.find(
           p => toPrivateProp(directiveName) in p,
         );
         if (provider)
@@ -46,8 +44,8 @@ export function transformSchema(
     });
     return documents;
   });
-  const resolvers: Resolvers = allModules.flatMap(
-    module => module.config.resolvers ?? [],
+  const resolvers: Resolvers = modules.flatMap(
+    ({ config }) => config.resolvers ?? [],
   );
 
   const schema = mapDirectives(makeExecutableSchema({ typeDefs, resolvers }), {

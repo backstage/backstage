@@ -14,6 +14,7 @@ import { GraphQLObjectType } from 'graphql';
 import { GraphQLSchema } from 'graphql';
 import { Module } from 'graphql-modules';
 import { Options } from 'dataloader';
+import { TypeDefs } from 'graphql-modules';
 import { TypeProvider } from 'graphql-modules';
 
 // @public (undocumented)
@@ -23,7 +24,10 @@ export type BatchLoadFn<Context extends GraphQLContext> = (
 ) => PromiseLike<ArrayLike<any | GraphQLError>>;
 
 // @public (undocumented)
-export const Core: Module;
+export const Core: () => Promise<Module>;
+
+// @public (undocumented)
+export const CoreSync: (typeDefs?: TypeDefs) => Module;
 
 // @public (undocumented)
 export function createDirectiveMapperProvider(
@@ -32,7 +36,9 @@ export function createDirectiveMapperProvider(
 ): TypeProvider<any>;
 
 // @public (undocumented)
-export function createGraphQLApp(options: createGraphQLAppOptions): Application;
+export function createGraphQLApp(
+  options: createGraphQLAppOptions,
+): Promise<Application>;
 
 // @public (undocumented)
 export type createGraphQLAppOptions = {

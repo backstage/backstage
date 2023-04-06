@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { JsonObject } from '@backstage/types';
-import type { Operation } from 'effection';
 
 import { createGraphQLApp } from '../createGraphQLApp';
 
@@ -25,9 +24,8 @@ import { GraphQLContext } from '../types';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
-import { unwrap } from './helpers';
 
-export function createGraphQLAPI(
+export async function createGraphQLAPI(
   TestModule: Module,
   loader: (context: GraphQLContext) => DataLoader<any, any>,
   generateOpaqueTypes?: boolean,
@@ -36,7 +34,7 @@ export function createGraphQLAPI(
     encodeId: (x: unknown) => JSON.stringify(x),
     decodeId: (x: string) => JSON.parse(x),
   };
-  const application = createGraphQLApp({
+  const application = await createGraphQLApp({
     modules: [TestModule],
     generateOpaqueTypes,
   });
@@ -49,28 +47,24 @@ export function createGraphQLAPI(
     ],
   });
 
-  return (query: string): Operation<JsonObject> => {
-    return function* Query() {
-      const { parse, validate, contextFactory, execute, schema } = run();
-      const document = parse(`{ ${query} }`);
-      const errors = validate(schema, document);
-      if (errors.length) {
-        throw errors[0];
-      }
-      const contextValue = yield* unwrap(contextFactory(context));
+  return async (query: string): Promise<JsonObject> => {
+    const { parse, validate, contextFactory, execute, schema } = run();
+    const document = parse(`{ ${query} }`);
+    const errors = validate(schema, document);
+    if (errors.length) {
+      throw errors[0];
+    }
+    const contextValue = await contextFactory(context);
 
-      const result = yield* unwrap(
-        execute({
-          schema: application.schema,
-          document,
-          contextValue,
-        }),
-      );
-      if (result.errors) {
-        throw result.errors[0];
-      } else {
-        return result.data as JsonObject;
-      }
-    };
+    const result = await execute({
+      schema: application.schema,
+      document,
+      contextValue,
+    });
+    if (result.errors) {
+      throw result.errors[0];
+    } else {
+      return result.data as JsonObject;
+    }
   };
 }

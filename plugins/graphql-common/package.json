@@ -51,7 +51,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@effection/jest": "^2.0.4",
     "@envelop/core": "^3.0.4",
     "@envelop/dataloader": "^4.0.4",
     "@envelop/graphql-modules": "^4.0.4",
@@ -61,8 +60,7 @@
     "@graphql-codegen/graphql-modules-preset": "^3.0.0",
     "@graphql-codegen/schema-ast": "^3.0.0",
     "@graphql-codegen/typescript": "^3.0.0",
-    "@graphql-codegen/typescript-resolvers": "^3.0.0",
-    "effection": "^2.0.6"
+    "@graphql-codegen/typescript-resolvers": "^3.0.0"
   },
   "files": [
     "dist",

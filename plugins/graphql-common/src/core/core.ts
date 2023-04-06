@@ -14,36 +14,40 @@
  * limitations under the License.
  */
 import { resolvePackagePath } from '@backstage/backend-common';
-import { loadFilesSync } from '@graphql-tools/load-files';
-import { createModule } from 'graphql-modules';
+import { loadFiles, loadFilesSync } from '@graphql-tools/load-files';
+import { TypeDefs, createModule } from 'graphql-modules';
 import { createDirectiveMapperProvider } from '../mapperProvider';
 import { ResolverContext } from '../types';
 import { fieldDirectiveMapper } from './fieldDirectiveMapper';
 
+const coreSchemaPath = resolvePackagePath(
+  '@backstage/plugin-graphql-common',
+  'src/core/core.graphql',
+);
+
 /** @public */
-export const Core = createModule({
-  id: 'core',
-  typeDefs: loadFilesSync(
-    resolvePackagePath(
-      '@backstage/plugin-graphql-common',
-      'src/core/core.graphql',
-    ),
-  ),
-  resolvers: {
-    Node: {
-      id: async (
-        { id }: { id: string },
-        _: never,
-        { loader }: ResolverContext,
-      ): Promise<string | null> => {
-        const node = await loader.load(id);
-        if (!node) return null;
-        return id;
+export const CoreSync = (typeDefs: TypeDefs = loadFilesSync(coreSchemaPath)) =>
+  createModule({
+    id: 'core',
+    typeDefs,
+    resolvers: {
+      Node: {
+        id: async (
+          { id }: { id: string },
+          _: never,
+          { loader }: ResolverContext,
+        ): Promise<string | null> => {
+          const node = await loader.load(id);
+          if (!node) return null;
+          return id;
+        },
+      },
+      Query: {
+        node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
       },
     },
-    Query: {
-      node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
-    },
-  },
-  providers: [createDirectiveMapperProvider('field', fieldDirectiveMapper)],
-});
+    providers: [createDirectiveMapperProvider('field', fieldDirectiveMapper)],
+  });
+
+/** @public */
+export const Core = async () => CoreSync(await loadFiles(coreSchemaPath));

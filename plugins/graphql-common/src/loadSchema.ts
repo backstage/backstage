@@ -15,15 +15,15 @@
  */
 import { CodeFileLoader } from '@graphql-tools/code-file-loader';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
-import { loadTypedefsSync } from '@graphql-tools/load';
+import { loadTypedefs } from '@graphql-tools/load';
 import {
   getResolversFromSchema,
   printSchemaWithDirectives,
 } from '@graphql-tools/utils';
 import { createModule, gql } from 'graphql-modules';
 
-export function loadSchema(schema: string | string[]) {
-  const sources = loadTypedefsSync(schema, {
+export async function loadSchema(schema: string | string[]) {
+  const sources = await loadTypedefs(schema, {
     sort: true,
     loaders: [new CodeFileLoader(), new GraphQLFileLoader()],
   });

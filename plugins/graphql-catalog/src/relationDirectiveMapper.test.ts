@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-/* eslint-disable func-names */
-/* eslint-disable jest/no-standalone-expect */
-
 import {
+  CoreSync,
   GraphQLContext,
   transformSchema,
 } from '@backstage/plugin-graphql-common';
-import { describe, it } from '@effection/jest';
 import DataLoader from 'dataloader';
 import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
-import { createGraphQLAPI } from './setupTests';
-import { Relation } from './relation/relation';
+import { createGraphQLAPI } from './__testUtils__';
+import { RelationSync } from './relation/relation';
 
 describe('mapRelationDirective', () => {
   const transform = (source: DocumentNode) =>
     transformSchema([
-      Relation,
+      CoreSync(),
+      RelationSync(),
       createModule({
         id: 'mapRelationDirective',
         typeDefs: source,
       }),
     ]);
 
-  it('should add subtypes to a union type', function* () {
+  it('should add subtypes to a union type', () => {
     const schema = transform(gql`
       union Ownable = Entity
 
@@ -67,7 +65,7 @@ describe('mapRelationDirective', () => {
     ).toEqual(['union Ownable = Database | Website']);
   });
 
-  it('should add arguments to the "Connection" type', function* () {
+  it('should add arguments to the "Connection" type', () => {
     const schema = transform(gql`
       extend interface Node @discriminates(with: "kind")
 
@@ -89,7 +87,7 @@ describe('mapRelationDirective', () => {
     ]);
   });
 
-  it('should override union type to interface if it has been used in a @relation directive with "Connection" type', function* () {
+  it('should override union type to interface if it has been used in a @relation directive with "Connection" type', () => {
     const schema = transform(gql`
       union Ownable = Entity
 
@@ -147,7 +145,7 @@ describe('mapRelationDirective', () => {
     ]);
   });
 
-  it("should fail if @relation interface doesn't exist", function* () {
+  it("should fail if @relation interface doesn't exist", () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -159,7 +157,7 @@ describe('mapRelationDirective', () => {
     );
   });
 
-  it('should fail if @relation interface is input type', function* () {
+  it('should fail if @relation interface is input type', () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -174,7 +172,7 @@ describe('mapRelationDirective', () => {
     );
   });
 
-  it('should fail if Connection type is in a list', function* () {
+  it('should fail if Connection type is in a list', () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -189,7 +187,7 @@ describe('mapRelationDirective', () => {
     );
   });
 
-  it('should fail if Connection has arguments are not valid types', function* () {
+  it('should fail if Connection has arguments are not valid types', () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -205,7 +203,7 @@ describe('mapRelationDirective', () => {
     );
   });
 
-  it('should fail if @relation and @field are used on the same field', function* () {
+  it('should fail if @relation and @field are used on the same field', () => {
     expect(() =>
       transform(gql`
         interface Entity {
@@ -222,7 +220,7 @@ describe('mapRelationDirective', () => {
     );
   });
 
-  it('should add resolver for @relation directive with single item', function* () {
+  it('should add resolver for @relation directive with single item', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -265,8 +263,8 @@ describe('mapRelationDirective', () => {
           return entity;
         }),
       );
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
       )}) {
@@ -286,7 +284,7 @@ describe('mapRelationDirective', () => {
     });
   });
 
-  it('should add resolver for @relation directive with a list', function* () {
+  it('should add resolver for @relation directive with a list', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -332,8 +330,8 @@ describe('mapRelationDirective', () => {
           return entity;
         }),
       );
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
       )}) {
@@ -370,7 +368,7 @@ describe('mapRelationDirective', () => {
     });
   });
 
-  it('should add resolver for @relation directive with a connection', function* () {
+  it('should add resolver for @relation directive with a connection', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -418,8 +416,8 @@ describe('mapRelationDirective', () => {
           return entity;
         }),
       );
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
       )}) {
@@ -480,7 +478,7 @@ describe('mapRelationDirective', () => {
     });
   });
 
-  it('resolver for @relation without `type` argument should return all relations', function* () {
+  it('resolver for @relation without `type` argument should return all relations', async () => {
     const TestModule = createModule({
       id: 'test',
       typeDefs: gql`
@@ -527,8 +525,8 @@ describe('mapRelationDirective', () => {
           return entity;
         }),
       );
-    const query = createGraphQLAPI(TestModule, loader);
-    const result = yield query(/* GraphQL */ `
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
         JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'entity' }),
       )}) {

@@ -6816,7 +6816,6 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-graphql-common": "workspace:^"
-    "@effection/jest": ^2.0.4
     "@envelop/core": ^3.0.4
     "@envelop/dataloader": ^4.0.4
     "@envelop/graphql-modules": 4.0.4
@@ -6842,7 +6841,6 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@effection/jest": ^2.0.4
     "@envelop/core": ^3.0.4
     "@envelop/dataloader": ^4.0.4
     "@envelop/graphql-modules": ^4.0.4
@@ -6861,7 +6859,6 @@ __metadata:
     "@graphql-tools/schema": ^9.0.13
     "@graphql-tools/utils": ^9.1.4
     dataloader: ^2.1.0
-    effection: ^2.0.6
     graphql: ^16.6.0
     graphql-modules: ^2.1.0
     lodash: ^4.17.21
@@ -10089,88 +10086,6 @@ __metadata:
     pkginfo: ^0.4.1
     uid2: ^1.0.0
   checksum: 0bd7c33ffd34a7fed4c6a43704792817b8ea6d0783060c32a55619d50b05c79db6f0a8e23b15327a4c7ce0cd8ea2d7486f320eebae3d4ca73e36baa415802ec4
-  languageName: node
-  linkType: hard
-
-"@effection/channel@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@effection/channel@npm:2.0.4"
-  dependencies:
-    "@effection/core": 2.2.1
-    "@effection/events": 2.0.4
-    "@effection/stream": 2.0.4
-  checksum: 9406c52fa8227c0c75ee0bb3ab17c5a0022aebb3d8d676832fe11893993ad1466ba807f0a3191328026f1f7c8a7b2bd6187ee52a051bcfc29d5e0ec9e1fbe670
-  languageName: node
-  linkType: hard
-
-"@effection/core@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@effection/core@npm:2.2.1"
-  dependencies:
-    abort-controller: ^3.0.0
-  checksum: 3c4f300d88a4eb73816ee19b50a306e0991414733df25bcbdbe015d497dac718908ccf44d6f0a66b1435bf29b31fba2d455e4c579dc71f864a56fe40fe06621f
-  languageName: node
-  linkType: hard
-
-"@effection/events@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@effection/events@npm:2.0.4"
-  dependencies:
-    "@effection/core": 2.2.1
-    "@effection/stream": 2.0.4
-  checksum: 6491ead3363a4a83c63a0aaebed39717b4f1ab1fda9cb351bc8c20b4e444acf769db7291183c83407d4bc28ae28be99fb1717f56a2c00c0e34961b0a418c8a80
-  languageName: node
-  linkType: hard
-
-"@effection/fetch@npm:2.0.5":
-  version: 2.0.5
-  resolution: "@effection/fetch@npm:2.0.5"
-  dependencies:
-    "@effection/core": 2.2.1
-    cross-fetch: 3.1.5
-  checksum: b1c9626ca11487fb902237389866e934e4ad726001223d343b3b5dfd3e62da2f2389ca41b06facbc70c6d90a1f70bbc54ceca470a3a257b2a42a8027c12a64de
-  languageName: node
-  linkType: hard
-
-"@effection/jest@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "@effection/jest@npm:2.0.4"
-  dependencies:
-    assert-ts: ^0.3.4
-    effection: 2.0.6
-  peerDependencies:
-    jest: ^27.0.0
-  checksum: 7398e616e534bb04e0f34b04f14971daebfbd9df00c5fd186be52ae67d5bf023f35e6506cc14357dc1e088c181f0af10a511d987025c18041291bf9a421e022c
-  languageName: node
-  linkType: hard
-
-"@effection/main@npm:2.1.1":
-  version: 2.1.1
-  resolution: "@effection/main@npm:2.1.1"
-  dependencies:
-    "@effection/core": 2.2.1
-    chalk: ^4.1.2
-    stacktrace-parser: ^0.1.10
-  checksum: 3b962507451caf78b09a02de5dea735fa773b305281d97c7c42f01131ca0f4255c80efc2e81e3739d952c231e5355ccbc023f4c99c32da6c5ec75dbcbb8095e2
-  languageName: node
-  linkType: hard
-
-"@effection/stream@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@effection/stream@npm:2.0.4"
-  dependencies:
-    "@effection/core": 2.2.1
-    "@effection/subscription": 2.0.4
-  checksum: 912e62241abcd1c51b89bdf66a29d6ce446a96251f85527ca309f447cd1489a973eee9335736fe43d4a64d2c865506c5c7deb89a61522d2f05cc23269af0bde7
-  languageName: node
-  linkType: hard
-
-"@effection/subscription@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@effection/subscription@npm:2.0.4"
-  dependencies:
-    "@effection/core": 2.2.1
-  checksum: a30e7766e48198cfde206acc6666a2e185941c5dd9b75f3853b823f9ec4787e0517cdda1f3931111a2045ec9c77ac8526c08dd094f9360a2aba644bba63c2cd3
   languageName: node
   linkType: hard
 
@@ -19837,13 +19752,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assert-ts@npm:^0.3.4":
-  version: 0.3.4
-  resolution: "assert-ts@npm:0.3.4"
-  checksum: 143d6dd83c3cbe71bc4927d734de22ef0a0052f3bde059eed78d5ca5b71428bc35a5c0437d3637cde17583babc46116e6076414a4f69e5735e32391adc5984e6
-  languageName: node
-  linkType: hard
-
 "assert@npm:^1.1.1":
   version: 1.5.0
   resolution: "assert@npm:1.5.0"
@@ -24016,21 +23924,6 @@ __metadata:
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
   checksum: 1b4cac778d64ce3b582a7e26b218afe07e207a0f9bfe13cc7395a6d307849cfe361e65033c3251e00c27dd060cab43014c2d6b2647676135e18b77d2d05b3f4f
-  languageName: node
-  linkType: hard
-
-"effection@npm:2.0.6, effection@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "effection@npm:2.0.6"
-  dependencies:
-    "@effection/channel": 2.0.4
-    "@effection/core": 2.2.1
-    "@effection/events": 2.0.4
-    "@effection/fetch": 2.0.5
-    "@effection/main": 2.1.1
-    "@effection/stream": 2.0.4
-    "@effection/subscription": 2.0.4
-  checksum: 07f0d9b3f3fd9ab38c8cb5c087178e45fe5428f3124b6e51d4d1246191cb3c50e28f06b23bb1228ce49381a50d231356a83bc5e94aa8c5e2c140a95ff8a591a4
   languageName: node
   linkType: hard
 
@@ -39640,15 +39533,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stacktrace-parser@npm:^0.1.10":
-  version: 0.1.10
-  resolution: "stacktrace-parser@npm:0.1.10"
-  dependencies:
-    type-fest: ^0.7.1
-  checksum: f4fbddfc09121d91e587b60de4beb4941108e967d71ad3a171812dc839b010ca374d064ad0a296295fed13acd103609d99a4224a25b4e67de13cae131f1901ee
-  languageName: node
-  linkType: hard
-
 "stampit@npm:^4.3.2":
   version: 4.3.2
   resolution: "stampit@npm:4.3.2"
@@ -41252,13 +41136,6 @@ __metadata:
   version: 0.6.0
   resolution: "type-fest@npm:0.6.0"
   checksum: b2188e6e4b21557f6e92960ec496d28a51d68658018cba8b597bd3ef757721d1db309f120ae987abeeda874511d14b776157ff809f23c6d1ce8f83b9b2b7d60f
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "type-fest@npm:0.7.1"
-  checksum: 5b1b113529d59949d97b76977d545989ddc11b81bb0c766b6d2ccc65473cb4b4a5c7d24f5be2c2bb2de302a5d7a13c1732ea1d34c8c59b7e0ec1f890cf7fc424
   languageName: node
   linkType: hard
 

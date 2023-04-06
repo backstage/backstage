@@ -43,7 +43,7 @@ export interface RouterOptions<TContext extends Record<string, any>> {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  modules?: Module[];
+  modules?: ((() => Module | Promise<Module>) | Module | Promise<Module>)[];
   // (undocumented)
   plugins?: Plugin_2[];
   // (undocumented)
