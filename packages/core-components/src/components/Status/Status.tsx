@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
@@ -31,12 +31,12 @@ export type StatusClassKey =
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     status: {
-      fontWeight: 500,
+      fontWeight: theme.typography.fontWeightMedium,
       '&::before': {
         width: '0.7em',
         height: '0.7em',
         display: 'inline-block',
-        marginRight: 8,
+        marginRight: theme.spacing(1),
         borderRadius: '50%',
         content: '""',
       },
@@ -78,7 +78,8 @@ const useStyles = makeStyles<BackstageTheme>(
 export function StatusOK(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.ok)}
       aria-label="Status ok"
       aria-hidden="true"
@@ -90,7 +91,8 @@ export function StatusOK(props: PropsWithChildren<{}>) {
 export function StatusWarning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.warning)}
       aria-label="Status warning"
       aria-hidden="true"
@@ -102,7 +104,8 @@ export function StatusWarning(props: PropsWithChildren<{}>) {
 export function StatusError(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.error)}
       aria-label="Status error"
       aria-hidden="true"
@@ -114,7 +117,8 @@ export function StatusError(props: PropsWithChildren<{}>) {
 export function StatusPending(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.pending)}
       aria-label="Status pending"
       aria-hidden="true"
@@ -126,7 +130,8 @@ export function StatusPending(props: PropsWithChildren<{}>) {
 export function StatusRunning(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.running)}
       aria-label="Status running"
       aria-hidden="true"
@@ -138,7 +143,8 @@ export function StatusRunning(props: PropsWithChildren<{}>) {
 export function StatusAborted(props: PropsWithChildren<{}>) {
   const classes = useStyles(props);
   return (
-    <span
+    <Typography
+      component="span"
       className={classNames(classes.status, classes.aborted)}
       aria-label="Status aborted"
       aria-hidden="true"

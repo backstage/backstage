@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DateAggregation, Trendline, ChartData } from '../types';
+import {
+  DateAggregation,
+  Trendline,
+} from '@backstage/plugin-cost-insights-common';
+import { ChartData } from '../types';
 
 export function trendFrom(trendline: Trendline, date: number): number {
   return trendline.slope * (date / 1000) + trendline.intercept;

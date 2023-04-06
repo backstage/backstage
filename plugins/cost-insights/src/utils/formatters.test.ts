@@ -21,6 +21,7 @@ import {
   quarterOf,
 } from './formatters';
 import { Duration } from '../types';
+import { createCurrencyFormat } from './currency';
 
 Date.now = jest.fn(() => new Date(Date.parse('2019-12-07')).valueOf());
 
@@ -39,7 +40,7 @@ describe('date formatters', () => {
       0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
     ];
     const formattedValues = values.map(val =>
-      lengthyCurrencyFormatter.format(val),
+      lengthyCurrencyFormatter(createCurrencyFormat()).format(val),
     );
     expect(formattedValues).toEqual([
       '$0.00000041',
@@ -47,6 +48,22 @@ describe('date formatters', () => {
       '$0.00000040',
       '$0.41',
       '$0.0000023',
+    ]);
+  });
+
+  it('Correctly formats values in euros to two significant digits', () => {
+    const values = [
+      0.00000040925, 0.21, 0.0000004, 0.4139877878, 0.00000234566,
+    ];
+    const formattedValues = values.map(val =>
+      lengthyCurrencyFormatter(createCurrencyFormat('EUR')).format(val),
+    );
+    expect(formattedValues).toEqual([
+      '€0.00000041',
+      '€0.21',
+      '€0.00000040',
+      '€0.41',
+      '€0.0000023',
     ]);
   });
 });
@@ -73,6 +90,9 @@ describe.each`
   ${0.123123}       | ${'12%'}
   ${1.123}          | ${'112%'}
   ${10.123}         | ${'>1000%'}
+  ${-0.123123}      | ${'-12%'}
+  ${-1.123}         | ${'-112%'}
+  ${-10.123}        | ${'>-1000%'}
 `('formatPercent', ({ ratio, expected }) => {
   it(`correctly formats ${ratio} as ${expected}`, () => {
     expect(formatPercent(ratio)).toBe(expected);

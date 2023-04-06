@@ -16,17 +16,18 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { SentryIssuesWidget } from './SentryIssuesWidget';
 
-export const Router = ({ entity }: { entity: Entity }) => {
+/** @public */
+export const Router = (props: { entity: Entity }) => {
   return (
     <Routes>
       <Route
         path="/"
         element={
           <SentryIssuesWidget
-            entity={entity}
+            entity={props.entity}
             statsFor="24h"
             tableOptions={{
               padding: 'dense',

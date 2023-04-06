@@ -22,8 +22,10 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
+import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -114,9 +116,11 @@ export const ApiProvider: {
   (props: PropsWithChildren<ApiProviderProps>): JSX.Element;
   propTypes: {
     apis: PropTypes.Validator<
-      PropTypes.InferProps<{
-        get: PropTypes.Validator<(...args: any[]) => any>;
-      }>
+      NonNullable<
+        PropTypes.InferProps<{
+          get: PropTypes.Validator<(...args: any[]) => any>;
+        }>
+      >
     >;
     children: PropTypes.Requireable<PropTypes.ReactNodeLike>;
   };
@@ -144,7 +148,9 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
-  Router: ComponentType<{}>;
+  Router: ComponentType<{
+    basename?: string;
+  }>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<{}>;
   SignInPage?: ComponentType<SignInPageProps>;
@@ -155,8 +161,9 @@ export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 // @public
 export type AppContext = {
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  getSystemIcons(): Record<string, IconComponent>;
   getComponents(): AppComponents;
 };
 
@@ -193,7 +200,7 @@ export type AppOptions = {
     [key in string]: IconComponent;
   };
   plugins?: Array<
-    BackstagePlugin<any, any> & {
+    BackstagePlugin & {
       output?(): Array<
         | {
             type: 'feature-flag';
@@ -205,6 +212,7 @@ export type AppOptions = {
       >;
     }
   >;
+  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -223,6 +231,15 @@ export type AppRouteBinder = <
     KeysWithType<ExternalRoutes, ExternalRouteRef<any, true>>
   >,
 ) => void;
+
+// @public
+export function AppRouter(props: AppRouterProps): JSX.Element;
+
+// @public
+export interface AppRouterProps {
+  // (undocumented)
+  children?: ReactNode;
+}
 
 // @public
 export class AppThemeSelector implements AppThemeApi {
@@ -250,12 +267,14 @@ export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
   environment?: string;
   provider?: AuthProviderInfo;
+  configApi?: ConfigApi;
 };
 
 // @public
 export type BackstageApp = {
-  getPlugins(): BackstagePlugin<any, any>[];
+  getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
+  createRoot(element: JSX.Element): ComponentType<{}>;
   getProvider(): ComponentType<{}>;
   getRouter(): ComponentType<{}>;
 };
@@ -265,6 +284,25 @@ export class BitbucketAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof bitbucketAuthApiRef.T;
 }
+
+// @public
+export class BitbucketServerAuth {
+  // (undocumented)
+  static create(
+    options: OAuthApiCreateOptions,
+  ): typeof bitbucketServerAuthApiRef.T;
+}
+
+// @public
+export type BitbucketServerSession = {
+  providerInfo: {
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt?: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentityResponse;
+};
 
 // @public
 export type BitbucketSession = {
@@ -405,7 +443,32 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 // @public
 export class MicrosoftAuth {
   // (undocumented)
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
+  // (undocumented)
+  getAccessToken(
+    scope?: string | string[],
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  // (undocumented)
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
+
+// @public
+export class MultipleAnalyticsApi implements AnalyticsApi {
+  captureEvent(event: AnalyticsEvent): void;
+  static fromApis(actualApis: AnalyticsApi[]): MultipleAnalyticsApi;
 }
 
 // @public
@@ -493,6 +556,7 @@ export class OneLoginAuth {
 
 // @public
 export type OneLoginAuthCreateOptions = {
+  configApi?: ConfigApi;
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
@@ -549,7 +613,9 @@ export class WebStorage implements StorageApi {
   // (undocumented)
   get<T>(key: string): T | undefined;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)

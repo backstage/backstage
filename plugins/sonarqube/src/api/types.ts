@@ -14,48 +14,31 @@
  * limitations under the License.
  */
 
-export interface ComponentWrapper {
-  component: Component;
+import {
+  MetricKey as NonDeprecatedMetricKey,
+  SonarUrlProcessorFunc as NonDeprecatedSonarUrlProcessorFunc,
+} from '@backstage/plugin-sonarqube-react';
+
+export interface InstanceUrlWrapper {
+  instanceUrl: string;
 }
 
-export interface Component {
+export interface FindingsWrapper {
   analysisDate: string;
-}
-
-export interface MeasuresWrapper {
   measures: Measure[];
 }
 
-export type MetricKey =
-  // alert status
-  | 'alert_status'
-
-  // bugs and rating (-> reliability)
-  | 'bugs'
-  | 'reliability_rating'
-
-  // vulnerabilities and rating (-> security)
-  | 'vulnerabilities'
-  | 'security_rating'
-
-  // code smells and rating (-> maintainability)
-  | 'code_smells'
-  | 'sqale_rating'
-
-  // security hotspots
-  | 'security_hotspots_reviewed'
-  | 'security_review_rating'
-
-  // coverage
-  | 'coverage'
-
-  // duplicated lines
-  | 'duplicated_lines_density';
+/**
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export type MetricKey = NonDeprecatedMetricKey;
 
 export interface Measure {
   metric: MetricKey;
   value: string;
-  component: string;
 }
 
-export type SonarUrlProcessorFunc = (identifier: string) => string;
+/**
+ * @deprecated use the same type from `@backstage/plugin-sonarqube-react` instead
+ */
+export type SonarUrlProcessorFunc = NonDeprecatedSonarUrlProcessorFunc;

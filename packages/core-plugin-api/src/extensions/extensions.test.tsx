@@ -61,11 +61,19 @@ describe('extensions', () => {
     const Component = () => <div />;
     const routeRef = createRouteRef({ id: 'foo' });
 
-    const extension1 = createComponentExtension({
-      component: {
-        sync: Component,
-      },
+    let extension1: ReturnType<typeof createComponentExtension>;
+    const { warn } = withLogCollector(['warn'], () => {
+      extension1 = createComponentExtension({
+        component: {
+          sync: Component,
+        },
+      });
     });
+    expect(warn).toEqual([
+      expect.stringMatching(
+        /^Declaring extensions without name is DEPRECATED. /,
+      ),
+    ]);
 
     const extension2 = createRoutableExtension({
       name: 'Extension2',
@@ -73,7 +81,7 @@ describe('extensions', () => {
       mountPoint: routeRef,
     });
 
-    const ExtensionComponent1 = plugin.provide(extension1);
+    const ExtensionComponent1 = plugin.provide(extension1!);
     const ExtensionComponent2 = plugin.provide(extension2);
 
     const element1 = <ExtensionComponent1 />;
@@ -109,7 +117,7 @@ describe('extensions', () => {
       render(<BrokenComponent />);
     });
     screen.getByText('Error in my-plugin');
-    expect(errors[0]).toMatch('Test error');
+    expect(errors[0]).toMatchObject({ detail: new Error('Test error') });
   });
 
   it('should wrap extended component with analytics context', async () => {

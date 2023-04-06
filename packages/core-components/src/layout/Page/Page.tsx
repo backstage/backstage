@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import { SidebarPinStateContext } from '../Sidebar/Page';
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme, { isMobile?: boolean }>(
-  () => ({
-    root: ({ isMobile }) => ({
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
       display: 'grid',
       gridTemplateAreas:
         "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
       gridTemplateRows: 'max-content auto 1fr',
       gridTemplateColumns: 'auto 1fr auto',
-      height: isMobile ? '100%' : '100vh',
       overflowY: 'auto',
-    }),
+      height: '100vh',
+      [theme.breakpoints.down('xs')]: {
+        height: '100%',
+      },
+    },
   }),
   { name: 'BackstagePage' },
 );
@@ -43,8 +45,7 @@ type Props = {
 
 export function Page(props: Props) {
   const { themeId, children } = props;
-  const { isMobile } = useContext(SidebarPinStateContext);
-  const classes = useStyles({ isMobile });
+  const classes = useStyles();
   return (
     <ThemeProvider
       theme={(baseTheme: BackstageTheme) => ({

@@ -24,6 +24,7 @@ import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export const ApiDefinitionCard = () => {
   const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);

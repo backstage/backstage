@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
@@ -41,10 +44,17 @@ const migrationsDir = resolvePackagePath(
 );
 
 export class CodeCoverageDatabase implements CodeCoverageStore {
-  static async create(knex: Knex): Promise<CodeCoverageStore> {
-    await knex.migrate.latest({
-      directory: migrationsDir,
-    });
+  static async create(
+    database: PluginDatabaseManager,
+  ): Promise<CodeCoverageStore> {
+    const knex = await database.getClient();
+
+    if (!database.migrations?.skip) {
+      await knex.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
     return new CodeCoverageDatabase(knex);
   }
 

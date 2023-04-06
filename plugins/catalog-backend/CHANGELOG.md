@@ -1,5 +1,1175 @@
 # @backstage/plugin-catalog-backend
 
+## 1.8.1-next.2
+
+### Patch Changes
+
+- 62a725e3a94: Use the `LocationSpec` type from the `catalog-common` package in place of the deprecated `LocationSpec` from the `catalog-node` package.
+- c36b89f2af3: Fixed bug in the `DefaultCatalogProcessingEngine` where entities that contained multiple different types of relations for the same source entity would not properly trigger stitching for that source entity.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.0-next.1
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- c4b846359c0: Allow replacement of the BuiltinKindsEntityProcessor which enables customization of schema validation and connections emitted.
+- 01ae205352e: Collator factories instantiated in new backend system modules and now marked as deprecated. Will be continued to be exported publicly until the new backend system is fully rolled out.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.0-next.0
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- 899ebfd8e02: Add full text search support to the `by-query` endpoint.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.8.0
+
+### Minor Changes
+
+- 7f4ea3d3602: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- e675f902980: Add deprecations for symbols that were moved to `@backstage/plugin-catalog-node` a long time ago:
+
+  - `CatalogProcessor`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorResult`
+  - `DeferredEntity`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `EntityRelationSpec`
+  - `processingResult`
+
+  Also moved over and deprecated the following symbols:
+
+  - `locationSpecToLocationEntity`
+  - `locationSpecToMetadataName`
+
+- ac8929f2f31: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.8.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.8.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- f093ce83d58: Fix a bug where the batch fetch by ref endpoint did not work in conjunction with filtering (e.g. if authorization was enabled).
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 7f4ea3d360: Add /entities/by-query endpoint returning paginated entities.
+
+  The endpoint supports cursor base pagination and server side sorting of the entities
+
+### Patch Changes
+
+- ac8929f2f3: Fix export of `defaultCatalogCollatorEntityTransformer`.
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.6-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2
+
+### Patch Changes
+
+- 071354eb7d: Add additional validation as security precations for output entities.
+- b977c2e69f: Minor improvements to the descriptions provided with permission rules schemas
+- 2380506364: The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](https://backstage.io/docs/features/search/how-to-guides#how-to-customize-fields-in-the-software-catalog-index).
+- 9573651919: The previous migration that adds the `search.original_value` column may leave some of the entities not updated. Add a migration script to trigger a reprocessing of the entities.
+- 9f71a2fd20: Location rule target patterns now also match hidden files, i.e. path components with a leading dot.
+- e716946103: Updated usage of the lifecycle service.
+- 1aec041c34: Fixed an issue where entities sometimes were not properly deleted during a full mutation.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- fc73f6aae5: Switched the order of reprocessing statements retroactively in migrations. This only improves the experience for those who at a later time perform a large upgrade of an old Backstage installation.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.5
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-permission-node@0.7.5-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.1
+
+### Patch Changes
+
+- 2380506364: The process of adding or modifying fields in the software-catalog search index has been simplified. For more details, see [how to customize fields in the Software Catalog index](https://backstage.io/docs/features/search/how-to-guides#how-to-customize-fields-in-the-software-catalog-index).
+- 9573651919: The previous migration that adds the `search.original_value` column may leave some of the entities not updated. Add a migration script to trigger a reprocessing of the entities.
+- fc73f6aae5: Switched the order of reprocessing statements retroactively in migrations. This only improves the experience for those who at a later time perform a large upgrade of an old Backstage installation.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- f75bf76330: Implemented server side ordering in the entities endpoint
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- d136793ff0: Fixed an issue where internal references in the catalog would stick around for longer than expected, causing entities to not be deleted or orphaned as expected.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.7.0-next.2
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-catalog-node@1.3.1-next.2
+  - @backstage/plugin-permission-node@0.7.3-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.1
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-catalog-node@1.3.1-next.1
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.1
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-permission-node@0.7.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- f75bf76330: Implemented server side ordering in the entities endpoint
+
+### Patch Changes
+
+- d136793ff0: Fixed an issue where internal references in the catalog would stick around for longer than expected, causing entities to not be deleted or orphaned as expected.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-catalog-node@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.6.0
+
+### Minor Changes
+
+- 16891a212c: Added new `POST /entities/by-refs` endpoint, which allows you to efficiently
+  batch-fetch entities by their entity ref. This can be useful e.g. in graphql
+  resolvers or similar contexts where you need to fetch many entities at the same
+  time.
+- 273ba3a77f: Deprecated Prometheus metrics in favour of OpenTelemtry metrics.
+- c395abb5b2: The catalog no longer stops after the first processor `validateEntityKind`
+  method returns `true` when validating entity kind shapes. Instead, it continues
+  through all registered processors that have this method, and requires that _at
+  least one_ of them returned true.
+
+  The old behavior of stopping early made it harder to extend existing core kinds
+  with additional fields, since the `BuiltinKindsEntityProcessor` is always
+  present at the top of the processing chain and ensures that your additional
+  validation code would never be run.
+
+  This is technically a breaking change, although it should not affect anybody
+  under normal circumstances, except if you had problematic validation code that
+  you were unaware that it was not being run. That code may now start to exhibit
+  those problems.
+
+  If you need to disable this new behavior, `CatalogBuilder` as used in your
+  `packages/backend/src/plugins/catalog.ts` file now has a
+  `useLegacySingleProcessorValidation()` method to go back to the old behavior.
+
+  ```diff
+   const builder = await CatalogBuilder.create(env);
+  +builder.useLegacySingleProcessorValidation();
+  ```
+
+- 3072ebfdd7: The search table also holds the original entity value now and the facets endpoint fetches the filtered entity data from the search table.
+
+### Patch Changes
+
+- ba13ff663c: Added a new `catalog.rules[].location` configuration that makes it possible to configure catalog rules to only apply to specific locations, either via exact match or a glob pattern.
+- d8593ce0e6: Do not use deprecated `LocationSpec` from the `@backstage/plugin-catalog-node` package
+- c507aee8a2: Ensured typescript type checks in migration files.
+- 2a8e3cc0b5: Optimize `Stitcher` process to be more memory efficient
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- eacc8e2b55: Make it possible for entity providers to supply only entity refs, instead of full entities, in `delta` mutation deletions.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 5b3e2afa45: Fixed deprecated use of `substr` into `substring`.
+- 71147d5c16: Internal code reorganization.
+- 93870e4df1: Track the last time the final entity changed with new timestamp "last updated at" data in final entities database, which gets updated with the time when final entity is updated.
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- e982f77fe3: Registered shutdown hook in experimental catalog plugin.
+- b3fac9c107: Ignore attempts at emitting the current entity as a child of itself.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-catalog-common@1.0.9
+  - @backstage/plugin-scaffolder-common@1.2.3
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- ba13ff663c: Added a new `catalog.rules[].location` configuration that makes it possible to configure catalog rules to only apply to specific locations, either via exact match or a glob pattern.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 71147d5c16: Internal code reorganization.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+  - @backstage/plugin-catalog-node@1.3.0-next.3
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 3072ebfdd7: The search table also holds the original entity value now and the facets endpoint fetches the filtered entity data from the search table.
+
+### Patch Changes
+
+- c507aee8a2: Ensured typescript type checks in migration files.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- eacc8e2b55: Make it possible for entity providers to supply only entity refs, instead of full entities, in `delta` mutation deletions.
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- c395abb5b2: The catalog no longer stops after the first processor `validateEntityKind`
+  method returns `true` when validating entity kind shapes. Instead, it continues
+  through all registered processors that have this method, and requires that _at
+  least one_ of them returned true.
+
+  The old behavior of stopping early made it harder to extend existing core kinds
+  with additional fields, since the `BuiltinKindsEntityProcessor` is always
+  present at the top of the processing chain and ensures that your additional
+  validation code would never be run.
+
+  This is technically a breaking change, although it should not affect anybody
+  under normal circumstances, except if you had problematic validation code that
+  you were unaware that it was not being run. That code may now start to exhibit
+  those problems.
+
+  If you need to disable this new behavior, `CatalogBuilder` as used in your
+  `packages/backend/src/plugins/catalog.ts` file now has a
+  `useLegacySingleProcessorValidation()` method to go back to the old behavior.
+
+  ```diff
+   const builder = await CatalogBuilder.create(env);
+  +builder.useLegacySingleProcessorValidation();
+  ```
+
+### Patch Changes
+
+- 2a8e3cc0b5: Optimize `Stitcher` process to be more memory efficient
+- 5b3e2afa45: Fixed deprecated use of `substr` into `substring`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/plugin-permission-node@0.7.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-catalog-common@1.0.9-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 16891a212c: Added new `POST /entities/by-refs` endpoint, which allows you to efficiently
+  batch-fetch entities by their entity ref. This can be useful e.g. in graphql
+  resolvers or similar contexts where you need to fetch many entities at the same
+  time.
+
+### Patch Changes
+
+- d8593ce0e6: Do not use deprecated `LocationSpec` from the `@backstage/plugin-catalog-node` package
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- e982f77fe3: Registered shutdown hook in experimental catalog plugin.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/plugin-permission-node@0.7.2-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-catalog-common@1.0.9-next.0
+  - @backstage/plugin-scaffolder-common@1.2.3-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 1.5.1
+
+### Patch Changes
+
+- c1a4addda3: Improve processing error logging.
+
+  Adds `location` and `owner` to the logging meta if they are available.
+
+- a7607b5413: Replace usage of deprecataed `UrlReader.read` with `UrlReader.readUrl`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/plugin-permission-node@0.7.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-scaffolder-common@1.2.2
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/plugin-permission-node@0.7.1-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.8-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- a7607b5413: Replace usage of deprecataed `UrlReader.read` with `UrlReader.readUrl`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/plugin-permission-node@0.7.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-catalog-common@1.0.8-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.5.0
+
+### Minor Changes
+
+- b2e6cb6acf: Added a new method `addLocationAnalyzers` to the `CatalogBuilder`. With this you can add location analyzers to your catalog. These analyzers will be used by the /analyze-location endpoint to decide if the provided URL contains any catalog-info.yaml files already or not.
+
+  Moved the following types from this package to `@backstage/plugin-catalog-backend`.
+
+  - AnalyzeLocationResponse
+  - AnalyzeLocationRequest
+  - AnalyzeLocationExistingEntity
+  - AnalyzeLocationGenerateEntity
+  - AnalyzeLocationEntityField
+
+- eb25f7e12d: The exported permission rules and the API of `createCatalogConditionalDecision` have changed to reflect the breaking changes made to the `PermissionRule` type. Note that all involved types are exported from `@backstage/plugin-catalog-backend/alpha`
+
+### Patch Changes
+
+- 8cb6e10105: Fixed a bug where entities provided without a location key would always replace existing entities, rather than updating them.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- 63296ebcd4: Allow Placeholder value to be any value, not only string.
+- 74022e0163: Make sure to stitch entities correctly after deletion, to ensure that their relations are updated.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- b2e6cb6acf: Added a new method `addLocationAnalyzers` to the `CatalogBuilder`. With this you can add location analyzers to your catalog. These analyzers will be used by the /analyze-location endpoint to decide if the provided URL contains any catalog-info.yaml files already or not.
+
+  Moved the following types from this package to `@backstage/plugin-catalog-backend`.
+
+  - AnalyzeLocationResponse
+  - AnalyzeLocationRequest
+  - AnalyzeLocationExistingEntity
+  - AnalyzeLocationGenerateEntity
+  - AnalyzeLocationEntityField
+
+- eb25f7e12d: The exported permission rules and the API of `createCatalogConditionalDecision` have changed to reflect the breaking changes made to the `PermissionRule` type. Note that all involved types are exported from `@backstage/plugin-catalog-backend/alpha`
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-common@1.0.7-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-permission-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/plugin-search-common@1.1.0-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.2
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/plugin-search-common@1.1.0-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.7-next.1
+  - @backstage/plugin-catalog-node@1.1.1-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+  - @backstage/plugin-permission-node@0.6.6-next.1
+  - @backstage/plugin-scaffolder-common@1.2.1-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 8cb6e10105: Fixed a bug where entities provided without a location key would always replace existing entities, rather than updating them.
+- 63296ebcd4: Allow Placeholder value to be any value, not only string.
+- 74022e0163: Make sure to stitch entities correctly after deletion, to ensure that their relations are updated.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/plugin-catalog-node@1.1.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-permission-node@0.6.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.7-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+  - @backstage/plugin-search-common@1.0.2-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- dd395335bc: Allow unknown typed location from being registered via the location service by configuration settings
+- 651c9d6800: The search index now does retain fields that have a very long value, but in the form of just a null. This makes it possible to at least filter for their existence.
+- 6e63bc43f2: Added the `refresh` function to the Connection of the entity providers.
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 07dda0b746: Add optional value to `hasAnnotation` permission rule
+- 243533ecdc: Added support to mysql on some raw queries
+- ce77e78c93: Fixes a bug to be able to utilize refresh keys after the entity is loaded from cache
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 679f7c5e95: Include entity ref into error message when catalog policies fail
+- 06e2b077a1: Limit the length of error messages that get written to the database and logs - to prevent performance issues
+- 62788b2ee8: The experimental `CatalogProcessingExtensionPoint` now accepts multiple providers and processors at once.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-permission-node@0.6.5
+  - @backstage/plugin-catalog-node@1.1.0
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-scaffolder-common@1.2.0
+  - @backstage/plugin-catalog-common@1.0.6
+  - @backstage/plugin-search-common@1.0.1
+
+## 1.4.0-next.3
+
+### Minor Changes
+
+- 6e63bc43f2: Added the `refresh` function to the Connection of the entity providers.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.1.0-next.2
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.2
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-scaffolder-common@1.2.0-next.1
+  - @backstage/plugin-permission-node@0.6.5-next.3
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 06e2b077a1: Limit the length of error messages that get written to the database and logs - to prevent performance issues
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/catalog-client@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.6.4-next.1
+  - @backstage/plugin-permission-node@0.6.5-next.2
+
+## 1.4.0-next.1
+
+### Minor Changes
+
+- dd395335bc: Allow unknown typed location from being registered via the location service by configuration settings
+- 651c9d6800: The search index now does retain fields that have a very long value, but in the form of just a null. This makes it possible to at least filter for their existence.
+
+### Patch Changes
+
+- ce77e78c93: Fixes a bug to be able to utilize refresh keys after the entity is loaded from cache
+- 679f7c5e95: Include entity ref into error message when catalog policies fail
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.6.5-next.1
+  - @backstage/backend-common@0.15.1-next.1
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 243533ecdc: Added support to mysql on some raw queries
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 62788b2ee8: The experimental `CatalogProcessingExtensionPoint` now accepts multiple providers and processors at once.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.6.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- 56e1b4b89c: Fixed typos in alpha types.
+- e3d3018531: Fix issue for conditional decisions based on properties stored as arrays, like tags.
+
+  Before this change, having a permission policy returning conditional decisions based on metadata like tags, such like `createCatalogConditionalDecision(permission, catalogConditions.hasMetadata('tags', 'java'),)`, was producing wrong results. The issue occurred when authorizing entities already loaded from the database, for example when authorizing `catalogEntityDeletePermission`.
+
+- 059ae348b4: Use the non-deprecated form of table.unique in knex
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-permission-node@0.6.4
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 059ae348b4: Use the non-deprecated form of table.unique in knex
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- e3d3018531: Fix issue for conditional decisions based on properties stored as arrays, like tags.
+
+  Before this change, having a permission policy returning conditional decisions based on metadata like tags, such like `createCatalogConditionalDecision(permission, catalogConditions.hasMetadata('tags', 'java'),)`, was producing wrong results. The issue occurred when authorizing entities already loaded from the database, for example when authorizing `catalogEntityDeletePermission`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-plugin-api@0.1.1-next.0
+  - @backstage/plugin-catalog-node@1.0.1-next.0
+  - @backstage/plugin-permission-node@0.6.4-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 1dd6c22cc8: Added an option to be able to trigger refreshes on entities based on a prestored arbitrary key.
+
+  The UrlReaderProcessor, FileReaderProcessor got updated to store the absolute URL of the catalog file as a refresh key. In the format of `<type>:<target>`
+  The PlaceholderProcessor got updated to store the resolverValues as refreshKeys for the entities.
+
+  The custom resolvers will need to be updated to pass in a `CatalogProcessorEmit` function as parameter and they should be updated to emit their refresh processingResults. You can see the updated resolvers in the `PlaceholderProcessor.ts`
+
+  ```ts
+    // yamlPlaceholderResolver
+    ...
+    const { content, url } = await readTextLocation(params);
+
+    params.emit(processingResult.refresh(`url:${url}`));
+    ...
+  ```
+
+- 91c1d12123: Export experimental `catalogPlugin` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- 1e02fe46d6: Fixed bug where catalog metrics weren't being tracked.
+- 5f6b847c15: Fix Error Code in Register Component DryRun
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- fa0533e604: CatalogBuilder supports now subscription to processing engine errors.
+
+  ```ts
+  subscribe(options: {
+    onProcessingError: (event: { unprocessedEntity: Entity, error: Error }) => Promise<void> | void;
+  });
+  ```
+
+  If you want to get notified on errors while processing the entities, you call CatalogBuilder.subscribe
+  to get notifications with the parameters defined as above.
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- f1dcc6f3c6: Use entity type predicates from catalog-model
+- 9a6aba1d85: Many symbol declarations have been moved to `@backstage/plugin-catalog-node`. This has no affect on users of this package as they are all re-exported. Modules that build on top of the catalog backend plugin should switch all of their imports to the `@backstage/plugin-catalog-node` package and remove the dependency on `@backstage/plugin-catalog-backend`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/plugin-catalog-node@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/plugin-permission-node@0.6.3
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-catalog-common@1.0.4
+  - @backstage/plugin-scaffolder-common@1.1.2
+
+## 1.3.0-next.3
+
+### Minor Changes
+
+- 1dd6c22cc8: Added an option to be able to trigger refreshes on entities based on a prestored arbitrary key.
+
+  The UrlReaderProcessor, FileReaderProcessor got updated to store the absolute URL of the catalog file as a refresh key. In the format of `<type>:<target>`
+  The PlaceholderProcessor got updated to store the resolverValues as refreshKeys for the entities.
+
+  The custom resolvers will need to be updated to pass in a `CatalogProcessorEmit` function as parameter and they should be updated to emit their refresh processingResults. You can see the updated resolvers in the `PlaceholderProcessor.ts`
+
+  ```ts
+    // yamlPlaceholderResolver
+    ...
+    const { content, url } = await readTextLocation(params);
+
+    params.emit(processingResult.refresh(`url:${url}`));
+    ...
+  ```
+
+- 91c1d12123: Export experimental `catalogPlugin` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- 1e02fe46d6: Fixed bug where catalog metrics weren't being tracked.
+- 5f6b847c15: Fix Error Code in Register Component DryRun
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- fa0533e604: CatalogBuilder supports now subscription to processing engine errors.
+
+  ```ts
+  subscribe(options: {
+    onProcessingError: (event: { unprocessedEntity: Entity, error: Error }) => Promise<void> | void;
+  });
+  ```
+
+  If you want to get notified on errors while processing the entities, you call CatalogBuilder.subscribe
+  to get notifications with the parameters defined as above.
+
+- 9a6aba1d85: Many symbol declarations have been moved to `@backstage/plugin-catalog-node`. This has no affect on users of this package as they are all re-exported. Modules that build on top of the catalog backend plugin should switch all of their imports to the `@backstage/plugin-catalog-node` package and remove the dependency on `@backstage/plugin-catalog-backend`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0-next.0
+  - @backstage/plugin-catalog-node@1.0.0-next.0
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.6.3-next.2
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- f1dcc6f3c6: Use entity type predicates from catalog-model
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/plugin-catalog-common@1.0.4-next.0
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- b594679ae3: Allow array as non-spread arguments at the `CatalogBuilder`.
+
+  ```typescript
+  builder.addEntityProvider(...getArrayOfProviders());
+  ```
+
+  can be simplified to
+
+  ```typescript
+  builder.addEntityProvider(getArrayOfProviders());
+  ```
+
+### Patch Changes
+
+- 8838b13038: Disallow anything but `'url'` locations from being registered via the location service.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-permission-node@0.6.2
+  - @backstage/plugin-catalog-common@1.0.3
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/plugin-permission-common@0.6.2
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-scaffolder-common@1.1.1
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/plugin-catalog-common@1.0.3-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-permission-node@0.6.2-next.2
+
+## 1.2.0-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-catalog-common@1.0.3-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+  - @backstage/plugin-scaffolder-common@1.1.1-next.0
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- b594679ae3: Allow array as non-spread arguments at the `CatalogBuilder`.
+
+  ```typescript
+  builder.addEntityProvider(...getArrayOfProviders());
+  ```
+
+  can be simplified to
+
+  ```typescript
+  builder.addEntityProvider(getArrayOfProviders());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 16a40ac4c0: Fix wrong return type of the `isGroupEntity` function.
+- 55e09b29dd: Fixing broken types for `knex` when checking returned rows
+- 1ccbe081cc: Minor internal tweak to support TypeScript 4.6
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2909746147: Updated parseEntityTransformParams to handle keys with '.' in them. This will allow for querying of entities based off annotations such as 'backstage.io/orgin-location' or other entity field keys that have '.' in them.
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/integration@1.2.0
+  - @backstage/plugin-scaffolder-common@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-catalog-common@1.0.2
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-node@0.6.1
+
 ## 1.1.2-next.2
 
 ### Patch Changes
@@ -473,7 +1643,7 @@
 - 022507c860: A `DefaultCatalogCollatorFactory`, which works with the new stream-based
   search indexing subsystem, is now available. The `DefaultCatalogCollator` will
   continue to be available for those unable to upgrade to the stream-based
-  `@backstage/search-backend-node` (and related packages), however it is now
+  `@backstage/plugin-search-backend-node` (and related packages), however it is now
   marked as deprecated and will be removed in a future version.
 
   To upgrade this plugin and the search indexing subsystem in one go, check

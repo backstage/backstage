@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 import { DatabaseStore } from '../database';
 
+/** @public */
 export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
+  logger?: Logger;
 };
 
+/** @public */
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
+  private logger: Logger;
   private store: DatabaseStore;
   private type: string;
   private tx: Knex.Transaction | undefined;
+  private numRecords = 0;
 
   constructor(options: PgSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
     this.store = options.databaseStore;
     this.type = options.type;
+    this.logger = options.logger || getVoidLogger();
   }
 
   async initialize(): Promise<void> {
@@ -49,6 +57,8 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async index(documents: IndexableDocument[]): Promise<void> {
+    this.numRecords += documents.length;
+
     try {
       await this.store.insertDocuments(this.tx!, this.type, documents);
     } catch (e) {
@@ -60,6 +70,17 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async finalize(): Promise<void> {
+    // If no documents were indexed, rollback the transaction, log a warning,
+    // and do not continue. This ensures that collators that return empty sets
+    // of documents do not cause the index to be deleted.
+    if (this.numRecords === 0) {
+      this.logger.warn(
+        `Index for ${this.type} was not replaced: indexer received 0 documents`,
+      );
+      this.tx!.rollback!();
+      return;
+    }
+
     // Attempt to complete and commit the transaction.
     try {
       await this.store.completeInsert(this.tx!, this.type);

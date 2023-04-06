@@ -23,7 +23,7 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { renderHook } from '@testing-library/react-hooks';
-import { hexToRgb, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   spotlight: {
@@ -71,7 +71,7 @@ describe('Items', () => {
     it('should render a button with custom style', async () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
-      ).toHaveStyle(`background-color: ${hexToRgb('2b2a2a')}`);
+      ).toHaveStyle(`background-color: transparent`);
     });
   });
   describe('SidebarSearchField', () => {

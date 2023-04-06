@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  clearStylesheetEventListeners,
-  createTestShadowDom,
-  executeStylesheetEventListeners,
-  mockStylesheetEventListener,
-} from '../../test-utils';
+import { createTestShadowDom } from '../../test-utils';
 import { onCssReady } from './onCssReady';
 
 const docStorageUrl: string =
@@ -31,22 +26,6 @@ const fixture = `
 `;
 
 describe('onCssReady', () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  beforeEach(() => {
-    mockStylesheetEventListener(100);
-  });
-
-  afterEach(() => {
-    clearStylesheetEventListeners();
-  });
-
   it('does not call onLoading and onLoaded without the onCssReady transformer', async () => {
     const onLoading = jest.fn();
     const onLoaded = jest.fn();
@@ -57,7 +36,6 @@ describe('onCssReady', () => {
     });
 
     expect(onLoading).not.toHaveBeenCalled();
-    executeStylesheetEventListeners();
     expect(onLoaded).not.toHaveBeenCalled();
   });
 
@@ -69,7 +47,6 @@ describe('onCssReady', () => {
       preTransformers: [],
       postTransformers: [
         onCssReady({
-          docStorageUrl,
           onLoading,
           onLoaded,
         }),
@@ -77,12 +54,6 @@ describe('onCssReady', () => {
     });
 
     expect(onLoading).toHaveBeenCalledTimes(1);
-    expect(onLoading).toHaveBeenCalledWith(expect.any(Element));
-    expect(onLoaded).not.toHaveBeenCalled();
-
-    executeStylesheetEventListeners();
-
     expect(onLoaded).toHaveBeenCalledTimes(1);
-    expect(onLoaded).toHaveBeenCalledWith(expect.any(Element));
   });
 });

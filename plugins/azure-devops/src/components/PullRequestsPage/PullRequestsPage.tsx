@@ -24,7 +24,6 @@ import {
 import { PullRequestColumnConfig, PullRequestGroup } from './lib/types';
 import React, { useState } from 'react';
 import { getPullRequestGroupConfigs, getPullRequestGroups } from './lib/utils';
-
 import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
 import { useDashboardPullRequests } from '../../hooks';
@@ -71,11 +70,9 @@ type PullRequestsPageProps = {
   defaultColumnConfigs?: PullRequestColumnConfig[];
 };
 
-export const PullRequestsPage = ({
-  projectName,
-  pollingInterval,
-  defaultColumnConfigs,
-}: PullRequestsPageProps) => {
+export const PullRequestsPage = (props: PullRequestsPageProps) => {
+  const { projectName, pollingInterval, defaultColumnConfigs } = props;
+
   const { pullRequests, loading, error } = useDashboardPullRequests(
     projectName,
     pollingInterval,

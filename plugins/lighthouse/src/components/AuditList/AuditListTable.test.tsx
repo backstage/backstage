@@ -25,9 +25,9 @@ import AuditListTable from './AuditListTable';
 
 import {
   WebsiteListResponse,
-  lighthouseApiRef,
   LighthouseRestApi,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { formatTime } from '../../utils';
 import { setupServer } from 'msw/node';
 import * as data from '../../__fixtures__/website-list-response.json';
@@ -76,7 +76,7 @@ describe('AuditListTable', () => {
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
     expect(
-      rendered.queryByText(formatTime(website.lastAudit.timeCreated)),
+      rendered.getByText(formatTime(website.lastAudit.timeCreated)),
     ).toBeInTheDocument();
   });
 

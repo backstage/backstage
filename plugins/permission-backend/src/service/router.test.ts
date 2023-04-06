@@ -17,7 +17,6 @@
 import express from 'express';
 import request from 'supertest';
 import { getVoidLogger } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -71,17 +70,23 @@ describe('createRouter', () => {
         getExternalBaseUrl: jest.fn(),
       },
       identity: {
-        authenticate: jest.fn(token => {
+        getIdentity: jest.fn(({ request: req }) => {
+          const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
+
           if (!token) {
-            throw new Error('No token supplied!');
+            return Promise.resolve(undefined);
           }
 
           return Promise.resolve({
-            id: 'test-user',
+            identity: {
+              type: 'user',
+              userEntityRef: 'test-user',
+              ownershipEntityRefs: ['blah'],
+            },
             token,
           });
         }),
-      } as unknown as IdentityClient,
+      },
       policy,
     });
 
@@ -184,7 +189,14 @@ describe('createRouter', () => {
             attributes: {},
           },
         },
-        { id: 'test-user', token: 'test-token' },
+        {
+          token: 'test-token',
+          identity: {
+            type: 'user',
+            userEntityRef: 'test-user',
+            ownershipEntityRefs: ['blah'],
+          },
+        },
       );
       expect(response.body).toEqual({
         items: [{ id: '123', result: AuthorizeResult.ALLOW }],

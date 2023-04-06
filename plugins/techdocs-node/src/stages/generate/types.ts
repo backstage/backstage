@@ -28,7 +28,7 @@ export type GeneratorRunInType = 'docker' | 'local';
  * @public
  */
 export type GeneratorOptions = {
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   logger: Logger;
 };
 
@@ -53,6 +53,7 @@ export type GeneratorConfig = {
  * @param etag - A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
  * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
  * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
+ * @param siteOptions - Options for the site: The `name` property will be used in mkdocs.yml config for the required `site_name` property, default value is "Documentation Site"
  */
 export type GeneratorRunOptions = {
   inputDir: string;
@@ -61,6 +62,7 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
+  siteOptions?: { name?: string };
 };
 
 /**
@@ -88,4 +90,10 @@ export type SupportedGeneratorKey = 'techdocs' | string;
 export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
+};
+
+export type DefaultMkdocsContent = {
+  site_name: string;
+  docs_dir: string;
+  plugins: String[];
 };

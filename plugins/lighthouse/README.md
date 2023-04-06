@@ -105,3 +105,7 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 ```
+
+## Schedule
+
+If you want to run automated scheduled runs, you can install the [@backstage/lighthouse-backend](../lighthouse-backend/README.md) plugin

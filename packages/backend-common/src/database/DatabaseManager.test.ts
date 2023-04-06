@@ -113,7 +113,11 @@ describe('DatabaseManager', () => {
         },
       },
     };
-    const manager = DatabaseManager.fromConfig(new ConfigReader(config));
+    let manager: DatabaseManager;
+
+    beforeEach(() => {
+      manager = DatabaseManager.fromConfig(new ConfigReader(config));
+    });
 
     it('connects to a plugin database using default config', async () => {
       const pluginId = 'pluginwithoutconfig';
@@ -338,6 +342,16 @@ describe('DatabaseManager', () => {
       expect(plugin1CallArgs[1].connection.database).not.toEqual(
         plugin2CallArgs[1].connection.database,
       );
+    });
+
+    it('returns the same client for the same pluginId', async () => {
+      const [client1, client2] = await Promise.all([
+        manager.forPlugin('plugin1').getClient(),
+        manager.forPlugin('plugin1').getClient(),
+      ]);
+      expect(mocked(createDatabaseClient)).toHaveBeenCalledTimes(1);
+
+      expect(client1).toBe(client2);
     });
 
     it('uses plugin connection as base if default client is different from plugin client', async () => {
@@ -612,6 +626,31 @@ describe('DatabaseManager', () => {
       );
     });
 
+    it('ensureExists does not create database or schema when false', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              pluginDivisionMode: 'schema',
+              ensureExists: false,
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+              },
+            },
+          },
+        }),
+      );
+      const pluginId = 'testdbname';
+      await testManager.forPlugin(pluginId).getClient();
+
+      expect(mocked(ensureDatabaseExists)).toHaveBeenCalledTimes(0);
+      expect(mocked(ensureSchemaExists)).toHaveBeenCalledTimes(0);
+    });
+
     it('fetches and merges additional knex config', async () => {
       const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
@@ -647,6 +686,60 @@ describe('DatabaseManager', () => {
           something: false,
         }),
       );
+    });
+
+    it('sets the owner config for plugin using default config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {},
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage');
+    });
+
+    it('sets the owner config for plugin using plugin config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {
+                  role: 'backstage-plugin',
+                },
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage-plugin');
     });
   });
 });

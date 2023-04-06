@@ -15,7 +15,7 @@
  */
 
 import type { JenkinsInfo } from './jenkinsInfoProvider';
-import jenkins from 'jenkins';
+import Jenkins from 'jenkins';
 import type {
   BackstageBuild,
   BackstageProject,
@@ -70,41 +70,49 @@ export class JenkinsApiImpl {
    * Get a list of projects for the given JenkinsInfo.
    * @see ../../../jenkins/src/api/JenkinsApi.ts#getProjects
    */
-  async getProjects(jenkinsInfo: JenkinsInfo, branch?: string) {
+  async getProjects(jenkinsInfo: JenkinsInfo, branches?: string[]) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
     const projects: BackstageProject[] = [];
 
-    if (branch) {
-      // we have been asked to filter to a single branch.
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
+    if (branches) {
+      // Assume jenkinsInfo.jobFullName is a MultiBranch Pipeline project which contains one job per branch.
       // TODO: extract a strategy interface for this
-      const job = await client.job.get({
-        name: `${jenkinsInfo.jobFullName}/${branch}`,
-        tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
-      });
+      const job = await Promise.any(
+        branches.map(branch =>
+          client.job.get({
+            name: `${jenkinsInfo.jobFullName}/${branch}`,
+            tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+          }),
+        ),
+      );
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
-      const folder = await client.job.get({
+      // Assume jenkinsInfo.jobFullName is either
+      // a MultiBranch Pipeline (folder with one job per branch) project
+      // a Pipeline (standalone) project
+      const project = await client.job.get({
         name: jenkinsInfo.jobFullName,
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
         // at all.
-        // Whitespaces are only included for readablity here and stripped out
+        // Whitespaces are only included for readability here and stripped out
         // before sending to Jenkins
         tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
       });
 
-      // TODO: support this being a project itself.
-      for (const jobDetails of folder.jobs) {
+      const isStandaloneProject = !project.jobs;
+      if (isStandaloneProject) {
+        const standaloneProject = await client.job.get({
+          name: jenkinsInfo.jobFullName,
+          tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+        });
+        projects.push(this.augmentProject(standaloneProject));
+        return projects;
+      }
+      for (const jobDetails of project.jobs) {
         // for each branch (we assume)
-        if (jobDetails?.jobs) {
-          // skipping folders inside folders for now
-          // TODO: recurse
-        } else {
-          projects.push(this.augmentProject(jobDetails));
-        }
+        projects.push(this.augmentProject(jobDetails));
       }
     }
     return projects;
@@ -168,12 +176,12 @@ export class JenkinsApiImpl {
 
   private static async getClient(jenkinsInfo: JenkinsInfo) {
     // The typings for the jenkins library are out of date so just cast to any
-    return jenkins({
+    return new (Jenkins as any)({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
       crumbIssuer: jenkinsInfo.crumbIssuer,
-    }) as any;
+    });
   }
 
   private augmentProject(project: JenkinsProject): BackstageProject {

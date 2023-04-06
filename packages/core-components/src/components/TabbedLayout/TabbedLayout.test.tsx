@@ -16,7 +16,6 @@
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
 import { TabbedLayout } from './TabbedLayout';
 
 describe('TabbedLayout', () => {
@@ -48,9 +47,11 @@ describe('TabbedLayout', () => {
     });
 
     expect(error).toEqual([
-      expect.stringMatching(
-        /Child of TabbedLayout must be an TabbedLayout.Route/,
-      ),
+      expect.objectContaining({
+        detail: new Error(
+          'Child of TabbedLayout must be an TabbedLayout.Route',
+        ),
+      }),
       expect.stringMatching(
         /The above error occurred in the <TabbedLayout> component/,
       ),
@@ -59,24 +60,14 @@ describe('TabbedLayout', () => {
 
   it('navigates when user clicks different tab', async () => {
     const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <TabbedLayout>
-              <TabbedLayout.Route path="/" title="tabbed-test-title">
-                <div>tabbed-test-content</div>
-              </TabbedLayout.Route>
-              <TabbedLayout.Route
-                path="/some-other-path"
-                title="tabbed-test-title-2"
-              >
-                <div>tabbed-test-content-2</div>
-              </TabbedLayout.Route>
-            </TabbedLayout>
-          }
-        />
-      </Routes>,
+      <TabbedLayout>
+        <TabbedLayout.Route path="/" title="tabbed-test-title">
+          <div>tabbed-test-content</div>
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
+          <div>tabbed-test-content-2</div>
+        </TabbedLayout.Route>
+      </TabbedLayout>,
     );
 
     const secondTab = queryAllByRole('tab')[1];
@@ -88,6 +79,6 @@ describe('TabbedLayout', () => {
     expect(queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(getByText('tabbed-test-content-2')).toBeInTheDocument();
   });
 });

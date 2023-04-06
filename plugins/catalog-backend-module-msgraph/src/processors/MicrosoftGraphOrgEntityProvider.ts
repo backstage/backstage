@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -40,13 +40,70 @@ import {
   readMicrosoftGraphOrg,
   UserTransformer,
 } from '../microsoftGraph';
+import { readProviderConfigs } from '../microsoftGraph/config';
 
 /**
  * Options for {@link MicrosoftGraphOrgEntityProvider}.
  *
  * @public
  */
-export interface MicrosoftGraphOrgEntityProviderOptions {
+export type MicrosoftGraphOrgEntityProviderOptions =
+  | MicrosoftGraphOrgEntityProviderLegacyOptions
+  | {
+      /**
+       * The logger to use.
+       */
+      logger: Logger;
+
+      /**
+       * The refresh schedule to use.
+       *
+       * @remarks
+       *
+       * If you pass in 'manual', you are responsible for calling the `read` method
+       * manually at some interval.
+       *
+       * But more commonly you will pass in the result of
+       * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+       * to enable automatic scheduling of tasks.
+       */
+      schedule?: 'manual' | TaskRunner;
+
+      /**
+       * Scheduler used to schedule refreshes based on
+       * the schedule config.
+       */
+      scheduler?: PluginTaskScheduler;
+
+      /**
+       * The function that transforms a user entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      userTransformer?: UserTransformer | Record<string, UserTransformer>;
+
+      /**
+       * The function that transforms a group entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
+
+      /**
+       * The function that transforms an organization entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      organizationTransformer?:
+        | OrganizationTransformer
+        | Record<string, OrganizationTransformer>;
+    };
+
+/**
+ * Legacy options for {@link MicrosoftGraphOrgEntityProvider}
+ * based on `catalog.processors.microsoftGraphOrg`.
+ *
+ * @public
+ * @deprecated This interface exists for backwards compatibility only and will be removed in the future.
+ */
+export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -57,7 +114,7 @@ export interface MicrosoftGraphOrgEntityProviderOptions {
   /**
    * The target that this provider should consume.
    *
-   * Should exactly match the "target" field of one of the providers
+   * Should exactly match the "target" field of one of the provider
    * configuration entries.
    */
   target: string;
@@ -110,7 +167,75 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: MicrosoftGraphOrgEntityProviderOptions,
-  ) {
+  ): MicrosoftGraphOrgEntityProvider[] {
+    if ('id' in options) {
+      return [
+        MicrosoftGraphOrgEntityProvider.fromLegacyConfig(configRoot, options),
+      ];
+    }
+
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
+    function getTransformer<T extends Function>(
+      id: string,
+      transformers?: T | Record<string, T>,
+    ): T | undefined {
+      if (['undefined', 'function'].includes(typeof transformers)) {
+        return transformers as T;
+      }
+
+      return (transformers as Record<string, T>)[id];
+    }
+
+    return readProviderConfigs(configRoot).map(providerConfig => {
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
+      const provider = new MicrosoftGraphOrgEntityProvider({
+        id: providerConfig.id,
+        provider: providerConfig,
+        logger: options.logger,
+        userTransformer: getTransformer(
+          providerConfig.id,
+          options.userTransformer,
+        ),
+        groupTransformer: getTransformer(
+          providerConfig.id,
+          options.groupTransformer,
+        ),
+        organizationTransformer: getTransformer(
+          providerConfig.id,
+          options.organizationTransformer,
+        ),
+      });
+
+      if (taskRunner !== 'manual') {
+        provider.schedule(taskRunner);
+      }
+
+      return provider;
+    });
+  }
+
+  /**
+   * @deprecated Exists for backwards compatibility only and will be removed in the future.
+   */
+  private static fromLegacyConfig(
+    configRoot: Config,
+    options: MicrosoftGraphOrgEntityProviderLegacyOptions,
+  ): MicrosoftGraphOrgEntityProvider {
+    options.logger.warn(
+      'Deprecated msgraph config "catalog.processors.microsoftGraphOrg" used. Use "catalog.providers.microsoftGraphOrg" instead. More info at https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/CHANGELOG.md#040-next1',
+    );
     const config = configRoot.getOptionalConfig(
       'catalog.processors.microsoftGraphOrg',
     );
@@ -136,7 +261,9 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       provider,
     });
 
-    result.schedule(options.schedule);
+    if (options.schedule !== 'manual') {
+      result.schedule(options.schedule);
+    }
 
     return result;
   }
@@ -180,9 +307,12 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       client,
       provider.tenantId,
       {
+        userExpand: provider.userExpand,
         userFilter: provider.userFilter,
+        userSelect: provider.userSelect,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         groupSelect: provider.groupSelect,
@@ -207,16 +337,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  private schedule(
-    schedule: MicrosoftGraphOrgEntityProviderOptions['schedule'],
-  ) {
-    if (schedule === 'manual') {
-      return;
-    }
-
+  private schedule(taskRunner: TaskRunner) {
     this.scheduleFn = async () => {
       const id = `${this.getProviderName()}:refresh`;
-      await schedule.run({
+      await taskRunner.run({
         id,
         fn: async () => {
           const logger = this.options.logger.child({
@@ -228,7 +352,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           try {
             await this.read({ logger });
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 /// <reference types="node" />
 /// <reference types="react" />
@@ -36,6 +36,11 @@ declare module '*.jpg' {
 }
 
 declare module '*.jpeg' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.md' {
   const src: string;
   export default src;
 }

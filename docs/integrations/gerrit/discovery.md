@@ -17,7 +17,7 @@ As this provider is not one of the default providers, you will first need to ins
 the Gerrit provider plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gerrit
 ```
 
@@ -30,12 +30,15 @@ import { Duration } from 'luxon';
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 builder.addEntityProvider(
-  ...GerritEntityProvider.fromConfig(env.config, {
+  GerritEntityProvider.fromConfig(env.config, {
     logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },
       timeout: { minutes: 3 },
     }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
   }),
 );
 ```
@@ -54,6 +57,11 @@ catalog:
         host: gerrit-your-company.com
         branch: master # Optional
         query: 'state=ACTIVE&prefix=webapps'
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
       backend:
         host: gerrit-your-company.com
         branch: master # Optional
@@ -62,8 +70,8 @@ catalog:
 
 The provider configuration is composed of three parts:
 
-- host, the host of the Gerrit integration to use.
-- branch, the branch where we will look for catalog entities (defaults to "master").
-- query, this string is directly used as the argument to the "List Project" API.
-  Typically you will want to have some filter here to exclude projects that will
+- **`host`**: the host of the Gerrit integration to use.
+- **`branch`** _(optional)_: the branch where we will look for catalog entities (defaults to "master").
+- **`query`**: this string is directly used as the argument to the "List Project" API.
+  Typically, you will want to have some filter here to exclude projects that will
   never contain any catalog files.

@@ -19,7 +19,8 @@ export {
   EntityTechInsightsScorecardCard,
 } from './plugin';
 
-export { techInsightsApiRef } from './api/TechInsightsApi';
-export type { TechInsightsApi } from './api/TechInsightsApi';
-export type { Check } from './api/types';
+export { techInsightsApiRef, TechInsightsClient } from './api';
+export type { TechInsightsApi, Check, InsightFacts } from './api';
+export { BooleanCheck } from './components/BooleanCheck';
+export { jsonRulesEngineCheckResultRenderer } from './components/CheckResultRenderer';
 export type { CheckResultRenderer } from './components/CheckResultRenderer';

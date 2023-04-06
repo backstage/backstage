@@ -30,15 +30,7 @@ import {
   ExternalRouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
-
-// Joins a list of paths together, avoiding trailing and duplicate slashes
-function joinPaths(...paths: string[]): string {
-  const normalized = paths.join('/').replace(/\/\/+/g, '/');
-  if (normalized !== '/' && normalized.endsWith('/')) {
-    return normalized.slice(0, -1);
-  }
-  return normalized;
-}
+import { joinPaths } from './helpers';
 
 /**
  * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
@@ -90,7 +82,7 @@ function resolveTargetRef(
 
   // Find the path that our target route is bound to
   const resolvedPath = routePaths.get(targetRef);
-  if (!resolvedPath) {
+  if (resolvedPath === undefined) {
     return [undefined, ''];
   }
 
@@ -160,22 +152,20 @@ function resolveBasePath(
   // we need to traverse to reach our target except for the very last one. None of these
   // paths are allowed to require any parameters, as the caller would have no way of knowing
   // what parameters those are.
-  const diffPath = joinPaths(
-    ...refDiffList.slice(0, -1).map(ref => {
-      const path = routePaths.get(ref);
-      if (!path) {
-        throw new Error(`No path for ${ref}`);
-      }
-      if (path.includes(':')) {
-        throw new Error(
-          `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
-        );
-      }
-      return path;
-    }),
-  );
+  const diffPaths = refDiffList.slice(0, -1).map(ref => {
+    const path = routePaths.get(ref);
+    if (path === undefined) {
+      throw new Error(`No path for ${ref}`);
+    }
+    if (path.includes(':')) {
+      throw new Error(
+        `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
+      );
+    }
+    return path;
+  });
 
-  return parentPath + diffPath;
+  return `${joinPaths(parentPath, ...diffPaths)}/`;
 }
 
 export class RouteResolver {
@@ -235,7 +225,7 @@ export class RouteResolver {
       );
 
     const routeFunc: RouteFunc<Params> = (...[params]) => {
-      return basePath + generatePath(targetPath, params);
+      return joinPaths(basePath, generatePath(targetPath, params));
     };
     return routeFunc;
   }

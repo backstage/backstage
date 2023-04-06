@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 import type { Transformer } from '../reader/transformers';
 import { transform as transformer } from '../reader/transformers';
 
@@ -49,6 +50,9 @@ export const createTestShadowDom = async (
   if (opts.postTransformers) {
     await transformer(dom, opts.postTransformers);
   }
+
+  // Simulate event dispatched after all styles are loaded
+  dom.dispatchEvent(new CustomEvent(SHADOW_DOM_STYLE_LOAD_EVENT));
 
   return divElement.shadowRoot!;
 };

@@ -22,6 +22,7 @@ export const runMkdocsServer = async (options: {
   useDocker?: boolean;
   dockerImage?: string;
   dockerEntrypoint?: string;
+  dockerOptions?: string[];
   stdoutLogFunc?: LogFunc;
   stderrLogFunc?: LogFunc;
 }): Promise<ChildProcess> => {
@@ -45,6 +46,7 @@ export const runMkdocsServer = async (options: {
         ...(options.dockerEntrypoint
           ? ['--entrypoint', options.dockerEntrypoint]
           : []),
+        ...(options.dockerOptions || []),
         dockerImage,
         'serve',
         '--dev-addr',

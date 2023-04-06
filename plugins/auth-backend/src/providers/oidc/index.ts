@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export type { OidcAuthResult, OidcProviderOptions } from './provider';
-export { createOidcProvider } from './provider';
+export { oidc } from './provider';
+export type { OidcAuthResult } from './provider';

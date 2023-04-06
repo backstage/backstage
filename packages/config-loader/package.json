@@ -1,8 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.1.1-next.1",
-  "private": false,
+  "version": "1.1.9",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -34,10 +33,10 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.9-next.0",
-    "@backstage/config": "^1.0.1-next.0",
-    "@backstage/errors": "^1.0.0",
-    "@backstage/types": "^1.0.0",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@types/json-schema": "^7.0.6",
     "ajv": "^8.10.0",
     "chokidar": "^3.5.2",
@@ -46,18 +45,18 @@
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-traverse": "^1.0.0",
     "node-fetch": "^2.6.7",
-    "typescript-json-schema": "^0.53.0",
-    "yaml": "^1.9.2",
+    "typescript-json-schema": "^0.55.0",
+    "yaml": "^2.0.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.7",
+    "@backstage/cli": "workspace:^",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^16.11.26",
     "@types/yup": "^0.29.13",
     "mock-fs": "^5.1.0",
-    "msw": "^0.35.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

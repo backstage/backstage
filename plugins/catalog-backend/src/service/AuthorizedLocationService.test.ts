@@ -73,7 +73,7 @@ describe('AuthorizedLocationService', () => {
         service.createLocation(spec, false, {
           authorizationToken: 'Bearer authtoken',
         }),
-      ).rejects.toThrowError(NotAllowedError);
+      ).rejects.toThrow(NotAllowedError);
     });
   });
 
@@ -117,7 +117,7 @@ describe('AuthorizedLocationService', () => {
 
       await expect(() =>
         service.getLocation('id', { authorizationToken: 'Bearer authtoken' }),
-      ).rejects.toThrowError(NotFoundError);
+      ).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -141,7 +141,7 @@ describe('AuthorizedLocationService', () => {
         service.deleteLocation('id', {
           authorizationToken: 'Bearer authtoken',
         }),
-      ).rejects.toThrowError(NotAllowedError);
+      ).rejects.toThrow(NotAllowedError);
     });
   });
 });

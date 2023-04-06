@@ -17,12 +17,12 @@
 import { Entity, stringifyLocationRef } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessorParser,
   CatalogProcessorResult,
-  LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 /** @public */
 export function* parseEntityYaml(

@@ -13,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
-const fetchContents = jest.fn();
-
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
-  fetchContents,
-  executeShellCommand,
-}));
-jest.mock('command-exists', () => commandExists);
 
 import {
   getVoidLogger,
@@ -37,7 +27,24 @@ import os from 'os';
 import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
-import type { ActionContext } from '@backstage/plugin-scaffolder-backend';
+import type { ActionContext } from '@backstage/plugin-scaffolder-node';
+
+const executeShellCommand = jest.fn();
+const commandExists = jest.fn();
+const fetchContents = jest.fn();
+
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+  fetchContents: (...args: any[]) => fetchContents(...args),
+  executeShellCommand: (...args: any[]) => executeShellCommand(...args),
+}));
+
+jest.mock(
+  'command-exists',
+  () =>
+    (...args: any[]) =>
+      commandExists(...args),
+);
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -67,7 +74,7 @@ describe('fetch:cookiecutter', () => {
   };
 
   const mockReader: UrlReader = {
-    read: jest.fn(),
+    readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
   };
@@ -132,7 +139,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when copyWithoutRender is not an array', async () => {
     (mockContext.input as any).copyWithoutRender = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input copyWithoutRender must be an Array/,
     );
   });
@@ -140,7 +147,7 @@ describe('fetch:cookiecutter', () => {
   it('should throw an error when extensions is not an array', async () => {
     (mockContext.input as any).extensions = 'not an array';
 
-    await expect(action.handler(mockContext)).rejects.toThrowError(
+    await expect(action.handler(mockContext)).rejects.toThrow(
       /Fetch action input extensions must be an Array/,
     );
   });
@@ -214,6 +221,18 @@ describe('fetch:cookiecutter', () => {
       expect.objectContaining({
         imageName,
       }),
+    );
+  });
+
+  it('should throw error if cookiecutter is not installed and containerRunner is undefined', async () => {
+    commandExists.mockResolvedValue(false);
+    const ccAction = createFetchCookiecutterAction({
+      integrations,
+      reader: mockReader,
+    });
+
+    await expect(ccAction.handler(mockContext)).rejects.toThrow(
+      /Invalid state: containerRunner cannot be undefined when cookiecutter is not installed/,
     );
   });
 });

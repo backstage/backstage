@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityLifecycleFilter } from '../../filters';
@@ -56,36 +56,36 @@ const sampleEntities: Entity[] = [
 
 describe('<EntityLifecyclePicker/>', () => {
   it('renders all lifecycles', () => {
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{ entities: sampleEntities, backendEntities: sampleEntities }}
       >
         <EntityLifecyclePicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Lifecycle')).toBeInTheDocument();
+    expect(screen.getByText('Lifecycle')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
+    fireEvent.click(screen.getByTestId('lifecycle-picker-expand'));
     sampleEntities
       .map(e => e.spec?.lifecycle!)
       .forEach(lifecycle => {
-        expect(rendered.getByText(lifecycle as string)).toBeInTheDocument();
+        expect(screen.getByText(lifecycle as string)).toBeInTheDocument();
       });
   });
 
   it('renders unique lifecycles in alphabetical order', () => {
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{ entities: sampleEntities, backendEntities: sampleEntities }}
       >
         <EntityLifecyclePicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Lifecycle')).toBeInTheDocument();
+    expect(screen.getByText('Lifecycle')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
+    fireEvent.click(screen.getByTestId('lifecycle-picker-expand'));
 
-    expect(rendered.getAllByRole('option').map(o => o.textContent)).toEqual([
+    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
       'experimental',
       'production',
     ]);
@@ -114,7 +114,7 @@ describe('<EntityLifecyclePicker/>', () => {
 
   it('adds lifecycles to filters', () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{
           entities: sampleEntities,
@@ -129,8 +129,8 @@ describe('<EntityLifecyclePicker/>', () => {
       lifecycles: undefined,
     });
 
-    fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
-    fireEvent.click(rendered.getByText('production'));
+    fireEvent.click(screen.getByTestId('lifecycle-picker-expand'));
+    fireEvent.click(screen.getByText('production'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       lifecycles: new EntityLifecycleFilter(['production']),
     });
@@ -138,7 +138,7 @@ describe('<EntityLifecyclePicker/>', () => {
 
   it('removes lifecycles from filters', () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    render(
       <MockEntityListContextProvider
         value={{
           entities: sampleEntities,
@@ -153,10 +153,10 @@ describe('<EntityLifecyclePicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       lifecycles: new EntityLifecycleFilter(['production']),
     });
-    fireEvent.click(rendered.getByTestId('lifecycle-picker-expand'));
-    expect(rendered.getByLabelText('production')).toBeChecked();
+    fireEvent.click(screen.getByTestId('lifecycle-picker-expand'));
+    expect(screen.getByLabelText('production')).toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('production'));
+    fireEvent.click(screen.getByLabelText('production'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       lifecycles: undefined,
     });
@@ -169,6 +169,7 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['experimental'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityLifecyclePicker />
@@ -182,9 +183,44 @@ describe('<EntityLifecyclePicker/>', () => {
         value={{
           updateFilters,
           queryParameters: { lifecycles: ['production'] },
+          backendEntities: sampleEntities,
         }}
       >
         <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: new EntityLifecycleFilter(['production']),
+    });
+  });
+  it('removes lifecycles from filters if there are no available lifecycles', () => {
+    const updateFilters = jest.fn();
+    render(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { lifecycles: ['experimental'] },
+          backendEntities: [],
+        }}
+      >
+        <EntityLifecyclePicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      lifecycles: undefined,
+    });
+  });
+  it('responds to initialFilter prop', () => {
+    const updateFilters = jest.fn();
+    render(
+      <MockEntityListContextProvider
+        value={{
+          entities: sampleEntities,
+          backendEntities: sampleEntities,
+          updateFilters,
+        }}
+      >
+        <EntityLifecyclePicker initialFilter={['production']} />
       </MockEntityListContextProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({

@@ -22,6 +22,10 @@ export interface Config {
      */
     elasticsearch?: {
       /**
+       * Batch size for elastic search indexing tasks. Defaults to 1000.
+       */
+      batchSize?: number;
+      /**
        * Options for configuring highlight settings
        * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
        */
@@ -133,6 +137,36 @@ export interface Config {
        *
       bearer: string;
     };*/
+          }
+
+        /**
+         *  AWS = In house hosting Open Search
+         */
+        | {
+            provider: 'opensearch';
+            /**
+             * Node configuration.
+             * URL/URLS to OpenSearch node to connect to.
+             * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
+             */
+            node: string | string[];
+
+            /**
+             * Authentication credentials for OpenSearch
+             * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
+             */
+            auth?:
+              | {
+                  username: string;
+
+                  /**
+                   * @visibility secret
+                   */
+                  password: string;
+                }
+              | {
+                  apiKey: string;
+                };
           }
       );
     };

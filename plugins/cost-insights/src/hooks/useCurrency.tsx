@@ -23,6 +23,7 @@ import React, {
 import { Currency } from '../types';
 import { useConfig } from './useConfig';
 
+/** @public */
 export type CurrencyContextProps = {
   currency: Currency;
   setCurrency: Dispatch<SetStateAction<Currency>>;

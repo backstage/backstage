@@ -196,4 +196,92 @@ describe('MyGroupsSidebarItem Test', () => {
       expect(rendered.getByLabelText('My Squads')).toBeInTheDocument();
     });
   });
+
+  describe('When an additional filter is not provided', () => {
+    it('catalogApi.getEntities() should be called with the default filter', async () => {
+      const identityApi: Partial<IdentityApi> = {
+        getBackstageIdentity: async () => ({
+          type: 'user',
+          userEntityRef: 'user:default/guest',
+          ownershipEntityRefs: ['user:default/guest'],
+        }),
+      };
+      const mockCatalogApi: Partial<CatalogApi> = {
+        getEntities: jest.fn(),
+      };
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [identityApiRef, identityApi],
+            [catalogApiRef, mockCatalogApi],
+          ]}
+        >
+          <MyGroupsSidebarItem
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
+          />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: 'group',
+            'relations.hasMember': 'user:default/guest',
+          },
+        ],
+        fields: ['metadata', 'kind'],
+      });
+    });
+  });
+
+  describe('When an additional filter is provided', () => {
+    it('catalogApi.getEntities() should be called with an additional filter item', async () => {
+      const identityApi: Partial<IdentityApi> = {
+        getBackstageIdentity: async () => ({
+          type: 'user',
+          userEntityRef: 'user:default/guest',
+          ownershipEntityRefs: ['user:default/guest'],
+        }),
+      };
+      const mockCatalogApi: Partial<CatalogApi> = {
+        getEntities: jest.fn(),
+      };
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [identityApiRef, identityApi],
+            [catalogApiRef, mockCatalogApi],
+          ]}
+        >
+          <MyGroupsSidebarItem
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
+            filter={{ 'spec.type': 'team' }}
+          />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+        filter: [
+          {
+            kind: 'group',
+            'relations.hasMember': 'user:default/guest',
+            'spec.type': 'team',
+          },
+        ],
+        fields: ['metadata', 'kind'],
+      });
+    });
+  });
 });

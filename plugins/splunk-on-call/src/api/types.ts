@@ -24,6 +24,7 @@ import {
 } from '../components/types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export type MessageType =
   | 'CRITICAL'
   | 'WARNING'
@@ -31,6 +32,7 @@ export type MessageType =
   | 'INFO'
   | 'RECOVERY';
 
+/** @public */
 export type TriggerAlarmRequest = {
   routingKey?: string;
   incidentType: MessageType;
@@ -40,6 +42,7 @@ export type TriggerAlarmRequest = {
   incidentStartTime?: number;
 };
 
+/** @public */
 export interface SplunkOnCallApi {
   /**
    * Fetches a list of incidents
@@ -77,33 +80,40 @@ export interface SplunkOnCallApi {
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
 }
 
+/** @public */
 export type EscalationPolicyResponse = {
   policies: EscalationPolicyInfo[];
 };
 
+/** @public */
 export type ListUserResponse = {
   users: User[];
   _selfUrl?: string;
 };
 
+/** @public */
 export type ListRoutingKeyResponse = {
   routingKeys: RoutingKey[];
   _selfUrl?: string;
 };
 
+/** @public */
 export type IncidentsResponse = {
   incidents: Incident[];
 };
 
+/** @public */
 export type OnCallsResponse = {
   teamsOnCall: OnCall[];
 };
 
+/** @public */
 export type ClientApiConfig = {
   eventsRestEndpoint: string | null;
   discoveryApi: DiscoveryApi;
 };
 
+/** @public */
 export type RequestOptions = {
   method: string;
   headers: HeadersInit;

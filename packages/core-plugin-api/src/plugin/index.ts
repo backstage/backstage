@@ -15,6 +15,7 @@
  */
 
 export { createPlugin } from './Plugin';
+
 export type {
   AnyExternalRoutes,
   AnyRoutes,

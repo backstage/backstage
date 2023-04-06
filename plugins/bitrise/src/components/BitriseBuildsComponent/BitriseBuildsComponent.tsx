@@ -32,8 +32,10 @@ export type Props = {
   entity: Entity;
 };
 
+/** @public */
 export const BITRISE_APP_ANNOTATION = 'bitrise.io/app';
 
+/** @public */
 export const isBitriseAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[BITRISE_APP_ANNOTATION]);
 

@@ -26,21 +26,24 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, UrlReader } from '@backstage/backend-common';
 import express from 'express';
 
 const DEFAULT_TOP = 10;
 
+/** @public */
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
   logger: Logger;
   config: Config;
+  reader: UrlReader;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, reader } = options;
   const config = options.config.getConfig('azureDevOps');
 
   const token = config.getString('token');
@@ -51,7 +54,7 @@ export async function createRouter(
   const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi);
+    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi, reader);
 
   const pullRequestsDashboardProvider =
     await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
@@ -61,6 +64,11 @@ export async function createRouter(
 
   router.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });
+  });
+
+  router.get('/projects', async (_req, res) => {
+    const projects = await azureDevOpsApi.getProjects();
+    res.status(200).json(projects);
   });
 
   router.get('/repository/:projectName/:repoName', async (req, res) => {
@@ -184,6 +192,17 @@ export async function createRouter(
     const { userId } = req.params;
     const teamIds = await pullRequestsDashboardProvider.getUserTeamIds(userId);
     res.status(200).json(teamIds);
+  });
+
+  router.get('/readme/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const readme = await azureDevOpsApi.getReadme(
+      host,
+      organization,
+      projectName,
+      repoName,
+    );
+    res.status(200).json(readme);
   });
 
   router.use(errorHandler());

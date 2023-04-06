@@ -15,15 +15,17 @@
  */
 
 import archiver from 'archiver';
+import yauzl, { Entry } from 'yauzl';
 import fs from 'fs-extra';
 import platformPath from 'path';
 import { Readable } from 'stream';
-import unzipper, { Entry } from 'unzipper';
 import {
   ReadTreeResponse,
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
+import { streamToBuffer } from './util';
+import { resolveSafeChildPath } from '../../paths';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -67,43 +69,90 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
   private shouldBeIncluded(entry: Entry): boolean {
     if (this.subPath) {
-      if (!entry.path.startsWith(this.subPath)) {
+      if (!entry.fileName.startsWith(this.subPath)) {
         return false;
       }
     }
     if (this.filter) {
-      return this.filter(this.getInnerPath(entry.path), {
-        size:
-          (entry.vars as { uncompressedSize?: number }).uncompressedSize ??
-          entry.vars.compressedSize,
+      return this.filter(this.getInnerPath(entry.fileName), {
+        size: entry.uncompressedSize,
       });
     }
     return true;
   }
 
-  async files(): Promise<ReadTreeResponseFile[]> {
-    this.onlyOnce();
+  private async streamToTemporaryFile(
+    stream: Readable,
+  ): Promise<{ fileName: string; cleanup: () => Promise<void> }> {
+    const tmpDir = await fs.mkdtemp(
+      platformPath.join(this.workDir, 'backstage-tmp'),
+    );
+    const tmpFile = platformPath.join(tmpDir, 'tmp.zip');
 
-    const files = Array<ReadTreeResponseFile>();
+    const writeStream = fs.createWriteStream(tmpFile);
 
-    await this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', (entry: Entry) => {
-        if (entry.type === 'Directory') {
-          entry.resume();
+    return new Promise((resolve, reject) => {
+      writeStream.on('error', reject);
+      writeStream.on('finish', () =>
+        resolve({ fileName: tmpFile, cleanup: () => fs.remove(tmpFile) }),
+      );
+      stream.pipe(writeStream);
+    });
+  }
+
+  private forEveryZipEntry(
+    zip: string,
+    callback: (entry: Entry, content: Readable) => Promise<void>,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
+        if (err || !zipfile) {
+          reject(err || new Error(`Failed to open zip file ${zip}`));
           return;
         }
 
-        if (this.shouldBeIncluded(entry)) {
-          files.push({
-            path: this.getInnerPath(entry.path),
-            content: () => entry.buffer(),
-          });
-        } else {
-          entry.autodrain();
-        }
-      })
-      .promise();
+        zipfile.on('entry', async (entry: Entry) => {
+          // Check that the file is not a directory, and that is matches the filter.
+          if (!entry.fileName.endsWith('/') && this.shouldBeIncluded(entry)) {
+            zipfile.openReadStream(entry, async (openErr, readStream) => {
+              if (openErr || !readStream) {
+                reject(
+                  openErr ||
+                    new Error(`Failed to open zip entry ${entry.fileName}`),
+                );
+                return;
+              }
+
+              await callback(entry, readStream);
+              zipfile.readEntry();
+            });
+          } else {
+            zipfile.readEntry();
+          }
+        });
+        zipfile.once('end', () => resolve());
+        zipfile.on('error', e => reject(e));
+        zipfile.readEntry();
+      });
+    });
+  }
+
+  async files(): Promise<ReadTreeResponseFile[]> {
+    this.onlyOnce();
+    const files = Array<ReadTreeResponseFile>();
+    const temporary = await this.streamToTemporaryFile(this.stream);
+
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
+      files.push({
+        path: this.getInnerPath(entry.fileName),
+        content: async () => await streamToBuffer(content),
+        lastModifiedAt: entry.lastModFileTime
+          ? new Date(entry.lastModFileTime)
+          : undefined,
+      });
+    });
+
+    temporary.cleanup();
 
     return files;
   }
@@ -116,45 +165,46 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     }
 
     const archive = archiver('zip');
-    await this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', (entry: Entry) => {
-        if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          archive.append(entry, { name: this.getInnerPath(entry.path) });
-        } else {
-          entry.autodrain();
-        }
-      })
-      .promise();
+    const temporary = await this.streamToTemporaryFile(this.stream);
+
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
+      archive.append(await streamToBuffer(content), {
+        name: this.getInnerPath(entry.fileName),
+      });
+    });
+
     archive.finalize();
+
+    temporary.cleanup();
 
     return archive;
   }
 
   async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
-
     const dir =
       options?.targetDir ??
       (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    await this.stream
-      .pipe(unzipper.Parse())
-      .on('entry', async (entry: Entry) => {
-        // Ignore directory entries since we handle that with the file entries
-        // as a zip can have files with directories without directory entries
-        if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          const entryPath = this.getInnerPath(entry.path);
-          const dirname = platformPath.dirname(entryPath);
-          if (dirname) {
-            await fs.mkdirp(platformPath.join(dir, dirname));
-          }
-          entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
-        } else {
-          entry.autodrain();
-        }
-      })
-      .promise();
+    const temporary = await this.streamToTemporaryFile(this.stream);
+
+    await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
+      const entryPath = this.getInnerPath(entry.fileName);
+      const dirname = platformPath.dirname(entryPath);
+
+      if (dirname) {
+        await fs.mkdirp(resolveSafeChildPath(dir, dirname));
+      }
+      return new Promise(async (resolve, reject) => {
+        const file = fs.createWriteStream(resolveSafeChildPath(dir, entryPath));
+        file.on('finish', resolve);
+
+        content.on('error', reject);
+        content.pipe(file);
+      });
+    });
+
+    temporary.cleanup();
 
     return dir;
   }

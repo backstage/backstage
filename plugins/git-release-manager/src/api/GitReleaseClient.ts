@@ -15,7 +15,7 @@
  */
 
 import { Octokit } from '@octokit/rest';
-import { GitHubIntegration, ScmIntegrations } from '@backstage/integration';
+import { GithubIntegration, ScmIntegrations } from '@backstage/integration';
 import { DISABLE_CACHE } from '../constants/constants';
 
 import { Project } from '../contexts/ProjectContext';
@@ -50,7 +50,7 @@ export class GitReleaseClient implements GitReleaseApi {
   private getGithubIntegrationConfig({
     gitHubIntegrations,
   }: {
-    gitHubIntegrations: GitHubIntegration[];
+    gitHubIntegrations: GithubIntegration[];
   }) {
     const defaultIntegration = gitHubIntegrations.find(
       ({ config: { host } }) => host === 'github.com',

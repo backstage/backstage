@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
+import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
@@ -30,8 +31,6 @@ type TransformOptions = {
 
 export const transforms = (options: TransformOptions): Transforms => {
   const { isDev, isBackend } = options;
-
-  const extraTransforms = isDev && !isBackend ? ['react-hot-loader'] : [];
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -54,25 +53,61 @@ export const transforms = (options: TransformOptions): Transforms => {
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['typescript', 'jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: require.resolve('swc-loader'),
+          options: {
+            jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'typescript',
+                tsx: !isBackend,
+                dynamicImport: true,
+              },
+              transform: {
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
+              },
+            },
+          },
+        },
+      ],
     },
     {
       test: /\.(jsx?|mjs|cjs)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: require.resolve('swc-loader'),
+          options: {
+            jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'ecmascript',
+                jsx: !isBackend,
+                dynamicImport: true,
+              },
+              transform: {
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
+              },
+            },
+          },
+        },
+      ],
     },
     {
-      test: /\.(js|mjs|cjs)/,
+      test: /\.(js|mjs|cjs)$/,
       resolve: {
         fullySpecified: false,
       },
@@ -81,11 +116,17 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('swc-loader'),
           options: {
-            transforms: ['jsx', ...extraTransforms],
-            disableESTransforms: true,
-            production: !isDev,
+            jsc: {
+              target: 'es2019',
+              externalHelpers: !isBackend,
+              parser: {
+                syntax: 'ecmascript',
+                jsx: !isBackend,
+                dynamicImport: true,
+              },
+            },
           },
         },
         {
@@ -100,9 +141,10 @@ export const transforms = (options: TransformOptions): Transforms => {
         /\.gif$/,
         /\.jpe?g$/,
         /\.png$/,
-        /\.frag/,
-        { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
-        /\.xml/,
+        /\.frag$/,
+        /\.vert$/,
+        { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
+        /\.xml$/,
       ],
       type: 'asset/resource',
       generator: {
@@ -151,7 +193,13 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new webpack.HotModuleReplacementPlugin());
+    if (!isBackend) {
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: { sockProtocol: 'ws' },
+        }),
+      );
+    }
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

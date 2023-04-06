@@ -18,6 +18,8 @@ Backstage comes with many common authentication providers in the core library:
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
 - [Bitbucket](bitbucket/provider.md)
+- [Bitbucket Server](bitbucketServer/provider.md)
+- [Cloudflare Access](cloudflare/access.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
@@ -64,7 +66,7 @@ the local `auth.environment` setting will be selected.
 > and access to a Backstage Identity Token, which can be passed to backend
 > plugins.
 
-Using an authentication provide for sign-in is something you need to configure
+Using an authentication provider for sign-in is something you need to configure
 both in the frontend app, as well as the `auth` backend plugin. For information
 on how to configure the backend app, see [Sign-in Identities and Resolvers](./identity-resolver.md).
 The rest of this section will focus on how to configure sign-in for the frontend app.
@@ -82,56 +84,65 @@ which takes either a `provider` or `providers` (array) prop of `SignInProviderCo
 The following example for GitHub shows the additions needed to `packages/app/src/App.tsx`,
 and can be adapted to any of the built-in providers:
 
-```diff
-+ import { githubAuthApiRef } from '@backstage/core-plugin-api';
-+ import { SignInPage } from '@backstage/core-components';
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-start */
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInPage } from '@backstage/core-components';
+/* highlight-add-end */
 
- const app = createApp({
-   apis,
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={{
-+          id: 'github-auth-provider',
-+          title: 'GitHub',
-+          message: 'Sign in using GitHub',
-+          apiRef: githubAuthApiRef,
-+        }}
-+      />
-+    ),
-+  },
-   bindRoutes({ bind }) {
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'github-auth-provider',
+          title: 'GitHub',
+          message: 'Sign in using GitHub',
+          apiRef: githubAuthApiRef,
+        }}
+      />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 You can also use the `providers` prop to enable multiple sign-in methods, for example
 allows allowing guest access:
 
-```diff
- const app = createApp({
-   apis,
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        providers={['guest', {
-+          id: 'github-auth-provider',
-+          title: 'GitHub',
-+          message: 'Sign in using GitHub',
-+          apiRef: githubAuthApiRef,
-+        }]}
-+      />
-+    ),
-+  },
-   bindRoutes({ bind }) {
+```tsx title="packages/app/src/App.tsx"
+const app = createApp({
+  /* highlight-add-start */
+  components: {
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        providers={[
+          'guest',
+          {
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          },
+        ]}
+      />
+    ),
+  },
+  /* highlight-add-end */
+  // ..
+});
 ```
 
 ## Sign-In with Proxy Providers
 
 Some auth providers are so-called "proxy" providers, meaning they're meant to be used
 behind an authentication proxy. Examples of these are
-[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
+[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md), [Cloudflare Access](./cloudflare/access.md),
 [GCP IAP](./google/gcp-iap-auth.md), and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 
 When using a proxy provider, you'll end up wanting to use a different sign-in page, as
@@ -140,13 +151,41 @@ All the sign-in page needs to do is to call the `/refresh` endpoint of the auth 
 to get the existing session, which is exactly what the `ProxiedSignInPage` does. The only
 thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 const app = createApp({
-  ...,
   components: {
     SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,
   },
+  // ..
 });
+```
+
+If the provider in auth backend expects additional headers such as `x-provider-token`, there is now a way to configure that in `ProxiedSignInPage` using the optional `headers` prop.
+
+Example:
+
+```tsx
+<ProxiedSignInPage
+  {...props}
+  provider="my-custom-provider"
+  /* highlight-next-line */
+  headers={{ 'x-some-key': someValue }}
+/>
+```
+
+Headers can also be returned in an async manner:
+
+```tsx
+<ProxiedSignInPage
+  {...props}
+  provider="my-custom-provider"
+  /* highlight-start */
+  headers={async () => {
+    const someValue = await someFn();
+    return { 'x-some-key': someValue };
+  }}
+  /* highlight-end */
+/>
 ```
 
 A downside of this method is that it can be cumbersome to set up for local development.
@@ -157,9 +196,8 @@ select the sign-in method based on the `process.env.NODE_ENV` environment variab
 by checking the `hostname` of the current location, or by accessing the configuration API
 to read a configuration value. For example:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 const app = createApp({
-  ...,
   components: {
     SignInPage: props => {
       const configApi = useApi(configApiRef);
@@ -179,11 +217,30 @@ const app = createApp({
       return <ProxiedSignInPage {...props} provider="gcpiap" />;
     },
   },
+  // ..
 });
 ```
 
 When using multiple auth providers like this, it's important that you configure the different
 sign-in resolvers so that they resolve to the same identity regardless of the method used.
+
+## Scaffolder Configuration (Software Templates)
+
+If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
+
+To set it up, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The example below sets up the `ScmAuthApi` for an already configured GitLab authentication provider:
+
+```ts title="packages/app/src/apis.ts"
+createApiFactory({
+  api: scmAuthApiRef,
+  deps: {
+    gitlabAuthApi: gitlabAuthApiRef,
+  },
+  factory: ({ gitlabAuthApi }) => ScmAuth.forGitlab(gitlabAuthApi),
+});
+```
+
+In case you are using a custom authentication providers, you might need to add a [custom `ScmAuthApi` implementation](./index.md#custom-scmauthapi-implementation).
 
 ## For Plugin Developers
 
@@ -239,9 +296,59 @@ Passport-supported authentication method.
 
 ## Custom ScmAuthApi Implementation
 
-If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
+The default `ScmAuthAPi` provides integrations for `github`, `gitlab`, `azure` and `bitbucket` and is created by the following code in `packages/app/src/apis.ts`:
 
-To set up a custom `ScmAuthApi` implementation, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
+```ts
+ScmAuth.createDefaultApiFactory();
+```
+
+If you require only a subset of these integrations, then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate different SCM systems generically, based on what resource is being accessed, and is used for example, by the Scaffolder (Software Templates) and Catalog Import plugins.
+
+The first step is to remove the code that creates the default providers.
+
+```ts title="packages/app/src/apis.ts"
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+  /* highlight-add-next-line */
+  ScmAuth,
+} from '@backstage/integration-react';
+
+export const apis: AnyApiFactory[] = [
+  /* highlight-add-next-line */
+  ScmAuth.createDefaultApiFactory(),
+  // ...
+];
+```
+
+Then replace it with something like this, which will create an `ApiFactory` with only a github provider.
+
+```ts title="packages/app/src/apis.ts"
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+      ),
+  });
+```
+
+If you use any custom authentication integrations, a new provider can be added to the `ApiFactory`.
+
+The first step is to create a new authentication ref, which follows the naming convention of `xxxAuthApiRef`. The example below is for a new GitHub enterprise integration which can be defined either inside the app itself if it's only used for this purpose or inside a common internal package for APIs, such as `@internal/apis`:
+
+```ts
+const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
+  createApiRef({
+    id: 'internal.auth.ghe',
+  });
+```
+
+The new ref is then used to add a new provider to the ApiFactory:
 
 ```ts
 createApiFactory({
@@ -258,4 +365,15 @@ createApiFactory({
       }),
     ),
 });
+```
+
+Finally, you also need to add and configure another provider to the `auth-backend` using the provider ID, which in this example is `ghe`:
+
+```ts
+import { providers } from '@backstage/plugin-auth-backend';
+
+// Add the following options to `createRouter` in packages/backend/src/plugins/auth.ts
+providerFactories: {
+  ghe: providers.github.create(),
+},
 ```

@@ -19,7 +19,8 @@ import lunr from 'lunr';
 import { BatchSearchEngineIndexer } from '../indexing';
 
 /**
- * @beta
+ * Lunr specific search engine indexer
+ * @public
  */
 export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   private schemaInitialized = false;

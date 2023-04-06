@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { getByRole, waitFor } from '@testing-library/react';
+import { getByRole, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ProjectSelect } from './ProjectSelect';
 import { MockFilterProvider } from '../../testUtils';
@@ -42,23 +42,19 @@ describe('<ProjectSelect />', () => {
   });
 
   it('Renders without exploding', async () => {
-    const rendered = await renderInTestApp(Component);
-    expect(rendered.getByText('All Projects')).toBeInTheDocument();
+    await renderInTestApp(Component);
+    expect(screen.getByText('All Projects')).toBeInTheDocument();
   });
 
   it('shows all projects in the filter select', async () => {
-    const rendered = await renderInTestApp(Component);
-    const projectSelectContainer = rendered.getByTestId(
-      'project-filter-select',
-    );
+    await renderInTestApp(Component);
+    const projectSelectContainer = screen.getByTestId('project-filter-select');
     const button = getByRole(projectSelectContainer, 'button');
     await userEvent.click(button);
-    await waitFor(() => rendered.getByTestId('option-all'));
+    await waitFor(() => screen.getByTestId('option-all'));
 
     mockProjects.forEach(project =>
-      expect(
-        rendered.getByText(project.name ?? project.id),
-      ).toBeInTheDocument(),
+      expect(screen.getByText(project.name ?? project.id)).toBeInTheDocument(),
     );
   });
 });

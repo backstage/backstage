@@ -25,7 +25,7 @@ Cypress.Commands.add('loginAsGuest', () => {
 });
 
 Cypress.Commands.add('getTechDocsShadowRoot', () => {
-  cy.get('[data-testid="techdocs-content-shadowroot"]').shadow();
+  cy.get('[data-testid="techdocs-native-shadowroot"]').shadow();
 });
 
 Cypress.Commands.add('isNotInViewport', element => {
@@ -57,11 +57,15 @@ Cypress.Commands.add('isInViewport', element => {
 });
 
 Cypress.Commands.add('getTechDocsTableOfContents', () => {
-  cy.get('[data-md-component="toc"]');
+  cy.get('[data-md-type="toc"]');
 });
 
 Cypress.Commands.add('getTechDocsNavigation', () => {
-  cy.get('[data-md-component="navigation"]');
+  cy.get('[data-md-type="navigation"]');
+});
+
+Cypress.Commands.add('getCatalogDocsTab', () => {
+  cy.get('button[role="tab"]').contains('Docs');
 });
 
 Cypress.Commands.add('mockSockJSNode', () => {
@@ -113,4 +117,9 @@ Cypress.Commands.add('waitSectionTwoPage', () => {
 
 Cypress.Commands.add('waitHomePage', () => {
   cy.wait(['@entityMetadata', '@syncEntity', '@techdocsMetadata', '@homeHTML']);
+});
+
+Cypress.Commands.add('checkForErrors', () => {
+  // when an error occurs there is a <div> with an "alert" role attribute. This can change ofc => we shall add also some positive ("when error occurs") test
+  cy.get('div[role="alert"]').should('not.exist');
 });

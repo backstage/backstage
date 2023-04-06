@@ -29,6 +29,9 @@ import { Entity } from '@backstage/catalog-model';
 export const entityOwnershipFactRetriever: FactRetriever = {
   id: 'entityOwnershipFactRetriever',
   version: '0.0.1',
+  title: 'Entity Ownership',
+  description:
+    'Generates facts which indicate the quality of data in the spec.owner field',
   entityFilter: [
     { kind: ['component', 'domain', 'system', 'api', 'resource', 'template'] },
   ],

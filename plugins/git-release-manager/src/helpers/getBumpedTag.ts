@@ -28,16 +28,15 @@ import { SemverTagParts } from './tagParts/getSemverTagParts';
  *
  * For semantic versioning this means either a minor or a patch bump
  * depending on the value of `bumpLevel`
+ *
+ * @public
  */
-export function getBumpedTag({
-  project,
-  tag,
-  bumpLevel,
-}: {
+export function getBumpedTag(options: {
   project: Project;
   tag: string;
   bumpLevel: keyof typeof SEMVER_PARTS;
 }) {
+  const { project, tag, bumpLevel } = options;
   const tagParts = getTagParts({ project, tag });
 
   if (tagParts.error !== undefined) {
@@ -53,6 +52,7 @@ export function getBumpedTag({
   return getBumpedSemverTag(tagParts.tagParts, bumpLevel);
 }
 
+/** @public */
 function getPatchedCalverTag(tagParts: CalverTagParts) {
   const bumpedTagParts: CalverTagParts = {
     ...tagParts,
@@ -67,6 +67,7 @@ function getPatchedCalverTag(tagParts: CalverTagParts) {
   };
 }
 
+/** @public */
 function getBumpedSemverTag(
   tagParts: SemverTagParts,
   semverBumpLevel: keyof typeof SEMVER_PARTS,
@@ -85,6 +86,8 @@ function getBumpedSemverTag(
 /**
  * Calculates the next semantic version, taking into account
  * whether or not it's a minor or patch
+ *
+ * @public
  */
 export function getBumpedSemverTagParts(
   tagParts: SemverTagParts,

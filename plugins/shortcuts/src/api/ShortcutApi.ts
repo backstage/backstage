@@ -18,15 +18,22 @@ import { Shortcut } from '../types';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 
+/** @public */
 export const shortcutsApiRef = createApiRef<ShortcutApi>({
   id: 'plugin.shortcuts.api',
 });
 
+/** @public */
 export interface ShortcutApi {
   /**
    * Returns an Observable that will subscribe to changes.
    */
   shortcut$(): Observable<Shortcut[]>;
+
+  /**
+   * Returns an immediate snapshot of shortcuts, sorted by title
+   */
+  get(): Shortcut[];
 
   /**
    * Generates a unique id for the shortcut and then saves it.

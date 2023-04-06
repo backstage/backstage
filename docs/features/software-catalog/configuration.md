@@ -106,8 +106,7 @@ with [Static Location Configuration](#static-location-configuration) or a
 discovery processor like
 [GitHub Discovery](../../integrations/github/discovery.md). To enforce usage of
 processors to locate entities we can configure the catalog into `readonly` mode.
-This configuration disables the mutating backend catalog APIs and disallows
-users from registering new entities at run-time.
+This configuration disables registering and deleting locations with the catalog APIs.
 
 ```yaml
 catalog:
@@ -116,6 +115,8 @@ catalog:
 
 > **Note that any plugin relying on the catalog API for creating, updating and
 > deleting entities will not work in this mode.**
+
+Deleting an entity by UUID, `DELETE /entities/by-uid/:uid`, is allowed when using this mode. It may be rediscovered as noted in [explicit deletion](life-of-an-entity.md#explicit-deletion).
 
 A common use case for this configuration is when organizations have a remote
 source that should be mirrored into Backstage. To make Backstage a mirror of

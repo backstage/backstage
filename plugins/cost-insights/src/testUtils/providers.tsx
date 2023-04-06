@@ -15,24 +15,28 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
-import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
-import { FilterContext, FilterContextProps } from '../hooks/useFilters';
-import { ConfigContext, ConfigContextProps } from '../hooks/useConfig';
-import { CurrencyContext, CurrencyContextProps } from '../hooks/useCurrency';
 import {
+  LoadingContext,
+  LoadingContextProps,
+  GroupsContext,
+  GroupsContextProps,
+  FilterContext,
+  FilterContextProps,
+  ConfigContext,
+  ConfigContextProps,
+  CurrencyContext,
+  CurrencyContextProps,
   BillingDateContext,
   BillingDateContextProps,
-} from '../hooks/useLastCompleteBillingDate';
-import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
-import { Group, Duration } from '../types';
+  ScrollContext,
+  ScrollContextProps,
+} from '../hooks';
+import { Duration, EngineerThreshold } from '../types';
+import { createCurrencyFormat } from '../utils/currency';
 
-type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
-
-export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
-
-export type MockFilterProviderProps =
-  PartialPropsWithChildren<FilterContextProps>;
+export type MockFilterProviderProps = PropsWithChildren<
+  Partial<FilterContextProps>
+>;
 
 export const MockFilterProvider = ({
   children,
@@ -56,8 +60,9 @@ export const MockFilterProvider = ({
   );
 };
 
-export type MockLoadingProviderProps =
-  PartialPropsWithChildren<LoadingContextProps>;
+export type MockLoadingProviderProps = PropsWithChildren<
+  Partial<LoadingContextProps>
+>;
 
 export const MockLoadingProvider = ({
   children,
@@ -75,20 +80,25 @@ export const MockLoadingProvider = ({
   );
 };
 
-export type MockConfigProviderProps =
-  PartialPropsWithChildren<ConfigContextProps>;
+/** @public */
+export type MockConfigProviderProps = PropsWithChildren<
+  Partial<ConfigContextProps>
+>;
 
-export const MockConfigProvider = ({
-  children,
-  ...context
-}: MockConfigProviderProps) => {
+/** @public */
+export const MockConfigProvider = (props: MockConfigProviderProps) => {
+  const { children, ...context } = props;
+
   const defaultContext: ConfigContextProps = {
+    baseCurrency: createCurrencyFormat(),
     metrics: [],
     products: [],
     icons: [],
     engineerCost: 0,
+    engineerThreshold: EngineerThreshold,
     currencies: [],
   };
+
   return (
     <ConfigContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
@@ -96,13 +106,15 @@ export const MockConfigProvider = ({
   );
 };
 
-export type MockCurrencyProviderProps =
-  PartialPropsWithChildren<CurrencyContextProps>;
+/** @public */
+export type MockCurrencyProviderProps = PropsWithChildren<
+  Partial<CurrencyContextProps>
+>;
 
-export const MockCurrencyProvider = ({
-  children,
-  ...context
-}: MockCurrencyProviderProps) => {
+/** @public */
+export const MockCurrencyProvider = (props: MockCurrencyProviderProps) => {
+  const { children, ...context } = props;
+
   const defaultContext: CurrencyContextProps = {
     currency: {
       kind: null,
@@ -111,6 +123,7 @@ export const MockCurrencyProvider = ({
     },
     setCurrency: jest.fn(),
   };
+
   return (
     <CurrencyContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
@@ -118,8 +131,9 @@ export const MockCurrencyProvider = ({
   );
 };
 
-export type MockBillingDateProviderProps =
-  PartialPropsWithChildren<BillingDateContextProps>;
+export type MockBillingDateProviderProps = PropsWithChildren<
+  Partial<BillingDateContextProps>
+>;
 
 export const MockBillingDateProvider = ({
   children,
@@ -149,8 +163,9 @@ export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   );
 };
 
-export type MockGroupsProviderProps =
-  PartialPropsWithChildren<GroupsContextProps>;
+export type MockGroupsProviderProps = PropsWithChildren<
+  Partial<GroupsContextProps>
+>;
 
 export const MockGroupsProvider = ({
   children,

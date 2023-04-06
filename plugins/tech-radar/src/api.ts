@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 
 /**
  * {@link @backstage/core-plugin-api#ApiRef} for the {@link TechRadarApi}
+ *
+ * @public
  */
 export const techRadarApiRef: ApiRef<TechRadarApi> = createApiRef<TechRadarApi>(
   {
@@ -31,6 +34,8 @@ export const techRadarApiRef: ApiRef<TechRadarApi> = createApiRef<TechRadarApi>(
  *
  * This should be implemented by user, as {@link https://github.com/backstage/backstage/blob/master/plugins/tech-radar/src/sample.ts | default}
  * serves only some static data for example purposes
+ *
+ * @public
  */
 export interface TechRadarApi {
   /**
@@ -46,6 +51,8 @@ export interface TechRadarApi {
 
 /**
  * Tech Radar Ring which indicates stage of {@link RadarEntry}
+ *
+ * @public
  */
 export interface RadarRing {
   /**
@@ -68,6 +75,8 @@ export interface RadarRing {
 
 /**
  * Tech Radar Quadrant which represent area/topic of {@link RadarEntry}
+ *
+ * @public
  */
 export interface RadarQuadrant {
   /**
@@ -81,7 +90,25 @@ export interface RadarQuadrant {
 }
 
 /**
+ * Single link in {@link RadarEntry}
+ *
+ * @public
+ */
+export interface RadarEntryLink {
+  /**
+   * URL of the link
+   */
+  url: string;
+  /**
+   * Display name of the link
+   */
+  title: string;
+}
+
+/**
  * Single Entry in Tech Radar
+ *
+ * @public
  */
 export interface RadarEntry {
   /**
@@ -106,8 +133,10 @@ export interface RadarEntry {
    * @remarks
    *
    * You can use `#` if you don't want to provide any other url
+   *
+   * @deprecated Use {@link RadarEntry.links} instead
    */
-  url: string;
+  url?: string;
   /**
    * History of the Entry moving through {@link RadarRing}
    */
@@ -116,10 +145,16 @@ export interface RadarEntry {
    * Description of the Entry
    */
   description?: string;
+  /**
+   * User-clickable links to provide more information about the Entry
+   */
+  links?: Array<RadarEntryLink>;
 }
 
 /**
  * State of {@link RadarEntry} at given point in time
+ *
+ * @public
  */
 export interface RadarEntrySnapshot {
   /**
@@ -142,6 +177,8 @@ export interface RadarEntrySnapshot {
 
 /**
  * Indicates how {@link RadarEntry} moved though {@link RadarRing} on {@link RadarEntry.timeline}
+ *
+ * @public
  */
 export enum MovedState {
   /**
@@ -164,6 +201,8 @@ export enum MovedState {
 
 /**
  * Response from {@link TechRadarApi}
+ *
+ * @public
  */
 export interface TechRadarLoaderResponse {
   /**

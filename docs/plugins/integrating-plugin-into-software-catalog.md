@@ -21,7 +21,7 @@ should have a separate package in a folder, which represents your plugin.
 Example:
 
 ```
-$ yarn create-plugin
+$ yarn new --select plugin
 > ? Enter an ID for the plugin [required] my-plugin
 > ? Enter the owner(s) of the plugin. If specified, this will be added to CODEOWNERS for the plugin path. [optional]
 

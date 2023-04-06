@@ -39,7 +39,7 @@ describe('MockFetchApi', () => {
       const inner = jest.fn();
       const m = new MockFetchApi({ baseImplementation: inner });
       await m.fetch('http://example.com/data.json');
-      expect(inner).lastCalledWith('http://example.com/data.json');
+      expect(inner).toHaveBeenLastCalledWith('http://example.com/data.json');
     });
   });
 

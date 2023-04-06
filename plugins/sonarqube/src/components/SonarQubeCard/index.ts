@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export type { DuplicationRating } from './SonarQubeCard';
 export { SonarQubeCard } from './SonarQubeCard';

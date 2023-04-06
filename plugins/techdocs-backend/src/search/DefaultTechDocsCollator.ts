@@ -29,7 +29,7 @@ import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { Permission } from '@backstage/plugin-permission-common';
 import {
   CatalogApi,
@@ -69,7 +69,7 @@ type EntityInfo = {
  * A search collator responsible for gathering and transforming TechDocs documents.
  *
  * @public
- * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * @deprecated Upgrade to a more recent `@backstage/plugin-search-backend-node` and
  * use `DefaultTechDocsCollatorFactory` instead.
  */
 export class DefaultTechDocsCollator {

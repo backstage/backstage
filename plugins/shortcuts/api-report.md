@@ -9,28 +9,27 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
-import { StorageApi } from '@backstage/core-plugin-api';
+import { Shortcut as Shortcut_2 } from '@backstage/plugin-shortcuts';
+import { ShortcutApi as ShortcutApi_2 } from '@backstage/plugin-shortcuts';
+import type { StorageApi } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "LocalStoredShortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export class LocalStoredShortcuts implements ShortcutApi {
+export class LocalStoredShortcuts implements ShortcutApi_2 {
   constructor(storageApi: StorageApi);
   // (undocumented)
-  add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
+  add(shortcut: Omit<Shortcut_2, 'id'>): Promise<void>;
+  // (undocumented)
+  get(): Shortcut_2[];
   // (undocumented)
   getColor(url: string): string;
   // (undocumented)
   remove(id: string): Promise<void>;
   // (undocumented)
-  shortcut$(): ObservableImpl<Shortcut[]>;
+  shortcut$(): Observable<Shortcut_2[]>;
   // (undocumented)
-  update(shortcut: Shortcut): Promise<void>;
+  update(shortcut: Shortcut_2): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "Shortcut" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Shortcut = {
   id: string;
@@ -38,34 +37,29 @@ export type Shortcut = {
   title: string;
 };
 
-// Warning: (ae-missing-release-tag) "ShortcutApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ShortcutApi {
   add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
+  get(): Shortcut[];
   getColor(url: string): string;
   remove(id: string): Promise<void>;
   shortcut$(): Observable<Shortcut[]>;
   update(shortcut: Shortcut): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "Shortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Shortcuts: (props: ShortcutsProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "shortcutsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const shortcutsApiRef: ApiRef<ShortcutApi>;
 
-// Warning: (ae-missing-release-tag) "shortcutsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const shortcutsPlugin: BackstagePlugin<{}, {}>;
+export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export interface ShortcutsProps {
+  // (undocumented)
+  allowExternalLinks?: boolean;
   // (undocumented)
   icon?: IconComponent;
 }

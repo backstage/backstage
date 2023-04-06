@@ -14,112 +14,36 @@
  * limitations under the License.
  */
 
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityList } from '../../hooks/useEntityListProvider';
+import { makeStyles } from '@material-ui/core';
+import React from 'react';
 import { EntityTagFilter } from '../../filters';
-import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../api';
+import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';
 
 /** @public */
 export type CatalogReactEntityTagPickerClassKey = 'input';
 
+/** @public */
+export type EntityTagPickerProps = {
+  showCounts?: boolean;
+};
+
 const useStyles = makeStyles(
-  {
-    input: {},
-  },
-  {
-    name: 'CatalogReactEntityTagPicker',
-  },
+  { input: {} },
+  { name: 'CatalogReactEntityTagPicker' },
 );
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
 /** @public */
-export const EntityTagPicker = () => {
+export const EntityTagPicker = (props: EntityTagPickerProps) => {
   const classes = useStyles();
-  const {
-    updateFilters,
-    filters,
-    queryParameters: { tags: tagsParameter },
-  } = useEntityList();
-
-  const catalogApi = useApi(catalogApiRef);
-  const { value: availableTags } = useAsync(async () => {
-    const facet = 'metadata.tags';
-    const { facets } = await catalogApi.getEntityFacets({
-      facets: [facet],
-      filter: filters.kind?.getCatalogFilters(),
-    });
-
-    return facets[facet].map(({ value }) => value);
-  }, [filters.kind]);
-
-  const queryParamTags = useMemo(
-    () => [tagsParameter].flat().filter(Boolean) as string[],
-    [tagsParameter],
-  );
-
-  const [selectedTags, setSelectedTags] = useState(
-    queryParamTags.length ? queryParamTags : filters.tags?.values ?? [],
-  );
-
-  // Set selected tags on query parameter updates; this happens at initial page load and from
-  // external updates to the page location.
-  useEffect(() => {
-    if (queryParamTags.length) {
-      setSelectedTags(queryParamTags);
-    }
-  }, [queryParamTags]);
-
-  useEffect(() => {
-    updateFilters({
-      tags: selectedTags.length ? new EntityTagFilter(selectedTags) : undefined,
-    });
-  }, [selectedTags, updateFilters]);
-
-  if (!availableTags?.length) return null;
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button">Tags</Typography>
-      <Autocomplete
-        multiple
-        aria-label="Tags"
-        options={availableTags}
-        value={selectedTags}
-        onChange={(_: object, value: string[]) => setSelectedTags(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
-    </Box>
+    <EntityAutocompletePicker
+      label="Tags"
+      name="tags"
+      path="metadata.tags"
+      Filter={EntityTagFilter}
+      showCounts={props.showCounts}
+      InputProps={{ className: classes.input }}
+    />
   );
 };

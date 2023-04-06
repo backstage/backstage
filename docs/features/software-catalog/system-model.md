@@ -33,8 +33,8 @@ tracked in source control, or use some existing open source or commercial
 software.
 
 A component can implement APIs for other components to consume. In turn it might
-depend on APIs implemented by other components, or resources that are attached
-to it at runtime.
+consume APIs implemented by other components, or directly depend on components or
+resources that are attached to it at runtime.
 
 ### API
 
@@ -50,7 +50,7 @@ components need to be in a known machine-readable format so we can build further
 tooling and analysis on top.
 
 APIs have a visibility: they are either public (making them available for any
-other component to consume), restricted (only available to a whitelisted set of
+other component to consume), restricted (only available to an allowlisted set of
 consumers), or private (only available within their system). As public APIs are
 going to be the primary way interaction between components, Backstage supports
 documenting, indexing and searching all APIs so we can browse them as
@@ -62,6 +62,17 @@ Resources are the infrastructure a component needs to operate at runtime, like
 BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
+
+## Organizational Entities
+
+### User
+
+A user describes a person, such as an employee, a contractor, or similar.
+
+### Group
+
+A group describes an organizational entity, such as for example a team, a
+business unit, or a loose collection of people in an interest group.
 
 ## Ecosystem Modeling
 
@@ -108,3 +119,20 @@ domain would come with some documentation on how to accept payments for a new
 product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
+
+## Other
+
+### Location
+
+A location is a marker that references other places to look for catalog data.
+
+### Type
+
+The type field in the system has no set meaning. It is up to the user to assign their own types and use them as desired, such as for link validation or creating custom UI components. Some common pre-defined types are depicted in the
+[ecosystem modeling diagram](#ecosystem-modeling).
+
+### Template
+
+A template definition describes both the parameters that are rendered in the
+frontend part of the scaffolding wizard, and the steps that are executed when
+scaffolding that component.

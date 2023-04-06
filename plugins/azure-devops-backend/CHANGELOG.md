@@ -1,5 +1,460 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.22
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.3.22-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.21
+
+### Patch Changes
+
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- cc926a59bd: Fixed a bug where the azure devops host in URLs on the readme card was being URL encoded, breaking hosts with ports.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.21-next.1
+
+### Patch Changes
+
+- cc926a59bd: Fixed a bug where the azure devops host in URLs on the readme card was being URL encoded, breaking hosts with ports.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.0
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18
+
+### Patch Changes
+
+- eaccf6d628: Updated installation documentation
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/config@1.0.5
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18-next.2
+
+### Patch Changes
+
+- eaccf6d628: Updated installation documentation
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17
+
+### Patch Changes
+
+- 62f284e394: - Adjusted the asset parser to accept case sensitive
+  - Fixed fetching data that was using the deprecated function
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/config@1.0.4
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- 62f284e394: - Adjusted the asset parser to accept case sensitive
+  - Fixed fetching data that was using the deprecated function
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/config@1.0.3
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.15
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- cb1cfc018b: `createRouter` now requires an additional reader: `UrlReader` argument
+
+  ```diff
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return createRouter({
+      logger: env.logger,
+      config: env.config,
+  +   reader: env.reader,
+    });
+  }
+  ```
+
+  Remember to check if you have already provided these settings previously.
+
+  #### [Azure DevOps]
+
+  ```yaml
+  # app-config.yaml
+  azureDevOps:
+    host: dev.azure.com
+    token: my-token
+    organization: my-company
+  ```
+
+  #### [Azure Integrations]
+
+  ```yaml
+  # app-config.yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        token: ${AZURE_TOKEN}
+  ```
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-azure-devops-common@0.3.0
+  - @backstage/config@1.0.2
+
+## 0.3.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-common@0.15.1-next.3
+
+## 0.3.15-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- 3f739be9d9: Minor API signatures cleanup
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- cb1cfc018b: `createRouter` now requires an additional reader: `UrlReader` argument
+
+  ```diff
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return createRouter({
+      logger: env.logger,
+      config: env.config,
+  +   reader: env.reader,
+    });
+  }
+  ```
+
+  Remember to check if you have already provided these settings previously.
+
+  #### [Azure DevOps]
+
+  ```yaml
+  # app-config.yaml
+  azureDevOps:
+    host: dev.azure.com
+    token: my-token
+    organization: my-company
+  ```
+
+  #### [Azure Integrations]
+
+  ```yaml
+  # app-config.yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        token: ${AZURE_TOKEN}
+  ```
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 13a232ec22: Added comments to example to help avoid confusion as to where lines need to be added
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-azure-devops-common@0.2.4
+
+## 0.3.13-next.1
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- e67c4b7d5a: Adding getProjects endpoint to list out all projects associated with the Azure DevOps organization.
+
+  It can be accessed by using this endpoint `{backendUrl}/api/azure-devops/projects`
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-azure-devops-common@0.2.4-next.0
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- 13a232ec22: Added comments to example to help avoid confusion as to where lines need to be added
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+
+## 0.3.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.3.12-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+
+## 0.3.11
+
+### Patch Changes
+
+- ac14fcaf38: Added entity view for Azure Git Tags, based on existing Pull Requests view
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-azure-devops-common@0.2.3
+
 ## 0.3.11-next.1
 
 ### Patch Changes

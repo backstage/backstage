@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-interface GerritConfig {
-  /**
-   * (Required) The host of the Gerrit integration to use.
-   * @visibility backend
-   */
-  host: string;
-  /**
-   * (Required) The query to use for the "List Projects" API call. Used to limit the
-   * scope of the projects that the provider tries to ingest.
-   * @visibility backend
-   */
-  query: string;
-  /**
-   * (Optional) Branch.
-   * The branch where the provider will try to find entities. Defaults to "master".
-   * @visibility backend
-   */
-  branch?: string;
-}
-
 export interface Config {
   catalog?: {
     /**
@@ -45,7 +25,25 @@ export interface Config {
        *
        * Maps provider id with configuration.
        */
-      gerrit?: Record<string, GerritConfig>;
+      gerrit?: Record<
+        string,
+        {
+          /**
+           * (Required) The host of the Gerrit integration to use.
+           */
+          host: string;
+          /**
+           * (Required) The query to use for the "List Projects" API call. Used to limit the
+           * scope of the projects that the provider tries to ingest.
+           */
+          query: string;
+          /**
+           * (Optional) Branch.
+           * The branch where the provider will try to find entities. Defaults to "master".
+           */
+          branch?: string;
+        }
+      >;
     };
   };
 }

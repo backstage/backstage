@@ -13,37 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
 import {
-  Box,
   Button,
-  Paper,
   Step as StepUI,
   StepContent,
   StepLabel,
   Stepper,
   Typography,
 } from '@material-ui/core';
+import { JsonObject } from '@backstage/types';
 import {
   errorApiRef,
-  useApi,
   featureFlagsApiRef,
+  useAnalytics,
+  useRouteRefParams,
+  useApi,
 } from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
+import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState } from 'react';
+import React, { ComponentType, useState } from 'react';
 import { transformSchemaToProps } from './schema';
-import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
+import { ReviewStepProps } from '../types';
+import { ReviewStep } from './ReviewStep';
+import { extractSchemaFromStep } from '@backstage/plugin-scaffolder-react/alpha';
+import { selectedTemplateRouteRef } from '../../routes';
+import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 const Form = withTheme(MuiTheme);
+
 type Step = {
   schema: JsonObject;
   title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
 
-type Props = {
+/**
+ * The props for a dynamic form of a scaffolder template.
+ */
+export type MultistepJsonFormProps = {
   /**
    * Steps for the form, each contains title and form schema
    */
@@ -54,63 +62,34 @@ type Props = {
   onFinish?: () => Promise<void>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
+  finishButtonLabel?: string;
+  layouts: LayoutOptions[];
+  ReviewStepComponent?: ComponentType<ReviewStepProps>;
 };
 
-export function getUiSchemasFromSteps(steps: Step[]): UiSchema[] {
-  const uiSchemas: Array<UiSchema> = [];
-  steps.forEach(step => {
-    const schemaProps = step.schema.properties as JsonObject;
-    for (const key in schemaProps) {
-      if (schemaProps.hasOwnProperty(key)) {
-        const uiSchema = schemaProps[key] as UiSchema;
-        uiSchema.name = key;
-        uiSchemas.push(uiSchema);
-      }
-    }
-  });
-  return uiSchemas;
+export function getSchemasFromSteps(steps: Step[]) {
+  return steps.map(({ schema }) => ({
+    mergedSchema: schema,
+    ...extractSchemaFromStep(schema),
+  }));
 }
 
-export function getReviewData(formData: Record<string, any>, steps: Step[]) {
-  const uiSchemas = getUiSchemasFromSteps(steps);
-  const reviewData: Record<string, any> = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      const uiSchema = uiSchemas.find(us => us.name === key);
-
-      if (!uiSchema) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      if (uiSchema['ui:widget'] === 'password') {
-        reviewData[key] = '******';
-        continue;
-      }
-
-      if (!uiSchema['ui:backstage'] || !uiSchema['ui:backstage'].review) {
-        reviewData[key] = formData[key];
-        continue;
-      }
-
-      const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (!review.show) {
-        continue;
-      }
-
-      if (review.mask) {
-        reviewData[key] = review.mask;
-        continue;
-      }
-      reviewData[key] = formData[key];
-    }
-  }
-
-  return reviewData;
-}
-
-export const MultistepJsonForm = (props: Props) => {
-  const { formData, onChange, onReset, onFinish, fields, widgets } = props;
+/**
+ * Creates the dynamic form for a scaffolder template.
+ */
+export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
+  const {
+    formData,
+    onChange,
+    onReset,
+    onFinish,
+    fields,
+    widgets,
+    layouts,
+    ReviewStepComponent,
+  } = props;
+  const { templateName } = useRouteRefParams(selectedTemplateRouteRef);
+  const analytics = useAnalytics();
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -159,7 +138,9 @@ export const MultistepJsonForm = (props: Props) => {
     onReset();
   };
   const handleNext = () => {
-    setActiveStep(Math.min(activeStep + 1, steps.length));
+    const stepNum = Math.min(activeStep + 1, steps.length);
+    setActiveStep(stepNum);
+    analytics.captureEvent('click', `Next Step (${stepNum})`);
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
@@ -170,11 +151,15 @@ export const MultistepJsonForm = (props: Props) => {
     setDisableButtons(true);
     try {
       await onFinish();
+      analytics.captureEvent('create', formData.name || `new ${templateName}`);
     } catch (err) {
-      setDisableButtons(false);
       errorApi.post(err);
+    } finally {
+      setDisableButtons(false);
     }
   };
+
+  const ReviewStepElement = ReviewStepComponent ?? ReviewStep;
 
   return (
     <>
@@ -198,12 +183,13 @@ export const MultistepJsonForm = (props: Props) => {
                   widgets={widgets}
                   noHtml5Validate
                   formData={formData}
+                  formContext={{ formData }}
                   onChange={onChange}
                   onSubmit={e => {
                     if (e.errors.length === 0) handleNext();
                   }}
                   {...formProps}
-                  {...transformSchemaToProps(schema)}
+                  {...transformSchemaToProps(schema, layouts)}
                 >
                   <Button disabled={activeStep === 0} onClick={handleBack}>
                     Back
@@ -218,30 +204,14 @@ export const MultistepJsonForm = (props: Props) => {
         })}
       </Stepper>
       {activeStep === steps.length && (
-        <Content>
-          <Paper square elevation={0}>
-            <Typography variant="h6">Review and create</Typography>
-            <StructuredMetadataTable
-              dense
-              metadata={getReviewData(formData, steps)}
-            />
-            <Box mb={4} />
-            <Button onClick={handleBack} disabled={disableButtons}>
-              Back
-            </Button>
-            <Button onClick={handleReset} disabled={disableButtons}>
-              Reset
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCreate}
-              disabled={!onFinish || disableButtons}
-            >
-              Create
-            </Button>
-          </Paper>
-        </Content>
+        <ReviewStepElement
+          disableButtons={disableButtons}
+          handleBack={handleBack}
+          handleCreate={handleCreate}
+          handleReset={handleReset}
+          formData={formData}
+          steps={getSchemasFromSteps(steps)}
+        />
       )}
     </>
   );

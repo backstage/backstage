@@ -14,14 +14,71 @@
  * limitations under the License.
  */
 
-interface Config {
+export interface Config {
   costInsights: {
     /**
      * @visibility frontend
      */
     engineerCost: number;
 
-    products: {
+    /**
+     * @visibility frontend
+     */
+    engineerThreshold?: number;
+
+    /**
+     * @visibility frontend
+     */
+    baseCurrency?: {
+      /**
+       * @visibility frontend
+       */
+      locale?: string;
+      options?: {
+        /**
+         * @visibility frontend
+         */
+        localeMatcher?: string | undefined;
+        /**
+         * @visibility frontend
+         */
+        style?: string | undefined;
+        /**
+         * @visibility frontend
+         */
+        currency?: string | undefined;
+        /**
+         * @visibility frontend
+         */
+        currencySign?: string | undefined;
+        /**
+         * @visibility frontend
+         */
+        useGrouping?: boolean | undefined;
+        /**
+         * @visibility frontend
+         */
+        minimumIntegerDigits?: number | undefined;
+        /**
+         * @visibility frontend
+         */
+        minimumFractionDigits?: number | undefined;
+        /**
+         * @visibility frontend
+         */
+        maximumFractionDigits?: number | undefined;
+        /**
+         * @visibility frontend
+         */
+        minimumSignificantDigits?: number | undefined;
+        /**
+         * @visibility frontend
+         */
+        maximumSignificantDigits?: number | undefined;
+      };
+    };
+
+    products?: {
       [kind: string]: {
         /**
          * @visibility frontend

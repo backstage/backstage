@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { CSSProperties } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MaterialAvatar from '@material-ui/core/Avatar';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React, { CSSProperties } from 'react';
+
 import { extractInitials, stringToColor } from './utils';
 
 /** @public */
 export type AvatarClassKey = 'avatar';
 
 const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      avatar: {
-        width: '4rem',
-        height: '4rem',
-        color: '#fff',
-        fontWeight: theme.typography.fontWeightBold,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-      },
-    }),
+  (theme: Theme) => ({
+    avatar: {
+      width: '4rem',
+      height: '4rem',
+      color: theme.palette.common.white,
+    },
+    avatarText: {
+      fontWeight: theme.typography.fontWeightBold,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+    },
+  }),
   { name: 'BackstageAvatar' },
 );
 
@@ -68,6 +71,11 @@ export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
   const classes = useStyles();
   let styles = { ...customStyles };
+  const fontStyles = {
+    fontFamily: styles.fontFamily,
+    fontSize: styles.fontSize,
+    fontWeight: styles.fontWeight,
+  };
   // We only calculate the background color if there's not an avatar
   // picture. If there is a picture, it might have a transparent
   // background and we don't know whether the calculated background
@@ -85,7 +93,16 @@ export function Avatar(props: AvatarProps) {
       className={classes.avatar}
       style={styles}
     >
-      {displayName && extractInitials(displayName)}
+      {displayName && (
+        <Typography
+          variant="h6"
+          component="span"
+          className={classes.avatarText}
+          style={fontStyles}
+        >
+          {extractInitials(displayName)}
+        </Typography>
+      )}
     </MaterialAvatar>
   );
 }

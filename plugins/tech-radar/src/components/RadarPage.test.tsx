@@ -20,8 +20,6 @@ import {
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import { act, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
@@ -61,11 +59,9 @@ describe('RadarPage', () => {
 
     const { getByTestId, findByTestId } = render(
       wrapInTestApp(
-        <ThemeProvider theme={lightTheme}>
-          <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
-            <RadarPage {...techRadarProps} />
-          </TestApiProvider>
-        </ThemeProvider>,
+        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
+          <RadarPage {...techRadarProps} />
+        </TestApiProvider>,
       ),
     );
 
@@ -87,18 +83,16 @@ describe('RadarPage', () => {
     jest.spyOn(mockClient, 'load');
 
     const { getByText, findByTestId } = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
-          <RadarPage {...techRadarProps} />
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
+        <RadarPage {...techRadarProps} />
+      </TestApiProvider>,
     );
 
     await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
     expect(
       getByText('Pick the recommended technologies for your projects'),
     ).toBeInTheDocument();
-    expect(mockClient.load).toBeCalledWith(undefined);
+    expect(mockClient.load).toHaveBeenCalledWith(undefined);
   });
 
   it('should call load with id', async () => {
@@ -111,15 +105,13 @@ describe('RadarPage', () => {
     jest.spyOn(mockClient, 'load');
 
     const { findByTestId } = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
-          <RadarPage {...techRadarProps} />
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
+        <RadarPage {...techRadarProps} />
+      </TestApiProvider>,
     );
 
     await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
-    expect(mockClient.load).toBeCalledWith('myId');
+    expect(mockClient.load).toHaveBeenCalledWith('myId');
   });
 
   it('should call the errorApi if load fails', async () => {
@@ -136,16 +128,14 @@ describe('RadarPage', () => {
     };
 
     const { queryByTestId } = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider
-          apis={[
-            [errorApiRef, errorApi],
-            [techRadarApiRef, mockClient],
-          ]}
-        >
-          <RadarPage {...techRadarProps} />
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider
+        apis={[
+          [errorApiRef, errorApi],
+          [techRadarApiRef, mockClient],
+        ]}
+      >
+        <RadarPage {...techRadarProps} />
+      </TestApiProvider>,
     );
 
     await waitFor(() => !queryByTestId('progress'));

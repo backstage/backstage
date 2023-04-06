@@ -4,6 +4,7 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .PluginGrid {
@@ -140,4 +141,32 @@
 
 #add-plugin-card {
   border: 1px solid #69ddc7;
+}
+
+/* RIBBON */
+
+.ribbon {
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  position: absolute;
+}
+.ribbon span {
+  position: absolute;
+  display: block;
+  width: 140px;
+  padding: 4px 0;
+  background-color: rgb(54, 186, 162, 0.85);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  text-align: center;
+}
+.ribbon-top-right {
+  top: 0;
+  right: 0;
+}
+.ribbon-top-right span {
+  left: -17px;
+  top: 11px;
+  transform: rotate(45deg);
 }

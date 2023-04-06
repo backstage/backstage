@@ -31,6 +31,7 @@ exports.up = async function up(knex) {
   }
   await knex.schema.alterTable('entities', table => {
     table.dropUnique([], 'entities_unique_name');
+    table.dropForeign(['location_id']);
   });
   // Setup temporary tables
   await knex.schema.renameTable('entities_search', 'tmp_entities_search');
@@ -56,7 +57,7 @@ exports.up = async function up(knex) {
           'An opaque string that changes for each update operation to any part of the entity, including metadata.',
         );
       table
-        .string('generation')
+        .integer('generation')
         .notNullable()
         .unsigned()
         .comment(
@@ -89,7 +90,9 @@ exports.up = async function up(knex) {
     })
     .alterTable('entities', table => {
       // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
-      table.unique(['kind', 'name', 'namespace'], 'entities_unique_name');
+      table.unique(['kind', 'name', 'namespace'], {
+        indexName: 'entities_unique_name',
+      });
     });
 
   await knex.schema.raw(`INSERT INTO entities SELECT * FROM tmp_entities`);
@@ -199,7 +202,9 @@ exports.down = async function down(knex) {
     })
     .alterTable('entities', table => {
       // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
-      table.unique(['kind', 'name', 'namespace'], 'entities_unique_name');
+      table.unique(['kind', 'name', 'namespace'], {
+        indexName: 'entities_unique_name',
+      });
     });
 
   await knex.schema.raw(`INSERT INTO entities SELECT * FROM tmp_entities`);

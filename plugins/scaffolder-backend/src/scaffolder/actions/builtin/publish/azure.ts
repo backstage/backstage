@@ -20,7 +20,7 @@ import { initRepoAndPush } from '../helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 
 /**
@@ -104,6 +104,10 @@ export function createPublishAzureAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          repositoryId: {
+            title: 'The Id of the created repository',
+            type: 'string',
+          },
         },
       },
     },
@@ -160,6 +164,11 @@ export function createPublishAzureAction(options: {
           'No remote URL returned from create repository for Azure',
         );
       }
+      const repositoryId = returnedRepo.id;
+
+      if (!repositoryId) {
+        throw new InputError('No Id returned from create repository for Azure');
+      }
 
       // blam: Repo contents is serialized into the path,
       // so it's just the base path I think
@@ -191,6 +200,7 @@ export function createPublishAzureAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('repositoryId', repositoryId);
     },
   });
 }

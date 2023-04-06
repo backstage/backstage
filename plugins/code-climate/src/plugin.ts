@@ -20,7 +20,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
@@ -30,6 +30,7 @@ export const rootRouteRef = createRouteRef({
   id: 'code-climate',
 });
 
+/** @public */
 export const codeClimatePlugin = createPlugin({
   id: 'code-climate',
   apis: [
@@ -37,9 +38,10 @@ export const codeClimatePlugin = createPlugin({
       api: codeClimateApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi }) => new ProductionCodeClimateApi(discoveryApi),
+      factory: ({ discoveryApi, fetchApi }) =>
+        new ProductionCodeClimateApi({ discoveryApi, fetchApi }),
     }),
   ],
   routes: {
@@ -47,6 +49,7 @@ export const codeClimatePlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityCodeClimateCard = codeClimatePlugin.provide(
   createComponentExtension({
     name: 'EntityCodeClimateCard',

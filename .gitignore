@@ -61,6 +61,15 @@ typings/
 # Optional npm cache directory
 .npm
 
+# Yarn 3 files
+.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
+
 # Node version directives
 .nvmrc
 
@@ -140,3 +149,6 @@ cypress/cypress/*
 
 # Possible leftover from build:api-reports
 tsconfig.tmp.json
+
+# vscode database functionality support files
+*.session.sql

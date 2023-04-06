@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createApiFactory,
   createComponentExtension,
@@ -20,10 +21,10 @@ import {
   fetchApiRef,
   googleAuthApiRef,
 } from '@backstage/core-plugin-api';
-
 import { GCalendarApiClient, gcalendarApiRef } from './api';
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const gcalendarPlugin = createPlugin({
   id: 'gcalendar',
   routes: {
@@ -40,6 +41,7 @@ export const gcalendarPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const HomePageCalendar = gcalendarPlugin.provide(
   createComponentExtension({
     name: 'HomePageCalendar',

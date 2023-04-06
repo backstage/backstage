@@ -34,9 +34,7 @@ npx @backstage/create-app
 This will create a new Backstage App inside the current folder. The name of the
 app-folder is the name that was provided when prompted.
 
-<p align='center'>
-  <img src='../assets/getting-started/create-app_output.png' width='600' alt='create app' />
-</p>
+![create app](../assets/getting-started/create-app_output.png)
 
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
@@ -73,9 +71,9 @@ app
   good starting point for you to get to know Backstage.
 - **packages/backend/**: We include a backend that helps power features such as
   [Authentication](https://backstage.io/docs/auth/),
-  [Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
-  [Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
-  and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)
+  [Software Catalog](https://backstage.io/docs/features/software-catalog/),
+  [Software Templates](https://backstage.io/docs/features/software-templates/)
+  and [TechDocs](https://backstage.io/docs/features/techdocs/)
   amongst other things.
 
 ### Troubleshooting

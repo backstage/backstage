@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
   ClusterDetails,
   KubernetesClustersSupplier,
   KubernetesServiceLocator,
+  ServiceLocatorRequestContext,
 } from '../types/types';
 
 // This locator assumes that every service is located on every cluster
@@ -30,8 +32,10 @@ export class MultiTenantServiceLocator implements KubernetesServiceLocator {
   }
 
   // As this implementation always returns all clusters serviceId is ignored here
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getClustersByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
-    return this.clusterSupplier.getClusters();
+  getClustersByEntity(
+    _entity: Entity,
+    _requestContext: ServiceLocatorRequestContext,
+  ): Promise<{ clusters: ClusterDetails[] }> {
+    return this.clusterSupplier.getClusters().then(clusters => ({ clusters }));
   }
 }

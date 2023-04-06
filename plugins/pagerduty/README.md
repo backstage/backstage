@@ -6,7 +6,8 @@
 # How it Works
 
 - The Backstage PagerDuty plugin allows PagerDuty information about a Backstage entity to be displayed within Backstage. This includes active incidents, recent change events, as well as the current on-call responders' names, email addresses, and links to their profiles in PagerDuty.
-- Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders.
+- Incidents can be manually triggered via the plugin with a user-provided description, which will in turn notify the current on-call responders (Alternatively, the plugin can be configured with an optional `readOnly` property to suppress the ability to trigger incidents from the plugin).
+  - _Note: This feature is only available when providing the `pagerduty.com/integration-key` annotation_
 - Change events will be displayed in a separate tab. If the change event payload has additional links the first link only will be rendered.
 
 # Requirements
@@ -15,7 +16,7 @@
 
 # Support
 
-If you need help with this plugin, please reach out on the [Backstage Discord server](https://discord.gg/MUpMjP2).
+If you need help with this plugin, please reach out on the [Backstage Discord server](https://discord.gg/backstage-687207715902193673).
 
 # Integration Walk-through
 
@@ -117,11 +118,49 @@ This will proxy the request by adding an `Authorization` header with the provide
 
 ### Optional configuration
 
+#### Annotating with Service ID
+
+If you want to integrate a PagerDuty service with Backstage but don't want to use an integration key, you can also [annotate](https://backstage.io/docs/features/software-catalog/descriptor-format#annotations-optional) the appropriate entity with a PagerDuty Service ID instead
+
+```yaml
+annotations:
+  pagerduty.com/service-id: [SERVICE_ID]
+```
+
+This service ID can be found by navigating to a Service within PagerDuty and pulling the ID value out of the URL.
+
+1. From the **Configuration** menu within PagerDuty, select **Services**.
+2. Click the **name** of the service you want to represent for your Entity.
+
+Your browser URL should now be located at `https://pagerduty.com/service-directory/[SERVICE_ID]`.
+
+_Note: When annotating with `pagerduty.com/service-id`, the feature to Create Incidents is not currently supported_
+
+#### Custom Events URL
+
 If you want to override the default URL used for events, you can add it to `app-config.yaml`:
 
 ```yaml
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+```
+
+To suppress the rendering of the actionable incident-creation button, the `PagerDutyCard` can also be instantiated in `readOnly` mode:
+
+```ts
+<PagerDuty readOnly />
+```
+
+**WARNING**: In current implementation, the PagerDuty plugin requires the `/pagerduty` proxy endpoint be exposed by the Backstage backend as an unprotected endpoint, in effect enabling PagerDuty API access using the configured `PAGERDUTY_TOKEN` for any user or process with access to the `/pagerduty` Backstage backend endpoint. If you regard this as problematic, consider using the plugin in `readOnly` mode (`<PagerDutyCard readOnly />`) using the following proxy configuration:
+
+```yaml
+proxy:
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization: Token token=${PAGERDUTY_TOKEN}
+    # prohibit the `/pagerduty` proxy endpoint from servicing non-GET requests
+    allowedMethods: ['GET']
 ```
 
 # How to Uninstall

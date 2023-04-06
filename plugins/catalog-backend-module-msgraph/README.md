@@ -1,85 +1,102 @@
 # Catalog Backend Module for Microsoft Graph
 
-This is an extension module to the `plugin-catalog-backend` plugin, providing a
-`MicrosoftGraphOrgReaderProcessor` and a `MicrosoftGraphOrgEntityProvider` that
-can be used to ingest organization data from the Microsoft Graph API. This
-processor is useful if you want to import users and groups from Azure Active
-Directory or Office 365.
+This is an extension module to the `plugin-catalog-backend` plugin, providing a `MicrosoftGraphOrgEntityProvider`
+that can be used to ingest organization data from the Microsoft Graph API.
+This provider is useful if you want to import users and groups from Azure Active Directory or Office 365.
 
 ## Getting Started
 
-First you need to decide whether you want to use an [entity provider or a processor](https://backstage.io/docs/features/software-catalog/life-of-an-entity#stitching) to ingest the organization data.
-If you want groups and users deleted from the source to be automatically deleted
-from Backstage, choose the entity provider.
+1. Choose your authentication method - all methods supported by [DefaultAzureCredential](https://docs.microsoft.com/en-us/javascript/api/overview/azure/identity-readme?view=azure-node-latest#defaultazurecredential)
 
-1. Create or use an existing App registration in the [Microsoft Azure Portal](https://portal.azure.com/).
-   The App registration requires at least the API permissions `Group.Read.All`,
-   `GroupMember.Read.All`, `User.Read` and `User.Read.All` for Microsoft Graph
-   (if you still run into errors about insufficient privileges, add
-   `Team.ReadBasic.All` and `TeamMember.Read.All` too).
+   - For local dev, use Azure CLI, Azure PowerShell or Visual Studio Code for authentication
+   - If your infrastructure supports Managed Identity, use that
+   - Otherwise use an App Registration
 
-2. Configure the processor or entity provider:
+1. If using Managed Identity or App Registration for authentication, grant the following application permissions (not delegated)
+
+   - `GroupMember.Read.All`
+   - `User.Read.All`
+
+1. Configure the entity provider:
 
 ```yaml
 # app-config.yaml
 catalog:
-  processors:
+  providers:
     microsoftGraphOrg:
-      providers:
-        - target: https://graph.microsoft.com/v1.0
-          authority: https://login.microsoftonline.com
-          # If you don't know you tenantId, you can use Microsoft Graph Explorer
-          # to query it
-          tenantId: ${MICROSOFT_GRAPH_TENANT_ID}
-          # Client Id and Secret can be created under Certificates & secrets in
-          # the App registration in the Microsoft Azure Portal.
-          clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
-          clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
-          # Optional mode for querying which defaults to "basic".
-          # By default, the Microsoft Graph API only provides the basic feature set
-          # for querying. Certain features are limited to advanced querying capabilities.
-          # (See https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
-          queryMode: basic # basic | advanced
+      providerId:
+        target: https://graph.microsoft.com/v1.0
+        authority: https://login.microsoftonline.com
+        # If you don't know you tenantId, you can use Microsoft Graph Explorer
+        # to query it
+        tenantId: ${AZURE_TENANT_ID}
+        # Optional ClientId and ClientSecret if you don't want to use `DefaultAzureCredential`
+        # for authentication
+        # Client Id and Secret can be created under Certificates & secrets in
+        # the App registration in the Microsoft Azure Portal.
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        # Optional mode for querying which defaults to "basic".
+        # By default, the Microsoft Graph API only provides the basic feature set
+        # for querying. Certain features are limited to advanced querying capabilities.
+        # (See https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+        queryMode: basic # basic | advanced
+        # Optional configuration block
+        user:
           # Optional parameter to include the expanded resource or collection referenced
           # by a single relationship (navigation property) in your results.
           # Only one relationship can be expanded in a single request.
           # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
           # Can be combined with userGroupMember[...] instead of userFilter.
-          userExpand: manager
+          expand: manager
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           # This and userGroupMemberFilter are mutually exclusive, only one can be specified
-          userFilter: accountEnabled eq true and userType eq 'member'
+          filter: accountEnabled eq true and userType eq 'member'
+          # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
+          select: ['id', 'displayName', 'description']
+        # Optional configuration block
+        userGroupMember:
           # Optional filter for users, use group membership to get users.
           # (Filtered groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
-          userGroupMemberFilter: "displayName eq 'Backstage Users'"
+          filter: "displayName eq 'Backstage Users'"
+          # Optional search for users, use group membership to get users.
+          # (Search for groups and fetch their members.)
+          # This and userFilter are mutually exclusive, only one can be specified
+          search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+        # Optional configuration block
+        group:
           # Optional parameter to include the expanded resource or collection referenced
           # by a single relationship (navigation property) in your results.
           # Only one relationship can be expanded in a single request.
           # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
           # Can be combined with userGroupMember[...] instead of userFilter.
-          groupExpand: member
-          # Optional search for users, use group membership to get users.
-          # (Search for groups and fetch their members.)
-          # This and userFilter are mutually exclusive, only one can be specified
-          userGroupMemberSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+          expand: member
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
-          groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+          filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
           # Optional search for groups, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
-          groupSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
-          # Optional select for groups, this will allow you work with schemaExtensions in order to add extra information to your groups that can be used on you custom groupTransformers
+          search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+          # Optional select for groups, this will allow you work with schemaExtensions
+          # in order to add extra information to your groups that can be used on your custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
-          groupSelect: ['id', 'displayName', 'description']
+          select: ['id', 'displayName', 'description']
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { hours: 1 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 50 }
+          # supports ISO duration, "human duration" as used in code
+          initialDelay: { seconds: 15},
 ```
 
-`userFilter` and `userGroupMemberFilter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
+`user.filter` and `userGroupMember.filter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
 
-By default, all users are loaded. If you want to filter users based on their attributes, use `userFilter`. `userGroupMemberFilter` can be used if you want to load users based on their group membership.
+By default, all users are loaded. If you want to filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
 
 3. The package is not installed by default, therefore you have to add a
    dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your
@@ -90,15 +107,12 @@ By default, all users are loaded. If you want to filter users based on their att
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 ```
 
-### Using the Entity Provider
-
 4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you
    have to register it in the catalog plugin. Pass the target to reference a
    provider from the configuration.
 
 ```diff
  // packages/backend/src/plugins/catalog.ts
-+import { Duration } from 'luxon';
 +import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
  export default async function createPlugin(
@@ -106,53 +120,30 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
 
-+  // The target parameter below needs to match one of the providers' target
-+  // value specified in your app-config (see above).
 +  builder.addEntityProvider(
 +    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
-+      id: 'production',
-+      target: 'https://graph.microsoft.com/v1.0',
 +      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: Duration.fromObject({ minutes: 5 }),
-+        timeout: Duration.fromObject({ minutes: 3 }),
-+      }),
++      scheduler,
 +    }),
 +  );
 ```
 
-### Using the Processor
+Instead of configuring the refresh schedule inside the config (per provider instance),
+you can define it in code (for all of them):
 
-4. The `MicrosoftGraphOrgReaderProcessor` is not registered by default, so you
-   have to register it in the catalog plugin:
-
-```typescript
-// packages/backend/src/plugins/catalog.ts
-builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
-    logger: env.logger,
-  }),
-);
-```
-
-5. Add a location that ingests from Microsoft Graph:
-
-```yaml
-# app-config.yaml
-catalog:
-  locations:
-    - type: microsoft-graph-org
-      target: https://graph.microsoft.com/v1.0
-      rules:
-        - allow: [Group, User]
-    …
+```diff
+-      scheduler,
++      schedule: env.scheduler.createScheduledTaskRunner({
++        frequency: { hours: 1 },
++        timeout: { minutes: 50 },
++        initialDelay: { seconds: 15},
++      }),
 ```
 
 ## Customize the Processor or Entity Provider
 
-In case you want to customize the ingested entities, both the `MicrosoftGraphOrgReaderProcessor`
-and the `MicrosoftGraphOrgEntityProvider` allows to pass transformers for users,
-groups and the organization.
+In case you want to customize the ingested entities, the `MicrosoftGraphOrgEntityProvider`
+allows to pass transformers for users, groups and the organization.
 
 1. Create a transformer:
 
@@ -179,13 +170,14 @@ export async function myGroupTransformer(
 }
 ```
 
-2. Configure the processor with the transformer:
+2. Add the transformer:
 
-```ts
-builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
-    logger: env.logger,
-    groupTransformer: myGroupTransformer,
-  }),
-);
+```diff
+ builder.addEntityProvider(
+   MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+     logger: env.logger,
+     scheduler,
++    groupTransformer: myGroupTransformer,
+   }),
+ );
 ```

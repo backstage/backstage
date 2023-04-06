@@ -1,8 +1,8 @@
 ---
 id: how-to-guides
-title: TechDocs "HOW TO" guides
-sidebar_label: "HOW TO" guides
-description: TechDocs "HOW TO" guides related to TechDocs
+title: TechDocs How-To guides
+sidebar_label: How-To guides
+description: TechDocs How-To guides related to TechDocs
 ---
 
 ## How to migrate from TechDocs Basic to Recommended deployment approach?
@@ -111,7 +111,7 @@ in Backstage. While a default table experience, similar to the one provided by
 the Catalog plugin, is made available for ease-of-use, it's possible for you to
 provide a completely custom experience, tailored to the needs of your
 organization. For example, TechDocs comes with an alternative grid based layout
-(`<EntityListDocsGrid>`).
+(`<EntityListDocsGrid>`) and panel layout (`TechDocsCustomHome`).
 
 This is done in your `app` package. By default, you might see something like
 this in your `App.tsx`:
@@ -126,10 +126,104 @@ const AppRoutes = () => {
 };
 ```
 
+### Using TechDocsCustomHome
+
+You can easily customize the TechDocs home page using TechDocs panel layout
+(`<TechDocsCustomHome />`).
+
+Modify your `App.tsx` as follows:
+
+```tsx
+import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
+//...
+
+const techDocsTabsConfig = [
+  {
+    label: 'Recommended Documentation',
+    panels: [
+      {
+        title: 'Golden Path',
+        description: 'Documentation about standards to follow',
+        panelType: 'DocsCardGrid',
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ],
+  },
+];
+
+const AppRoutes = () => {
+  <FlatRoutes>
+    <Route
+      path="/docs"
+      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+    />
+  </FlatRoutes>;
+};
+```
+
+### Building a Custom home page
+
 But you can replace `<DefaultTechDocsHome />` with any React component, which
 will be rendered in its place. Most likely, you would want to create and
 maintain such a component in a new directory at
 `packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
+
+For example, you can define the following Custom home page component:
+
+```tsx
+import React from 'react';
+
+import { Content } from '@backstage/core-components';
+import {
+  CatalogFilterLayout,
+  EntityOwnerPicker,
+  EntityTagPicker,
+  UserListPicker,
+  EntityListProvider,
+} from '@backstage/plugin-catalog-react';
+import {
+  TechDocsPageWrapper,
+  TechDocsPicker,
+} from '@backstage/plugin-techdocs';
+import { Entity } from '@backstage/catalog-model';
+
+import {
+  EntityListDocsGrid,
+  DocsGroupConfig,
+} from '@backstage/plugin-techdocs';
+
+export type CustomTechDocsHomeProps = {
+  groups?: Array<{
+    title: React.ReactNode;
+    filterPredicate: (entity: Entity) => boolean;
+  }>;
+};
+
+export const CustomTechDocsHome = ({ groups }: CustomTechDocsHomeProps) => {
+  return (
+    <TechDocsPageWrapper>
+      <Content>
+        <EntityListProvider>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
+              <TechDocsPicker />
+              <UserListPicker initialFilter="all" />
+              <EntityOwnerPicker />
+              <EntityTagPicker />
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <EntityListDocsGrid groups={groups} />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </TechDocsPageWrapper>
+  );
+};
+```
+
+Then you can add the following to your `App.tsx`:
 
 ```tsx
 import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
@@ -137,7 +231,19 @@ import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
 const AppRoutes = () => {
   <FlatRoutes>
     <Route path="/docs" element={<TechDocsIndexPage />}>
-      <CustomTechDocsHome />
+      <CustomTechDocsHome
+        groups={[
+          {
+            title: 'Recommended Documentation',
+            filterPredicate: entity =>
+              entity?.metadata?.tags?.includes('recommended') ?? false,
+          },
+          {
+            title: 'My Docs',
+            filterPredicate: 'ownedByUser',
+          },
+        ]}
+      />
     </Route>
   </FlatRoutes>;
 };
@@ -331,7 +437,7 @@ const app = createApp({
 
 ## How to add the documentation setup to your software templates
 
-[Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+[Software Templates](https://backstage.io/docs/features/software-templates/)
 in Backstage is a tool that can help your users to create new components out of
 already configured templates. It comes with a set of default templates to use,
 but you can also
@@ -437,7 +543,7 @@ FROM python:3.8-alpine
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.0.1
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.1.7
 
 RUN pip install mkdocs-kroki-plugin
 

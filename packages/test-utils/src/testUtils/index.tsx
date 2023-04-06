@@ -19,6 +19,7 @@ export { default as mockBreakpoint } from './mockBreakpoint';
 export {
   wrapInTestApp,
   renderInTestApp,
+  textContentMatcher,
   createTestAppWrapper,
 } from './appWrappers';
 export type { TestAppOptions } from './appWrappers';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { KafkaBackendClient } from './api/KafkaBackendClient';
-import { kafkaApiRef } from './api/types';
+import { kafkaApiRef, kafkaDashboardApiRef } from './api/types';
 import {
   createApiFactory,
   createPlugin,
@@ -22,12 +22,16 @@ import {
   createRouteRef,
   discoveryApiRef,
   identityApiRef,
+  configApiRef,
 } from '@backstage/core-plugin-api';
+import { KafkaDashboardClient } from './api/KafkaDashboardClient';
 
+/** @public */
 export const rootCatalogKafkaRouteRef = createRouteRef({
   id: 'kafka',
 });
 
+/** @public */
 export const kafkaPlugin = createPlugin({
   id: 'kafka',
   apis: [
@@ -37,12 +41,18 @@ export const kafkaPlugin = createPlugin({
       factory: ({ discoveryApi, identityApi }) =>
         new KafkaBackendClient({ discoveryApi, identityApi }),
     }),
+    createApiFactory({
+      api: kafkaDashboardApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => new KafkaDashboardClient({ configApi }),
+    }),
   ],
   routes: {
     entityContent: rootCatalogKafkaRouteRef,
   },
 });
 
+/** @public */
 export const EntityKafkaContent = kafkaPlugin.provide(
   createRoutableExtension({
     name: 'EntityKafkaContent',

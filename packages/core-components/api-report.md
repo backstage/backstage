@@ -16,20 +16,22 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
-import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
+import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
+import { Options as Options_2 } from '@material-table/core';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -51,7 +53,7 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
-// @public (undocumented)
+// @public
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
 // @public
@@ -60,6 +62,7 @@ export type AlertDisplayProps = {
     vertical: 'top' | 'bottom';
     horizontal: 'left' | 'center' | 'right';
   };
+  transientTimeoutMs?: number;
 };
 
 // @public
@@ -111,7 +114,7 @@ export type BottomLinkProps = {
   onClick?: (event: React_2.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_19" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function Breadcrumbs(props: Props_19): JSX.Element;
@@ -127,11 +130,11 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 // @public
 export function BrokenImageIcon(props: IconComponentProps): JSX.Element;
 
-// @public
-export const Button: (props: ButtonProps) => JSX.Element;
+// @public @deprecated (undocumented)
+export const Button: (props: LinkButtonProps) => JSX.Element;
 
-// @public
-export type ButtonProps = ButtonProps_2 & Omit<LinkProps, 'variant' | 'color'>;
+// @public @deprecated (undocumented)
+export type ButtonProps = LinkButtonProps;
 
 // @public (undocumented)
 export type CardActionsTopRightClassKey = 'root';
@@ -166,7 +169,7 @@ export interface CodeSnippetProps {
   text: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_13" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function Content(props: PropsWithChildren<Props_13>): JSX.Element;
@@ -191,6 +194,7 @@ export function CopyTextButton(props: CopyTextButtonProps): JSX.Element;
 
 // @public
 export interface CopyTextButtonProps {
+  'aria-label'?: string;
   text: string;
   tooltipDelay?: number;
   tooltipText?: string;
@@ -240,6 +244,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   acyclicer?: 'greedy';
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   align?: Alignment;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: SVGDefsElement | SVGDefsElement[];
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   direction?: Direction;
@@ -247,6 +252,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   edgeRanks?: number;
   edges: DependencyEdge<EdgeData>[];
   edgeWeight?: number;
+  fit?: 'grow' | 'contain';
   labelOffset?: number;
   // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
   labelPosition?: LabelPosition;
@@ -315,7 +321,7 @@ export function DocsIcon(props: IconComponentProps): JSX.Element;
 // @public (undocumented)
 export function EmailIcon(props: IconComponentProps): JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_2" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function EmptyState(props: Props_2): JSX.Element;
@@ -370,7 +376,7 @@ export type FeatureCalloutCircleClassKey =
   | 'pulseCircle'
   | 'text';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_4" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function FeatureCalloutCircular(
@@ -383,7 +389,7 @@ export type FiltersContainerClassKey = 'root' | 'title';
 // @public
 export function Gauge(props: GaugeProps): JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_10" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function GaugeCard(props: Props_10): JSX.Element;
@@ -427,10 +433,27 @@ export function GitHubIcon(props: IconComponentProps): JSX.Element;
 // @public (undocumented)
 export function GroupIcon(props: IconComponentProps): JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_14" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function Header(props: PropsWithChildren<Props_14>): JSX.Element;
+
+// @public (undocumented)
+export function HeaderActionMenu(props: HeaderActionMenuProps): JSX.Element;
+
+// @public (undocumented)
+export type HeaderActionMenuItem = {
+  label?: ListItemTextProps['primary'];
+  secondaryLabel?: ListItemTextProps['secondary'];
+  icon?: ReactElement;
+  disabled?: boolean;
+  onClick?: (event: React_2.MouseEvent<HTMLElement>) => void;
+};
+
+// @public (undocumented)
+export type HeaderActionMenuProps = {
+  actionItems: HeaderActionMenuItem[];
+};
 
 // @public (undocumented)
 export type HeaderClassKey =
@@ -444,7 +467,7 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_5" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function HeaderIconLinkRow(props: Props_5): JSX.Element;
@@ -475,10 +498,7 @@ export type HeaderTabsClassKey =
 // @public (undocumented)
 export function HelpIcon(props: IconComponentProps): JSX.Element;
 
-// @public @deprecated
-export function HomepageTimer(_props: {}): JSX.Element | null;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_6" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function HorizontalScrollGrid(
@@ -505,7 +525,7 @@ export type IconLinkVerticalClassKey =
   | 'secondary'
   | 'label';
 
-// Warning: (ae-missing-release-tag) "IconLinkVerticalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "IconLinkVerticalProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type IconLinkVerticalProps = {
@@ -521,7 +541,7 @@ export type IconLinkVerticalProps = {
 // @public (undocumented)
 export type IdentityProviders = ('guest' | 'custom' | SignInProviderConfig)[];
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Props_15" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function InfoCard(props: Props_15): JSX.Element;
@@ -545,7 +565,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 export function IntroCard(props: IntroCardProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ItemCardProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ItemCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ItemCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated
 export function ItemCard(props: ItemCardProps): JSX.Element;
@@ -569,7 +589,7 @@ export function ItemCardHeader(props: ItemCardHeaderProps): JSX.Element;
 // @public (undocumented)
 export type ItemCardHeaderClassKey = 'root';
 
-// Warning: (ae-forgotten-export) The symbol "styles" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "styles_2" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
@@ -588,38 +608,46 @@ enum LabelPosition {
   RIGHT = 'r',
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Lifecycle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_7" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Lifecycle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Lifecycle(props: Props_7): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "LifecycleClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "LifecycleClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type LifecycleClassKey = 'alpha' | 'beta';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "LinearGauge" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_11" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "LinearGauge" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function LinearGauge(props: Props_11): JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "Link" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Link" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export const Link: (props: LinkProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "LinkProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// @public
+export const LinkButton: (props: LinkButtonProps) => JSX.Element;
+
+// @public
+export type LinkButtonProps = ButtonProps_2 &
+  Omit<LinkProps, 'variant' | 'color'>;
+
+// Warning: (ae-missing-release-tag) "LinkProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type LinkProps = LinkProps_2 &
-  LinkProps_3 & {
+export type LinkProps = Omit<LinkProps_2, 'to'> &
+  Omit<LinkProps_3, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };
 
-// Warning: (ae-missing-release-tag) "LoginRequestListItemClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "LoginRequestListItemClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type LoginRequestListItemClassKey = 'root';
@@ -668,49 +696,49 @@ export interface LogViewerProps {
   text: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MarkdownContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_8" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "MarkdownContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function MarkdownContent(props: Props_8): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MarkdownContentClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MarkdownContentClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MarkdownContentClassKey = 'markdown';
 
-// Warning: (ae-missing-release-tag) "MetadataTableCellClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MetadataTableCellClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MetadataTableCellClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "MetadataTableListClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MetadataTableListClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MetadataTableListClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "MetadataTableListItemClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MetadataTableListItemClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MetadataTableListItemClassKey = 'root' | 'random';
 
-// Warning: (ae-missing-release-tag) "MetadataTableTitleCellClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MetadataTableTitleCellClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MetadataTableTitleCellClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "MicDropClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MicDropClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MicDropClassKey = 'micDrop';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_3" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function MissingAnnotationEmptyState(props: Props_3): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyStateClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyStateClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -723,12 +751,12 @@ export type MobileSidebarProps = {
   children?: React_2.ReactNode;
 };
 
-// Warning: (ae-missing-release-tag) "OAuthRequestDialog" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "OAuthRequestDialog" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function OAuthRequestDialog(_props: {}): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "OAuthRequestDialogClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "OAuthRequestDialogClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type OAuthRequestDialogClassKey =
@@ -737,42 +765,42 @@ export type OAuthRequestDialogClassKey =
   | 'contentList'
   | 'actionButtons';
 
-// Warning: (ae-missing-release-tag) "OpenedDropdownClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "OpenedDropdownClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type OpenedDropdownClassKey = 'icon';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "OverflowTooltip" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_9" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "OverflowTooltip" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function OverflowTooltip(props: Props_9): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "OverflowTooltipClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "OverflowTooltipClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type OverflowTooltipClassKey = 'container';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Page" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_16" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Page" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Page(props: Props_16): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "PageClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "PageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type PageClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "PageWithHeaderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PageWithHeader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "PageWithHeader" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function PageWithHeader(
   props: PropsWithChildren<PageWithHeaderProps>,
 ): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Progress" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Progress" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Progress(
@@ -787,9 +815,10 @@ export const ProxiedSignInPage: (
 // @public
 export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
-// Warning: (ae-missing-release-tag) "Ranker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Ranker" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 enum Ranker {
@@ -798,14 +827,14 @@ enum Ranker {
   TIGHT_TREE = 'tight-tree',
 }
 
-// Warning: (ae-missing-release-tag) "RenderLabelFunction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "RenderLabelFunction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 type RenderLabelFunction<T = {}> = (
   props: RenderLabelProps<T>,
 ) => React_2.ReactNode;
 
-// Warning: (ae-missing-release-tag) "RenderLabelProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "RenderLabelProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
 //
@@ -814,7 +843,7 @@ type RenderLabelProps<T = unknown> = {
   edge: DependencyEdge<T>;
 };
 
-// Warning: (ae-missing-release-tag) "RenderNodeFunction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "RenderNodeFunction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
 //
 // @public
@@ -822,7 +851,7 @@ type RenderNodeFunction<T = {}> = (
   props: RenderNodeProps<T>,
 ) => React_2.ReactNode;
 
-// Warning: (ae-missing-release-tag) "RenderNodeProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "RenderNodeProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
 //
@@ -831,17 +860,17 @@ type RenderNodeProps<T = unknown> = {
   node: DependencyNode<T>;
 };
 
-// Warning: (ae-missing-release-tag) "ResponseErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ResponseErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function ResponseErrorPanel(props: ErrorPanelProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ResponseErrorPanelClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ResponseErrorPanelClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type ResponseErrorPanelClassKey = 'text' | 'divider';
 
-// Warning: (ae-missing-release-tag) "RoutedTabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "RoutedTabs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX.Element;
@@ -875,7 +904,7 @@ export type SelectItem = {
 // @public
 export const Sidebar: (props: SidebarProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
@@ -884,7 +913,7 @@ export const SIDEBAR_INTRO_LOCAL_STORAGE =
 // @public (undocumented)
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 
-// Warning: (ae-missing-release-tag) "sidebarConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "sidebarConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const sidebarConfig: {
@@ -903,20 +932,16 @@ export const sidebarConfig: {
   mobileSidebarHeight: number;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const SidebarContext: Context<SidebarContextType>;
+// @public @deprecated
+export const SidebarContext: React_2.Context<SidebarContextType>;
 
-// Warning: (ae-missing-release-tag) "SidebarContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @public @deprecated
 export type SidebarContextType = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarDivider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarDivider" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarDivider: React_2.ComponentType<
@@ -925,7 +950,7 @@ export const SidebarDivider: React_2.ComponentType<
     StyledComponentProps<'root'>
 >;
 
-// Warning: (ae-missing-release-tag) "SidebarDividerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarDividerClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SidebarDividerClassKey = 'root';
@@ -943,7 +968,7 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   to?: string;
 }
 
-// Warning: (ae-missing-release-tag) "SidebarIntro" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarIntro" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SidebarIntro(_props: {}): JSX.Element | null;
@@ -957,7 +982,7 @@ export type SidebarIntroClassKey =
   | 'introDismissIcon';
 
 // Warning: (ae-forgotten-export) The symbol "SidebarItemProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SidebarItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarItem" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export const SidebarItem: (props: SidebarItemProps) => JSX.Element;
@@ -983,18 +1008,30 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
+// @public
+export type SidebarOpenState = {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+// @public
+export function SidebarOpenStateProvider(props: {
+  children: ReactNode;
+  value: SidebarOpenState;
+}): JSX.Element;
+
 // @public (undocumented)
 export type SidebarOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SidebarPage(props: SidebarPageProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SidebarPageClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarPageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SidebarPageClassKey = 'root';
@@ -1005,14 +1042,27 @@ export type SidebarPageProps = {
 };
 
 // @public
+export type SidebarPinState = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
+};
+
+// @public @deprecated
 export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
 
-// @public
+// @public @deprecated
 export type SidebarPinStateContextType = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
   isMobile?: boolean;
 };
+
+// @public
+export function SidebarPinStateProvider(props: {
+  children: ReactNode;
+  value: SidebarPinStateContextType;
+}): JSX.Element;
 
 // @public (undocumented)
 export type SidebarProps = {
@@ -1024,7 +1074,7 @@ export type SidebarProps = {
   children?: React_2.ReactNode;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarScrollWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarScrollWrapper" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarScrollWrapper: React_2.ComponentType<
@@ -1034,12 +1084,12 @@ export const SidebarScrollWrapper: React_2.ComponentType<
 >;
 
 // Warning: (ae-forgotten-export) The symbol "SidebarSearchFieldProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SidebarSearchField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarSearchField" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SidebarSearchField(props: SidebarSearchFieldProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SidebarSpace" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarSpace" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarSpace: React_2.ComponentType<
@@ -1048,12 +1098,12 @@ export const SidebarSpace: React_2.ComponentType<
     StyledComponentProps<'root'>
 >;
 
-// Warning: (ae-missing-release-tag) "SidebarSpaceClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarSpaceClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SidebarSpaceClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "SidebarSpacer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarSpacer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SidebarSpacer: React_2.ComponentType<
@@ -1062,7 +1112,7 @@ export const SidebarSpacer: React_2.ComponentType<
     StyledComponentProps<'root'>
 >;
 
-// Warning: (ae-missing-release-tag) "SidebarSpacerClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SidebarSpacerClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SidebarSpacerClassKey = 'root';
@@ -1084,6 +1134,7 @@ export type SidebarSubmenuItemDropdownItem = {
 // @public
 export type SidebarSubmenuItemProps = {
   title: string;
+  subtitle?: string;
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
@@ -1095,18 +1146,18 @@ export type SidebarSubmenuProps = {
   children: ReactNode;
 };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SignInPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_17" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SignInPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SignInPage(props: Props_17): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SignInPageClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SignInPageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SignInPageClassKey = 'container' | 'item';
 
-// Warning: (ae-missing-release-tag) "SignInProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SignInProviderConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SignInProviderConfig = {
@@ -1117,37 +1168,37 @@ export type SignInProviderConfig = {
 };
 
 // Warning: (ae-forgotten-export) The symbol "StepperProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SimpleStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SimpleStepper" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SimpleStepper(
   props: PropsWithChildren<StepperProps>,
 ): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SimpleStepperFooterClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SimpleStepperFooterClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SimpleStepperFooterClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "StepProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SimpleStepperStep" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SimpleStepperStep" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SimpleStepperStep(
   props: PropsWithChildren<StepProps>,
 ): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SimpleStepperStepClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SimpleStepperStepClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SimpleStepperStepClassKey = 'end';
 
-// Warning: (ae-missing-release-tag) "StatusAborted" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusAborted(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StatusClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type StatusClassKey =
@@ -1159,43 +1210,43 @@ export type StatusClassKey =
   | 'running'
   | 'aborted';
 
-// Warning: (ae-missing-release-tag) "StatusError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusError" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusError(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StatusOK" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusOK" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusOK(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StatusPending" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusPending" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusPending(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StatusRunning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusRunning" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusRunning(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StatusWarning" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StatusWarning" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StatusWarning(props: PropsWithChildren<{}>): JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "StructuredMetadataTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_12" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "StructuredMetadataTable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function StructuredMetadataTable(props: Props_12): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "StructuredMetadataTableListClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StructuredMetadataTableListClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type StructuredMetadataTableListClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "StructuredMetadataTableNestedListClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "StructuredMetadataTableNestedListClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type StructuredMetadataTableNestedListClassKey = 'root';
@@ -1207,28 +1258,28 @@ export type SubmenuOptions = {
 };
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SubvalueCell" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SubvalueCell(props: SubvalueCellProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SubvalueCellClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SubvalueCellClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
 // Warning: (ae-forgotten-export) The symbol "SupportButtonProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SupportButton" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SupportButton" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function SupportButton(props: SupportButtonProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SupportButtonClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SupportButtonClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SupportButtonClassKey = 'popoverList';
 
-// Warning: (ae-missing-release-tag) "SupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SupportConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SupportConfig = {
@@ -1236,7 +1287,7 @@ export type SupportConfig = {
   items: SupportItem[];
 };
 
-// Warning: (ae-missing-release-tag) "SupportItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SupportItem" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SupportItem = {
@@ -1245,7 +1296,7 @@ export type SupportItem = {
   links: SupportItemLink[];
 };
 
-// Warning: (ae-missing-release-tag) "SupportItemLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "SupportItemLink" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type SupportItemLink = {
@@ -1253,7 +1304,7 @@ export type SupportItemLink = {
   title: string;
 };
 
-// Warning: (ae-missing-release-tag) "Tab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Tab" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type Tab = {
@@ -1267,24 +1318,24 @@ export type Tab = {
   >;
 };
 
-// Warning: (ae-missing-release-tag) "TabBarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabBarClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TabBarClassKey = 'indicator' | 'flexContainer' | 'root';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "TabbedCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-forgotten-export) The symbol "Props_18" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "TabbedCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function TabbedCard(props: PropsWithChildren<Props_18>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TabbedCardClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabbedCardClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TabbedCardClassKey = 'root' | 'indicator';
 
-// Warning: (ae-missing-release-tag) "TabbedLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "TabbedLayout" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function TabbedLayout(props: PropsWithChildren<{}>): JSX.Element;
@@ -1300,22 +1351,28 @@ export namespace TabbedLayout {
 // @public (undocumented)
 export type TabClassKey = 'root' | 'selected';
 
-// Warning: (ae-missing-release-tag) "TabIconClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabIconClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TabIconClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "Table" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Table" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Table<T extends object = {}>(props: TableProps<T>): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TableClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// @public (undocumented)
+export namespace Table {
+  var // (undocumented)
+    icons: Readonly<Icons>;
+}
+
+// Warning: (ae-missing-release-tag) "TableClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableClassKey = 'root';
 
-// Warning: (ae-missing-release-tag) "TableColumn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableColumn" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface TableColumn<T extends object = {}> extends Column<T> {
@@ -1325,7 +1382,7 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
   width?: string;
 }
 
-// Warning: (ae-missing-release-tag) "TableFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableFilter = {
@@ -1333,17 +1390,22 @@ export type TableFilter = {
   type: 'select' | 'multiple-select';
 };
 
-// Warning: (ae-missing-release-tag) "TableFiltersClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableFiltersClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 
-// Warning: (ae-missing-release-tag) "TableHeaderClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableHeaderClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableHeaderClassKey = 'header';
 
-// Warning: (ae-missing-release-tag) "TableProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface TableOptions<T extends object = {}> extends Options_2<T> {}
+
+// Warning: (ae-missing-release-tag) "TableProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface TableProps<T extends object = {}>
@@ -1362,7 +1424,7 @@ export interface TableProps<T extends object = {}>
   subtitle?: string;
 }
 
-// Warning: (ae-missing-release-tag) "TableState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableState = {
@@ -1371,23 +1433,23 @@ export type TableState = {
   filters?: SelectedFilters;
 };
 
-// Warning: (ae-missing-release-tag) "TableToolbarClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TableToolbarClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
 
 // Warning: (ae-forgotten-export) The symbol "TabsProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Tabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "Tabs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Tabs(props: TabsProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TabsClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TabsClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type TabsClassKey = 'root' | 'styledTabs' | 'appbar';
 
-// Warning: (ae-missing-release-tag) "TrendLine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "TrendLine" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function TrendLine(
@@ -1404,7 +1466,7 @@ export function useContent(): {
 };
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "useQueryParamState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "useQueryParamState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function useQueryParamState<T>(
@@ -1447,7 +1509,13 @@ export class UserIdentity implements IdentityApi {
   signOut(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// @public
+export const useSidebarOpenState: () => SidebarOpenState;
+
+// @public
+export const useSidebarPinState: () => SidebarPinState;
+
+// Warning: (ae-missing-release-tag) "useSupportConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function useSupportConfig(): SupportConfig;
@@ -1456,12 +1524,12 @@ export function useSupportConfig(): SupportConfig;
 export function WarningIcon(props: IconComponentProps): JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "WarningProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "WarningPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "WarningPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function WarningPanel(props: WarningProps): JSX.Element;
 
-// Warning: (ae-missing-release-tag) "WarningPanelClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "WarningPanelClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type WarningPanelClassKey =
@@ -1475,7 +1543,7 @@ export type WarningPanelClassKey =
 //
 // src/components/DependencyGraph/types.d.ts:16:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:20:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
+// src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```

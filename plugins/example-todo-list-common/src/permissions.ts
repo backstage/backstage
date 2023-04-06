@@ -25,3 +25,10 @@ export const tempExamplePermission = createPermission({
   name: 'temp.example.noop',
   attributes: {},
 });
+
+/**
+ * List of all todo list permissions.
+ *
+ * @public
+ */
+export const todoListPermissions = [tempExamplePermission];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, Fragment } from 'react';
+import React, { ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
@@ -82,7 +82,7 @@ type TechDocsAddonTesterOptions = {
 
 const defaultOptions: TechDocsAddonTesterOptions = {
   dom: <></>,
-  entity: {},
+  entity: { metadata: { name: '' } },
   metadata: {},
   componentId: 'docs',
   apis: [],
@@ -236,9 +236,9 @@ export class TechDocsAddonTester {
               element={<TechDocsReaderPage />}
             >
               <TechDocsAddons>
-                {this.addons.map((addon, index) => (
-                  <Fragment key={index}>{addon}</Fragment>
-                ))}
+                {this.addons.map((addon, index) =>
+                  React.cloneElement(addon, { key: index }),
+                )}
               </TechDocsAddons>
             </Route>
           </FlatRoutes>

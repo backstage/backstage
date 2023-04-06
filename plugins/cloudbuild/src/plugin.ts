@@ -23,6 +23,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const cloudbuildPlugin = createPlugin({
   id: 'cloudbuild',
   apis: [
@@ -39,6 +40,7 @@ export const cloudbuildPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const EntityCloudbuildContent = cloudbuildPlugin.provide(
   createRoutableExtension({
     name: 'EntityCloudbuildContent',
@@ -47,6 +49,7 @@ export const EntityCloudbuildContent = cloudbuildPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityLatestCloudbuildRunCard = cloudbuildPlugin.provide(
   createComponentExtension({
     name: 'EntityLatestCloudbuildRunCard',
@@ -57,6 +60,7 @@ export const EntityLatestCloudbuildRunCard = cloudbuildPlugin.provide(
   }),
 );
 
+/** @public */
 export const EntityLatestCloudbuildsForBranchCard = cloudbuildPlugin.provide(
   createComponentExtension({
     name: 'EntityLatestCloudbuildsForBranchCard',

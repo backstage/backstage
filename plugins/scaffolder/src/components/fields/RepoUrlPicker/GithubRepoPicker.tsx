@@ -32,7 +32,7 @@ export const GithubRepoPicker = (props: {
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const { owner, repoName } = state;
+  const { owner } = state;
 
   return (
     <>
@@ -65,19 +65,6 @@ export const GithubRepoPicker = (props: {
         <FormHelperText>
           The organization, user or project that this repo will belong to
         </FormHelperText>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
-      >
-        <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-        <Input
-          id="repoNameInput"
-          onChange={e => onChange({ repoName: e.target.value })}
-          value={repoName}
-        />
-        <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>
     </>
   );

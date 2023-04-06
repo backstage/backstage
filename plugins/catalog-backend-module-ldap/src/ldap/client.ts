@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, stringifyError } from '@backstage/errors';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import { Logger } from 'winston';
-import { BindConfig } from './config';
-import { errorString } from './util';
+import { BindConfig, TLSConfig } from './config';
+import { createOptions, errorString } from './util';
 import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
+  FreeIpaVendor,
+  AEDirVendor,
   LdapVendor,
 } from './vendors';
 
@@ -40,8 +42,12 @@ export class LdapClient {
     logger: Logger,
     target: string,
     bind?: BindConfig,
+    tls?: TLSConfig,
   ): Promise<LdapClient> {
-    const client = ldap.createClient({ url: target });
+    const client = ldap.createClient({
+      url: target,
+      tlsOptions: tls,
+    });
 
     // We want to have a catch-all error handler at the top, since the default
     // behavior of the client is to blow up the entire process when it fails,
@@ -142,23 +148,45 @@ export class LdapClient {
   async searchStreaming(
     dn: string,
     options: SearchOptions,
-    f: (entry: SearchEntry) => void,
+    f: (entry: SearchEntry) => Promise<void> | void,
   ): Promise<void> {
     try {
       return await new Promise<void>((resolve, reject) => {
         // Note that we clone the (frozen) options, since ldapjs rudely tries to
         // overwrite parts of them
-        this.client.search(dn, cloneDeep(options), (err, res) => {
+        this.client.search(dn, createOptions(options), (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
           }
+          let awaitList: Array<Promise<void> | void> = [];
+          let transformError = false;
+
+          const transformReject = (e: Error) => {
+            transformError = true;
+            reject(
+              new Error(
+                `Transform function threw an exception, ${stringifyError(e)}`,
+              ),
+            );
+          };
 
           res.on('searchReference', () => {
             this.logger.warn('Received unsupported search referral');
           });
 
           res.on('searchEntry', entry => {
-            f(entry);
+            if (!transformError) awaitList.push(f(entry));
+          });
+
+          res.on('page', (_, cb) => {
+            // awaits completion before fetching next page
+            Promise.all(awaitList)
+              .then(() => {
+                // flush list
+                awaitList = [];
+                if (cb) cb();
+              })
+              .catch(transformReject);
           });
 
           res.on('error', e => {
@@ -171,7 +199,9 @@ export class LdapClient {
             } else if (r.status !== 0) {
               throw new Error(`Got status ${r.status}: ${r.errorMessage}`);
             } else {
-              resolve();
+              Promise.all(awaitList)
+                .then(() => resolve())
+                .catch(transformReject);
             }
           });
         });
@@ -195,6 +225,10 @@ export class LdapClient {
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
           return ActiveDirectoryVendor;
+        } else if (root && root.raw?.ipaDomainLevel) {
+          return FreeIpaVendor;
+        } else if (root && 'aeRoot' in root.raw) {
+          return AEDirVendor;
         }
         return DefaultLdapVendor;
       })

@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, Observable } from '@backstage/types';
-import ObservableImpl from 'zen-observable';
+
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
+import ObservableImpl from 'zen-observable';
 import {
+  SerializedTask,
+  SerializedTaskEvent,
+  TaskBroker,
+  TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
-  TaskSecrets,
   TaskStore,
-  TaskBroker,
-  SerializedTaskEvent,
-  SerializedTask,
 } from './types';
-import { TaskBrokerDispatchOptions } from '.';
 
 /**
  * TaskManager
@@ -38,8 +39,13 @@ export class TaskManager implements TaskContext {
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
-  static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
-    const agent = new TaskManager(task, storage, logger);
+  static create(
+    task: CurrentClaimedTask,
+    storage: TaskStore,
+    abortSignal: AbortSignal,
+    logger: Logger,
+  ) {
+    const agent = new TaskManager(task, storage, abortSignal, logger);
     agent.startTimeout();
     return agent;
   }
@@ -48,11 +54,16 @@ export class TaskManager implements TaskContext {
   private constructor(
     private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
+    private readonly signal: AbortSignal,
     private readonly logger: Logger,
   ) {}
 
   get spec() {
     return this.task.spec;
+  }
+
+  get cancelSignal() {
+    return this.signal;
   }
 
   get secrets() {
@@ -150,7 +161,46 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly storage: TaskStore,
     private readonly logger: Logger,
   ) {}
+
+  async list(options?: {
+    createdBy?: string;
+  }): Promise<{ tasks: SerializedTask[] }> {
+    if (!this.storage.list) {
+      throw new Error(
+        'TaskStore does not implement the list method. Please implement the list method to be able to list tasks',
+      );
+    }
+    return await this.storage.list({ createdBy: options?.createdBy });
+  }
+
   private deferredDispatch = defer();
+
+  private async registerCancellable(
+    taskId: string,
+    abortController: AbortController,
+  ) {
+    let shouldUnsubscribe = false;
+    const subscription = this.event$({ taskId, after: undefined }).subscribe({
+      error: _ => {
+        subscription.unsubscribe();
+      },
+      next: ({ events }) => {
+        for (const event of events) {
+          if (event.type === 'cancelled') {
+            abortController.abort();
+            shouldUnsubscribe = true;
+          }
+
+          if (event.type === 'completion') {
+            shouldUnsubscribe = true;
+          }
+        }
+        if (shouldUnsubscribe) {
+          subscription.unsubscribe();
+        }
+      },
+    });
+  }
 
   /**
    * {@inheritdoc TaskBroker.claim}
@@ -159,6 +209,8 @@ export class StorageTaskBroker implements TaskBroker {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
+        const abortController = new AbortController();
+        await this.registerCancellable(pendingTask.id, abortController);
         return TaskManager.create(
           {
             taskId: pendingTask.id,
@@ -167,6 +219,7 @@ export class StorageTaskBroker implements TaskBroker {
             createdBy: pendingTask.createdBy,
           },
           this.storage,
+          abortController.signal,
           this.logger,
         );
       }
@@ -257,5 +310,25 @@ export class StorageTaskBroker implements TaskBroker {
   private signalDispatch() {
     this.deferredDispatch.resolve();
     this.deferredDispatch = defer();
+  }
+
+  async cancel(taskId: string) {
+    const { events } = await this.storage.listEvents({ taskId });
+    const currentStepId =
+      events.length > 0
+        ? events
+            .filter(({ body }) => body?.stepId)
+            .reduce((prev, curr) => (prev.id > curr.id ? prev : curr)).body
+            .stepId
+        : 0;
+
+    await this.storage.cancelTask?.({
+      taskId,
+      body: {
+        message: `Step ${currentStepId} has been cancelled.`,
+        stepId: currentStepId,
+        status: 'cancelled',
+      },
+    });
   }
 }

@@ -1,0 +1,61 @@
+{
+  "name": "@backstage/plugin-events-backend-module-aws-sqs",
+  "version": "0.1.6-next.2",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.208.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "luxon": "^3.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/types": "^3.208.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend-test-utils": "workspace:^",
+    "aws-sdk-client-mock": "^2.0.0"
+  },
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "configSchema": "config.d.ts"
+}

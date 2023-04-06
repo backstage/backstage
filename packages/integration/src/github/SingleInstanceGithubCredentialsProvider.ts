@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { GithubAppConfig, GitHubIntegrationConfig } from './config';
+import { GithubAppConfig, GithubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
@@ -30,29 +30,56 @@ type InstallationData = {
   suspended: boolean;
 };
 
+type InstallationTokenData = {
+  token: string;
+  expiresAt: DateTime;
+  repositories?: String[];
+};
+
 class Cache {
-  private readonly tokenCache = new Map<
-    string,
-    { token: string; expiresAt: DateTime }
-  >();
+  private readonly tokenCache = new Map<string, InstallationTokenData>();
 
   async getOrCreateToken(
-    key: string,
-    supplier: () => Promise<{ token: string; expiresAt: DateTime }>,
+    owner: string,
+    repo: string | undefined,
+    supplier: () => Promise<InstallationTokenData>,
   ): Promise<{ accessToken: string }> {
-    const item = this.tokenCache.get(key);
-    if (item && this.isNotExpired(item.expiresAt)) {
-      return { accessToken: item.token };
+    let existingInstallationData = this.tokenCache.get(owner);
+
+    if (
+      !existingInstallationData ||
+      this.isExpired(existingInstallationData.expiresAt)
+    ) {
+      existingInstallationData = await supplier();
+      // Allow 10 minutes grace to account for clock skew
+      existingInstallationData.expiresAt =
+        existingInstallationData.expiresAt.minus({ minutes: 10 });
+      this.tokenCache.set(owner, existingInstallationData);
     }
 
-    const result = await supplier();
-    this.tokenCache.set(key, result);
-    return { accessToken: result.token };
+    if (!this.appliesToRepo(existingInstallationData, repo)) {
+      throw new Error(
+        `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+      );
+    }
+
+    return { accessToken: existingInstallationData.token };
   }
 
-  // consider timestamps older than 50 minutes to be expired.
-  private isNotExpired = (date: DateTime) =>
-    date.diff(DateTime.local(), 'minutes').minutes > 50;
+  private isExpired = (date: DateTime) => DateTime.local() > date;
+
+  private appliesToRepo(tokenData: InstallationTokenData, repo?: string) {
+    // If no specific repo has been requested the token is applicable
+    if (repo === undefined) {
+      return true;
+    }
+    // If the token is restricted to repositories, the token only applies if the repo is in the allow list
+    if (tokenData.repositories !== undefined) {
+      return tokenData.repositories.includes(repo);
+    }
+    // Otherwise the token is applicable
+    return true;
+  }
 }
 
 /**
@@ -93,25 +120,29 @@ class GithubAppManager {
     owner: string,
     repo?: string,
   ): Promise<{ accessToken: string | undefined }> {
-    const { installationId, suspended } = await this.getInstallationData(owner);
     if (this.allowedInstallationOwners) {
       if (!this.allowedInstallationOwners?.includes(owner)) {
         return { accessToken: undefined }; // An empty token allows anonymous access to public repos
       }
     }
-    if (suspended) {
-      throw new Error(`The GitHub application for ${owner} is suspended`);
-    }
-
-    const cacheKey = repo ? `${owner}/${repo}` : owner;
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
-    return this.cache.getOrCreateToken(cacheKey, async () => {
+    return this.cache.getOrCreateToken(owner, repo, async () => {
+      const { installationId, suspended } = await this.getInstallationData(
+        owner,
+      );
+      if (suspended) {
+        throw new Error(`The GitHub application for ${owner} is suspended`);
+      }
+
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         headers: HEADERS,
       });
-      if (repo && result.data.repository_selection === 'selected') {
+
+      let repositoryNames;
+
+      if (result.data.repository_selection === 'selected') {
         const installationClient = new Octokit({
           baseUrl: this.baseUrl,
           auth: result.data.token,
@@ -119,18 +150,16 @@ class GithubAppManager {
         const repos = await installationClient.paginate(
           installationClient.apps.listReposAccessibleToInstallation,
         );
-        const hasRepo = repos.some(repository => {
-          return repository.name === repo;
-        });
-        if (!hasRepo) {
-          throw new Error(
-            `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
-          );
-        }
+        // The return type of the paginate method is incorrect.
+        const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
+          repos.repositories ?? repos;
+
+        repositoryNames = repositories.map(repository => repository.name);
       }
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
+        repositories: repositoryNames,
       };
     });
   }
@@ -170,7 +199,7 @@ class GithubAppManager {
 export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
-  constructor(config: GitHubIntegrationConfig) {
+  constructor(config: GithubIntegrationConfig) {
     this.apps =
       config.apps?.map(ac => new GithubAppManager(ac, config.apiBaseUrl)) ?? [];
   }
@@ -230,7 +259,7 @@ export class SingleInstanceGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
   static create: (
-    config: GitHubIntegrationConfig,
+    config: GithubIntegrationConfig,
   ) => GithubCredentialsProvider = config => {
     return new SingleInstanceGithubCredentialsProvider(
       new GithubAppCredentialsMux(config),

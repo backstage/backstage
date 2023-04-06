@@ -7,3 +7,4 @@ description: View GitHub Insights for your components in Backstage.
 documentation: https://roadie.io/backstage/plugins/github-insights/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=github-insights
 iconUrl: https://roadie.io/images/logos/insights.png
 npmPackageName: '@roadiehq/backstage-plugin-github-insights'
+addedDate: '2021-04-20'

@@ -127,7 +127,7 @@ describe('GcsUrlReader', () => {
 
     it('throws if search url looks truly glob-y', async () => {
       const glob = 'https://storage.cloud.google.com/bucket/**/path*';
-      await expect(() => reader.search(glob)).rejects.toThrowError(
+      await expect(() => reader.search(glob)).rejects.toThrow(
         'GcsUrlReader only supports prefix-based searches',
       );
     });

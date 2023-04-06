@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import minimatch from 'minimatch';
 import { getPackages } from '@manypkg/get-packages';
-import { runPlain } from '../../lib/run';
 import { NotFoundError } from '../errors';
+import { detectYarnVersion } from '../yarn';
+import { execFile } from '../run';
 
 const DEP_TYPES = [
   'dependencies',
@@ -48,18 +50,45 @@ type PkgVersionInfo = {
 export async function fetchPackageInfo(
   name: string,
 ): Promise<YarnInfoInspectData> {
-  const output = await runPlain('yarn', 'info', '--json', name);
+  const yarnVersion = await detectYarnVersion();
 
-  if (!output) {
-    throw new NotFoundError(`No package information found for package ${name}`);
+  const cmd = yarnVersion === 'classic' ? ['info'] : ['npm', 'info'];
+  try {
+    const { stdout: output } = await execFile(
+      'yarn',
+      [...cmd, '--json', name],
+      { shell: true },
+    );
+
+    if (!output) {
+      throw new NotFoundError(
+        `No package information found for package ${name}`,
+      );
+    }
+
+    if (yarnVersion === 'berry') {
+      return JSON.parse(output) as YarnInfoInspectData;
+    }
+
+    const info = JSON.parse(output) as YarnInfo;
+    if (info.type !== 'inspect') {
+      throw new Error(`Received unknown yarn info for ${name}, ${output}`);
+    }
+
+    return info.data as YarnInfoInspectData;
+  } catch (error) {
+    if (yarnVersion === 'classic') {
+      throw error;
+    }
+
+    if (error?.stdout.includes('Response Code: 404')) {
+      throw new NotFoundError(
+        `No package information found for package ${name}`,
+      );
+    }
+
+    throw error;
   }
-
-  const info = JSON.parse(output) as YarnInfo;
-  if (info.type !== 'inspect') {
-    throw new Error(`Received unknown yarn info for ${name}, ${output}`);
-  }
-
-  return info.data as YarnInfoInspectData;
 }
 
 /** Map all dependencies in the repo as dependency => dependents */

@@ -21,9 +21,6 @@
  * @packageDocumentation
  */
 
+export * from './api';
 export * from './components';
-export {
-  sonarQubePlugin,
-  sonarQubePlugin as plugin,
-  EntitySonarQubeCard,
-} from './plugin';
+export * from './plugin';

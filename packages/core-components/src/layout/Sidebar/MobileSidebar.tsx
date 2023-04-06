@@ -26,9 +26,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
-import { SidebarConfigContext, SidebarContext, SidebarConfig } from './config';
+import { SidebarConfigContext, SidebarConfig } from './config';
 
 /**
  * Type of `MobileSidebarContext`
@@ -84,14 +85,14 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 
     overlayHeader: {
       display: 'flex',
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(2, 3),
     },
 
     overlayHeaderClose: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.palette.text.primary,
     },
 
     marginMobileSidebar: props => ({
@@ -158,6 +159,7 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
 /**
  * A navigation component for mobile screens, which sticks to the bottom.
  *
+ * @remarks
  * It alternates the normal sidebar by grouping the `SidebarItems` based on provided `SidebarGroup`s
  * either rendering them as a link or an overlay menu.
  * If no `SidebarGroup`s are provided the sidebar content is wrapped in an default overlay menu.
@@ -207,7 +209,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
     !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <SidebarContext.Provider value={{ isOpen: true, setOpen: () => {} }}>
+    <SidebarOpenStateProvider value={{ isOpen: true, setOpen: () => {} }}>
       <MobileSidebarContext.Provider
         value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >
@@ -231,6 +233,6 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           {sidebarGroups}
         </BottomNavigation>
       </MobileSidebarContext.Provider>
-    </SidebarContext.Provider>
+    </SidebarOpenStateProvider>
   );
 };

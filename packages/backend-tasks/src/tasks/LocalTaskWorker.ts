@@ -17,7 +17,6 @@
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { TaskFunction, TaskSettingsV2 } from './types';
 import { delegateAbortController, sleep } from './util';
@@ -42,28 +41,37 @@ export class LocalTaskWorker {
     );
 
     (async () => {
-      try {
-        if (settings.initialDelayDuration) {
-          await this.sleep(
-            Duration.fromISO(settings.initialDelayDuration),
-            options?.signal,
-          );
-        }
+      let attemptNum = 1;
+      for (;;) {
+        try {
+          if (settings.initialDelayDuration) {
+            await this.sleep(
+              Duration.fromISO(settings.initialDelayDuration),
+              options?.signal,
+            );
+          }
 
-        while (!options?.signal?.aborted) {
-          const startTime = process.hrtime();
-          await this.runOnce(settings, options?.signal);
-          const timeTaken = process.hrtime(startTime);
-          await this.waitUntilNext(
-            settings,
-            (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
-            options?.signal,
-          );
-        }
+          while (!options?.signal?.aborted) {
+            const startTime = process.hrtime();
+            await this.runOnce(settings, options?.signal);
+            const timeTaken = process.hrtime(startTime);
+            await this.waitUntilNext(
+              settings,
+              (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
+              options?.signal,
+            );
+          }
 
-        this.logger.info(`Task worker finished: ${this.taskId}`);
-      } catch (e) {
-        this.logger.warn(`Task worker failed unexpectedly, ${e}`);
+          this.logger.info(`Task worker finished: ${this.taskId}`);
+          attemptNum = 0;
+          break;
+        } catch (e) {
+          attemptNum += 1;
+          this.logger.warn(
+            `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
+          );
+          await sleep(Duration.fromObject({ seconds: 1 }));
+        }
       }
     })();
   }
@@ -116,7 +124,7 @@ export class LocalTaskWorker {
     let dt: number;
 
     if (isCron) {
-      const nextRun = +new CronTime(settings.cadence).sendAt().toDate();
+      const nextRun = +new CronTime(settings.cadence).sendAt().toJSDate();
       dt = nextRun - Date.now();
     } else {
       dt =

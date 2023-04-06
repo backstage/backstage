@@ -21,15 +21,17 @@ import {
   GitTag,
   PullRequest,
   PullRequestOptions,
+  Readme,
+  ReadmeConfig,
   RepoBuild,
   RepoBuildOptions,
   Team,
 } from '@backstage/plugin-azure-devops-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-
-import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
+import { AzureDevOpsApi } from './AzureDevOpsApi';
 
+/** @public */
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
@@ -128,6 +130,14 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     )}?${queryString}`;
     const items = await this.get<BuildRun[]>(urlSegment);
     return { items };
+  }
+
+  public async getReadme(opts: ReadmeConfig): Promise<Readme> {
+    return await this.get(
+      `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
+        opts.repo,
+      )}`,
+    );
   }
 
   private async get<T>(path: string): Promise<T> {

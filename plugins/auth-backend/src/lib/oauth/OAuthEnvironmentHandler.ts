@@ -20,6 +20,7 @@ import { InputError, NotFoundError } from '@backstage/errors';
 import { readState } from './helpers';
 import { AuthProviderRouteHandlers } from '../../providers/types';
 
+/** @public */
 export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   static mapConfig(
     config: Config,

@@ -17,7 +17,6 @@
 const { createHash } = require('crypto');
 const { transform } = require('sucrase');
 const sucrasePkg = require('sucrase/package.json');
-const sucrasePluginPkg = require('@sucrase/jest-plugin/package.json');
 
 const ESM_REGEX = /\b(?:import|export)\b/;
 
@@ -64,20 +63,17 @@ function createTransformer(config) {
       }
       // We only return the `map` result if source maps are enabled, as they
       // have a negative impact on the coverage accuracy.
-      return code;
+      return { code };
     }
 
-    return source;
+    return { code: source };
   };
 
-  // TODO: contribute something like this to @sucrase/jest-plugin
   const getCacheKey = sourceText => {
     return createHash('md5')
       .update(sourceText)
       .update(Buffer.alloc(1))
       .update(sucrasePkg.version)
-      .update(Buffer.alloc(1))
-      .update(sucrasePluginPkg.version)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config))
       .update(Buffer.alloc(1))

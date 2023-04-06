@@ -27,9 +27,11 @@ import {
 } from '../database/tables';
 import { Stitcher } from './Stitcher';
 
+jest.setTimeout(60_000);
+
 describe('Stitcher', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
   const logger = getVoidLogger();
 
@@ -110,18 +112,55 @@ describe('Stitcher', () => {
       });
 
       expect(entity.metadata.etag).toEqual(entities[0].hash);
+      const last_updated_at = entities[0].last_updated_at;
+      expect(last_updated_at).not.toBeNull();
       const firstHash = entities[0].hash;
 
       const search = await db<DbSearchRow>('search');
       expect(search).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
-          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-          { entity_id: 'my-id', key: 'kind', value: 'k' },
-          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/other',
+            value: 'k:ns/other',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'apiversion',
+            original_value: 'a',
+            value: 'a',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'kind',
+            original_value: 'k',
+            value: 'k',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.namespace',
+            original_value: 'ns',
+            value: 'ns',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.uid',
+            original_value: 'my-id',
+            value: 'my-id',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
         ]),
       );
 
@@ -179,17 +218,56 @@ describe('Stitcher', () => {
 
       expect(await db<DbSearchRow>('search')).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
-          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/third' },
-          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-          { entity_id: 'my-id', key: 'kind', value: 'k' },
-          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/other',
+            value: 'k:ns/other',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'relations.looksat',
+            original_value: 'k:ns/third',
+            value: 'k:ns/third',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'apiversion',
+            original_value: 'a',
+            value: 'a',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'kind',
+            original_value: 'k',
+            value: 'k',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.namespace',
+            original_value: 'ns',
+            value: 'ns',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'metadata.uid',
+            original_value: 'my-id',
+            value: 'my-id',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
         ]),
       );
     },
-    60_000,
   );
 });

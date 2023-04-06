@@ -16,28 +16,57 @@
 
 import type { JsonObject } from '@backstage/types';
 import {
+  PodStatus,
   V1ConfigMap,
   V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1HorizontalPodAutoscaler,
   V1Ingress,
   V1Job,
+  V1LimitRange,
   V1Pod,
   V1ReplicaSet,
   V1Service,
+  V1StatefulSet,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
-export interface KubernetesRequestBody {
-  auth?: {
-    google?: string;
-    oidc?: {
-      [key: string]: string;
-    };
+/** @public */
+export interface KubernetesRequestAuth {
+  google?: string;
+  oidc?: {
+    [key: string]: string;
   };
+}
+
+/** @public */
+export interface CustomResourceMatcher {
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+/** @public */
+export interface WorkloadsByEntityRequest {
+  auth: KubernetesRequestAuth;
   entity: Entity;
 }
 
+/** @public */
+export interface CustomObjectsByEntityRequest {
+  auth: KubernetesRequestAuth;
+  customResources: CustomResourceMatcher[];
+  entity: Entity;
+}
+
+/** @public */
+export interface KubernetesRequestBody {
+  auth?: KubernetesRequestAuth;
+  entity: Entity;
+}
+
+/** @public */
 export interface ClusterAttributes {
   /**
    * Specifies the name of the Kubernetes cluster.
@@ -76,6 +105,7 @@ export interface ClusterAttributes {
   dashboardParameters?: JsonObject;
 }
 
+/** @public */
 export interface ClusterObjects {
   cluster: ClusterAttributes;
   resources: FetchResponse[];
@@ -83,98 +113,154 @@ export interface ClusterObjects {
   errors: KubernetesFetchError[];
 }
 
+/** @public */
 export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
+/** @public */
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
+/** @public */
 export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
+  | LimitRangeFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
   | CronJobsFetchResponse
   | IngressesFetchResponse
-  | CustomResourceFetchResponse;
+  | CustomResourceFetchResponse
+  | StatefulSetsFetchResponse
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
+/** @public */
 export interface PodFetchResponse {
   type: 'pods';
   resources: Array<V1Pod>;
 }
 
+/** @public */
 export interface ServiceFetchResponse {
   type: 'services';
   resources: Array<V1Service>;
 }
 
+/** @public */
 export interface ConfigMapFetchResponse {
   type: 'configmaps';
   resources: Array<V1ConfigMap>;
 }
 
+/** @public */
 export interface DeploymentFetchResponse {
   type: 'deployments';
   resources: Array<V1Deployment>;
 }
 
+/** @public */
 export interface ReplicaSetsFetchResponse {
   type: 'replicasets';
   resources: Array<V1ReplicaSet>;
 }
 
+/** @public */
+export interface LimitRangeFetchResponse {
+  type: 'limitranges';
+  resources: Array<V1LimitRange>;
+}
+
+/** @public */
 export interface HorizontalPodAutoscalersFetchResponse {
   type: 'horizontalpodautoscalers';
   resources: Array<V1HorizontalPodAutoscaler>;
 }
 
+/** @public */
 export interface JobsFetchResponse {
   type: 'jobs';
   resources: Array<V1Job>;
 }
 
+/** @public */
 export interface CronJobsFetchResponse {
   type: 'cronjobs';
   resources: Array<V1CronJob>;
 }
 
+/** @public */
 export interface IngressesFetchResponse {
   type: 'ingresses';
   resources: Array<V1Ingress>;
 }
 
+/** @public */
 export interface CustomResourceFetchResponse {
   type: 'customresources';
   resources: Array<any>;
 }
 
-export interface KubernetesFetchError {
+/** @public */
+export interface StatefulSetsFetchResponse {
+  type: 'statefulsets';
+  resources: Array<V1StatefulSet>;
+}
+
+/** @public */
+export interface DaemonSetsFetchResponse {
+  type: 'daemonsets';
+  resources: Array<V1DaemonSet>;
+}
+
+/** @public */
+export interface PodStatusFetchResponse {
+  type: 'podstatus';
+  resources: Array<PodStatus>;
+}
+
+/** @public */
+export type KubernetesFetchError = StatusError | RawFetchError;
+
+/** @public */
+export interface StatusError {
   errorType: KubernetesErrorTypes;
   statusCode?: number;
   resourcePath?: string;
 }
 
+/** @public */
+export interface RawFetchError {
+  errorType: 'FETCH_ERROR';
+  message: string;
+}
+
+/** @public */
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
+  | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 
+/** @public */
 export interface ClientCurrentResourceUsage {
   currentUsage: number | string;
   requestTotal: number | string;
   limitTotal: number | string;
 }
 
+/** @public */
 export interface ClientContainerStatus {
   container: string;
   cpuUsage: ClientCurrentResourceUsage;
   memoryUsage: ClientCurrentResourceUsage;
 }
 
+/** @public */
 export interface ClientPodStatus {
   pod: V1Pod;
   cpu: ClientCurrentResourceUsage;

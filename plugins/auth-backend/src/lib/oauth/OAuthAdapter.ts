@@ -24,6 +24,7 @@ import {
 import {
   AuthProviderRouteHandlers,
   AuthProviderConfig,
+  CookieConfigurer,
 } from '../../providers/types';
 import {
   AuthenticationError,
@@ -31,57 +32,56 @@ import {
   isError,
   NotAllowedError,
 } from '@backstage/errors';
-import { TokenIssuer } from '../../identity/types';
 import { defaultCookieConfigurer, readState, verifyNonce } from './helpers';
-import { postMessageResponse, ensuresXRequestedWith } from '../flow';
+import {
+  postMessageResponse,
+  ensuresXRequestedWith,
+  WebMessageResponse,
+} from '../flow';
 import {
   OAuthHandlers,
   OAuthStartRequest,
   OAuthRefreshRequest,
   OAuthState,
+  OAuthLogoutRequest,
 } from './types';
 import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
 
 export const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 export const TEN_MINUTES_MS = 600 * 1000;
 
-export type Options = {
+/** @public */
+export type OAuthAdapterOptions = {
   providerId: string;
-  secure: boolean;
   persistScopes?: boolean;
-  cookieDomain: string;
-  cookiePath: string;
   appOrigin: string;
-  /** @deprecated This option is no longer needed */
-  tokenIssuer?: TokenIssuer;
+  baseUrl: string;
+  cookieConfigurer: CookieConfigurer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
+
+/** @public */
 export class OAuthAdapter implements AuthProviderRouteHandlers {
   static fromConfig(
     config: AuthProviderConfig,
     handlers: OAuthHandlers,
     options: Pick<
-      Options,
-      'providerId' | 'persistScopes' | 'tokenIssuer' | 'callbackUrl'
+      OAuthAdapterOptions,
+      'providerId' | 'persistScopes' | 'callbackUrl'
     >,
   ): OAuthAdapter {
-    const { origin: appOrigin } = new URL(config.appUrl);
+    const { appUrl, baseUrl, isOriginAllowed } = config;
+    const { origin: appOrigin } = new URL(appUrl);
 
     const cookieConfigurer = config.cookieConfigurer ?? defaultCookieConfigurer;
-    const cookieConfig = cookieConfigurer({
-      providerId: options.providerId,
-      baseUrl: config.baseUrl,
-      callbackUrl: options.callbackUrl,
-    });
 
     return new OAuthAdapter(handlers, {
       ...options,
       appOrigin,
-      cookieDomain: cookieConfig.domain,
-      cookiePath: cookieConfig.path,
-      secure: cookieConfig.secure,
-      isOriginAllowed: config.isOriginAllowed,
+      baseUrl,
+      cookieConfigurer,
+      isOriginAllowed,
     });
   }
 
@@ -89,14 +89,11 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
   constructor(
     private readonly handlers: OAuthHandlers,
-    private readonly options: Options,
+    private readonly options: OAuthAdapterOptions,
   ) {
     this.baseCookieOptions = {
       httpOnly: true,
       sameSite: 'lax',
-      secure: this.options.secure,
-      path: this.options.cookiePath,
-      domain: this.options.cookieDomain,
     };
   }
 
@@ -105,16 +102,20 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     const scope = req.query.scope?.toString() ?? '';
     const env = req.query.env?.toString();
     const origin = req.query.origin?.toString();
+    const redirectUrl = req.query.redirectUrl?.toString();
+    const flow = req.query.flow?.toString();
 
     if (!env) {
       throw new InputError('No env provided in request query parameters');
     }
 
+    const cookieConfig = this.getCookieConfig(origin);
+
     const nonce = crypto.randomBytes(16).toString('base64');
     // set a nonce cookie before redirecting to oauth provider
-    this.setNonceCookie(res, nonce);
+    this.setNonceCookie(res, nonce, cookieConfig);
 
-    const state: OAuthState = { nonce, env, origin };
+    const state: OAuthState = { nonce, env, origin, redirectUrl, flow };
 
     // If scopes are persisted then we pass them through the state so that we
     // can set the cookie on successful auth
@@ -158,25 +159,37 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
 
       const { response, refreshToken } = await this.handlers.handler(req);
 
+      const cookieConfig = this.getCookieConfig(appOrigin);
+
       // Store the scope that we have been granted for this session. This is useful if
       // the provider does not return granted scopes on refresh or if they are normalized.
       if (this.options.persistScopes && state.scope) {
-        this.setGrantedScopeCookie(res, state.scope);
+        this.setGrantedScopeCookie(res, state.scope, cookieConfig);
         response.providerInfo.scope = state.scope;
       }
 
       if (refreshToken) {
         // set new refresh token
-        this.setRefreshTokenCookie(res, refreshToken);
+        this.setRefreshTokenCookie(res, refreshToken, cookieConfig);
       }
 
       const identity = await this.populateIdentity(response.backstageIdentity);
 
-      // post message back to popup if successful
-      return postMessageResponse(res, appOrigin, {
+      const responseObj: WebMessageResponse = {
         type: 'authorization_response',
         response: { ...response, backstageIdentity: identity },
-      });
+      };
+
+      if (state.flow === 'redirect') {
+        if (!state.redirectUrl) {
+          throw new InputError(
+            'No redirectUrl provided in request query parameters',
+          );
+        }
+        res.redirect(state.redirectUrl);
+      }
+      // post message back to popup if successful
+      return postMessageResponse(res, appOrigin, responseObj);
     } catch (error) {
       const { name, message } = isError(error)
         ? error
@@ -194,8 +207,18 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       throw new AuthenticationError('Invalid X-Requested-With header');
     }
 
+    if (this.handlers.logout) {
+      const refreshToken = this.getRefreshTokenFromCookie(req);
+      const revokeRequest: OAuthLogoutRequest = Object.assign(req, {
+        refreshToken,
+      });
+      await this.handlers.logout(revokeRequest);
+    }
+
     // remove refresh token cookie if it is set
-    this.removeRefreshTokenCookie(res);
+    const origin = req.get('origin');
+    const cookieConfig = this.getCookieConfig(origin);
+    this.removeRefreshTokenCookie(res, cookieConfig);
 
     res.status(200).end();
   }
@@ -212,8 +235,7 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     }
 
     try {
-      const refreshToken =
-        req.cookies[`${this.options.providerId}-refresh-token`];
+      const refreshToken = this.getRefreshTokenFromCookie(req);
 
       // throw error if refresh token is missing in the request
       if (!refreshToken) {
@@ -235,7 +257,9 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       );
 
       if (newRefreshToken && newRefreshToken !== refreshToken) {
-        this.setRefreshTokenCookie(res, newRefreshToken);
+        const origin = req.get('origin');
+        const cookieConfig = this.getCookieConfig(origin);
+        this.setRefreshTokenCookie(res, newRefreshToken, cookieConfig);
       }
 
       res.status(200).json({ ...response, backstageIdentity });
@@ -261,19 +285,33 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     return prepareBackstageIdentityResponse(identity);
   }
 
-  private setNonceCookie = (res: express.Response, nonce: string) => {
+  private setNonceCookie = (
+    res: express.Response,
+    nonce: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-nonce`, nonce, {
       maxAge: TEN_MINUTES_MS,
       ...this.baseCookieOptions,
-      path: `${this.options.cookiePath}/handler`,
+      ...cookieConfig,
+      path: `${cookieConfig.path}/handler`,
     });
   };
 
-  private setGrantedScopeCookie = (res: express.Response, scope: string) => {
+  private setGrantedScopeCookie = (
+    res: express.Response,
+    scope: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-granted-scope`, scope, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.baseCookieOptions,
+      ...cookieConfig,
     });
+  };
+
+  private getRefreshTokenFromCookie = (req: express.Request) => {
+    return req.cookies[`${this.options.providerId}-refresh-token`];
   };
 
   private getGrantedScopeFromCookie = (req: express.Request) => {
@@ -283,17 +321,32 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
   private setRefreshTokenCookie = (
     res: express.Response,
     refreshToken: string,
+    cookieConfig: ReturnType<CookieConfigurer>,
   ) => {
     res.cookie(`${this.options.providerId}-refresh-token`, refreshToken, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.baseCookieOptions,
+      ...cookieConfig,
     });
   };
 
-  private removeRefreshTokenCookie = (res: express.Response) => {
+  private removeRefreshTokenCookie = (
+    res: express.Response,
+    cookieConfig: ReturnType<CookieConfigurer>,
+  ) => {
     res.cookie(`${this.options.providerId}-refresh-token`, '', {
       maxAge: 0,
       ...this.baseCookieOptions,
+      ...cookieConfig,
+    });
+  };
+
+  private getCookieConfig = (origin?: string) => {
+    return this.options.cookieConfigurer({
+      providerId: this.options.providerId,
+      baseUrl: this.options.baseUrl,
+      callbackUrl: this.options.callbackUrl,
+      appOrigin: origin ?? this.options.appOrigin,
     });
   };
 }

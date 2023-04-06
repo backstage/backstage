@@ -1,5 +1,100 @@
 # @backstage/release-manifests
 
+## 0.0.9
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+
+## 0.0.8
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+
+## 0.0.8-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+
+## 0.0.7
+
+### Patch Changes
+
+- a4496131fa: Added a fallback that fetches manifests from `https://raw.githubusercontent.com` if `https://versions.backstage.io` is unavailable.
+
+## 0.0.7-next.0
+
+### Patch Changes
+
+- a4496131fa: Added a fallback that fetches manifests from `https://raw.githubusercontent.com` if `https://versions.backstage.io` is unavailable.
+
+## 0.0.6
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
+## 0.0.6-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 0.0.6-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 0.0.6-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
+## 0.0.5
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+
+## 0.0.5-next.0
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+
+## 0.0.4
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 0.0.4-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 0.0.3
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+
 ## 0.0.3-next.0
 
 ### Patch Changes

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { FieldExtensionComponentProps } from '../../../extensions';
+import { EntityNamePickerProps } from './schema';
 import { TextField } from '@material-ui/core';
+
+export { EntityNamePickerSchema } from './schema';
 
 /**
  * EntityName Picker
  */
-export const EntityNamePicker = (
-  props: FieldExtensionComponentProps<string>,
-) => {
+export const EntityNamePicker = (props: EntityNamePickerProps) => {
   const {
     onChange,
     required,

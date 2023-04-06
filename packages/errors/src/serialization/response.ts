@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ConsumedResponse } from '../errors/types';
 import { SerializedError } from './error';
 
 /**
@@ -53,7 +54,7 @@ export type ErrorResponseBody = {
  * @param response - The response of a failed request
  */
 export async function parseErrorResponseBody(
-  response: Response,
+  response: ConsumedResponse & { text(): Promise<string> },
 ): Promise<ErrorResponseBody> {
   try {
     const text = await response.text();

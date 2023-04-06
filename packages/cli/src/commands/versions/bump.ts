@@ -39,6 +39,7 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import 'global-agent/bootstrap';
+import { PackageGraph } from '../../lib/monorepo';
 
 const DEP_TYPES = [
   'dependencies',
@@ -124,13 +125,6 @@ export default async (opts: OptionValues) => {
       }
 
       for (const pkg of pkgs) {
-        if (semver.satisfies(target, pkg.range)) {
-          if (semver.minVersion(pkg.range)?.version !== target) {
-            unlocked.push({ name, range: pkg.range, target });
-          }
-
-          continue;
-        }
         versionBumps.set(
           pkg.name,
           (versionBumps.get(pkg.name) ?? []).concat({
@@ -207,7 +201,7 @@ export default async (opts: OptionValues) => {
           lockfile.remove(name, range);
         }
       }
-      await lockfile.save();
+      await lockfile.save(lockfilePath);
     }
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
@@ -262,7 +256,13 @@ export default async (opts: OptionValues) => {
       );
     }
 
-    await runYarnInstall();
+    if (!opts.skipInstall) {
+      await runYarnInstall();
+    } else {
+      console.log();
+
+      console.log(chalk.yellow(`Skipping yarn install`));
+    }
 
     if (breakingUpdates.size > 0) {
       console.log();
@@ -306,8 +306,12 @@ export default async (opts: OptionValues) => {
 
   // Finally we make sure the new lockfile doesn't have any duplicates
   const dedupLockfile = await Lockfile.load(lockfilePath);
+
   const result = dedupLockfile.analyze({
     filter,
+    localPackages: PackageGraph.fromPackages(
+      await PackageGraph.listTargetPackages(),
+    ),
   });
 
   if (result.newVersions.length > 0) {

@@ -13,64 +13,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+
+import { render, screen } from '@testing-library/react';
+import user from '@testing-library/user-event';
 import React from 'react';
 import { MaxDepthFilter } from './MaxDepthFilter';
 
 describe('<MaxDepthFilter/>', () => {
   test('should display current value', () => {
-    const { getByLabelText } = render(
-      <MaxDepthFilter value={5} onChange={() => {}} />,
-    );
+    render(<MaxDepthFilter value={5} onChange={() => {}} />);
 
-    expect(getByLabelText('maxp')).toBeInTheDocument();
-    expect(getByLabelText('maxp')).toHaveValue(5);
+    expect(screen.getByLabelText('maxp')).toBeInTheDocument();
+    expect(screen.getByLabelText('maxp')).toHaveValue(5);
   });
 
   test('should display infinite if non finite', () => {
-    const { getByPlaceholderText, getByLabelText } = render(
+    render(
       <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />,
     );
 
-    expect(getByPlaceholderText(/Infinite/)).toBeInTheDocument();
-    expect(getByLabelText('maxp')).toHaveValue(null);
+    expect(screen.getByPlaceholderText(/Infinite/)).toBeInTheDocument();
+    expect(screen.getByLabelText('maxp')).toHaveValue(null);
   });
 
   test('should clear max depth', async () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(
-      <MaxDepthFilter value={10} onChange={onChange} />,
-    );
+    render(<MaxDepthFilter value={10} onChange={onChange} />);
 
-    await userEvent.click(getByLabelText('clear max depth'));
-    expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
+    expect(onChange).not.toHaveBeenCalled();
+    await user.click(screen.getByLabelText('clear max depth'));
+    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
   });
 
   test('should set max depth to undefined if below one', async () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(
-      <MaxDepthFilter value={1} onChange={onChange} />,
-    );
+    render(<MaxDepthFilter value={1} onChange={onChange} />);
 
-    await userEvent.clear(getByLabelText('maxp'));
-    await userEvent.type(getByLabelText('maxp'), '0');
+    await user.clear(screen.getByLabelText('maxp'));
+    await user.type(screen.getByLabelText('maxp'), '0');
 
-    expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
+    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
   });
 
   test('should select direction', async () => {
-    const onChange = jest.fn();
-    const { getByLabelText } = render(
-      <MaxDepthFilter value={5} onChange={onChange} />,
+    let value = 5;
+    render(
+      <MaxDepthFilter
+        value={value}
+        onChange={v => {
+          value = v;
+        }}
+      />,
     );
 
-    expect(getByLabelText('maxp')).toHaveValue(5);
+    expect(screen.getByLabelText('maxp')).toHaveValue(5);
+    expect(value).toBe(5);
 
-    await userEvent.clear(getByLabelText('maxp'));
-    await userEvent.type(getByLabelText('maxp'), '10');
-    waitFor(() => {
-      expect(onChange).toBeCalledWith(10);
-    });
+    await user.clear(screen.getByLabelText('maxp'));
+    expect(value).toBe(Number.POSITIVE_INFINITY);
+    await user.type(screen.getByLabelText('maxp'), '10');
+    expect(value).toBe(10);
   });
 });

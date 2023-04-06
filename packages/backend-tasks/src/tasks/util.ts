@@ -17,7 +17,6 @@
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 
 // Keep the IDs compatible with e.g. Prometheus labels
 export function validateId(id: string) {
@@ -38,9 +37,16 @@ export function nowPlus(duration: Duration | undefined, knex: Knex) {
   if (!seconds) {
     return knex.fn.now();
   }
-  return knex.client.config.client.includes('sqlite3')
-    ? knex.raw(`datetime('now', ?)`, [`${seconds} seconds`])
-    : knex.raw(`now() + interval '${seconds} seconds'`);
+
+  if (knex.client.config.client.includes('sqlite3')) {
+    return knex.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
+  }
+
+  if (knex.client.config.client.includes('mysql')) {
+    return knex.raw(`now() + interval ${seconds} second`);
+  }
+
+  return knex.raw(`now() + interval '${seconds} seconds'`);
 }
 
 /**

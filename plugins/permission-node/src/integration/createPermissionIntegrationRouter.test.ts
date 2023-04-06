@@ -14,56 +14,79 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import express, { Express, Router } from 'express';
+import {
+  AuthorizeResult,
+  createPermission,
+  Permission,
+} from '@backstage/plugin-permission-common';
+import express from 'express';
 import request, { Response } from 'supertest';
-import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
+import { z } from 'zod';
+import {
+  createPermissionIntegrationRouter,
+  CreatePermissionIntegrationRouterResourceOptions,
+  createConditionAuthorizer,
+} from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
-const mockGetResources: jest.MockedFunction<
-  Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
-> = jest.fn(async resourceRefs =>
-  resourceRefs.map(resourceRef => ({ id: resourceRef })),
-);
+const testPermission: Permission = createPermission({
+  name: 'test.permission',
+  attributes: {},
+});
 
+const mockTestRule1Apply = jest
+  .fn()
+  .mockImplementation((_resource: any, _params) => true);
 const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
-  apply: jest.fn(
-    (_resource: any, _firstParam: string, _secondParam: number) => true,
-  ),
-  toQuery: jest.fn(),
+  paramsSchema: z.object({
+    foo: z.string(),
+    bar: z.number().describe('bar'),
+  }),
+  apply: mockTestRule1Apply,
+  toQuery: _params => ({}),
 });
 
+const mockTestRule2Apply = jest
+  .fn()
+  .mockImplementation((_resource: any) => false);
 const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
   resourceType: 'test-resource',
-  apply: jest.fn((_resource: any, _firstParam: object) => false),
-  toQuery: jest.fn(),
+  apply: mockTestRule2Apply,
+  toQuery: () => ({}),
 });
 
+const defaultMockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+  string,
+  { id: string }
+>['getResources'] = jest.fn(async resourceRefs =>
+  resourceRefs.map(resourceRef => ({ id: resourceRef })),
+);
+
+const createApp = (
+  mockedGetResources:
+    | typeof defaultMockedGetResources
+    | null = defaultMockedGetResources,
+) => {
+  const router = mockedGetResources
+    ? createPermissionIntegrationRouter({
+        resourceType: 'test-resource',
+        permissions: [testPermission],
+        getResources: mockedGetResources,
+        rules: [testRule1, testRule2],
+      })
+    : createPermissionIntegrationRouter({ permissions: [testPermission] });
+
+  return express().use(router);
+};
+
 describe('createPermissionIntegrationRouter', () => {
-  let app: Express;
-  let router: Router;
-
-  beforeAll(() => {
-    router = createPermissionIntegrationRouter({
-      resourceType: 'test-resource',
-      getResources: mockGetResources,
-      rules: [testRule1, testRule2],
-    });
-
-    app = express().use(router);
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('works', async () => {
-    expect(router).toBeDefined();
   });
 
   describe('POST /.well-known/backstage/permissions/apply-conditions', () => {
@@ -71,23 +94,31 @@ describe('createPermissionIntegrationRouter', () => {
       {
         rule: 'test-rule-1',
         resourceType: 'test-resource',
-        params: ['abc', 123],
+        params: {
+          foo: 'abc',
+          bar: 123,
+        },
       },
       {
         anyOf: [
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+          },
         ],
       },
       {
         not: {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
-          params: [{}],
         },
       },
       {
@@ -97,12 +128,14 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{}],
               },
             ],
           },
@@ -112,12 +145,14 @@ describe('createPermissionIntegrationRouter', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['b', 2],
+                  params: {
+                    foo: 'b',
+                    bar: 2,
+                  },
                 },
                 {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [{ c: 3 }],
                 },
               ],
             },
@@ -125,7 +160,7 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
     ])('returns 200/ALLOW when criteria match (case %#)', async conditions => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -153,16 +188,21 @@ describe('createPermissionIntegrationRouter', () => {
       {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
-        params: [{ foo: 0 }],
       },
       {
         allOf: [
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+          },
         ],
       },
       {
@@ -172,12 +212,14 @@ describe('createPermissionIntegrationRouter', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{ b: 2 }],
               },
             ],
           },
@@ -187,13 +229,15 @@ describe('createPermissionIntegrationRouter', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['c', 3],
+                  params: {
+                    foo: 'c',
+                    bar: 3,
+                  },
                 },
                 {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: [{ d: 4 }],
                   },
                 },
               ],
@@ -204,7 +248,7 @@ describe('createPermissionIntegrationRouter', () => {
     ])(
       'returns 200/DENY when criteria do not match (case %#)',
       async conditions => {
-        const response = await request(app)
+        const response = await request(createApp())
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             items: [
@@ -228,7 +272,7 @@ describe('createPermissionIntegrationRouter', () => {
       let response: Response;
 
       beforeEach(async () => {
-        response = await request(app)
+        response = await request(createApp())
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             items: [
@@ -239,7 +283,10 @@ describe('createPermissionIntegrationRouter', () => {
                 conditions: {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: [],
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
                 },
               },
               {
@@ -249,7 +296,6 @@ describe('createPermissionIntegrationRouter', () => {
                 conditions: {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [],
                 },
               },
               {
@@ -260,7 +306,10 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-1',
                     resourceType: 'test-resource',
-                    params: [],
+                    params: {
+                      foo: 'a',
+                      bar: 1,
+                    },
                   },
                 },
               },
@@ -272,7 +321,6 @@ describe('createPermissionIntegrationRouter', () => {
                   not: {
                     rule: 'test-rule-2',
                     resourceType: 'test-resource',
-                    params: [],
                   },
                 },
               },
@@ -285,12 +333,14 @@ describe('createPermissionIntegrationRouter', () => {
                     {
                       rule: 'test-rule-1',
                       resourceType: 'test-resource',
-                      params: [],
+                      params: {
+                        foo: 'a',
+                        bar: 1,
+                      },
                     },
                     {
                       rule: 'test-rule-2',
                       resourceType: 'test-resource',
-                      params: [],
                     },
                   ],
                 },
@@ -313,7 +363,7 @@ describe('createPermissionIntegrationRouter', () => {
       });
 
       it('calls getResources for all required resources at once', () => {
-        expect(mockGetResources).toHaveBeenCalledWith([
+        expect(defaultMockedGetResources).toHaveBeenCalledWith([
           'default:test/resource-1',
           'default:test/resource-2',
           'default:test/resource-3',
@@ -323,7 +373,7 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 400 when called with incorrect resource type', async () => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -334,7 +384,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-incorrect-resource-1',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
             {
@@ -344,7 +396,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
             {
@@ -354,7 +408,9 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-incorrect-resource-2',
-                params: [{}],
+                params: {
+                  foo: {},
+                },
               },
             },
           ],
@@ -367,11 +423,14 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('returns 200/DENY when resource is not found', async () => {
-      mockGetResources.mockImplementationOnce(async resourceRefs =>
+      const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+        string,
+        { id: string }
+      >['getResources'] = jest.fn(async resourceRefs =>
         resourceRefs.map(() => undefined),
       );
 
-      const response = await request(app)
+      const response = await request(createApp(mockedGetResources))
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -382,7 +441,7 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {},
               },
             },
           ],
@@ -400,7 +459,10 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it('interleaves responses for present and missing resources', async () => {
-      mockGetResources.mockImplementationOnce(async resourceRefs =>
+      const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
+        string,
+        { id: string }
+      >['getResources'] = jest.fn(async resourceRefs =>
         resourceRefs.map(resourceRef =>
           resourceRef === 'default:test/missing-resource'
             ? undefined
@@ -408,7 +470,7 @@ describe('createPermissionIntegrationRouter', () => {
         ),
       );
 
-      const response = await request(app)
+      const response = await request(createApp(mockedGetResources))
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -419,7 +481,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
             {
@@ -429,7 +494,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
             {
@@ -439,7 +507,10 @@ describe('createPermissionIntegrationRouter', () => {
               conditions: {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: [],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
             },
           ],
@@ -493,12 +564,140 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
     ])(`returns 400 for invalid input %#`, async input => {
-      const response = await request(app)
+      const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send(input);
 
       expect(response.status).toEqual(400);
       expect(response.error && response.error.text).toMatch(/invalid/i);
     });
+
+    it('returns 501 with no getResources implementation', async () => {
+      const response = await request(createApp(null))
+        .post('/.well-known/backstage/permissions/apply-conditions')
+        .send({
+          items: [],
+        });
+
+      expect(response.status).toEqual(501);
+      expect(response.body.error.message).toEqual(
+        `This plugin does not expose any permission rule or can't evaluate conditional decisions`,
+      );
+    });
+  });
+
+  describe('GET /.well-known/backstage/permissions/metadata', () => {
+    it('returns a list of permissions and rules used by a given backend', async () => {
+      const response = await request(createApp()).get(
+        '/.well-known/backstage/permissions/metadata',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        permissions: [testPermission],
+        rules: [
+          {
+            name: testRule1.name,
+            description: testRule1.description,
+            resourceType: testRule1.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {
+                foo: {
+                  type: 'string',
+                },
+                bar: {
+                  description: 'bar',
+                  type: 'number',
+                },
+              },
+              required: ['foo', 'bar'],
+              type: 'object',
+            },
+          },
+          {
+            name: testRule2.name,
+            description: testRule2.description,
+            resourceType: testRule2.resourceType,
+            paramsSchema: {
+              $schema: 'http://json-schema.org/draft-07/schema#',
+              additionalProperties: false,
+              properties: {},
+              type: 'object',
+            },
+          },
+        ],
+      });
+    });
+  });
+});
+
+describe('createConditionAuthorizer', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return true in case of allowed decision', () => {
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          result: AuthorizeResult.ALLOW,
+        },
+        {},
+      ),
+    ).toBe(true);
+
+    expect(mockTestRule1Apply).not.toHaveBeenCalled();
+    expect(mockTestRule2Apply).not.toHaveBeenCalled();
+  });
+  it('should return false in case of denied decision', () => {
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          result: AuthorizeResult.DENY,
+        },
+        {},
+      ),
+    ).toBe(false);
+
+    expect(mockTestRule1Apply).not.toHaveBeenCalled();
+    expect(mockTestRule2Apply).not.toHaveBeenCalled();
+  });
+
+  it('should apply conditions to a resource in case of conditional decision', () => {
+    const isAuthorized = createConditionAuthorizer([testRule1, testRule2]);
+    expect(
+      isAuthorized(
+        {
+          pluginId: 'plugin',
+          resourceType: 'test-resource',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            allOf: [
+              {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
+              },
+              {
+                rule: 'test-rule-2',
+                resourceType: 'test-resource',
+                params: {},
+              },
+            ],
+          },
+        },
+        {},
+      ),
+    ).toBe(false);
+
+    expect(mockTestRule1Apply).toHaveBeenCalledTimes(1);
+    expect(mockTestRule2Apply).toHaveBeenCalledTimes(1);
   });
 });

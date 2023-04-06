@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -61,15 +61,25 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
   const { children } = props;
   const { entity } = useEntity();
 
+  // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
+  const element = useRoutes([
+    {
+      path: '/*',
+      element: <EntityPageDocs entity={entity} />,
+      children: [
+        {
+          path: '*',
+          element: children,
+        },
+      ],
+    },
+  ]);
+
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
 
   if (!projectId) {
     return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
   }
 
-  return (
-    <Routes>
-      <Route element={<EntityPageDocs entity={entity} />}>{children}</Route>
-    </Routes>
-  );
+  return element;
 };

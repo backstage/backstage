@@ -13,13 +13,89 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  AnalyticsContext,
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
+import {
+  scaffolderApiRef,
+  useTemplateSecrets,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
+import {
+  FormProps,
+  Workflow,
+  NextFieldExtensionOptions,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { JsonValue } from '@backstage/types';
+import { Header, Page } from '@backstage/core-components';
 
-import { FieldExtensionOptions } from '../../extensions';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 
-export interface TemplateWizardPageProps {
-  customFieldExtensions: FieldExtensionOptions<any, any>[];
-}
+/**
+ * @alpha
+ */
+export type TemplateWizardPageProps = {
+  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
+  FormProps?: FormProps;
+};
 
-export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
-  return null;
+export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+  const rootRef = useRouteRef(rootRouteRef);
+  const taskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const { secrets } = useTemplateSecrets();
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const navigate = useNavigate();
+  const { templateName, namespace } = useRouteRefParams(
+    selectedTemplateRouteRef,
+  );
+
+  const templateRef = stringifyEntityRef({
+    kind: 'Template',
+    namespace,
+    name: templateName,
+  });
+
+  const onCreate = async (values: Record<string, JsonValue>) => {
+    const { taskId } = await scaffolderApi.scaffold({
+      templateRef,
+      values,
+      secrets,
+    });
+
+    navigate(taskRoute({ taskId }));
+  };
+
+  const onError = () => <Navigate to={rootRef()} />;
+
+  return (
+    <AnalyticsContext attributes={{ entityRef: templateRef }}>
+      <Page themeId="website">
+        <Header
+          pageTitleOverride="Create a new component"
+          title="Create a new component"
+          subtitle="Create new software components using standard templates in your organization"
+        />
+        <Workflow
+          namespace={namespace}
+          templateName={templateName}
+          onCreate={onCreate}
+          onError={onError}
+          extensions={props.customFieldExtensions}
+          FormProps={props.FormProps}
+          layouts={props.layouts}
+        />
+      </Page>
+    </AnalyticsContext>
+  );
 };

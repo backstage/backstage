@@ -24,7 +24,7 @@ import lodash from 'lodash';
  */
 export class CommonValidatorFunctions {
   /**
-   * Checks that the value is on the form <suffix> or <prefix><separator><suffix>, and validates
+   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
    * those parts separately.
    *
    * @param value - The value to check
@@ -91,7 +91,7 @@ export class CommonValidatorFunctions {
       typeof value === 'string' &&
       value.length >= 1 &&
       value.length <= 63 &&
-      /^[a-z0-9]+(\-[a-z0-9]+)*$/.test(value)
+      /^[a-z0-9]+(?:\-+[a-z0-9]+)*$/.test(value)
     );
   }
 

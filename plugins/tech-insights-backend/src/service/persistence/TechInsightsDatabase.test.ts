@@ -15,7 +15,7 @@
  */
 import { DateTime, Duration } from 'luxon';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
-import { Knex } from 'knex';
+import { Knex as KnexType, Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { getVoidLogger } from '@backstage/backend-common';
 import { initializePersistenceContext } from './persistenceContext';
@@ -115,15 +115,78 @@ const additionalFacts = [
   },
 ];
 
+const sameFactsDiffDateSchema = {
+  id: 'same-fact-diff-date-test',
+  version: '0.0.1-test',
+  entityFilter: JSON.stringify([{ kind: 'service' }]),
+  schema: JSON.stringify({
+    testStringFact: {
+      type: 'string',
+      description: 'Test fact with a string type',
+    },
+  }),
+};
+
+const sameFactsDiffDateNow = DateTime.now().toISO();
+const sameFactsDiffDateNearFuture = DateTime.now()
+  .plus(Duration.fromMillis(555))
+  .toISO();
+const sameFactsDiffDateFuture = DateTime.now()
+  .plus(Duration.fromMillis(1000))
+  .toISO();
+
+const multipleSameFacts = [
+  {
+    timestamp: sameFactsDiffDateNow,
+    id: sameFactsDiffDateSchema.id,
+    version: '0.0.1-test',
+    entity: 'a:a/a',
+    facts: JSON.stringify({
+      testNumberFact: 1,
+    }),
+  },
+  {
+    timestamp: sameFactsDiffDateNearFuture,
+    id: sameFactsDiffDateSchema.id,
+    version: '0.0.1-test',
+    entity: 'a:a/a',
+    facts: JSON.stringify({
+      testNumberFact: 2,
+    }),
+  },
+  {
+    timestamp: sameFactsDiffDateFuture,
+    id: 'multiple-same-facts',
+    version: '0.0.1-test',
+    entity: 'a:a/a',
+    facts: JSON.stringify({
+      testNumberFact: 3,
+    }),
+  },
+];
+
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
+
 describe('Tech Insights database', () => {
   const databases = TestDatabases.create();
   let store: TechInsightsStore;
   let testDbClient: Knex<any, unknown[]>;
   beforeAll(async () => {
     testDbClient = await databases.init('SQLITE_3');
+    const database = createDatabaseManager(testDbClient);
 
     store = (
-      await initializePersistenceContext(testDbClient, {
+      await initializePersistenceContext(database, {
         logger: getVoidLogger(),
       })
     ).techInsightsStore;
@@ -213,6 +276,33 @@ describe('Tech Insights database', () => {
       'a:a/a',
     );
     expect(returnedFact['test-fact']).toMatchObject(baseAssertionFact);
+  });
+
+  it('should return latest fact with multiple entries', async () => {
+    await testDbClient.batchInsert('fact_schemas', [sameFactsDiffDateSchema]);
+    await testDbClient.batchInsert(
+      'facts',
+      multipleSameFacts.map(fact => ({
+        ...fact,
+        id: sameFactsDiffDateSchema.id,
+      })),
+    );
+
+    const returnedFacts = await store.getLatestFactsByIds(
+      ['test-fact', sameFactsDiffDateSchema.id],
+      'a:a/a',
+    );
+
+    expect(returnedFacts['test-fact']).toMatchObject({
+      ...baseAssertionFact,
+    });
+
+    expect(returnedFacts[sameFactsDiffDateSchema.id]).toMatchObject({
+      ...baseAssertionFact,
+      id: sameFactsDiffDateSchema.id,
+      timestamp: DateTime.fromISO(sameFactsDiffDateFuture),
+      facts: { testNumberFact: 3 },
+    });
   });
 
   it('should return latest facts for multiple ids', async () => {

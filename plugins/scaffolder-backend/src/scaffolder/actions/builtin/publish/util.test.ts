@@ -15,7 +15,9 @@
  */
 
 import path from 'path';
-import { getRepoSourceDirectory, isExecutable } from './util';
+import { getRepoSourceDirectory, isExecutable, parseRepoUrl } from './util';
+import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 
 describe('getRepoSourceDirectory', () => {
   it('should return workspace root if no sub folder is given', () => {
@@ -83,5 +85,97 @@ describe('isExecutable', () => {
   });
   it('should return false for file mode 640', () => {
     expect(isExecutable(0o100640)).toBe(false);
+  });
+});
+
+describe('parseRepoUrl', () => {
+  const config = new ConfigReader({
+    integrations: {
+      gitlab: [
+        {
+          host: 'www.gitlab.com',
+          token: 'token',
+          apiBaseUrl: 'https://api.gitlab.com',
+        },
+      ],
+      bitbucket: [
+        {
+          host: 'www.bitbucket.net',
+          apiBaseUrl: 'https://api.hosted.bitbucket.net',
+        },
+        {
+          host: 'www.bitbucket.org',
+          username: 'username',
+          appPassword: 'password',
+          apiBaseUrl: 'https://api.hosted.bitbucket.org',
+        },
+      ],
+    },
+  });
+  const integrations = ScmIntegrations.fromConfig(config);
+  it('should throw an exception if no parameters are passed (gitlab)', () => {
+    expect(() => parseRepoUrl('www.gitlab.com', integrations)).toThrow(
+      'Invalid repo URL passed to publisher: https://www.gitlab.com/, missing owner',
+    );
+  });
+  it('should return the project ID in the `project` parameter (gitlab)', () => {
+    expect(
+      parseRepoUrl('www.gitlab.com?project=234', integrations),
+    ).toStrictEqual({
+      host: 'www.gitlab.com',
+      organization: undefined,
+      owner: undefined,
+      project: '234',
+      repo: null,
+      workspace: undefined,
+    });
+  });
+  it('should throw an exception if the repo parameter is missing, but owner parameter is set', () => {
+    expect(() =>
+      parseRepoUrl('www.gitlab.com?owner=owner', integrations),
+    ).toThrow(
+      'Invalid repo URL passed to publisher: https://www.gitlab.com/?owner=owner, missing repo',
+    );
+  });
+  it('should throw an exception if the owner parameter is missing, but repo parameter is set (gitlab)', () => {
+    expect(() =>
+      parseRepoUrl('www.gitlab.com?repo=repo', integrations),
+    ).toThrow(
+      'Invalid repo URL passed to publisher: https://www.gitlab.com/?repo=repo, missing owner',
+    );
+  });
+  it('should return the workspace, project and repo (bitbucket.org)', () => {
+    expect(
+      parseRepoUrl(
+        'www.bitbucket.org?project=project&workspace=workspace&repo=repo',
+        integrations,
+      ),
+    ).toStrictEqual({
+      host: 'www.bitbucket.org',
+      organization: undefined,
+      owner: undefined,
+      project: 'project',
+      repo: 'repo',
+      workspace: 'workspace',
+    });
+  });
+  it('should return the project and repo (another bitbucket instance)', () => {
+    expect(
+      parseRepoUrl('www.bitbucket.net?project=project&repo=repo', integrations),
+    ).toStrictEqual({
+      host: 'www.bitbucket.net',
+      organization: undefined,
+      owner: undefined,
+      project: 'project',
+      repo: 'repo',
+      workspace: undefined,
+    });
+  });
+  it('should throw an exception if the workspace parameter is missing for bitbucket.org instance (bitbucket.org)', () => {
+    expect(() =>
+      parseRepoUrl('www.bitbucket.org?project=project&repo=repo', integrations),
+    ).toThrow(
+      'Invalid repo URL passed to publisher: https://www.bitbucket.org/?project=project&repo=repo, missing workspace',
+    );
   });
 });

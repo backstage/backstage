@@ -26,6 +26,8 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles<BackstageTheme>(
   theme => ({
@@ -33,13 +35,14 @@ const useStyles = makeStyles<BackstageTheme>(
       height: 48,
       width: '100%',
       '&:hover': {
-        background: '#6f6f6f',
+        background:
+          theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
         color: theme.palette.navigation.selectedColor,
       },
       display: 'flex',
       alignItems: 'center',
       color: theme.palette.navigation.color,
-      padding: 20,
+      padding: theme.spacing(2.5),
       cursor: 'pointer',
       position: 'relative',
       background: 'none',
@@ -50,12 +53,19 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     selected: {
       background: '#6f6f6f',
-      color: '#FFF',
+      color: theme.palette.common.white,
     },
     label: {
-      margin: 14,
-      marginLeft: 7,
-      fontSize: 14,
+      margin: theme.spacing(1.75),
+      marginLeft: theme.spacing(1),
+      fontSize: theme.typography.body2.fontSize,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
+      lineHeight: 1,
+    },
+    subtitle: {
+      fontSize: 10,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',
@@ -73,7 +83,8 @@ const useStyles = makeStyles<BackstageTheme>(
       width: '100%',
       padding: '10px 0 10px 0',
       '&:hover': {
-        background: '#6f6f6f',
+        background:
+          theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
         color: theme.palette.navigation.selectedColor,
       },
     },
@@ -81,7 +92,7 @@ const useStyles = makeStyles<BackstageTheme>(
       color: theme.palette.navigation.color,
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(1),
-      fontSize: '14px',
+      fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',
@@ -104,7 +115,9 @@ export type SidebarSubmenuItemDropdownItem = {
 /**
  * Holds submenu item content.
  *
+ * @remarks
  * title: Text content of submenu item
+ * subtitle: A subtitle displayed under the main title
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
@@ -113,6 +126,7 @@ export type SidebarSubmenuItemDropdownItem = {
  */
 export type SidebarSubmenuItemProps = {
   title: string;
+  subtitle?: string;
   to?: string;
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
@@ -124,7 +138,7 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, to, icon: Icon, dropdownItems } = props;
+  const { title, subtitle, to, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -145,9 +159,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       return isActive;
     });
     return (
-      <div className={classes.itemContainer}>
+      <Box className={classes.itemContainer}>
         <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
-          <button
+          <Button
+            role="button"
             onClick={handleClickDropdown}
             onTouchStart={e => e.stopPropagation()}
             className={classnames(
@@ -158,16 +173,22 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             {Icon && <Icon fontSize="small" />}
             <Typography variant="subtitle1" className={classes.label}>
               {title}
+              <br />
+              {subtitle && (
+                <Typography variant="caption" className={classes.subtitle}>
+                  {subtitle}
+                </Typography>
+              )}
             </Typography>
             {showDropDown ? (
               <ArrowDropUpIcon className={classes.dropdownArrow} />
             ) : (
               <ArrowDropDownIcon className={classes.dropdownArrow} />
             )}
-          </button>
+          </Button>
         </Tooltip>
         {dropdownItems && showDropDown && (
-          <div className={classes.dropdown}>
+          <Box className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Tooltip
                 key={key}
@@ -188,14 +209,14 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 </Link>
               </Tooltip>
             ))}
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className={classes.itemContainer}>
+    <Box className={classes.itemContainer}>
       <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
         <Link
           to={to!}
@@ -210,9 +231,15 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           {Icon && <Icon fontSize="small" />}
           <Typography variant="subtitle1" className={classes.label}>
             {title}
+            <br />
+            {subtitle && (
+              <Typography variant="caption" className={classes.subtitle}>
+                {subtitle}
+              </Typography>
+            )}
           </Typography>
         </Link>
       </Tooltip>
-    </div>
+    </Box>
   );
 };

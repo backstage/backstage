@@ -11,8 +11,8 @@ Our TypeScript style is inspired by the [style guidelines](https://github.com/Mi
 1. Use PascalCase for type names.
 1. Do not use `I` as a prefix for interface names.
 1. Use PascalCase for `enum` values.
-1. Use camelCase for function names.
-1. Use camelCase for property names and local variables.
+1. Use `camelCase` for function names.
+1. Use `camelCase` for property names and local variables.
 1. Do not use `_` as a prefix for private properties.
 1. Use whole words in names when possible.
 1. Give type parameters names prefixed with `T`, for example `Request<TBody>`.
@@ -94,6 +94,13 @@ This section describes guidelines for designing public APIs. It can also be appl
        /* ... */
      }
 
+     // In order to make a private constructor available for testing you can use a
+     // static factory marked as `@internal`, which will not show up in the public API.
+     /** @internal */
+     static forTesting(internalOptions?: { ... }) {
+       return new DefaultImageLoader(internalOptions);
+     }
+
      private constructor(/* ... */) {
        /* ... */
      }
@@ -131,6 +138,30 @@ This section describes guidelines for designing public APIs. It can also be appl
    interface ReportsApi {
      uploadReports(request: UploadReportsRequest): Promise<void>;
      deleteReport(request: DeleteReportRequest): Promise<void>;
+   }
+   ```
+
+1. When there is a significant number of arguments to a function or method, prefer to use a single options object as the argument, rather than many positional arguments.
+
+   ```ts
+   // Bad
+   function createWidget(id: string, name: string, width: number) {}
+
+   // Good
+   function createWidget(options: CreateWidgetOptions) {}
+   ```
+
+1. Avoid arrays as return types; prefer response objects.
+
+   ```ts
+   interface UserApi {
+     // Bad
+     // Can only return Users without signaling additional information such as pagination.
+     listUsers(): Promise<User[]>;
+
+     // Good
+     // Easy to evolve with additional fields.
+     listUsers(): Promise<ListUsersResponse>;
    }
    ```
 

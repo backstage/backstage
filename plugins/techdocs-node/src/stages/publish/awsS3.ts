@@ -16,9 +16,26 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
-import aws, { Credentials } from 'aws-sdk';
-import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import {
+  GetObjectCommand,
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  HeadBucketCommand,
+  HeadObjectCommand,
+  PutObjectCommandInput,
+  ListObjectsV2CommandOutput,
+  ListObjectsV2Command,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
+import { Upload } from '@aws-sdk/lib-storage';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
+import { HttpsProxyAgent } from 'hpagent';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -49,7 +66,9 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
     try {
       const chunks: any[] = [];
       stream.on('data', chunk => chunks.push(chunk));
-      stream.on('error', reject);
+      stream.on('error', (e: Error) =>
+        reject(new ForwardedError('Unable to read stream', e)),
+      );
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
       throw new ForwardedError('Unable to parse the response data', e);
@@ -58,7 +77,7 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
 };
 
 export class AwsS3Publish implements PublisherBase {
-  private readonly storageClient: aws.S3;
+  private readonly storageClient: S3Client;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
   private readonly logger: Logger;
@@ -66,7 +85,7 @@ export class AwsS3Publish implements PublisherBase {
   private readonly sse?: 'aws:kms' | 'AES256';
 
   constructor(options: {
-    storageClient: aws.S3;
+    storageClient: S3Client;
     bucketName: string;
     legacyPathCasing: boolean;
     logger: Logger;
@@ -81,7 +100,10 @@ export class AwsS3Publish implements PublisherBase {
     this.sse = options.sse;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static async fromConfig(
+    config: Config,
+    logger: Logger,
+  ): Promise<PublisherBase> {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
@@ -101,21 +123,28 @@ export class AwsS3Publish implements PublisherBase {
       | 'AES256'
       | undefined;
 
-    // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
-    // 1. AWS environment variables
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
-    // 2. AWS shared credentials file at ~/.aws/credentials
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
-    // 3. IAM Roles for EC2
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
-    const credentialsConfig = config.getOptionalConfig(
-      'techdocs.publisher.awsS3.credentials',
-    );
-    const credentials = AwsS3Publish.buildCredentials(credentialsConfig);
-
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
     // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
+
+    // Credentials can optionally be configured by specifying the AWS account ID, which will retrieve credentials
+    // for the account from the 'aws' section of the app config.
+    // Credentials can also optionally be directly configured in the techdocs awsS3 config, but this method is
+    // deprecated.
+    // If no credentials are configured, the AWS SDK V3's default credential chain will be used.
+    const accountId = config.getOptionalString(
+      'techdocs.publisher.awsS3.accountId',
+    );
+    const credentialsConfig = config.getOptionalConfig(
+      'techdocs.publisher.awsS3.credentials',
+    );
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+    const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
+      credsManager,
+      accountId,
+      credentialsConfig,
+      region,
+    );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
     // the configured region.
@@ -123,17 +152,28 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.endpoint',
     );
 
+    // AWS HTTPS proxy is an optional config. If missing, no proxy is used
+    const httpsProxy = config.getOptionalString(
+      'techdocs.publisher.awsS3.httpsProxy',
+    );
+
     // AWS forcePathStyle is an optional config. If missing, it defaults to false. Needs to be enabled for cases
     // where endpoint url points to locally hosted S3 compatible storage like Localstack
-    const s3ForcePathStyle = config.getOptionalBoolean(
+    const forcePathStyle = config.getOptionalBoolean(
       'techdocs.publisher.awsS3.s3ForcePathStyle',
     );
 
-    const storageClient = new aws.S3({
-      credentials,
+    const storageClient = new S3Client({
+      customUserAgent: 'backstage-aws-techdocs-s3-publisher',
+      credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
-      ...(s3ForcePathStyle && { s3ForcePathStyle }),
+      ...(forcePathStyle && { forcePathStyle }),
+      ...(httpsProxy && {
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
+        }),
+      }),
     });
 
     const legacyPathCasing =
@@ -151,31 +191,53 @@ export class AwsS3Publish implements PublisherBase {
     });
   }
 
-  private static buildCredentials(
-    config?: Config,
-  ): Credentials | CredentialsOptions | undefined {
-    if (!config) {
-      return undefined;
-    }
-
-    const accessKeyId = config.getOptionalString('accessKeyId');
-    const secretAccessKey = config.getOptionalString('secretAccessKey');
-    let explicitCredentials: Credentials | undefined;
-    if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new Credentials({
+  private static buildStaticCredentials(
+    accessKeyId: string,
+    secretAccessKey: string,
+  ): AwsCredentialIdentityProvider {
+    return async () => {
+      return Promise.resolve({
         accessKeyId,
         secretAccessKey,
       });
+    };
+  }
+
+  private static async buildCredentials(
+    credsManager: AwsCredentialsManager,
+    accountId?: string,
+    config?: Config,
+    region?: string,
+  ): Promise<AwsCredentialIdentityProvider> {
+    // Pull credentials for the specified account ID from the 'aws' config section
+    if (accountId) {
+      return (await credsManager.getCredentialProvider({ accountId }))
+        .sdkCredentialProvider;
     }
+
+    // Fall back to the default credential chain if neither account ID
+    // nor explicit credentials are provided
+    if (!config) {
+      return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
+    }
+
+    // Pull credentials from the techdocs config section (deprecated)
+    const accessKeyId = config.getOptionalString('accessKeyId');
+    const secretAccessKey = config.getOptionalString('secretAccessKey');
+    const explicitCredentials: AwsCredentialIdentityProvider =
+      accessKeyId && secretAccessKey
+        ? AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey)
+        : (await credsManager.getCredentialProvider()).sdkCredentialProvider;
 
     const roleArn = config.getOptionalString('roleArn');
     if (roleArn) {
-      return new aws.ChainableTemporaryCredentials({
+      return fromTemporaryCredentials({
         masterCredentials: explicitCredentials,
         params: {
           RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
           RoleArn: roleArn,
         },
+        clientConfig: { region },
       });
     }
 
@@ -188,9 +250,9 @@ export class AwsS3Publish implements PublisherBase {
    */
   async getReadiness(): Promise<ReadinessResponse> {
     try {
-      await this.storageClient
-        .headBucket({ Bucket: this.bucketName })
-        .promise();
+      await this.storageClient.send(
+        new HeadBucketCommand({ Bucket: this.bucketName }),
+      );
 
       this.logger.info(
         `Successfully connected to the AWS S3 bucket ${this.bucketName}.`,
@@ -256,7 +318,7 @@ export class AwsS3Publish implements PublisherBase {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
           const fileStream = fs.createReadStream(absoluteFilePath);
 
-          const params = {
+          const params: PutObjectCommandInput = {
             Bucket: this.bucketName,
             Key: getCloudPathForLocalPath(
               entity,
@@ -266,10 +328,15 @@ export class AwsS3Publish implements PublisherBase {
             ),
             Body: fileStream,
             ...(sse && { ServerSideEncryption: sse }),
-          } as aws.S3.PutObjectRequest;
+          };
 
-          objects.push(params.Key);
-          return this.storageClient.upload(params).promise();
+          objects.push(params.Key!);
+
+          const upload = new Upload({
+            client: this.storageClient,
+            params,
+          });
+          return upload.done();
         },
         absoluteFilesToUpload,
         { concurrencyLimit: 10 },
@@ -299,12 +366,12 @@ export class AwsS3Publish implements PublisherBase {
 
       await bulkStorageOperation(
         async relativeFilePath => {
-          return await this.storageClient
-            .deleteObject({
+          return await this.storageClient.send(
+            new DeleteObjectCommand({
               Bucket: this.bucketName,
               Key: relativeFilePath,
-            })
-            .promise();
+            }),
+          );
         },
         staleFiles,
         { concurrencyLimit: 10 },
@@ -332,15 +399,17 @@ export class AwsS3Publish implements PublisherBase {
 
         const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
-        const stream = this.storageClient
-          .getObject({
-            Bucket: this.bucketName,
-            Key: `${entityRootDir}/techdocs_metadata.json`,
-          })
-          .createReadStream();
-
         try {
-          const techdocsMetadataJson = await streamToBuffer(stream);
+          const resp = await this.storageClient.send(
+            new GetObjectCommand({
+              Bucket: this.bucketName,
+              Key: `${entityRootDir}/techdocs_metadata.json`,
+            }),
+          );
+
+          const techdocsMetadataJson = await streamToBuffer(
+            resp.Body as Readable,
+          );
           if (!techdocsMetadataJson) {
             throw new Error(
               `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
@@ -368,29 +437,25 @@ export class AwsS3Publish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return async (req, res) => {
-      // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
-
-      // Root path is removed from the Uri so that legacy casing can be applied
-      // to the entity triplet without manipulating the root path
-      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
 
       // filePath example - /default/component/documented-component/index.html
       const filePathNoRoot = this.legacyPathCasing
-        ? decodedUriNoRoot
-        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
-      // Re-prepend the root path to the relative file path
+      // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const stream = this.storageClient
-        .getObject({ Bucket: this.bucketName, Key: filePath })
-        .createReadStream();
       try {
+        const resp = await this.storageClient.send(
+          new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
+        );
+
         // Inject response headers
         for (const [headerKey, headerValue] of Object.entries(
           responseHeaders,
@@ -398,7 +463,7 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        res.send(await streamToBuffer(stream));
+        res.send(await streamToBuffer(resp.Body as Readable));
       } catch (err) {
         assertError(err);
         this.logger.warn(
@@ -422,12 +487,12 @@ export class AwsS3Publish implements PublisherBase {
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
 
-      await this.storageClient
-        .headObject({
+      await this.storageClient.send(
+        new HeadObjectCommand({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/index.html`,
-        })
-        .promise();
+        }),
+      );
       return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);
@@ -460,21 +525,21 @@ export class AwsS3Publish implements PublisherBase {
 
           try {
             this.logger.verbose(`Migrating ${file}`);
-            await this.storageClient
-              .copyObject({
+            await this.storageClient.send(
+              new CopyObjectCommand({
                 Bucket: this.bucketName,
                 CopySource: [this.bucketName, file].join('/'),
                 Key: newPath,
-              })
-              .promise();
+              }),
+            );
 
             if (removeOriginal) {
-              await this.storageClient
-                .deleteObject({
+              await this.storageClient.send(
+                new DeleteObjectCommand({
                   Bucket: this.bucketName,
                   Key: file,
-                })
-                .promise();
+                }),
+              );
             }
           } catch (e) {
             assertError(e);
@@ -493,16 +558,16 @@ export class AwsS3Publish implements PublisherBase {
   ): Promise<string[]> {
     const objects: string[] = [];
     let nextContinuation: string | undefined;
-    let allObjects: ListObjectsV2Output;
+    let allObjects: ListObjectsV2CommandOutput;
     // Iterate through every file in the root of the publisher.
     do {
-      allObjects = await this.storageClient
-        .listObjectsV2({
+      allObjects = await this.storageClient.send(
+        new ListObjectsV2Command({
           Bucket: this.bucketName,
           ContinuationToken: nextContinuation,
           ...(prefix ? { Prefix: prefix } : {}),
-        })
-        .promise();
+        }),
+      );
       objects.push(
         ...(allObjects.Contents || []).map(f => f.Key || '').filter(f => !!f),
       );

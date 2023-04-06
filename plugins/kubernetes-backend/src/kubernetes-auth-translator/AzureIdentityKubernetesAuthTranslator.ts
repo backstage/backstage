@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
 import { AzureClusterDetails } from '../types/types';
-import { DefaultAzureCredential } from '@azure/identity';
+import {
+  AccessToken,
+  DefaultAzureCredential,
+  TokenCredential,
+} from '@azure/identity';
 
 const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope is the same for all Azure Managed Kubernetes
 
+/**
+ *
+ * @public
+ */
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
+  private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
+  private newTokenPromise: Promise<string> | undefined;
+
+  constructor(
+    private readonly logger: Logger,
+    private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
+  ) {}
+
   async decorateClusterDetailsWithAuth(
     clusterDetails: AzureClusterDetails,
   ): Promise<AzureClusterDetails> {
@@ -31,11 +48,54 @@ export class AzureIdentityKubernetesAuthTranslator
       clusterDetails,
     );
 
-    const credentials = new DefaultAzureCredential();
-
-    // TODO: can we cache this? It's inneficiant to get a new token every time
-    const accessToken = await credentials.getToken(aksScope);
-    clusterDetailsWithAuthToken.serviceAccountToken = accessToken.token;
+    clusterDetailsWithAuthToken.serviceAccountToken = await this.getToken();
     return clusterDetailsWithAuthToken;
+  }
+
+  private async getToken(): Promise<string> {
+    if (!this.tokenRequiresRefresh()) {
+      return this.accessToken.token;
+    }
+
+    if (!this.newTokenPromise) {
+      this.newTokenPromise = this.fetchNewToken();
+    }
+
+    return this.newTokenPromise;
+  }
+
+  private async fetchNewToken(): Promise<string> {
+    try {
+      this.logger.info('Fetching new Azure token for AKS');
+
+      const newAccessToken = await this.tokenCredential.getToken(aksScope, {
+        requestOptions: { timeout: 10_000 }, // 10 seconds
+      });
+      if (!newAccessToken) {
+        throw new Error('AccessToken is null');
+      }
+
+      this.accessToken = newAccessToken;
+    } catch (err) {
+      this.logger.error('Unable to fetch Azure token', err);
+
+      // only throw the error if the token has already expired, otherwise re-use existing until we're able to fetch a new token
+      if (this.tokenExpired()) {
+        throw err;
+      }
+    }
+
+    this.newTokenPromise = undefined;
+    return this.accessToken.token;
+  }
+
+  private tokenRequiresRefresh(): boolean {
+    // Set tokens to expire 15 minutes before its actual expiry time
+    const expiresOn = this.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
+    return Date.now() >= expiresOn;
+  }
+
+  private tokenExpired(): boolean {
+    return Date.now() >= this.accessToken.expiresOnTimestamp;
   }
 }

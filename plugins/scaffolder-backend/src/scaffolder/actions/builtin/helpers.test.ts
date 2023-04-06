@@ -15,14 +15,16 @@
  */
 
 import { Git, getVoidLogger } from '@backstage/backend-common';
-import { initRepoAndPush } from './helpers';
+import { commitAndPushRepo, initRepoAndPush } from './helpers';
 
 jest.mock('@backstage/backend-common', () => ({
   Git: {
     fromAuth: jest.fn().mockReturnValue({
       init: jest.fn(),
       add: jest.fn(),
+      checkout: jest.fn(),
       commit: jest.fn(),
+      fetch: jest.fn(),
       addRemote: jest.fn(),
       push: jest.fn(),
     }),
@@ -31,8 +33,6 @@ jest.mock('@backstage/backend-common', () => ({
 }));
 
 const mockedGit = Git.fromAuth({
-  username: 'test-user',
-  password: 'test-password',
   logger: getVoidLogger(),
 });
 
@@ -99,6 +99,22 @@ describe('initRepoAndPush', () => {
     });
   });
 
+  it('with token', async () => {
+    await initRepoAndPush({
+      dir: '/test/repo/dir/',
+      remoteUrl: 'git@github.com:test/repo.git',
+      auth: {
+        token: 'test-token',
+      },
+      logger: getVoidLogger(),
+    });
+
+    expect(mockedGit.init).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      defaultBranch: 'master',
+    });
+  });
+
   it('allows overriding the default branch', async () => {
     await initRepoAndPush({
       dir: '/test/repo/dir/',
@@ -135,6 +151,145 @@ describe('initRepoAndPush', () => {
     expect(mockedGit.commit).toHaveBeenCalledWith({
       dir: '/test/repo/dir/',
       message: 'Initial commit',
+      author: {
+        name: 'Custom Scaffolder Author',
+        email: 'scaffolder@example.org',
+      },
+      committer: {
+        name: 'Custom Scaffolder Author',
+        email: 'scaffolder@example.org',
+      },
+    });
+  });
+});
+
+describe('commitAndPushRepo', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('with minimal parameters', () => {
+    beforeEach(async () => {
+      await commitAndPushRepo({
+        dir: '/test/repo/dir/',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+        logger: getVoidLogger(),
+        commitMessage: 'commit message',
+      });
+    });
+
+    it('fetches commits', () => {
+      expect(mockedGit.fetch).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+      });
+    });
+
+    it('checkouts to master', () => {
+      expect(mockedGit.checkout).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        ref: 'master',
+      });
+    });
+
+    it('stages all files in the repo', () => {
+      expect(mockedGit.add).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        filepath: '.',
+      });
+    });
+
+    it('creates a commit', () => {
+      expect(mockedGit.commit).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        message: 'commit message',
+        author: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+        committer: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+      });
+    });
+
+    it('pushes to the remote', () => {
+      expect(mockedGit.push).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        remote: 'origin',
+        remoteRef: 'refs/heads/master',
+      });
+    });
+  });
+
+  it('allows overriding the default branch', async () => {
+    await commitAndPushRepo({
+      dir: '/test/repo/dir/',
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+      logger: getVoidLogger(),
+      commitMessage: 'commit message',
+      branch: 'otherbranch',
+    });
+
+    expect(mockedGit.checkout).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      ref: 'otherbranch',
+    });
+    expect(mockedGit.push).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      remote: 'origin',
+      remoteRef: 'refs/heads/otherbranch',
+    });
+  });
+
+  it('allows overriding the remote ref', async () => {
+    await commitAndPushRepo({
+      dir: '/test/repo/dir/',
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+      logger: getVoidLogger(),
+      commitMessage: 'commit message',
+      remoteRef: 'refs/for/master',
+    });
+
+    expect(mockedGit.checkout).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      ref: 'master',
+    });
+    expect(mockedGit.push).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      remote: 'origin',
+      remoteRef: 'refs/for/master',
+    });
+  });
+
+  it('allows overriding the author', async () => {
+    await commitAndPushRepo({
+      dir: '/test/repo/dir/',
+      commitMessage: 'commit message',
+      gitAuthorInfo: {
+        name: 'Custom Scaffolder Author',
+        email: 'scaffolder@example.org',
+      },
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+      logger: getVoidLogger(),
+      branch: 'master',
+    });
+
+    expect(mockedGit.commit).toHaveBeenCalledWith({
+      dir: '/test/repo/dir/',
+      message: 'commit message',
       author: {
         name: 'Custom Scaffolder Author',
         email: 'scaffolder@example.org',

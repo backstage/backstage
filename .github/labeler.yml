@@ -9,10 +9,12 @@ search:
   - plugins/search/**/*
   - plugins/search-*/**/*
   - packages/search-*/**/*
-docs-like-code:
+techdocs:
   - plugins/techdocs/**/*
   - plugins/techdocs-*/**/*
   - packages/techdocs-*/**/*
+homepage:
+  - plugins/home/**/*
 documentation:
   - docs/**/*
 microsite:

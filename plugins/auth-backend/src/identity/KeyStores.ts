@@ -53,9 +53,7 @@ export class KeyStores {
         throw new Error('This KeyStore provider requires a database');
       }
 
-      return await DatabaseKeyStore.create({
-        database: await database.getClient(),
-      });
+      return await DatabaseKeyStore.create({ database });
     }
 
     if (provider === 'memory') {

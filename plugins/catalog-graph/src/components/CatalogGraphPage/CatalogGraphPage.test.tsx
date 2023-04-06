@@ -13,87 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   MockAnalyticsApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CatalogGraphPage } from './CatalogGraphPage';
 
 const navigate = jest.fn();
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => navigate,
 }));
 
 describe('<CatalogGraphPage/>', () => {
   let wrapper: JSX.Element;
-  let catalog: jest.Mocked<CatalogApi>;
+  const entityC = {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'c',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        type: RELATION_PART_OF,
+        targetRef: 'b:d/e',
+        target: {
+          kind: 'b',
+          namespace: 'd',
+          name: 'e',
+        },
+      },
+    ],
+  };
+  const entityE = {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'e',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        type: RELATION_HAS_PART,
+        targetRef: 'b:d/c',
+        target: {
+          kind: 'b',
+          namespace: 'd',
+          name: 'c',
+        },
+      },
+    ],
+  };
+  const catalog = {
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    getLocationById: jest.fn(),
+    getLocationByRef: jest.fn(),
+    addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
 
   beforeEach(() => {
-    const entityC = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'c',
-        namespace: 'd',
-      },
-      relations: [
-        {
-          type: RELATION_PART_OF,
-          targetRef: 'b:d/e',
-          target: {
-            kind: 'b',
-            namespace: 'd',
-            name: 'e',
-          },
-        },
-      ],
-    };
-    const entityE = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'e',
-        namespace: 'd',
-      },
-      relations: [
-        {
-          type: RELATION_HAS_PART,
-          targetRef: 'b:d/c',
-          target: {
-            kind: 'b',
-            namespace: 'd',
-            name: 'c',
-          },
-        },
-      ],
-    };
-    catalog = {
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(async (n: any) =>
-        n === 'b:d/e' ? entityE : entityC,
-      ),
-      removeEntityByUid: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-    };
-
     wrapper = (
       <TestApiProvider apis={[[catalogApiRef, catalog]]}>
         <CatalogGraphPage
@@ -110,71 +105,85 @@ describe('<CatalogGraphPage/>', () => {
   afterEach(() => jest.resetAllMocks());
 
   test('should render without exploding', async () => {
-    const { getByText, findByText, findAllByTestId } = await renderInTestApp(
-      wrapper,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        },
-      },
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
     );
 
-    expect(getByText('Catalog Graph')).toBeInTheDocument();
-    expect(await findByText('b:d/c')).toBeInTheDocument();
-    expect(await findByText('b:d/e')).toBeInTheDocument();
-    expect(await findAllByTestId('node')).toHaveLength(2);
-    expect(catalog.getEntityByRef).toBeCalledTimes(2);
+    await renderInTestApp(wrapper, {
+      mountedRoutes: {
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+      },
+    });
+
+    expect(screen.getByText('Catalog Graph')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(await screen.findByText('b:d/e')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+    expect(catalog.getEntityByRef).toHaveBeenCalledTimes(2);
   });
 
   test('should toggle filters', async () => {
-    const { getByText, queryByText } = await renderInTestApp(wrapper, {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
-    expect(queryByText('Max Depth')).toBeNull();
+    expect(screen.queryByText('Max Depth')).toBeNull();
 
-    await userEvent.click(getByText('Filters'));
+    await userEvent.click(screen.getByText('Filters'));
 
-    expect(getByText('Max Depth')).toBeInTheDocument();
+    expect(screen.getByText('Max Depth')).toBeInTheDocument();
   });
 
   test('should select other entity', async () => {
-    const { getByText, findByText, findAllByTestId } = await renderInTestApp(
-      wrapper,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        },
-      },
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
     );
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
-
-    await userEvent.click(getByText('b:d/e'));
-
-    expect(await findByText('hasPart')).toBeInTheDocument();
-  });
-
-  test('should navigate to entity', async () => {
-    const { getByText, findAllByTestId } = await renderInTestApp(wrapper, {
+    await renderInTestApp(wrapper, {
       mountedRoutes: {
         '/entity/{kind}/{namespace}/{name}': entityRouteRef,
       },
     });
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
+
+    await userEvent.click(screen.getByText('b:d/e'));
+
+    expect(await screen.findByText('hasPart')).toBeInTheDocument();
+  });
+
+  test('should navigate to entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
+    await renderInTestApp(wrapper, {
+      mountedRoutes: {
+        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+      },
+    });
+
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
-    await user.click(getByText('b:d/e'));
-    expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
+    await user.click(screen.getByText('b:d/e'));
+    expect(navigate).toHaveBeenCalledWith('/entity/{kind}/{namespace}/{name}');
   });
 
   test('should capture analytics event when selecting other entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const analyticsSpy = new MockAnalyticsApi();
-    const { getByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -185,12 +194,12 @@ describe('<CatalogGraphPage/>', () => {
       },
     );
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
     await new Promise(r => setTimeout(r, 100));
 
-    await userEvent.click(getByText('b:d/e'));
+    await userEvent.click(screen.getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
@@ -199,8 +208,12 @@ describe('<CatalogGraphPage/>', () => {
   });
 
   test('should capture analytics event when navigating to entity', async () => {
+    catalog.getEntityByRef.mockImplementation(async (n: any) =>
+      n === 'b:d/e' ? entityE : entityC,
+    );
+
     const analyticsSpy = new MockAnalyticsApi();
-    const { getByText, findAllByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
         {wrapper}
       </TestApiProvider>,
@@ -211,11 +224,11 @@ describe('<CatalogGraphPage/>', () => {
       },
     );
 
-    expect(await findAllByTestId('node')).toHaveLength(2);
+    expect(await screen.findAllByTestId('node')).toHaveLength(2);
 
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
-    await user.click(getByText('b:d/e'));
+    await user.click(screen.getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

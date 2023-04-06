@@ -17,7 +17,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
-import { makeStyles, Grid, TablePagination } from '@material-ui/core';
+import { makeStyles, Grid, TablePagination, GridSize } from '@material-ui/core';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
 
@@ -25,6 +25,9 @@ type Props = {
   bazaarProjects: BazaarProject[];
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
+  useTablePagination?: boolean;
+  gridSize?: GridSize;
+  height: 'large' | 'small';
 };
 
 const useStyles = makeStyles({
@@ -51,6 +54,9 @@ export const ProjectPreview = ({
   bazaarProjects,
   fetchBazaarProjects,
   catalogEntities,
+  useTablePagination = true,
+  gridSize = 2,
+  height = 'large',
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -80,31 +86,34 @@ export const ProjectPreview = ({
           .slice((page - 1) * rows, rows * page)
           .map((bazaarProject: BazaarProject, i: number) => {
             return (
-              <Grid key={i} item xs={2}>
+              <Grid key={i} item xs={gridSize}>
                 <ProjectCard
                   project={bazaarProject}
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
+                  height={height}
                 />
               </Grid>
             );
           })}
       </Grid>
 
-      <TablePagination
-        className={classes.pagination}
-        rowsPerPageOptions={[12, 24, 48, 96]}
-        count={bazaarProjects?.length}
-        page={page - 1}
-        onPageChange={handlePageChange}
-        rowsPerPage={rows}
-        onRowsPerPageChange={handleRowChange}
-        backIconButtonProps={{ disabled: page === 1 }}
-        nextIconButtonProps={{
-          disabled: rows * page >= bazaarProjects.length,
-        }}
-      />
+      {useTablePagination && (
+        <TablePagination
+          className={classes.pagination}
+          rowsPerPageOptions={[12, 24, 48, 96]}
+          count={bazaarProjects?.length}
+          page={page - 1}
+          onPageChange={handlePageChange}
+          rowsPerPage={rows}
+          onRowsPerPageChange={handleRowChange}
+          backIconButtonProps={{ disabled: page === 1 }}
+          nextIconButtonProps={{
+            disabled: rows * page >= bazaarProjects.length,
+          }}
+        />
+      )}
     </Content>
   );
 };

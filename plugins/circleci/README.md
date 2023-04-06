@@ -2,8 +2,11 @@
 
 Website: [https://circleci.com/](https://circleci.com/)
 
-<img src="./src/assets/screenshot-1.png" />
-<img src="./src/assets/screenshot-2.png" />
+## Screenshots
+
+<img src="./src/assets/screenshot-pipeline-list.png" />
+<img src="./src/assets/screenshot-build-details.png" />
+<img src="./src/assets/screenshot-build-failure.png" />
 
 ## Setup
 
@@ -43,7 +46,7 @@ proxy:
 ```
 
 5. Get and provide a `CIRCLECI_AUTH_TOKEN` as an environment variable (see the [CircleCI docs](https://circleci.com/docs/api/#add-an-api-token)).
-6. Add a `circleci.com/project-slug` annotation to your respective `catalog-info.yaml` files, on the format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format).
+6. Add an annotation to your respective `catalog-info.yaml` files, with the format `circleci.com/project-slug: <git-provider>/<owner>/<project>` (See reference in [ADR002](https://backstage.io/docs/architecture-decisions/adrs-adr002#format)).
 
 ```yaml
 # Example catalog-info.yaml entity definition file
@@ -71,4 +74,4 @@ spec:
 ## Limitations
 
 - CircleCI has pretty strict rate limits per token, be careful with opened tabs
-- CircleCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356)
+- CircleCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (reference [feature request](https://ideas.circleci.com/api-feature-requests/p/allow-circleci-api-calls-using-github-auth) and [discussion topic](https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356))

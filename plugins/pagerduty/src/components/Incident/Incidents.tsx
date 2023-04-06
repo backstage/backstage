@@ -34,7 +34,12 @@ export const Incidents = ({ serviceId, refreshIncidents }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
-    async () => await api.getIncidentsByServiceId(serviceId),
+    async () => {
+      const { incidents: foundIncidents } = await api.getIncidentsByServiceId(
+        serviceId,
+      );
+      return foundIncidents;
+    },
   );
 
   useEffect(() => {

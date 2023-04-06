@@ -15,6 +15,28 @@ export class AuthenticationError extends CustomErrorBase {}
 export class ConflictError extends CustomErrorBase {}
 
 // @public
+export type ConsumedResponse = {
+  readonly headers: {
+    append(name: string, value: string): void;
+    delete(name: string): void;
+    get(name: string): string | null;
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    forEach(callback: (value: string, name: string) => void): void;
+    entries(): IterableIterator<[string, string]>;
+    keys(): IterableIterator<string>;
+    values(): IterableIterator<string>;
+    [Symbol.iterator](): Iterator<[string, string]>;
+  };
+  readonly ok: boolean;
+  readonly redirected: boolean;
+  readonly status: number;
+  readonly statusText: string;
+  readonly type: ResponseType;
+  readonly url: string;
+};
+
+// @public
 export class CustomErrorBase extends Error {
   constructor(message?: string, cause?: Error | unknown);
   readonly cause?: Error | undefined;
@@ -63,19 +85,28 @@ export class NotAllowedError extends CustomErrorBase {}
 export class NotFoundError extends CustomErrorBase {}
 
 // @public
+export class NotImplementedError extends CustomErrorBase {}
+
+// @public
 export class NotModifiedError extends CustomErrorBase {}
 
 // @public
 export function parseErrorResponseBody(
-  response: Response,
+  response: ConsumedResponse & {
+    text(): Promise<string>;
+  },
 ): Promise<ErrorResponseBody>;
 
 // @public
 export class ResponseError extends Error {
   readonly body: ErrorResponseBody;
   readonly cause: Error;
-  static fromResponse(response: Response): Promise<ResponseError>;
-  readonly response: Response;
+  static fromResponse(
+    response: ConsumedResponse & {
+      text(): Promise<string>;
+    },
+  ): Promise<ResponseError>;
+  readonly response: ConsumedResponse;
 }
 
 // @public

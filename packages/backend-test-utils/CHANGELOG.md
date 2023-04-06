@@ -1,5 +1,538 @@
 # @backstage/backend-test-utils
 
+## 0.1.36-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.2
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+
+## 0.1.36-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.1
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+
+## 0.1.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.1.35-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.35-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+
+## 0.1.34
+
+### Patch Changes
+
+- baf6e4c96a: Removed unnecessary `@backstage/cli` dependency.
+- c51efce2a0: Update docs to always use `yarn add --cwd` for app & backend
+- 1835311713: Added explicit return type signature for `mockServices.config()`.
+- e716946103: Updated usage of the lifecycle service.
+- 7e7557a2be: Updated the `mockServices.rootLogger` options to accept a single level option instead.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- b86efa2d04: Updated usage of `ServiceFactory`.
+- 17b573e4be: The new backend system testing utilities have now been marked as stable API.
+- f1adb2e36b: Removed the `ref` from all `mockServices`.
+- d0901c9ba4: All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+
+## 0.1.34-next.2
+
+### Patch Changes
+
+- baf6e4c96a: Removed unnecessary `@backstage/cli` dependency.
+- 1835311713: Added explicit return type signature for `mockServices.config()`.
+- e716946103: Updated usage of the lifecycle service.
+- 7e7557a2be: Updated the `mockServices.rootLogger` options to accept a single level option instead.
+- 610d65e143: Updates to match new `BackendFeature` type.
+- e412d33025: Use the new `*ServiceFactory` exports from `@backstage/backend-app-api`
+- f1adb2e36b: Removed the `ref` from all `mockServices`.
+- 71a5ec0f06: Updated usages of `LogMeta`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+
+## 0.1.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.22.2-next.0
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-app-api@0.3.2-next.1
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+
+## 0.1.34-next.0
+
+### Patch Changes
+
+- d0901c9ba4: All mock service factories and mock service implementations are now available via the new experimental `mockServices` export.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.2-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/cli@0.22.1
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 0.1.32
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- a3ec2f32ea: The `startTestBackend` setup now includes default implementations for all core services.
+- 483e907eaf: Internal updates of `createServiceFactory` from `@backstage/backend-plugin-api`.
+- 51b7a7ed07: The backend started by `startTestBackend` now has default implementations of all core services. It now also returns a `TestBackend` instance, which provides access to the underlying `server` that can be used with testing libraries such as `supertest`.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/cli@0.22.1
+  - @backstage/backend-common@0.18.0
+  - @backstage/backend-app-api@0.3.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
+## 0.1.32-next.2
+
+### Patch Changes
+
+- 015a6dced6: Updated to make sure that service implementations replace default service implementations.
+- a3ec2f32ea: The `startTestBackend` setup now includes default implementations for all core services.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.0-next.1
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/cli@0.22.1-next.2
+  - @backstage/config@1.0.6-next.0
+
+## 0.1.32-next.1
+
+### Patch Changes
+
+- 6cfd4d7073: Include implementations for the new `rootLifecycleServiceRef`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/cli@0.22.1-next.1
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/backend-app-api@0.2.5-next.0
+
+## 0.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.22.1-next.0
+  - @backstage/backend-app-api@0.2.4
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config@1.0.5
+
+## 0.1.31
+
+### Patch Changes
+
+- afa3bf5657: Backends started with `startTestBackend` are now automatically stopped after all tests have run.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4
+  - @backstage/cli@0.22.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/config@1.0.5
+
+## 0.1.31-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.22.0-next.4
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-app-api@0.2.4-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.31-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.21.2-next.3
+  - @backstage/backend-app-api@0.2.4-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.31-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.4-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/cli@0.21.2-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/cli@0.21.2-next.1
+  - @backstage/backend-app-api@0.2.4-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 0.1.31-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/cli@0.21.2-next.0
+  - @backstage/backend-app-api@0.2.4-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/config@1.0.5-next.0
+
+## 0.1.30
+
+### Patch Changes
+
+- e13cd3feaf: Updated dependency `msw` to `^0.48.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/cli@0.21.0
+  - @backstage/backend-app-api@0.2.3
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/config@1.0.4
+
+## 0.1.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/cli@0.21.0-next.1
+  - @backstage/backend-app-api@0.2.3-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/config@1.0.4-next.0
+
+## 0.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/cli@0.21.0-next.0
+  - @backstage/backend-app-api@0.2.3-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/config@1.0.4-next.0
+
+## 0.1.29
+
+### Patch Changes
+
+- 72549952d1: Fixed handling of root scoped services in `startTestBackend`.
+- e91e8e9c55: Increased test database max connection pool size to reduce the risk of resource exhaustion.
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/cli@0.20.0
+  - @backstage/backend-app-api@0.2.2
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/config@1.0.3
+
+## 0.1.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/cli@0.20.0-next.2
+  - @backstage/backend-app-api@0.2.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/config@1.0.3-next.2
+
+## 0.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.20.0-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/backend-app-api@0.2.2-next.1
+  - @backstage/config@1.0.3-next.1
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- 72549952d1: Fixed handling of root scoped services in `startTestBackend`.
+- e91e8e9c55: Increased test database max connection pool size to reduce the risk of resource exhaustion.
+- Updated dependencies
+  - @backstage/backend-app-api@0.2.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/cli@0.20.0-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/config@1.0.3-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/cli@0.19.0
+  - @backstage/backend-app-api@0.2.1
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/config@1.0.2
+
+## 0.1.28-next.3
+
+### Patch Changes
+
+- 854ba37357: Updated to support new `ServiceFactory` formats.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/config@1.0.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.2
+  - @backstage/cli@0.19.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/cli@0.19.0-next.2
+  - @backstage/backend-app-api@0.2.1-next.1
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/cli@0.19.0-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- de3347ca74: Updated usages of `ServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/cli@0.18.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/backend-app-api@0.2.1-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- 0599732ec0: Refactored experimental backend system with new type names.
+- 56e1b4b89c: Added alpha test helpers for the new experimental backend system.
+- Updated dependencies
+  - @backstage/cli@0.18.1
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-app-api@0.2.0
+  - @backstage/backend-plugin-api@0.1.1
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/cli@0.18.1-next.0
+
+## 0.1.26
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/cli@0.18.0
+
+## 0.1.26-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/cli@0.18.0-next.3
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/cli@0.18.0-next.2
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.18.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/cli@0.17.3-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/cli@0.17.2
+  - @backstage/backend-common@0.14.0
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.17.2-next.2
+  - @backstage/backend-common@0.14.0-next.2
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/cli@0.17.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.17.2-next.0
+  - @backstage/backend-common@0.13.6-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/cli@0.17.1
+  - @backstage/config@1.0.1
+
 ## 0.1.24-next.1
 
 ### Patch Changes

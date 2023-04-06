@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readGerritConfigs } from './config';
 
 describe('readGerritConfigs', () => {
@@ -29,12 +30,24 @@ describe('readGerritConfigs', () => {
       query: 'state=ACTIVE',
       branch: 'main',
     };
+    const provider3 = {
+      host: 'gerrit1.com',
+      query: 'state=ACTIVE',
+      branch: 'main',
+      schedule: {
+        frequency: 'PT30M',
+        timeout: {
+          minutes: 3,
+        },
+      },
+    };
     const config = {
       catalog: {
         providers: {
           gerrit: {
             'active-g1': provider1,
             'active-g2': provider2,
+            'active-g3': provider3,
           },
         },
       },
@@ -42,10 +55,19 @@ describe('readGerritConfigs', () => {
 
     const actual = readGerritConfigs(new ConfigReader(config));
 
-    expect(actual).toHaveLength(2);
+    expect(actual).toHaveLength(3);
     expect(actual[0]).toEqual({ ...provider1, id: 'active-g1' });
     expect(actual[1]).toEqual({ ...provider2, id: 'active-g2' });
+    expect(actual[2]).toEqual({
+      ...provider3,
+      id: 'active-g3',
+      schedule: {
+        ...provider3.schedule,
+        frequency: Duration.fromISO(provider3.schedule.frequency),
+      },
+    });
   });
+
   it('provides default values', () => {
     const provider = {
       host: 'gerrit1.com',

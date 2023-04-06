@@ -1,5 +1,606 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.6-next.2
+
+### Patch Changes
+
+- 55a969fe574: Bumped `recharts` dependency to `^2.5.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.6-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.6-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.5
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.12.5-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.5-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.4
+
+### Patch Changes
+
+- dfa0bb737e: Fix bug in EntityCostsCard if cost aggregation array is empty. Allow title override on the Cost Insights Page
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/plugin-catalog-react@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.3.0-next.2
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/plugin-catalog-react@1.3.0-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.3.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- 6a41175d70: Removed @backstage/test-utils dependency, since it was already in the devDependencies where it belongs. The main benefit is that this will exclude better-sqlite3 from the production build.
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-catalog-react@1.2.4
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/plugin-catalog-react@1.2.4-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.3-next.1
+
+### Patch Changes
+
+- 6a41175d70: Removed @backstage/test-utils dependency, since it was already in the devDependencies where it belongs. The main benefit is that this will exclude better-sqlite3 from the production build.
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.4-next.1
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-catalog-react@1.2.4-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/test-utils@1.2.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+  - @backstage/plugin-catalog-react@1.2.3
+
+## 0.12.1
+
+### Patch Changes
+
+- 593c22253a: Added Y axis for metric data, with relevant formatting and data domain
+- f9bbb3be37: Provide the ability to change the base currency from USD to any other currency in cost insights plugin
+- d379b6f070: Internal refactor to avoid usage of deprecated symbols
+- 5960d0902e: Internal refactor to avoid usage of deprecated symbols
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- f97c7fd1f7: added an optional config entry `costInsights.engineerThreshold` to allow users to control the threshold value for the 'negligible' change in costs.
+- a5ecdb99f0: Making a possibility to hide a trending line in a cost insights plugin
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/test-utils@1.2.3
+  - @backstage/plugin-catalog-react@1.2.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.1-next.4
+
+### Patch Changes
+
+- 593c22253a: Added Y axis for metric data, with relevant formatting and data domain
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/test-utils@1.2.3-next.4
+  - @backstage/plugin-catalog-react@1.2.2-next.4
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/test-utils@1.2.3-next.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-react@1.2.2-next.3
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 5960d0902e: Internal refactor to avoid usage of deprecated symbols
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-catalog-react@1.2.2-next.2
+  - @backstage/test-utils@1.2.3-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- d379b6f070: Internal refactor to avoid usage of deprecated symbols
+- f97c7fd1f7: added an optional config entry `costInsights.engineerThreshold` to allow users to control the threshold value for the 'negligible' change in costs.
+- a5ecdb99f0: Making a possibility to hide a trending line in a cost insights plugin
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/test-utils@1.2.3-next.1
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/plugin-catalog-react@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- f9bbb3be37: Provide the ability to change the base currency from USD to any other currency in cost insights plugin
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-catalog-react@1.2.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.0
+
+### Minor Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+
+### Patch Changes
+
+- e92aa15f01: Bumped `canvas` dependency to the latest version, which has better Node.js v18 support.
+- cbe11d1e23: Tweak README
+- 745e0e2228: Added support for displaying entity cost insights by implementing the new `getCatalogEntityDailyCost` that's part of the `CostInsightsApi`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.2.1
+  - @backstage/core-components@0.12.0
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/config@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.0-next.1
+
+### Patch Changes
+
+- e92aa15f01: Bumped `canvas` dependency to the latest version, which has better Node.js v18 support.
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- 43afded227: Updated recharts to v2.0.0 and fixed typing issues
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.32
+
+### Patch Changes
+
+- a94c2ed1b7: Fixed bug in `CostOverviewBreakdownChart` component where some datasets caused the cost overview breakdown chart to tear.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/core-components@0.11.2
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.32-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.32-next.0
+
+### Patch Changes
+
+- a94c2ed1b7: Fixed bug in `CostOverviewBreakdownChart` component where some datasets caused the cost overview breakdown chart to tear.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.31
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 9318bf15d4: The `CostInsightsHeader`component now uses group names if available
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+
+## 0.11.31-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+
+## 0.11.31-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.2
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.11.31-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- d669d89206: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 0.11.31-next.0
+
+### Patch Changes
+
+- 9318bf15d4: The `CostInsightsHeader`component now uses group names if available
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+
+## 0.11.30
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- 08562ebe11: Display minus sign in trends in `CostOverviewCard`
+- Updated dependencies
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-cost-insights-common@0.1.1
+
+## 0.11.30-next.1
+
+### Patch Changes
+
+- b746eca638: Make `products` field optional in the config
+- daf4b33e34: Add name property to Group
+- Updated dependencies
+  - @backstage/plugin-cost-insights-common@0.1.1-next.0
+  - @backstage/core-components@0.11.0-next.2
+
+## 0.11.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+  - @backstage/core-components@0.10.1-next.0
+
+## 0.11.29
+
+### Patch Changes
+
+- 3e032a5de2: Move cost-insights data specific API types (non react) into an @backstage/plugin-cost-insights-common
+  isomorphic package. This allows these types to be shared in any backend packages or other cost-insight
+  modules.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/core-components@0.10.0
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-cost-insights-common@0.1.0
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+
+## 0.11.29-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+  - @backstage/core-components@0.10.0-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 0.11.29-next.2
+
+### Patch Changes
+
+- 3e032a5de2: Move cost-insights data specific API types (non react) into an @backstage/plugin-cost-insights-common
+  isomorphic package. This allows these types to be shared in any backend packages or other cost-insight
+  modules.
+- Updated dependencies
+  - @backstage/core-components@0.10.0-next.2
+  - @backstage/plugin-cost-insights-common@0.1.0-next.0
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/theme@0.2.16-next.1
+
+## 0.11.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.6-next.1
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/theme@0.2.16-next.0
+
+## 0.11.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/core-components@0.9.6-next.0
+
+## 0.11.28
+
+### Patch Changes
+
+- dea1f32f44: In the README, a old path of the `sidebar` was updated to the current path.
+- eb2544b21b: Add missing `export` in configuration schema.
+- 2fc98ac50c: Fix broken app-config in the example in the README
+- 2297510941: Fixed css to show large tooltips on cost overview graph
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5
+  - @backstage/core-plugin-api@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.11.28-next.2
+
+### Patch Changes
+
+- 2fc98ac50c: Fix broken app-config in the example in the README
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.2
+
+## 0.11.28-next.1
+
+### Patch Changes
+
+- 2297510941: Fixed css to show large tooltips on cost overview graph
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.1
+  - @backstage/core-plugin-api@1.0.3-next.0
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 0.11.28-next.0
+
+### Patch Changes
+
+- eb2544b21b: Add missing `export` in configuration schema.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.11.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+  - @backstage/catalog-model@1.0.2
+
 ## 0.11.27-next.1
 
 ### Patch Changes

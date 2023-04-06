@@ -44,15 +44,14 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-type Props = {
-  guid: string;
-};
+
 const useStyles = makeStyles(
   theme => ({
     tabsWrapper: {
@@ -79,7 +78,9 @@ const useStyles = makeStyles(
   }),
   { name: 'DashboardHeaderTabs' },
 );
-export const DashboardSnapshotList = ({ guid }: Props) => {
+
+export const DashboardSnapshotList = (props: { guid: string }) => {
+  const { guid } = props;
   const styles = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<
@@ -137,7 +138,6 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
                 name={Entity.name}
                 permalink={Entity.permalink}
                 guid={Entity.guid}
-                duration={26297430000}
               />
             </TabPanel>
           );

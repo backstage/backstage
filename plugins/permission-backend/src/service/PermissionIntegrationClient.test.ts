@@ -18,7 +18,7 @@ import { AddressInfo } from 'net';
 import { Server } from 'http';
 import express, { Router, RequestHandler } from 'express';
 import { RestContext, rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import { setupServer, SetupServer } from 'msw/node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   AuthorizeResult,
@@ -30,16 +30,21 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+import { z } from 'zod';
 
 describe('PermissionIntegrationClient', () => {
   describe('applyConditions', () => {
-    let server: SetupServerApi;
+    let server: SetupServer;
 
     const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {
         allOf: [
-          { rule: 'RULE_1', resourceType: 'test-resource', params: [] },
-          { rule: 'RULE_2', resourceType: 'test-resource', params: ['abc'] },
+          { rule: 'RULE_1', resourceType: 'test-resource', params: {} },
+          {
+            rule: 'RULE_2',
+            resourceType: 'test-resource',
+            params: { foo: 'abc' },
+          },
         ],
       },
     };
@@ -189,7 +194,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/401/i);
+      ).rejects.toThrow(/401/i);
     });
 
     it('should reject invalid responses', async () => {
@@ -210,7 +215,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/invalid input/i);
+      ).rejects.toThrow(/invalid input/i);
     });
 
     it('should batch requests to plugin backends', async () => {
@@ -279,7 +284,10 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_1',
               description: 'Test rule 1',
               resourceType: 'test-resource',
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+              paramsSchema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -288,7 +296,11 @@ describe('PermissionIntegrationClient', () => {
               name: 'RULE_2',
               description: 'Test rule 2',
               resourceType: 'test-resource',
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+
+              paramsSchema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -344,7 +356,9 @@ describe('PermissionIntegrationClient', () => {
             conditions: {
               rule: 'RULE_1',
               resourceType: 'test-resource',
-              params: ['no'],
+              params: {
+                input: 'no',
+              },
             },
           },
         ]),
@@ -365,13 +379,17 @@ describe('PermissionIntegrationClient', () => {
                     {
                       rule: 'RULE_1',
                       resourceType: 'test-resource',
-                      params: ['yes'],
+                      params: {
+                        input: 'yes',
+                      },
                     },
                     {
                       not: {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                     },
                   ],
@@ -382,12 +400,16 @@ describe('PermissionIntegrationClient', () => {
                       {
                         rule: 'RULE_1',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                       {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['yes'],
+                        params: {
+                          input: 'yes',
+                        },
                       },
                     ],
                   },

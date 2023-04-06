@@ -21,9 +21,7 @@ When we set out to define what beta looked like, we combed through GitHub issues
 
 TechDocs can be transformational once fully up and running (update your code and your docs with the same pull request!). But for first-time users and especially those unfamiliar with the MkDocs ecosystem upon which TechDocs is built, there are often many small, obtuse hurdles that can get in the way of success. Leading up to the beta release, we worked to surface and improve relevant errors and other details during the documentation generation process. Better still, all of this detail is now provided to users _in real-time_, as docs are generated and refreshed.
 
-<!-- vale off -->
 <p>🙌 Shout out to <a href="https://github.com/dhenneke">Dominik Henneke</a> for implementing the interactive experience.</p>
-<!-- vale on -->
 
 ## Custom homepages: Make TechDocs yours
 
@@ -31,9 +29,7 @@ TechDocs can be transformational once fully up and running (update your code and
 
 We strive to make it so that you can mold Backstage into the shape that best fits your organization. With this beta release, just as you can with the Catalog entities and [Search](https://backstage.io/blog/2021/06/24/announcing-backstage-search-platform#composable-search-page-experiences), you can now customize and compose your own TechDocs homepage. Use it to level up the front page of your Backstage documentation by highlighting golden documentation at your company, or use the new and improved (and Catalog-inspired) experience. Read more about [how to customize the TechDocs homepage](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-customize-the-techdocs-home-page).
 
-<!-- vale off -->
 <p>🙏 Thanks to <a href="https://github.com/kuangp">Phil Kuang</a> for the improved default TechDocs home experience.</p>
-<!-- vale on -->
 
 ## Simpler YAML annotations: What's in a ref?
 
@@ -43,9 +39,7 @@ We often forget that in order to enable TechDocs on a Catalog entity, documentat
 
 In the beta, we've simplified this annotation dramatically for documentation authors, aligning its value with TechDocs' docs-like-code philosophy itself. In the vast majority of cases, its value will simply be `dir:.` — which means this catalog entity contains documentation and the mkdocs.yml file describing this documentation lives in the current directory. We continue to support edge cases for [other techdocs-ref annotation values](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-understand-techdocs-ref-annotation-values), as well.
 
-<!-- vale off -->
 <p>👏 Another round of applause for Dominik for driving this improvement through.</p>
-<!-- vale on -->
 
 ## Everything neat and tidy
 
@@ -67,4 +61,4 @@ If you're upgrading from a prior, alpha version of TechDocs, be aware that there
 - If you've configured TechDocs to publish generated content to a remote storage solution provider like AWS S3, Google Cloud Storage, or Azure Blob Storage, you will need to use the TechDocs CLI to migrate the contents of your storage bucket. [See full migration instructions here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
 - In order to take advantage of the stale file deletion functionality, you may need to add some permissions to the account or role used by your TechDocs backend to publish contents to your storage provider. [See "Using Cloud Storage docs"](https://backstage.io/docs/features/techdocs/using-cloud-storage) for updated permissions recommendations.
 
-Thanks again to the whole community for hitting this milestone with us! Catch us in [Discord](https://discord.gg/MUpMjP2) or an [upcoming community session](https://github.com/backstage/community) if you have any questions.
+Thanks again to the whole community for hitting this milestone with us! Catch us in [Discord](https://discord.gg/backstage-687207715902193673) or an [upcoming community session](https://github.com/backstage/community) if you have any questions.

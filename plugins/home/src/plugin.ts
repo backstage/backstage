@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createComponentExtension,
   createPlugin,
@@ -20,7 +21,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from './extensions';
 import { ToolkitContentProps } from './homePageComponents';
-
 import { rootRouteRef } from './routes';
 
 /** @public */
@@ -134,5 +134,22 @@ export const HomePageStarredEntities = homePlugin.provide(
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
     components: () => import('./homePageComponents/StarredEntities'),
+  }),
+);
+
+/**
+ * A component to display a configurable list of clocks for various time zones.
+ *
+ * @public
+ */
+export const HeaderWorldClock = homePlugin.provide(
+  createComponentExtension({
+    name: 'HeaderWorldClock',
+    component: {
+      lazy: () =>
+        import('./homePageComponents/HeaderWorldClock').then(
+          m => m.HeaderWorldClock,
+        ),
+    },
   }),
 );

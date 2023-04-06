@@ -29,6 +29,12 @@ import {
 } from './connection';
 import { PluginDatabaseManager } from './types';
 import path from 'path';
+import {
+  LifecycleService,
+  LoggerService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
+import { stringifyError } from '@backstage/errors';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -44,6 +50,7 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
+  logger?: LoggerService;
 };
 
 /**
@@ -81,6 +88,7 @@ export class DatabaseManager {
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
     private readonly options?: DatabaseManagerOptions,
+    private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
   ) {}
 
   /**
@@ -90,12 +98,18 @@ export class DatabaseManager {
    * should be unique as they are used to look up database config overrides under
    * `backend.database.plugin`.
    */
-  forPlugin(pluginId: string): PluginDatabaseManager {
+  forPlugin(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): PluginDatabaseManager {
     const _this = this;
 
     return {
       getClient(): Promise<Knex> {
-        return _this.getDatabase(pluginId);
+        return _this.getDatabase(pluginId, deps);
       },
       migrations: {
         skip: false,
@@ -170,6 +184,13 @@ export class DatabaseManager {
       client,
       overridden: client !== baseClient,
     };
+  }
+
+  private getRoleConfig(pluginId: string): string | undefined {
+    return (
+      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
+      this.config.getOptionalString('role')
+    );
   }
 
   /**
@@ -251,7 +272,7 @@ export class DatabaseManager {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
-    };
+    } as Partial<Knex.StaticConnectionConfig>;
   }
 
   /**
@@ -264,11 +285,13 @@ export class DatabaseManager {
    */
   private getConfigForPlugin(pluginId: string): Knex.Config {
     const { client } = this.getClientType(pluginId);
+    const role = this.getRoleConfig(pluginId);
 
     return {
       ...this.getAdditionalKnexConfig(pluginId),
       client,
       connection: this.getConnectionConfig(pluginId),
+      ...(role && { role }),
     };
   }
 
@@ -303,40 +326,88 @@ export class DatabaseManager {
    * @returns Promise which resolves to a scoped Knex database client for a
    *          plugin
    */
-  private async getDatabase(pluginId: string): Promise<Knex> {
-    const pluginConfig = new ConfigReader(
-      this.getConfigForPlugin(pluginId) as JsonObject,
-    );
-
-    const databaseName = this.getDatabaseName(pluginId);
-    if (databaseName && this.getEnsureExistsConfig(pluginId)) {
-      try {
-        await ensureDatabaseExists(pluginConfig, databaseName);
-      } catch (error) {
-        throw new Error(
-          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
-        );
-      }
+  private async getDatabase(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): Promise<Knex> {
+    if (this.databaseCache.has(pluginId)) {
+      return this.databaseCache.get(pluginId)!;
     }
 
-    let schemaOverrides;
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      try {
+    const clientPromise = Promise.resolve().then(async () => {
+      const pluginConfig = new ConfigReader(
+        this.getConfigForPlugin(pluginId) as JsonObject,
+      );
+
+      const databaseName = this.getDatabaseName(pluginId);
+      if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+        try {
+          await ensureDatabaseExists(pluginConfig, databaseName);
+        } catch (error) {
+          throw new Error(
+            `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+          );
+        }
+      }
+
+      let schemaOverrides;
+      if (this.getPluginDivisionModeConfig() === 'schema') {
         schemaOverrides = this.getSchemaOverrides(pluginId);
-        await ensureSchemaExists(pluginConfig, pluginId);
-      } catch (error) {
-        throw new Error(
-          `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-        );
+        if (this.getEnsureExistsConfig(pluginId)) {
+          try {
+            await ensureSchemaExists(pluginConfig, pluginId);
+          } catch (error) {
+            throw new Error(
+              `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
+            );
+          }
+        }
       }
-    }
 
-    const databaseClientOverrides = mergeDatabaseConfig(
-      {},
-      this.getDatabaseOverrides(pluginId),
-      schemaOverrides,
-    );
+      const databaseClientOverrides = mergeDatabaseConfig(
+        {},
+        this.getDatabaseOverrides(pluginId),
+        schemaOverrides,
+      );
 
-    return createDatabaseClient(pluginConfig, databaseClientOverrides);
+      const client = createDatabaseClient(
+        pluginConfig,
+        databaseClientOverrides,
+        deps,
+      );
+      this.startKeepaliveLoop(pluginId, client);
+      return client;
+    });
+
+    this.databaseCache.set(pluginId, clientPromise);
+
+    return clientPromise;
+  }
+
+  private startKeepaliveLoop(pluginId: string, client: Knex): void {
+    let lastKeepaliveFailed = false;
+
+    setInterval(() => {
+      // During testing it can happen that the environment is torn down and
+      // this client is `undefined`, but this interval is still run.
+      client?.raw('select 1').then(
+        () => {
+          lastKeepaliveFailed = false;
+        },
+        (error: unknown) => {
+          if (!lastKeepaliveFailed) {
+            lastKeepaliveFailed = true;
+            this.options?.logger?.warn(
+              `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
+                error,
+              )}`,
+            );
+          }
+        },
+      );
+    }, 60 * 1000);
   }
 }

@@ -1,0 +1,10 @@
+---
+title: Okta Organization Entity Provider
+author: roadie.io
+authorUrl: https://roadie.io/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=okta-entity-provider
+category: Identity
+description: Load users and groups from Okta into the Backstage catalog.
+documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/tree/main/plugins/backend/catalog-backend-module-okta
+iconUrl: https://roadie.io/images/logos/okta.png
+npmPackageName: '@roadiehq/catalog-backend-module-okta'
+addedDate: '2022-07-26'

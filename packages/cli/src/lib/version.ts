@@ -19,7 +19,7 @@ import semver from 'semver';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
 
-/* eslint-disable monorepo/no-relative-import */
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 
 /*
 This is a list of all packages used by the templates. If dependencies are added or removed,
@@ -81,6 +81,14 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     ) {
       return '*';
     }
+
+    for (const specifier of ['^', '~', '*']) {
+      const range = `workspace:${specifier}`;
+      if (lockfileEntries?.some(entry => entry.range === range)) {
+        return range;
+      }
+    }
+
     const validRanges = lockfileEntries?.filter(entry =>
       semver.satisfies(targetVersion, entry.range),
     );

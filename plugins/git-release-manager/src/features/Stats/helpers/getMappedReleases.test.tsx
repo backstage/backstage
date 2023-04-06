@@ -33,27 +33,27 @@ describe('getMappedReleases', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "mappedReleases": Object {
-          "releases": Object {
-            "1.0": Object {
+      {
+        "mappedReleases": {
+          "releases": {
+            "1.0": {
               "baseVersion": "1.0",
-              "candidates": Array [],
+              "candidates": [],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
-              "versions": Array [],
+              "versions": [],
             },
-            "1.1": Object {
+            "1.1": {
               "baseVersion": "1.1",
-              "candidates": Array [],
+              "candidates": [],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
-              "versions": Array [],
+              "versions": [],
             },
           },
-          "unmappableTags": Array [],
-          "unmatchedReleases": Array [],
-          "unmatchedTags": Array [],
+          "unmappableTags": [],
+          "unmatchedReleases": [],
+          "unmatchedTags": [],
         },
       }
     `);

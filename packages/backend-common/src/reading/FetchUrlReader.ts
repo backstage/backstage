@@ -26,9 +26,45 @@ import {
 } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
+
+const isInRange = (num: number, [start, end]: [number, number]) => {
+  return num >= start && num <= end;
+};
+
+const parsePortRange = (port: string): [number, number] => {
+  const isRange = port.includes('-');
+  if (isRange) {
+    const range = port
+      .split('-')
+      .map(v => parseInt(v, 10))
+      .filter(Boolean) as [number, number];
+    if (range.length !== 2) throw new Error(`Port range is not valid: ${port}`);
+    const [start, end] = range;
+    if (start <= 0 || end <= 0 || start > end)
+      throw new Error(`Port range is not valid: [${start}, ${end}]`);
+    return range;
+  }
+  const parsedPort = parseInt(port, 10);
+  return [parsedPort, parsedPort];
+};
+
+const parsePortPredicate = (port: string | undefined) => {
+  if (port) {
+    const range = parsePortRange(port);
+    return (url: URL) => {
+      if (url.port) return isInRange(parseInt(url.port, 10), range);
+
+      if (url.protocol === 'http:') return isInRange(80, range);
+      if (url.protocol === 'https:') return isInRange(443, range);
+      return false;
+    };
+  }
+  return (url: URL) => !url.port;
+};
 
 /**
- * A {@link UrlReader} that does a plain fetch of the URL.
+ * A {@link @backstage/backend-plugin-api#UrlReaderService} that does a plain fetch of the URL.
  *
  * @public
  */
@@ -39,8 +75,8 @@ export class FetchUrlReader implements UrlReader {
    * targets to allow, containing the following fields:
    *
    * `host`:
-   *   Either full hostnames to match, or subdomain wildcard matchers with a leading `*`.
-   *   For example `example.com` and `*.example.com` are valid values, `prod.*.example.com` is not.
+   *   Either full hostnames to match, or subdomain wildcard matchers with a leading '*'.
+   *   For example 'example.com' and '*.example.com' are valid values, 'prod.*.example.com' is not.
    *
    * `paths`:
    *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.
@@ -60,11 +96,17 @@ export class FetchUrlReader implements UrlReader {
               }
             : (_url: URL) => true;
           const host = allowConfig.getString('host');
-          if (host.startsWith('*.')) {
-            const suffix = host.slice(1);
-            return (url: URL) => url.host.endsWith(suffix) && checkPath(url);
+          const [hostname, port] = host.split(':');
+
+          const checkPort = parsePortPredicate(port);
+
+          if (hostname.startsWith('*.')) {
+            const suffix = hostname.slice(1);
+            return (url: URL) =>
+              url.hostname.endsWith(suffix) && checkPath(url) && checkPort(url);
           }
-          return (url: URL) => url.host === host && checkPath(url);
+          return (url: URL) =>
+            url.hostname === hostname && checkPath(url) && checkPort(url);
         }) ?? [];
 
     const reader = new FetchUrlReader();
@@ -86,6 +128,9 @@ export class FetchUrlReader implements UrlReader {
       response = await fetch(url, {
         headers: {
           ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(options?.lastModifiedAfter && {
+            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -106,6 +151,9 @@ export class FetchUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 

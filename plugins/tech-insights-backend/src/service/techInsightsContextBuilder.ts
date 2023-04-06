@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { FactRetrieverEngine } from './fact/FactRetrieverEngine';
+import {
+  DefaultFactRetrieverEngine,
+  FactRetrieverEngine,
+} from './fact/FactRetrieverEngine';
 import { Logger } from 'winston';
-import { FactRetrieverRegistry } from './fact/FactRetrieverRegistry';
+import {
+  DefaultFactRetrieverRegistry,
+  FactRetrieverRegistry,
+} from './fact/FactRetrieverRegistry';
 import { Config } from '@backstage/config';
 import {
   PluginDatabaseManager,
@@ -49,15 +55,30 @@ export interface TechInsightsOptions<
   CheckResultType extends CheckResult,
 > {
   /**
-   * A collection of FactRetrieverRegistrations.
+   * Optional collection of FactRetrieverRegistrations (required if no factRetrieverRegistry passed in).
    * Used to register FactRetrievers and their schemas and schedule an execution loop for them.
+   *
+   * Not needed if passing in your own FactRetrieverRegistry implementation. Required otherwise.
    */
-  factRetrievers: FactRetrieverRegistration[];
+  factRetrievers?: FactRetrieverRegistration[];
 
   /**
    * Optional factory exposing a `construct` method to initialize a FactChecker implementation
    */
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
+
+  /**
+   * Optional FactRetrieverRegistry implementation that replaces the default one.
+   *
+   * If passing this in you don't need to pass in factRetrievers also.
+   */
+  factRetrieverRegistry?: FactRetrieverRegistry;
+
+  /**
+   * Optional persistenceContext implementation that replaces the default one.
+   * This can be used to replace underlying database with a more suitable implementation if needed
+   */
+  persistenceContext?: PersistenceContext;
 
   logger: Logger;
   config: Config;
@@ -81,6 +102,7 @@ export type TechInsightsContext<
 > = {
   factChecker?: FactChecker<CheckType, CheckResultType>;
   persistenceContext: PersistenceContext;
+  factRetrieverEngine: FactRetrieverEngine;
 };
 
 /**
@@ -109,14 +131,27 @@ export const buildTechInsightsContext = async <
     tokenManager,
   } = options;
 
-  const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
+  const buildFactRetrieverRegistry = (): FactRetrieverRegistry => {
+    if (!options.factRetrieverRegistry) {
+      if (!factRetrievers) {
+        throw new Error(
+          'Failed to build FactRetrieverRegistry because no factRetrievers found',
+        );
+      }
+      return new DefaultFactRetrieverRegistry(factRetrievers);
+    }
+    return options.factRetrieverRegistry;
+  };
 
-  const persistenceContext = await initializePersistenceContext(
-    await database.getClient(),
-    { logger },
-  );
+  const factRetrieverRegistry = buildFactRetrieverRegistry();
 
-  const factRetrieverEngine = await FactRetrieverEngine.create({
+  const persistenceContext =
+    options.persistenceContext ??
+    (await initializePersistenceContext(database, {
+      logger,
+    }));
+
+  const factRetrieverEngine = await DefaultFactRetrieverEngine.create({
     scheduler,
     repository: persistenceContext.techInsightsStore,
     factRetrieverRegistry,
@@ -137,10 +172,12 @@ export const buildTechInsightsContext = async <
     return {
       persistenceContext,
       factChecker,
+      factRetrieverEngine,
     };
   }
 
   return {
     persistenceContext,
+    factRetrieverEngine,
   };
 };

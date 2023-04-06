@@ -18,7 +18,7 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import useAsync from 'react-use/lib/useAsync';
 import { useCostInsightsStyles } from '../../utils/styles';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 function useDisplayName(): string {
@@ -28,31 +28,32 @@ function useDisplayName(): string {
 }
 
 type CostInsightsHeaderProps = {
-  owner: string;
+  groupId: string;
   groups: Group[];
   hasCostData: boolean;
   alerts: number;
 };
 
 const CostInsightsHeaderNoData = ({
-  owner,
+  groupId,
   groups,
 }: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
   const hasMultipleGroups = groups.length > 1;
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="flushed-face">
+        <Typography component="span" role="img" aria-label="flushed-face">
           😳
-        </span>{' '}
+        </Typography>{' '}
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {displayName}!</b> <b>{owner}</b> doesn't seem to have any cloud
-        costs.
+        <b>Hey, {displayName}!</b> <b>{ownerName}</b> doesn't seem to have any
+        cloud costs.
       </Typography>
       {hasMultipleGroups && (
         <Typography align="center" gutterBottom>
@@ -64,43 +65,49 @@ const CostInsightsHeaderNoData = ({
 };
 
 const CostInsightsHeaderAlerts = ({
-  owner,
+  groupId,
+  groups,
   alerts,
 }: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="magnifying-glass">
+        <Typography component="span" role="img" aria-label="magnifying-glass">
           🔎
-        </span>{' '}
+        </Typography>{' '}
         You have {alerts} thing{alerts > 1 && 's'} to look into
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
         <b>Hey, {displayName}!</b> We've identified{' '}
         {alerts > 1 ? 'a few things ' : 'one thing '}
-        <b>{owner}</b> should look into next.
+        <b>{ownerName}</b> should look into next.
       </Typography>
     </>
   );
 };
 
-const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
+const CostInsightsHeaderNoAlerts = ({
+  groupId,
+  groups,
+}: CostInsightsHeaderProps) => {
   const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
+  const ownerName = groups.find(({ id }) => id === groupId)?.name ?? groupId;
 
   return (
     <>
       <Typography variant="h4" gutterBottom align="center">
-        <span role="img" aria-label="thumbs-up">
+        <Typography component="span" role="img" aria-label="thumbs-up">
           👍
-        </span>{' '}
+        </Typography>{' '}
         Your team is doing great
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {displayName}!</b> <b>{owner}</b> is doing well. No major
+        <b>Hey, {displayName}!</b> <b>{ownerName}</b> is doing well. No major
         changes this month.
       </Typography>
     </>
@@ -113,9 +120,9 @@ export const CostInsightsHeaderNoGroups = () => {
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="flushed-face">
+        <Typography component="span" role="img" aria-label="flushed-face">
           😳
-        </span>{' '}
+        </Typography>{' '}
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>

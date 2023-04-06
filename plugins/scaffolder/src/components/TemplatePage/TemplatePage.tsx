@@ -16,25 +16,34 @@
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
-import React, { useCallback, useContext, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router';
-import { useParams } from 'react-router-dom';
+import React, { ComponentType, useCallback, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
-import { FieldExtensionOptions } from '../../extensions';
-import { SecretsContext } from '../secrets/SecretsContext';
-import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
+import {
+  type FieldExtensionOptions,
+  type LayoutOptions,
+  scaffolderApiRef,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { createValidator } from './createValidator';
 
 import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 import {
+  AnalyticsContext,
   errorApiRef,
   useApi,
   useApiHolder,
   useRouteRef,
+  useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { ReviewStepProps } from '../types';
+import {
+  rootRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -45,20 +54,39 @@ const useTemplateParameterSchema = (templateRef: string) => {
   return { schema: value, loading, error };
 };
 
-export const TemplatePage = ({
-  customFieldExtensions = [],
-}: {
+type Props = {
+  ReviewStepComponent?: ComponentType<ReviewStepProps>;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
-}) => {
+  layouts?: LayoutOptions[];
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
+};
+
+export const TemplatePage = ({
+  ReviewStepComponent,
+  customFieldExtensions = [],
+  layouts = [],
+  headerOptions,
+}: Props) => {
   const apiHolder = useApiHolder();
-  const secretsContext = useContext(SecretsContext);
+  const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
-  const { templateName } = useParams();
+  const { templateName, namespace } = useRouteRefParams(
+    selectedTemplateRouteRef,
+  );
+  const templateRef = stringifyEntityRef({
+    name: templateName,
+    kind: 'template',
+    namespace,
+  });
   const navigate = useNavigate();
   const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
   const rootRoute = useRouteRef(rootRouteRef);
-  const { schema, loading, error } = useTemplateParameterSchema(templateName);
+  const { schema, loading, error } = useTemplateParameterSchema(templateRef);
   const [formState, setFormState] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
@@ -78,11 +106,7 @@ export const TemplatePage = ({
 
   const handleCreate = async () => {
     const { taskId } = await scaffolderApi.scaffold({
-      templateRef: stringifyEntityRef({
-        name: templateName,
-        kind: 'template',
-        namespace: 'default',
-      }),
+      templateRef,
       values: formState,
       secrets: secretsContext?.secrets,
     });
@@ -119,40 +143,45 @@ export const TemplatePage = ({
   );
 
   return (
-    <Page themeId="home">
-      <Header
-        pageTitleOverride="Create a New Component"
-        title="Create a New Component"
-        subtitle="Create new software components using standard templates"
-      />
-      <Content>
-        {loading && <LinearProgress data-testid="loading-progress" />}
-        {schema && (
-          <InfoCard
-            title={schema.title}
-            noPadding
-            titleTypographyProps={{ component: 'h2' }}
-          >
-            <MultistepJsonForm
-              formData={formState}
-              fields={customFieldComponents}
-              onChange={handleChange}
-              onReset={handleFormReset}
-              onFinish={handleCreate}
-              steps={schema.steps.map(step => {
-                return {
-                  ...step,
-                  validate: createValidator(
-                    step.schema,
-                    customFieldValidators,
-                    { apiHolder },
-                  ),
-                };
-              })}
-            />
-          </InfoCard>
-        )}
-      </Content>
-    </Page>
+    <AnalyticsContext attributes={{ entityRef: templateRef }}>
+      <Page themeId="home">
+        <Header
+          pageTitleOverride="Create a New Component"
+          title="Create a New Component"
+          subtitle="Create new software components using standard templates"
+          {...headerOptions}
+        />
+        <Content>
+          {loading && <LinearProgress data-testid="loading-progress" />}
+          {schema && (
+            <InfoCard
+              title={schema.title}
+              noPadding
+              titleTypographyProps={{ component: 'h2' }}
+            >
+              <MultistepJsonForm
+                ReviewStepComponent={ReviewStepComponent}
+                formData={formState}
+                fields={customFieldComponents}
+                onChange={handleChange}
+                onReset={handleFormReset}
+                onFinish={handleCreate}
+                layouts={layouts}
+                steps={schema.steps.map(step => {
+                  return {
+                    ...step,
+                    validate: createValidator(
+                      step.schema,
+                      customFieldValidators,
+                      { apiHolder },
+                    ),
+                  };
+                })}
+              />
+            </InfoCard>
+          )}
+        </Content>
+      </Page>
+    </AnalyticsContext>
   );
 };

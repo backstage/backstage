@@ -16,7 +16,12 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
-import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
+import {
+  File,
+  FileExistsResponse,
+  Storage,
+  StorageOptions,
+} from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
 import path from 'path';
@@ -83,6 +88,9 @@ export class GoogleGCSPublish implements PublisherBase {
     const credentials = config.getOptionalString(
       'techdocs.publisher.googleGcs.credentials',
     );
+    const projectId = config.getOptionalString(
+      'techdocs.publisher.googleGcs.projectId',
+    );
     let credentialsJson: any = {};
     if (credentials) {
       try {
@@ -94,11 +102,17 @@ export class GoogleGCSPublish implements PublisherBase {
       }
     }
 
+    const clientOpts: StorageOptions = {};
+    if (projectId) {
+      clientOpts.projectId = projectId;
+    }
+
     const storageClient = new Storage({
       ...(credentials && {
         projectId: credentialsJson.project_id,
         credentials: credentialsJson,
       }),
+      ...clientOpts,
     });
 
     const legacyPathCasing =
@@ -274,18 +288,14 @@ export class GoogleGCSPublish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return (req, res) => {
-      // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
-      // Root path is removed from the Uri so that legacy casing can be applied
-      // to the entity triplet without manipulating the root path
-      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
-
+      // filePath example - /default/component/documented-component/index.html
       const filePathNoRoot = this.legacyPathCasing
-        ? decodedUriNoRoot
-        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
-      // Re-prepend the root path to the relative file path
+      // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
 
       // Files with different extensions (CSS, HTML) need to be served with different headers

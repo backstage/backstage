@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.2.0",
+  "version": "0.2.2-next.2",
   "private": true,
   "backstage": {
     "role": "cli"
@@ -18,30 +18,33 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon --",
+    "start": "yarn nodemon --",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "test:e2e": "yarn start",
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean"
   },
-  "bin": {
-    "e2e-test": "bin/e2e-test"
-  },
-  "devDependencies": {
-    "@backstage/cli-common": "^0.1.9-next.0",
-    "@backstage/errors": "^1.0.0",
-    "@types/fs-extra": "^9.0.1",
-    "@types/node": "^16.11.26",
-    "@types/puppeteer": "^5.4.4",
+  "bin": "bin/e2e-test",
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/create-app": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "cross-fetch": "^3.1.5",
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "pgtools": "^0.3.0",
-    "puppeteer": "^14.0.0",
-    "tree-kill": "^1.2.2",
+    "puppeteer": "^17.0.0",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/fs-extra": "^9.0.1",
+    "@types/node": "^16.11.26",
+    "@types/puppeteer": "^5.4.4",
+    "nodemon": "^2.0.2",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {

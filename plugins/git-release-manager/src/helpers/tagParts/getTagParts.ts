@@ -19,19 +19,15 @@ import { getSemverTagParts } from './getSemverTagParts';
 import { Project } from '../../contexts/ProjectContext';
 
 /**
- * Tag parts are the individual parts of a version, e.g. <major>.<minor>.<patch>
+ * Tag parts are the individual parts of a version, e.g. [major].[minor].[patch]
  * are the parts of a semantic version
+ *
+ * @public
  */
-export function getTagParts({
-  project,
-  tag,
-}: {
-  project: Project;
-  tag: string;
-}) {
-  if (project.versioningStrategy === 'calver') {
-    return getCalverTagParts(tag);
+export function getTagParts(options: { project: Project; tag: string }) {
+  if (options.project.versioningStrategy === 'calver') {
+    return getCalverTagParts(options.tag);
   }
 
-  return getSemverTagParts(tag);
+  return getSemverTagParts(options.tag);
 }

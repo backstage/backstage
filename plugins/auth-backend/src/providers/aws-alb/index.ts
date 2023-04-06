@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createAwsAlbProvider } from './provider';
-export type { AwsAlbProviderOptions, AwsAlbResult } from './provider';
+export { awsAlb } from './provider';
+export type { AwsAlbResult } from './provider';

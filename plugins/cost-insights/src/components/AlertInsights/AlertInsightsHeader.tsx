@@ -36,9 +36,9 @@ export const AlertInsightsHeader = ({
       <ScrollAnchor id={DefaultNavigation.AlertInsightsHeader} />
       <Typography variant="h4" align="center">
         {title}{' '}
-        <span role="img" aria-label="direct-hit">
+        <Typography component="span" role="img" aria-label="direct-hit">
           🎯
-        </span>
+        </Typography>
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
         {subtitle}

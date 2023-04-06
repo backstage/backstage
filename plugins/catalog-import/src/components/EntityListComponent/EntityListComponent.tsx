@@ -98,7 +98,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
           <ListItem
             dense
             button={Boolean(onItemClick) as any}
-            onClick={() => onItemClick?.call(this, r.target)}
+            onClick={() => onItemClick?.(r.target)}
           >
             <ListItemIcon>{locationListItemIcon(r.target)}</ListItemIcon>
 

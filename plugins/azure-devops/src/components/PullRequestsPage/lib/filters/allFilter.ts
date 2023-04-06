@@ -18,6 +18,7 @@ import { BaseFilter, FilterType, PullRequestFilter } from './types';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 
+/** @public */
 export type AllFilter = BaseFilter & {
   type: FilterType.All;
 };

@@ -26,7 +26,7 @@ import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef, googleAuthApiRef } from '@backstage/core-plugin-api';
 
-const mockSignInHandler = jest.fn().mockReturnValue('');
+const mockSignInHandler = jest.fn().mockReturnValue(Promise.resolve());
 const mockGoogleAuth = {
   sessionState$: () => ({
     [Symbol.observable]: jest.fn(),

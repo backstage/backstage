@@ -19,7 +19,12 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
-import { CatalogProcessor, LocationSpec } from '../../api';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  processingResult,
+} from '@backstage/plugin-catalog-node';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
@@ -37,6 +42,7 @@ export type PlaceholderResolverParams = {
   baseUrl: string;
   read: PlaceholderResolverRead;
   resolveUrl: PlaceholderResolverResolveUrl;
+  emit: CatalogProcessorEmit;
 };
 
 /** @public */
@@ -66,6 +72,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
@@ -100,25 +107,22 @@ export class PlaceholderProcessor implements CatalogProcessor {
         return [data, false];
       }
 
-      const resolverKey = keys[0].substr(1);
+      const resolverKey = keys[0].substring(1);
       const resolverValue = data[keys[0]];
+
       const resolver = this.options.resolvers[resolverKey];
-      if (!resolver || typeof resolverValue !== 'string') {
-        // If there was no such placeholder resolver or if the value was not a
-        // string, we err on the side of safety and assume that this is
-        // something that's best left alone. For example, if the input contains
-        // JSONSchema, there may be "$ref": "#/definitions/node" nodes in the
-        // document.
+      if (!resolver) {
+        // If there was no such placeholder resolver, we err on the side of safety
+        // and assume that this is something that's best left alone. For example, if
+        // the input contains JSONSchema, there may be "$ref": "#/definitions/node"
+        // nodes in the document.
         return [data, false];
       }
 
       const read = async (url: string): Promise<Buffer> => {
-        if (this.options.reader.readUrl) {
-          const response = await this.options.reader.readUrl(url);
-          const buffer = await response.buffer();
-          return buffer;
-        }
-        return this.options.reader.read(url);
+        const response = await this.options.reader.readUrl(url);
+        const buffer = await response.buffer();
+        return buffer;
       };
 
       const resolveUrl = (url: string, base: string): string =>
@@ -134,6 +138,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
           baseUrl: location.target,
           read,
           resolveUrl,
+          emit,
         }),
         true,
       ];
@@ -151,11 +156,13 @@ export class PlaceholderProcessor implements CatalogProcessor {
 export async function yamlPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  const text = await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
 
   let documents: yaml.Document.Parsed[];
   try {
-    documents = yaml.parseAllDocuments(text).filter(d => d);
+    documents = yaml.parseAllDocuments(content).filter(d => d);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,
@@ -182,10 +189,12 @@ export async function yamlPlaceholderResolver(
 export async function jsonPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  const text = await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
 
   try {
-    return JSON.parse(text);
+    return JSON.parse(content);
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} failed to parse JSON data at ${params.value}, ${e}`,
@@ -196,7 +205,11 @@ export async function jsonPlaceholderResolver(
 export async function textPlaceholderResolver(
   params: PlaceholderResolverParams,
 ): Promise<JsonValue> {
-  return await readTextLocation(params);
+  const { content, url } = await readTextLocation(params);
+
+  params.emit(processingResult.refresh(`url:${url}`));
+
+  return content;
 }
 
 /*
@@ -205,12 +218,12 @@ export async function textPlaceholderResolver(
 
 async function readTextLocation(
   params: PlaceholderResolverParams,
-): Promise<string> {
+): Promise<{ content: string; url: string }> {
   const newUrl = relativeUrl(params);
 
   try {
     const data = await params.read(newUrl);
-    return data.toString('utf-8');
+    return { content: data.toString('utf-8'), url: newUrl };
   } catch (e) {
     throw new Error(
       `Placeholder \$${params.key} could not read location ${params.value}, ${e}`,

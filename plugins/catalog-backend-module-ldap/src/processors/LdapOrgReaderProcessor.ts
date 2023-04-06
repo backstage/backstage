@@ -27,9 +27,9 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * Extracts teams and users out of an LDAP server.
@@ -103,6 +103,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       this.logger,
       provider.target,
       provider.bind,
+      provider.tls,
     );
     const { users, groups } = await readLdapOrg(
       client,

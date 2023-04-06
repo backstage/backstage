@@ -18,12 +18,22 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
+import { TestApiProvider } from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
+
+const mockConfigApi: jest.Mocked<Partial<typeof configApiRef.T>> = {
+  getConfigArray: jest.fn(_ => []),
+};
 
 describe('useConsumerGroupOffsets', () => {
   let entity: Entity;
 
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
-    return <EntityProvider entity={entity}>{children}</EntityProvider>;
+    return (
+      <TestApiProvider apis={[[configApiRef, mockConfigApi]]}>
+        <EntityProvider entity={entity}>{children}</EntityProvider>
+      </TestApiProvider>
+    );
   };
 
   const subject = () => renderHook(useConsumerGroupsForEntity, { wrapper });
@@ -36,6 +46,32 @@ describe('useConsumerGroupOffsets', () => {
         name: 'test',
         annotations: {
           'kafka.apache.org/consumer-groups': 'prod/consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(result.current).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: 'consumer',
+      },
+    ]);
+  });
+
+  it('returns correct dashboard url for cluster for annotation', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups': 'prod/consumer',
+          'kafka.apache.org/dashboard-urls': 'prod/https://akhq.io',
         },
       },
       spec: {
@@ -72,7 +108,10 @@ describe('useConsumerGroupOffsets', () => {
     };
     const { result } = subject();
     expect(result.current).toStrictEqual([
-      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'prod',
+        consumerGroup: 'consumer',
+      },
       {
         clusterId: 'dev',
         consumerGroup: 'another-consumer',
@@ -99,7 +138,10 @@ describe('useConsumerGroupOffsets', () => {
     };
     const { result } = subject();
     expect(result.current).toStrictEqual([
-      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'prod',
+        consumerGroup: 'consumer',
+      },
       {
         clusterId: 'dev',
         consumerGroup: 'another-consumer',
@@ -124,7 +166,7 @@ describe('useConsumerGroupOffsets', () => {
       },
     };
     const { result } = subject();
-    expect(() => result.current).toThrowError();
+    expect(() => result.current).toThrow();
     expect(result.error).toStrictEqual(
       new Error(
         `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,

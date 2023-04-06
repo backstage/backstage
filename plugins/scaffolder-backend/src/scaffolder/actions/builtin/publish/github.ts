@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
-import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
-import { getOctokitOptions } from '../github/helpers';
 import { Octokit } from 'octokit';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createGithubRepoWithCollaboratorsAndTopics,
+  getOctokitOptions,
+  initRepoPushAndProtect,
+} from '../github/helpers';
+import * as inputProps from '../github/inputProperties';
+import * as outputProps from '../github/outputProperties';
+import { parseRepoUrl } from './util';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -44,25 +47,64 @@ export function createPublishGithubAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
+    homepage?: string;
     access?: string;
     defaultBranch?: string;
+    protectDefaultBranch?: boolean;
+    protectEnforceAdmins?: boolean;
     deleteBranchOnMerge?: boolean;
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
+    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
+    allowAutoMerge?: boolean;
     sourcePath?: string;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
     requiredStatusCheckContexts?: string[];
+    requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<{
-      username: string;
-      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-    }>;
+    collaborators?: Array<
+      | {
+          user: string;
+          access: string;
+        }
+      | {
+          team: string;
+          access: string;
+        }
+      | {
+          /** @deprecated This field is deprecated in favor of team */
+          username: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+    >;
+    hasProjects?: boolean | undefined;
+    hasWiki?: boolean | undefined;
+    hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
+    requiredCommitSigning?: boolean;
   }>({
     id: 'publish:github',
     description:
@@ -72,131 +114,48 @@ export function createPublishGithubAction(options: {
         type: 'object',
         required: ['repoUrl'],
         properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          access: {
-            title: 'Repository Access',
-            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
-            type: 'string',
-          },
-          requireCodeOwnerReviews: {
-            title: 'Require CODEOWNER Reviews?',
-            description:
-              'Require an approved review in PR including files with a designated Code Owner',
-            type: 'boolean',
-          },
-          requiredStatusCheckContexts: {
-            title: 'Required Status Check Contexts',
-            description:
-              'The list of status checks to require in order to merge into this branch',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            type: 'string',
-            enum: ['private', 'public', 'internal'],
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          deleteBranchOnMerge: {
-            title: 'Delete Branch On Merge',
-            type: 'boolean',
-            description: `Delete the branch after merging the PR. The default value is 'false'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          allowMergeCommit: {
-            title: 'Allow Merge Commits',
-            type: 'boolean',
-            description: `Allow merge commits. The default value is 'true'`,
-          },
-          allowSquashMerge: {
-            title: 'Allow Squash Merges',
-            type: 'boolean',
-            description: `Allow squash merges. The default value is 'true'`,
-          },
-          allowRebaseMerge: {
-            title: 'Allow Rebase Merges',
-            type: 'boolean',
-            description: `Allow rebase merges. The default value is 'true'`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          collaborators: {
-            title: 'Collaborators',
-            description: 'Provide additional users with permissions',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['username', 'access'],
-              properties: {
-                access: {
-                  type: 'string',
-                  description: 'The type of access for the user',
-                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                },
-                username: {
-                  type: 'string',
-                  description: 'The username or group',
-                },
-              },
-            },
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          topics: {
-            title: 'Topics',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
+          repoUrl: inputProps.repoUrl,
+          description: inputProps.description,
+          homepage: inputProps.homepage,
+          access: inputProps.access,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
+          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
+          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
+          repoVisibility: inputProps.repoVisibility,
+          defaultBranch: inputProps.defaultBranch,
+          protectDefaultBranch: inputProps.protectDefaultBranch,
+          protectEnforceAdmins: inputProps.protectEnforceAdmins,
+          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
+          gitCommitMessage: inputProps.gitCommitMessage,
+          gitAuthorName: inputProps.gitAuthorName,
+          gitAuthorEmail: inputProps.gitAuthorEmail,
+          allowMergeCommit: inputProps.allowMergeCommit,
+          allowSquashMerge: inputProps.allowSquashMerge,
+          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
+          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
+          allowRebaseMerge: inputProps.allowRebaseMerge,
+          allowAutoMerge: inputProps.allowAutoMerge,
+          sourcePath: inputProps.sourcePath,
+          collaborators: inputProps.collaborators,
+          hasProjects: inputProps.hasProjects,
+          hasWiki: inputProps.hasWiki,
+          hasIssues: inputProps.hasIssues,
+          token: inputProps.token,
+          topics: inputProps.topics,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
         type: 'object',
         properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
+          remoteUrl: outputProps.remoteUrl,
+          repoContentsUrl: outputProps.repoContentsUrl,
         },
       },
     },
@@ -204,22 +163,46 @@ export function createPublishGithubAction(options: {
       const {
         repoUrl,
         description,
+        homepage,
         access,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount = 1,
+        restrictions,
         requiredStatusCheckContexts = [],
+        requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
+        protectDefaultBranch = true,
+        protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
+        squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
+        squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
+        allowAutoMerge = false,
         collaborators,
+        hasProjects = undefined,
+        hasWiki = undefined,
+        hasIssues = undefined,
         topics,
         token: providedToken,
+        requiredCommitSigning = false,
       } = ctx.input;
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        repoUrl: repoUrl,
+      });
+      const client = new Octokit(octokitOptions);
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
@@ -227,140 +210,58 @@ export function createPublishGithubAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl,
-      });
-
-      const client = new Octokit(octokitOptions);
-
-      const user = await client.rest.users.getByUsername({
-        username: owner,
-      });
-
-      const repoCreationPromise =
-        user.data.type === 'Organization'
-          ? client.rest.repos.createInOrg({
-              name: repo,
-              org: owner,
-              private: repoVisibility === 'private',
-              visibility: repoVisibility,
-              description: description,
-              delete_branch_on_merge: deleteBranchOnMerge,
-              allow_merge_commit: allowMergeCommit,
-              allow_squash_merge: allowSquashMerge,
-              allow_rebase_merge: allowRebaseMerge,
-            })
-          : client.rest.repos.createForAuthenticatedUser({
-              name: repo,
-              private: repoVisibility === 'private',
-              description: description,
-              delete_branch_on_merge: deleteBranchOnMerge,
-              allow_merge_commit: allowMergeCommit,
-              allow_squash_merge: allowSquashMerge,
-              allow_rebase_merge: allowRebaseMerge,
-            });
-
-      const { data: newRepo } = await repoCreationPromise;
-      if (access?.startsWith(`${owner}/`)) {
-        const [, team] = access.split('/');
-        await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-          org: owner,
-          team_slug: team,
-          owner,
-          repo,
-          permission: 'admin',
-        });
-        // No need to add access if it's the person who owns the personal account
-      } else if (access && access !== owner) {
-        await client.rest.repos.addCollaborator({
-          owner,
-          repo,
-          username: access,
-          permission: 'admin',
-        });
-      }
-
-      if (collaborators) {
-        for (const {
-          access: permission,
-          username: team_slug,
-        } of collaborators) {
-          try {
-            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-              org: owner,
-              team_slug,
-              owner,
-              repo,
-              permission,
-            });
-          } catch (e) {
-            assertError(e);
-            ctx.logger.warn(
-              `Skipping ${permission} access for ${team_slug}, ${e.message}`,
-            );
-          }
-        }
-      }
-
-      if (topics) {
-        try {
-          await client.rest.repos.replaceAllTopics({
-            owner,
-            repo,
-            names: topics.map(t => t.toLowerCase()),
-          });
-        } catch (e) {
-          assertError(e);
-          ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
-        }
-      }
+      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+        client,
+        repo,
+        owner,
+        repoVisibility,
+        description,
+        homepage,
+        deleteBranchOnMerge,
+        allowMergeCommit,
+        allowSquashMerge,
+        squashMergeCommitTitle,
+        squashMergeCommitMessage,
+        allowRebaseMerge,
+        allowAutoMerge,
+        access,
+        collaborators,
+        hasProjects,
+        hasWiki,
+        hasIssues,
+        topics,
+        ctx.logger,
+      );
 
       const remoteUrl = newRepo.clone_url;
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
-      const gitAuthorInfo = {
-        name: gitAuthorName
-          ? gitAuthorName
-          : config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: gitAuthorEmail
-          ? gitAuthorEmail
-          : config.getOptionalString('scaffolder.defaultAuthor.email'),
-      };
-
-      await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+      await initRepoPushAndProtect(
         remoteUrl,
+        octokitOptions.auth,
+        ctx.workspacePath,
+        ctx.input.sourcePath,
         defaultBranch,
-        auth: {
-          username: 'x-access-token',
-          password: octokitOptions.auth,
-        },
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
-      });
-
-      try {
-        await enableBranchProtectionOnDefaultRepoBranch({
-          owner,
-          client,
-          repoName: newRepo.name,
-          logger: ctx.logger,
-          defaultBranch,
-          requireCodeOwnerReviews,
-          requiredStatusCheckContexts,
-        });
-      } catch (e) {
-        assertError(e);
-        ctx.logger.warn(
-          `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
-        );
-      }
+        protectDefaultBranch,
+        protectEnforceAdmins,
+        owner,
+        client,
+        repo,
+        requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
+        requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
+        requiredConversationResolution,
+        config,
+        ctx.logger,
+        gitCommitMessage,
+        gitAuthorName,
+        gitAuthorEmail,
+        dismissStaleReviews,
+        requiredCommitSigning,
+      );
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);

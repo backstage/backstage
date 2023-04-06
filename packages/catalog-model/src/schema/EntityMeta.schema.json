@@ -108,6 +108,12 @@
             "description": "A key representing a visual icon to be displayed in the UI.",
             "examples": ["dashboard"],
             "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "An optional value to categorize links into specific groups.",
+            "examples": ["runbook", "documentation", "logs", "dashboard"],
+            "minLength": 1
           }
         }
       }

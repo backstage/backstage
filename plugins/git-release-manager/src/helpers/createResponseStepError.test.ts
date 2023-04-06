@@ -21,7 +21,7 @@ describe('createResponseStepError', () => {
     const result = createResponseStepError(new Error('banana'));
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "icon": "failure",
         "message": "Something went wrong ❌",
         "secondaryMessage": "Error message: banana",

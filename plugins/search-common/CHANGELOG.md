@@ -1,5 +1,211 @@
 # @backstage/plugin-search-common
 
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/types@1.0.2
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults (total number of results for a given query) can now be provided by each search engine and consumed as part of the search results response
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/types@1.0.2
+
+## 1.2.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/types@1.0.2-next.1
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults (total number of results for a given query) can now be provided by each search engine and consumed as part of the search results response
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/types@1.0.2-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/types@1.0.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- a799972bb1: There is a new property called `pageLimit` on the `SearchQuery` interface that specifies how many results should be returned per page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a799972bb1: There is a new property called `pageLimit` on the `SearchQuery` interface that specifies how many results should be returned per page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.6.5-next.1
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.4
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.4-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.3
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.3-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 7d8acfc32e: `@beta` exports now replaced with `@public` exports
+- 484afdf1dc: Added an optional `rank` attribute to the `Result` type. This represents the result rank (starting at 1) for a given result in a result set for a given search.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 7d8acfc32e: `@beta` exports now replaced with `@public` exports
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.2-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 3a74e203a8: Support generating highlighted matched terms in search result data
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes

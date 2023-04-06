@@ -13,32 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthenticationError, ResponseError } from '@backstage/errors';
-import {
-  AlertSource,
-  EscalationPolicy,
-  Incident,
-  IncidentAction,
-  IncidentResponder,
-  OnCall,
-  Schedule,
-  UptimeMonitor,
-  User,
-} from '../types';
-import {
-  ILertApi,
-  GetIncidentsOpts,
-  GetIncidentsCountOpts,
-  Options,
-  EventRequest,
-} from './types';
-import { DateTime as dt } from 'luxon';
 import {
   ConfigApi,
   createApiRef,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
+import { AuthenticationError, ResponseError } from '@backstage/errors';
+import { DateTime as dt } from 'luxon';
+import {
+  Alert,
+  AlertAction,
+  AlertResponder,
+  AlertSource,
+  EscalationPolicy,
+  OnCall,
+  Schedule,
+  Service,
+  StatusPage,
+  User,
+} from '../types';
+import {
+  EventRequest,
+  GetAlertsCountOpts,
+  GetAlertsOpts,
+  GetServicesOpts,
+  GetStatusPagesOpts,
+  ILertApi,
+} from './types';
 
+/** @public */
 export const ilertApiRef = createApiRef<ILertApi>({
   id: 'plugin.ilert.service',
 });
@@ -49,6 +52,7 @@ const JSON_HEADERS = {
   Accept: 'application/json',
 };
 
+/** @public */
 export class ILertClient implements ILertApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
@@ -66,7 +70,20 @@ export class ILertClient implements ILertApi {
     });
   }
 
-  constructor(opts: Options) {
+  constructor(opts: {
+    discoveryApi: DiscoveryApi;
+
+    /**
+     * URL used by users to access iLert web UI.
+     * Example: https://my-org.ilert.com/
+     */
+    baseUrl: string;
+
+    /**
+     * Path to use for requests via the proxy, defaults to /ilert/api
+     */
+    proxyPath: string;
+  }) {
     this.discoveryApi = opts.discoveryApi;
     this.baseUrl = opts.baseUrl;
     this.proxyPath = opts.proxyPath;
@@ -88,7 +105,7 @@ export class ILertClient implements ILertApi {
     return await response.json();
   }
 
-  async fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]> {
+  async fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]> {
     const init = {
       headers: JSON_HEADERS,
     };
@@ -112,15 +129,11 @@ export class ILertClient implements ILertApi {
         query.append('state', state);
       });
     }
-    const response = await this.fetch(
-      `/api/v1/incidents?${query.toString()}`,
-      init,
-    );
-
+    const response = await this.fetch(`/api/alerts?${query.toString()}`, init);
     return response;
   }
 
-  async fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number> {
+  async fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number> {
     const init = {
       headers: JSON_HEADERS,
     };
@@ -131,96 +144,85 @@ export class ILertClient implements ILertApi {
       });
     }
     const response = await this.fetch(
-      `/api/v1/incidents/count?${query.toString()}`,
+      `/api/alerts/count?${query.toString()}`,
       init,
     );
 
     return response && response.count ? response.count : 0;
   }
 
-  async fetchIncident(id: number): Promise<Incident> {
+  async fetchAlert(id: number): Promise<Alert> {
     const init = {
       headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
-      `/api/v1/incidents/${encodeURIComponent(id)}`,
+      `/api/alerts/${encodeURIComponent(id)}`,
       init,
     );
 
     return response;
   }
 
-  async fetchIncidentResponders(
-    incident: Incident,
-  ): Promise<IncidentResponder[]> {
+  async fetchAlertResponders(alert: Alert): Promise<AlertResponder[]> {
     const init = {
       headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
-      `/api/v1/incidents/${encodeURIComponent(incident.id)}/responders`,
+      `/api/alerts/${encodeURIComponent(alert.id)}/responders`,
       init,
     );
 
     return response;
   }
 
-  async fetchIncidentActions(incident: Incident): Promise<IncidentAction[]> {
+  async fetchAlertActions(alert: Alert): Promise<AlertAction[]> {
     const init = {
       headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
-      `/api/v1/incidents/${encodeURIComponent(incident.id)}/actions`,
+      `/api/alerts/${encodeURIComponent(alert.id)}/actions`,
       init,
     );
 
     return response;
   }
 
-  async acceptIncident(
-    incident: Incident,
-    userName: string,
-  ): Promise<Incident> {
+  async acceptAlert(alert: Alert, userName: string): Promise<Alert> {
     const init = {
       method: 'POST',
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        apiKey: incident.alertSource?.integrationKey || '',
-        incidentKey: incident.incidentKey,
+        apiKey: alert.alertSource?.integrationKey || '',
+        alertKey: alert.alertKey,
         summary: `from ${userName} via Backstage plugin`,
         eventType: 'ACCEPT',
       }),
     };
 
-    await this.fetch('/api/v1/events', init);
-    return this.fetchIncident(incident.id);
+    await this.fetch('/api/events', init);
+    return this.fetchAlert(alert.id);
   }
 
-  async resolveIncident(
-    incident: Incident,
-    userName: string,
-  ): Promise<Incident> {
+  async resolveAlert(alert: Alert, userName: string): Promise<Alert> {
     const init = {
       method: 'POST',
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        apiKey: incident.alertSource?.integrationKey || '',
-        incidentKey: incident.incidentKey,
+        apiKey: alert.alertSource?.integrationKey || '',
+        alertKey: alert.alertKey,
         summary: `from ${userName} via Backstage plugin`,
         eventType: 'RESOLVE',
       }),
     };
 
-    await this.fetch('/api/v1/events', init);
-    return this.fetchIncident(incident.id);
+    await this.fetch('/api/events', init);
+    return this.fetchAlert(alert.id);
   }
 
-  async assignIncident(
-    incident: Incident,
-    responder: IncidentResponder,
-  ): Promise<Incident> {
+  async assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert> {
     const init = {
       method: 'PUT',
       headers: JSON_HEADERS,
@@ -240,19 +242,14 @@ export class ILertClient implements ILertApi {
     }
 
     const response = await this.fetch(
-      `/api/v1/incidents/${encodeURIComponent(
-        incident.id,
-      )}/assign?${query.toString()}`,
+      `/api/alerts/${encodeURIComponent(alert.id)}/assign?${query.toString()}`,
       init,
     );
 
     return response;
   }
 
-  async triggerIncidentAction(
-    incident: Incident,
-    action: IncidentAction,
-  ): Promise<void> {
+  async triggerAlertAction(alert: Alert, action: AlertAction): Promise<void> {
     const init = {
       method: 'POST',
       headers: JSON_HEADERS,
@@ -265,12 +262,12 @@ export class ILertClient implements ILertApi {
     };
 
     await this.fetch(
-      `/api/v1/incidents/${encodeURIComponent(incident.id)}/actions`,
+      `/api/alerts/${encodeURIComponent(alert.id)}/actions`,
       init,
     );
   }
 
-  async createIncident(eventRequest: EventRequest): Promise<boolean> {
+  async createAlert(eventRequest: EventRequest): Promise<boolean> {
     const init = {
       method: 'POST',
       headers: JSON_HEADERS,
@@ -291,64 +288,7 @@ export class ILertClient implements ILertApi {
       }),
     };
 
-    const response = await this.fetch('/api/v1/events', init);
-    return response;
-  }
-
-  async fetchUptimeMonitors(): Promise<UptimeMonitor[]> {
-    const init = {
-      headers: JSON_HEADERS,
-    };
-
-    const response = await this.fetch('/api/v1/uptime-monitors', init);
-
-    return response;
-  }
-
-  async fetchUptimeMonitor(id: number): Promise<UptimeMonitor> {
-    const init = {
-      headers: JSON_HEADERS,
-    };
-
-    const response: UptimeMonitor = await this.fetch(
-      `/api/v1/uptime-monitors/${encodeURIComponent(id)}`,
-      init,
-    );
-
-    return response;
-  }
-
-  async pauseUptimeMonitor(
-    uptimeMonitor: UptimeMonitor,
-  ): Promise<UptimeMonitor> {
-    const init = {
-      method: 'PUT',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({ ...uptimeMonitor, paused: true }),
-    };
-
-    const response = await this.fetch(
-      `/api/v1/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
-      init,
-    );
-
-    return response;
-  }
-
-  async resumeUptimeMonitor(
-    uptimeMonitor: UptimeMonitor,
-  ): Promise<UptimeMonitor> {
-    const init = {
-      method: 'PUT',
-      headers: JSON_HEADERS,
-      body: JSON.stringify({ ...uptimeMonitor, paused: false }),
-    };
-
-    const response = await this.fetch(
-      `/api/v1/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
-      init,
-    );
-
+    const response = await this.fetch('/api/events', init);
     return response;
   }
 
@@ -357,7 +297,7 @@ export class ILertClient implements ILertApi {
       headers: JSON_HEADERS,
     };
 
-    const response = await this.fetch('/api/v1/alert-sources', init);
+    const response = await this.fetch('/api/alert-sources', init);
 
     return response;
   }
@@ -370,7 +310,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${encodeURIComponent(idOrIntegrationKey)}`,
+      `/api/alert-sources/${encodeURIComponent(idOrIntegrationKey)}`,
       init,
     );
 
@@ -383,7 +323,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/on-calls?policies=${encodeURIComponent(
+      `/api/on-calls?policies=${encodeURIComponent(
         alertSource.escalationPolicy.id,
       )}&expand=user&expand=escalationPolicy&timezone=${dt.local().zoneName}`,
       init,
@@ -400,7 +340,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${encodeURIComponent(alertSource.id)}`,
+      `/api/alert-sources/${encodeURIComponent(alertSource.id)}`,
       init,
     );
 
@@ -415,7 +355,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${encodeURIComponent(alertSource.id)}`,
+      `/api/alert-sources/${encodeURIComponent(alertSource.id)}`,
       init,
     );
 
@@ -439,7 +379,7 @@ export class ILertClient implements ILertApi {
       }),
     };
 
-    const response = await this.fetch('/api/v1/maintenance-windows', init);
+    const response = await this.fetch('/api/maintenance-windows', init);
 
     return response;
   }
@@ -449,7 +389,10 @@ export class ILertClient implements ILertApi {
       headers: JSON_HEADERS,
     };
 
-    const response = await this.fetch('/api/v1/schedules', init);
+    const response = await this.fetch(
+      '/api/schedules?include=currentShift&include=nextShift',
+      init,
+    );
 
     return response;
   }
@@ -459,7 +402,7 @@ export class ILertClient implements ILertApi {
       headers: JSON_HEADERS,
     };
 
-    const response = await this.fetch('/api/v1/users', init);
+    const response = await this.fetch('/api/users', init);
 
     return response;
   }
@@ -477,17 +420,57 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/schedules/${encodeURIComponent(scheduleId)}/overrides`,
+      `/api/schedules/${encodeURIComponent(scheduleId)}/overrides`,
       init,
     );
 
     return response;
   }
 
-  getIncidentDetailsURL(incident: Incident): string {
-    return `${this.baseUrl}/incident/view.jsf?id=${encodeURIComponent(
-      incident.id,
-    )}`;
+  async fetchServices(opts?: GetServicesOpts): Promise<Service[]> {
+    const init = {
+      headers: JSON_HEADERS,
+    };
+    const query = new URLSearchParams();
+    if (opts?.maxResults !== undefined) {
+      query.append('max-results', String(opts.maxResults));
+    }
+    if (opts?.startIndex !== undefined) {
+      query.append('start-index', String(opts.startIndex));
+    }
+
+    query.append('include', 'uptime');
+
+    const response = await this.fetch(
+      `/api/services?${query.toString()}`,
+      init,
+    );
+    return response;
+  }
+
+  async fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]> {
+    const init = {
+      headers: JSON_HEADERS,
+    };
+    const query = new URLSearchParams();
+    if (opts?.maxResults !== undefined) {
+      query.append('max-results', String(opts.maxResults));
+    }
+    if (opts?.startIndex !== undefined) {
+      query.append('start-index', String(opts.startIndex));
+    }
+
+    query.append('include', 'subscribed');
+
+    const response = await this.fetch(
+      `/api/status-pages?${query.toString()}`,
+      init,
+    );
+    return response;
+  }
+
+  getAlertDetailsURL(alert: Alert): string {
+    return `${this.baseUrl}/alert/view.jsf?id=${encodeURIComponent(alert.id)}`;
   }
 
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string {
@@ -505,16 +488,26 @@ export class ILertClient implements ILertApi {
     )}`;
   }
 
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string {
-    return `${this.baseUrl}/uptime/view.jsf?id=${encodeURIComponent(
-      uptimeMonitor.id,
-    )}`;
-  }
-
   getScheduleDetailsURL(schedule: Schedule): string {
     return `${this.baseUrl}/schedule/view.jsf?id=${encodeURIComponent(
       schedule.id,
     )}`;
+  }
+
+  getServiceDetailsURL(service: Service): string {
+    return `${this.baseUrl}/service/view.jsf?id=${encodeURIComponent(
+      service.id,
+    )}`;
+  }
+
+  getStatusPageDetailsURL(statusPage: StatusPage): string {
+    return `${this.baseUrl}/status-page/view.jsf?id=${encodeURIComponent(
+      statusPage.id,
+    )}`;
+  }
+
+  getStatusPageURL(statusPage: StatusPage): string {
+    return statusPage.domain ? statusPage.domain : statusPage.subdomain;
   }
 
   getUserPhoneNumber(user: User | null) {
@@ -528,7 +521,7 @@ export class ILertClient implements ILertApi {
     if (!user.firstName && !user.lastName) {
       return user.username;
     }
-    return `${user.firstName} ${user.lastName} (${user.username})`;
+    return `${user.firstName} ${user.lastName}`;
   }
 
   private async apiUrl() {

@@ -15,6 +15,15 @@ coverage
 # Dependencies
 node_modules/
 
+# Yarn 3 files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # Node version directives
 .nvmrc
 
@@ -37,3 +46,6 @@ site
 
 # Sensitive credentials
 *-credentials.yaml
+
+# vscode database functionality support files
+*.session.sql

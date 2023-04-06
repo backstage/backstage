@@ -14,18 +14,34 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+import {
+  DefaultPlaylistPermissionPolicy,
+  isPlaylistPermission,
+} from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-class AllowAllPermissionPolicy implements PermissionPolicy {
-  async handle(): Promise<PolicyDecision> {
+class ExamplePermissionPolicy implements PermissionPolicy {
+  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
+
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (isPlaylistPermission(request.permission)) {
+      return this.playlistPermissionPolicy.handle(request, user);
+    }
+
     return {
       result: AuthorizeResult.ALLOW,
     };
@@ -39,10 +55,7 @@ export default async function createPlugin(
     config: env.config,
     logger: env.logger,
     discovery: env.discovery,
-    policy: new AllowAllPermissionPolicy(),
-    identity: IdentityClient.create({
-      discovery: env.discovery,
-      issuer: await env.discovery.getExternalBaseUrl('auth'),
-    }),
+    policy: new ExamplePermissionPolicy(),
+    identity: env.identity,
   });
 }

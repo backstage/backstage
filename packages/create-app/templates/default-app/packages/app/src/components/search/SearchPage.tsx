@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+import { makeStyles, Theme, Grid, Paper } from '@material-ui/core';
 
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
@@ -8,14 +8,14 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
+import { SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
   SearchFilter,
   SearchResult,
-  SearchType,
-  DefaultResultListItem,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  SearchPagination,
+  useSearch,
+} from '@backstage/plugin-search-react';
 import {
   CatalogIcon,
   Content,
@@ -109,39 +109,10 @@ const SearchPage = () => {
             </Paper>
           </Grid>
           <Grid item xs={9}>
+            <SearchPagination />
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
           </Grid>
         </Grid>

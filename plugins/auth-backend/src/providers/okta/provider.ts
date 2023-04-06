@@ -26,7 +26,7 @@ import {
   OAuthRefreshRequest,
   OAuthResult,
 } from '../../lib/oauth';
-import { Strategy as OktaStrategy } from 'passport-okta-oauth';
+import { Strategy as OktaStrategy } from '@davidzemon/passport-okta-oauth';
 import passport from 'passport';
 import {
   executeFrameHandlerStrategy,
@@ -38,7 +38,7 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -55,6 +55,8 @@ type PrivateInfo = {
 
 export type OktaAuthProviderOptions = OAuthProviderOptions & {
   audience: string;
+  authServerId?: string;
+  idp?: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
@@ -94,6 +96,8 @@ export class OktaAuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         audience: options.audience,
+        authServerID: options.authServerId,
+        idp: options.idp,
         passReqToCallback: false,
         store: this.store,
         response_type: 'code',
@@ -121,7 +125,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
@@ -193,28 +197,6 @@ export class OktaAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type OktaProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for Okta auth
  *
  * @public
@@ -242,6 +224,8 @@ export const okta = createAuthProviderIntegration({
         const clientId = envConfig.getString('clientId');
         const clientSecret = envConfig.getString('clientSecret');
         const audience = envConfig.getString('audience');
+        const authServerId = envConfig.getOptionalString('authServerId');
+        const idp = envConfig.getOptionalString('idp');
         const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
         const callbackUrl =
           customCallbackUrl ||
@@ -262,6 +246,8 @@ export const okta = createAuthProviderIntegration({
 
         const provider = new OktaAuthProvider({
           audience,
+          authServerId,
+          idp,
           clientId,
           clientSecret,
           callbackUrl,
@@ -305,16 +291,3 @@ export const okta = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.okta.create` instead
- */
-export const createOktaProvider = okta.create;
-
-/**
- * @public
- * @deprecated Use `providers.okta.resolvers.emailMatchingUserEntityAnnotation()` instead.
- */
-export const oktaEmailSignInResolver =
-  okta.resolvers.emailMatchingUserEntityAnnotation();

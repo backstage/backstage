@@ -16,9 +16,10 @@
 import React from 'react';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
 import LinkIcon from '@material-ui/icons/Link';
-import { Link as RouterLink } from '../Link';
+import { Link } from '../Link';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
@@ -47,7 +48,7 @@ const useIconStyles = makeStyles(
       textAlign: 'center',
     },
     disabled: {
-      color: 'gray',
+      color: theme.palette.text.secondary,
       cursor: 'default',
     },
     primary: {
@@ -57,9 +58,8 @@ const useIconStyles = makeStyles(
       color: theme.palette.secondary.main,
     },
     label: {
-      fontSize: '0.7rem',
       textTransform: 'uppercase',
-      fontWeight: 600,
+      fontWeight: theme.typography.fontWeightBold,
       letterSpacing: 1.2,
     },
   }),
@@ -80,14 +80,16 @@ export function IconLinkVertical({
 
   if (disabled) {
     return (
-      <Link
-        title={title}
-        className={classnames(classes.link, classes.disabled)}
-        underline="none"
-      >
+      <Box title={title} className={classnames(classes.link, classes.disabled)}>
         {icon}
-        <span className={classes.label}>{label}</span>
-      </Link>
+        <Typography
+          variant="caption"
+          component="span"
+          className={classes.label}
+        >
+          {label}
+        </Typography>
+      </Box>
     );
   }
 
@@ -96,11 +98,12 @@ export function IconLinkVertical({
       title={title}
       className={classnames(classes.link, classes[color])}
       to={href}
-      component={RouterLink}
       onClick={onClick}
     >
       {icon}
-      <span className={classes.label}>{label}</span>
+      <Typography variant="caption" component="span" className={classes.label}>
+        {label}
+      </Typography>
     </Link>
   );
 }

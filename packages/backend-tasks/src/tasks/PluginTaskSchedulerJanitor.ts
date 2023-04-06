@@ -16,7 +16,6 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { sleep } from './util';
@@ -53,25 +52,37 @@ export class PluginTaskSchedulerJanitor {
   }
 
   private async runOnce() {
-    // SQLite currently (Oct 1 2021) returns a number for returning()
-    // statements, effectively ignoring them and instead returning the outcome
-    // of the delete() - and knex also emits a warning about that fact, which
-    // is why we avoid that entirely for the sqlite3 family of drivers.
-    // https://github.com/knex/knex/issues/4370
-    // https://github.com/mapbox/node-sqlite3/issues/1453
-
     const dbNull = this.knex.raw('null');
+    const configClient = this.knex.client.config.client;
 
-    const tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
-      .where('current_run_expires_at', '<', this.knex.fn.now())
-      .update({
-        current_run_ticket: dbNull,
-        current_run_started_at: dbNull,
-        current_run_expires_at: dbNull,
-      })
-      .returning(['id']);
+    let tasks: Array<{ id: string }>;
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
+      tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .select('id')
+        .where('current_run_expires_at', '<', this.knex.fn.now());
+      await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .whereIn(
+          'id',
+          tasks.map(t => t.id),
+        )
+        .update({
+          current_run_ticket: dbNull,
+          current_run_started_at: dbNull,
+          current_run_expires_at: dbNull,
+        });
+    } else {
+      tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .where('current_run_expires_at', '<', this.knex.fn.now())
+        .update({
+          current_run_ticket: dbNull,
+          current_run_started_at: dbNull,
+          current_run_expires_at: dbNull,
+        })
+        .returning(['id']);
+    }
 
-    // sqlite ignores "returning", returns number of rows changed instead
+    // In rare cases, knex drivers may ignore "returning", and return the number
+    // of rows changed instead
     if (typeof tasks === 'number') {
       if (tasks > 0) {
         this.logger.warn(`${tasks} tasks timed out and were lost`);

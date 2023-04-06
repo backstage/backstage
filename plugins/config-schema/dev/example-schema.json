@@ -19,12 +19,6 @@
           "visibility": "frontend",
           "description": "The title of the app."
         },
-        "googleAnalyticsTrackingId": {
-          "type": "string",
-          "visibility": "frontend",
-          "description": "Tracking ID for Google Analytics",
-          "examples": ["UA-000000-0"]
-        },
         "listen": {
           "type": "object",
           "description": "Listening configuration for local development",
@@ -499,28 +493,6 @@
         }
       }
     },
-    "homepage": {
-      "type": "object",
-      "properties": {
-        "clocks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["label", "timezone"],
-            "properties": {
-              "label": {
-                "visibility": "frontend",
-                "type": "string"
-              },
-              "timezone": {
-                "visibility": "frontend",
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
     "integrations": {
       "description": "Configuration for integrations towards various external repository provider systems",
       "type": "object",
@@ -687,7 +659,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "Rules to apply to all catalog entities, from any location.\n\nAn undefined list of matchers means match all, an empty list of\nmatchers means match none.\n\nThis is commonly used to put in what amounts to a whitelist of kinds\nthat regular users of Backstage are permitted to register locations\nfor. This can be used to stop them from registering yaml files\ndescribing for example a Group entity called \"admin\" that they make\nthemselves members of, or similar.",
+          "description": "Rules to apply to all catalog entities, from any location.\n\nAn undefined list of matchers means match all, an empty list of\nmatchers means match none.\n\nThis is commonly used to put in what amounts to an allowlist of kinds\nthat regular users of Backstage are permitted to register locations\nfor. This can be used to stop them from registering yaml files\ndescribing for example a Group entity called \"admin\" that they make\nthemselves members of, or similar.",
           "type": "array",
           "items": {
             "type": "object",

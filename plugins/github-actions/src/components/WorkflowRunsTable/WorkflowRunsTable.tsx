@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import {
-  Link,
   Typography,
   Box,
   IconButton,
@@ -31,9 +30,14 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../routes';
 import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { Entity } from '@backstage/catalog-model';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 
-import { EmptyState, Table, TableColumn } from '@backstage/core-components';
+import {
+  EmptyState,
+  Table,
+  TableColumn,
+  Link,
+} from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const generatedColumns: TableColumn[] = [
@@ -64,8 +68,12 @@ const generatedColumns: TableColumn[] = [
     title: 'Source',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.source?.branchName}</p>
-        <p>{row.source?.commit.hash}</p>
+        <Typography paragraph variant="body2">
+          {row.source?.branchName}
+        </Typography>
+        <Typography paragraph variant="body2">
+          {row.source?.commit.hash}
+        </Typography>
       </Typography>
     ),
   },
@@ -159,7 +167,7 @@ export const WorkflowRunsTable = ({
   const config = useApi(configApiRef);
   const projectName = getProjectNameFromEntity(entity);
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName ?? '/').split('/');

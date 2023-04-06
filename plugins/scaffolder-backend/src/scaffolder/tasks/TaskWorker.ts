@@ -15,12 +15,13 @@
  */
 
 import { TaskContext, TaskBroker, WorkflowRunner } from './types';
+import PQueue from 'p-queue';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import { TemplateFilter } from '../../lib/templating/SecureTemplater';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
 
 /**
  * TaskWorkerOptions
@@ -32,6 +33,7 @@ export type TaskWorkerOptions = {
   runners: {
     workflowRunner: WorkflowRunner;
   };
+  concurrentTasksLimit: number;
 };
 
 /**
@@ -46,6 +48,20 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  /**
+   * The number of tasks that can be executed at the same time by the worker
+   * @defaultValue 10
+   * @example
+   * ```
+   * {
+   *   concurrentTasksLimit: 1,
+   *   // OR
+   *   concurrentTasksLimit: Infinity
+   * }
+   * ```
+   */
+  concurrentTasksLimit?: number;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
 /**
@@ -56,6 +72,10 @@ export type CreateWorkerOptions = {
 export class TaskWorker {
   private constructor(private readonly options: TaskWorkerOptions) {}
 
+  private taskQueue: PQueue = new PQueue({
+    concurrency: this.options.concurrentTasksLimit,
+  });
+
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
       taskBroker,
@@ -64,6 +84,8 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
+      concurrentTasksLimit = 10, // from 1 to Infinity
+      additionalTemplateGlobals,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -72,21 +94,37 @@ export class TaskWorker {
       logger,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
     });
 
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
+      concurrentTasksLimit,
     });
   }
 
   start() {
     (async () => {
       for (;;) {
+        await this.onReadyToClaimTask();
         const task = await this.options.taskBroker.claim();
-        await this.runOneTask(task);
+        this.taskQueue.add(() => this.runOneTask(task));
       }
     })();
+  }
+
+  protected onReadyToClaimTask(): Promise<void> {
+    if (this.taskQueue.pending < this.options.concurrentTasksLimit) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      // "next" event emits when a task completes
+      // https://github.com/sindresorhus/p-queue#next
+      this.taskQueue.once('next', () => {
+        resolve();
+      });
+    });
   }
 
   async runOneTask(task: TaskContext) {

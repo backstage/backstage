@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -22,7 +22,7 @@ import {
   EntityProviderConnection,
   LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import fetch, { Response } from 'node-fetch';
 import {
   GerritIntegration,
@@ -49,9 +49,14 @@ export class GerritEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): GerritEntityProvider[] {
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
     const providerConfigs = readGerritConfigs(configRoot);
     const integrations = ScmIntegrations.fromConfig(configRoot).gerrit;
     const providers: GerritEntityProvider[] = [];
@@ -63,12 +68,23 @@ export class GerritEntityProvider implements EntityProvider {
           `No gerrit integration found that matches host ${providerConfig.host}`,
         );
       }
+
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for gerrit-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       providers.push(
         new GerritEntityProvider(
           providerConfig,
           integration,
           options.logger,
-          options.schedule,
+          taskRunner,
         ),
       );
     });
@@ -79,14 +95,14 @@ export class GerritEntityProvider implements EntityProvider {
     config: GerritProviderConfig,
     integration: GerritIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.config = config;
     this.integration = integration;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
   getProviderName(): string {
@@ -98,10 +114,10 @@ export class GerritEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -113,7 +129,7 @@ export class GerritEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

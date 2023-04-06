@@ -20,7 +20,7 @@ import { BitriseBuildDetailsDialog } from './BitriseBuildDetailsDialog';
 import { BitriseBuildResult } from '../../api/bitriseApi.model';
 
 jest.mock('../BitriseArtifactsComponent', () => ({
-  BitriseArtifactsComponent: (_props: { build: string }) => <></>,
+  BitriseArtifactsComponent: (_props: { build: string }) => <>VISIBLE</>,
 }));
 
 describe('BitriseArtifactsComponent', () => {
@@ -42,18 +42,14 @@ describe('BitriseArtifactsComponent', () => {
     expect(await rendered.findByTestId('btn')).toBeInTheDocument();
   });
 
-  it('should change the state when the button is clicked', async () => {
-    const setOpen = jest.fn();
-    const useStateMock: any = (initState: any) => [initState, setOpen];
-
-    jest.spyOn(React, 'useState').mockImplementation(useStateMock);
-
+  it('should open the modal when clicked to render the ArtifactsComponent', async () => {
     const rendered = renderComponent();
-
     const btn = await rendered.findByTestId('btn');
+
+    expect(rendered.queryByText('VISIBLE')).not.toBeInTheDocument();
 
     btn.click();
 
-    expect(setOpen).toHaveBeenCalled();
+    expect(rendered.getByText('VISIBLE')).toBeInTheDocument();
   });
 });

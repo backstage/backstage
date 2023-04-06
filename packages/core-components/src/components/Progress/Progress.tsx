@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
 import LinearProgress, {
   LinearProgressProps,
 } from '@material-ui/core/LinearProgress';
+import { useTheme } from '@material-ui/core/styles';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
+  const theme = useTheme<BackstageTheme>();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handle = setTimeout(() => setIsVisible(true), 250);
+    const handle = setTimeout(
+      () => setIsVisible(true),
+      theme.transitions.duration.short,
+    );
     return () => clearTimeout(handle);
-  }, []);
+  }, [theme.transitions.duration.short]);
 
   return isVisible ? (
     <LinearProgress {...props} data-testid="progress" />
   ) : (
-    <div style={{ display: 'none' }} />
+    <Box display="none" />
   );
 }

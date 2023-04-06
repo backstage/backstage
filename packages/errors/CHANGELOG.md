@@ -1,5 +1,117 @@
 # @backstage/errors
 
+## 1.1.5
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4
+
+### Patch Changes
+
+- ac6cc9f7bd: Removed a circular import
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 1.1.0
+
+### Minor Changes
+
+- 6d61b44466: The `ResponseError.fromResponse` now accepts a more narrow response type, in order to avoid incompatibilities between different fetch implementations.
+
+  The `response` property of `ResponseError` has also been narrowed to a new `ConsumedResponse` type that omits all the properties for consuming the body of the response. This is not considered a breaking change as it was always an error to try to consume the body of the response.
+
+### Patch Changes
+
+- c1a8bbf5e5: Inline the type of `ConsumedResponse.headers` and tweaked it to be the intersection of the built-in type and `node-fetch` type.
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 6d61b44466: The `ResponseError.fromResponse` now accepts a more narrow response type, in order to avoid incompatibilities between different fetch implementations.
+
+  The `response` property of `ResponseError` has also been narrowed to a new `ConsumedResponse` type that omits all the properties for consuming the body of the response. This is not considered a breaking change as it was always an error to try to consume the body of the response.
+
 ## 1.0.0
 
 ### Major Changes

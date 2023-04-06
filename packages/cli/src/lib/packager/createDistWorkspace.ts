@@ -22,7 +22,7 @@ import {
   relative as relativePath,
 } from 'path';
 import { tmpdir } from 'os';
-import tar, { CreateOptions } from 'tar';
+import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../paths';
 import { run } from '../run';
@@ -37,8 +37,9 @@ import {
   getOutputsForRole,
   Output,
 } from '../builder';
-import { copyPackageDist } from './copyPackageDist';
+import { productionPack } from './productionPack';
 import { getRoleInfo } from '../role';
+import { runParallelWorkers } from '../parallel';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -58,6 +59,11 @@ type Options = {
    * Target directory for the dist workspace, defaults to a temporary directory
    */
   targetDir?: string;
+
+  /**
+   * Configuration files to load during packaging.
+   */
+  configPaths?: string[];
 
   /**
    * Files to copy into the target workspace.
@@ -87,6 +93,14 @@ type Options = {
    */
   skeleton?: 'skeleton.tar' | 'skeleton.tar.gz';
 };
+
+function prefixLogFunc(prefix: string, out: 'stdout' | 'stderr') {
+  return (data: Buffer) => {
+    for (const line of data.toString('utf8').split(/\r?\n/)) {
+      process[out].write(`${prefix} ${line}\n`);
+    }
+  };
+}
 
 /**
  * Uses `yarn pack` to package local packages and unpacks them into a dist workspace.
@@ -118,13 +132,18 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
+    const configPaths = options.configPaths ?? [];
 
     const toBuild = new Set(
       targets.map(_ => _.name).filter(name => !exclude.includes(name)),
     );
 
     const standardBuilds = new Array<BuildOptions>();
-    const customBuild = new Array<string>();
+    const customBuild = new Array<{
+      dir: string;
+      name: string;
+      args?: string[];
+    }>();
 
     for (const pkg of packages) {
       if (!toBuild.has(pkg.packageJson.name)) {
@@ -135,13 +154,13 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it has no role`,
         );
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
       const buildScript = pkg.packageJson.scripts?.build;
       if (!buildScript) {
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
@@ -149,7 +168,7 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it has a custom build script, '${buildScript}'`,
         );
-        customBuild.push(pkg.packageJson.name);
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
         continue;
       }
 
@@ -157,7 +176,10 @@ export async function createDistWorkspace(
         console.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
-        customBuild.push(pkg.packageJson.name);
+        const args = buildScript.includes('--config')
+          ? []
+          : configPaths.map(p => ['--config', p]).flat();
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name, args });
         continue;
       }
 
@@ -169,6 +191,7 @@ export async function createDistWorkspace(
       if (outputs.size > 0) {
         standardBuilds.push({
           targetDir: pkg.dir,
+          packageJson: pkg.packageJson,
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           // No need to detect these for the backend builds, we assume no minification or types
@@ -181,14 +204,15 @@ export async function createDistWorkspace(
     await buildPackages(standardBuilds);
 
     if (customBuild.length > 0) {
-      const scopeArgs = customBuild.flatMap(name => ['--scope', name]);
-      const lernaArgs =
-        options.parallelism && Number.isInteger(options.parallelism)
-          ? ['--concurrency', options.parallelism.toString()]
-          : [];
-
-      await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
-        cwd: paths.targetRoot,
+      await runParallelWorkers({
+        items: customBuild,
+        worker: async ({ name, dir, args }) => {
+          await run('yarn', ['run', 'build', ...(args || [])], {
+            cwd: dir,
+            stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
+            stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
+          });
+        },
       });
     }
   }
@@ -204,10 +228,12 @@ export async function createDistWorkspace(
   }
 
   if (options.skeleton) {
-    const skeletonFiles = targets.map(target => {
-      const dir = relativePath(paths.targetRoot, target.dir);
-      return joinPath(dir, 'package.json');
-    });
+    const skeletonFiles = targets
+      .map(target => {
+        const dir = relativePath(paths.targetRoot, target.dir);
+        return joinPath(dir, 'package.json');
+      })
+      .sort();
 
     await tar.create(
       {
@@ -216,7 +242,7 @@ export async function createDistWorkspace(
         portable: true,
         noMtime: true,
         gzip: options.skeleton.endsWith('.gz'),
-      } as CreateOptions & { noMtime: boolean },
+      } as CreateOptions & FileOptions & { noMtime: boolean },
       skeletonFiles,
     );
   }
@@ -245,7 +271,10 @@ async function moveToDistWorkspace(
 
       const outputDir = relativePath(paths.targetRoot, target.dir);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
-      await copyPackageDist(target.dir, absoluteOutputPath);
+      await productionPack({
+        packageDir: target.dir,
+        targetDir: absoluteOutputPath,
+      });
     }),
   );
 

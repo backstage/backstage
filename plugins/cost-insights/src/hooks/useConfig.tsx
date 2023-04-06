@@ -22,10 +22,11 @@ import React, {
   useState,
 } from 'react';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, Icon, Metric, Product } from '../types';
+import { Currency, EngineerThreshold, Icon } from '../types';
+import { Metric, Product } from '@backstage/plugin-cost-insights-common';
 import { getIcon } from '../utils/navigation';
 import { validateCurrencies, validateMetrics } from '../utils/config';
-import { defaultCurrencies } from '../utils/currency';
+import { createCurrencyFormat, defaultCurrencies } from '../utils/currency';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /*
@@ -46,6 +47,11 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       default: true
  *     metricB:
  *       name: Metric B
+ *   baseCurrency:
+ *     locale: nl-NL
+ *     options:
+ *       currency: EUR
+ *       minimumFractionDigits: 3
  *   currencies:
  *     currencyA:
  *       label: Currency A
@@ -58,11 +64,14 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *       rate: 3.5
  */
 
+/** @public */
 export type ConfigContextProps = {
+  baseCurrency: Intl.NumberFormat;
   metrics: Metric[];
   products: Product[];
   icons: Icon[];
   engineerCost: number;
+  engineerThreshold: number;
   currencies: Currency[];
 };
 
@@ -71,10 +80,12 @@ export const ConfigContext = createContext<ConfigContextProps | undefined>(
 );
 
 const defaultState: ConfigContextProps = {
+  baseCurrency: createCurrencyFormat(),
   metrics: [],
   products: [],
   icons: [],
   engineerCost: 0,
+  engineerThreshold: EngineerThreshold,
   currencies: defaultCurrencies,
 };
 
@@ -85,12 +96,15 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
 
   useEffect(() => {
     function getProducts(): Product[] {
-      const products = c.getConfig('costInsights.products');
-      return products.keys().map(key => ({
-        kind: key,
-        name: products.getString(`${key}.name`),
-        aggregation: [0, 0],
-      }));
+      const products = c.getOptionalConfig('costInsights.products');
+      if (products) {
+        return products.keys().map(key => ({
+          kind: key,
+          name: products.getString(`${key}.name`),
+          aggregation: [0, 0],
+        }));
+      }
+      return [];
     }
 
     function getMetrics(): Metric[] {
@@ -104,6 +118,42 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       }
 
       return [];
+    }
+
+    function getBaseCurrency(): Intl.NumberFormat {
+      const baseCurrency = c.getOptionalConfig('costInsights.baseCurrency');
+      if (baseCurrency) {
+        const options = baseCurrency.getOptionalConfig('options');
+        return new Intl.NumberFormat(
+          baseCurrency.getOptionalString('locale'),
+          options
+            ? {
+                localeMatcher: options.getOptionalString('localeMatcher'),
+                style: 'currency',
+                currency: options.getOptionalString('currency'),
+                currencySign: options.getOptionalString('currencySign'),
+                useGrouping: options.getOptionalBoolean('useGrouping'),
+                minimumIntegerDigits: options.getOptionalNumber(
+                  'minimumIntegerDigits',
+                ),
+                minimumFractionDigits: options.getOptionalNumber(
+                  'minimumFractionDigits',
+                ),
+                maximumFractionDigits: options.getOptionalNumber(
+                  'maximumFractionDigits',
+                ),
+                minimumSignificantDigits: options.getOptionalNumber(
+                  'minimumSignificantDigits',
+                ),
+                maximumSignificantDigits: options.getOptionalNumber(
+                  'maximumSignificantDigits',
+                ),
+              }
+            : undefined,
+        );
+      }
+
+      return defaultState.baseCurrency;
     }
 
     function getCurrencies(): Currency[] {
@@ -122,23 +172,33 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
     }
 
     function getIcons(): Icon[] {
-      const products = c.getConfig('costInsights.products');
-      const keys = products.keys();
-
-      return keys.map(k => ({
-        kind: k,
-        component: getIcon(products.getOptionalString(`${k}.icon`)),
-      }));
+      const products = c.getOptionalConfig('costInsights.products');
+      if (products) {
+        return products.keys().map(k => ({
+          kind: k,
+          component: getIcon(products.getOptionalString(`${k}.icon`)),
+        }));
+      }
+      return [];
     }
 
     function getEngineerCost(): number {
       return c.getNumber('costInsights.engineerCost');
     }
 
+    function getEngineerThreshold(): number {
+      return (
+        c.getOptionalNumber('costInsights.engineerThreshold') ??
+        defaultState.engineerThreshold
+      );
+    }
+
     function getConfig() {
+      const baseCurrency = getBaseCurrency();
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
+      const engineerThreshold = getEngineerThreshold();
       const icons = getIcons();
       const currencies = getCurrencies();
 
@@ -147,9 +207,11 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
 
       setConfig(prevState => ({
         ...prevState,
+        baseCurrency,
         metrics,
         products,
         engineerCost,
+        engineerThreshold,
         icons,
         currencies,
       }));

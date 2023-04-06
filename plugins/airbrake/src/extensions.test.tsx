@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityAirbrakeContent } from './extensions';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { airbrakeApiRef, MockAirbrakeApi } from './api';
 import { createEntity } from './api';
@@ -26,7 +26,9 @@ describe('The Airbrake entity', () => {
     const rendered = await renderInTestApp(
       <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
         <EntityProvider entity={createEntity(123)}>
-          <Route path="/" element={<EntityAirbrakeContent />} />
+          <Routes>
+            <Route path="/" element={<EntityAirbrakeContent />} />
+          </Routes>
         </EntityProvider>
       </TestApiProvider>,
     );

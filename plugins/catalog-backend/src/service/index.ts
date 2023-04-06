@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export type { CatalogEnvironment } from './CatalogBuilder';
+export type {
+  CatalogEnvironment,
+  CatalogPermissionRuleInput,
+} from './CatalogBuilder';
 export { CatalogBuilder } from './CatalogBuilder';

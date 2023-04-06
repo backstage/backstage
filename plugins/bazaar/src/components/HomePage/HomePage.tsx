@@ -16,27 +16,39 @@
 
 import React from 'react';
 import { Header, RoutedTabs } from '@backstage/core-components';
-import { Route } from 'react-router-dom';
 import { SortView } from '../SortView';
 import { About } from '../About';
 
-export const HomePage = () => {
+/** @public */
+export type HomePageProps = {
+  title?: string;
+  subtitle?: string;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
+
+export const HomePage = (props: HomePageProps) => {
+  const { title, subtitle, fullWidth, fullHeight } = props;
+
   const tabContent = [
     {
       path: '/',
       title: 'Home',
-      children: <Route path="/" element={<SortView />} />,
+      children: <SortView fullWidth={fullWidth} fullHeight={fullHeight} />,
     },
     {
       path: '/about',
       title: 'About',
-      children: <Route path="/about" element={<About />} />,
+      children: <About />,
     },
   ];
 
   return (
     <div>
-      <Header title="Bazaar" subtitle="Marketplace for inner source projects" />
+      <Header
+        title={title || 'Bazaar'}
+        subtitle={subtitle || 'Marketplace for inner source projects'}
+      />
       <RoutedTabs routes={tabContent} />
     </div>
   );

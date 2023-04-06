@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  FactSchema,
   TechInsightFact,
   FlatTechInsightFact,
   FactSchemaDefinition,
   FactLifecycle,
 } from './facts';
 import { DateTime } from 'luxon';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 
 /**
  * TechInsights Database
@@ -38,11 +38,7 @@ export interface TechInsightsStore {
    * @param facts - A collection of TechInsightFacts
    * @param lifecycle - (Optional) Fact lifecycle object indicating the expiration logic for these items
    */
-  insertFacts({
-    id,
-    facts,
-    lifecycle,
-  }: {
+  insertFacts(options: {
     id: string;
     facts: TechInsightFact[];
     lifecycle?: FactLifecycle;

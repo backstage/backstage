@@ -13,36 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AlertSource,
-  Incident,
-  User,
-  IncidentStatus,
-  UptimeMonitor,
-  EscalationPolicy,
-  Schedule,
-  IncidentResponder,
-  IncidentAction,
-  OnCall,
-} from '../types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+import {
+  Alert,
+  AlertAction,
+  AlertResponder,
+  AlertSource,
+  AlertStatus,
+  EscalationPolicy,
+  OnCall,
+  Schedule,
+  Service,
+  StatusPage,
+  User,
+} from '../types';
+
+/** @public */
 export type TableState = {
   page: number;
   pageSize: number;
 };
 
-export type GetIncidentsOpts = {
+/** @public */
+export type GetAlertsOpts = {
   maxResults?: number;
   startIndex?: number;
-  states?: IncidentStatus[];
+  states?: AlertStatus[];
   alertSources?: number[];
 };
 
-export type GetIncidentsCountOpts = {
-  states?: IncidentStatus[];
+/** @public */
+export type GetAlertsCountOpts = {
+  states?: AlertStatus[];
 };
 
+/** @public */
+export type GetServicesOpts = {
+  maxResults?: number;
+  startIndex?: number;
+};
+
+/** @public */
+export type GetStatusPagesOpts = {
+  maxResults?: number;
+  startIndex?: number;
+};
+
+/** @public */
 export type EventRequest = {
   integrationKey: string;
   summary: string;
@@ -51,28 +68,18 @@ export type EventRequest = {
   source: string;
 };
 
+/** @public */
 export interface ILertApi {
-  fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
-  fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
-  fetchIncident(id: number): Promise<Incident>;
-  fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
-  fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
-  acceptIncident(incident: Incident, userName: string): Promise<Incident>;
-  resolveIncident(incident: Incident, userName: string): Promise<Incident>;
-  assignIncident(
-    incident: Incident,
-    responder: IncidentResponder,
-  ): Promise<Incident>;
-  createIncident(eventRequest: EventRequest): Promise<boolean>;
-  triggerIncidentAction(
-    incident: Incident,
-    action: IncidentAction,
-  ): Promise<void>;
-
-  fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
-  pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  resumeUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
-  fetchUptimeMonitor(id: number): Promise<UptimeMonitor>;
+  fetchAlerts(opts?: GetAlertsOpts): Promise<Alert[]>;
+  fetchAlertsCount(opts?: GetAlertsCountOpts): Promise<number>;
+  fetchAlert(id: number): Promise<Alert>;
+  fetchAlertResponders(alert: Alert): Promise<AlertResponder[]>;
+  fetchAlertActions(alert: Alert): Promise<AlertAction[]>;
+  acceptAlert(alert: Alert, userName: string): Promise<Alert>;
+  resolveAlert(alert: Alert, userName: string): Promise<Alert>;
+  assignAlert(alert: Alert, responder: AlertResponder): Promise<Alert>;
+  createAlert(eventRequest: EventRequest): Promise<boolean>;
+  triggerAlertAction(alert: Alert, action: AlertAction): Promise<void>;
 
   fetchAlertSources(): Promise<AlertSource[]>;
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
@@ -95,26 +102,17 @@ export interface ILertApi {
     end: string,
   ): Promise<Schedule>;
 
-  getIncidentDetailsURL(incident: Incident): string;
+  fetchServices(opts?: GetServicesOpts): Promise<Service[]>;
+
+  fetchStatusPages(opts?: GetStatusPagesOpts): Promise<StatusPage[]>;
+
+  getAlertDetailsURL(alert: Alert): string;
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string;
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
-  getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
   getScheduleDetailsURL(schedule: Schedule): string;
+  getServiceDetailsURL(service: Service): string;
+  getStatusPageDetailsURL(statusPage: StatusPage): string;
+  getStatusPageURL(statusPage: StatusPage): string;
   getUserPhoneNumber(user: User | null): string;
   getUserInitials(user: User | null): string;
 }
-
-export type Options = {
-  discoveryApi: DiscoveryApi;
-
-  /**
-   * URL used by users to access iLert web UI.
-   * Example: https://my-org.ilert.com/
-   */
-  baseUrl: string;
-
-  /**
-   * Path to use for requests via the proxy, defaults to /ilert/api
-   */
-  proxyPath: string;
-};

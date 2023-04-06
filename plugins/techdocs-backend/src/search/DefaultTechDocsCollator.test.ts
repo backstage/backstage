@@ -74,144 +74,145 @@ const expectedEntities: Entity[] = [
   },
 ];
 
-describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
-  let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
-  let mockTokenManager: jest.Mocked<TokenManager>;
-  let collator: DefaultTechDocsCollator;
-
+describe('TechDocs Collator', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
-  beforeEach(() => {
-    mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-      getExternalBaseUrl: jest.fn(),
-    };
-    mockTokenManager = {
-      getToken: jest.fn().mockResolvedValue({ token: '' }),
-      authenticate: jest.fn(),
-    };
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        legacyUseCaseSensitiveTripletPaths: true,
-      },
-    });
-    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
-      discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
-      logger,
-      legacyPathCasing: true,
-    });
 
-    worker.use(
-      rest.get(
-        'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
-        (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
-      ),
-      rest.get('http://test-backend/entities', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json(expectedEntities)),
-      ),
-    );
-  });
+  describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
+    let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+    let mockTokenManager: jest.Mocked<TokenManager>;
+    let collator: DefaultTechDocsCollator;
 
-  it('fetches from the configured catalog and tech docs services', async () => {
-    const documents = await collator.execute();
-    expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
-    expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('techdocs');
-    expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
-  });
-
-  it('should create documents for each tech docs search index', async () => {
-    const documents = await collator.execute();
-    const entity = expectedEntities[0];
-    documents.forEach((document, idx) => {
-      expect(document).toMatchObject({
-        title: mockSearchDocIndex.docs[idx].title,
-        location: `/docs/default/Component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
-        text: mockSearchDocIndex.docs[idx].text,
-        namespace: 'default',
-        entityTitle: entity!.metadata.title,
-        componentType: entity!.spec!.type,
-        lifecycle: entity!.spec!.lifecycle,
-        owner: '',
-        kind: entity.kind,
-        name: entity.metadata.name,
-      });
-    });
-  });
-});
-
-describe('DefaultTechDocsCollator', () => {
-  let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
-  let mockTokenManager: jest.Mocked<TokenManager>;
-  let collator: DefaultTechDocsCollator;
-
-  const worker = setupServer();
-  setupRequestMockHandlers(worker);
-  beforeEach(() => {
-    mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-      getExternalBaseUrl: jest.fn(),
-    };
-    mockTokenManager = {
-      getToken: jest.fn().mockResolvedValue({ token: '' }),
-      authenticate: jest.fn(),
-    };
-    collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
-      discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
-      logger,
-    });
-
-    worker.use(
-      rest.get(
-        'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
-        (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
-      ),
-      rest.get('http://test-backend/entities', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json(expectedEntities)),
-      ),
-    );
-  });
-
-  it('should create documents for each tech docs search index', async () => {
-    const documents = await collator.execute();
-    const entity = expectedEntities[0];
-    documents.forEach((document, idx) => {
-      expect(document).toMatchObject({
-        title: mockSearchDocIndex.docs[idx].title,
-        location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
-        text: mockSearchDocIndex.docs[idx].text,
-        namespace: 'default',
-        entityTitle: entity!.metadata.title,
-        componentType: entity!.spec!.type,
-        lifecycle: entity!.spec!.lifecycle,
-        owner: '',
-        kind: entity.kind.toLocaleLowerCase('en-US'),
-        name: entity.metadata.name.toLocaleLowerCase('en-US'),
-        authorization: {
-          resourceRef: `component:default/${entity.metadata.name}`,
+    beforeEach(() => {
+      mockDiscoveryApi = {
+        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
+        getExternalBaseUrl: jest.fn(),
+      };
+      mockTokenManager = {
+        getToken: jest.fn().mockResolvedValue({ token: '' }),
+        authenticate: jest.fn(),
+      };
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          legacyUseCaseSensitiveTripletPaths: true,
         },
       });
+      collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
+        discovery: mockDiscoveryApi,
+        tokenManager: mockTokenManager,
+        logger,
+        legacyPathCasing: true,
+      });
+
+      worker.use(
+        rest.get(
+          'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+        ),
+        rest.get('http://test-backend/entities', (_, res, ctx) =>
+          res(ctx.status(200), ctx.json(expectedEntities)),
+        ),
+      );
+    });
+
+    it('fetches from the configured catalog and tech docs services', async () => {
+      const documents = await collator.execute();
+      expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('catalog');
+      expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('techdocs');
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
+    });
+
+    it('should create documents for each tech docs search index', async () => {
+      const documents = await collator.execute();
+      const entity = expectedEntities[0];
+      documents.forEach((document, idx) => {
+        expect(document).toMatchObject({
+          title: mockSearchDocIndex.docs[idx].title,
+          location: `/docs/default/Component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
+          text: mockSearchDocIndex.docs[idx].text,
+          namespace: 'default',
+          entityTitle: entity!.metadata.title,
+          componentType: entity!.spec!.type,
+          lifecycle: entity!.spec!.lifecycle,
+          owner: '',
+          kind: entity.kind,
+          name: entity.metadata.name,
+        });
+      });
     });
   });
 
-  it('maps a returned entity with a custom locationTemplate', async () => {
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        legacyUseCaseSensitiveTripletPaths: true,
-      },
-    });
-    // Provide an alternate location template.
-    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
-      discovery: mockDiscoveryApi,
-      tokenManager: mockTokenManager,
-      locationTemplate: '/software/:name',
-      logger,
+  describe('DefaultTechDocsCollator', () => {
+    let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+    let mockTokenManager: jest.Mocked<TokenManager>;
+    let collator: DefaultTechDocsCollator;
+
+    beforeEach(() => {
+      mockDiscoveryApi = {
+        getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
+        getExternalBaseUrl: jest.fn(),
+      };
+      mockTokenManager = {
+        getToken: jest.fn().mockResolvedValue({ token: '' }),
+        authenticate: jest.fn(),
+      };
+      collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
+        discovery: mockDiscoveryApi,
+        tokenManager: mockTokenManager,
+        logger,
+      });
+
+      worker.use(
+        rest.get(
+          'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
+          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+        ),
+        rest.get('http://test-backend/entities', (_, res, ctx) =>
+          res(ctx.status(200), ctx.json(expectedEntities)),
+        ),
+      );
     });
 
-    const documents = await collator.execute();
-    expect(documents[0]).toMatchObject({
-      location: '/software/test-entity-with-docs',
+    it('should create documents for each tech docs search index', async () => {
+      const documents = await collator.execute();
+      const entity = expectedEntities[0];
+      documents.forEach((document, idx) => {
+        expect(document).toMatchObject({
+          title: mockSearchDocIndex.docs[idx].title,
+          location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
+          text: mockSearchDocIndex.docs[idx].text,
+          namespace: 'default',
+          entityTitle: entity!.metadata.title,
+          componentType: entity!.spec!.type,
+          lifecycle: entity!.spec!.lifecycle,
+          owner: '',
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          name: entity.metadata.name.toLocaleLowerCase('en-US'),
+          authorization: {
+            resourceRef: `component:default/${entity.metadata.name}`,
+          },
+        });
+      });
+    });
+
+    it('maps a returned entity with a custom locationTemplate', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          legacyUseCaseSensitiveTripletPaths: true,
+        },
+      });
+      // Provide an alternate location template.
+      collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
+        discovery: mockDiscoveryApi,
+        tokenManager: mockTokenManager,
+        locationTemplate: '/software/:name',
+        logger,
+      });
+
+      const documents = await collator.execute();
+      expect(documents[0]).toMatchObject({
+        location: '/software/test-entity-with-docs',
+      });
     });
   });
 });

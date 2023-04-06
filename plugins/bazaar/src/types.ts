@@ -19,6 +19,7 @@ export type Member = {
   userId: string;
   joinDate?: string;
   picture?: string;
+  userRef?: string;
 };
 
 export type Status = 'ongoing' | 'proposed';
@@ -26,7 +27,7 @@ export type Status = 'ongoing' | 'proposed';
 export type Size = 'small' | 'medium' | 'large';
 
 export type BazaarProject = {
-  name: string;
+  title: string;
   id: number;
   entityRef?: string;
   community: string;
@@ -41,7 +42,7 @@ export type BazaarProject = {
 };
 
 export type FormValues = {
-  name: string;
+  title: string;
   description: string;
   community: string;
   status: string;

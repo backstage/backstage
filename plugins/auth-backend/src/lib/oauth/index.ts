@@ -15,6 +15,7 @@
  */
 
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
+export type { OAuthAdapterOptions } from './OAuthAdapter';
 export { OAuthAdapter } from './OAuthAdapter';
 export { encodeState, verifyNonce, readState } from './helpers';
 export type {
@@ -25,5 +26,6 @@ export type {
   OAuthState,
   OAuthStartRequest,
   OAuthRefreshRequest,
+  OAuthLogoutRequest,
   OAuthResult,
 } from './types';

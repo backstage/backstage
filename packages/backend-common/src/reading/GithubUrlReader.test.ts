@@ -17,8 +17,8 @@
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
-  GitHubIntegration,
-  readGitHubIntegrationConfig,
+  GithubIntegration,
+  readGithubIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -46,8 +46,8 @@ const mockCredentialsProvider = {
 } as unknown as GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
@@ -58,8 +58,8 @@ const githubProcessor = new GithubUrlReader(
 );
 
 const gheProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'ghe.github.com',
         apiBaseUrl: 'https://ghe.github.com/api/v3',
@@ -92,7 +92,7 @@ describe('GithubUrlReader', () => {
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        githubProcessor.read('https://not.github.com/apa'),
+        githubProcessor.readUrl('https://not.github.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
@@ -135,7 +135,7 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      await gheProcessor.read(
+      await gheProcessor.readUrl(
         'https://github.com/backstage/mock/tree/blob/main',
       );
     });
@@ -247,7 +247,7 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(/rate limit exceeded/);
     });
 
-    it('should return etag from the response', async () => {
+    it('should return etag and last-modified from the response', async () => {
       (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
         headers: {
           Authorization: 'bearer blah',
@@ -261,6 +261,11 @@ describe('GithubUrlReader', () => {
             return res(
               ctx.status(200),
               ctx.set('Etag', 'foo'),
+              ctx.set(
+                'Last-Modified',
+                new Date('2021-01-01T00:00:00Z').toUTCString(),
+              ),
+
               ctx.body('bar'),
             );
           },
@@ -271,6 +276,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/blob/main',
       );
       expect(response.etag).toBe('foo');
+      expect(response.lastModifiedAt).toEqual(new Date('2021-01-01T00:00:00Z'));
     });
   });
 
@@ -539,8 +545,8 @@ describe('GithubUrlReader', () => {
       expect(() => {
         /* eslint-disable no-new */
         new GithubUrlReader(
-          new GitHubIntegration(
-            readGitHubIntegrationConfig(
+          new GithubIntegration(
+            readGithubIntegrationConfig(
               new ConfigReader({
                 host: 'ghe.mycompany.net',
               }),
@@ -551,7 +557,7 @@ describe('GithubUrlReader', () => {
             credentialsProvider: mockCredentialsProvider,
           },
         );
-      }).toThrowError('must configure an explicit apiBaseUrl');
+      }).toThrow('must configure an explicit apiBaseUrl');
     });
   });
 

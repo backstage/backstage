@@ -16,16 +16,13 @@
 
 import React from 'react';
 
-type Classes = {
-  svg: string;
-  path: string;
-};
-
-type TemplateBackstageLogoProps = {
-  classes: Classes;
-};
-
-export const TemplateBackstageLogo = (props: TemplateBackstageLogoProps) => {
+/** @public */
+export const TemplateBackstageLogo = (props: {
+  classes: {
+    svg: string;
+    path: string;
+  };
+}) => {
   return (
     <svg
       className={props.classes.svg}

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 import { createDevApp } from '@backstage/dev-utils';
-import { newRelicDashboardPlugin } from './../src/plugin';
+import { newRelicDashboardPlugin } from '../src/plugin';
 
 createDevApp().registerPlugin(newRelicDashboardPlugin).render();

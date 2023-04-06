@@ -25,11 +25,14 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
+import { PassThrough } from 'stream';
+import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
+jest.useFakeTimers();
 
 jest.mock('node-fetch', () => ({
   __esModule: true,
@@ -74,11 +77,16 @@ describe('DocsSynchronizer', () => {
   } as unknown as jest.Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
+
   const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
     log: jest.fn(),
     finish: jest.fn(),
     error: jest.fn(),
   };
+
+  const mockBuildLogTransport = new winston.transports.Stream({
+    stream: new PassThrough(),
+  });
 
   beforeEach(async () => {
     publisher.docsRouter.mockReturnValue(() => {});
@@ -90,6 +98,7 @@ describe('DocsSynchronizer', () => {
       publisher,
       config: new ConfigReader({}),
       logger: getVoidLogger(),
+      buildLogTransport: mockBuildLogTransport,
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
     });
@@ -122,6 +131,8 @@ describe('DocsSynchronizer', () => {
 
         const logger = MockedDocsBuilder.mock.calls[0][0].logger;
 
+        jest.advanceTimersByTime(10001);
+
         logger.info('Some more log');
 
         return true;
@@ -136,19 +147,58 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(3);
-      expect(mockResponseHandler.log).toBeCalledWith('Some log');
-      expect(mockResponseHandler.log).toBeCalledWith('Another log');
-      expect(mockResponseHandler.log).toBeCalledWith(
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(4);
+      expect(mockResponseHandler.log).toHaveBeenCalledWith('Some log');
+      expect(mockResponseHandler.log).toHaveBeenCalledWith('Another log');
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(/info.*Some more log/),
       );
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /info.*The docs building process is taking a little bit longer to process this entity. Please bear with us/,
+        ),
+      );
 
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(1);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(0);
+
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(1);
+    });
+
+    it('should limit concurrent updates', async () => {
+      // Given a build implementation that runs long...
+      MockedDocsBuilder.prototype.build.mockImplementation(
+        () => new Promise(() => {}),
+      );
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          uid: '0',
+          name: 'test',
+          namespace: 'default',
+        },
+      };
+
+      // When more than 10 syncs are attempted...
+      for (let i = 0; i < 12; i++) {
+        docsSynchronizer.doSync({
+          responseHandler: mockResponseHandler,
+          entity,
+          preparers,
+          generators,
+        });
+      }
+
+      // Then still only 10 builds should have been triggered.
+      await new Promise<void>(resolve => resolve());
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(10);
     });
 
     it('should not check for an update too often', async () => {
@@ -171,13 +221,15 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(0);
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(0);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(0);
 
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
-      expect(DocsBuilder.prototype.build).toBeCalledTimes(0);
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
+      expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(0);
     });
 
     it('should forward build errors', async () => {
@@ -203,15 +255,15 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.log).toBeCalledTimes(1);
-      expect(mockResponseHandler.log).toBeCalledWith(
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(1);
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(
           /error.*: Failed to build the docs page: Some random error/,
         ),
       );
-      expect(mockResponseHandler.finish).toBeCalledTimes(0);
-      expect(mockResponseHandler.error).toBeCalledTimes(1);
-      expect(mockResponseHandler.error).toBeCalledWith(error);
+      expect(mockResponseHandler.finish).toHaveBeenCalledTimes(0);
+      expect(mockResponseHandler.error).toHaveBeenCalledTimes(1);
+      expect(mockResponseHandler.error).toHaveBeenCalledWith(error);
     });
   });
 
@@ -236,8 +288,10 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
-      expect(shouldCheckForUpdate).toBeCalledTimes(1);
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
+      expect(shouldCheckForUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should do nothing if source/cached metadata matches', async () => {
@@ -253,7 +307,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
     });
 
     it('should invalidate expected files when source/cached metadata differ', async () => {
@@ -270,7 +326,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
       expect(cache.invalidateMultiple).toHaveBeenCalledWith([
         'default/component/test/index.html',
       ]);
@@ -289,6 +347,9 @@ describe('DocsSynchronizer', () => {
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
         logger: getVoidLogger(),
+        buildLogTransport: new winston.transports.Stream({
+          stream: new PassThrough(),
+        }),
         scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
         cache,
       });
@@ -300,7 +361,9 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: true });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: true,
+      });
       expect(cache.invalidateMultiple).toHaveBeenCalledWith([
         'default/Component/test/index.html',
       ]);
@@ -319,7 +382,26 @@ describe('DocsSynchronizer', () => {
         entity,
       });
 
-      expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
+      expect(mockResponseHandler.finish).toHaveBeenCalledWith({
+        updated: false,
+      });
+    });
+
+    it("adds the build log transport to the logger's list of transports", async () => {
+      let logger: winston.Logger;
+      MockedDocsBuilder.prototype.build.mockImplementation(async () => {
+        logger = MockedDocsBuilder.mock.calls[0][0].logger;
+        expect(logger.transports).toContain(mockBuildLogTransport);
+
+        return true;
+      });
+
+      await docsSynchronizer.doSync({
+        responseHandler: mockResponseHandler,
+        entity,
+        preparers,
+        generators,
+      });
     });
   });
 });

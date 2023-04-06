@@ -9,7 +9,12 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga`
+
+```sh
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-analytics-module-ga
+```
+
 2. Wire up the API implementation to your App:
 
 ```tsx
@@ -169,6 +174,33 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
+### Enabling Site Search
+
+If you wish to see all of the search events in the [Site Search](https://support.google.com/analytics/answer/1012264)
+section of Google Analytics, you can enable sending virtual pageviews on every `search` event like so:
+
+```yaml
+app:
+  analytics:
+    ga:
+      virtualSearchPageView:
+        mode: only # Defaults to 'disabled'
+        mountPath: /virtual-search # Defaults to '/search'
+        searchQuery: term # Defaults to 'query'
+        categoryQuery: sc # Omitted by default
+```
+
+Available `mode`s are:
+
+- `disabled` - no virtual pageviews are sent, default behavior
+- `only` - sends virtual pageviews _instead_ of `search` events
+- `both` - sends both virtual pageviews _and_ `search` events
+
+Virtual pageviews will be sent to the path specified in the `mountPath`, the search term will be
+set as the value for query parameter `searchQuery` and category (if provided) will be set as the value for
+query parameter `categoryQuery`, e.g. the example config above will result in
+virtual pageviews being sent to `/virtual-search?term=SearchTermHere&sc=CategoryHere`.
+
 ### Debugging and Testing
 
 In pre-production environments, you may wish to set additional configurations
@@ -204,7 +236,7 @@ make and test changes is to do the following:
 Code for the isolated version of the plugin can be found inside the [/dev](./dev)
 directory. Changes to the plugin are hot-reloaded.
 
-#### Recommended Dev Config
+### Recommended Dev Config
 
 Paste this into your `app-config.local.yaml` while developing this plugin:
 

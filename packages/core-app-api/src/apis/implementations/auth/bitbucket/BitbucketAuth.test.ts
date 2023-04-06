@@ -17,6 +17,7 @@
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import BitbucketAuth from './BitbucketAuth';
+import { MockConfigApi } from '@backstage/test-utils';
 
 const getSession = jest.fn();
 
@@ -32,6 +33,8 @@ describe('BitbucketAuth', () => {
     jest.resetAllMocks();
   });
 
+  const configApi = new MockConfigApi({});
+
   it.each([
     ['team api write_repository', ['team', 'api', 'write_repository']],
     ['read_repository sudo', ['read_repository', 'sudo']],
@@ -39,6 +42,7 @@ describe('BitbucketAuth', () => {
     const gitlabAuth = BitbucketAuth.create({
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+      configApi: configApi,
     });
 
     gitlabAuth.getAccessToken(scope);

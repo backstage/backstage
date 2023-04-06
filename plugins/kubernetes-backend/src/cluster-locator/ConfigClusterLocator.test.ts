@@ -55,6 +55,7 @@ describe('ConfigClusterLocator', () => {
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
+        caFile: undefined,
       },
     ]);
   });
@@ -95,6 +96,7 @@ describe('ConfigClusterLocator', () => {
         skipTLSVerify: false,
         skipMetricsLookup: true,
         caData: undefined,
+        caFile: undefined,
       },
       {
         name: 'cluster2',
@@ -104,6 +106,7 @@ describe('ConfigClusterLocator', () => {
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
+        caFile: undefined,
       },
     ]);
   });
@@ -151,6 +154,7 @@ describe('ConfigClusterLocator', () => {
         skipTLSVerify: false,
         skipMetricsLookup: false,
         caData: undefined,
+        caFile: undefined,
       },
       {
         assumeRole: 'SomeRole',
@@ -162,6 +166,7 @@ describe('ConfigClusterLocator', () => {
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
+        caFile: undefined,
       },
       {
         assumeRole: 'SomeRole',
@@ -173,6 +178,7 @@ describe('ConfigClusterLocator', () => {
         skipTLSVerify: true,
         skipMetricsLookup: false,
         caData: undefined,
+        caFile: undefined,
       },
     ]);
   });
@@ -207,6 +213,7 @@ describe('ConfigClusterLocator', () => {
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
+        caFile: undefined,
         dashboardApp: 'gke',
         dashboardParameters: {
           projectId: 'some-project',
@@ -243,6 +250,7 @@ describe('ConfigClusterLocator', () => {
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
+        caFile: undefined,
         dashboardApp: 'standard',
         dashboardUrl: 'http://someurl',
       },

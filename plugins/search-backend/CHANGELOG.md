@@ -1,5 +1,626 @@
 # @backstage/plugin-search-backend
 
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.0-next.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- 1469daa409e: Exports search plugin that can be used with the new backend system. For documentation on how to migrate, check out the [how to migrate to the new backend system guide](https://backstage.io/docs/features/search/how-to-guides/#how-to-migrate-your-backend-installation-to-use-search-together-with-the-new-backend-system).
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.0-next.1
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-search-backend-node@1.1.5-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-backend-node@1.1.4
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/plugin-search-backend-node@1.1.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-backend-node@1.1.4-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.6-next.0
+  - @backstage/plugin-search-backend-node@1.1.4-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.2.3
+
+### Patch Changes
+
+- 1b30c9a0f7: Change the router's response to include the error message instead of its object type in case it fails during a search query because the messages have more info.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5
+  - @backstage/plugin-search-backend-node@1.1.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.2.3-next.2
+
+### Patch Changes
+
+- 1b30c9a0f7: Change the router's response to include the error message instead of its object type in case it fails during a search query because the messages have more info.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/plugin-permission-node@0.7.5-next.2
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-search-backend-node@1.1.3-next.2
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.5-next.1
+  - @backstage/plugin-search-backend-node@1.1.3-next.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/plugin-permission-node@0.7.5-next.0
+  - @backstage/plugin-search-backend-node@1.1.3-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- bfd66b0478: Allow max page limit for search results to be configurable
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/plugin-search-backend-node@1.1.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-node@0.7.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/plugin-permission-node@0.7.3-next.1
+  - @backstage/plugin-search-backend-node@1.1.1-next.2
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9-next.0
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-permission-node@0.7.3-next.0
+  - @backstage/plugin-search-backend-node@1.1.1-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- bfd66b0478: Allow max page limit for search results to be configurable
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-node@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
+## 1.2.0-next.3
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-search-backend-node@1.1.0-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/plugin-permission-node@0.7.2-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-search-backend-node@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/plugin-permission-node@0.7.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.5-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/plugin-permission-node@0.7.2-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/types@1.0.1
+  - @backstage/plugin-permission-node@0.7.1
+  - @backstage/plugin-search-backend-node@1.0.4
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/plugin-permission-node@0.7.1-next.1
+  - @backstage/plugin-search-backend-node@1.0.4-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-permission-node@0.7.1-next.0
+  - @backstage/plugin-search-backend-node@1.0.4-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 16c853a6ed: Be less restrictive with unknown keys on query endpoint
+- a799972bb1: The query received by search engines now contains a property called `pageLimit`, it specifies how many results to return per page when sending a query request to the search backend.
+
+  Example:
+  _Returns up to 30 results per page_
+
+  ```
+  GET /query?pageLimit=30
+  ```
+
+  The search backend validates the page limit and this value must not exceed 100, but it doesn't set a default value for the page limit parameter, it leaves it up to each search engine to set this, so Lunr, Postgres and Elastic Search set 25 results per page as a default value.
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/plugin-permission-node@0.7.0
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-search-backend-node@1.0.3
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-permission-node@0.7.0-next.2
+  - @backstage/plugin-search-backend-node@1.0.3-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/plugin-search-common@1.1.0-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 16c853a6ed: Be less restrictive with unknown keys on query endpoint
+- a799972bb1: The query received by search engines now contains a property called `pageLimit`, it specifies how many results to return per page when sending a query request to the search backend.
+
+  Example:
+  _Returns up to 30 results per page_
+
+  ```
+  GET /query?pageLimit=30
+  ```
+
+  The search backend validates the page limit and this value must not exceed 100, but it doesn't set a default value for the page limit parameter, it leaves it up to each search engine to set this, so Lunr, Postgres and Elastic Search set 25 results per page as a default value.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/plugin-search-common@1.1.0-next.1
+  - @backstage/plugin-search-backend-node@1.0.3-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.2.6-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+  - @backstage/plugin-permission-node@0.6.6-next.1
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/plugin-permission-node@0.6.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+  - @backstage/plugin-search-backend-node@1.0.3-next.0
+  - @backstage/plugin-search-common@1.0.2-next.0
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/plugin-permission-node@0.6.5
+  - @backstage/plugin-search-backend-node@1.0.2
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-search-common@1.0.1
+
+## 1.0.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.2
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-auth-node@0.2.5-next.3
+  - @backstage/plugin-permission-node@0.6.5-next.3
+  - @backstage/plugin-search-backend-node@1.0.2-next.2
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-search-backend-node@1.0.2-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.6.5-next.0
+  - @backstage/plugin-search-common@1.0.1-next.0
+
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-auth-node@0.2.4
+  - @backstage/plugin-permission-node@0.6.4
+  - @backstage/plugin-search-backend-node@1.0.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-auth-node@0.2.4-next.0
+  - @backstage/plugin-permission-node@0.6.4-next.0
+  - @backstage/plugin-search-backend-node@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 7bd7d336b2: This package has been promoted to 1.0. Read more about what it means in [New release: Backstage Search 1.0 blog](https://backstage.io/blog/2022/07/19/releasing-backstage-search-1.0)
+
+### Patch Changes
+
+- a21cd43467: If error is `MissingIndexError` we return a 400 response with a more clear error message.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/plugin-search-backend-node@1.0.0
+  - @backstage/plugin-search-common@1.0.0
+  - @backstage/plugin-auth-node@0.2.3
+  - @backstage/plugin-permission-common@0.6.3
+  - @backstage/plugin-permission-node@0.6.3
+  - @backstage/errors@1.1.0
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- a21cd43467: If error is `MissingIndexError` we return a 400 response with a more clear error message.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/plugin-auth-node@0.2.3-next.2
+  - @backstage/plugin-permission-common@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.6.3-next.2
+  - @backstage/plugin-search-backend-node@0.6.3-next.2
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.1
+  - @backstage/plugin-permission-common@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.1
+  - @backstage/plugin-search-backend-node@0.6.3-next.1
+  - @backstage/plugin-search-common@0.3.6-next.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/plugin-permission-node@0.6.3-next.0
+  - @backstage/plugin-search-backend-node@0.6.3-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 7d8acfc32e: `RouterOptions` and `createRouter` now marked as public exports
+- 915700f64f: The provided search engine now adds a pagination-aware `rank` value to all results.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5
+  - @backstage/plugin-permission-node@0.6.2
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/plugin-search-backend-node@0.6.2
+  - @backstage/plugin-permission-common@0.6.2
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- 7d8acfc32e: `RouterOptions` and `createRouter` now marked as public exports
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.5-next.1
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-search-backend-node@0.6.2-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+  - @backstage/plugin-permission-node@0.6.2-next.2
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/plugin-auth-node@0.2.2-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.1
+  - @backstage/plugin-search-backend-node@0.6.2-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-backend-node@0.6.1
+  - @backstage/plugin-auth-node@0.2.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-node@0.6.1
+
 ## 0.5.2-next.1
 
 ### Patch Changes

@@ -27,6 +27,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import * as React from 'react';
@@ -140,11 +141,11 @@ const columns: TableColumn<FossaRow>[] = [
               DateTime.DATETIME_MED,
             )}
           >
-            <span>
+            <Typography component="span">
               {DateTime.fromISO(details.timestamp).toRelative({
                 locale: 'en',
               })}
-            </span>
+            </Typography>
           </Tooltip>
         )
       );
@@ -167,6 +168,7 @@ const filters: TableFilter[] = [
   { column: 'Branch', type: 'select' },
 ];
 
+/** @public */
 export type FossaPageProps = {
   entitiesFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
@@ -174,9 +176,8 @@ export type FossaPageProps = {
     | undefined;
 };
 
-export const FossaPage = ({
-  entitiesFilter = { kind: 'Component' },
-}: FossaPageProps) => {
+export const FossaPage = (props: FossaPageProps) => {
+  const { entitiesFilter = { kind: 'Component' } } = props;
   const catalogApi = useApi(catalogApiRef);
   const fossaApi = useApi(fossaApiRef);
   const [filter, setFilter] = useState(entitiesFilter);

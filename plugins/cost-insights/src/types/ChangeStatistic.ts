@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-export interface ChangeStatistic {
-  // The ratio of change from one duration to another, expressed as: (newSum - oldSum) / oldSum
-  // If a ratio cannot be calculated - such as when a new or old sum is zero,
-  // the ratio can be omitted and where applicable, ∞ or -∞ will display based on amount.
-  ratio?: number;
-  // The actual USD change between time periods (can be negative if costs decreased)
-  amount: number;
-}
-
+/** @public */
 export const EngineerThreshold = 0.5;
 
+/** @public */
 export enum ChangeThreshold {
   upper = 0.05,
   lower = -0.05,
 }
 
+/** @public */
 export enum GrowthType {
   Negligible,
   Savings,

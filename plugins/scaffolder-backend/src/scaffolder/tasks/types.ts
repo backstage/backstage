@@ -15,7 +15,9 @@
  */
 
 import { JsonValue, JsonObject, Observable } from '@backstage/types';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 /**
  * The status of each step of the Task
@@ -23,11 +25,11 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
  * @public
  */
 export type TaskStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
   | 'cancelled'
-  | 'completed';
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
 
 /**
  * The state of a completed task.
@@ -56,7 +58,7 @@ export type SerializedTask = {
  *
  * @public
  */
-export type TaskEventType = 'completion' | 'log';
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
 
 /**
  * SerializedTaskEvent
@@ -69,15 +71,6 @@ export type SerializedTaskEvent = {
   body: JsonObject;
   type: TaskEventType;
   createdAt: string;
-};
-
-/**
- * TaskSecrets
- *
- * @public
- */
-export type TaskSecrets = Record<string, string> & {
-  backstageToken?: string;
 };
 
 /**
@@ -107,12 +100,17 @@ export type TaskBrokerDispatchOptions = {
  * @public
  */
 export interface TaskContext {
+  cancelSignal: AbortSignal;
   spec: TaskSpec;
   secrets?: TaskSecrets;
   createdBy?: string;
   done: boolean;
-  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  isDryRun?: boolean;
+
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+
   getWorkspaceName(): Promise<string>;
 }
 
@@ -122,16 +120,24 @@ export interface TaskContext {
  * @public
  */
 export interface TaskBroker {
+  cancel?(taskId: string): Promise<void>;
+
   claim(): Promise<TaskContext>;
+
   dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
+
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
+
   event$(options: {
     taskId: string;
     after: number | undefined;
   }): Observable<{ events: SerializedTaskEvent[] }>;
+
   get(taskId: string): Promise<SerializedTask>;
+
+  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 }
 
 /**
@@ -152,6 +158,15 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+};
+
+/**
+ * TaskStoreShutDownTaskOptions
+ *
+ * @public
+ */
+export type TaskStoreShutDownTaskOptions = {
+  taskId: string;
 };
 
 /**
@@ -178,29 +193,51 @@ export type TaskStoreCreateTaskResult = {
  * @public
  */
 export interface TaskStore {
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
+
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
+
   getTask(taskId: string): Promise<SerializedTask>;
+
   claimTask(): Promise<SerializedTask | undefined>;
+
   completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
+
   heartbeatTask(taskId: string): Promise<void>;
+
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
 
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
-  listEvents({
-    taskId,
-    after,
-  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }>;
+  list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+
+  emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
+
+  listEvents(
+    options: TaskStoreListEventsOptions,
+  ): Promise<{ events: SerializedTaskEvent[] }>;
+
+  shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
+
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;
 }
+
+export type TaskTrackType = {
+  markCancelled: (step: TaskStep) => Promise<void>;
+  markFailed: (step: TaskStep, err: Error) => Promise<void>;
+  markSuccessful: () => Promise<void>;
+  skipDryRun: (
+    step: TaskStep,
+    action: TemplateAction<JsonObject>,
+  ) => Promise<void>;
+};

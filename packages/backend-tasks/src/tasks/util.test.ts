@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+import knexFactory, { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { AbortController } from 'node-abort-controller';
-import { delegateAbortController, sleep, validateId } from './util';
+import { delegateAbortController, nowPlus, sleep, validateId } from './util';
+
+class KnexBuilder {
+  public build(client: string): Knex {
+    return knexFactory({ client, useNullAsDefault: true });
+  }
+}
 
 describe('util', () => {
   describe('validateId', () => {
@@ -71,6 +77,37 @@ describe('util', () => {
       child.abort();
       expect(parent.signal.aborted).toBe(false);
       expect(child.signal.aborted).toBe(true);
+    });
+  });
+
+  describe('nowPlus', () => {
+    describe('without duration', () => {
+      const databases = [
+        { client: 'sqlite3', expected: 'CURRENT_TIMESTAMP' },
+        { client: 'mysql2', expected: 'CURRENT_TIMESTAMP' },
+        { client: 'pg', expected: 'CURRENT_TIMESTAMP' },
+      ];
+
+      it.each(databases)('for client $client', ({ client, expected }) => {
+        const knex = new KnexBuilder().build(client);
+        const result = nowPlus(undefined, knex);
+
+        expect(result.toString()).toBe(expected);
+      });
+    });
+    describe('With duration', () => {
+      const databases = [
+        { client: 'sqlite3', expected: "datetime('now', '20 seconds')" },
+        { client: 'mysql2', expected: 'now() + interval 20 second' },
+        { client: 'pg', expected: "now() + interval '20 seconds'" },
+      ];
+      it.each(databases)('for client $client', ({ client, expected }) => {
+        const duration = Duration.fromObject({ seconds: 20 });
+        const knex = new KnexBuilder().build(client);
+        const result = nowPlus(duration, knex);
+
+        expect(result.toString()).toBe(expected);
+      });
     });
   });
 });

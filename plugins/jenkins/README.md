@@ -19,7 +19,7 @@ yarn add --cwd packages/app @backstage/plugin-jenkins
 
 3. Add the `EntityJenkinsContent` extension to the `CI/CD` page and `EntityLatestJenkinsRunCard` to the `overview` page in the app (or wherever you'd prefer):
 
-Note that if you configured a custom JenkinsInfoProvider in step 2, you may need a custom isJenkinsAvailable.
+Note that if you configured a custom JenkinsInfoProvider in step 2, you may need a custom isJenkinsAvailable. Also if you're transitioning to a new default branch name, you can pass multiple branch names as a comma-separated list and it will check for each branch name.
 
 ```tsx
 // In packages/app/src/components/catalog/EntityPage.tsx
@@ -38,7 +38,10 @@ const serviceEntityPage = (
       <EntitySwitch>
         <EntitySwitch.Case if={isJenkinsAvailable}>
           <Grid item sm={6}>
-            <EntityLatestJenkinsRunCard branch="master" variant="gridItem" />
+            <EntityLatestJenkinsRunCard
+              branch="main,master"
+              variant="gridItem"
+            />
           </Grid>
         </EntitySwitch.Case>
         {/* ... */}

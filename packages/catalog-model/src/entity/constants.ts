@@ -34,3 +34,29 @@ export const ANNOTATION_VIEW_URL = 'backstage.io/view-url';
  * @public
  */
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
+
+/**
+ * Annotation for specifying the API server of a Kubernetes cluster
+ *
+ * @deprecated Import this constant from `@backstage/plugin-kubernetes-common` instead
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
+
+/**
+ * Annotation for specifying the Certificate Authority of an API server for a Kubernetes cluster
+ *
+ * @deprecated Import this constant from `@backstage/plugin-kubernetes-common` instead
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_API_SERVER_CA =
+  'kubernetes.io/api-server-certificate-authority';
+
+/**
+ * Annotation for specifying the auth provider for a Kubernetes cluster
+ *
+ * @deprecated Import this constant from `@backstage/plugin-kubernetes-common` instead
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
+  'kubernetes.io/auth-provider';

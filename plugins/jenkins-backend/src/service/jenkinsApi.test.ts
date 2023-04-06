@@ -75,6 +75,38 @@ describe('JenkinsApi', () => {
       },
     };
 
+    describe('standalone project', () => {
+      it('should return the only build', async () => {
+        mockedJenkinsClient.job.get
+          .mockResolvedValueOnce(project)
+          .mockResolvedValueOnce(project);
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledTimes(2);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toEqual({
+          actions: [],
+          displayName: 'Example Build',
+          fullDisplayName: 'Example jobName » Example Build',
+          fullName: 'example-jobName/exampleBuild',
+          inQueue: false,
+          lastBuild: {
+            actions: [],
+            timestamp: 1,
+            building: false,
+            duration: 10,
+            result: 'success',
+            displayName: '#7',
+            fullDisplayName: 'Example jobName » Example Build #7',
+            url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+            number: 7,
+            status: 'success',
+            source: {},
+          },
+          status: 'success',
+        });
+      });
+    });
+
     describe('unfiltered', () => {
       it('standard github layout', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce({ jobs: [project] });
@@ -86,7 +118,7 @@ describe('JenkinsApi', () => {
           headers: jenkinsInfo.headers,
           promisify: true,
         });
-        expect(mockedJenkinsClient.job.get).toBeCalledWith({
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
           name: jenkinsInfo.jobFullName,
           tree: expect.anything(),
         });
@@ -118,18 +150,46 @@ describe('JenkinsApi', () => {
       it('standard github layout', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce(project);
 
-        const result = await jenkinsApi.getProjects(
-          jenkinsInfo,
+        const result = await jenkinsApi.getProjects(jenkinsInfo, [
           'testBranchName',
-        );
+        ]);
 
         expect(mockedJenkins).toHaveBeenCalledWith({
           baseUrl: jenkinsInfo.baseUrl,
           headers: jenkinsInfo.headers,
           promisify: true,
         });
-        expect(mockedJenkinsClient.job.get).toBeCalledWith({
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
           name: `${jenkinsInfo.jobFullName}/testBranchName`,
+          tree: expect.anything(),
+        });
+        expect(result).toHaveLength(1);
+      });
+
+      it('supports multiple branches', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValue(project);
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo, [
+          'foo',
+          'bar',
+          'catpants',
+        ]);
+
+        expect(mockedJenkins).toHaveBeenCalledWith({
+          baseUrl: jenkinsInfo.baseUrl,
+          headers: jenkinsInfo.headers,
+          promisify: true,
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: `${jenkinsInfo.jobFullName}/foo`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: `${jenkinsInfo.jobFullName}/bar`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: `${jenkinsInfo.jobFullName}/catpants`,
           tree: expect.anything(),
         });
         expect(result).toHaveLength(1);
@@ -615,11 +675,11 @@ describe('JenkinsApi', () => {
       headers: jenkinsInfo.headers,
       promisify: true,
     });
-    expect(mockedJenkinsClient.job.get).toBeCalledWith({
+    expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
       name: jobFullName,
       depth: 1,
     });
-    expect(mockedJenkinsClient.build.get).toBeCalledWith(
+    expect(mockedJenkinsClient.build.get).toHaveBeenCalledWith(
       jobFullName,
       buildNumber,
     );
@@ -632,7 +692,7 @@ describe('JenkinsApi', () => {
       headers: jenkinsInfo.headers,
       promisify: true,
     });
-    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
   });
 
   it('buildProject should fail if it does not have required permissions', async () => {
@@ -660,7 +720,7 @@ describe('JenkinsApi', () => {
       headers: jenkinsInfo.headers,
       promisify: true,
     });
-    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
   });
 
   it('buildProject with crumbIssuer option', async () => {
@@ -673,6 +733,6 @@ describe('JenkinsApi', () => {
       promisify: true,
       crumbIssuer: true,
     });
-    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
   });
 });

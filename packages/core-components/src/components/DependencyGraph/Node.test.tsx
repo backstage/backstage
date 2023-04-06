@@ -23,7 +23,7 @@ import { RenderNodeProps } from './types';
 const node = { id: 'abc', x: 0, y: 0, width: 0, height: 0 };
 const setNode = jest.fn(() => new dagre.graphlib.Graph());
 const renderElement = jest.fn((props: RenderNodeProps) => (
-  <text>{props.node.id}</text>
+  <div>{props.node.id}</div>
 ));
 
 const minProps = {
@@ -34,8 +34,7 @@ const minProps = {
 
 describe('<Node />', () => {
   beforeEach(() => {
-    // jsdom does not support SVG elements so we have to fall back to HTMLUnknownElement
-    Object.defineProperty(window.HTMLUnknownElement.prototype, 'getBBox', {
+    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
       value: () => ({ width: 100, height: 100 }),
       configurable: true,
     });
@@ -44,19 +43,31 @@ describe('<Node />', () => {
   afterEach(jest.clearAllMocks);
 
   it('renders the supplied element', () => {
-    const { getByText } = render(<Node {...minProps} />);
+    const { getByText } = render(
+      <svg>
+        <Node {...minProps} />
+      </svg>,
+    );
     expect(getByText(minProps.node.id)).toBeInTheDocument();
   });
 
   it('passes down node properties to the render method', () => {
     const nodeWithRandomProp = { ...node, randomProp: true };
-    render(<Node {...minProps} node={nodeWithRandomProp} />);
+    render(
+      <svg>
+        <Node {...minProps} node={nodeWithRandomProp} />
+      </svg>,
+    );
 
     expect(renderElement).toHaveBeenCalledWith({ node: nodeWithRandomProp });
   });
 
   it('calls setNode with node ID and actual size after rendering', () => {
-    const { getByText } = render(<Node {...minProps} />);
+    const { getByText } = render(
+      <svg>
+        <Node {...minProps} />
+      </svg>,
+    );
     expect(getByText(minProps.node.id)).toBeInTheDocument();
 
     // Updates the node in the graph

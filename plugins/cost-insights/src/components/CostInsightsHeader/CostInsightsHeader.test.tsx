@@ -17,7 +17,6 @@
 import { CostInsightsHeader } from './CostInsightsHeader';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 
@@ -35,7 +34,7 @@ describe('<CostInsightsHeader/>', () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <CostInsightsHeader
-          owner="test-owner"
+          groupId="test-user-group-1"
           groups={[{ id: 'test-user-group-1' }]}
           hasCostData
           alerts={0}
@@ -43,28 +42,28 @@ describe('<CostInsightsHeader/>', () => {
       </ApiProvider>,
     );
 
-    expect(rendered.queryByText(/doing great/)).toBeInTheDocument();
+    expect(rendered.getByText(/doing great/)).toBeInTheDocument();
   });
 
   it('Shows work to do when alerts > 1', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <CostInsightsHeader
-          owner="test-owner"
+          groupId="test-user-group-1"
           groups={[{ id: 'test-user-group-1' }]}
           hasCostData
           alerts={4}
         />
       </ApiProvider>,
     );
-    expect(rendered.queryByText(/few things/)).toBeInTheDocument();
+    expect(rendered.getByText(/few things/)).toBeInTheDocument();
   });
 
   it('Handles grammar with a single alert', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <CostInsightsHeader
-          owner="test-owner"
+          groupId="test-user-group-1"
           groups={[{ id: 'test-user-group-1' }]}
           hasCostData
           alerts={1}
@@ -73,20 +72,57 @@ describe('<CostInsightsHeader/>', () => {
     );
 
     expect(rendered.queryByText(/things/)).not.toBeInTheDocument();
-    expect(rendered.queryByText(/one thing/)).toBeInTheDocument();
+    expect(rendered.getByText(/one thing/)).toBeInTheDocument();
   });
 
   it('Shows no costs when hasCostData is false', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <CostInsightsHeader
-          owner="test-owner"
+          groupId="test-user-group-1"
           groups={[{ id: 'test-user-group-1' }]}
           hasCostData={false}
           alerts={1}
         />
       </ApiProvider>,
     );
-    expect(rendered.queryByText(/this is awkward/)).toBeInTheDocument();
+    expect(rendered.getByText(/this is awkward/)).toBeInTheDocument();
+  });
+
+  describe.each`
+    hasCostData | alerts
+    ${true}     | ${0}
+    ${true}     | ${1}
+    ${false}    | ${0}
+  `('Shows proper group name', ({ hasCostData, alerts }) => {
+    it('Shows group display name when available', async () => {
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CostInsightsHeader
+            groupId="test-user-group-1"
+            groups={[
+              { id: 'test-user-group-1', name: 'Test group display name' },
+            ]}
+            hasCostData={hasCostData}
+            alerts={alerts}
+          />
+        </ApiProvider>,
+      );
+      expect(rendered.getByText(/Test group display name/)).toBeInTheDocument();
+    });
+
+    it('Fallbacks to group id when display name not available', async () => {
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CostInsightsHeader
+            groupId="test-user-group-1"
+            groups={[{ id: 'test-user-group-1' }]}
+            hasCostData={hasCostData}
+            alerts={alerts}
+          />
+        </ApiProvider>,
+      );
+      expect(rendered.getByText(/test-user-group-1/)).toBeInTheDocument();
+    });
   });
 });

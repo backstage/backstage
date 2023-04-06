@@ -14,17 +14,98 @@
  * limitations under the License.
  */
 
-import { parseGitHubOrgUrl } from './util';
+import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
+import {
+  parseGithubOrgUrl,
+  satisfiesTopicFilter,
+  satisfiesForkFilter,
+} from './util';
 
-describe('parseGitHubOrgUrl', () => {
+describe('parseGithubOrgUrl', () => {
   it('only supports clean org urls, and decodes them', () => {
-    expect(() => parseGitHubOrgUrl('https://github.com')).toThrow();
-    expect(() => parseGitHubOrgUrl('https://github.com/org/foo')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com/org/foo')).toThrow();
     expect(() =>
-      parseGitHubOrgUrl('https://github.com/org/foo/teams'),
+      parseGithubOrgUrl('https://github.com/org/foo/teams'),
     ).toThrow();
-    expect(parseGitHubOrgUrl('https://github.com/foo%32')).toEqual({
+    expect(parseGithubOrgUrl('https://github.com/foo%32')).toEqual({
       org: 'foo2',
     });
+  });
+});
+
+describe('satisfiesTopicFilter', () => {
+  it('handles cases where the filter will never apply', () => {
+    expect(satisfiesTopicFilter([], undefined)).toEqual(true);
+    expect(
+      satisfiesTopicFilter([], { include: undefined, exclude: undefined }),
+    ).toEqual(true);
+    expect(satisfiesTopicFilter([], { include: [], exclude: [] })).toEqual(
+      true,
+    );
+  });
+
+  it('handles cases where include filter is configured', () => {
+    const filter: GithubTopicFilters = {
+      include: ['backstage-include', 'open-source'],
+      exclude: undefined,
+    };
+    expect(satisfiesTopicFilter([], filter)).toEqual(false);
+    expect(satisfiesTopicFilter(['blah', 'something-else'], filter)).toEqual(
+      false,
+    );
+    expect(satisfiesTopicFilter(['backstage-include'], filter)).toEqual(true);
+    expect(
+      satisfiesTopicFilter(['backstage-include', 'open-source'], filter),
+    ).toEqual(true);
+  });
+
+  it('handles cases where exclude filter is configured', () => {
+    const filter: GithubTopicFilters = {
+      include: undefined,
+      exclude: ['backstage-exclude', 'experiment'],
+    };
+    expect(satisfiesTopicFilter([], filter)).toEqual(true);
+    expect(satisfiesTopicFilter(['blah', 'bleh'], filter)).toEqual(true);
+    expect(
+      satisfiesTopicFilter(['backstage-include', 'backstage-exclude'], filter),
+    ).toEqual(false);
+    expect(
+      satisfiesTopicFilter(['experiment', 'backstage-include'], filter),
+    ).toEqual(false);
+  });
+
+  it('handles cases where both exclusion filters are configured', () => {
+    const filter: GithubTopicFilters = {
+      include: ['backstage-include', 'blah'],
+      exclude: ['backstage-exclude', 'bleh'],
+    };
+    expect(satisfiesTopicFilter([], filter)).toEqual(false);
+    expect(satisfiesTopicFilter(['backstage-include'], filter)).toEqual(true);
+    expect(satisfiesTopicFilter(['blah', 'nothing'], filter)).toEqual(true);
+    expect(satisfiesTopicFilter(['backstage-exclude'], filter)).toEqual(false);
+    expect(satisfiesTopicFilter(['bleh, nothing'], filter)).toEqual(false);
+    expect(satisfiesTopicFilter(['abc123'], filter)).toEqual(false);
+    expect(
+      satisfiesTopicFilter(['backstage-include', 'backstage-exclude'], filter),
+    ).toEqual(false);
+  });
+});
+
+describe('satisfiesForkFilter', () => {
+  it('handles cases where forks are not allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(false, true)).toEqual(false);
+  });
+
+  it('handles cases where forks are not allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(false, false)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(true, true)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(true, false)).toEqual(true);
   });
 });

@@ -7,3 +7,4 @@ description: Configuration GUI over GitOps using kpt, with WYSIWYG editing, revi
 documentation: https://github.com/GoogleContainerTools/kpt-backstage-plugins/tree/main/plugins/cad
 iconUrl: https://github.com/GoogleContainerTools/kpt/blob/main/logo/KptLogoSmall.png?raw=true
 npmPackageName: '@kpt/backstage-plugin-cad'
+addedDate: '2022-05-13'

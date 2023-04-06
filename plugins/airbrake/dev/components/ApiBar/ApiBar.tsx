@@ -14,46 +14,23 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  createTheme,
-  makeStyles,
-  MuiThemeProvider,
-  TextField,
-} from '@material-ui/core';
+import { makeStyles, TextField } from '@material-ui/core';
 import { Context } from '../ContextProvider';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     gap: '1em',
     flexWrap: 'wrap',
   },
-});
-
-const textFieldTheme = createTheme({
-  palette: {
-    type: 'dark',
-    primary: {
-      light: '#fff',
-      main: '#fff',
-      dark: '#fff',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#fff',
-      main: '#fff',
-      dark: '#fff',
-      contrastText: '#fff',
-    },
-    action: {
-      disabled: '#fff',
-    },
-    text: {
-      primary: '#fff',
-      secondary: '#fff',
-    },
+  label: {
+    color: `${theme.palette.common.white} !important`,
   },
-});
+  outline: {
+    color: `${theme.palette.common.white} !important`,
+    borderColor: `${theme.palette.common.white} !important`,
+  },
+}));
 
 export const ApiBar = () => {
   const classes = useStyles();
@@ -62,16 +39,16 @@ export const ApiBar = () => {
     <Context.Consumer>
       {value => (
         <div className={classes.root}>
-          <MuiThemeProvider theme={textFieldTheme}>
-            <TextField
-              label="Project ID"
-              variant="outlined"
-              defaultValue={value.projectId}
-              onChange={e =>
-                value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
-              }
-            />
-          </MuiThemeProvider>
+          <TextField
+            label="Project ID"
+            variant="outlined"
+            defaultValue={value.projectId}
+            InputLabelProps={{ classes: { root: classes.label } }}
+            InputProps={{ classes: { notchedOutline: classes.outline } }}
+            onChange={e =>
+              value.setProjectId?.(parseInt(e.target.value, 10) || undefined)
+            }
+          />
         </div>
       )}
     </Context.Consumer>

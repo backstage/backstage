@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import {
   Entity,
   RELATION_OWNED_BY,
@@ -27,7 +27,6 @@ import { EntityTagFilter, UserListFilter } from '../../filters';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi, TestApiRegistry } from '@backstage/test-utils';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   ConfigApi,
@@ -144,7 +143,7 @@ const backendEntities: Entity[] = [
 
 describe('<UserListPicker />', () => {
   it('renders filter groups', () => {
-    const { queryByText } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ backendEntities }}>
           <UserListPicker />
@@ -152,12 +151,12 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
 
-    expect(queryByText('Personal')).toBeInTheDocument();
-    expect(queryByText('Test Company')).toBeInTheDocument();
+    expect(screen.getByText('Personal')).toBeInTheDocument();
+    expect(screen.getByText('Test Company')).toBeInTheDocument();
   });
 
   it('renders filters', () => {
-    const { getAllByRole } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ backendEntities }}>
           <UserListPicker />
@@ -166,12 +165,12 @@ describe('<UserListPicker />', () => {
     );
 
     expect(
-      getAllByRole('menuitem').map(({ textContent }) => textContent),
-    ).toEqual(['Owned', 'Starred', 'All']);
+      screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
+    ).toEqual(['Owned 1', 'Starred 1', 'All 4']);
   });
 
   it('includes counts alongside each filter', async () => {
-    const { getAllByRole } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ backendEntities }}>
           <UserListPicker />
@@ -183,15 +182,13 @@ describe('<UserListPicker />', () => {
     // menuitem itself, so we pick off the next sibling.
     await waitFor(() => {
       expect(
-        getAllByRole('menuitem').map(
-          ({ nextSibling }) => nextSibling?.textContent,
-        ),
-      ).toEqual(['1', '1', '4']);
+        screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
+      ).toEqual(['Owned 1', 'Starred 1', 'All 4']);
     });
   });
 
   it('respects other frontend filters in counts', async () => {
-    const { getAllByRole } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -206,10 +203,8 @@ describe('<UserListPicker />', () => {
 
     await waitFor(() => {
       expect(
-        getAllByRole('menuitem').map(
-          ({ nextSibling }) => nextSibling?.textContent,
-        ),
-      ).toEqual(['1', '0', '2']);
+        screen.getAllByRole('menuitem').map(({ textContent }) => textContent),
+      ).toEqual(['Owned 1', 'Starred 0', 'All 2']);
     });
   });
 
@@ -233,7 +228,7 @@ describe('<UserListPicker />', () => {
 
   it('updates user filter when a menuitem is selected', () => {
     const updateFilters = jest.fn();
-    const { getByText } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{ backendEntities, updateFilters }}
@@ -243,7 +238,7 @@ describe('<UserListPicker />', () => {
       </ApiProvider>,
     );
 
-    fireEvent.click(getByText('Starred'));
+    fireEvent.click(screen.getByText('Starred'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
       user: new UserListFilter(

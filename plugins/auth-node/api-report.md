@@ -4,6 +4,7 @@
 
 ```ts
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Request as Request_2 } from 'express';
 
 // @public
 export interface BackstageIdentityResponse extends BackstageSignInResult {
@@ -23,16 +24,45 @@ export type BackstageUserIdentity = {
 };
 
 // @public
+export class DefaultIdentityClient implements IdentityApi {
+  // @deprecated
+  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
+  static create(options: IdentityClientOptions): DefaultIdentityClient;
+  // (undocumented)
+  getIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined>;
+}
+
+// @public
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
 
 // @public
-export class IdentityClient {
-  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }): IdentityClient;
+export interface IdentityApi {
+  getIdentity(
+    options: IdentityApiGetIdentityRequest,
+  ): Promise<BackstageIdentityResponse | undefined>;
 }
+
+// @public
+export type IdentityApiGetIdentityRequest = {
+  request: Request_2<unknown>;
+};
+
+// @public @deprecated
+export class IdentityClient {
+  // @deprecated
+  authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
+  // (undocumented)
+  static create(options: IdentityClientOptions): IdentityClient;
+}
+
+// @public
+export type IdentityClientOptions = {
+  discovery: PluginEndpointDiscovery;
+  issuer?: string;
+  algorithms?: string[];
+};
 ```

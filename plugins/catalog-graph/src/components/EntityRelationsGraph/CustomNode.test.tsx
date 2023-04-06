@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { CustomNode } from './CustomNode';
 import userEvent from '@testing-library/user-event';
 
 describe('<CustomNode />', () => {
   test('renders node', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomNode
           node={{
@@ -35,11 +37,11 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(getByText('kind:namespace/name')).toBeInTheDocument();
+    expect(screen.getByText('kind:namespace/name')).toBeInTheDocument();
   });
 
   test('renders node, skips default namespace', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomNode
           node={{
@@ -53,12 +55,12 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(getByText('kind:name')).toBeInTheDocument();
+    expect(screen.getByText('kind:name')).toBeInTheDocument();
   });
 
   test('renders node with onClick', async () => {
     const onClick = jest.fn();
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomNode
           node={{
@@ -73,13 +75,13 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(getByText('kind:namespace/name')).toBeInTheDocument();
-    await userEvent.click(getByText('kind:namespace/name'));
-    expect(onClick).toBeCalledTimes(1);
+    expect(screen.getByText('kind:namespace/name')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('kind:namespace/name'));
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   test('renders title if entity has one', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomNode
           node={{
@@ -94,6 +96,6 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(getByText('Custom Title')).toBeInTheDocument();
+    expect(screen.getByText('Custom Title')).toBeInTheDocument();
   });
 });

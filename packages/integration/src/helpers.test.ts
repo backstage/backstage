@@ -62,7 +62,7 @@ describe('isValidHost', () => {
     ['[::]', true],
     ['[::1]', true],
     ['[1:2:3:4:5:6:7:8]', true],
-    ['1.2.3.4.5.6.7.8', true],
+    ['1.2.3.4.5.6.7.8', false],
     ['https://example.com', false],
     ['foo:100000', false],
     ['FOO', false],

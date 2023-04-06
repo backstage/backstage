@@ -21,10 +21,18 @@ import { rootRouteRef } from '../../plugin';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
 import { SidebarSearchField, useContent } from '@backstage/core-components';
 
+/**
+ * Props for {@link SidebarSearch}.
+ *
+ * @public
+ */
 export type SidebarSearchProps = {
   icon?: IconComponent;
 };
 
+/**
+ * @public
+ */
 export const SidebarSearch = (props: SidebarSearchProps) => {
   const searchRoute = useRouteRef(rootRouteRef);
   const { focusContent } = useContent();

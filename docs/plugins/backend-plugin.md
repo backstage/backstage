@@ -13,10 +13,10 @@ A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository root:
 
 ```sh
-yarn create-plugin --backend
+yarn new --select backend-plugin
 ```
 
-Please also see the `--help` flag for the `create-plugin` command for some
+Please also see the `--help` flag for the `new` command for some
 further options that are available, notably the `--scope` and `--no-private`
 flags that control naming and publishing of the newly created package. Your repo
 root `package.json` will probably also have some default values already set up
@@ -28,7 +28,7 @@ lowercase characters separated by dashes, for example `carmen`, if it's a
 package that adds an integration with a system named Carmen, for example. The
 full NPM package name would then be something like
 `@internal/plugin-carmen-backend`, depending on the other flags passed to the
-`create-plugin` command, and your settings for the `create-plugin` command in
+`new` command, and your settings for the `new` command in
 your root `package.json`.
 
 Creating the plugin will take a little while, so be patient. It will helpfully
@@ -51,7 +51,7 @@ terminal window, now run
 curl localhost:7007/carmen/health
 ```
 
-This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to kill it
+This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it
 again.
 
 ## Developing your Backend Plugin
@@ -66,8 +66,8 @@ To actually attach and run the plugin router, you will make some modifications
 to your backend.
 
 ```bash
-# From the Backstage root directory
-yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.1 # Change this to match the plugin's package.json
+# From your Backstage root directory
+yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
 Create a new file named `packages/backend/src/plugins/carmen.ts`, and add the
@@ -154,3 +154,40 @@ schema migrations as well, but you can do so in any manner that you see fit.
 See the [Knex library documentation](http://knexjs.org/) for examples and
 details on how to write schema migrations and perform SQL queries against your
 database..
+
+## Making Use of the User's Identity
+
+The Backstage backend comes with a facility for retrieving the identity of the
+logged in user.
+
+As part of the environment object that is passed to your `createPlugin`
+function, there is a `identity` field. You can use that to get an identity
+from the request.
+
+```ts
+// in packages/backend/src/plugins/carmen.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    model: model,
+    logger: env.logger,
+    identity: env.identity,
+  });
+}
+```
+
+The plugin can then extract the identity from the request.
+
+```ts
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const router = Router();
+  const { identity } = options;
+
+  router.post('/example', async (req, res) => {
+    const userIdentity = await identity.getIdentity({ request: req });
+    ...
+  });
+```

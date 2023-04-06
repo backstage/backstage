@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createGithubProvider } from './provider';
-export type { GithubOAuthResult, GithubProviderOptions } from './provider';
+export { github } from './provider';
+export type { GithubOAuthResult } from './provider';

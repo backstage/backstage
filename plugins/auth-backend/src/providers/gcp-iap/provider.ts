@@ -29,24 +29,27 @@ import {
   defaultAuthHandler,
   parseRequestToken,
 } from './helpers';
-import { GcpIapResponse, GcpIapResult, IAP_JWT_HEADER } from './types';
+import { GcpIapResponse, GcpIapResult, DEFAULT_IAP_JWT_HEADER } from './types';
 
 export class GcpIapProvider implements AuthProviderRouteHandlers {
   private readonly authHandler: AuthHandler<GcpIapResult>;
   private readonly signInResolver: SignInResolver<GcpIapResult>;
   private readonly tokenValidator: (token: string) => Promise<TokenPayload>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly jwtHeader: string;
 
   constructor(options: {
     authHandler: AuthHandler<GcpIapResult>;
     signInResolver: SignInResolver<GcpIapResult>;
     tokenValidator: (token: string) => Promise<TokenPayload>;
     resolverContext: AuthResolverContext;
+    jwtHeader?: string;
   }) {
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
     this.tokenValidator = options.tokenValidator;
     this.resolverContext = options.resolverContext;
+    this.jwtHeader = options?.jwtHeader || DEFAULT_IAP_JWT_HEADER;
   }
 
   async start() {}
@@ -55,7 +58,7 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     const result = await parseRequestToken(
-      req.header(IAP_JWT_HEADER),
+      req.header(this.jwtHeader),
       this.tokenValidator,
     );
 
@@ -103,6 +106,7 @@ export const gcpIap = createAuthProviderIntegration({
   }) {
     return ({ config, resolverContext }) => {
       const audience = config.getString('audience');
+      const jwtHeader = config.getOptionalString('jwtHeader');
 
       const authHandler = options.authHandler ?? defaultAuthHandler;
       const signInResolver = options.signIn.resolver;
@@ -113,13 +117,8 @@ export const gcpIap = createAuthProviderIntegration({
         signInResolver,
         tokenValidator,
         resolverContext,
+        jwtHeader,
       });
     };
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.gcpIap.create` instead
- */
-export const createGcpIapProvider = gcpIap.create;

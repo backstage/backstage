@@ -28,7 +28,7 @@ import {
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
-import { User } from '../types';
+import { PagerDutyUser } from '../types';
 
 const useStyles = makeStyles({
   listItemPrimary: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  user: User;
+  user: PagerDutyUser;
 };
 
 export const EscalationUser = ({ user }: Props) => {

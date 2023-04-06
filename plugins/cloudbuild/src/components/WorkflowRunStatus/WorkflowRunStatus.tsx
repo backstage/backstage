@@ -23,11 +23,8 @@ import {
   StatusError,
 } from '@backstage/core-components';
 
-export const WorkflowRunStatus = ({
-  status,
-}: {
-  status: string | undefined;
-}) => {
+export const WorkflowRunStatus = (props: { status: string | undefined }) => {
+  const { status } = props;
   if (status === undefined) return null;
   switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':

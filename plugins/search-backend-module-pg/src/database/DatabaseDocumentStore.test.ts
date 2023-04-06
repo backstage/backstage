@@ -13,9 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Knex as KnexType } from 'knex';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
+
+const highlightOptions: PgSearchHighlightOptions = {
+  preTag: '<tag>',
+  postTag: '</tag>',
+  useHighlight: false,
+  maxWords: 35,
+  minWords: 15,
+  shortWord: 3,
+  highlightAll: false,
+  maxFragments: 0,
+  fragmentDelimiter: ' ... ',
+};
+
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
+
+jest.setTimeout(60_000);
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
@@ -31,19 +60,18 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(false);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
       'should fail to create, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
+        const databaseManager = createDatabaseManager(knex);
 
         await expect(
-          async () => await DatabaseDocumentStore.create(knex),
+          async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
       },
-      60_000,
     );
   });
 
@@ -54,7 +82,9 @@ describe('DatabaseDocumentStore', () => {
 
     async function createStore(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      const store = await DatabaseDocumentStore.create(knex);
+      const databaseManager = createDatabaseManager(knex);
+      const store = await DatabaseDocumentStore.create(databaseManager);
+
       return { store, knex };
     }
 
@@ -72,7 +102,6 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(true);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -101,7 +130,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '2' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -142,7 +170,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '4' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -189,7 +216,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '0' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -220,7 +246,12 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 1, limit: 1 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 1,
+            limit: 1,
+            options: highlightOptions,
+          }),
         );
 
         expect(rows).toEqual([
@@ -235,7 +266,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -261,7 +291,12 @@ describe('DatabaseDocumentStore', () => {
         });
 
         const rows = await store.transaction(tx =>
-          store.query(tx, { pgTerm: 'Hello & World', offset: 0, limit: 25 }),
+          store.query(tx, {
+            pgTerm: 'Hello & World',
+            offset: 0,
+            limit: 25,
+            options: highlightOptions,
+          }),
         );
 
         expect(rows).toEqual([
@@ -285,7 +320,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -322,6 +356,7 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -337,7 +372,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -375,6 +409,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -391,7 +426,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -429,6 +463,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -455,7 +490,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -490,6 +524,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -507,7 +542,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -539,6 +573,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            options: highlightOptions,
           }),
         );
 
@@ -565,7 +600,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
   });
 });

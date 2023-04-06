@@ -36,7 +36,13 @@ describe('publish:bitbucketServer', () => {
           apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
         },
         {
-          host: 'notoken.bitbucket.com',
+          host: 'basic-auth.bitbucket.com',
+          username: 'test-user',
+          password: 'test-password',
+          apiBaseUrl: 'https://basic-auth.bitbucket.com/rest/api/1.0',
+        },
+        {
+          host: 'no-credentials.bitbucket.com',
         },
       ],
     },
@@ -96,28 +102,32 @@ describe('publish:bitbucketServer', () => {
     ).rejects.toThrow(/No matching integration configuration/);
   });
 
-  it('should throw if there is no token in the integration config that is returned', async () => {
+  it('should throw if there no credentials in the integration config that is returned', async () => {
     await expect(
       action.handler({
         ...mockContext,
         input: {
           ...mockContext.input,
-          repoUrl: 'notoken.bitbucket.com?project=project&repo=repo',
+          repoUrl: 'no-credentials.bitbucket.com?project=project&repo=repo',
         },
       }),
     ).rejects.toThrow(
-      /Authorization has not been provided for notoken.bitbucket.com/,
+      /Authorization has not been provided for no-credentials.bitbucket.com/,
     );
   });
 
-  it('should call the correct APIs', async () => {
+  it('should call the correct APIs with token', async () => {
     expect.assertions(2);
     server.use(
       rest.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -150,15 +160,65 @@ describe('publish:bitbucketServer', () => {
     });
   });
 
+  it('should call the correct APIs with basic auth', async () => {
+    expect.assertions(2);
+    server.use(
+      rest.post(
+        'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
+          );
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                self: [
+                  {
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                  },
+                ],
+                clone: [
+                  {
+                    name: 'http',
+                    href: 'https://bitbucket.mycompany.com/scm/project/repo',
+                  },
+                ],
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'basic-auth.bitbucket.com?project=project&repo=repo',
+      },
+    });
+  });
+
   it('should work if the token is provided through ctx.input', async () => {
     expect.assertions(2);
     const token = 'user-token';
     server.use(
       rest.post(
-        'https://notoken.bitbucket.com/rest/api/1.0/projects/project/repos',
+        'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -185,7 +245,7 @@ describe('publish:bitbucketServer', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'notoken.bitbucket.com?project=project&repo=repo',
+        repoUrl: 'no-credentials.bitbucket.com?project=project&repo=repo',
         token: token,
       },
     });
@@ -273,13 +333,17 @@ describe('publish:bitbucketServer', () => {
     });
   });
 
-  it('should call initAndPush with the correct values', async () => {
+  it('should call initAndPush with the correct values with token', async () => {
     server.use(
       rest.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -309,9 +373,71 @@ describe('publish:bitbucketServer', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
       defaultBranch: 'master',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
+    });
+  });
+
+  it('should call initAndPush with the correct values with basic auth', async () => {
+    server.use(
+      rest.post(
+        'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
+          );
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                self: [
+                  {
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                  },
+                ],
+                clone: [
+                  {
+                    name: 'http',
+                    href: 'https://bitbucket.mycompany.com/scm/project/repo',
+                  },
+                ],
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'basic-auth.bitbucket.com?project=project&repo=repo',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
+      defaultBranch: 'master',
+      auth: { username: 'test-user', password: 'test-password' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -321,7 +447,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'main',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -357,9 +487,13 @@ describe('publish:bitbucketServer', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
       defaultBranch: 'main',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -373,7 +507,7 @@ describe('publish:bitbucketServer', () => {
             apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
           },
           {
-            host: 'notoken.bitbucket.com',
+            host: 'no-credentials.bitbucket.com',
           },
         ],
       },
@@ -397,7 +531,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -426,9 +564,10 @@ describe('publish:bitbucketServer', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -443,12 +582,12 @@ describe('publish:bitbucketServer', () => {
             apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
           },
           {
-            host: 'notoken.bitbucket.com',
+            host: 'no-credentials.bitbucket.com',
           },
         ],
       },
       scaffolder: {
-        defaultCommitMessage: 'Test commit message',
+        defaultCommitMessage: 'initial commit',
       },
     });
 
@@ -464,7 +603,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -493,10 +636,10 @@ describe('publish:bitbucketServer', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-      auth: { username: 'x-token-auth', password: 'thing' },
+      auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
@@ -507,7 +650,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'master',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -549,7 +696,11 @@ describe('publish:bitbucketServer', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
+          expect(req.body).toEqual({
+            public: false,
+            name: 'repo',
+            defaultBranch: 'main',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),

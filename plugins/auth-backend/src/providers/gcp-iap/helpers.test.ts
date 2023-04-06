@@ -54,7 +54,7 @@ describe('helpers', () => {
         'a',
         mockClient as unknown as OAuth2Client,
       );
-      await expect(validator(validJwt)).rejects.toThrowError(TypeError);
+      await expect(validator(validJwt)).rejects.toThrow(TypeError);
     });
 
     it('rejects empty payload', async () => {
@@ -95,19 +95,19 @@ describe('helpers', () => {
         parseRequestToken(7, undefined as any),
       ).rejects.toMatchObject({
         name: 'AuthenticationError',
-        message: 'Missing Google IAP header: x-goog-iap-jwt-assertion',
+        message: 'Missing Google IAP header',
       });
       await expect(
         parseRequestToken(undefined, undefined as any),
       ).rejects.toMatchObject({
         name: 'AuthenticationError',
-        message: 'Missing Google IAP header: x-goog-iap-jwt-assertion',
+        message: 'Missing Google IAP header',
       });
       await expect(
         parseRequestToken('', undefined as any),
       ).rejects.toMatchObject({
         name: 'AuthenticationError',
-        message: 'Missing Google IAP header: x-goog-iap-jwt-assertion',
+        message: 'Missing Google IAP header',
       });
     });
 

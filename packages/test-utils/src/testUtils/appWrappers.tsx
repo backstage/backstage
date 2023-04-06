@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter, Routes } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -29,7 +29,7 @@ import {
   attachComponentData,
   createRouteRef,
 } from '@backstage/core-plugin-api';
-import { RenderResult } from '@testing-library/react';
+import { MatcherFunction, RenderResult } from '@testing-library/react';
 import { renderWithEffects } from './testingLibrary';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
@@ -184,11 +184,7 @@ export function createTestAppWrapper(
     <AppProvider>
       <AppRouter>
         <NoRender>{routeElements}</NoRender>
-        {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
-         *  and work with nested routes if they exist too */}
-        <Routes>
-          <Route path="/*" element={<>{children}</>} />
-        </Routes>
+        {children}
       </AppRouter>
     </AppProvider>
   );
@@ -212,7 +208,7 @@ export function wrapInTestApp(
 
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = React.createElement(Component as ComponentType);
   } else {
     wrappedElement = Component as React.ReactElement;
   }
@@ -237,7 +233,7 @@ export async function renderInTestApp(
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = React.createElement(Component as ComponentType);
   } else {
     wrappedElement = Component as React.ReactElement;
   }
@@ -246,3 +242,24 @@ export async function renderInTestApp(
     wrapper: createTestAppWrapper(options),
   });
 }
+
+/**
+ * Returns a `@testing-library/react` valid MatcherFunction for supplied text
+ *
+ * @param string - text Text to match by element's textContent
+ *
+ * @public
+ */
+export const textContentMatcher =
+  (text: string): MatcherFunction =>
+  (_, node) => {
+    if (!node) {
+      return false;
+    }
+
+    const hasText = (textNode: Element) => textNode?.textContent === text;
+    const childrenDontHaveText = (containerNode: Element) =>
+      Array.from(containerNode?.children).every(child => !hasText(child));
+
+    return hasText(node) && childrenDontHaveText(node);
+  };

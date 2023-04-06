@@ -43,12 +43,12 @@ export const ServiceDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h5">
+          <Typography variant="body1">
             {service.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             Service
           </Typography>
         </Grid>

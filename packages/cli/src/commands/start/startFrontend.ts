@@ -21,7 +21,8 @@ import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
-import { includedFilter } from '../versions/lint';
+import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
+import { PackageGraph } from '../../lib/monorepo';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -36,15 +37,18 @@ export async function startFrontend(options: StartAppOptions) {
     const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
     const result = lockfile.analyze({
       filter: includedFilter,
+      localPackages: PackageGraph.fromPackages(
+        await PackageGraph.listTargetPackages(),
+      ),
     });
-    const problemPackages = [...result.newVersions, ...result.newRanges].map(
-      ({ name }) => name,
-    );
+    const problemPackages = [...result.newVersions, ...result.newRanges]
+      .map(({ name }) => name)
+      .filter(forbiddenDuplicatesFilter);
 
     if (problemPackages.length > 1) {
       console.log(
         chalk.yellow(
-          `⚠️ Some of the following packages may be outdated or have duplicate installations:
+          `⚠️   Some of the following packages may be outdated or have duplicate installations:
 
           ${uniq(problemPackages).join(', ')}
         `,
@@ -52,7 +56,7 @@ export async function startFrontend(options: StartAppOptions) {
       );
       console.log(
         chalk.yellow(
-          `⚠️ This can be resolved using the following command:
+          `⚠️   This can be resolved using the following command:
 
           yarn backstage-cli versions:check --fix
       `,
@@ -62,14 +66,34 @@ export async function startFrontend(options: StartAppOptions) {
   }
 
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const config = await loadCliConfig({
+    args: options.configPaths,
+    fromPackage: name,
+    withFilteredKeys: true,
+  });
+
+  const appBaseUrl = config.frontendConfig.getString('app.baseUrl');
+  const backendBaseUrl = config.frontendConfig.getString('backend.baseUrl');
+  if (appBaseUrl === backendBaseUrl) {
+    console.log(
+      chalk.yellow(
+        `⚠️   Conflict between app baseUrl and backend baseUrl:
+
+    app.baseUrl:     ${appBaseUrl}
+    backend.baseUrl: ${backendBaseUrl}
+
+    Must have unique hostname and/or ports.
+
+    This can be resolved by changing app.baseUrl and backend.baseUrl to point to their respective local development ports.
+`,
+      ),
+    );
+  }
+
   const waitForExit = await serveBundle({
     entry: options.entry,
     checksEnabled: options.checksEnabled,
-    ...(await loadCliConfig({
-      args: options.configPaths,
-      fromPackage: name,
-      withFilteredKeys: true,
-    })),
+    ...config,
   });
 
   await waitForExit();

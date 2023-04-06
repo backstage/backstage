@@ -23,6 +23,7 @@ import {
 import { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
+/** @public */
 export const useUserProfile = () => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
@@ -53,6 +54,7 @@ export const useUserProfile = () => {
 
   return {
     profile: value!.profile,
+    backstageIdentity: value!.identity,
     displayName: value!.profile.displayName ?? value!.identity.userEntityRef,
     loading,
   };

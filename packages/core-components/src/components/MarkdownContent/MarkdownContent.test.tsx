@@ -62,4 +62,72 @@ describe('<MarkdownContent />', () => {
     expect(fp2).toBeInTheDocument();
     expect(rendered.getByText(');', { selector: 'span' })).toBeInTheDocument();
   });
+
+  it('render MarkdownContent component with transformed link', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content="[Title](https://backstage.io/link)"
+          transformLinkUri={href => {
+            return `${href}-modified`;
+          }}
+        />,
+      ),
+    );
+    const fp1 = rendered.getByText('Title', {
+      selector: 'a',
+    });
+    expect(fp1).toBeInTheDocument();
+    expect(fp1.getAttribute('href')).toEqual(
+      'https://backstage.io/link-modified',
+    );
+  });
+
+  it('render MarkdownContent component with transformed image', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content="![Image](https://backstage.io/blog/assets/6/header.png)"
+          transformImageUri={() => {
+            return `https://example.com/blog/assets/6/header.png`;
+          }}
+        />,
+      ),
+    );
+    const fp1 = rendered.getByAltText('Image');
+    expect(fp1).toBeInTheDocument();
+    expect(fp1.getAttribute('src')).toEqual(
+      'https://example.com/blog/assets/6/header.png',
+    );
+  });
+
+  it('render MarkdownContent component with headings given proper ids', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content={
+            '# Lorem ipsum\n' +
+            '## bing bong\n' +
+            '### The FitnessGram Pacer Test is a multistage aerobic capacity test'
+          }
+        />,
+      ),
+    );
+
+    expect(rendered.getByText('Lorem ipsum').getAttribute('id')).toEqual(
+      'lorem-ipsum',
+    );
+    expect(rendered.getByText('bing bong').getAttribute('id')).toEqual(
+      'bing-bong',
+    );
+    expect(
+      rendered
+        .getByText(
+          'The FitnessGram Pacer Test is a multistage aerobic capacity test',
+        )
+        .getAttribute('id'),
+    ).toEqual(
+      'the-fitnessgram-pacer-test-is-a-multistage-aerobic-capacity-test',
+    );
+  });
 });

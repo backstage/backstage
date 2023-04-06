@@ -29,16 +29,16 @@ interface StyledIconProps {
 export type TabIconClassKey = 'root';
 
 const useStyles = makeStyles<BackstageTheme, StyledIconProps>(
-  () => ({
+  theme => ({
     root: {
       color: '#6E6E6E',
       overflow: 'visible',
-      fontSize: '1.5rem',
+      fontSize: theme.typography.h5.fontSize,
       textAlign: 'center',
       borderRadius: '50%',
       backgroundColor: '#E6E6E6',
       marginLeft: props => (props.isNext ? 'auto' : '0'),
-      marginRight: props => (props.isNext ? '0' : '10px'),
+      marginRight: props => (props.isNext ? '0' : theme.spacing(1.25)),
       '&:hover': {
         backgroundColor: '#E6E6E6',
         opacity: '1',

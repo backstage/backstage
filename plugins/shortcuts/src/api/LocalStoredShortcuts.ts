@@ -15,35 +15,61 @@
  */
 
 import { pageTheme } from '@backstage/theme';
-import ObservableImpl from 'zen-observable';
 import { v4 as uuid } from 'uuid';
-import { ShortcutApi } from './ShortcutApi';
-import { Shortcut } from '../types';
-import { StorageApi } from '@backstage/core-plugin-api';
+import { ShortcutApi, type Shortcut } from '@backstage/plugin-shortcuts';
+import type { StorageApi } from '@backstage/core-plugin-api';
+import type { Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
 
 /**
  * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
+ *
+ * @public
  */
 export class LocalStoredShortcuts implements ShortcutApi {
-  constructor(private readonly storageApi: StorageApi) {}
+  private shortcuts: Shortcut[];
+  private readonly subscribers = new Set<
+    ZenObservable.SubscriptionObserver<Shortcut[]>
+  >();
 
-  shortcut$() {
+  private readonly observable = new ObservableImpl<Shortcut[]>(subscriber => {
+    // forward the the latest value
+    subscriber.next(this.shortcuts);
+
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
+
+  constructor(private readonly storageApi: StorageApi) {
+    this.shortcuts = this.storageApi.snapshot<Shortcut[]>('items').value ?? [];
+    this.storageApi.observe$<Shortcut[]>('items').subscribe({
+      next: next => {
+        this.shortcuts = next.value ?? [];
+        this.notifyChanges();
+      },
+    });
+  }
+
+  shortcut$(): Observable<Shortcut[]> {
     return this.observable;
   }
 
+  get() {
+    return this.shortcuts;
+  }
+
   async add(shortcut: Omit<Shortcut, 'id'>) {
-    const shortcuts = this.get();
-    shortcuts.push({ ...shortcut, id: uuid() });
+    const shortcuts = this.sort([...this.get(), { ...shortcut, id: uuid() }]);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async remove(id: string) {
     const shortcuts = this.get().filter(s => s.id !== id);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   async update(shortcut: Shortcut) {
@@ -51,7 +77,6 @@ export class LocalStoredShortcuts implements ShortcutApi {
     shortcuts.push(shortcut);
 
     await this.storageApi.set('items', shortcuts);
-    this.notify();
   }
 
   getColor(url: string) {
@@ -63,33 +88,18 @@ export class LocalStoredShortcuts implements ShortcutApi {
     return pageTheme[theme].colors[0];
   }
 
-  private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<Shortcut[]>
-  >();
-
-  private readonly observable = new ObservableImpl<Shortcut[]>(subscriber => {
-    subscriber.next(this.get());
-    this.subscribers.add(subscriber);
-
-    return () => {
-      this.subscribers.delete(subscriber);
-    };
-  });
-
   private readonly THEME_MAP: Record<string, keyof typeof pageTheme> = {
     catalog: 'home',
     docs: 'documentation',
   };
 
-  private get() {
-    return Array.from(
-      this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
-    ).sort((a, b) => (a.title >= b.title ? 1 : -1));
+  private sort(shortcuts: Shortcut[]): Shortcut[] {
+    return shortcuts.slice().sort((a, b) => (a.title >= b.title ? 1 : -1));
   }
 
-  private notify() {
+  private notifyChanges() {
     for (const subscription of this.subscribers) {
-      subscription.next(this.get());
+      subscription.next(this.shortcuts);
     }
   }
 }

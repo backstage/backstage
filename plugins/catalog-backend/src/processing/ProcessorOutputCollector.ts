@@ -19,17 +19,23 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyLocationRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { CatalogProcessorResult, EntityRelationSpec } from '../api';
+import {
+  CatalogProcessor,
+  CatalogProcessorResult,
+  DeferredEntity,
+  EntityRelationSpec,
+} from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
   validateEntityEnvelope,
 } from './util';
+import { RefreshKeyData } from './types';
 
 /**
  * Helper class for aggregating all of the emitted data from processors.
@@ -38,6 +44,7 @@ export class ProcessorOutputCollector {
   private readonly errors = new Array<Error>();
   private readonly relations = new Array<EntityRelationSpec>();
   private readonly deferredEntities = new Array<DeferredEntity>();
+  private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
   constructor(
@@ -45,8 +52,17 @@ export class ProcessorOutputCollector {
     private readonly parentEntity: Entity,
   ) {}
 
-  get onEmit(): (i: CatalogProcessorResult) => void {
-    return i => this.receive(i);
+  generic(): (i: CatalogProcessorResult) => void {
+    return i => this.receive(this.logger, i);
+  }
+
+  forProcessor(
+    processor: CatalogProcessor,
+  ): (i: CatalogProcessorResult) => void {
+    const logger = this.logger.child({
+      processor: processor.getProcessorName(),
+    });
+    return i => this.receive(logger, i);
   }
 
   results() {
@@ -54,13 +70,14 @@ export class ProcessorOutputCollector {
     return {
       errors: this.errors,
       relations: this.relations,
+      refreshKeys: this.refreshKeys,
       deferredEntities: this.deferredEntities,
     };
   }
 
-  private receive(i: CatalogProcessorResult) {
+  private receive(logger: Logger, i: CatalogProcessorResult) {
     if (this.done) {
-      this.logger.warn(
+      logger.warn(
         `Item of type "${
           i.type
         }" was emitted after processing had completed. Stack trace: ${
@@ -78,8 +95,21 @@ export class ProcessorOutputCollector {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
         assertError(e);
-        this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
+        logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
+        return;
+      }
+
+      // The processor contract says you should return the "trunk" (current)
+      // entity, not emit it. But it happens that this is misunderstood or
+      // accidentally forgotten. This can lead to circular references which at
+      // best is wasteful, so we try to be helpful by ignoring such emitted
+      // entities.
+      const entityRef = stringifyEntityRef(entity);
+      if (entityRef === stringifyEntityRef(this.parentEntity)) {
+        logger.warn(
+          `Ignored emitted entity ${entityRef} whose ref was identical to the one being processed. This commonly indicates mistakenly emitting the input entity instead of returning it.`,
+        );
         return;
       }
 
@@ -116,6 +146,8 @@ export class ProcessorOutputCollector {
       this.relations.push(i.relation);
     } else if (i.type === 'error') {
       this.errors.push(i.error);
+    } else if (i.type === 'refresh') {
+      this.refreshKeys.push({ key: i.key });
     }
   }
 }

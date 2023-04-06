@@ -15,7 +15,10 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
@@ -29,6 +32,7 @@ import {
   TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -61,7 +65,26 @@ export type RawDbTaskEventRow = {
  * @public
  */
 export type DatabaseTaskStoreOptions = {
-  database: Knex;
+  database: PluginDatabaseManager | Knex;
+};
+
+/**
+ * Typeguard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
+ *
+ * * @public
+ */
+function isPluginDatabaseManager(
+  opt: PluginDatabaseManager | Knex,
+): opt is PluginDatabaseManager {
+  return (opt as PluginDatabaseManager).getClient !== undefined;
+}
+
+const parseSqlDateToIsoString = <T>(input: T): T | string => {
+  if (typeof input === 'string') {
+    return DateTime.fromSQL(input, { zone: 'UTC' }).toISO();
+  }
+
+  return input;
 };
 
 /**
@@ -75,14 +98,70 @@ export class DatabaseTaskStore implements TaskStore {
   static async create(
     options: DatabaseTaskStoreOptions,
   ): Promise<DatabaseTaskStore> {
-    await options.database.migrate.latest({
-      directory: migrationsDir,
-    });
-    return new DatabaseTaskStore(options);
+    const { database } = options;
+    const client = await this.getClient(database);
+
+    await this.runMigrations(database, client);
+
+    return new DatabaseTaskStore(client);
   }
 
-  private constructor(options: DatabaseTaskStoreOptions) {
-    this.db = options.database;
+  private static async getClient(
+    database: PluginDatabaseManager | Knex,
+  ): Promise<Knex> {
+    if (isPluginDatabaseManager(database)) {
+      return database.getClient();
+    }
+
+    return database;
+  }
+
+  private static async runMigrations(
+    database: PluginDatabaseManager | Knex,
+    client: Knex,
+  ): Promise<void> {
+    if (!isPluginDatabaseManager(database)) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+
+      return;
+    }
+
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+  }
+
+  private constructor(client: Knex) {
+    this.db = client;
+  }
+
+  async list(options: {
+    createdBy?: string;
+  }): Promise<{ tasks: SerializedTask[] }> {
+    const queryBuilder = this.db<RawDbTaskRow>('tasks');
+
+    if (options.createdBy) {
+      queryBuilder.where({
+        created_by: options.createdBy,
+      });
+    }
+
+    const results = await queryBuilder.orderBy('created_at', 'desc').select();
+
+    const tasks = results.map(result => ({
+      id: result.id,
+      spec: JSON.parse(result.spec),
+      status: result.status,
+      createdBy: result.created_by ?? undefined,
+      lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+      createdAt: parseSqlDateToIsoString(result.created_at),
+    }));
+
+    return { tasks };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {
@@ -99,8 +178,8 @@ export class DatabaseTaskStore implements TaskStore {
         id: result.id,
         spec,
         status: result.status,
-        lastHeartbeatAt: result.last_heartbeat_at,
-        createdAt: result.created_at,
+        lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+        createdAt: parseSqlDateToIsoString(result.created_at),
         createdBy: result.created_by ?? undefined,
         secrets,
       };
@@ -141,7 +220,7 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets when moving moving to processing state.
+          // remove the secrets when moving to processing state.
           secrets: null,
         });
 
@@ -178,9 +257,11 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  async listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
+  async listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }> {
+    const { timeoutS } = options;
+
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
       .andWhere(
@@ -188,8 +269,7 @@ export class DatabaseTaskStore implements TaskStore {
         '<=',
         this.db.client.config.client.includes('sqlite3')
           ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
-          : this.db.raw(`dateadd('second', ?, ?)`, [
-              `-${timeoutS}`,
+          : this.db.raw(`? - interval '${timeoutS} seconds'`, [
               this.db.fn.now(),
             ]),
       );
@@ -199,23 +279,22 @@ export class DatabaseTaskStore implements TaskStore {
     return { tasks };
   }
 
-  async completeTask({
-    taskId,
-    status,
-    eventBody,
-  }: {
+  async completeTask(options: {
     taskId: string;
     status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void> {
+    const { taskId, status, eventBody } = options;
+
     let oldStatus: string;
-    if (status === 'failed' || status === 'completed') {
+    if (['failed', 'completed', 'cancelled'].includes(status)) {
       oldStatus = 'processing';
     } else {
       throw new Error(
         `Invalid status update of run '${taskId}' to status '${status}'`,
       );
     }
+
     await this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
@@ -223,6 +302,40 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .limit(1)
         .select();
+
+      const updateTask = async (criteria: {
+        id: string;
+        status?: TaskStatus;
+      }) => {
+        const updateCount = await tx<RawDbTaskRow>('tasks')
+          .where(criteria)
+          .update({
+            status,
+          });
+
+        if (updateCount !== 1) {
+          throw new ConflictError(
+            `Failed to update status to '${status}' for taskId ${taskId}`,
+          );
+        }
+
+        await tx<RawDbTaskEventRow>('task_events').insert({
+          task_id: taskId,
+          event_type: 'completion',
+          body: JSON.stringify(eventBody),
+        });
+      };
+
+      if (status === 'cancelled') {
+        await updateTask({
+          id: taskId,
+        });
+        return;
+      }
+
+      if (task.status === 'cancelled') {
+        return;
+      }
 
       if (!task) {
         throw new Error(`No task with taskId ${taskId} found`);
@@ -233,25 +346,10 @@ export class DatabaseTaskStore implements TaskStore {
             `as it is currently '${task.status}', expected '${oldStatus}'`,
         );
       }
-      const updateCount = await tx<RawDbTaskRow>('tasks')
-        .where({
-          id: taskId,
-          status: oldStatus,
-        })
-        .update({
-          status,
-        });
 
-      if (updateCount !== 1) {
-        throw new ConflictError(
-          `Failed to update status to '${status}' for taskId ${taskId}`,
-        );
-      }
-
-      await tx<RawDbTaskEventRow>('task_events').insert({
-        task_id: taskId,
-        event_type: 'completion',
-        body: JSON.stringify(eventBody),
+      await updateTask({
+        id: taskId,
+        status: oldStatus,
       });
     });
   }
@@ -268,10 +366,10 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async listEvents({
-    taskId,
-    after,
-  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }> {
+  async listEvents(
+    options: TaskStoreListEventsOptions,
+  ): Promise<{ events: SerializedTaskEvent[] }> {
+    const { taskId, after } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -292,10 +390,7 @@ export class DatabaseTaskStore implements TaskStore {
           taskId,
           body,
           type: event.event_type,
-          createdAt:
-            typeof event.created_at === 'string'
-              ? DateTime.fromSQL(event.created_at, { zone: 'UTC' }).toISO()
-              : event.created_at,
+          createdAt: parseSqlDateToIsoString(event.created_at),
         };
       } catch (error) {
         throw new Error(
@@ -304,5 +399,56 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
     return { events };
+  }
+
+  async shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void> {
+    const { taskId } = options;
+    const message = `This task was marked as stale as it exceeded its timeout`;
+
+    const statusStepEvents = (await this.listEvents({ taskId })).events.filter(
+      ({ body }) => body?.stepId,
+    );
+
+    const completedSteps = statusStepEvents
+      .filter(
+        ({ body: { status } }) => status === 'failed' || status === 'completed',
+      )
+      .map(step => step.body.stepId);
+
+    const hungProcessingSteps = statusStepEvents
+      .filter(({ body: { status } }) => status === 'processing')
+      .map(event => event.body.stepId)
+      .filter(step => !completedSteps.includes(step));
+
+    for (const step of hungProcessingSteps) {
+      await this.emitLogEvent({
+        taskId,
+        body: {
+          message,
+          stepId: step,
+          status: 'failed',
+        },
+      });
+    }
+
+    await this.completeTask({
+      taskId,
+      status: 'failed',
+      eventBody: {
+        message,
+      },
+    });
+  }
+
+  async cancelTask(
+    options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
+  ): Promise<void> {
+    const { taskId, body } = options;
+    const serializedBody = JSON.stringify(body);
+    await this.db<RawDbTaskEventRow>('task_events').insert({
+      task_id: taskId,
+      event_type: 'cancelled',
+      body: serializedBody,
+    });
   }
 }

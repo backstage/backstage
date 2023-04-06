@@ -23,6 +23,7 @@ import {
 
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const firehydrantPlugin = createPlugin({
   id: 'firehydrant',
   apis: [
@@ -37,6 +38,7 @@ export const firehydrantPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const FirehydrantCard = firehydrantPlugin.provide(
   createComponentExtension({
     name: 'FirehydrantCard',
@@ -48,3 +50,6 @@ export const FirehydrantCard = firehydrantPlugin.provide(
     },
   }),
 );
+
+/** @public */
+export { isFireHydrantAvailable } from './components/hooks';

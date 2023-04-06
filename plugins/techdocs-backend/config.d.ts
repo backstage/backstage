@@ -66,6 +66,13 @@ export interface Config {
     publisher?:
       | {
           type: 'local';
+
+          local?: {
+            /**
+             * Directory to store generated static files.
+             */
+            publishDirectory?: string;
+          };
         }
       | {
           type: 'awsS3';
@@ -75,8 +82,22 @@ export interface Config {
            */
           awsS3?: {
             /**
+             * (Optional) The AWS account ID where the storage bucket is located.
+             * Credentials for the account ID will be sourced from the 'aws' app config section.
+             * See the
+             * [integration-aws-node package](https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md)
+             * for details on how to configure the credentials in the app config.
+             * If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             * @visibility secret
+             */
+            accountId?: string;
+            /**
              * (Optional) Credentials used to access a storage bucket.
-             * If not set, environment variables or aws config file will be used to authenticate.
+             * This section is now deprecated. Configuring the account ID is now preferred, with credentials in the 'aws'
+             * app config section.
+             * If not set and no account ID is set, environment variables or aws config file will be used to authenticate.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
              * @visibility secret
@@ -94,13 +115,11 @@ export interface Config {
               secretAccessKey?: string;
               /**
                * ARN of role to be assumed
-               * @visibility backend
                */
               roleArn?: string;
             };
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
@@ -121,7 +140,6 @@ export interface Config {
              * (Optional) Whether to use path style URLs when communicating with S3.
              * Defaults to false.
              * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
-             * @visibility backend
              */
             s3ForcePathStyle?: boolean;
 
@@ -160,17 +178,14 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
             /**
              * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
-             * @visibility backend
              */
             authUrl: string;
             /**
              * (Required) Swift URL
-             * @visibility backend
              */
             swiftUrl: string;
           };
@@ -202,7 +217,6 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
           };
@@ -216,7 +230,6 @@ export interface Config {
           googleGcs?: {
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
@@ -226,6 +239,12 @@ export interface Config {
              * @visibility secret
              */
             credentials?: string;
+            /**
+             * (Optional) GCP project ID that contains the bucket. Should be
+             * set if credentials is not set, or if the service account in
+             * the credentials belongs to a different project to the bucket.
+             */
+            projectId?: string;
           };
         };
 

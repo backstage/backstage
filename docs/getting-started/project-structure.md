@@ -28,7 +28,7 @@ the code.
   sub-folder which is used for a markdown spellchecker.
 
 - [`.yarn/`](https://github.com/backstage/backstage/tree/master/.yarn) -
-  Backstage ships with it's own `yarn` implementation. This allows us to have
+  Backstage ships with its own `yarn` implementation. This allows us to have
   better control over our `yarn.lock` file and hopefully avoid problems due to
   yarn versioning differences.
 
@@ -101,7 +101,7 @@ are separated out into their own folder, see further down.
 
 - [`cli/`](https://github.com/backstage/backstage/tree/master/packages/cli) -
   One of the biggest packages in our project, the `cli` is used to build, serve,
-  diff, create-plugins and more. In the early days of this project, we started
+  diff, create plugins and more. In the early days of this project, we started
   out with calling tools directly - such as `eslint` - through `package.json`.
   But as it was tricky to have a good development experience around that when we
   change named tooling, we opted for wrapping those in our own CLI. That way
@@ -212,7 +212,7 @@ future.
   common for companies to have their own npm registry, and this file makes sure
   that this folder always uses the public registry.
 
-- [`.yarnrc`](https://github.com/backstage/backstage/tree/master/.yarnrc) -
+- [`.yarnrc.yml`](https://github.com/backstage/backstage/tree/master/.yarnrc.yml) -
   Enforces "our" version of Yarn.
 
 - [`app-config.yaml`](https://github.com/backstage/backstage/tree/master/app-config.yaml) -

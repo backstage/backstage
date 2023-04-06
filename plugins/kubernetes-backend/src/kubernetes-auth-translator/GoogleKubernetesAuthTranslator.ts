@@ -16,20 +16,24 @@
 
 import { KubernetesAuthTranslator } from './types';
 import { GKEClusterDetails } from '../types/types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ * @public
+ */
 export class GoogleKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   async decorateClusterDetailsWithAuth(
     clusterDetails: GKEClusterDetails,
-    requestBody: KubernetesRequestBody,
+    authConfig: KubernetesRequestAuth,
   ): Promise<GKEClusterDetails> {
     const clusterDetailsWithAuthToken: GKEClusterDetails = Object.assign(
       {},
       clusterDetails,
     );
-    const authToken: string | undefined = requestBody.auth?.google;
+    const authToken: string | undefined = authConfig.google;
 
     if (authToken) {
       clusterDetailsWithAuthToken.serviceAccountToken = authToken;

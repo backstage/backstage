@@ -17,23 +17,18 @@
 import React from 'react';
 import {
   Grid,
-  makeStyles,
   Card,
   CardContent,
   Typography,
   GridSize,
 } from '@material-ui/core';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Avatar, Link } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { StatusTag } from '../StatusTag';
 import { Member, BazaarProject } from '../../types';
-
-const useStyles = makeStyles({
-  break: {
-    wordBreak: 'break-word',
-    textAlign: 'justify',
-  },
-});
 
 type Props = {
   bazaarProject: BazaarProject;
@@ -48,7 +43,7 @@ export const CardContentFields = ({
   descriptionSize,
   membersSize,
 }: Props) => {
-  const classes = useStyles();
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
 
   return (
     <div>
@@ -60,12 +55,7 @@ export const CardContentFields = ({
                 {bazaarProject.description
                   .split('\n')
                   .map((str: string, i: number) => (
-                    <Typography
-                      key={i}
-                      variant="body2"
-                      paragraph
-                      className={classes.break}
-                    >
+                    <Typography key={i} variant="body2" paragraph>
                       {str}
                     </Typography>
                   ))}
@@ -110,9 +100,14 @@ export const CardContentFields = ({
                           picture={member.picture}
                         />
                         <Link
-                          className={classes.break}
-                          to={`http://github.com/${member.userId}`}
                           target="_blank"
+                          to={
+                            member.userRef
+                              ? `${catalogEntityRoute(
+                                  parseEntityRef(member.userRef),
+                                )}`
+                              : `http://github.com/${member.userId}`
+                          }
                         >
                           {member?.userId}
                         </Link>

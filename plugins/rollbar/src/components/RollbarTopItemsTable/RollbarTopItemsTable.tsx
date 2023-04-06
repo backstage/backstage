@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Box, Link, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import {
@@ -24,7 +24,7 @@ import {
 } from '../../api/types';
 import { buildItemUrl } from '../../utils';
 import { TrendGraph } from '../TrendGraph/TrendGraph';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Table, TableColumn, Link } from '@backstage/core-components';
 
 const columns: TableColumn[] = [
   {
@@ -34,11 +34,7 @@ const columns: TableColumn[] = [
     align: 'left',
     width: '70px',
     render: (data: any) => (
-      <Link
-        href={buildItemUrl(data.org, data.project, data.item.counter)}
-        target="_blank"
-        rel="noreferrer"
-      >
+      <Link to={buildItemUrl(data.org, data.project, data.item.counter)}>
         {data.item.counter}
       </Link>
     ),

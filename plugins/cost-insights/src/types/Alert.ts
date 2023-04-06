@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { ChangeStatistic } from './ChangeStatistic';
+import { ChangeStatistic, Maybe } from '@backstage/plugin-cost-insights-common';
 import { Duration } from './Duration';
-import { Maybe } from './Maybe';
 
 /**
  * Generic alert type with required fields for display. The `element` field will be rendered in
@@ -31,8 +31,9 @@ import { Maybe } from './Maybe';
  * React.forwardRef. See https://reactjs.org/docs/forwarding-refs
  *
  * Errors thrown within hooks will generate a snackbar error notification.
+ *
+ * @public
  */
-
 export type Alert = {
   title: string | JSX.Element;
   subtitle: string | JSX.Element;
@@ -48,6 +49,7 @@ export type Alert = {
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
 };
 
+/** @public */
 export type AlertForm<
   A extends Alert = any,
   Data = any,
@@ -55,6 +57,7 @@ export type AlertForm<
   AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
 >;
 
+/** @public */
 export interface AlertOptions<T = any> {
   data: T;
   group: string;
@@ -69,11 +72,14 @@ export interface AlertOptions<T = any> {
  * inclusive of the last day.
  *
  * https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
+ *
+ * @public
  */
 export interface AlertSnoozeFormData {
   intervals: string;
 }
 
+/** @public */
 export interface AlertDismissFormData {
   other: Maybe<string>;
   reason: AlertDismissReason;
@@ -81,23 +87,27 @@ export interface AlertDismissFormData {
 }
 
 // TODO: Convert enum to literal
+/** @public */
 export enum AlertStatus {
   Snoozed = 'snoozed',
   Accepted = 'accepted',
   Dismissed = 'dismissed',
 }
 
+/** @public */
 export type AlertFormProps<A extends Alert, FormData = {}> = {
   alert: A;
   onSubmit: (data: FormData) => void;
   disableSubmit: (isDisabled: boolean) => void;
 };
 
+/** @public */
 export interface AlertDismissOption {
   label: string;
   reason: string;
 }
 
+/** @public */
 export enum AlertDismissReason {
   Other = 'other',
   Resolved = 'resolved',
@@ -107,6 +117,7 @@ export enum AlertDismissReason {
   NotApplicable = 'not-applicable',
 }
 
+/** @public */
 export const AlertDismissOptions: AlertDismissOption[] = [
   {
     reason: AlertDismissReason.Resolved,
@@ -134,11 +145,13 @@ export const AlertDismissOptions: AlertDismissOption[] = [
   },
 ];
 
+/** @public */
 export type AlertSnoozeOption = {
   label: string;
   duration: Duration;
 };
 
+/** @public */
 export const AlertSnoozeOptions: AlertSnoozeOption[] = [
   {
     duration: Duration.P7D,
@@ -154,17 +167,20 @@ export const AlertSnoozeOptions: AlertSnoozeOption[] = [
   },
 ];
 
+/** @public */
 export interface AlertCost {
   id: string;
   aggregation: [number, number];
 }
 
+/** @public */
 export interface ResourceData {
   previous: number;
   current: number;
   name: Maybe<string>;
 }
 
+/** @public */
 export interface BarChartOptions {
   previousFill: string;
   currentFill: string;
@@ -172,15 +188,20 @@ export interface BarChartOptions {
   currentName: string;
 }
 
-/** deprecated use BarChartOptions instead */
+/**
+ * @public
+ * @deprecated use BarChartOptions instead
+ */
 export interface BarChartData extends BarChartOptions {}
 
+/** @public */
 export enum DataKey {
   Previous = 'previous',
   Current = 'current',
   Name = 'name',
 }
 
+/** @public */
 export interface ProjectGrowthData {
   project: string;
   periodStart: string;
@@ -190,6 +211,7 @@ export interface ProjectGrowthData {
   products: Array<AlertCost>;
 }
 
+/** @public */
 export interface UnlabeledDataflowData {
   periodStart: string;
   periodEnd: string;
@@ -198,6 +220,7 @@ export interface UnlabeledDataflowData {
   labeledCost: number;
 }
 
+/** @public */
 export interface UnlabeledDataflowAlertProject {
   id: string;
   unlabeledCost: number;

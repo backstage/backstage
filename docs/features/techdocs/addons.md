@@ -4,11 +4,6 @@ title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
-> Note: This page contains documentation for features that have not yet been
-> released on a [main-line version](https://backstage.io/docs/overview/versioning-policy#main-release-line)
-> of Backstage and TechDocs. We plan to make Addons generally available in
-> Backstage v1.2.
-
 ## Concepts
 
 TechDocs is a centralized platform for publishing, viewing, and discovering
@@ -44,7 +39,9 @@ representative of physical spaces in the TechDocs UI:
 - `Component`: A [proposed-but-not-yet-implemented](https://github.com/backstage/backstage/issues/11109)
   virtual location, aimed at simplifying a common type of Addon.
 
-<img data-zoomable src="../../assets/techdocs/addon-locations.png" alt="TechDocs Addon Location Guide" />
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Addon Location Guide](../../assets/techdocs/addon-locations.png)
 
 ### Addon Registry
 
@@ -56,6 +53,8 @@ the TechDocs Reader page as well as the Entity docs page.
 Addons are rendered in the order in which they are registered.
 
 ## Installing and using Addons
+
+To start using Addons you need to add the `@backstage/plugin-techdocs-module-addons-contrib` package to your app. You can do that by running this command from the root of your project: `yarn add --cwd packages/app @backstage/plugin-techdocs-module-addons-contrib`
 
 Addons can be installed and configured in much the same way as extensions for
 other Backstage plugins: by adding them underneath an extension registry
@@ -77,6 +76,18 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
     {/* Other addons can be added here. */}
   </TechDocsAddons>
 </Route>;
+```
+
+If you are using a custom [TechDocs reader page](./how-to-guides.md#how-to-customize-the-techdocs-reader-page) your setup will be very similar, here's an example:
+
+```ts
+<Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
+  <TechDocsAddons>
+    <ReportIssue />
+    {/* Other addons can be added here. */}
+  </TechDocsAddons>
+  {techDocsPage} // This is your custom TechDocs reader page
+</Route>
 ```
 
 The process for configuring Addons on the documentation tab on the entity page
@@ -111,10 +122,12 @@ page header, TechDocs Addons whose location is `Header` will not be rendered.
 Addons can, in principle, be provided by any plugin! To make it easier to
 discover available Addons, we've compiled a list of them here:
 
-| Addon                                                                                                      | Package/Plugin                                     | Description                                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`<ReportIssue />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue) | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to select a portion of text on a TechDocs page and open an issue against the repository that contains the documentation, populating the issue description with the selected text according to a configurable template.                                                            |
-| [`<TextSize />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.textsize)       | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons. The default value for font size is 100% and this setting is kept in the browser's local storage whenever it is changed. |
+| Addon                                                                                                                        | Package/Plugin                                     | Description                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`<ExpandableNavigation />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.expandablenavigation) | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to expand or collapse the entire TechDocs main navigation, and keeps the user's preferred state between documentation sites.                                                                                                                                                      |
+| [`<ReportIssue />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue)                   | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to select a portion of text on a TechDocs page and open an issue against the repository that contains the documentation, populating the issue description with the selected text according to a configurable template.                                                            |
+| [`<TextSize />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.textsize)                         | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons. The default value for font size is 100% and this setting is kept in the browser's local storage whenever it is changed. |
+| [`<LightBox />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.lightbox)                         | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to open images in a light-box on documentation pages, they can navigate between images if there are several on one page. The image size of the light-box image is the same as the image size on the document page.                                                     |
 
 Got an Addon to contribute? Feel free to add a row above!
 

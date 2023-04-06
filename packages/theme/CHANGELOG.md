@@ -1,5 +1,53 @@
 # @backstage/theme
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
+## 0.2.18
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.2.17
+
+### Patch Changes
+
+- b7705e176c: Use same table header color as @backstage/core-components Table to meet accessibility color contrast requirements. This change affects material-ui tables.
+
+## 0.2.16
+
+### Patch Changes
+
+- ff4f56eb49: **DEPRECATED**: The `bursts` object from `BackstagePaletteAdditions` has been depreciated and will be removed in a future release
+
+  The `genPageTheme` function now includes an optional options object with an optional `fontColor` which defaults to white if not provided.
+
+- 4c09c09102: Adds optional `htmlFontSize` property and also sets typography design tokens for h5 and h6 in base theme.
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- ff4f56eb49: **DEPRECATED**: The `bursts` object from `BackstagePaletteAdditions` has been depreciated and will be removed in a future release
+
+  The `genPageTheme` function now includes an optional options object with an optional `fontColor` which defaults to white if not provided.
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- 4c09c09102: Adds optional `htmlFontSize` property and also sets typography design tokens for h5 and h6 in base theme.
+
 ## 0.2.15
 
 ### Patch Changes

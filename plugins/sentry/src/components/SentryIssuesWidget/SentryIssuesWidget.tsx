@@ -19,10 +19,7 @@ import React, { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { sentryApiRef } from '../../api';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
-import {
-  SENTRY_PROJECT_SLUG_ANNOTATION,
-  useProjectSlug,
-} from '../useProjectSlug';
+import { SENTRY_PROJECT_SLUG_ANNOTATION, useProjectSlug } from '../hooks';
 
 import {
   EmptyState,
@@ -35,26 +32,28 @@ import {
 import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Options } from '@material-table/core';
 
-export const SentryIssuesWidget = ({
-  entity,
-  statsFor,
-  tableOptions,
-  variant = 'gridItem',
-  query = '',
-}: {
+/** @public */
+export const SentryIssuesWidget = (props: {
   entity: Entity;
   statsFor: '24h' | '14d' | '';
   tableOptions: Options<never>;
   variant?: InfoCardVariants;
   query?: string;
 }) => {
+  const {
+    entity,
+    statsFor,
+    tableOptions,
+    variant = 'gridItem',
+    query = '',
+  } = props;
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const sentryApi = useApi(sentryApiRef);
 
   const projectId = useProjectSlug(entity);
 
   const { loading, value, error } = useAsync(
-    () => sentryApi.fetchIssues(projectId, statsFor, query),
+    () => sentryApi.fetchIssues(entity, { statsFor, query }),
     [sentryApi, statsFor, projectId, query],
   );
 

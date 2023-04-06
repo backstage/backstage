@@ -37,7 +37,7 @@ const octokit = {
   },
 };
 
-jest.doMock('@octokit/rest', () => {
+jest.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
       return octokit;
@@ -49,7 +49,7 @@ jest.doMock('@octokit/rest', () => {
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
@@ -89,7 +89,7 @@ describe('CatalogImportClient', () => {
     }),
   );
 
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
+  const catalogApi = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
@@ -100,6 +100,7 @@ describe('CatalogImportClient', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;
@@ -110,7 +111,7 @@ describe('CatalogImportClient', () => {
       scmAuthApi,
       scmIntegrationsApi,
       identityApi,
-      catalogApi,
+      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       configApi: new ConfigReader({
         app: {
           baseUrl: 'https://demo.backstage.io/',
@@ -120,7 +121,6 @@ describe('CatalogImportClient', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -164,7 +164,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target: 'http://example.com/folder/catalog-info.yaml',
@@ -213,7 +213,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target:
@@ -261,7 +261,7 @@ describe('CatalogImportClient', () => {
         type: 'locations',
       });
 
-      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation).toHaveBeenCalledTimes(1);
       expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
         type: 'url',
         target: 'http://example.com/folder/catalog-info.yaml?branch=test',
@@ -296,7 +296,7 @@ describe('CatalogImportClient', () => {
     it('should find locations from github', async () => {
       (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: {
-          total_count: 2,
+          total_count: 3,
           items: [
             { path: 'simple/path/catalog-info.yaml' },
             { path: 'co/mple/x/path/catalog-info.yaml' },
@@ -304,24 +304,72 @@ describe('CatalogImportClient', () => {
           ],
         },
       });
-
-      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
-        location: {
-          id: 'id-0',
-          type: type ?? 'url',
-          target,
-        },
-        entities: [
-          {
-            apiVersion: '1',
-            kind: 'k',
-            metadata: {
-              name: 'e',
-              namespace: 'n',
+      server.use(
+        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+          expect(req.body).toEqual({
+            location: {
+              target: 'https://github.com/backstage/backstage',
+              type: 'url',
             },
-          },
-        ],
-      }));
+          });
+
+          return res(
+            ctx.json({
+              generateEntities: [],
+              existingEntityFiles: [
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'k',
+                    metadata: {
+                      name: 'e',
+                      namespace: 'n',
+                    },
+                  },
+                },
+              ],
+            }),
+          );
+        }),
+      );
 
       await expect(
         catalogImportClient.analyzeUrl(
@@ -331,16 +379,19 @@ describe('CatalogImportClient', () => {
         locations: [
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
           },
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
           },
           {
             entities: [{ kind: 'k', name: 'e', namespace: 'n' }],
+            exists: false,
             target:
               'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
           },
@@ -406,7 +457,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -425,31 +476,57 @@ describe('CatalogImportClient', () => {
         }),
       );
 
-      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
-        location: {
-          id: 'id-0',
-          type: type ?? 'url',
-          target,
-        },
-        entities: [
-          {
-            apiVersion: '1',
-            kind: 'Location',
-            metadata: {
-              name: 'my-entity',
-              namespace: 'my-namespace',
+      server.use(
+        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+          expect(req.body).toEqual({
+            location: {
+              target: 'https://github.com/acme-corp/our-awesome-api',
+              type: 'url',
             },
-          },
-          {
-            apiVersion: '1',
-            kind: 'Component',
-            metadata: {
-              name: 'my-entity',
-              namespace: 'my-namespace',
-            },
-          },
-        ],
-      }));
+            catalogFilename: 'anvil.yaml',
+          });
+
+          return res(
+            ctx.json({
+              generateEntities: [],
+              existingEntityFiles: [
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'Location',
+                    metadata: {
+                      name: 'my-entity',
+                      namespace: 'my-namespace',
+                    },
+                  },
+                },
+                {
+                  isRegistered: false,
+                  location: {
+                    type: 'url',
+                    target:
+                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                  },
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'Component',
+                    metadata: {
+                      name: 'my-entity',
+                      namespace: 'my-namespace',
+                    },
+                  },
+                },
+              ],
+            }),
+          );
+        }),
+      );
 
       await expect(
         catalogImportClient.analyzeUrl(repositoryUrl),
@@ -469,6 +546,7 @@ describe('CatalogImportClient', () => {
               },
             ],
             target: `${repositoryUrl}/blob/main/${entityFilename}`,
+            exists: false,
           },
         ],
         type: 'locations',
@@ -531,7 +609,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -601,7 +679,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         identityApi,
-        catalogApi,
+        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {

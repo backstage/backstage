@@ -29,7 +29,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { GitLabClient, GitLabProject, paginated } from './lib';
 
@@ -41,8 +41,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
+  private readonly skipReposWithoutExactFileMatch: boolean;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; skipReposWithoutExactFileMatch?: boolean },
+  ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
       CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
@@ -58,10 +62,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     integrations: ScmIntegrationRegistry;
     pluginCache: PluginCacheManager;
     logger: Logger;
+    skipReposWithoutExactFileMatch?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache.getClient();
     this.logger = options.logger;
+    this.skipReposWithoutExactFileMatch =
+      options.skipReposWithoutExactFileMatch || false;
   }
 
   getProcessorName(): string {
@@ -77,6 +84,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
+    const startTime = new Date();
     const { group, host, branch, catalogPath } = parseUrl(location.target);
 
     const integration = this.integrations.gitlab.byUrl(`https://${host}`);
@@ -90,14 +98,18 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       config: integration.config,
       logger: this.logger,
     });
-    const startTimestamp = Date.now();
     this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
-    const projects = paginated(options => client.listProjects(options), {
+    const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
+    const opts = {
       group,
-      last_activity_after: await this.updateLastActivity(),
       page: 1,
-    });
+      // We check for the existence of lastActivity and only set it if it's present to ensure
+      // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
+      ...(lastActivity && { last_activity_after: lastActivity }),
+    };
+
+    const projects = paginated(options => client.listProjects(options), opts);
 
     const res: Result = {
       scanned: 0,
@@ -112,6 +124,20 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
       if (branch === '*' && project.default_branch === undefined) {
         continue;
+      }
+
+      if (this.skipReposWithoutExactFileMatch) {
+        const project_branch = branch === '*' ? project.default_branch : branch;
+
+        const projectHasFile: boolean = await client.hasFile(
+          project.path_with_namespace,
+          project_branch,
+          catalogPath,
+        );
+
+        if (!projectHasFile) {
+          continue;
+        }
       }
 
       res.matches.push(project);
@@ -135,7 +161,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+    // Save an ISO formatted string in the cache as that's what GitLab expects in the API request.
+    await this.cache.set(this.getCacheKey(), startTime.toISOString());
+
+    const duration = ((Date.now() - startTime.getTime()) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${res.scanned} GitLab repositories in ${duration} seconds`,
     );
@@ -143,11 +172,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     return true;
   }
 
-  private async updateLastActivity(): Promise<string | undefined> {
-    const cacheKey = `processors/${this.getProcessorName()}/last-activity`;
-    const lastActivity = await this.cache.get(cacheKey);
-    await this.cache.set(cacheKey, new Date().toISOString());
-    return lastActivity as string | undefined;
+  private getCacheKey(): string {
+    return `processors/${this.getProcessorName()}/last-activity`;
   }
 }
 
@@ -167,7 +193,7 @@ export function parseUrl(urlString: string): {
   catalogPath: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // (/group/subgroup)/blob/branch|*/filepath
   const blobIndex = path.findIndex(p => p === 'blob');

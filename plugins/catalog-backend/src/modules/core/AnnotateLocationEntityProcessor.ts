@@ -25,11 +25,11 @@ import {
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { identity, merge, pickBy } from 'lodash';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 /** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {

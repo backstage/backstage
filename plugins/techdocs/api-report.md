@@ -19,7 +19,9 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { TableColumn } from '@backstage/core-components';
+import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
@@ -45,15 +47,11 @@ export type ContentStateTypes =
 
 // @public
 export const DefaultTechDocsHome: (
-  props: DefaultTechDocsHomeProps,
+  props: TechDocsIndexPageProps,
 ) => JSX.Element;
 
-// @public
-export type DefaultTechDocsHomeProps = {
-  initialFilter?: UserListFilterKind;
-  columns?: TableColumn<DocsTableRow>[];
-  actions?: TableProps<DocsTableRow>['actions'];
-};
+// @public @deprecated
+export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
 
 // @public
 export const DocsCardGrid: (props: DocsCardGridProps) => JSX.Element | null;
@@ -61,6 +59,12 @@ export const DocsCardGrid: (props: DocsCardGridProps) => JSX.Element | null;
 // @public
 export type DocsCardGridProps = {
   entities: Entity[] | undefined;
+};
+
+// @public
+export type DocsGroupConfig = {
+  title: React_2.ReactNode;
+  filterPredicate: ((entity: Entity) => boolean) | string;
 };
 
 // @public
@@ -80,7 +84,7 @@ export const DocsTable: {
     createStarEntityAction(
       isStarredEntity: Function,
       toggleStarredEntity: Function,
-    ): ({ entity }: DocsTableRow) => {
+    ): (row: DocsTableRow) => {
       cellStyle: {
         paddingLeft: string;
       };
@@ -98,6 +102,7 @@ export type DocsTableProps = {
   loading?: boolean | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 // @public
@@ -111,10 +116,19 @@ export type DocsTableRow = {
 };
 
 // @public
-export const EmbeddedDocsRouter: (props: PropsWithChildren<{}>) => JSX.Element;
+export const EmbeddedDocsRouter: (
+  props: PropsWithChildren<{}>,
+) => JSX.Element | null;
 
 // @public
-export const EntityListDocsGrid: () => JSX.Element;
+export const EntityListDocsGrid: (
+  props: EntityListDocsGridPageProps,
+) => JSX.Element;
+
+// @public
+export type EntityListDocsGridPageProps = {
+  groups?: DocsGroupConfig[];
+};
 
 // @public
 export const EntityListDocsTable: {
@@ -133,7 +147,7 @@ export const EntityListDocsTable: {
     createStarEntityAction(
       isStarredEntity: Function,
       toggleStarredEntity: Function,
-    ): ({ entity }: DocsTableRow) => {
+    ): (row: DocsTableRow) => {
       cellStyle: {
         paddingLeft: string;
       };
@@ -148,12 +162,13 @@ export const EntityListDocsTable: {
 export type EntityListDocsTableProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 // @public
 export const EntityTechdocsContent: (props: {
   children?: ReactNode;
-}) => JSX.Element;
+}) => JSX.Element | null;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
@@ -254,7 +269,14 @@ export type TechDocsCustomHomeProps = {
 export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
 
 // @public
-export const TechDocsIndexPage: () => JSX.Element;
+export const TechDocsIndexPage: (props: TechDocsIndexPageProps) => JSX.Element;
+
+// @public
+export type TechDocsIndexPageProps = {
+  initialFilter?: UserListFilterKind;
+  columns?: TableColumn<DocsTableRow>[];
+  actions?: TableProps<DocsTableRow>['actions'];
+};
 
 // @public @deprecated (undocumented)
 export type TechDocsMetadata = TechDocsMetadata_2;
@@ -286,16 +308,16 @@ const techdocsPlugin: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderLayout: ({
-  withSearch,
-  withHeader,
-}: TechDocsReaderLayoutProps) => JSX.Element;
+export const TechDocsReaderLayout: (
+  props: TechDocsReaderLayoutProps,
+) => JSX.Element;
 
 // @public
 export type TechDocsReaderLayoutProps = {
@@ -339,11 +361,7 @@ export type TechDocsReaderPageProps = {
 };
 
 // @public
-export type TechDocsReaderPageRenderFunction = ({
-  techdocsMetadataValue,
-  entityMetadataValue,
-  entityRef,
-}: {
+export type TechDocsReaderPageRenderFunction = (options: {
   techdocsMetadataValue?: TechDocsMetadata_2 | undefined;
   entityMetadataValue?: TechDocsEntityMetadata_2 | undefined;
   entityRef: CompoundEntityRef;
@@ -351,16 +369,14 @@ export type TechDocsReaderPageRenderFunction = ({
 }) => JSX.Element;
 
 // @public
-export const TechDocsReaderPageSubheader: ({
-  toolbarProps,
-}: {
-  toolbarProps?: ToolbarProps<'div', {}> | undefined;
+export const TechDocsReaderPageSubheader: (props: {
+  toolbarProps?: ToolbarProps;
 }) => JSX.Element | null;
 
 // @public
-export const TechDocsReaderProvider: ({
-  children,
-}: TechDocsReaderProviderProps) => JSX.Element;
+export const TechDocsReaderProvider: (
+  props: TechDocsReaderProviderProps,
+) => JSX.Element;
 
 // @public
 export type TechDocsReaderProviderProps = {
@@ -378,18 +394,21 @@ export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
 // @public
 export type TechDocsSearchProps = {
   entityId: CompoundEntityRef;
+  entityTitle?: string;
   debounceTime?: number;
 };
 
 // @public
 export const TechDocsSearchResultListItem: (
-  props: TechDocsSearchResultListItemProps,
-) => JSX.Element;
+  props: SearchResultListItemExtensionProps<TechDocsSearchResultListItemProps>,
+) => JSX.Element | null;
 
 // @public
 export type TechDocsSearchResultListItemProps = {
-  result: any;
+  icon?: ReactNode | ((result: any) => ReactNode);
+  result?: any;
   highlight?: ResultHighlight;
+  rank?: number;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;

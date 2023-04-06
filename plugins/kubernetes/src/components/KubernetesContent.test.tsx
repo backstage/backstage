@@ -45,11 +45,6 @@ describe('KubernetesContent', () => {
         />,
       ),
     );
-
-    expect(getByText('Error Reporting')).toBeInTheDocument();
-    expect(
-      getByText('Nice! There are no errors to report!'),
-    ).toBeInTheDocument();
     expect(getByText('Your Clusters')).toBeInTheDocument();
     // TODO add a prompt for the user to configure their clusters
   });
@@ -94,9 +89,6 @@ describe('KubernetesContent', () => {
       ),
     );
 
-    expect(
-      getByText('Nice! There are no errors to report!'),
-    ).toBeInTheDocument();
     expect(getByText('cluster-1')).toBeInTheDocument();
     expect(getByText('Cluster')).toBeInTheDocument();
     expect(getByText('10 pods')).toBeInTheDocument();
@@ -148,7 +140,7 @@ describe('KubernetesContent', () => {
       },
       error: undefined,
     });
-    const { getByText, getAllByText, queryByText } = render(
+    const { getByText, getAllByText } = render(
       wrapInTestApp(
         <KubernetesContent
           entity={
@@ -161,8 +153,6 @@ describe('KubernetesContent', () => {
         />,
       ),
     );
-
-    expect(queryByText('Nice! There are no errors to report!')).toBeNull();
     expect(getAllByText('Cluster')).toHaveLength(2);
     expect(getByText('cluster-a')).toBeInTheDocument();
     expect(getByText('10 pods')).toBeInTheDocument();

@@ -16,21 +16,10 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
+  Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import {
-  humanizeEntityRef,
-  getEntityRelations,
-  useEntityList,
-  useStarredEntities,
-} from '@backstage/plugin-catalog-react';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import { capitalize } from 'lodash';
-import React, { useMemo } from 'react';
-import { columnFactories } from './columns';
-import { CatalogTableRow } from './types';
 import {
   CodeSnippet,
   Table,
@@ -38,9 +27,22 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
-import StarBorder from '@material-ui/icons/StarBorder';
+import {
+  getEntityRelations,
+  humanizeEntityRef,
+  useEntityList,
+  useStarredEntities,
+} from '@backstage/plugin-catalog-react';
+import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import Edit from '@material-ui/icons/Edit';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
+import StarBorder from '@material-ui/icons/StarBorder';
+import { capitalize } from 'lodash';
+import React, { ReactNode, useMemo } from 'react';
+import { columnFactories } from './columns';
+import { CatalogTableRow } from './types';
 
 /**
  * Props for {@link CatalogTable}.
@@ -51,6 +53,8 @@ export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  emptyContent?: ReactNode;
+  subtitle?: string;
 }
 
 const YellowStar = withStyles({
@@ -59,14 +63,25 @@ const YellowStar = withStyles({
   },
 })(Star);
 
+const refCompare = (a: Entity, b: Entity) => {
+  const toRef = (entity: Entity) =>
+    entity.metadata.title ||
+    humanizeEntityRef(entity, {
+      defaultKind: 'Component',
+    });
+
+  return toRef(a).localeCompare(toRef(b));
+};
+
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions } = props;
+  const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
+      columnFactories.createTitleColumn({ hidden: true }),
       columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
       ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
@@ -81,9 +96,13 @@ export const CatalogTable = (props: CatalogTableProps) => {
         case 'system':
           return [columnFactories.createOwnerColumn()];
         case 'group':
-        case 'location':
         case 'template':
           return [columnFactories.createSpecTypeColumn()];
+        case 'location':
+          return [
+            columnFactories.createSpecTypeColumn(),
+            columnFactories.createSpecTargetsColumn(),
+          ];
         default:
           return [
             columnFactories.createSystemColumn(),
@@ -115,9 +134,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
+      const title = 'View';
+
       return {
-        icon: () => <OpenInNew aria-label="View" fontSize="small" />,
-        tooltip: 'View',
+        icon: () => (
+          <>
+            <Typography variant="srOnly">{title}</Typography>
+            <OpenInNew fontSize="small" />
+          </>
+        ),
+        tooltip: title,
         disabled: !url,
         onClick: () => {
           if (!url) return;
@@ -127,9 +153,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
+      const title = 'Edit';
+
       return {
-        icon: () => <Edit aria-label="Edit" fontSize="small" />,
-        tooltip: 'Edit',
+        icon: () => (
+          <>
+            <Typography variant="srOnly">{title}</Typography>
+            <Edit fontSize="small" />
+          </>
+        ),
+        tooltip: title,
         disabled: !url,
         onClick: () => {
           if (!url) return;
@@ -139,16 +172,23 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const isStarred = isStarredEntity(entity);
+      const title = isStarred ? 'Remove from favorites' : 'Add to favorites';
+
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => (isStarred ? <YellowStar /> : <StarBorder />),
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        icon: () => (
+          <>
+            <Typography variant="srOnly">{title}</Typography>
+            {isStarred ? <YellowStar /> : <StarBorder />}
+          </>
+        ),
+        tooltip: title,
         onClick: () => toggleStarredEntity(entity),
       };
     },
   ];
 
-  const rows = entities.map(entity => {
+  const rows = entities.sort(refCompare).map(entity => {
     const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
       kind: 'system',
     });
@@ -199,6 +239,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       title={`${titlePreamble} (${entities.length})`}
       data={rows}
       actions={actions || defaultActions}
+      subtitle={subtitle}
+      emptyContent={emptyContent}
     />
   );
 };

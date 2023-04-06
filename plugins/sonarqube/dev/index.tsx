@@ -19,9 +19,13 @@ import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { EntitySonarQubeCard, sonarQubePlugin } from '../src';
-import { FindingSummary, SonarQubeApi, sonarQubeApiRef } from '../src/api';
-import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../src/components/useProjectKey';
 import { Content, Header, Page } from '@backstage/core-components';
+import {
+  FindingSummary,
+  SonarQubeApi,
+  sonarQubeApiRef,
+} from '@backstage/plugin-sonarqube-react';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 
 const entity = (name?: string) =>
   ({
@@ -62,9 +66,6 @@ createDevApp()
             <EntityGridItem xs={12} md={6} entity={entity('passed')}>
               <EntitySonarQubeCard />
             </EntityGridItem>
-            <EntityGridItem xs={12} entity={entity(undefined)}>
-              <EntitySonarQubeCard />
-            </EntityGridItem>
           </Grid>
         </Content>
       </Page>
@@ -75,7 +76,7 @@ createDevApp()
     deps: {},
     factory: () =>
       ({
-        getFindingSummary: async componentKey => {
+        getFindingSummary: async ({ componentKey }) => {
           switch (componentKey) {
             case 'error':
               throw new Error('Error!');

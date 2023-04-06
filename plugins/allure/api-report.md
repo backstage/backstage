@@ -6,20 +6,24 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "allurePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export const ALLURE_PROJECT_ID_ANNOTATION = 'qameta.io/allure-project';
+
 // @public (undocumented)
 export const allurePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityAllureReportContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityAllureReportContent: () => JSX.Element;
+
+// @public (undocumented)
+export const isAllureReportAvailable: (entity: Entity) => boolean;
 ```

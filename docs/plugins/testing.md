@@ -123,7 +123,7 @@ than simply letting them know they had an invalid input.
 > input change.
 
 This piggybacks the Scalability Principle and applies primarily to frontend
-development. As a general rule of thumb, frontends should be flexible enough so
+development. As a general guideline, frontends should be flexible enough so
 that the UX or design can change while touching the least amount of code
 possible. So for example, a poor unit test would verify the color of a button
 when it is hovered. This would be a poor unit test, because if you decide to
@@ -353,7 +353,7 @@ For more information:
 ### Accessing `store`, `theme`, routing, browser history, etc.
 
 The Backstage application has several core providers at its root. To run your
-test wrapped in a "dummy" Backstage application, you can use our utility
+test wrapped in a "sample" Backstage application, you can use our utility
 functions:
 
 **`wrapInTestApp`**
@@ -371,14 +371,4 @@ Note: wrapping in the test application **requires** you to do a `find()` or
 
 # Debugging Jest Tests
 
-Currently, debugging Jest tests using IntelliJ or `node-debugger` is possible
-but can be
-[problematic to set up.](https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000634564-Debugging-Jest-unit-tests)
-
-It is possible, but you might spend a decent amount of time configuring your
-IDE.
-
-In most cases, we have found that using `console.log` works well.
-
-Note: if your console.logs are not being displayed, focus your specific unit
-test from the command line by running them like so `yarn test MyTest`.
+You can find it [here](https://backstage.io/docs/local-dev/cli-build-system#debugging-jest-tests)

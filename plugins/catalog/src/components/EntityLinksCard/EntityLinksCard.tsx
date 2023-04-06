@@ -29,7 +29,7 @@ export interface EntityLinksCardProps {
   variant?: InfoCardVariants;
 }
 
-export function EntityLinksCard(props: EntityLinksCardProps) {
+export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const { cols = undefined, variant } = props;
   const { entity } = useEntity();
   const app = useApp();
@@ -55,4 +55,4 @@ export function EntityLinksCard(props: EntityLinksCardProps) {
       )}
     </InfoCard>
   );
-}
+};

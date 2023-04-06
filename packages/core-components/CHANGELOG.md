@@ -1,5 +1,672 @@
 # @backstage/core-components
 
+## 0.12.6-next.2
+
+### Patch Changes
+
+- 67140d9f96f: Upgrade `react-virtualized-auto-sizer´ to version `^1.0.11`
+- 7e60bee2dea: Split the `BackstageSidebar` style `drawer` class, such that the `width` property is in a separate `drawerWidth` class instead. This makes it such that you can style the `drawer` class in your theme again.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 0.12.6-next.1
+
+### Patch Changes
+
+- d0befd3fb23: Fixed a bug that could prevent auth from working when using the `guest` or `custom` auth providers.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.12.6-next.0
+
+### Patch Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 7245e744ab1: Fixed the font color on `BackstageHeaderLabel` to respect the active page theme.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5
+
+### Patch Changes
+
+- 8bbf95b5507: Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
+  For example, a sidebar button with the label "Search" will appear as Search, "search" will appear as search, "SEARCH" will appear as SEARCH etc.
+  This can potentially affect any overriding styles previously applied to change the appearance of Button labels in the Sidebar.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- e1aae2f5a0c: Updated the `aria-label` of the `HeaderTabs` component.
+- 6a51a49a810: Fix bug where `<Table />` component would not take into account header styles defined in `columns[*].headerStyle`.
+- fa004f66871: Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5-next.2
+
+### Patch Changes
+
+- 8bbf95b5507: Button labels in the sidebar (previously displayed in uppercase) will be displayed in the case that is provided without any transformations.
+  For example, a sidebar button with the label "Search" will appear as Search, "search" will appear as search, "SEARCH" will appear as SEARCH etc.
+  This can potentially affect any overriding styles previously applied to change the appearance of Button labels in the Sidebar.
+- fa004f66871: Use media queries to change layout instead of `isMobile` prop in `BackstagePage` component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.12.5-next.1
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- e1aae2f5a0c: Updated the `aria-label` of the `HeaderTabs` component.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.17
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4
+
+### Patch Changes
+
+- 68ce7d0417: Added aria labels on the support button and sidebar
+- 5637ebed92: Added a global override for `window.open` that helps prevent security vulnerabilities.
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- e81a6e0ab5: Updated Link URL validation to be more strict.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.1
+
+### Patch Changes
+
+- 66e2aab4c4: Navigation items in mobile sidebar now have aria label.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- 910015f5b7: The Button component has been deprecated in favor of the LinkButton component
+- 20840b36b4: Adds new type, TableOptions, extending Material Table Options.
+- 85b04f659a: Internal refactor to not use deprecated `substr`
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.3
+
+### Patch Changes
+
+- f2ea446de0: Applied fix from v1.9.1
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- f23146520e: Ensure that the "Custom User" sign-in makes use of supplied custom tokens, if any
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- f2ea446de0: Applied fix from v1.9.1
+- Updated dependencies
+  - @backstage/config@1.0.5
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3
+
+## 0.12.2
+
+### Patch Changes
+
+- Fixing the UPPERCASED links in the sidebar
+
+## 0.12.1
+
+### Patch Changes
+
+- a236a8830d: Update sidebar icon alignment
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- ea4a5be8f3: Create a variable for minimum height and add a prop named 'fit' for determining if the graph height should grow or be contained.
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- d2e3bf6737: Made AlertDisplay not crash on undefined messages
+- 64a579a998: Add items prop to SupportButton. This prop can be used to override the items that would otherwise be grabbed from the config.
+- 5d3058355d: Add `react/forbid-elements` linter rule for button, suggest MUI `Button`
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 17a8e32f39: Updated dependency `rc-progress` to `3.4.1`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 830687539f: Sync components in @backstage/core-components with the Component Design Guidelines
+- 1ae86ab5fb: Added an option to allow the `AlertMessage` to be self-closing. This is done with a new `display` property that is set to `transient` on the `AlertMessage` when triggering a message to the `AlertApi`. The length of time that these transient messages stay open for can be set using the `transientTimeoutMs` prop on the `AlertDisplay` in the `App.tsx`. Here is an example:
+
+  ```diff
+    const App = () => (
+      <AppProvider>
+  +     <AlertDisplay transientTimeoutMs={2500} />
+        <OAuthRequestDialog />
+        <AppRouter>
+          <Root>{routes}</Root>
+        </AppRouter>
+      </AppProvider>
+    );
+  ```
+
+  The above example will set the transient timeout to 2500ms from the default of 5000ms
+
+- 16e31e690f: InfoCard - Remove subheader container when there is not a subheader or icon
+- a5a2d12298: Added option to pass additional headers to `<ProxiedSignInPage />`, which are passed along with the request to the underlying provider
+- 91bba69ef8: Internal refactor to remove deprecated symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/version-bridge@1.0.3
+  - @backstage/errors@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/theme@0.2.16
+
+## 0.12.1-next.4
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a5a2d12298: Added option to pass additional headers to `<ProxiedSignInPage />`, which are passed along with the request to the underlying provider
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 0.12.1-next.3
+
+### Patch Changes
+
+- 91bba69ef8: Internal refactor to remove deprecated symbols.
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 0.12.1-next.2
+
+### Patch Changes
+
+- d2e3bf6737: Made AlertDisplay not crash on undefined messages
+- 5fb6d5e92e: Updated dependency `@react-hookz/web` to `^19.0.0`.
+- 146378c146: Updated dependency `@react-hookz/web` to `^20.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 830687539f: Sync components in @backstage/core-components with the Component Design Guidelines
+- 1ae86ab5fb: Added an option to allow the `AlertMessage` to be self-closing. This is done with a new `display` property that is set to `transient` on the `AlertMessage` when triggering a message to the `AlertApi`. The length of time that these transient messages stay open for can be set using the `transientTimeoutMs` prop on the `AlertDisplay` in the `App.tsx`. Here is an example:
+
+  ```diff
+    const App = () => (
+      <AppProvider>
+  +     <AlertDisplay transientTimeoutMs={2500} />
+        <OAuthRequestDialog />
+        <AppRouter>
+          <Root>{routes}</Root>
+        </AppRouter>
+      </AppProvider>
+    );
+  ```
+
+  The above example will set the transient timeout to 2500ms from the default of 5000ms
+
+- 16e31e690f: InfoCard - Remove subheader container when there is not a subheader or icon
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- ea4a5be8f3: Create a variable for minimum height and add a prop named 'fit' for determining if the graph height should grow or be contained.
+- 64a579a998: Add items prop to SupportButton. This prop can be used to override the items that would otherwise be grabbed from the config.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- 17a8e32f39: Updated dependency `rc-progress` to `3.4.1`.
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+
+## 0.12.0
+
+### Minor Changes
+
+- fb3733e446: **BREAKING**: Removed the `HomepageTimer` as it has been replaced by the `HeaderWorldClock` in the Home plugin and was deprecated over a year ago.
+
+### Patch Changes
+
+- 5f695c219a: Set the `searchTooltip` to "Filter" to follow how the `searchPlaceholder` is set making this more consistent
+- f36127f5fe: Add optional step to SimpleStepper
+- b4fb5c8ecc: MissingAnnotationEmptyState now accepts either a string or an array of strings to support multiple missing annotations.
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 858986f6b6: Disable base path workaround in `Link` component when React Router v6 stable is used.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+
+## 0.12.0-next.1
+
+### Patch Changes
+
+- b4fb5c8ecc: MissingAnnotationEmptyState now accepts either a string or an array of strings to support multiple missing annotations.
+- Updated dependencies
+  - @backstage/config@1.0.4-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- fb3733e446: **BREAKING**: Removed the `HomepageTimer` as it has been replaced by the `HeaderWorldClock` in the Home plugin and was deprecated over a year ago.
+
+### Patch Changes
+
+- 5f695c219a: Set the `searchTooltip` to "Filter" to follow how the `searchPlaceholder` is set making this more consistent
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 858986f6b6: Disable base path workaround in `Link` component when React Router v6 stable is used.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2
+
+### Patch Changes
+
+- bde1e8c8e2: Added `curve` prop to the `DependencyGraph` component to select the type of layout
+- 882101cd9b: Deep-import LightAsync component to improve module-import speed
+- 0d0f30d87e: Fixed layout for core-components docs where table was broken by splitting with code sample
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- 882101cd9b: Deep-import LightAsync component to improve module-import speed
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+
+## 0.11.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- d3737da337: Export `HeaderActionMenu` and expose default `Table` icons via `Table.icons`
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- b29c44d895: Adds code to generate ids for headers parsed through the MarkdownContent component.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 13f23f6510: Allow custom images in the empty state component
+- 023d14c52b: Fix overflow bug on MicDrop image for 404 page by moving the image and making it relative rather than absolute
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 0.11.1-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/errors@1.1.1-next.0
+
+## 0.11.1-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 13f23f6510: Allow custom images in the empty state component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 37e8c5e128: The `RoutedTabs` component has been updated to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- b29c44d895: Adds code to generate ids for headers parsed through the MarkdownContent component.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- c8bb0ff8ce: Minor cleanup of the public API surface to reduce the number of warnings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
+## 0.11.0-next.2
+
+### Minor Changes
+
+- d0eefc499a: Made the `to` prop of `Button` and `Link` more strict, only supporting plain strings. It used to be the case that this prop was unexpectedly too liberal, making it look like we supported the complex `react-router-dom` object form of the parameter as well, which led to unexpected results at runtime.
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a22af3edc8: Adding a `className` prop to the `MarkdownContent` component
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5-next.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 944af7f2a8: Work around a bug calling `onChange` twice in `mui` for `RoutedTab` so you don't have to press back twice to navigate through tabs
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- ae746946f7: Improve accessibility for CopyTextButton
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4
+  - @backstage/theme@0.2.16
+  - @backstage/errors@1.1.0
+
+## 0.10.0-next.3
+
+### Patch Changes
+
+- 7f5e79961d: Fix relative `sub-paths` by concatenating the app's base path with them.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 693990d4fe: Updated dependency `@react-hookz/web` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.4-next.0
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 32204fa794: Add `transformLinkUri` and `transformImageUri` to `MarkdownContent`
+
+### Patch Changes
+
+- b4b711bcc2: Fix the EntityLayout header style so that EntityContextMenu button can display in correct shape when user hover on it
+- 15201b1032: Updated dependency `rc-progress` to `3.4.0`.
+- 385389d23c: Updated to remove usage of the `bursts` object in the theme palette
+- Updated dependencies
+  - @backstage/theme@0.2.16-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- 3c440ea77e: Change BackstageIconLinkVertical style to use pallette instead of explicit color
+- 7e115d42f9: Support displaying subtitle text in `SidebarSubmenuItem`
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/theme@0.2.16-next.0
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
+## 0.9.5
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- de593ec78f: Updated dependency `react-text-truncate` to `^0.19.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+- 7d355c4b3f: Fix the missing filter in the toolbar when passing a custom component in the core-components Table
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- ee2cd642c5: Updated dependency `rc-progress` to `3.3.3`.
+- 1cf9caecd6: fix Sidebar Contexts deprecation message
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
+## 0.9.4
+
+### Patch Changes
+
+- ac19f82936: Added ARIA landmark <main> to Page component and added ARIA landmark <nav> to DesktopSidebar and Sidebar components
+- 55f68c386a: Enabled select component to be enabled by keyboard
+- c0055ece91: Announce external links to screen readers
+- e210c0cab8: Add ability to customize `Read More` destination with `readMoreUrl` prop for `MissingAnnotationEmptyState` component.
+- 52c02ac02b: Don't set the background color on an Avatar component that has a picture.
+- cfc0f2e5bd: Added optional anchorOrigin alignment prop to AlertDisplay
+- f4380eb602: Add an aria-label to the support button to improve accessibility for screen readers
+- ba97b80421: Updated dependency `@types/react-syntax-highlighter` to `^15.0.0`.
+- e462112be5: Updated dependency `rc-progress` to `3.3.2`.
+- 2bcb0a0e2b: Sidebar NAV now includes aria-label. Component AboutField now uses h2 variant instead of subtitle2 (font properties unchanged)
+- c7f32b53a4: Fixed multiple scrolls appearing on Page when added InfoCard with external bottom link
+- 3603014e0e: Add ARIA landmark( <main>), & label and a heading to OAuthRequestDialog. Removed nested interactive control (button).
+- 2025d7c123: Properly highlight `SidebarSubmenuItem` dropdown items on hover, use ellipsis styling on long labels in `SidebarSubmenu`, allow `icon` and `to` properties to be optional on `SidebarSubmenuItem`, and fix `SidebarPage` padding to be responsive to pinned state
+- 2295b4ab2b: Add controls to Storybook stories
+- 521293b22e: Added a chevron Indicator when the sidebar is collapsed and has a sub-menu
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+
 ## 0.9.4-next.2
 
 ### Patch Changes

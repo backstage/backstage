@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
 const mockEntity = {
@@ -42,11 +42,15 @@ const mockEntity = {
   kind: 'TestKind',
   metadata: {
     name: 'testName',
+    title: 'Test site name',
   },
 };
 
 const mkdocsYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
+);
+const mkdocsDefaultYml = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_default.yml'),
 );
 const mkdocsYmlWithExtensions = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_extensions.yml'),
@@ -89,6 +93,10 @@ const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('helpers', () => {
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   describe('getGeneratorKey', () => {
     it('should return techdocs as the only generator key', () => {
       const key = getGeneratorKey(mockEntity);
@@ -98,13 +106,13 @@ describe('helpers', () => {
 
   describe('getRepoUrlFromLocationAnnotation', () => {
     it.each`
-      url                                                                        | repo_url                                    | edit_uri
-      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'} | ${undefined}
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${undefined}                                | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${undefined}                                | ${'https://github.com/backstage/backstage/edit/main/docs'}
-      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'} | ${undefined}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${undefined}                                | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${undefined}                                | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'}                                | ${undefined}
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/docs'}
+      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'}                                | ${undefined}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
     `('should convert $url', ({ url: target, repo_url, edit_uri }) => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
         type: 'url',
@@ -120,14 +128,14 @@ describe('helpers', () => {
     });
 
     it.each`
-      url                                                                        | edit_uri
-      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
-      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
-      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
     `(
       'should convert $url with custom docsFolder',
-      ({ url: target, edit_uri }) => {
+      ({ url: target, repo_url, edit_uri }) => {
         const parsedLocationAnnotation: ParsedLocationAnnotation = {
           type: 'url',
           target,
@@ -139,7 +147,7 @@ describe('helpers', () => {
             scmIntegrations,
             './custom/folder',
           ),
-        ).toEqual({ edit_uri });
+        ).toEqual({ repo_url, edit_uri });
       },
     );
 
@@ -182,15 +190,12 @@ describe('helpers', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs.yml': mkdocsYml,
+        '/mkdocs_default.yml': mkdocsDefaultYml,
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
         '/mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
         '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
         '/mkdocs_with_comments.yml': mkdocsYmlWithComments,
       });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should add edit_uri to mkdocs.yml', async () => {
@@ -375,7 +380,6 @@ describe('helpers', () => {
         'index.md content',
       );
       expect(warn).not.toHaveBeenCalledWith();
-      mockFs.restore();
     });
 
     it("should use docs/README.md if docs/index.md doesn't exists", async () => {
@@ -392,7 +396,6 @@ describe('helpers', () => {
       expect(warn.mock.calls).toEqual([
         [`${path.normalize('docs/index.md')} not found.`],
       ]);
-      mockFs.restore();
     });
 
     it('should use README.md if neither docs/index.md or docs/README.md exist', async () => {
@@ -410,7 +413,6 @@ describe('helpers', () => {
         [`${path.normalize('docs/README.md')} not found.`],
         [`${path.normalize('docs/readme.md')} not found.`],
       ]);
-      mockFs.restore();
     });
 
     it('should not use any file as index.md if no one matches the requirements', async () => {
@@ -434,7 +436,6 @@ describe('helpers', () => {
             .join(' ')} exists.`,
         ],
       ]);
-      mockFs.restore();
     });
   });
 
@@ -445,14 +446,9 @@ describe('helpers', () => {
     };
 
     beforeEach(() => {
-      mockFs.restore();
       mockFs({
         [rootDir]: mockFiles,
       });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should create the file if it does not exist', async () => {
@@ -462,7 +458,7 @@ describe('helpers', () => {
       // Check if the file exists
       await expect(
         fs.access(filePath, fs.constants.F_OK),
-      ).resolves.not.toThrowError();
+      ).resolves.not.toThrow();
     });
 
     it('should throw error when the JSON is invalid', async () => {
@@ -470,7 +466,7 @@ describe('helpers', () => {
 
       await expect(
         createOrUpdateMetadata(filePath, mockLogger),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -495,7 +491,6 @@ describe('helpers', () => {
 
   describe('storeEtagMetadata', () => {
     beforeEach(() => {
-      mockFs.restore();
       mockFs({
         [rootDir]: {
           'invalid_techdocs_metadata.json': 'dsds',
@@ -504,16 +499,12 @@ describe('helpers', () => {
       });
     });
 
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     it('should throw error when the JSON is invalid', async () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
-      await expect(
-        storeEtagMetadata(filePath, 'etag123abc'),
-      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+      await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
+        'Unexpected token d in JSON at position 0',
+      );
     });
 
     it('should add etag to the metadata json', async () => {
@@ -527,33 +518,63 @@ describe('helpers', () => {
   });
 
   describe('getMkdocsYml', () => {
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     const inputDir = resolvePath(__filename, '../__fixtures__/');
+    const siteOptions = {
+      name: mockEntity.metadata.title,
+    };
 
     it('returns expected contents when .yml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, siteOptions);
 
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
     });
 
     it('returns expected contents when .yaml file is present', async () => {
       const key = path.join(inputDir, 'mkdocs.yaml');
       mockFs({ [key]: mkdocsYml });
-      const { path: mkdocsPath, content } = await getMkdocsYml(inputDir);
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, siteOptions);
       expect(mkdocsPath).toBe(key);
       expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
     });
 
-    it('throws when neither .yml nor .yaml file is present', async () => {
+    it('returns expected contents when default file is present', async () => {
+      const defaultSiteOptions = {
+        name: 'Default Test site name',
+      };
+      const key = path.join(inputDir, 'mkdocs.yml');
+      const mockPathExists = jest.spyOn(fs, 'pathExists');
+      mockPathExists.mockImplementation(() => Promise.resolve(false));
+      mockFs({ [key]: mkdocsDefaultYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(inputDir, defaultSiteOptions);
+
+      expect(mkdocsPath).toBe(key);
+      expect(content.split(/[\r\n]+/g)).toEqual(
+        mkdocsDefaultYml.toString().split(/[\r\n]+/g),
+      );
+      expect(configIsTemporary).toBe(true);
+    });
+
+    it('throws when neither .yml nor .yaml nor default file is present', async () => {
       const invalidInputDir = resolvePath(__filename);
-      await expect(getMkdocsYml(invalidInputDir)).rejects.toThrowError(
-        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation/,
+      await expect(getMkdocsYml(invalidInputDir, siteOptions)).rejects.toThrow(
+        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
       );
     });
   });

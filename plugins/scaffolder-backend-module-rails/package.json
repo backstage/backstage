@@ -1,11 +1,10 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-rails",
   "description": "A module for the scaffolder backend that lets you template projects using Rails",
-  "version": "0.4.0-next.1",
+  "version": "0.4.12-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -24,22 +23,22 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.3-next.2",
-    "@backstage/plugin-scaffolder-backend": "^1.2.0-next.1",
-    "@backstage/config": "^1.0.1-next.0",
-    "@backstage/errors": "^1.0.0",
-    "@backstage/integration": "^1.2.0-next.1",
-    "@backstage/types": "^1.0.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "command-exists": "^1.2.9",
     "fs-extra": "^10.0.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2",
-    "@types/jest": "^26.0.7",
-    "@types/node": "^16.11.26",
+    "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/mock-fs": "^4.13.0",
+    "@types/node": "^16.11.26",
     "jest-when": "^3.1.0",
     "mock-fs": "^5.1.0"
   },

@@ -9,3 +9,4 @@ iconUrl: https://kafka.apache.org/images/apache-kafka.png
 npmPackageName: '@backstage/plugin-kafka'
 tags:
   - monitoring
+addedDate: '2021-01-21'

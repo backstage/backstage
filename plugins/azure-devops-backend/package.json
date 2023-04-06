@@ -1,10 +1,9 @@
 {
   "name": "@backstage/plugin-azure-devops-backend",
-  "version": "0.3.11-next.1",
+  "version": "0.3.23-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -23,22 +22,23 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.3-next.2",
-    "@backstage/config": "^1.0.1-next.0",
-    "@backstage/plugin-azure-devops-common": "^0.2.3-next.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-azure-devops-common": "workspace:^",
     "@types/express": "^4.17.6",
     "azure-devops-node-api": "^11.0.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "mime-types": "^2.1.27",
     "p-limit": "^3.1.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2",
+    "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "supertest": "^6.1.6",
-    "msw": "^0.35.0"
+    "msw": "^1.0.0",
+    "supertest": "^6.1.6"
   },
   "files": [
     "dist",

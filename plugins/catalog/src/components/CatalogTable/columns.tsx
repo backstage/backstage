@@ -23,6 +23,7 @@ import { Chip } from '@material-ui/core';
 import { CatalogTableRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
+import { JsonArray } from '@backstage/types';
 
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
@@ -82,11 +83,30 @@ export const columnFactories = Object.freeze({
       ),
     };
   },
+  createSpecTargetsColumn(): TableColumn<CatalogTableRow> {
+    return {
+      title: 'Targets',
+      field: 'entity.spec.targets',
+      render: ({ entity }) => (
+        <>
+          {(entity?.spec?.targets || entity?.spec?.target) && (
+            <OverflowTooltip
+              text={(
+                (entity!.spec!.targets as JsonArray) || [entity.spec.target]
+              ).join(', ')}
+              placement="bottom-start"
+            />
+          )}
+        </>
+      ),
+    };
+  },
   createSpecTypeColumn(): TableColumn<CatalogTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
       hidden: true,
+      width: 'auto',
     };
   },
   createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
@@ -129,6 +149,48 @@ export const columnFactories = Object.freeze({
             ))}
         </>
       ),
+      width: 'auto',
+    };
+  },
+  createTitleColumn(options?: {
+    hidden?: boolean;
+  }): TableColumn<CatalogTableRow> {
+    return {
+      title: 'Title',
+      field: 'entity.metadata.title',
+      hidden: options?.hidden,
+      searchable: true,
+    };
+  },
+  createLabelColumn(
+    key: string,
+    options?: { title?: string; defaultValue?: string },
+  ): TableColumn<CatalogTableRow> {
+    return {
+      title: options?.title || 'Label',
+      field: 'entity.metadata.labels',
+      cellStyle: {
+        padding: '0px 16px 0px 20px',
+      },
+      render: ({ entity }: { entity: Entity }) => {
+        const labels: Record<string, string> | undefined =
+          entity.metadata?.labels;
+        const specifiedLabelValue =
+          (labels && labels[key]) || options?.defaultValue;
+        return (
+          <>
+            {specifiedLabelValue && (
+              <Chip
+                key={specifiedLabelValue}
+                label={specifiedLabelValue}
+                size="small"
+                variant="outlined"
+              />
+            )}
+          </>
+        );
+      },
+      width: 'auto',
     };
   },
 });

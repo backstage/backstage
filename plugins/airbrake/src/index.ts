@@ -15,10 +15,11 @@
  */
 
 /**
- * The Airbrake plugin provides connectivity between Backstage and Airbrake (https://airbrake.io/).
+ * The Airbrake plugin provides connectivity between Backstage and {@link https://airbrake.io/ | Airbrake}.
  *
  * @packageDocumentation
  */
 
 export { airbrakePlugin } from './plugin';
 export { EntityAirbrakeContent } from './extensions';
+export { isAirbrakeAvailable } from './components/isAirbrakeAvailable';

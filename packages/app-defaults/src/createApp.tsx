@@ -50,7 +50,8 @@ export function createApp(
       ...icons,
       ...options?.icons,
     },
-    plugins: (options?.plugins as BackstagePlugin<any, any>[]) ?? [],
+    plugins: (options?.plugins as BackstagePlugin[]) ?? [],
+    featureFlags: options?.featureFlags ?? [],
     themes: options?.themes ?? themes,
   });
 }

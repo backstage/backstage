@@ -63,15 +63,16 @@ const useStyles = makeStyles<BackstageTheme>(
     },
     rightItemsBox: {
       width: 'auto',
+      alignItems: 'center',
     },
     title: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.page.fontColor,
       wordBreak: 'break-word',
       fontSize: theme.typography.h3.fontSize,
       marginBottom: 0,
     },
     subtitle: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.page.fontColor,
       opacity: 0.8,
       display: 'inline-block', // prevents margin collapse of adjacent siblings
       marginTop: theme.spacing(1),
@@ -82,10 +83,10 @@ const useStyles = makeStyles<BackstageTheme>(
       fontSize: 11,
       opacity: 0.8,
       marginBottom: theme.spacing(1),
-      color: theme.palette.bursts.fontColor,
+      color: theme.page.fontColor,
     },
     breadcrumb: {
-      color: theme.palette.bursts.fontColor,
+      color: theme.page.fontColor,
     },
     breadcrumbType: {
       fontSize: 'inherit',

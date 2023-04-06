@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-2019]
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
@@ -39,16 +39,21 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'GitHub e2e user'
+
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.3
+        uses: microsoft/setup-msbuild@v1.3.1
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - run: yarn tsc
       - run: yarn backstage-cli repo build
@@ -56,3 +61,4 @@ jobs:
         run: yarn e2e-test run
         env:
           DEBUG: zombie
+          CYPRESS_VERIFY_TIMEOUT: 600000

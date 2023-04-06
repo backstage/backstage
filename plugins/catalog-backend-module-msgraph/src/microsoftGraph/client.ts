@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import * as msal from '@azure/msal-node';
+import {
+  TokenCredential,
+  DefaultAzureCredential,
+  ClientSecretCredential,
+} from '@azure/identity';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import fetch, { Response } from 'node-fetch';
 import qs from 'qs';
@@ -48,6 +52,10 @@ export type ODataQuery = {
    * Retrieves the total count of matching resources.
    */
   count?: boolean;
+  /**
+   * Maximum number of records to receive in one batch.
+   */
+  top?: number;
 };
 
 /**
@@ -77,25 +85,32 @@ export class MicrosoftGraphClient {
    * @param config - Configuration for Interacting with Graph API
    */
   static create(config: MicrosoftGraphProviderConfig): MicrosoftGraphClient {
-    const clientConfig: msal.Configuration = {
-      auth: {
-        clientId: config.clientId,
-        clientSecret: config.clientSecret,
-        authority: `${config.authority}/${config.tenantId}`,
-      },
+    const options = {
+      authorityHost: config.authority,
+      tenantId: config.tenantId,
     };
-    const pca = new msal.ConfidentialClientApplication(clientConfig);
-    return new MicrosoftGraphClient(config.target, pca);
+
+    const credential =
+      config.clientId && config.clientSecret
+        ? new ClientSecretCredential(
+            config.tenantId,
+            config.clientId,
+            config.clientSecret,
+            options,
+          )
+        : new DefaultAzureCredential(options);
+
+    return new MicrosoftGraphClient(config.target, credential);
   }
 
   /**
    * @param baseUrl - baseUrl of Graph API {@link MicrosoftGraphProviderConfig.target}
-   * @param pca - instance of `msal.ConfidentialClientApplication` that is used to acquire token for Graph API calls
+   * @param tokenCredential - instance of `TokenCredential` that is used to acquire token for Graph API calls
    *
    */
   constructor(
     private readonly baseUrl: string,
-    private readonly pca: msal.ConfidentialClientApplication,
+    private readonly tokenCredential: TokenCredential,
   ) {}
 
   /**
@@ -177,6 +192,7 @@ export class MicrosoftGraphClient {
         $select: query?.select?.join(','),
         $expand: query?.expand,
         $count: query?.count,
+        $top: query?.top,
       },
       {
         addQueryPrefix: true,
@@ -202,42 +218,21 @@ export class MicrosoftGraphClient {
     headers?: Record<string, string>,
   ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
-    const token = await this.pca.acquireTokenByClientCredential({
-      scopes: ['https://graph.microsoft.com/.default'],
-    });
+    const urlObj = new URL(url);
+    const token = await this.tokenCredential.getToken(
+      `${urlObj.protocol}//${urlObj.hostname}/.default`,
+    );
 
     if (!token) {
-      throw new Error('Error while requesting token for Microsoft Graph');
+      throw new Error('Failed to obtain token from Azure Identity');
     }
 
     return await fetch(url, {
       headers: {
         ...headers,
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${token.token}`,
       },
     });
-  }
-
-  /**
-   * Get {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
-   * from Graph API
-   *
-   * @public
-   * @param userId - The unique identifier for the `User` resource
-   * @param query - OData Query {@link ODataQuery}
-   *
-   */
-  async getUserProfile(
-    userId: string,
-    query?: ODataQuery,
-  ): Promise<MicrosoftGraph.User> {
-    const response = await this.requestApi(`users/${userId}`, query);
-
-    if (response.status !== 200) {
-      await this.handleError('user profile', response);
-    }
-
-    return await response.json();
   }
 
   /**
@@ -332,8 +327,37 @@ export class MicrosoftGraphClient {
    * @param groupId - The unique identifier for the `Group` resource
    *
    */
-  async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
-    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
+  async *getGroupMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<GroupMember> {
+    yield* this.requestCollection<GroupMember>(
+      `groups/${groupId}/members`,
+      query,
+      queryMode,
+    );
+  }
+
+  /**
+   * Get a collection of
+   * {@link https://docs.microsoft.com/en-us/graph/api/resources/user | User}
+   * belonging to a `Group` from Graph API and return as `AsyncIterable`
+   * @public
+   * @param groupId - The unique identifier for the `Group` resource
+   * @param query - OData Query {@link ODataQuery}
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   */
+  async *getGroupUserMembers(
+    groupId: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User> {
+    yield* this.requestCollection<MicrosoftGraph.User>(
+      `groups/${groupId}/members/microsoft.graph.user/`,
+      query,
+      queryMode,
+    );
   }
 
   /**

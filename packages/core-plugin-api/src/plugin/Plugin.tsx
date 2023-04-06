@@ -30,9 +30,18 @@ import { AnyApiFactory } from '../apis';
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-> implements BackstagePlugin<Routes, ExternalRoutes>
+  PluginInputOptions extends {},
+> implements BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions>
 {
-  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
+  constructor(
+    private readonly config: PluginConfig<
+      Routes,
+      ExternalRoutes,
+      PluginInputOptions
+    >,
+  ) {}
+
+  private options: {} | undefined = undefined;
 
   getId(): string {
     return this.config.id;
@@ -58,6 +67,19 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
+  __experimentalReconfigure(options: PluginInputOptions): void {
+    if (this.config.__experimentalConfigure) {
+      this.options = this.config.__experimentalConfigure(options);
+    }
+  }
+
+  getPluginOptions(): {} {
+    if (this.config.__experimentalConfigure && !this.options) {
+      this.options = this.config.__experimentalConfigure();
+    }
+    return this.options ?? {};
+  }
+
   toString() {
     return `plugin{${this.config.id}}`;
   }
@@ -72,8 +94,9 @@ export class PluginImpl<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginInputOptions extends {} = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes> {
+  config: PluginConfig<Routes, ExternalRoutes, PluginInputOptions>,
+): BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions> {
   return new PluginImpl(config);
 }

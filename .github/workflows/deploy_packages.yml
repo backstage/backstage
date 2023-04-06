@@ -12,8 +12,9 @@ jobs:
       needs_release: ${{ steps.release_check.outputs.needs_release }}
 
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     services:
       postgres13:
@@ -61,33 +62,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v3
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: yarn install
-        run: yarn install --frozen-lockfile
-      # End of yarn setup
+        uses: backstage/actions/yarn-install@v0.6.3
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Fetch previous commit for release check
         run: git fetch origin '${{ github.event.before }}'
@@ -115,14 +98,13 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn lerna -- run test -- --coverage --runInBand
+          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --coverage
           bash <(curl -s https://codecov.io/bash)
           # Upload code coverage for some specific flags. Also see .codecov.yml
           bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
           bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
           bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
         env:
-          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
@@ -148,7 +130,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
 
     env:
       CI: 'true'
@@ -157,33 +139,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: cache global yarn cache
-        uses: actions/cache@v3
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: yarn install
-        run: yarn install --frozen-lockfile
-      # End of yarn setup
+        uses: backstage/actions/yarn-install@v0.6.3
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build type declarations
         run: yarn tsc:full
@@ -198,10 +162,11 @@ jobs:
       # Publishes current version of packages that are not already present in the registry
       - name: publish
         run: |
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
           if [ -f ".changeset/pre.json" ]; then
-              yarn lerna -- publish from-package --yes --dist-tag next
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
           else
-              yarn lerna -- publish from-package --yes
+              yarn workspaces foreach -p -j 10 -v --no-private npm publish --access public --tolerate-republish
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -209,7 +174,7 @@ jobs:
       # Grabs the version in the root package.json and creates a tag on GitHub
       - name: Create a release tag
         id: create_tag
-        run: node scripts/create-release-tag.js --dispatch-workflows
+        run: node scripts/create-release-tag.js
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
@@ -218,6 +183,13 @@ jobs:
         run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Dispatch repository event
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          event-type: release-published
+          client-payload: '{"version": "${{ steps.create_tag.outputs.version }}"}'
 
       # Notify everyone about this great new release :D
       - name: Discord notification

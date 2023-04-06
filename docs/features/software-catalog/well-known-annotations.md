@@ -110,7 +110,7 @@ metadata:
     backstage.io/edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
 ```
 
-These annotations allow customising links from the catalog pages. The view URL
+These annotations allow customizing links from the catalog pages. The view URL
 should point to the canonical metadata YAML that governs this entity. The edit
 URL should point to the source file for the metadata. In the example above,
 `my-org` generates its catalog data from Jsonnet files in a monorepo, so the
@@ -159,11 +159,11 @@ metadata:
     github.com/project-slug: backstage/backstage
 ```
 
-The value of this annotation is the so-called slug that identifies a project on
+The value of this annotation is the so-called slug that identifies a repository on
 [GitHub](https://github.com) (either the public one, or a private GitHub
 Enterprise installation) that is related to this entity. It is on the format
-`<organization>/<project>`, and is the same as can be seen in the URL location
-bar of the browser when viewing that project.
+`<organization or owner>/<repository>`, and is the same as can be seen in the URL location
+bar of the browser when viewing that repository.
 
 Specifying this annotation will enable GitHub related features in Backstage for
 that entity.
@@ -242,13 +242,14 @@ that entity if the periskop plugin is installed.
 # Example:
 metadata:
   annotations:
-    sentry.io/project-slug: pump-station
+    sentry.io/project-slug: backstage/pump-station
 ```
 
 The value of this annotation is the so-called slug (or alternatively, the ID) of
-a [Sentry](https://sentry.io) project within your organization. The organization
-slug is currently not configurable on a per-entity basis, but is assumed to be
-the same for all entities in the catalog.
+a [Sentry](https://sentry.io) project within your organization. The value can
+be the format of `[organization]/[project-slug]` or just `[project-slug]`. When
+the organization slug is omitted the `app-config.yaml` will be used as a
+fallback (`sentry.organization`).
 
 Specifying this annotation may enable Sentry related features in Backstage for
 that entity.
@@ -352,6 +353,19 @@ The value of this annotation controls the code-coverage backstage plugin. If set
 to `scm-only`, the plugin will only take into account files stored in source
 control (e.g. ignoring generated code). If set to `enabled`, all files covered
 by a coverage report will be taken into account.
+
+### vault.io/secrets-path
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    vault.io/secrets-path: test/backstage
+```
+
+The value of this annotation contains the path to the secrets of the entity in
+Vault. If not present when the Vault plugin is in use, a message will be shown
+instead, letting the user know what is missing in the `catalog-info.yaml`.
 
 ## Deprecated Annotations
 

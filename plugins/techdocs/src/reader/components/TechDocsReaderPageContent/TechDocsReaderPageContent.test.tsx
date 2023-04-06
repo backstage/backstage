@@ -16,9 +16,6 @@
 import React from 'react';
 import { act, waitFor } from '@testing-library/react';
 
-import { ThemeProvider } from '@material-ui/core';
-
-import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   techdocsApiRef,
@@ -29,12 +26,12 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 const useTechDocsReaderDom = jest.fn();
 jest.mock('./dom', () => ({
   ...jest.requireActual('./dom'),
-  useTechDocsReaderDom,
+  useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
 const useReaderState = jest.fn();
 jest.mock('../useReaderState', () => ({
   ...jest.requireActual('../useReaderState'),
-  useReaderState,
+  useReaderState: (...args: any[]) => useReaderState(...args),
 }));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
@@ -79,13 +76,11 @@ const Wrapper = ({
   entityRef?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
-  <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TestApiProvider>
-  </ThemeProvider>
+  <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      {children}
+    </TechDocsReaderPageProvider>
+  </TestApiProvider>
 );
 
 describe('<TechDocsReaderPageContent />', () => {
@@ -106,28 +101,6 @@ describe('<TechDocsReaderPageContent />', () => {
         expect(
           rendered.getByTestId('techdocs-native-shadowroot'),
         ).toBeInTheDocument();
-      });
-    });
-  });
-
-  it('should render progress if there is no dom and reader state is checking', async () => {
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(undefined);
-    useReaderState.mockReturnValue({ state: 'CHECKING' });
-
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
-        </Wrapper>,
-      );
-
-      await waitFor(() => {
-        expect(
-          rendered.queryByTestId('techdocs-native-shadowroot'),
-        ).not.toBeInTheDocument();
-        expect(rendered.getByRole('progressbar')).toBeInTheDocument();
       });
     });
   });

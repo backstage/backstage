@@ -55,6 +55,9 @@ describe('JenkinsConfig', () => {
               baseUrl: 'https://jenkins.example.com',
               username: 'backstage - bot',
               apiKey: '123456789abcdef0123456789abcedf012',
+              extraRequestHeaders: {
+                myHeader: 'my-value',
+              },
             },
           ],
         },
@@ -67,6 +70,9 @@ describe('JenkinsConfig', () => {
         baseUrl: 'https://jenkins.example.com',
         username: 'backstage - bot',
         apiKey: '123456789abcdef0123456789abcedf012',
+        extraRequestHeaders: {
+          myHeader: 'my-value',
+        },
       },
     ]);
   });
@@ -183,9 +189,9 @@ describe('DefaultJenkinsInfoProvider', () => {
 
   it('Handles entity not found', async () => {
     const provider = configureProvider({ jenkins: {} }, undefined);
-    await expect(provider.getInstance({ entityRef })).rejects.toThrowError();
+    await expect(provider.getInstance({ entityRef })).rejects.toThrow();
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
   });
@@ -197,6 +203,9 @@ describe('DefaultJenkinsInfoProvider', () => {
           baseUrl: 'https://jenkins.example.com',
           username: 'backstage - bot',
           apiKey: '123456789abcdef0123456789abcedf012',
+          extraRequestHeaders: {
+            ['extra-header']: 'extra-value',
+          },
         },
       },
       {
@@ -209,7 +218,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toStrictEqual({
@@ -218,6 +227,7 @@ describe('DefaultJenkinsInfoProvider', () => {
       headers: {
         Authorization:
           'Basic YmFja3N0YWdlIC0gYm90OjEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNlZGYwMTI=',
+        'extra-header': 'extra-value',
       },
       jobFullName: 'teamA/artistLookup-build',
     });
@@ -247,7 +257,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({
@@ -286,7 +296,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({
@@ -325,7 +335,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({
@@ -353,7 +363,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({
@@ -381,7 +391,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({
@@ -414,7 +424,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     );
     const info: JenkinsInfo = await provider.getInstance({ entityRef });
 
-    expect(mockCatalog.getEntityByRef).toBeCalledWith(entityRef, {
+    expect(mockCatalog.getEntityByRef).toHaveBeenCalledWith(entityRef, {
       backstageToken: undefined,
     });
     expect(info).toMatchObject({

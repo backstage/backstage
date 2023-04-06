@@ -32,9 +32,8 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
 
 const mockEntity = {
@@ -53,7 +52,7 @@ const mockApis = TestApiRegistry.from(
 
 describe('EntityLayout', () => {
   it('renders simplest case', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <EntityProvider entity={mockEntity}>
           <EntityLayout>
@@ -70,9 +69,9 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(rendered.getByText('my-entity')).toBeInTheDocument();
-    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
-    expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+    expect(screen.getByText('my-entity')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
   it('renders the entity title if defined', async () => {
@@ -84,7 +83,7 @@ describe('EntityLayout', () => {
       },
     } as Entity;
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <EntityProvider entity={mockEntityWithTitle}>
           <EntityLayout>
@@ -101,13 +100,13 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(rendered.getByText('My Entity')).toBeInTheDocument();
-    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
-    expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+    expect(screen.getByText('My Entity')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
   it('renders default error message when entity is not found', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <AsyncEntityProvider loading={false}>
           <EntityLayout>
@@ -124,14 +123,14 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(rendered.getByText('Warning: Entity not found')).toBeInTheDocument();
-    expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
+    expect(screen.getByText('Warning: Entity not found')).toBeInTheDocument();
+    expect(screen.queryByText('my-entity')).not.toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-title')).not.toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
   });
 
   it('renders custom message when entity is not found', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <AsyncEntityProvider loading={false}>
           <EntityLayout
@@ -151,37 +150,30 @@ describe('EntityLayout', () => {
     );
 
     expect(
-      rendered.getByText('Oppps.. Your entity was not found'),
+      screen.getByText('Oppps.. Your entity was not found'),
     ).toBeInTheDocument();
-    expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
+    expect(screen.queryByText('my-entity')).not.toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-title')).not.toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
   });
 
   it('navigates when user clicks different tab', async () => {
-    const rendered = await renderInTestApp(
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <ApiProvider apis={mockApis}>
-              <EntityProvider entity={mockEntity}>
-                <EntityLayout>
-                  <EntityLayout.Route path="/" title="tabbed-test-title">
-                    <div>tabbed-test-content</div>
-                  </EntityLayout.Route>
-                  <EntityLayout.Route
-                    path="/some-other-path"
-                    title="tabbed-test-title-2"
-                  >
-                    <div>tabbed-test-content-2</div>
-                  </EntityLayout.Route>
-                </EntityLayout>
-              </EntityProvider>
-            </ApiProvider>
-          }
-        />
-      </Routes>,
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityProvider entity={mockEntity}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+            <EntityLayout.Route
+              path="/some-other-path"
+              title="tabbed-test-title-2"
+            >
+              <div>tabbed-test-content-2</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -189,23 +181,23 @@ describe('EntityLayout', () => {
       },
     );
 
-    const secondTab = rendered.queryAllByRole('tab')[1];
+    const secondTab = screen.queryAllByRole('tab')[1];
     act(() => {
       fireEvent.click(secondTab);
     });
 
-    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
-    expect(rendered.getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title-2')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-content-2')).toBeInTheDocument();
   });
 
   it('should conditionally render tabs', async () => {
     const shouldRenderTab = (e: Entity) => e.metadata.name === 'my-entity';
     const shouldNotRenderTab = (e: Entity) => e.metadata.name === 'some-entity';
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <EntityProvider entity={mockEntity}>
           <EntityLayout>
@@ -236,8 +228,8 @@ describe('EntityLayout', () => {
       },
     );
 
-    expect(rendered.queryByText('tabbed-test-title')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-title-3')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(screen.queryByText('tabbed-test-title-2')).not.toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-title-3')).toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { LinearProgress, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
@@ -77,13 +78,12 @@ const WidgetContent = ({
   );
 };
 
-const JenkinsApiErrorPanel = ({
-  message,
-  errorType,
-}: {
+const JenkinsApiErrorPanel = (props: {
   message: string;
   errorType: ErrorType;
 }) => {
+  const { message, errorType } = props;
+
   let title = undefined;
   if (errorType === ErrorType.CONNECTION_ERROR) {
     title = "Can't connect to Jenkins";
@@ -94,13 +94,11 @@ const JenkinsApiErrorPanel = ({
   return <WarningPanel severity="error" title={title} message={message} />;
 };
 
-export const LatestRunCard = ({
-  branch = 'master',
-  variant,
-}: {
+export const LatestRunCard = (props: {
   branch: string;
   variant?: InfoCardVariants;
 }) => {
+  const { branch = 'master', variant } = props;
   const [{ projects, loading, error }] = useBuilds({ branch });
   const latestRun = projects?.[0];
   return (

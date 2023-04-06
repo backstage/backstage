@@ -92,7 +92,6 @@ appConfig:
   app:
     baseUrl: https://demo.example.com
     title: Backstage
-    googleAnalyticsTrackingId:
   backend:
     baseUrl: https://demo.example.com
     listen:

@@ -21,12 +21,16 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 import {
   convertDashboardPullRequest,
+  extractAssets,
+  extractPartsFromAsset,
   getArtifactId,
   getAvatarUrl,
   getPullRequestLink,
+  replaceReadme,
+  buildEncodedUrl,
 } from './azure-devops-utils';
-
 import { GitPullRequest } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
 describe('convertDashboardPullRequest', () => {
   it('should return DashboardPullRequest', () => {
@@ -157,5 +161,137 @@ describe('getArtifactId', () => {
   it('should return artifact id', () => {
     const result = getArtifactId('project1', 1);
     expect(result).toBe('vstfs:///CodeReview/CodeReviewId/project1/1');
+  });
+});
+
+describe('extractAssets', () => {
+  it('should return assets', () => {
+    const readme = `  
+    ## Images
+    ![Image 1](./images/sample-4(2).PNG)
+    ![Image 2](./images/cdCSj+-012340.jpg)             
+    ![Image 3](/images/test-4(2)))).jpeg)       
+    ![Image 4](./images/test-2211jd.webp)    
+    ![Image 5](/images/sa)mple.GIf)
+  `;
+    const result = extractAssets(readme);
+    expect(result).toEqual([
+      '[Image 1](./images/sample-4(2).PNG)',
+      '[Image 2](./images/cdCSj+-012340.jpg)',
+      '[Image 3](/images/test-4(2)))).jpeg)',
+      '[Image 4](./images/test-2211jd.webp)',
+      '[Image 5](/images/sa)mple.GIf)',
+    ]);
+  });
+});
+
+describe('extractPartsFromAsset', () => {
+  it('should return parts from asset - PNG', () => {
+    const result = extractPartsFromAsset('[Image 1](./images/sample-4(2).PNG)');
+    expect(result).toEqual({
+      label: 'Image 1',
+      path: '/images/sample-4(2)',
+      ext: '.PNG',
+    });
+  });
+
+  it('should return parts from asset - JPG', () => {
+    const result = extractPartsFromAsset(
+      '[Image 2](./images/cdCSj+-012340.jpg)',
+    );
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/cdCSj+-012340',
+      ext: '.jpg',
+    });
+  });
+
+  it('should return parts from asset - JPEG', () => {
+    const result = extractPartsFromAsset(
+      '[Image 2](/images/test-4(2)))).JpEg)',
+    );
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-4(2))))',
+      ext: '.JpEg',
+    });
+  });
+
+  it('should return parts from asset - WEBP', () => {
+    const result = extractPartsFromAsset('[Image 2](/images/test-2211jd.webp)');
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-2211jd',
+      ext: '.webp',
+    });
+  });
+
+  it('should return parts from asset - GIF', () => {
+    const result = extractPartsFromAsset('[Image 2](/images/test-4(2)))).gif)');
+    expect(result).toEqual({
+      label: 'Image 2',
+      path: '/images/test-4(2))))',
+      ext: '.gif',
+    });
+  });
+});
+
+describe('replaceReadme', () => {
+  it('should return mime type', async () => {
+    const readme = `  
+      ## Images
+        ![Image 1](./images/sample-4(2).png)
+        ![Image 2](./images/cdCSj+-012340.jpg)
+        ![Image 3](/images/test-4(2)))).jpeg)
+        ![Image 4](./images/test-2211jd.webp)
+        ![Image 5](/images/sa)mple.gif)
+    `;
+
+    const reader: UrlReader = {
+      readUrl: url =>
+        Promise.resolve({
+          buffer: async () => Buffer.from(url),
+          etag: 'buffer',
+          stream: jest.fn(),
+        }),
+      readTree: jest.fn(),
+      search: jest.fn(),
+    };
+
+    const result = await replaceReadme(
+      reader,
+      'host',
+      'org',
+      'project',
+      'repo',
+      readme,
+    );
+
+    const expected = `  
+      ## Images
+        ![Image 1](data:image/png;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnNhbXBsZS00KDIpLnBuZw==)
+        ![Image 2](data:image/jpeg;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRmNkQ1NqJTJCLTAxMjM0MC5qcGc=)
+        ![Image 3](data:image/jpeg;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnRlc3QtNCgyKSkpKS5qcGVn)
+        ![Image 4](data:image/webp;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnRlc3QtMjIxMWpkLndlYnA=)
+        ![Image 5](data:image/gif;base64,aHR0cHM6Ly9ob3N0L29yZy9wcm9qZWN0L19naXQvcmVwbz9wYXRoPSUyRmltYWdlcyUyRnNhKW1wbGUuZ2lm)
+    `;
+
+    expect(expected).toBe(result);
+  });
+});
+
+describe('buildEncodedUrl', () => {
+  it('should not encode the colon between host and port', async () => {
+    const result = await buildEncodedUrl(
+      'tfs.myorg.com:8443',
+      'org',
+      'project',
+      'repo',
+      'path',
+    );
+
+    expect(result).toBe(
+      'https://tfs.myorg.com:8443/org/project/_git/repo?path=path',
+    );
   });
 });

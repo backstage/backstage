@@ -13,32 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { scaffolderApiRef } from '../../api';
 import {
-  Typography,
+  ActionExample,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Collapse,
+  Grid,
+  makeStyles,
   Paper,
   Table,
   TableBody,
-  Box,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  Progress,
+  CodeSnippet,
   Content,
-  Header,
-  Page,
   ErrorPage,
+  Header,
+  MarkdownContent,
+  Page,
+  Progress,
 } from '@backstage/core-components';
+import Chip from '@material-ui/core/Chip';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -66,12 +79,41 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const ExamplesTable = (props: { examples: ActionExample[] }) => {
+  return (
+    <Grid container>
+      {props.examples.map((example, index) => {
+        return (
+          <Fragment key={`example-${index}`}>
+            <Grid item lg={3}>
+              <Box padding={4}>
+                <Typography>{example.description}</Typography>
+              </Box>
+            </Grid>
+            <Grid item lg={9}>
+              <Box padding={1}>
+                <CodeSnippet
+                  text={example.example}
+                  showLineNumbers
+                  showCopyCodeButton
+                  language="yaml"
+                />
+              </Box>
+            </Grid>
+          </Fragment>
+        );
+      })}
+    </Grid>
+  );
+};
+
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
     return api.listActions();
   });
+  const [isExpanded, setIsExpanded] = useState<{ [key: string]: boolean }>({});
 
   if (loading) {
     return <Progress />;
@@ -86,37 +128,9 @@ export const ActionsPage = () => {
     );
   }
 
-  const formatRows = (input: JSONSchema7) => {
-    const properties = input.properties;
-    if (!properties) {
-      return undefined;
-    }
-
-    return Object.entries(properties).map(entry => {
-      const [key] = entry;
-      const props = entry[1] as unknown as JSONSchema7;
-      const codeClassname = classNames(classes.code, {
-        [classes.codeRequired]: input.required?.includes(key),
-      });
-
-      return (
-        <TableRow key={key}>
-          <TableCell>
-            <div className={codeClassname}>{key}</div>
-          </TableCell>
-          <TableCell>{props.title}</TableCell>
-          <TableCell>{props.description}</TableCell>
-          <TableCell>
-            <span className={classes.code}>{props.type}</span>
-          </TableCell>
-        </TableRow>
-      );
-    });
-  };
-
-  const renderTable = (input: JSONSchema7) => {
-    if (!input.properties) {
-      return undefined;
+  const renderTable = (rows?: JSX.Element[]) => {
+    if (!rows || rows.length < 1) {
+      return <Typography>No schema defined</Typography>;
     }
     return (
       <TableContainer component={Paper}>
@@ -129,13 +143,108 @@ export const ActionsPage = () => {
               <TableCell>Type</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{formatRows(input)}</TableBody>
+          <TableBody>{rows}</TableBody>
         </Table>
       </TableContainer>
     );
   };
 
-  const renderTables = (name: string, input?: JSONSchema7Definition[]) => {
+  const getTypes = (properties: JSONSchema7) => {
+    if (!properties.type) {
+      return ['unknown'];
+    }
+
+    if (properties.type !== 'array') {
+      return [properties.type].flat();
+    }
+
+    return [
+      `${properties.type}(${
+        (properties.items as JSONSchema7 | undefined)?.type ?? 'unknown'
+      })`,
+    ];
+  };
+
+  const formatRows = (parentId: string, input?: JSONSchema7) => {
+    const properties = input?.properties;
+    if (!properties) {
+      return undefined;
+    }
+
+    return Object.entries(properties).map(entry => {
+      const [key] = entry;
+      const id = `${parentId}.${key}`;
+      const props = entry[1] as unknown as JSONSchema7;
+      const codeClassname = classNames(classes.code, {
+        [classes.codeRequired]: input.required?.includes(key),
+      });
+      const types = getTypes(props);
+
+      return (
+        <React.Fragment key={id}>
+          <TableRow key={id}>
+            <TableCell>
+              <div className={codeClassname}>{key}</div>
+            </TableCell>
+            <TableCell>{props.title}</TableCell>
+            <TableCell>{props.description}</TableCell>
+            <TableCell>
+              {types.map(type =>
+                type.includes('object') ? (
+                  <Chip
+                    label={type}
+                    key={type}
+                    icon={
+                      isExpanded[id] ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                    }
+                    variant="outlined"
+                    onClick={() =>
+                      setIsExpanded(prevState => {
+                        const state = { ...prevState };
+                        state[id] = !prevState[id];
+                        return state;
+                      })
+                    }
+                  />
+                ) : (
+                  <Chip label={type} key={type} variant="outlined" />
+                ),
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+              <Collapse in={isExpanded[id]} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" component="div">
+                    {key}
+                  </Typography>
+                  {renderTable(
+                    formatRows(
+                      id,
+                      props.type === 'array'
+                        ? ({
+                            properties:
+                              (props.items as JSONSchema7 | undefined)
+                                ?.properties ?? {},
+                          } as unknown as JSONSchema7 | undefined)
+                        : props,
+                    ),
+                  )}
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        </React.Fragment>
+      );
+    });
+  };
+
+  const renderTables = (
+    name: string,
+    id: string,
+    input?: JSONSchema7Definition[],
+  ) => {
     if (!input) {
       return undefined;
     }
@@ -144,7 +253,11 @@ export const ActionsPage = () => {
       <>
         <Typography variant="h6">{name}</Typography>
         {input.map((i, index) => (
-          <div key={index}>{renderTable(i as unknown as JSONSchema7)}</div>
+          <div key={index}>
+            {renderTable(
+              formatRows(`${id}.${index}`, i as unknown as JSONSchema7),
+            )}
+          </div>
         ))}
       </>
     );
@@ -155,25 +268,45 @@ export const ActionsPage = () => {
       return undefined;
     }
 
-    const oneOf = renderTables('oneOf', action.schema?.input?.oneOf);
+    const oneOf = renderTables(
+      'oneOf',
+      `${action.id}.input`,
+      action.schema?.input?.oneOf,
+    );
     return (
       <Box pb={4} key={action.id}>
         <Typography variant="h4" className={classes.code}>
           {action.id}
         </Typography>
-        <Typography>{action.description}</Typography>
+        {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5">Input</Typography>
-            {renderTable(action.schema.input)}
+            {renderTable(
+              formatRows(`${action.id}.input`, action?.schema?.input),
+            )}
             {oneOf}
           </Box>
         )}
         {action.schema?.output && (
           <Box pb={2}>
             <Typography variant="h5">Output</Typography>
-            {renderTable(action.schema.output)}
+            {renderTable(
+              formatRows(`${action.id}.output`, action?.schema?.output),
+            )}
           </Box>
+        )}
+        {action.examples && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Examples</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box pb={2}>
+                <ExamplesTable examples={action.examples} />
+              </Box>
+            </AccordionDetails>
+          </Accordion>
         )}
       </Box>
     );

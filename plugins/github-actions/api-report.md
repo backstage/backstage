@@ -14,8 +14,6 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "BuildStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum BuildStatus {
   // (undocumented)
@@ -28,61 +26,35 @@ export enum BuildStatus {
   'success' = 0,
 }
 
-// Warning: (ae-missing-release-tag) "EntityGithubActionsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityGithubActionsContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestGithubActionRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestGithubActionRunCard: ({
-  branch,
-  variant,
-}: {
+export const EntityLatestGithubActionRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestGithubActionsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestGithubActionsForBranchCard: ({
-  branch,
-  variant,
-}: {
+export const EntityLatestGithubActionsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityRecentGithubActionsRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityRecentGithubActionsRunsCard: ({
-  branch,
-  dense,
-  limit,
-  variant,
-}: Props) => JSX.Element;
+export const EntityRecentGithubActionsRunsCard: (props: {
+  branch?: string | undefined;
+  dense?: boolean | undefined;
+  limit?: number | undefined;
+  variant?: InfoCardVariants | undefined;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "GITHUB_ACTIONS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
-// Warning: (ae-missing-release-tag) "GithubActionsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type GithubActionsApi = {
-  listWorkflowRuns: ({
-    hostname,
-    owner,
-    repo,
-    pageSize,
-    page,
-    branch,
-  }: {
+  listWorkflowRuns: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -92,12 +64,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   >;
-  getWorkflow: ({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflow: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -105,12 +72,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   >;
-  getWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -118,25 +80,13 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   >;
-  reRunWorkflow: ({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  reRunWorkflow: (options: {
     hostname?: string;
     owner: string;
     repo: string;
     runId: number;
   }) => Promise<any>;
-  listJobsForWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    id,
-    pageSize,
-    page,
-  }: {
+  listJobsForWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -146,12 +96,7 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
   >;
-  downloadJobLogsForWorkflowRun: ({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  downloadJobLogsForWorkflowRun: (options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -161,23 +106,14 @@ export type GithubActionsApi = {
   >;
 };
 
-// Warning: (ae-missing-release-tag) "githubActionsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const githubActionsApiRef: ApiRef<GithubActionsApi>;
 
-// Warning: (ae-missing-release-tag) "GithubActionsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class GithubActionsClient implements GithubActionsApi {
   constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi });
   // (undocumented)
-  downloadJobLogsForWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  downloadJobLogsForWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -186,12 +122,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  getWorkflow({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflow(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -200,12 +131,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   >;
   // (undocumented)
-  getWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    id,
-  }: {
+  getWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -214,14 +140,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  listJobsForWorkflowRun({
-    hostname,
-    owner,
-    repo,
-    id,
-    pageSize,
-    page,
-  }: {
+  listJobsForWorkflowRun(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -232,14 +151,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
-  listWorkflowRuns({
-    hostname,
-    owner,
-    repo,
-    pageSize,
-    page,
-    branch,
-  }: {
+  listWorkflowRuns(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -250,12 +162,7 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   >;
   // (undocumented)
-  reRunWorkflow({
-    hostname,
-    owner,
-    repo,
-    runId,
-  }: {
+  reRunWorkflow(options: {
     hostname?: string;
     owner: string;
     repo: string;
@@ -263,88 +170,70 @@ export class GithubActionsClient implements GithubActionsApi {
   }): Promise<any>;
 }
 
-// Warning: (ae-missing-release-tag) "githubActionsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const githubActionsPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { githubActionsPlugin };
 export { githubActionsPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "isGithubActionsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const isGithubActionsAvailable: (entity: Entity) => boolean;
 export { isGithubActionsAvailable };
 export { isGithubActionsAvailable as isPluginApplicableToEntity };
 
-// Warning: (ae-missing-release-tag) "Job" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Job = {
-  html_url: string;
+  html_url?: string;
   status: string;
-  conclusion: string;
+  conclusion?: string;
   started_at: string;
-  completed_at: string;
+  completed_at?: string;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[];
 };
 
-// Warning: (ae-missing-release-tag) "Jobs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Jobs = {
   total_count: number;
   jobs: Job[];
 };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const LatestWorkflowRunCard: ({
-  branch,
-  variant,
-}: Props_2) => JSX.Element;
+export const LatestWorkflowRunCard: (props: {
+  branch: string;
+  variant?: InfoCardVariants;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const LatestWorkflowsForBranchCard: ({
-  branch,
-  variant,
-}: Props_2) => JSX.Element;
+export const LatestWorkflowsForBranchCard: (props: {
+  branch: string;
+  variant?: InfoCardVariants;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "RecentWorkflowRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const RecentWorkflowRunsCard: ({
-  branch,
-  dense,
-  limit,
-  variant,
-}: Props) => JSX.Element;
+export const RecentWorkflowRunsCard: (props: {
+  branch?: string;
+  dense?: boolean;
+  limit?: number;
+  variant?: InfoCardVariants;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Step" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Step = {
   name: string;
   status: string;
   conclusion?: string;
   number: number;
-  started_at: string;
-  completed_at: string;
+  started_at?: string;
+  completed_at?: string;
 };
 ```

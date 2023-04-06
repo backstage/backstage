@@ -24,9 +24,8 @@ import {
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import {
-  getBearerTokenFromAuthorizationHeader,
   BackstageIdentityResponse,
-  IdentityClient,
+  IdentityApi,
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
@@ -96,7 +95,7 @@ export interface RouterOptions {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   policy: PermissionPolicy;
-  identity: IdentityClient;
+  identity: IdentityApi;
   config: Config;
 }
 
@@ -180,7 +179,7 @@ export async function createRouter(
   router.use(express.json());
 
   router.get('/health', (_, response) => {
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.post(
@@ -189,10 +188,7 @@ export async function createRouter(
       req: Request<EvaluatePermissionRequestBatch>,
       res: Response<EvaluatePermissionResponseBatch>,
     ) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-      const user = token ? await identity.authenticate(token) : undefined;
+      const user = await identity.getIdentity({ request: req });
 
       const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
         req.body,

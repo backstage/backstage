@@ -15,9 +15,13 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from './AwsS3EntityProvider';
 import aws from 'aws-sdk';
 import AWSMock from 'aws-sdk-mock';
@@ -83,6 +87,7 @@ describe('AwsS3EntityProvider', () => {
     expectedBaseUrl: string,
     names: Record<string, string>,
     integrationConfig?: object,
+    scheduleInConfig?: boolean,
   ) => {
     const config = new ConfigReader({
       integrations: {
@@ -97,14 +102,25 @@ describe('AwsS3EntityProvider', () => {
       },
     });
 
+    const schedulingConfig: Record<string, any> = {};
+
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
+      refresh: jest.fn(),
     };
 
+    if (scheduleInConfig) {
+      schedulingConfig.scheduler = {
+        createScheduledTaskRunner: (_: any) => schedule,
+      } as unknown as PluginTaskScheduler;
+    } else {
+      schedulingConfig.schedule = schedule;
+    }
+
     const provider = AwsS3EntityProvider.fromConfig(config, {
+      ...schedulingConfig,
       logger,
-      schedule,
     })[0];
     expect(provider.getProviderName()).toEqual(`awsS3-provider:${providerId}`);
 
@@ -137,7 +153,7 @@ describe('AwsS3EntityProvider', () => {
       };
     });
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith({
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: expectedEntities,
     });
@@ -221,6 +237,83 @@ describe('AwsS3EntityProvider', () => {
       {
         endpoint: 'http://localhost:1234',
       },
+    );
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          awsS3: {
+            test: {
+              bucketName: 'bucket-1',
+              prefix: 'sub/dir/',
+              region: 'eu-west-1',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      AwsS3EntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          awsS3: {
+            test: {
+              bucketName: 'bucket-1',
+              prefix: 'sub/dir/',
+              region: 'eu-west-1',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      AwsS3EntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for awsS3-provider:test',
+    );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  it('single simple provider config with schedule in config', async () => {
+    return expectMutation(
+      'regionalStatic',
+      {
+        bucketName: 'bucket-1',
+        prefix: 'sub/dir/',
+        region: 'eu-west-1',
+        schedule: {
+          frequency: 'PT30M',
+          timeout: {
+            minutes: 3,
+          },
+        },
+      },
+      'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/',
+      {
+        'key1.yaml': 'generated-7f6d5861b0b3401a38b5fe62e6c7ca11da5fd6d8',
+        'key2.yaml': 'generated-a290be145586042af7d80715626399c9d661718d',
+        'key3.yaml': 'generated-8d75f78ed9fa618ce433b226dc24eeab441f3a2d',
+        'key 4.yaml': 'generated-1e0249dcb5805fc2ce6ac2d3c4d2a3ef4f1270c0',
+      },
+      undefined,
+      true,
     );
   });
 });

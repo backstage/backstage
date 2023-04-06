@@ -1,0 +1,9 @@
+---
+title: Azure Sites
+author: FRISS
+authorUrl: https://friss.com
+category: Infrastructure
+description: Azure Sites (Apps & Functions) support for a given entity. View the current status of the site, quickly jump to site's Overview page, or Log Stream page.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/azure-sites
+npmPackageName: '@backstage/plugin-azure-sites'
+addedDate: '2022-10-18'

@@ -14,24 +14,41 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { z } from 'zod';
 import { createCatalogPermissionRule } from './util';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for the presence of an annotation on a given entity.
  *
+ * If a value is given, it filters for the annotation value, too.
+ *
  * @alpha
  */
 export const hasAnnotation = createCatalogPermissionRule({
   name: 'HAS_ANNOTATION',
-  description:
-    'Allow entities which are annotated with the specified annotation',
+  description: 'Allow entities with the specified annotation',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  apply: (resource: Entity, annotation: string) =>
-    !!resource.metadata.annotations?.hasOwnProperty(annotation),
-  toQuery: (annotation: string) => ({
-    key: `metadata.annotations.${annotation}`,
+  paramsSchema: z.object({
+    annotation: z.string().describe('Name of the annotation to match on'),
+    value: z
+      .string()
+      .optional()
+      .describe('Value of the annotation to match on'),
   }),
+  apply: (resource, { annotation, value }) =>
+    !!resource.metadata.annotations?.hasOwnProperty(annotation) &&
+    (value === undefined
+      ? true
+      : resource.metadata.annotations?.[annotation] === value),
+  toQuery: ({ annotation, value }) =>
+    value === undefined
+      ? {
+          key: `metadata.annotations.${annotation}`,
+        }
+      : {
+          key: `metadata.annotations.${annotation}`,
+          values: [value],
+        },
 });

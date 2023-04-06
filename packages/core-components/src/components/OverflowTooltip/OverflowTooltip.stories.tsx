@@ -23,7 +23,7 @@ export default {
 };
 
 const text =
-  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.';
+  'Lorem Ipsum is simply sample text of the printing and typesetting industry.';
 
 export const Default = () => (
   <Box maxWidth="200px">

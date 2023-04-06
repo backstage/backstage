@@ -38,7 +38,36 @@ function duration(startTimestamp: [number, number]): string {
   return `${seconds.toFixed(1)}s`;
 }
 
-export class FactRetrieverEngine {
+/**
+ * @public
+ *
+ * FactRetrieverEngine responsible scheduling and running fact retrieval tasks.
+ */
+export interface FactRetrieverEngine {
+  /**
+   * Schedules fact retriever run cycles based on configuration provided in the registration.
+   *
+   * Default implementation uses backend-tasks to handle scheduling. This function can be called multiple
+   * times, where initial calls schedule the tasks and subsequents invocations update the schedules.
+   */
+  schedule(): Promise<void>;
+
+  /**
+   * Provides possibility to manually run a fact retriever job and construct fact data
+   *
+   * @param ref - Reference to the task name stored in the executor database. By convention this is the fact retriever id
+   */
+  triggerJob(ref: string): Promise<void>;
+
+  /**
+   * Exposes fact retriever job configuration information about previous and next runs and schedule
+   *
+   * @param ref - Reference to the task name stored in the executor database. By convention this is the fact retriever id
+   */
+  getJobRegistration(ref: string): Promise<FactRetrieverRegistration>;
+}
+
+export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
   private constructor(
     private readonly repository: TechInsightsStore,
     private readonly factRetrieverRegistry: FactRetrieverRegistry,
@@ -47,6 +76,7 @@ export class FactRetrieverEngine {
     private readonly scheduler: PluginTaskScheduler,
     private readonly defaultCadence?: string,
     private readonly defaultTimeout?: Duration,
+    private readonly defaultInitialDelay?: Duration,
   ) {}
 
   static async create(options: {
@@ -56,6 +86,7 @@ export class FactRetrieverEngine {
     scheduler: PluginTaskScheduler;
     defaultCadence?: string;
     defaultTimeout?: Duration;
+    defaultInitialDelay?: Duration;
   }) {
     const {
       repository,
@@ -64,15 +95,13 @@ export class FactRetrieverEngine {
       scheduler,
       defaultCadence,
       defaultTimeout,
+      defaultInitialDelay,
     } = options;
 
-    await Promise.all(
-      factRetrieverRegistry
-        .listRetrievers()
-        .map(it => repository.insertFactSchema(it)),
-    );
+    const retrievers = await factRetrieverRegistry.listRetrievers();
+    await Promise.all(retrievers.map(it => repository.insertFactSchema(it)));
 
-    return new FactRetrieverEngine(
+    return new DefaultFactRetrieverEngine(
       repository,
       factRetrieverRegistry,
       factRetrieverContext,
@@ -80,26 +109,35 @@ export class FactRetrieverEngine {
       scheduler,
       defaultCadence,
       defaultTimeout,
+      defaultInitialDelay,
     );
   }
 
   async schedule() {
-    const registrations = this.factRetrieverRegistry.listRegistrations();
+    const registrations = await this.factRetrieverRegistry.listRegistrations();
     const newRegs: string[] = [];
 
     await Promise.all(
       registrations.map(async registration => {
-        const { factRetriever, cadence, lifecycle, timeout } = registration;
+        const { factRetriever, cadence, lifecycle, timeout, initialDelay } =
+          registration;
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
         const timeLimit =
           timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
+        const initialDelaySetting =
+          initialDelay ||
+          this.defaultInitialDelay ||
+          Duration.fromObject({ seconds: 5 });
         try {
           await this.scheduler.scheduleTask({
             id: factRetriever.id,
             frequency: { cron: cronExpression },
             fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
             timeout: timeLimit,
+            // We add a delay in order to prevent errors due to the
+            // fact that the backend is not yet online in a cold-start scenario
+            initialDelay: initialDelaySetting,
           });
           newRegs.push(factRetriever.id);
         } catch (e) {
@@ -115,7 +153,7 @@ export class FactRetrieverEngine {
     );
   }
 
-  getJobRegistration(ref: string): FactRetrieverRegistration {
+  getJobRegistration(ref: string): Promise<FactRetrieverRegistration> {
     return this.factRetrieverRegistry.get(ref);
   }
 

@@ -20,6 +20,7 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const configSchemaPlugin = createPlugin({
   id: 'config-schema',
   routes: {
@@ -27,6 +28,7 @@ export const configSchemaPlugin = createPlugin({
   },
 });
 
+/** @public */
 export const ConfigSchemaPage = configSchemaPlugin.provide(
   createRoutableExtension({
     name: 'ConfigSchemaPage',

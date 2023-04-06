@@ -32,6 +32,11 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
 For simple setups, you can omit the provider ID at the config
@@ -47,13 +52,18 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
+      schedule: # optional; same options as in TaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
 ```
 
 As this provider is not one of the default providers, you will first need to install
 the AWS catalog plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-aws
 ```
 
@@ -67,36 +77,15 @@ import { AwsS3EntityProvider } from '@backstage/plugin-catalog-backend-module-aw
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 builder.addEntityProvider(
-  ...AwsS3EntityProvider.fromConfig(env.config, {
+  AwsS3EntityProvider.fromConfig(env.config, {
     logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },
       timeout: { minutes: 3 },
     }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
   }),
 );
-```
-
-## Alternative Processor
-
-As alternative to the entity provider `AwsS3EntityProvider`
-you can still use the `AwsS3DiscoveryProcessor`.
-
-```yaml
-# app-config.yaml
-
-catalog:
-  locations:
-    - type: s3-discovery
-      target: https://sample-bucket.s3.us-east-2.amazonaws.com/prefix/
-```
-
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-
-import { AwsS3DiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-aws';
-
-const builder = await CatalogBuilder.create(env);
-/** ... other processors ... */
-builder.addProcessor(new AwsS3DiscoveryProcessor(env.reader));
 ```

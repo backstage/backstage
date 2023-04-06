@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -19,6 +19,7 @@
 const { Octokit } = require('@octokit/rest');
 const path = require('path');
 const fs = require('fs-extra');
+const { EOL } = require('os');
 
 const baseOptions = {
   owner: 'backstage',
@@ -57,27 +58,15 @@ async function createGitTag(octokit, commitSha, tagName) {
   }
 }
 
-async function dispatchReleaseWorkflows(octokit, releaseVersion) {
-  console.log('Dispatching release manifest sync');
-  await octokit.actions.createWorkflowDispatch({
-    owner: 'backstage',
-    repo: 'backstage',
-    workflow_id: 'sync_release-manifest.yml',
-    ref: 'master',
-    inputs: {
-      version: releaseVersion,
-    },
-  });
-}
-
 async function main() {
-  const shouldDispatch = process.argv.includes('--dispatch-workflows');
-
   if (!process.env.GITHUB_SHA) {
     throw new Error('GITHUB_SHA is not set');
   }
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN is not set');
+  }
+  if (!process.env.GITHUB_OUTPUT) {
+    throw new Error('GITHUB_OUTPUT environment variable not set');
   }
 
   const commitSha = process.env.GITHUB_SHA;
@@ -89,12 +78,11 @@ async function main() {
   console.log(`Creating release tag ${tagName} at ${commitSha}`);
   await createGitTag(octokit, commitSha, tagName);
 
-  console.log(`::set-output name=tag_name::${tagName}`);
-
-  if (shouldDispatch) {
-    console.log(`Dispatching release workflows for ${tagName}`);
-    await dispatchReleaseWorkflows(octokit, releaseVersion);
-  }
+  await fs.appendFile(process.env.GITHUB_OUTPUT, `tag_name=${tagName}${EOL}`);
+  await fs.appendFile(
+    process.env.GITHUB_OUTPUT,
+    `version=${releaseVersion}${EOL}`,
+  );
 }
 
 main().catch(error => {

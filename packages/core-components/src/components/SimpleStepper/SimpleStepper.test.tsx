@@ -145,4 +145,32 @@ describe('Stepper', () => {
 
     expect(rendered.getByText('FinalStepNext')).toBeInTheDocument();
   });
+
+  it('Handles skipStep property', async () => {
+    const rendered = await renderInTestApp(
+      <Stepper>
+        <Step title="Step 0" data-testid="step0">
+          <div>step0</div>
+        </Step>
+        <Step title="Step 1" actions={{ showSkip: true }} data-testid="step1">
+          <div>step1</div>
+        </Step>
+        <Step title="Step 2" data-testid="step2">
+          <div>step2</div>
+        </Step>
+        <Step title="Step 3" data-testid="step3">
+          <div>step3</div>
+        </Step>
+      </Stepper>,
+    );
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Skip') as Node);
+    expect(rendered.getByText('step2')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 2)('Back') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+  });
 });

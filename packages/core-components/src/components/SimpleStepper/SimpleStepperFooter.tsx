@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext, ReactNode, PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import { StepActions } from './types';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { PropsWithChildren, ReactNode, useContext } from 'react';
+
 import { VerticalStepperContext } from './SimpleStepper';
+import { StepActions } from './types';
 
 export type SimpleStepperFooterClassKey = 'root';
 
@@ -45,6 +47,10 @@ interface NextBtnProps extends CommonBtnProps {
   last?: boolean;
   stepIndex: number;
 }
+interface SkipBtnProps extends CommonBtnProps {
+  disabled?: boolean;
+  stepIndex: number;
+}
 interface BackBtnProps extends CommonBtnProps {
   disabled?: boolean;
   stepIndex: number;
@@ -68,6 +74,18 @@ const NextBtn = ({
     onClick={handleClick}
   >
     {text || (last ? 'Finish' : 'Next')}
+  </Button>
+);
+
+const SkipBtn = ({ text, handleClick, disabled, stepIndex }: SkipBtnProps) => (
+  <Button
+    variant="outlined"
+    color="primary"
+    disabled={disabled}
+    data-testid={`skipButton-${stepIndex}`}
+    onClick={handleClick}
+  >
+    {text || 'Skip'}
   </Button>
 );
 
@@ -129,12 +147,23 @@ export const SimpleStepperFooter = ({
   };
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       {[undefined, true].includes(actions.showBack) && stepIndex !== 0 && (
         <BackBtn
           text={actions.backText}
           handleClick={handleBack}
           disabled={stepIndex === 0}
+          stepIndex={stepIndex}
+        />
+      )}
+      {actions.showSkip && (
+        <SkipBtn
+          text={actions.skipText}
+          handleClick={handleNext}
+          disabled={
+            (!!stepperLength && stepIndex >= stepperLength) ||
+            (!!actions.canSkip && !actions.canSkip())
+          }
           stepIndex={stepIndex}
         />
       )}
@@ -157,6 +186,6 @@ export const SimpleStepperFooter = ({
         />
       )}
       {children}
-    </div>
+    </Box>
   );
 };

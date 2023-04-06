@@ -15,10 +15,10 @@
  */
 
 import {
-  getGitHubFileFetchUrl,
+  getGithubFileFetchUrl,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  GitHubIntegration,
+  GithubIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
@@ -40,6 +40,7 @@ import {
   ReadUrlResponse,
 } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
@@ -51,7 +52,7 @@ export type GhBlobResponse =
   RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
- * Implements a {@link UrlReader} for files through the GitHub v3 APIs, such as
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files through the GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  *
  * @public
@@ -72,7 +73,7 @@ export class GithubUrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly integration: GitHubIntegration,
+    private readonly integration: GithubIntegration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
@@ -97,7 +98,7 @@ export class GithubUrlReader implements UrlReader {
     const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
-    const ghUrl = getGitHubFileFetchUrl(
+    const ghUrl = getGithubFileFetchUrl(
       url,
       this.integration.config,
       credentials,
@@ -109,6 +110,9 @@ export class GithubUrlReader implements UrlReader {
         headers: {
           ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(options?.lastModifiedAfter && {
+            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+          }),
           Accept: 'application/vnd.github.v3.raw',
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -130,6 +134,9 @@ export class GithubUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -290,6 +297,7 @@ export class GithubUrlReader implements UrlReader {
     return files.map(file => ({
       url: pathToUrl(file.path),
       content: file.content,
+      lastModifiedAt: file.lastModifiedAt,
     }));
   }
 

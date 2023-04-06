@@ -25,10 +25,12 @@ const LazyGraphQlDefinition = React.lazy(() =>
   })),
 );
 
+/** @public */
 export type GraphQlDefinitionWidgetProps = {
   definition: string;
 };
 
+/** @public */
 export const GraphQlDefinitionWidget = (
   props: GraphQlDefinitionWidgetProps,
 ) => {

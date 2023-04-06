@@ -27,7 +27,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import { Owner } from './Owner';
 import { mockApiClient } from '../../test-helpers/mock-api-client';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,
@@ -71,7 +71,7 @@ describe('Owner', () => {
 
     await waitFor(() => screen.getAllByTestId(TEST_IDS.form.owner.empty));
     expect(getAllByTestId(TEST_IDS.form.owner.empty)).toMatchInlineSnapshot(`
-      Array [
+      [
         <p
           class="MuiFormHelperText-root Mui-required"
           data-testid="grm--form--owner--empty"

@@ -18,14 +18,14 @@ import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
-import { SidebarPinStateContext } from '@backstage/core-components';
+import { SidebarPinStateProvider } from '@backstage/core-components';
 
 describe('<UserSettingsPinToggle />', () => {
   it('toggles the pin sidebar button', async () => {
     const mockToggleFn = jest.fn();
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <SidebarPinStateContext.Provider
+        <SidebarPinStateProvider
           value={{
             isPinned: false,
             isMobile: false,
@@ -33,7 +33,7 @@ describe('<UserSettingsPinToggle />', () => {
           }}
         >
           <UserSettingsPinToggle />
-        </SidebarPinStateContext.Provider>,
+        </SidebarPinStateProvider>,
       ),
     );
     expect(rendered.getByText('Pin Sidebar')).toBeInTheDocument();

@@ -80,7 +80,11 @@ describe('UnregisterEntityDialog', () => {
 
   it('can cancel', async () => {
     const onClose = jest.fn();
-    stateSpy.mockImplementation(() => ({ type: 'loading' }));
+    stateSpy.mockImplementation(() => ({
+      type: 'bootstrap',
+      location: '',
+      deleteEntity: jest.fn(),
+    }));
 
     await renderInTestApp(
       <Wrapper>
@@ -101,7 +105,7 @@ describe('UnregisterEntityDialog', () => {
     await userEvent.click(screen.getByText('Cancel'));
 
     await waitFor(() => {
-      expect(onClose).toBeCalled();
+      expect(onClose).toHaveBeenCalled();
     });
   });
 
@@ -196,8 +200,8 @@ describe('UnregisterEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
-      expect(deleteEntity).toBeCalled();
-      expect(onConfirm).toBeCalled();
+      expect(deleteEntity).toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 
@@ -236,8 +240,8 @@ describe('UnregisterEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
-      expect(deleteEntity).toBeCalled();
-      expect(onConfirm).toBeCalled();
+      expect(deleteEntity).toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 
@@ -284,8 +288,8 @@ describe('UnregisterEntityDialog', () => {
     await userEvent.click(screen.getByText('Unregister Location'));
 
     await waitFor(() => {
-      expect(unregisterLocation).toBeCalled();
-      expect(onConfirm).toBeCalled();
+      expect(unregisterLocation).toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 
@@ -340,8 +344,8 @@ describe('UnregisterEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
-      expect(deleteEntity).toBeCalled();
-      expect(onConfirm).toBeCalled();
+      expect(deleteEntity).toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 });

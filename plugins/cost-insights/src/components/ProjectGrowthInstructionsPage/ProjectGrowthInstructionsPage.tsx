@@ -23,10 +23,9 @@ import {
   Alert,
   DEFAULT_DATE_FORMAT,
   Duration,
-  Entity,
-  Product,
   ProjectGrowthData,
 } from '../../types';
+import { Entity, Product } from '@backstage/plugin-cost-insights-common';
 import { ProjectGrowthAlert } from '../../alerts';
 import { InfoCard } from '@backstage/core-components';
 

@@ -13,7 +13,7 @@ _TLDR;_ The Spotify team recently announced [Backstage Upgrade Helper](https://b
 
 ## Upgrading Backstage was a common pain point
 
-Without a doubt, one of the most exciting things about Backstage is our community. Step into our daily [Discord conversations](https://discord.gg/sBEF5VkG) and the monthly [Community Sessions](https://www.youtube.com/watch?v=0QMQYSTKAx0) and you’ll find a ton of great ideas, problem-solving, and support for one another.
+Without a doubt, one of the most exciting things about Backstage is our community. Step into our daily [Discord conversations](https://discord.gg/backstage-687207715902193673) and the monthly [Community Sessions](https://www.youtube.com/watch?v=0QMQYSTKAx0) and you’ll find a ton of great ideas, problem-solving, and support for one another.
 
 During one of these discussions, we realized we all shared the same pain point — upgrading a Backstage application.
 
@@ -29,7 +29,7 @@ We started by creating a fork from React Native’s open source project, applyin
 
 The Backstage Upgrade Helper tool enables adopters to easily upgrade their Backstage app by using the power of git to create a diff between different versions.
 
-Whenever a new version of Backstage is released, the Helper scaffolds a new dummy Backstage app using the `backstage-create-app` cli utility and checks all the generated files in a specific git branch. After the branch is generated, it gets compared with all the existing ones, which results in generating specific git patches stored in specific files. By selecting the version of the current Backstage release together with the version you want to upgrade to, the UI knows which patch file needs to be picked up.
+Whenever a new version of Backstage is released, the Helper scaffolds a new sample Backstage app using the `backstage-create-app` cli utility and checks all the generated files in a specific git branch. After the branch is generated, it gets compared with all the existing ones, which results in generating specific git patches stored in specific files. By selecting the version of the current Backstage release together with the version you want to upgrade to, the UI knows which patch file needs to be picked up.
 
 So, now you can update your Backstage application in three steps rather than manually reading the changelogs of all the Backstage modules in reverse order.
 

@@ -20,6 +20,7 @@ import {
   PolicyType,
 } from '@backstage/plugin-azure-devops-common';
 import { styled, withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 import CancelIcon from '@material-ui/icons/Cancel';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
@@ -91,6 +92,7 @@ export const PullRequestCardPolicy = ({
   policy,
 }: PullRequestCardPolicyProps) => (
   <PullRequestCardPolicyContainer>
-    {getPolicyIcon(policy)} <span>{policy.text}</span>
+    {getPolicyIcon(policy)}{' '}
+    <Typography component="span">{policy.text}</Typography>
   </PullRequestCardPolicyContainer>
 );

@@ -38,6 +38,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     processor = new MicrosoftGraphOrgReaderProcessor({
       providers: [
         {
+          id: 'https://example.com',
           target: 'https://example.com',
           tenantId: 'tenant',
           clientId: 'clientid',
@@ -91,8 +92,8 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     const processed = await processor.readLocation(location, false, emit);
 
     expect(processed).toBe(true);
-    expect(emit).toBeCalledTimes(2);
-    expect(emit).toBeCalledWith({
+    expect(emit).toHaveBeenCalledTimes(2);
+    expect(emit).toHaveBeenCalledWith({
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
@@ -110,7 +111,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
       },
       type: 'entity',
     });
-    expect(emit).toBeCalledWith({
+    expect(emit).toHaveBeenCalledWith({
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
@@ -138,6 +139,6 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     const processed = await processor.readLocation(location, false, emit);
 
     expect(processed).toBe(false);
-    expect(emit).toBeCalledTimes(0);
+    expect(emit).toHaveBeenCalledTimes(0);
   });
 });

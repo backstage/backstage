@@ -15,10 +15,13 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  getBitbucketServerRequestOptions,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
-import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 
@@ -27,6 +30,7 @@ const createRepository = async (opts: {
   repo: string;
   description?: string;
   repoVisibility: 'private' | 'public';
+  defaultBranch: string;
   authorization: string;
   apiBaseUrl: string;
 }) => {
@@ -36,6 +40,7 @@ const createRepository = async (opts: {
     description,
     authorization,
     repoVisibility,
+    defaultBranch,
     apiBaseUrl,
   } = opts;
 
@@ -45,6 +50,7 @@ const createRepository = async (opts: {
     body: JSON.stringify({
       name: repo,
       description: description,
+      defaultBranch: defaultBranch,
       public: repoVisibility === 'public',
     }),
     headers: {
@@ -77,10 +83,6 @@ const createRepository = async (opts: {
 
   const repoContentsUrl = `${r.links.self[0].href}`;
   return { remoteUrl, repoContentsUrl };
-};
-
-const getAuthorizationHeader = (config: { token: string }) => {
-  return `Bearer ${config.token}`;
 };
 
 const performEnableLFS = async (opts: {
@@ -128,6 +130,9 @@ export function createPublishBitbucketServerAction(options: {
     sourcePath?: string;
     enableLFS?: boolean;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucketServer',
     description:
@@ -172,6 +177,21 @@ export function createPublishBitbucketServerAction(options: {
             description:
               'The token to use for authorization to BitBucket Server',
           },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Author Name',
+            type: 'string',
+            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Author Email',
+            type: 'string',
+            description: `Sets the author email for the commit.`,
+          },
         },
       },
       output: {
@@ -195,6 +215,9 @@ export function createPublishBitbucketServerAction(options: {
         defaultBranch = 'master',
         repoVisibility = 'private',
         enableLFS = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { project, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -213,13 +236,18 @@ export function createPublishBitbucketServerAction(options: {
       }
 
       const token = ctx.input.token ?? integrationConfig.config.token;
-      if (!token) {
+
+      const authConfig = {
+        ...integrationConfig.config,
+        ...{ token },
+      };
+      const reqOpts = getBitbucketServerRequestOptions(authConfig);
+      const authorization = reqOpts.headers.Authorization;
+      if (!authorization) {
         throw new Error(
-          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either token to the Integrations config or a user login auth token`,
+          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, or (b) a token or (c) username + password to the integration config.`,
         );
       }
-
-      const authorization = getAuthorizationHeader({ token });
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
@@ -228,19 +256,28 @@ export function createPublishBitbucketServerAction(options: {
         project,
         repo,
         repoVisibility,
+        defaultBranch,
         description,
         apiBaseUrl,
       });
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      const auth = {
-        username: 'x-token-auth',
-        password: token,
-      };
+      const auth = authConfig.token
+        ? {
+            token: token!,
+          }
+        : {
+            username: authConfig.username!,
+            password: authConfig.password!,
+          };
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
@@ -248,9 +285,9 @@ export function createPublishBitbucketServerAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 

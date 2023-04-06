@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** @public */
 export const CIRCLECI_ANNOTATION = 'circleci.com/project-slug';

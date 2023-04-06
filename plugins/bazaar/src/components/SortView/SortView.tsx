@@ -27,7 +27,7 @@ import { BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 import SearchBar from 'material-ui-search-bar';
-import { sortByDate, sortByMembers, sortByName } from '../../util/sortMethods';
+import { sortByDate, sortByMembers, sortByTitle } from '../../util/sortMethods';
 import { SortMethodSelector } from '../SortMethodSelector';
 import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
@@ -66,11 +66,19 @@ const getUnlinkedCatalogEntities = (
   });
 };
 
-export const SortView = () => {
+/** @public */
+export type SortViewProps = {
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
+
+/** @public */
+export const SortView = (props: SortViewProps) => {
+  const { fullWidth = true, fullHeight = true } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const classes = useStyles();
-  const sortMethods = [sortByDate, sortByName, sortByMembers];
+  const sortMethods = [sortByDate, sortByTitle, sortByMembers];
   const [sortMethodNbr, setSortMethodNbr] = useState(0);
   const [openAdd, setOpenAdd] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -98,7 +106,7 @@ export const SortView = () => {
 
   const getSearchResults = () => {
     return bazaarProjects.value
-      ?.filter(project => project.name.includes(searchValue))
+      ?.filter(project => project.title.includes(searchValue))
       .sort(sortMethods[sortMethodNbr]);
   };
 
@@ -198,6 +206,8 @@ export const SortView = () => {
         bazaarProjects={getSearchResults() || []}
         fetchBazaarProjects={fetchBazaarProjects}
         catalogEntities={unlinkedCatalogEntities || []}
+        gridSize={fullWidth ? 2 : 4}
+        height={fullHeight ? 'large' : 'small'}
       />
       <Content noPadding className={classes.container} />
     </Content>

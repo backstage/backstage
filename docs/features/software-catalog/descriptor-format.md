@@ -55,6 +55,7 @@ metadata:
     - url: https://admin.example-org.com
       title: Admin Dashboard
       icon: dashboard
+      type: admin-dashboard
 spec:
   type: website
   lifecycle: production
@@ -83,7 +84,8 @@ This is the same entity as returned in JSON from the software catalog API:
       {
         "url": "https://admin.example-org.com",
         "title": "Admin Dashboard",
-        "icon": "dashboard"
+        "icon": "dashboard",
+        "type": "admin-dashboard"
       }
     ],
     "tags": ["java"],
@@ -249,6 +251,23 @@ the entity belongs to the `"default"` namespace.
 Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
 i.e. not Backstage specific but the same as in Kubernetes.
 
+### `uid` [output]
+
+Each entity gets an automatically generated globally unique ID when it first
+enters the database. This field is not meant to be specified as input data, but
+is rather created by the database engine itself when producing the output entity.
+
+Note that `uid` values are _not_ to be seen as stable, and should _not_ be used
+as external references to an entity. The `uid` can change over time even when a
+human observer might think that it wouldn't. As one of many examples,
+unregistering and re-registering the exact same file will result in a different
+`uid` value even though everything else is the same. Therefore there is very
+little, if any, reason to read or use this field externally.
+
+If you want to refer to an entity by some form of an identifier, you should
+always use [string-form entity reference](references.md#string-references)
+instead.
+
 ### `title` [optional]
 
 A display name of the entity, to be presented in user interfaces instead of the
@@ -353,14 +372,17 @@ Fields of a link are:
 | `url`   | String | [Required] A `url` in a standard `uri` format (e.g. `https://example.com/some/page`) |
 | `title` | String | [Optional] A user friendly display name for the link.                                |
 | `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
+| `type`  | String | [Optional] An optional value to categorize links into specific groups.               |
 
 _NOTE_: The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`
 icons). These keys should be a sequence of `[a-z0-9A-Z]`, possibly separated by
-one of `[-_.]`. Backstage may support some basic icons out of the box, but the
+one of `[-_.]`. Backstage may support some basic icons out of the box such as those [defined in app-defaults](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx), but the
 Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
+
+The semantics of the `type` field are undefined. The adopter is free to define their own set of types and utilize them as they wish. Some potential use cases can be to utilize the type field to validate certain links exist on entities or to create customized UI components for specific link types.
 
 ## Common to All Kinds: Relations
 
@@ -698,7 +720,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: {{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 ```
 
@@ -1304,3 +1326,7 @@ resolved relative to the location of this Location entity itself.
 A list of targets as strings. They can all be either absolute paths/URLs
 (depending on the type), or relative paths such as `./details/catalog-info.yaml`
 which are resolved relative to the location of this Location entity itself.
+
+### `spec.presence` [optional]
+
+Describes whether the target of a location is required to exist or not. It defaults to `'required'` if not specified, can also be `'optional'`.

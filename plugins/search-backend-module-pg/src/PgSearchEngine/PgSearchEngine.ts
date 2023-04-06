@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import {
   SearchQuery,
   IndexableResultSet,
+  IndexableResult,
 } from '@backstage/plugin-search-common';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import {
@@ -25,20 +27,116 @@ import {
   DatabaseStore,
   PgSearchQuery,
 } from '../database';
+import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
 
+/**
+ * Search query that the Postgres search engine understands.
+ * @public
+ */
 export type ConcretePgSearchQuery = {
   pgQuery: PgSearchQuery;
   pageSize: number;
 };
 
-export class PgSearchEngine implements SearchEngine {
-  constructor(private readonly databaseStore: DatabaseStore) {}
+/**
+ * Options available for the Postgres specific query translator.
+ * @public
+ */
+export type PgSearchQueryTranslatorOptions = {
+  highlightOptions: PgSearchHighlightOptions;
+};
 
+/**
+ * Postgres specific query translator.
+ * @public
+ */
+export type PgSearchQueryTranslator = (
+  query: SearchQuery,
+  options: PgSearchQueryTranslatorOptions,
+) => ConcretePgSearchQuery;
+
+/**
+ * Options to instantiate PgSearchEngine
+ * @public
+ */
+export type PgSearchOptions = {
+  database: PluginDatabaseManager;
+  logger?: Logger;
+};
+
+/**
+ * Options for highlighting search terms
+ * @public
+ */
+export type PgSearchHighlightOptions = {
+  useHighlight?: boolean;
+  maxWords?: number;
+  minWords?: number;
+  shortWord?: number;
+  highlightAll?: boolean;
+  maxFragments?: number;
+  fragmentDelimiter?: string;
+  preTag: string;
+  postTag: string;
+};
+
+/** @public */
+export class PgSearchEngine implements SearchEngine {
+  private readonly logger?: Logger;
+  private readonly highlightOptions: PgSearchHighlightOptions;
+
+  /**
+   * @deprecated This will be marked as private in a future release, please us fromConfig instead
+   */
+  constructor(
+    private readonly databaseStore: DatabaseStore,
+    config: Config,
+    logger?: Logger,
+  ) {
+    const uuidTag = uuid();
+    const highlightConfig = config.getOptionalConfig(
+      'search.pg.highlightOptions',
+    );
+
+    const highlightOptions: PgSearchHighlightOptions = {
+      preTag: `<${uuidTag}>`,
+      postTag: `</${uuidTag}>`,
+      useHighlight: highlightConfig?.getOptionalBoolean('useHighlight') ?? true,
+      maxWords: highlightConfig?.getOptionalNumber('maxWords') ?? 35,
+      minWords: highlightConfig?.getOptionalNumber('minWords') ?? 15,
+      shortWord: highlightConfig?.getOptionalNumber('shortWord') ?? 3,
+      highlightAll:
+        highlightConfig?.getOptionalBoolean('highlightAll') ?? false,
+      maxFragments: highlightConfig?.getOptionalNumber('maxFragments') ?? 0,
+      fragmentDelimiter:
+        highlightConfig?.getOptionalString('fragmentDelimiter') ?? ' ... ',
+    };
+    this.highlightOptions = highlightOptions;
+    this.logger = logger;
+  }
+
+  /**
+   * @deprecated This will be removed in a future release, please us fromConfig instead
+   */
   static async from(options: {
     database: PluginDatabaseManager;
+    config: Config;
+    logger?: Logger;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
-      await DatabaseDocumentStore.create(await options.database.getClient()),
+      await DatabaseDocumentStore.create(options.database),
+      options.config,
+      options.logger,
+    );
+  }
+
+  static async fromConfig(config: Config, options: PgSearchOptions) {
+    return new PgSearchEngine(
+      await DatabaseDocumentStore.create(options.database),
+      config,
+      options.logger,
     );
   }
 
@@ -46,8 +144,11 @@ export class PgSearchEngine implements SearchEngine {
     return await DatabaseDocumentStore.supported(await database.getClient());
   }
 
-  translator(query: SearchQuery): ConcretePgSearchQuery {
-    const pageSize = 25;
+  translator(
+    query: SearchQuery,
+    options: PgSearchQueryTranslatorOptions,
+  ): ConcretePgSearchQuery {
+    const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(query.pageCursor);
     const offset = page * pageSize;
     // We request more result to know whether there is another page
@@ -65,14 +166,13 @@ export class PgSearchEngine implements SearchEngine {
         types: query.types,
         offset,
         limit,
+        options: options.highlightOptions,
       },
       pageSize,
     };
   }
 
-  setTranslator(
-    translator: (query: SearchQuery) => ConcretePgSearchQuery,
-  ): void {
+  setTranslator(translator: PgSearchQueryTranslator) {
     this.translator = translator;
   }
 
@@ -81,11 +181,14 @@ export class PgSearchEngine implements SearchEngine {
       batchSize: 1000,
       type,
       databaseStore: this.databaseStore,
+      logger: this.logger?.child({ documentType: type }),
     });
   }
 
   async query(query: SearchQuery): Promise<IndexableResultSet> {
-    const { pgQuery, pageSize } = this.translator(query);
+    const { pgQuery, pageSize } = this.translator(query, {
+      highlightOptions: this.highlightOptions,
+    });
 
     const rows = await this.databaseStore.transaction(async tx =>
       this.databaseStore.query(tx, pgQuery),
@@ -104,10 +207,25 @@ export class PgSearchEngine implements SearchEngine {
       ? encodePageCursor({ page: page - 1 })
       : undefined;
 
-    const results = pageRows.map(({ type, document }) => ({
-      type,
-      document,
-    }));
+    const results = pageRows.map(
+      ({ type, document, highlight }, index): IndexableResult => ({
+        type,
+        document,
+        rank: page * pageSize + index + 1,
+        highlight: {
+          preTag: pgQuery.options.preTag,
+          postTag: pgQuery.options.postTag,
+          fields: highlight
+            ? {
+                text: highlight.text,
+                title: highlight.title,
+                location: highlight.location,
+                path: '',
+              }
+            : {},
+        },
+      }),
+    );
 
     return { results, nextPageCursor, previousPageCursor };
   }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useContext } from 'react';
+import React, { PropsWithChildren } from 'react';
 
-import { Link, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -27,9 +27,9 @@ import {
   SidebarPage,
   sidebarConfig,
   SidebarDivider,
-  SidebarContext,
+  useSidebarOpenState,
+  Link,
 } from '@backstage/core-components';
-import { NavLink } from 'react-router-dom';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -48,12 +48,11 @@ const useSidebarLogoStyles = makeStyles({
 
 const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
-  const { isOpen } = useContext(SidebarContext);
+  const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>
       <Link
-        component={NavLink}
         to="/docs/default/component/local/"
         underline="none"
         className={classes.link}

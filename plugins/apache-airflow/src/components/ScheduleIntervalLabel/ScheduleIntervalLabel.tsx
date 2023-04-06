@@ -22,11 +22,11 @@ interface Props {
   interval: ScheduleInterval | undefined;
 }
 
-const timeDeltaToLabel = (delta: TimeDelta): String => {
+const timeDeltaToLabel = (delta: TimeDelta): string => {
   let label = '';
   const date = new Date(0);
   date.setSeconds(delta.seconds);
-  const time = date.toISOString().substr(11, 8);
+  const time = date.toISOString().slice(11, 11 + 8);
   if (delta.days === 0) {
     label = `${time}`;
   } else if (delta.days === 1) {
@@ -45,7 +45,7 @@ const relativeDeltaToLabel = (delta: RelativeDelta) => {
 };
 
 export const ScheduleIntervalLabel = ({ interval }: Props) => {
-  let label: String = '';
+  let label = '';
   switch (interval?.__type) {
     case 'TimeDelta':
       label = timeDeltaToLabel(interval);

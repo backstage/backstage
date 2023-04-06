@@ -4,15 +4,20 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
-import { SerializedError } from '@backstage/errors';
-
-// @alpha
-export interface AlphaEntity extends Entity {
-  status?: EntityStatus;
-}
 
 // @public
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
+
+// @public @deprecated
+export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
+
+// @public @deprecated
+export const ANNOTATION_KUBERNETES_API_SERVER_CA =
+  'kubernetes.io/api-server-certificate-authority';
+
+// @public @deprecated
+export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
+  'kubernetes.io/auth-provider';
 
 // @public
 export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
@@ -159,6 +164,7 @@ export type EntityLink = {
   url: string;
   title?: string;
   icon?: string;
+  type?: string;
 };
 
 // @public
@@ -197,22 +203,6 @@ export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;
 
-// @alpha
-export type EntityStatus = {
-  items?: EntityStatusItem[];
-};
-
-// @alpha
-export type EntityStatusItem = {
-  type: string;
-  level: EntityStatusLevel;
-  message: string;
-  error?: SerializedError;
-};
-
-// @alpha
-export type EntityStatusLevel = 'info' | 'warning' | 'error';
-
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
   constructor(validators?: Validators);
@@ -228,6 +218,13 @@ export function getEntitySourceLocation(entity: Entity): {
   type: string;
   target: string;
 };
+
+// @public
+export class GroupDefaultParentEntityPolicy implements EntityPolicy {
+  constructor(parentEntityRef: string);
+  // (undocumented)
+  enforce(entity: Entity): Promise<Entity>;
+}
 
 // @public
 interface GroupEntityV1alpha1 extends Entity {
@@ -253,6 +250,36 @@ export { GroupEntityV1alpha1 };
 
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
+
+// @public (undocumented)
+export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
+
+// @public (undocumented)
+export function isComponentEntity(
+  entity: Entity,
+): entity is ComponentEntityV1alpha1;
+
+// @public (undocumented)
+export function isDomainEntity(entity: Entity): entity is DomainEntityV1alpha1;
+
+// @public (undocumented)
+export function isGroupEntity(entity: Entity): entity is GroupEntityV1alpha1;
+
+// @public (undocumented)
+export function isLocationEntity(
+  entity: Entity,
+): entity is LocationEntityV1alpha1;
+
+// @public (undocumented)
+export function isResourceEntity(
+  entity: Entity,
+): entity is ResourceEntityV1alpha1;
+
+// @public (undocumented)
+export function isSystemEntity(entity: Entity): entity is SystemEntityV1alpha1;
+
+// @public (undocumented)
+export function isUserEntity(entity: Entity): entity is UserEntityV1alpha1;
 
 // @public
 export type KindValidator = {

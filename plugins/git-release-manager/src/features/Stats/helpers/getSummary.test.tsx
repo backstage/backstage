@@ -22,8 +22,8 @@ describe('getSummary', () => {
     const result = getSummary({ releaseStats: mockReleaseStats });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "summary": Object {
+      {
+        "summary": {
           "totalCandidatePatches": 3,
           "totalReleases": 2,
           "totalVersionPatches": 1,

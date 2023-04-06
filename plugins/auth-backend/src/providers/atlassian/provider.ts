@@ -38,12 +38,13 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
+/** @public */
 export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
   scopes: string;
   signInResolver?: SignInResolver<OAuthResult>;
@@ -93,7 +94,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       state: encodeState(req.state),
     });
@@ -162,25 +163,6 @@ export class AtlassianAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type AtlassianProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for atlassian auth
  *
  * @public
@@ -230,9 +212,3 @@ export const atlassian = createAuthProviderIntegration({
       });
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.atlassian.create` instead
- */
-export const createAtlassianProvider = atlassian.create;

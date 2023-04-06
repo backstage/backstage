@@ -19,6 +19,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  fetchApiRef,
   configApiRef,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
@@ -27,18 +28,24 @@ export const rootRouteRef = createRouteRef({
   id: 'pagerduty',
 });
 
+/** @public */
 export const pagerDutyPlugin = createPlugin({
   id: 'pagerduty',
   apis: [
     createApiFactory({
       api: pagerDutyApiRef,
-      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
-      factory: ({ configApi, discoveryApi }) =>
-        PagerDutyClient.fromConfig(configApi, discoveryApi),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        configApi: configApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
+        PagerDutyClient.fromConfig(configApi, { discoveryApi, fetchApi }),
     }),
   ],
 });
 
+/** @public */
 export const EntityPagerDutyCard = pagerDutyPlugin.provide(
   createComponentExtension({
     name: 'EntityPagerDutyCard',

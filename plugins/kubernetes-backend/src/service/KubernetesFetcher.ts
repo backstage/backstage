@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-import { CoreV1Api, topPods } from '@kubernetes/client-node';
+import {
+  Config,
+  Cluster,
+  CoreV1Api,
+  KubeConfig,
+  Metrics,
+  User,
+  bufferFromFileOrString,
+  topPods,
+} from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
   ClusterDetails,
   FetchResponseWrapper,
   KubernetesFetcher,
-  KubernetesObjectTypes,
   ObjectFetchParams,
-  ObjectToFetch,
 } from '../types/types';
 import {
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
-
-export interface Clients {
-  core: CoreV1Api;
-}
+import fetch, { RequestInit, Response } from 'node-fetch';
+import * as https from 'https';
+import fs from 'fs-extra';
 
 export interface KubernetesClientBasedFetcherOptions {
-  kubernetesClientProvider: KubernetesClientProvider;
   logger: Logger;
 }
 
@@ -66,6 +70,8 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
       return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
+    case 404:
+      return 'NOT_FOUND';
     case 500:
       return 'SYSTEM_ERROR';
     default:
@@ -74,14 +80,9 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
 };
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
-  private readonly kubernetesClientProvider: KubernetesClientProvider;
   private readonly logger: Logger;
 
-  constructor({
-    kubernetesClientProvider,
-    logger,
-  }: KubernetesClientBasedFetcherOptions) {
-    this.kubernetesClientProvider = kubernetesClientProvider;
+  constructor({ logger }: KubernetesClientBasedFetcherOptions) {
     this.logger = logger;
   }
 
@@ -90,100 +91,183 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(params.objectTypesToFetch)
       .concat(params.customResources)
-      .map(toFetch => {
-        return this.fetchResource(
+      .map(({ objectType, group, apiVersion, plural }) =>
+        this.fetchResource(
           params.clusterDetails,
-          toFetch,
+          group,
+          apiVersion,
+          plural,
+          params.namespace,
           params.labelSelector ||
             `backstage.io/kubernetes-id=${params.serviceId}`,
-          toFetch.objectType,
-          params.namespace,
-        ).catch(this.captureKubernetesErrorsRethrowOthers.bind(this));
-      });
+        ).then(
+          (r: Response): Promise<FetchResult> =>
+            r.ok
+              ? r.json().then(
+                  ({ items }): FetchResponse => ({
+                    type: objectType,
+                    resources: items,
+                  }),
+                )
+              : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
+        ),
+      );
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
-  fetchPodMetricsByNamespace(
+  fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
-    namespace: string,
-  ): Promise<PodStatus[]> {
-    const metricsClient =
-      this.kubernetesClientProvider.getMetricsClient(clusterDetails);
-    const coreApi =
-      this.kubernetesClientProvider.getCoreClientByClusterDetails(
-        clusterDetails,
-      );
+    namespaces: Set<string>,
+  ): Promise<FetchResponseWrapper> {
+    const fetchResults = Array.from(namespaces).map(async ns => {
+      const [podMetrics, podList] = await Promise.all([
+        this.fetchResource(
+          clusterDetails,
+          'metrics.k8s.io',
+          'v1beta1',
+          'pods',
+          ns,
+        ),
+        this.fetchResource(clusterDetails, '', 'v1', 'pods', ns),
+      ]);
+      if (podMetrics.ok && podList.ok) {
+        return topPods(
+          {
+            listPodForAllNamespaces: () =>
+              podList.json().then(b => ({ body: b })),
+          } as unknown as CoreV1Api,
+          {
+            getPodMetrics: () => podMetrics.json(),
+          } as unknown as Metrics,
+        ).then(
+          (resources): PodStatusFetchResponse => ({
+            type: 'podstatus',
+            resources,
+          }),
+        );
+      } else if (podMetrics.ok) {
+        return this.handleUnsuccessfulResponse(clusterDetails.name, podList);
+      }
+      return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
+    });
 
-    return topPods(coreApi, metricsClient, namespace);
+    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
-  private captureKubernetesErrorsRethrowOthers(e: any): KubernetesFetchError {
-    if (e.response && e.response.statusCode) {
-      this.logger.warn(
-        `statusCode=${e.response.statusCode} for resource ${
-          e.response.request.uri.pathname
-        } body=[${JSON.stringify(e.response.body)}]`,
-      );
-      return {
-        errorType: statusCodeToErrorType(e.response.statusCode),
-        statusCode: e.response.statusCode,
-        resourcePath: e.response.request.uri.pathname,
-      };
-    }
-    throw e;
+  private async handleUnsuccessfulResponse(
+    clusterName: string,
+    res: Response,
+  ): Promise<KubernetesFetchError> {
+    const resourcePath = new URL(res.url).pathname;
+    this.logger.warn(
+      `Received ${
+        res.status
+      } status when fetching "${resourcePath}" from cluster "${clusterName}"; body=[${await res.text()}]`,
+    );
+    return {
+      errorType: statusCodeToErrorType(res.status),
+      statusCode: res.status,
+      resourcePath,
+    };
   }
 
   private fetchResource(
     clusterDetails: ClusterDetails,
-    resource: ObjectToFetch,
-    labelSelector: string,
-    objectType: KubernetesObjectTypes,
+    group: string,
+    apiVersion: string,
+    plural: string,
     namespace?: string,
-  ): Promise<FetchResponse> {
-    const customObjects =
-      this.kubernetesClientProvider.getCustomObjectsClient(clusterDetails);
-
-    customObjects.addInterceptor((requestOptions: any) => {
-      requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
-    });
-
+    labelSelector?: string,
+  ): Promise<Response> {
+    const encode = (s: string) => encodeURIComponent(s);
+    let resourcePath = group
+      ? `/apis/${encode(group)}/${encode(apiVersion)}`
+      : `/api/${encode(apiVersion)}`;
     if (namespace) {
-      return customObjects
-        .listNamespacedCustomObject(
-          resource.group,
-          resource.apiVersion,
-          namespace,
-          resource.plural,
-          '',
-          false,
-          '',
-          '',
-          labelSelector,
-        )
-        .then(r => {
-          return {
-            type: objectType,
-            resources: (r.body as any).items,
-          };
-        });
+      resourcePath += `/namespaces/${encode(namespace)}`;
     }
-    return customObjects
-      .listClusterCustomObject(
-        resource.group,
-        resource.apiVersion,
-        resource.plural,
-        '',
-        false,
-        '',
-        '',
-        labelSelector,
-      )
-      .then(r => {
-        return {
-          type: objectType,
-          resources: (r.body as any).items,
-        };
+    resourcePath += `/${encode(plural)}`;
+
+    let url: URL;
+    let requestInit: RequestInit;
+    if (
+      clusterDetails.serviceAccountToken ||
+      clusterDetails.authProvider === 'localKubectlProxy'
+    ) {
+      [url, requestInit] = this.fetchArgsFromClusterDetails(clusterDetails);
+    } else if (fs.pathExistsSync(Config.SERVICEACCOUNT_TOKEN_PATH)) {
+      [url, requestInit] = this.fetchArgsInCluster();
+    } else {
+      return Promise.reject(
+        new Error(
+          `no bearer token for cluster '${clusterDetails.name}' and not running in Kubernetes`,
+        ),
+      );
+    }
+
+    if (url.pathname === '/') {
+      url.pathname = resourcePath;
+    } else {
+      url.pathname += resourcePath;
+    }
+
+    if (labelSelector) {
+      url.search = `labelSelector=${labelSelector}`;
+    }
+
+    return fetch(url, requestInit);
+  }
+
+  private fetchArgsFromClusterDetails(
+    clusterDetails: ClusterDetails,
+  ): [URL, RequestInit] {
+    const requestInit: RequestInit = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${clusterDetails.serviceAccountToken}`,
+      },
+    };
+
+    const url: URL = new URL(clusterDetails.url);
+    if (url.protocol === 'https:') {
+      requestInit.agent = new https.Agent({
+        ca:
+          bufferFromFileOrString(
+            clusterDetails.caFile,
+            clusterDetails.caData,
+          ) ?? undefined,
+        rejectUnauthorized: !clusterDetails.skipTLSVerify,
       });
+    }
+    return [url, requestInit];
+  }
+  private fetchArgsInCluster(): [URL, RequestInit] {
+    const kc = new KubeConfig();
+    kc.loadFromCluster();
+    // loadFromCluster is guaranteed to populate the cluster/user/context
+    const cluster = kc.getCurrentCluster() as Cluster;
+    const user = kc.getCurrentUser() as User;
+
+    const token = fs.readFileSync(user.authProvider.config.tokenFile);
+
+    const requestInit: RequestInit = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const url = new URL(cluster.server);
+    if (url.protocol === 'https:') {
+      requestInit.agent = new https.Agent({
+        ca: fs.readFileSync(cluster.caFile as string),
+      });
+    }
+    return [url, requestInit];
   }
 }

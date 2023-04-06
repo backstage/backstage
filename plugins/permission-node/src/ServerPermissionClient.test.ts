@@ -22,6 +22,7 @@ import {
   DefinitivePolicyDecision,
   ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   getVoidLogger,
@@ -60,8 +61,7 @@ const config = new ConfigReader({
 const logger = getVoidLogger();
 
 describe('ServerPermissionClient', () => {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
+  setupRequestMockHandlers(server);
 
   it('should error if permissions are enabled but a no-op token manager is configured', async () => {
     expect(() =>
@@ -69,8 +69,8 @@ describe('ServerPermissionClient', () => {
         discovery,
         tokenManager: ServerTokenManager.noop(),
       }),
-    ).toThrowError(
-      'Backend-to-backend authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/tutorials/backend-to-backend-auth',
+    ).toThrow(
+      'Service-to-service authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/auth/service-to-service-auth',
     );
   });
 
@@ -91,7 +91,6 @@ describe('ServerPermissionClient', () => {
 
       server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
-    afterEach(() => server.resetHandlers());
 
     it('should bypass the permission backend if permissions are disabled', async () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
@@ -154,7 +153,6 @@ describe('ServerPermissionClient', () => {
 
       server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
-    afterEach(() => server.resetHandlers());
 
     it('should bypass the permission backend if permissions are disabled', async () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {

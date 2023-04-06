@@ -29,47 +29,51 @@ import { BazaarProject } from '../../types';
 import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
-
-const useStyles = makeStyles({
-  statusTag: {
-    display: 'inline-block',
-    whiteSpace: 'nowrap',
-    marginBottom: '0.8rem',
-  },
-  description: {
-    display: '-webkit-box',
-    WebkitLineClamp: 7,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textAlign: 'justify',
-  },
-  memberCount: {
-    float: 'right',
-  },
-  content: {
-    height: '13rem',
-  },
-  header: {
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
+import { BackstageTheme } from '@backstage/theme';
 
 type Props = {
   project: BazaarProject;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
+  height: 'large' | 'small';
 };
+
+type StyleProps = {
+  height: 'large' | 'small';
+};
+
+const useStyles = makeStyles((theme: BackstageTheme) => ({
+  description: (props: StyleProps) => ({
+    height: props.height === 'large' ? '10rem' : '4rem',
+    WebkitBackgroundClip: 'text',
+    backgroundImage: `linear-gradient(180deg, ${theme.palette.textContrast} 0%, ${theme.palette.textContrast} 60%, transparent 100%)`,
+    color: 'transparent',
+  }),
+  statusTag: {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    marginBottom: '0.8rem',
+  },
+  memberCount: {
+    float: 'right',
+  },
+  header: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    height: '5rem',
+  },
+}));
 
 export const ProjectCard = ({
   project,
   fetchBazaarProjects,
   catalogEntities,
+  height,
 }: Props) => {
-  const classes = useStyles();
+  const classes = useStyles({ height });
   const [openCard, setOpenCard] = useState(false);
-  const { id, name, status, updatedAt, description, membersCount } = project;
+  const { id, title, status, updatedAt, description, membersCount } = project;
 
   const handleClose = () => {
     setOpenCard(false);
@@ -92,7 +96,7 @@ export const ProjectCard = ({
             classes={{ root: classes.header }}
             title={
               <Typography noWrap variant="h6" component="h4">
-                {name}
+                {title}
               </Typography>
             }
             subtitle={`updated ${DateTime.fromISO(
@@ -101,7 +105,7 @@ export const ProjectCard = ({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent className={classes.content}>
+          <CardContent>
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

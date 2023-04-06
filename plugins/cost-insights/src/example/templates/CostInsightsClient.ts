@@ -22,7 +22,7 @@
 
 // IMPORTANT: Remove the lines below to enable type checking and linting
 // @ts-nocheck
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 import {
   CostInsightsApi,
@@ -77,6 +77,17 @@ export class CostInsightsClient implements CostInsightsApi {
   }
 
   async getProjectDailyCost(project: string, intervals: string): Promise<Cost> {
+    return {
+      id: 'remove-me',
+      aggregation: [],
+      change: {
+        ratio: 0,
+        amount: 0
+      }
+    }
+  }
+
+  async getCatalogEntityDailyCost(catalogEntityRef: string, intervals: string): Promise<Cost> {
     return {
       id: 'remove-me',
       aggregation: [],

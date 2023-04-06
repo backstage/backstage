@@ -5,33 +5,63 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "BazaarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const BazaarPage: () => JSX.Element;
+export const BazaarOverviewCard: (
+  props: BazaarOverviewCardProps,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "bazaarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type BazaarOverviewCardProps = {
+  title?: string;
+  order: 'latest' | 'random';
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
+
+// @public (undocumented)
+export const BazaarPage: (props: BazaarPageProps) => JSX.Element;
+
+// @public (undocumented)
+export type BazaarPageProps = {
+  title?: string;
+  subtitle?: string;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
+
 // @public (undocumented)
 export const bazaarPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityBazaarInfoCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityBazaarInfoCard: () => JSX.Element | null;
 
-// Warning: (ae-missing-release-tag) "SortView" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const SortView: () => JSX.Element;
+export const isBazaarAvailable: (
+  entity: Entity,
+  context: {
+    apis: ApiHolder;
+  },
+) => Promise<boolean>;
+
+// @public (undocumented)
+export const SortView: (props: SortViewProps) => JSX.Element;
+
+// @public (undocumented)
+export type SortViewProps = {
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

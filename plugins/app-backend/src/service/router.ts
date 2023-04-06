@@ -40,6 +40,7 @@ import {
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
 
+/** @public */
 export interface RouterOptions {
   config: Config;
   logger: Logger;
@@ -85,6 +86,7 @@ export interface RouterOptions {
   disableConfigInjection?: boolean;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -94,9 +96,11 @@ export async function createRouter(
   const staticDir = resolvePath(appDistDir, 'static');
 
   if (!(await fs.pathExists(staticDir))) {
-    logger.warn(
-      `Can't serve static app content from ${staticDir}, directory doesn't exist`,
-    );
+    if (process.env.NODE_ENV === 'production') {
+      logger.error(
+        `Can't serve static app content from ${staticDir}, directory doesn't exist`,
+      );
+    }
 
     return Router();
   }
@@ -130,7 +134,7 @@ export async function createRouter(
   if (options.database) {
     const store = await StaticAssetsStore.create({
       logger,
-      database: await options.database.getClient(),
+      database: options.database,
     });
 
     const assets = await findStaticAssets(staticDir);

@@ -119,7 +119,7 @@ export class PeriskopClient implements PeriskopApi {
 }
 
 // @public (undocumented)
-export const periskopPlugin: BackstagePlugin<{}, {}>;
+export const periskopPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public (undocumented)
 export interface RequestHeaders {

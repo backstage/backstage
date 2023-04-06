@@ -44,7 +44,7 @@ jest.mock('@google-cloud/firestore', () => ({
   Firestore: jest.fn().mockImplementation(() => firestoreMock),
 }));
 
-jest.useFakeTimers('legacy');
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 describe('FirestoreKeyStore', () => {
   const key = {
@@ -109,8 +109,13 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
-    expect(setTimeout).toBeCalledWith(expect.any(Function), DEFAULT_TIMEOUT_MS);
-    expect(firestoreMock.collection).toBeCalledWith(DEFAULT_DOCUMENT_PATH);
+    expect(setTimeout).toHaveBeenCalledWith(
+      expect.any(Function),
+      DEFAULT_TIMEOUT_MS,
+    );
+    expect(firestoreMock.collection).toHaveBeenCalledWith(
+      DEFAULT_DOCUMENT_PATH,
+    );
   });
 
   it('can handle a timeout', async () => {
@@ -135,9 +140,9 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.addKey(key);
 
-    expect(setTimeout).toBeCalledTimes(1);
-    expect(firestoreMock.collection).toBeCalledWith(path);
-    expect(firestoreMock.doc).toBeCalledWith(key.kid);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(firestoreMock.collection).toHaveBeenCalledWith(path);
+    expect(firestoreMock.doc).toHaveBeenCalledWith(key.kid);
     expect(firestoreMock.set).toHaveBeenCalledWith({
       kid: key.kid,
       key: JSON.stringify(key),
@@ -148,32 +153,32 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
-    expect(setTimeout).toBeCalledTimes(1);
-    expect(firestoreMock.collection).toBeCalledWith(path);
-    expect(firestoreMock.doc).toBeCalledWith('123');
-    expect(firestoreMock.delete).toBeCalledTimes(1);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(firestoreMock.collection).toHaveBeenCalledWith(path);
+    expect(firestoreMock.doc).toHaveBeenCalledWith('123');
+    expect(firestoreMock.delete).toHaveBeenCalledTimes(1);
   });
 
   it('can delete a multiple keys', async () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
-    expect(setTimeout).toBeCalledTimes(2);
-    expect(firestoreMock.collection).toBeCalledWith(path);
-    expect(firestoreMock.doc).toBeCalledWith('123');
-    expect(firestoreMock.doc).toBeCalledWith('456');
-    expect(firestoreMock.delete).toBeCalledTimes(2);
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(firestoreMock.collection).toHaveBeenCalledWith(path);
+    expect(firestoreMock.doc).toHaveBeenCalledWith('123');
+    expect(firestoreMock.doc).toHaveBeenCalledWith('456');
+    expect(firestoreMock.delete).toHaveBeenCalledTimes(2);
   });
 
   it('can list keys', async () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const items = await keyStore.listKeys();
 
-    expect(setTimeout).toBeCalledTimes(1);
-    expect(firestoreMock.collection).toBeCalledWith(path);
-    expect(firestoreMock.get).toBeCalledTimes(1);
-    expect(data).toBeCalledTimes(1);
-    expect(toDate).toBeCalledTimes(1);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(firestoreMock.collection).toHaveBeenCalledWith(path);
+    expect(firestoreMock.get).toHaveBeenCalledTimes(1);
+    expect(data).toHaveBeenCalledTimes(1);
+    expect(toDate).toHaveBeenCalledTimes(1);
     expect(items).toMatchObject({
       items: [{ key: 'data', createdAt: 'date' }],
     });

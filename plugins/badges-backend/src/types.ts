@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export const BADGE_STYLES = [
   'plastic',
   'flat',
@@ -24,8 +25,11 @@ export const BADGE_STYLES = [
   'for-the-badge',
   'social',
 ] as const;
-export type BadgeStyle = typeof BADGE_STYLES[number];
 
+/** @public */
+export type BadgeStyle = (typeof BADGE_STYLES)[number];
+
+/** @public */
 export interface Badge {
   /** Badge message background color. */
   color?: string;
@@ -48,16 +52,19 @@ export interface Badge {
   style?: BadgeStyle;
 }
 
+/** @public */
 export interface BadgeContext {
   badgeUrl: string;
   config: Config;
   entity?: Entity; // for entity badges
 }
 
+/** @public */
 export interface BadgeFactory {
   createBadge(context: BadgeContext): Badge;
 }
 
+/** @public */
 export interface BadgeFactories {
   [id: string]: BadgeFactory;
 }

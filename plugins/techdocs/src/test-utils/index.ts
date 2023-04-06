@@ -15,10 +15,11 @@
  */
 
 import FIXTURE_STANDARD_PAGE from './fixtures/mkdocs-index';
+import FIXTURE_STANDARD_PAGE_EXPANDED_NAVIGATION from './fixtures/mkdocs-expanded-index';
 
 export const FIXTURES = {
   FIXTURE_STANDARD_PAGE,
+  FIXTURE_STANDARD_PAGE_EXPANDED_NAVIGATION,
 };
 
-export * from './stylesheets';
 export * from './shadowDom';

@@ -26,8 +26,8 @@ describe('requestLoggingHandler', () => {
 
     const app = express();
     app.use(requestLoggingHandler(logger));
-    app.use('/exists1', (_, res) => res.status(200).send());
-    app.use('/exists2', (_, res) => res.status(201).send());
+    app.use('/exists1', (_, res) => res.status(200).end());
+    app.use('/exists2', (_, res) => res.status(201).end());
 
     const r = request(app);
     await r.get('/exists1');

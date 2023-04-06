@@ -51,7 +51,7 @@ describe('permission integration utils', () => {
     });
 
     it('throws if there is no rule for the supplied name', () => {
-      expect(() => getRule('test-rule-3')).toThrowError(
+      expect(() => getRule('test-rule-3')).toThrow(
         /unexpected permission rule/i,
       );
     });

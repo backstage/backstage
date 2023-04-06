@@ -22,10 +22,10 @@ import BottomNavigationAction, {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SidebarPinStateContext } from '.';
 import { Link } from '../../components';
-import { SidebarConfigContext, SidebarConfig } from './config';
+import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
+import { useSidebarPinState } from './SidebarPinStateContext';
 
 /**
  * Props for the `SidebarGroup`
@@ -100,6 +100,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     <BottomNavigationAction
+      aria-label={label}
       label={label}
       icon={icon}
       component={Link as any}
@@ -115,6 +116,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
 /**
  * Groups items of the `Sidebar` together.
  *
+ * @remarks
  * On bigger screens, this won't have any effect at the moment.
  * On small screens, it will add an action to the bottom navigation - either triggering an overlay menu or acting as a link
  *
@@ -122,7 +124,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
  */
 export const SidebarGroup = (props: SidebarGroupProps) => {
   const { children, to, label, icon, value } = props;
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
 
   return isMobile ? (
     <MobileSidebarGroup to={to} label={label} icon={icon} value={value} />

@@ -48,12 +48,12 @@ import {
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 /** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {

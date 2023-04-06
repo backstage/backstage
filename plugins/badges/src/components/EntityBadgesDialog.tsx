@@ -37,12 +37,11 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-type Props = {
+export const EntityBadgesDialog = (props: {
   open: boolean;
   onClose?: () => any;
-};
-
-export const EntityBadgesDialog = ({ open, onClose }: Props) => {
+}) => {
+  const { open, onClose } = props;
   const theme = useTheme();
   const { entity } = useAsyncEntity();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

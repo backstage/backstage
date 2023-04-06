@@ -24,6 +24,7 @@ import { EntityBazaarInfoContent } from '../EntityBazaarInfoContent';
 import { Card } from '@material-ui/core';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
+/** @public */
 export const EntityBazaarInfoCard = () => {
   const { entity } = useEntity();
   const bazaarApi = useApi(bazaarApiRef);

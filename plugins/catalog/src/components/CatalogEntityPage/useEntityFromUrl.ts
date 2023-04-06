@@ -25,7 +25,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {

@@ -75,14 +75,6 @@ export const EntityOwnerPicker = () => {
     }
   }, [queryParamOwners]);
 
-  useEffect(() => {
-    updateFilters({
-      owners: selectedOwners.length
-        ? new EntityOwnerFilter(selectedOwners)
-        : undefined,
-    });
-  }, [selectedOwners, updateFilters]);
-
   const availableOwners = useMemo(
     () =>
       [
@@ -99,35 +91,51 @@ export const EntityOwnerPicker = () => {
     [backendEntities],
   );
 
+  useEffect(() => {
+    updateFilters({
+      owners:
+        selectedOwners.length && availableOwners.length
+          ? new EntityOwnerFilter(selectedOwners)
+          : undefined,
+    });
+  }, [selectedOwners, updateFilters, availableOwners]);
+
   if (!availableOwners.length) return null;
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Owner</Typography>
-      <Autocomplete
-        multiple
-        aria-label="Owner"
-        options={availableOwners}
-        value={selectedOwners}
-        onChange={(_: object, value: string[]) => setSelectedOwners(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
+      <Typography variant="button" component="label">
+        Owner
+        <Autocomplete
+          multiple
+          disableCloseOnSelect
+          options={availableOwners}
+          value={selectedOwners}
+          onChange={(_: object, value: string[]) => setSelectedOwners(value)}
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              onClick={event => event.preventDefault()}
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };

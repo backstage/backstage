@@ -16,10 +16,12 @@
 
 import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const circleCIRouteRef = createRouteRef({
   id: 'circle-ci',
 });
 
+/** @public */
 export const circleCIBuildRouteRef = createSubRouteRef({
   id: 'circle-ci/build',
   parent: circleCIRouteRef,

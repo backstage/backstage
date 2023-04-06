@@ -25,7 +25,7 @@ import {
   DependencyEdge,
   LabelPosition,
 } from './types';
-import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
+import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
 import dagre from 'dagre';
 
@@ -47,7 +47,7 @@ export type DependencyGraphEdgeClassKey = 'path' | 'label';
 const useStyles = makeStyles(
   (theme: BackstageTheme) => ({
     path: {
-      strokeWidth: 2,
+      strokeWidth: 1,
       stroke: theme.palette.textSubtle,
       fill: 'none',
       transition: `${theme.transitions.duration.shortest}ms`,
@@ -70,23 +70,19 @@ export type EdgeComponentProps<T = unknown> = {
     id: dagre.Edge,
     edge: DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
+  curve: 'curveStepBefore' | 'curveMonotoneX';
 };
 
 const renderDefault = (props: RenderLabelProps<unknown>) => (
   <DefaultLabel {...props} />
 );
 
-const createPath = d3Shape
-  .line<EdgePoint>()
-  .x(d => d.x)
-  .y(d => d.y)
-  .curve(d3Shape.curveMonotoneX);
-
 export function Edge<EdgeData>({
   render = renderDefault,
   setEdge,
   id,
   edge,
+  curve,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: DependencyEdge<EdgeData> = edge;
@@ -114,6 +110,16 @@ export function Edge<EdgeData>({
 
   let path: string = '';
 
+  const createPath = React.useMemo(
+    () =>
+      d3Shape
+        .line<EdgePoint>()
+        .x(d => d.x)
+        .y(d => d.y)
+        .curve(d3Shape[curve]),
+    [curve],
+  );
+
   if (points) {
     const finitePoints = points.filter(
       (point: EdgePoint) => isFinite(point.x) && isFinite(point.y),
@@ -124,12 +130,7 @@ export function Edge<EdgeData>({
   return (
     <>
       {path && (
-        <path
-          data-testid={EDGE_TEST_ID}
-          className={classes.path}
-          markerEnd={`url(#${ARROW_MARKER_ID})`}
-          d={path}
-        />
+        <path data-testid={EDGE_TEST_ID} className={classes.path} d={path} />
       )}
       {labelProps.label ? (
         <g

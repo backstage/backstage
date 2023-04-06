@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-export {
-  createBitbucketProvider,
-  bitbucketUsernameSignInResolver,
-  bitbucketUserIdSignInResolver,
-} from './provider';
+export { bitbucket } from './provider';
 export type {
-  BitbucketProviderOptions,
   BitbucketPassportProfile,
   BitbucketOAuthResult,
 } from './provider';

@@ -14,11 +14,60 @@
  * limitations under the License.
  */
 
-import { errorString } from './util';
+import { errorString, createOptions } from './util';
 
 describe('errorString', () => {
   it('formats', () => {
     const e = { code: 1, name: 'n', message: 'm' };
     expect(errorString(e)).toEqual('1 n: m');
+  });
+});
+
+describe('createOptions', () => {
+  it('should add pagePause', () => {
+    const options = {
+      filter: 'f',
+      paged: true,
+      timeLimit: 42,
+      sizeLimit: 100,
+      derefAliases: 0,
+      typesOnly: false,
+    };
+    expect(createOptions(options)).toEqual({
+      filter: 'f',
+      paged: { pagePause: true },
+      timeLimit: 42,
+      sizeLimit: 100,
+      derefAliases: 0,
+      typesOnly: false,
+    });
+    const options2 = {
+      filter: 'f',
+      paged: {},
+      timeLimit: 42,
+      sizeLimit: 100,
+      derefAliases: 0,
+      typesOnly: false,
+    };
+    expect(createOptions(options2)).toEqual({
+      filter: 'f',
+      paged: { pagePause: true },
+      timeLimit: 42,
+      sizeLimit: 100,
+      derefAliases: 0,
+      typesOnly: false,
+    });
+  });
+
+  it('should not add pagePause', () => {
+    const options = {
+      filter: 'f',
+      paged: false,
+      timeLimit: 42,
+      sizeLimit: 100,
+      derefAliases: 0,
+      typesOnly: false,
+    };
+    expect(createOptions(options)).toEqual(options);
   });
 });

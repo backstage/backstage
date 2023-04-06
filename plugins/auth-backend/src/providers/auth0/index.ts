@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createAuth0Provider } from './provider';
-export type { Auth0ProviderOptions } from './provider';
+export { auth0 } from './provider';

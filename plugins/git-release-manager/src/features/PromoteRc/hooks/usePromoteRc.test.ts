@@ -72,27 +72,27 @@ describe('usePromoteRc', () => {
 
     expect(result.current.responseSteps).toHaveLength(5);
     expect(result.current).toMatchInlineSnapshot(`
-      Object {
+      {
         "progress": 100,
-        "responseSteps": Array [
-          Object {
+        "responseSteps": [
+          {
             "message": "Fetched most recent commit from release branch",
-            "secondaryMessage": "with sha \\"latestCommit.sha\\"",
+            "secondaryMessage": "with sha "latestCommit.sha"",
           },
-          Object {
+          {
             "message": "Created Tag Object",
-            "secondaryMessage": "with sha \\"mock_tag_object_sha\\"",
+            "secondaryMessage": "with sha "mock_tag_object_sha"",
           },
-          Object {
+          {
             "message": "Create Tag Reference",
-            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+            "secondaryMessage": "with ref "mock_createRef_ref"",
           },
-          Object {
+          {
             "link": "https://mock_update_release_html_url",
-            "message": "Promoted \\"mock_update_release_name\\"",
-            "secondaryMessage": "from \\"rc-2020.01.01_1\\" to \\"mock_update_release_tag_name\\"",
+            "message": "Promoted "mock_update_release_name"",
+            "secondaryMessage": "from "rc-2020.01.01_1" to "mock_update_release_tag_name"",
           },
-          Object {
+          {
             "icon": "success",
             "message": "Success callback successfully called 🚀",
           },

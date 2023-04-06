@@ -16,7 +16,8 @@ are stateless, so for a production deployment you will want to set up and
 connect to an external PostgreSQL instance where the backend plugins can store
 their state, rather than using SQLite.
 
-By default, in an app created with `@backstage/create-app`, the frontend is
+This section assumes that an [app](https://backstage.io/docs/getting-started/create-an-app)
+has already been created with `@backstage/create-app`, in which the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
 configuration into the app. This means that you only need to build and deploy a
@@ -33,12 +34,8 @@ more efficient caching of dependencies on the host, where a single change won't
 bust the entire cache.
 
 The required steps in the host build are to install dependencies with
-`yarn install`, generate type definitions using `yarn tsc`, and build all
-packages with `yarn build`.
-
-> NOTE: If you created your app prior to 2021-02-18, follow the
-> [migration step](https://github.com/backstage/backstage/releases/tag/release-2021-02-18)
-> to move from `backend:build` to `backend:bundle`.
+`yarn install`, generate type definitions using `yarn tsc`, and build the backend
+package with `yarn build:backend`.
 
 In a CI workflow it might look something like this:
 
@@ -48,8 +45,9 @@ yarn install --frozen-lockfile
 # tsc outputs type definitions to dist-types/ in the repo root, which are then consumed by the build
 yarn tsc
 
-# Build all packages and in the end bundle them all up into the packages/backend/dist folder.
-yarn build
+# Build the backend, which bundles it all up into the packages/backend/dist folder.
+# The configuration files here should match the one you use inside the Dockerfile below.
+yarn build:backend --config app-config.yaml
 ```
 
 Once the host build is complete, we are ready to build our image. The following
@@ -58,24 +56,36 @@ Once the host build is complete, we are ready to build our image. The following
 ```Dockerfile
 FROM node:16-bullseye-slim
 
+# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+# in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+    yarn config set python /usr/bin/python3
+
+# From here on we use the least-privileged `node` user to run the backend.
+USER node
+
+# This should create the app dir as `node`.
+# If it is instead created as `root` then the `tar` command below will fail: `can't create directory 'packages/': Permission denied`.
+# If this occurs, then ensure BuildKit is enabled (`DOCKER_BUILDKIT=1`) so the app dir is correctly created as `node`.
 WORKDIR /app
 
-# install sqlite3 dependencies, you can skip this if you don't use sqlite3 in the image
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
-    rm -rf /var/lib/apt/lists/* && \
-    yarn config set python /usr/bin/python3
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
-COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
+    yarn install --frozen-lockfile --production --network-timeout 300000
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
-COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
@@ -95,10 +105,13 @@ root of the repo to speed up the build by reducing build context size:
 
 ```text
 .git
+.yarn/cache
+.yarn/install-state.gz
 node_modules
 packages/*/src
 packages/*/node_modules
 plugins
+*.local.yaml
 ```
 
 With the project built and the `.dockerignore` and `Dockerfile` in place, we are
@@ -156,46 +169,67 @@ RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {
 # Stage 2 - Install dependencies and build packages
 FROM node:16-bullseye-slim AS build
 
-WORKDIR /app
-COPY --from=packages /app .
-
 # install sqlite3 dependencies
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
     yarn config set python /usr/bin/python3
 
-RUN yarn install --frozen-lockfile --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+USER node
+WORKDIR /app
 
-COPY . .
+COPY --from=packages --chown=node:node /app .
+
+# Stop cypress from downloading it's massive binary.
+ENV CYPRESS_INSTALL_BINARY=0
+RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
+    yarn install --frozen-lockfile --network-timeout 600000
+
+COPY --chown=node:node . .
 
 RUN yarn tsc
 RUN yarn --cwd packages/backend build
 # If you have not yet migrated to package roles, use the following command instead:
 # RUN yarn --cwd packages/backend backstage-cli backend:bundle --build-dependencies
 
+RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
+    && tar xzf packages/backend/dist/skeleton.tar.gz -C packages/backend/dist/skeleton \
+    && tar xzf packages/backend/dist/bundle.tar.gz -C packages/backend/dist/bundle
+
 # Stage 3 - Build the actual backend image and install production dependencies
 FROM node:16-bullseye-slim
 
-WORKDIR /app
-
-# install sqlite3 dependencies, you can skip this if you don't use sqlite3 in the image
-RUN apt-get update && \
+# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+# in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
-    rm -rf /var/lib/apt/lists/* && \
     yarn config set python /usr/bin/python3
 
-# Copy the install dependencies from the build stage and context
-COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+# From here on we use the least-privileged `node` user to run the backend.
+USER node
 
-RUN yarn install --frozen-lockfile --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+# This should create the app dir as `node`.
+# If it is instead created as `root` then the `tar` command below will fail: `can't create directory 'packages/': Permission denied`.
+# If this occurs, then ensure BuildKit is enabled (`DOCKER_BUILDKIT=1`) so the app dir is correctly created as `node`.
+WORKDIR /app
+
+# Copy the install dependencies from the build stage and context
+COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+
+RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
+    yarn install --frozen-lockfile --production --network-timeout 600000
 
 # Copy the built packages from the build stage
-COPY --from=build /app/packages/backend/dist/bundle.tar.gz .
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
 
 # Copy any other files that we need at runtime
-COPY app-config.yaml ./
+COPY --chown=node:node app-config.yaml ./
+
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 ```
@@ -212,6 +246,7 @@ however ignore any existing build output or dependencies on the host. For our
 new `.dockerignore`, replace the contents of your existing one with this:
 
 ```text
+dist-types
 node_modules
 packages/*/dist
 packages/*/node_modules
@@ -236,6 +271,11 @@ You should then start to get logs in your terminal, and then you can open your
 browser at `http://localhost:7007`
 
 ## Separate Frontend
+
+> NOTE: This is an optional step, and you will lose out on the features of the
+> `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
+> will no longer be injected by the backend, you will instead need to use the
+> correct configuration when building the frontend bundle.
 
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The

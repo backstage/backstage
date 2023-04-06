@@ -19,28 +19,29 @@ import {
   Content,
   DocsIcon,
   Header,
-  Lifecycle,
   Page,
-  SidebarPinStateContext,
+  useSidebarPinState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchFilter,
+  SearchPagination,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
-import React, { useContext } from 'react';
+import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
+import React from 'react';
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -59,13 +60,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const SearchPage = () => {
   const classes = useStyles();
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title="Search" subtitle={<Lifecycle alpha />} />}
+      {!isMobile && <Header title="Search" />}
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
@@ -78,6 +79,7 @@ const SearchPage = () => {
               <SearchType.Accordion
                 name="Result Type"
                 defaultValue="software-catalog"
+                showCounts
                 types={[
                   {
                     value: 'software-catalog',
@@ -129,39 +131,11 @@ const SearchPage = () => {
             </Grid>
           )}
           <Grid item xs>
+            <SearchPagination />
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
+              <ToolSearchResultListItem icon={<BuildIcon />} />
             </SearchResult>
             <SearchResultPager />
           </Grid>

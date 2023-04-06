@@ -24,8 +24,10 @@ import {
   KubernetesApi,
 } from '../src';
 import {
+  CustomObjectsByEntityRequest,
   FetchResponse,
   ObjectsByEntityResponse,
+  WorkloadsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import fixture1 from '../src/__fixtures__/1-deployments.json';
 import fixture2 from '../src/__fixtures__/2-deployments.json';
@@ -59,6 +61,34 @@ class MockKubernetesClient implements KubernetesApi {
         ({ type: type.toLocaleLowerCase('en-US'), resources } as FetchResponse),
     );
   }
+  async getWorkloadsByEntity(
+    _request: WorkloadsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse> {
+    return {
+      items: [
+        {
+          cluster: { name: 'mock-cluster' },
+          resources: this.resources,
+          podMetrics: [],
+          errors: [],
+        },
+      ],
+    };
+  }
+  async getCustomObjectsByEntity(
+    _request: CustomObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse> {
+    return {
+      items: [
+        {
+          cluster: { name: 'mock-cluster' },
+          resources: this.resources,
+          podMetrics: [],
+          errors: [],
+        },
+      ],
+    };
+  }
 
   async getObjectsByEntity(): Promise<ObjectsByEntityResponse> {
     return {
@@ -75,6 +105,16 @@ class MockKubernetesClient implements KubernetesApi {
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
     return [{ name: 'mock-cluster', authProvider: 'serviceAccount' }];
+  }
+
+  async proxy(_options: { clusterName: String; path: String }): Promise<any> {
+    return {
+      kind: 'Namespace',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'mock-ns',
+      },
+    };
   }
 }
 

@@ -38,16 +38,16 @@ describe('RefreshingAuthSessionManager', () => {
 
     expect(stateSubscriber.mock.calls).toEqual([[SessionState.SignedOut]]);
     await manager.getSession({});
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
     ]);
     await manager.getSession({});
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledWith(undefined);
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
@@ -76,13 +76,13 @@ describe('RefreshingAuthSessionManager', () => {
       expired: false,
     });
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     await manager.getSession({ scopes: new Set(['b']) });
-    expect(createSession).toBeCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(2);
   });
 
   it('should check for session expiry', async () => {
@@ -102,12 +102,12 @@ describe('RefreshingAuthSessionManager', () => {
     });
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledWith(new Set(['a']));
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
-    expect(refreshSession).toBeCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledTimes(2);
   });
 
   it('should handle user closed popup', async () => {
@@ -133,8 +133,8 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
-    expect(createSession).toBeCalledTimes(0);
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledWith(undefined);
   });
 
   it('should forward option to instantly show auth popup and not attempt refresh', async () => {
@@ -146,12 +146,12 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     expect(await manager.getSession({ instantPopup: true })).toBe(undefined);
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
     expect(createSession).toHaveBeenCalledWith({
       scopes: new Set(),
       instantPopup: true,
     });
-    expect(refreshSession).toBeCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledTimes(0);
   });
 
   it('should remove session straight away', async () => {

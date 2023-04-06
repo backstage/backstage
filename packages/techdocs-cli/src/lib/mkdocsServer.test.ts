@@ -64,6 +64,39 @@ describe('runMkdocsServer', () => {
         expect.objectContaining({}),
       );
     });
+
+    it('should accept custom docker options', async () => {
+      await runMkdocsServer({
+        dockerOptions: [
+          '--add-host=internal.host:192.168.11.12',
+          '--name',
+          'my-techdocs-container',
+        ],
+      });
+
+      expect(run).toHaveBeenCalledWith(
+        'docker',
+        expect.arrayContaining([
+          'run',
+          '--rm',
+          '-w',
+          '/content',
+          '-v',
+          `${process.cwd()}:/content`,
+          '-p',
+          '8000:8000',
+          '-it',
+          '--add-host=internal.host:192.168.11.12',
+          '--name',
+          'my-techdocs-container',
+          'spotify/techdocs',
+          'serve',
+          '--dev-addr',
+          '0.0.0.0:8000',
+        ]),
+        expect.objectContaining({}),
+      );
+    });
   });
 
   describe('mkdocs', () => {

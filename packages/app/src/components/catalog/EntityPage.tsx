@@ -25,7 +25,7 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, InfoCard } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -52,6 +52,7 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
+  EntityLabelsCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
   EntitySwitch,
@@ -59,7 +60,8 @@ import {
   isComponentType,
   isKind,
   isOrphan,
-} from '@backstage/plugin-catalog';
+  hasLabels,
+} from '@internal/plugin-catalog-customized';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -73,6 +75,15 @@ import {
   isCloudbuildAvailable,
 } from '@backstage/plugin-cloudbuild';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
+import {
+  DynatraceTab,
+  isDynatraceAvailable,
+} from '@backstage/plugin-dynatrace';
+import {
+  EntityFeedbackResponseContent,
+  EntityLikeDislikeRatingsCard,
+  LikeDislikeButtons,
+} from '@backstage/plugin-entity-feedback';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -100,15 +111,18 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
+import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 
 import {
   EntityGithubInsightsContent,
@@ -137,13 +151,27 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
+import { EntityScoreCardContent } from '@oriflame/backstage-plugin-score-card';
 
 import React, { ReactNode, useMemo, useState } from 'react';
+
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import {
+  TextSize,
+  ReportIssue,
+  LightBox,
+} from '@backstage/plugin-techdocs-module-addons-contrib';
+import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
+import {
+  isLinguistAvailable,
+  EntityLinguistCard,
+} from '@backstage/plugin-linguist';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
+  const [playlistDialogOpen, setPlaylistDialogOpen] = useState(false);
 
   const extraMenuItems = useMemo(() => {
     return [
@@ -152,26 +180,50 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
         Icon: BadgeIcon,
         onClick: () => setBadgesDialogOpen(true),
       },
+      {
+        title: 'Add to playlist',
+        Icon: PlaylistAddIcon,
+        onClick: () => setPlaylistDialogOpen(true),
+      },
     ];
   }, []);
 
   return (
     <>
-      <EntityLayout UNSTABLE_extraContextMenuItems={extraMenuItems}>
+      <EntityLayout
+        UNSTABLE_extraContextMenuItems={extraMenuItems}
+        UNSTABLE_contextMenuOptions={{
+          disableUnregister: 'visible',
+        }}
+      >
         {props.children}
       </EntityLayout>
       <EntityBadgesDialog
         open={badgesDialogOpen}
         onClose={() => setBadgesDialogOpen(false)}
       />
+      <EntityPlaylistDialog
+        open={playlistDialogOpen}
+        onClose={() => setPlaylistDialogOpen(false)}
+      />
     </>
   );
 };
 
+const techdocsContent = (
+  <EntityTechdocsContent>
+    <TechDocsAddons>
+      <TextSize />
+      <ReportIssue />
+      <LightBox />
+    </TechDocsAddons>
+  </EntityTechdocsContent>
+);
+
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
  * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
- * since this does not default. If no breakpoints are used, the items will equitably share the asvailable space.
+ * since this does not default. If no breakpoints are used, the items will equitably share the available space.
  * https://material-ui.com/components/grid/#basic-grid.
  */
 
@@ -325,6 +377,20 @@ const overviewContent = (
       <EntityLinksCard />
     </Grid>
 
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasLabels}>
+        <Grid item md={4} xs={12}>
+          <EntityLabelsCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <Grid item md={2}>
+      <InfoCard title="Rate this entity">
+        <LikeDislikeButtons />
+      </InfoCard>
+    </Grid>
+
     {cicdCard}
 
     <EntitySwitch>
@@ -351,6 +417,14 @@ const overviewContent = (
       <EntitySwitch.Case if={isGithubPullRequestsAvailable}>
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isLinguistAvailable}>
+        <Grid item md={6}>
+          <EntityLinguistCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -398,7 +472,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -421,6 +495,24 @@ const serviceEntityPage = (
       <EntityGithubInsightsContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/tech-insights" title="Scorecards">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12} md={6}>
+          <EntityTechInsightsScorecardCard
+            title="Scorecard 1"
+            description="This is a sample scorecard no. 1"
+            checksId={['titleCheck']}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <EntityTechInsightsScorecardCard
+            title="Scorecard 2"
+            checksId={['techDocsCheck']}
+          />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/code-coverage" title="Code Coverage">
       <EntityCodeCoverageContent />
     </EntityLayout.Route>
@@ -431,6 +523,22 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/costs" title="Costs">
+      <EntityCostInsightsContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -465,8 +573,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
+
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
       path="/newrelic-dashboard"
@@ -477,6 +586,14 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -502,6 +619,10 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -512,11 +633,15 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -554,6 +679,11 @@ const apiPage = (
             <Grid item xs={12} md={6}>
               <EntityConsumingComponentsCard />
             </Grid>
+            <Grid item md={2}>
+              <InfoCard title="Rate this entity">
+                <LikeDislikeButtons />
+              </InfoCard>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
@@ -565,6 +695,10 @@ const apiPage = (
           <EntityApiDefinitionCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -582,6 +716,9 @@ const userPage = (
             variant="gridItem"
             entityFilterKind={customEntityFilterKind}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -604,6 +741,9 @@ const groupPage = (
         </Grid>
         <Grid item xs={12}>
           <EntityMembersListCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -630,6 +770,18 @@ const systemPage = (
         <Grid item md={6}>
           <EntityHasResourcesCard variant="gridItem" />
         </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/score" title="Score">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12}>
+          <EntityScoreCardContent />
+        </Grid>
       </Grid>
     </EntityLayout.Route>
     <EntityLayout.Route path="/diagram" title="Diagram">
@@ -651,6 +803,9 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -668,7 +823,15 @@ const domainPage = (
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />
         </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
+        </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );

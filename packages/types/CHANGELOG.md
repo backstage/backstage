@@ -1,5 +1,36 @@
 # @backstage/types
 
+## 1.0.2
+
+### Patch Changes
+
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+
+## 1.0.2-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+
+## 1.0.1
+
+### Patch Changes
+
+- 30e43717c7: Added the `HumanDuration` type, moved here from `@backstage/backend-tasks`. This type matches the `Duration.fromObject` form of `luxon`.
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 30e43717c7: Added the `HumanDuration` type, moved here from `@backstage/backend-tasks`. This type matches the `Duration.fromObject` form of `luxon`.
+
 ## 1.0.0
 
 ### Major Changes

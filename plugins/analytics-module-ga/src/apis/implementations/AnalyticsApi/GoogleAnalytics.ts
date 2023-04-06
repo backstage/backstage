@@ -18,12 +18,16 @@ import ReactGA from 'react-ga';
 import {
   AnalyticsApi,
   AnalyticsContextValue,
-  AnalyticsEventAttributes,
   AnalyticsEvent,
+  AnalyticsEventAttributes,
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import { DeferredCapture } from '../../../util';
+import {
+  parseVirtualSearchPageViewConfig,
+  VirtualSearchPageViewConfig,
+} from '../../../util/VirtualSearchPageView';
 
 type CustomDimensionOrMetricConfig = {
   type: 'dimension' | 'metric';
@@ -40,6 +44,7 @@ export class GoogleAnalytics implements AnalyticsApi {
   private readonly cdmConfig: CustomDimensionOrMetricConfig[];
   private customUserIdTransform?: (userEntityRef: string) => Promise<string>;
   private readonly capture: DeferredCapture;
+  private readonly virtualSearchPageView: VirtualSearchPageViewConfig;
 
   /**
    * Instantiate the implementation and initialize ReactGA.
@@ -51,6 +56,7 @@ export class GoogleAnalytics implements AnalyticsApi {
     identity: string;
     trackingId: string;
     scriptSrc?: string;
+    virtualSearchPageView: VirtualSearchPageViewConfig;
     testMode: boolean;
     debug: boolean;
   }) {
@@ -61,11 +67,13 @@ export class GoogleAnalytics implements AnalyticsApi {
       identityApi,
       userIdTransform = 'sha-256',
       scriptSrc,
+      virtualSearchPageView,
       testMode,
       debug,
     } = options;
 
     this.cdmConfig = cdmConfig;
+    this.virtualSearchPageView = virtualSearchPageView;
 
     // Initialize Google Analytics.
     ReactGA.initialize(trackingId, {
@@ -105,6 +113,9 @@ export class GoogleAnalytics implements AnalyticsApi {
     const scriptSrc = config.getOptionalString('app.analytics.ga.scriptSrc');
     const identity =
       config.getOptionalString('app.analytics.ga.identity') || 'disabled';
+    const virtualSearchPageView = parseVirtualSearchPageViewConfig(
+      config.getOptionalConfig('app.analytics.ga.virtualSearchPageView'),
+    );
     const debug = config.getOptionalBoolean('app.analytics.ga.debug') ?? false;
     const testMode =
       config.getOptionalBoolean('app.analytics.ga.testMode') ?? false;
@@ -134,6 +145,7 @@ export class GoogleAnalytics implements AnalyticsApi {
       identity,
       trackingId,
       scriptSrc,
+      virtualSearchPageView,
       cdmConfig,
       testMode,
       debug,
@@ -152,6 +164,23 @@ export class GoogleAnalytics implements AnalyticsApi {
     if (action === 'navigate' && context.extension === 'App') {
       this.capture.pageview(subject, customMetadata);
       return;
+    }
+
+    if (this.virtualSearchPageView.mode !== 'disabled' && action === 'search') {
+      const { mountPath, searchQuery, categoryQuery } =
+        this.virtualSearchPageView;
+      const params = new URLSearchParams();
+      params.set(searchQuery, subject);
+      if (categoryQuery) {
+        params.set(categoryQuery, context.searchTypes?.toString() ?? '');
+      }
+      this.capture.pageview(
+        `${mountPath}?${params.toString()}`,
+        customMetadata,
+      );
+      if (this.virtualSearchPageView.mode === 'only') {
+        return;
+      }
     }
 
     this.capture.event({
@@ -241,7 +270,7 @@ export class GoogleAnalytics implements AnalyticsApi {
    * Simple hash function; relies on web cryptography + the sha-256 algorithm.
    */
   private async hash(value: string): Promise<string> {
-    const digest = await crypto.subtle.digest(
+    const digest = await window.crypto.subtle.digest(
       'sha-256',
       new TextEncoder().encode(value),
     );

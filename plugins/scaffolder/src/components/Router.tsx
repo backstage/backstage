@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Routes, Route, useOutlet, Navigate } from 'react-router';
+import React, { ComponentType, useEffect } from 'react';
+import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
-import { SecretsContextProvider } from './secrets/SecretsContext';
 import { TemplateEditorPage } from './TemplateEditorPage';
-
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
+import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import {
   FieldExtensionOptions,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
-} from '../extensions';
-import { useElementFilter } from '@backstage/core-plugin-api';
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+  useCustomLayouts,
+} from '@backstage/plugin-scaffolder-react';
+import { ListTasksPage } from './ListTasksPage';
+import { ReviewStepProps } from './types';
 import {
   actionsRouteRef,
   editRouteRef,
+  legacySelectedTemplateRouteRef,
+  scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
@@ -45,6 +48,7 @@ import {
  */
 export type RouterProps = {
   components?: {
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
@@ -54,7 +58,13 @@ export type RouterProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   /**
    * Options for the context menu on the scaffolder page.
    */
@@ -72,23 +82,20 @@ export type RouterProps = {
  * @public
  */
 export const Router = (props: RouterProps) => {
-  const { groups, components = {}, defaultPreviewTemplate } = props;
+  const {
+    groups,
+    templateFilter,
+    components = {},
+    defaultPreviewTemplate,
+  } = props;
 
-  const { TemplateCardComponent, TaskPageComponent } = components;
+  const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
+    components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -97,26 +104,61 @@ export const Router = (props: RouterProps) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ];
+  ] as FieldExtensionOptions[];
+
+  const customLayouts = useCustomLayouts(outlet);
+
+  /**
+   * This component can be deleted once the older routes have been deprecated.
+   */
+  const RedirectingComponent = () => {
+    const { templateName } = useRouteRefParams(legacySelectedTemplateRouteRef);
+    const newLink = useRouteRef(selectedTemplateRouteRef);
+    useEffect(
+      () =>
+        // eslint-disable-next-line no-console
+        console.warn(
+          'The route /template/:templateName is deprecated, please use the new /template/:namespace/:templateName route instead',
+        ),
+      [],
+    );
+    return <Navigate to={newLink({ namespace: 'default', templateName })} />;
+  };
 
   return (
     <Routes>
       <Route
+        path="/"
         element={
           <ScaffolderPage
             groups={groups}
+            templateFilter={templateFilter}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
+            headerOptions={props.headerOptions}
           />
         }
+      />
+      <Route
+        path={legacySelectedTemplateRouteRef.path}
+        element={<RedirectingComponent />}
       />
       <Route
         path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplatePage customFieldExtensions={fieldExtensions} />
+            <TemplatePage
+              ReviewStepComponent={ReviewStepComponent}
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+              headerOptions={props.headerOptions}
+            />
           </SecretsContextProvider>
         }
+      />
+      <Route
+        path={scaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
       />
       <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
@@ -127,6 +169,7 @@ export const Router = (props: RouterProps) => {
             <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
             />
           </SecretsContextProvider>
         }

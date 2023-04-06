@@ -6,6 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -13,9 +14,13 @@ export const airbrakePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
 // @public
 export const EntityAirbrakeContent: () => JSX.Element;
+
+// @public
+export const isAirbrakeAvailable: (entity: Entity) => boolean;
 ```

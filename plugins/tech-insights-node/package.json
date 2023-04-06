@@ -1,17 +1,16 @@
 {
   "name": "@backstage/plugin-tech-insights-node",
-  "version": "0.3.0-next.2",
+  "version": "0.4.2-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "node-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -33,15 +32,17 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.3-next.2",
-    "@backstage/config": "^1.0.1-next.0",
-    "@backstage/plugin-tech-insights-common": "^0.2.4",
-    "@types/luxon": "^2.0.5",
-    "luxon": "^2.0.2",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-tech-insights-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@types/luxon": "^3.0.0",
+    "luxon": "^3.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"

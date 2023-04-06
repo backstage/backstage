@@ -28,7 +28,7 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
@@ -36,17 +36,22 @@ import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 
-type ProviderFactories = { [s: string]: AuthProviderFactory };
+/** @public */
+export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
+  catalogApi?: CatalogApi;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -56,7 +61,9 @@ export async function createRouter(
     discovery,
     database,
     tokenManager,
+    tokenFactoryAlgorithm,
     providerFactories,
+    catalogApi,
   } = options;
   const router = Router();
 
@@ -71,8 +78,8 @@ export async function createRouter(
     keyStore,
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
+    algorithm: tokenFactoryAlgorithm,
   });
-  const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
@@ -108,7 +115,7 @@ export async function createRouter(
     allProviderFactories,
   )) {
     if (configuredProviders.includes(providerId)) {
-      logger.info(`Configuring provider, ${providerId}`);
+      logger.info(`Configuring auth provider: ${providerId}`);
       try {
         const provider = providerFactory({
           providerId,
@@ -119,13 +126,10 @@ export async function createRouter(
           },
           config: providersConfig.getConfig(providerId),
           logger,
-          tokenManager,
-          tokenIssuer,
-          discovery,
-          catalogApi,
           resolverContext: CatalogAuthResolverContext.create({
             logger,
-            catalogApi,
+            catalogApi:
+              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
             tokenIssuer,
             tokenManager,
           }),
@@ -141,6 +145,7 @@ export async function createRouter(
         }
         if (provider.refresh) {
           r.get('/refresh', provider.refresh.bind(provider));
+          r.post('/refresh', provider.refresh.bind(provider));
         }
 
         router.use(`/${providerId}`, r);
@@ -187,6 +192,7 @@ export async function createRouter(
   return router;
 }
 
+/** @public */
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {

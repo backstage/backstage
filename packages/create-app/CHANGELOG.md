@@ -1,5 +1,1570 @@
 # @backstage/create-app
 
+## 0.4.39-next.2
+
+### Patch Changes
+
+- 2945923b133: Upgraded the TypeScript version to 5.0
+
+  To apply this change in your own project, switch the TypeScript version in your root `package.json`:
+
+  ```diff
+  -    "typescript": "~4.6.4",
+  +    "typescript": "~5.0.0",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.1
+
+### Patch Changes
+
+- 71fd0966d10: Add `permissionApi` as dependency of the scaffolder-backend plugin
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38
+
+### Patch Changes
+
+- b4627f23b28: Bumped create-app version.
+- 0eceadb9502: Bumped create-app version.
+- 482dae5de1c: Updated link to docs.
+- 6ace2dd2c58: Added to the template `packages/app/.eslintignore` file to packages to ignore the contents of `packages/app/public`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.38-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12-next.0
+
+## 0.4.38-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37
+
+### Patch Changes
+
+- 12a7b316ee: Bumped create-app version.
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.2
+
+### Patch Changes
+
+- 02f1316e57: Updated `packages/app/cypress/.eslintrc.json` to remove the unnecessary `import/no-extraneous-dependencies` rule.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.1
+
+### Patch Changes
+
+- 86a8dfd7b0: Added a check to ensure that Yarn v1 is used when creating new projects.
+- 0eaa579f89: Update `SearchPage` template to use `SearchResult` extensions.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.36
+
+### Patch Changes
+
+- f834622f56: Bumped create-app version.
+- 724b55689b: Avoid potential temporary directory conflict.
+- a2a70504e3: Remove deprecated `create-plugin` script from the `default-app` template's `package.json.hbs`.
+  Also, update the documentation to not mention the `create-plugin` script and instead mention
+  the `new` script.
+- 016a52c28f: Bumped the minimum version of `better-sqlite3`. You can make the following change to your `packages/backend/package.json` to keep your instance of Backstage updated.
+
+  ```diff
+  - "better-sqlite3": "^7.5.0",
+  + "better-sqlite3": "^8.0.0",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.36-next.2
+
+### Patch Changes
+
+- 016a52c28f: Bumped the minimum version of `better-sqlite3`. You can make the following change to your `packages/backend/package.json` to keep your instance of Backstage updated.
+
+  ```diff
+  - "better-sqlite3": "^7.5.0",
+  + "better-sqlite3": "^8.0.0",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.36-next.1
+
+### Patch Changes
+
+- 724b55689b: Avoid potential temporary directory conflict.
+- a2a70504e3: Remove deprecated `create-plugin` script from the `default-app` template's `package.json.hbs`.
+  Also, update the documentation to not mention the `create-plugin` script and instead mention
+  the `new` script.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.36-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.35
+
+### Patch Changes
+
+- c4788dbb58: Fix dependency ordering in templated packages.
+- 83d3167594: Bumped create-app version.
+- 2cb6963f9b: Bumped create-app version.
+- 6465ab3686: Bumped create-app version.
+- af1358bb07: added default project name for CI job compatibility
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- dfb269fab2: Updated the template to have the `'/test'` proxy endpoint in `app-config.yaml` be commented out by default.
+- d9b3753f87: Updated the app template to use the new `AppRouter` component instead of `app.getRouter()`, as well as `app.createRoot()` instead of `app.getProvider()`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { FlatRoutes } from '@backstage/core-app-api';
+  +import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+
+   ...
+
+  -const AppProvider = app.getProvider();
+  -const AppRouter = app.getRouter();
+
+   ...
+
+  -const App = () => (
+  +export default app.createRoot(
+  -  <AppProvider>
+  +  <>
+       <AlertDisplay />
+       <OAuthRequestDialog />
+       <AppRouter>
+         <Root>{routes}</Root>
+       </AppRouter>
+  -  </AppProvider>
+  +  </>,
+   );
+  ```
+
+  The final export step should end up looking something like this:
+
+  ```tsx
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+- 71e75c0b70: Removed the `react-router` dependency from the app package, using only `react-router-dom` instead.
+
+  This change is just a bit of cleanup and is optional. If you want to apply it to your app, remove the `react-router` dependency from `packages/app/package.json`, and replace any imports from `react-router` with `react-router-dom` instead.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.4.35-next.4
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- dfb269fab2: Updated the template to have the `'/test'` proxy endpoint in `app-config.yaml` be commented out by default.
+- d9b3753f87: Updated the app template to use the new `AppRouter` component instead of `app.getRouter()`, as well as `app.createRoot()` instead of `app.getProvider()`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { FlatRoutes } from '@backstage/core-app-api';
+  +import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+
+   ...
+
+  -const AppProvider = app.getProvider();
+  -const AppRouter = app.getRouter();
+
+   ...
+
+  -const App = () => (
+  +export default app.createRoot(
+  -  <AppProvider>
+  +  <>
+       <AlertDisplay />
+       <OAuthRequestDialog />
+       <AppRouter>
+         <Root>{routes}</Root>
+       </AppRouter>
+  -  </AppProvider>
+  +  </>,
+   );
+  ```
+
+  The final export step should end up looking something like this:
+
+  ```tsx
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+- 71e75c0b70: Removed the `react-router` dependency from the app package, using only `react-router-dom` instead.
+
+  This change is just a bit of cleanup and is optional. If you want to apply it to your app, remove the `react-router` dependency from `packages/app/package.json`, and replace any imports from `react-router` with `react-router-dom` instead.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
+## 0.4.35-next.3
+
+### Patch Changes
+
+- c4788dbb58: Fix dependency ordering in templated packages.
+- af1358bb07: added default project name for CI job compatibility
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
+## 0.4.35-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
+## 0.4.35-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.35-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.34
+
+### Patch Changes
+
+- f1c3cdfb2d: Bumped create-app version.
+- df21bbd4ad: The [Analytics API](https://backstage.io/docs/plugins/analytics) is the recommended way to track usage in Backstage; an optionally installable [Google Analytics module](https://github.com/backstage/backstage/tree/master/plugins/analytics-module-ga#installation) has superseded the old app.googleAnalyticsTrackingId config and its corresponding script tags in packages/app/public/index.html.
+
+  For an existing installation where you want to remove the redundant app.googleAnalyticsTrackingId, you should make the following adjustment to `packages/app/public/index.html`:
+
+  ```diff
+      <title><%= config.getString('app.title') %></title>
+  -   <% if (config.has('app.googleAnalyticsTrackingId')) { %>
+  -   <script
+  -       async
+  -       src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
+  -   ></script>
+  -   <script>
+  -       window.dataLayer = window.dataLayer || [];
+  -       function gtag() {
+  -       dataLayer.push(arguments);
+  -       }
+  -       gtag('js', new Date());
+  -       gtag(
+  -       'config',
+  -       '<%= config.getString("app.googleAnalyticsTrackingId") %>',
+  -       );
+  -   </script>
+  -   <% } %>
+  </head>
+  ```
+
+  Additionally, you should make the following adjustment to `app-config.yaml`:
+
+  ```diff
+  app:
+    title: Backstage Example App
+    baseUrl: http://localhost:3000
+  - googleAnalyticsTrackingId: # UA-000000-0
+  ```
+
+- 4091c73e68: Updated `@swc/core` to `v1.3.9` which fixes a `.tsx` parser bug. You may want to run `yarn backstage-cli versions:bump` to get on latest version including the CLI itself.
+- 80bfac5266: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+- 286d474675: The `build` script in the root `package.json` has been split into two separate scripts, `build:backend` and `build:all`. This is to more accurately reflect what is being built, to avoid confusion.
+
+  If you want to build the project for a production deployment, you will want to use `build:backend`, as this builds both the frontend and backend package. If you are not using the `app-backend` plugin you will want to add your own `build:frontend` script, to which you can pass additional configuration parameters if needed.
+
+  The `build:all` script is useful if you simply want to check that it is possible to build all packages in the project. This might be useful as a CI check, but is generally unnecessary.
+
+  If you want to publish the packages in your repository you can add a `build:packages` script that calls `backstage-cli repo build`. This will skip the frontend and backend packages builds, as those are quite time consuming.
+
+  To apply these changes to an existing project, make the following change to the root `package.json` file:
+
+  ```diff
+  -    "build": "backstage-cli repo build --all",
+  +    "build:backend": "yarn workspace backend build",
+  +    "build:all": "backstage-cli repo build --all",
+  ```
+
+  There are also a couple of places where documentation has been updated, see the [upgrade helper](https://backstage.github.io/upgrade-helper/?to=1.8.0) for a full list of changes.
+
+- 384eaa2307: Switched Node.js version to support version 16 & 18, rather than 14 & 16. To switch the Node.js version in your own project, apply the following change to the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "14 || 16"
+  +    "node": "16 || 18"
+     },
+  ```
+
+  As well as the following change to `packages/app/package.json`:
+
+  ```diff
+  -    "@types/node": "^14.14.32",
+  +    "@types/node": "^16.11.26",
+  ```
+
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- 864c876e57: Fixed incorrect comments in the templated `app-config.yaml` and `app-config.production.yaml`. The `backend.listen` directive is not in fact needed to override the `backend.baseUrl`, the backend listens to all interfaces by default. The configuration has also been updated to listen to all interfaces, rather than just IPv4 ones, as this is required for Node.js v18. The production configuration now also shows the option to specify `backend.listen` as a single string.
+
+  To apply this changes to an existing app, make the following change to `app-config.yaml`:
+
+  ```diff
+  -    # Uncomment the following host directive to bind to all IPv4 interfaces and
+  -    # not just the baseUrl hostname.
+  -    # host: 0.0.0.0
+  +    # Uncomment the following host directive to bind to specific interfaces
+  +    # host: 127.0.0.1
+  ```
+
+  And the following change to `app-config.production.yaml`:
+
+  ```diff
+  -  listen:
+  -    port: 7007
+  -    # The following host directive binds to all IPv4 interfaces when its value
+  -    # is "0.0.0.0". This is the most permissive setting. The right value depends
+  -    # on your specific deployment. If you remove the host line entirely, the
+  -    # backend will bind on the interface that corresponds to the backend.baseUrl
+  -    # hostname.
+  -    host: 0.0.0.0
+  +  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  +  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  +  listen: ':7007'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.34-next.2
+
+### Patch Changes
+
+- 384eaa2307: Switched Node.js version to support version 16 & 18, rather than 14 & 16. To switch the Node.js version in your own project, apply the following change to the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "14 || 16"
+  +    "node": "16 || 18"
+     },
+  ```
+
+  As well as the following change to `packages/app/package.json`:
+
+  ```diff
+  -    "@types/node": "^14.14.32",
+  +    "@types/node": "^16.11.26",
+  ```
+
+- 864c876e57: Fixed incorrect comments in the templated `app-config.yaml` and `app-config.production.yaml`. The `backend.listen` directive is not in fact needed to override the `backend.baseUrl`, the backend listens to all interfaces by default. The configuration has also been updated to listen to all interfaces, rather than just IPv4 ones, as this is required for Node.js v18. The production configuration now also shows the option to specify `backend.listen` as a single string.
+
+  To apply this changes to an existing app, make the following change to `app-config.yaml`:
+
+  ```diff
+  -    # Uncomment the following host directive to bind to all IPv4 interfaces and
+  -    # not just the baseUrl hostname.
+  -    # host: 0.0.0.0
+  +    # Uncomment the following host directive to bind to specific interfaces
+  +    # host: 127.0.0.1
+  ```
+
+  And the following change to `app-config.production.yaml`:
+
+  ```diff
+  -  listen:
+  -    port: 7007
+  -    # The following host directive binds to all IPv4 interfaces when its value
+  -    # is "0.0.0.0". This is the most permissive setting. The right value depends
+  -    # on your specific deployment. If you remove the host line entirely, the
+  -    # backend will bind on the interface that corresponds to the backend.baseUrl
+  -    # hostname.
+  -    host: 0.0.0.0
+  +  # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
+  +  # all interfaces, the most permissive setting. The right value depends on your specific deployment.
+  +  listen: ':7007'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.33-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.33-next.0
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to `v1.3.9` which fixes a `.tsx` parser bug. You may want to run `yarn backstage-cli versions:bump` to get on latest version including the CLI itself.
+- 80bfac5266: Updated the create-app command to no longer require Git to be installed and configured. A git repository will only be initialized if possible and if not already in an git repository.
+- f905853ad6: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32
+
+### Patch Changes
+
+- 58c2264325: Newly created Backstage repositories now use the stable version 6 of
+  `react-router`, just like the main repo does. Please let us know if you find any
+  issues with this.
+
+  Migrating to the stable version of `react-router` is optional for the time
+  being. But if you want to do the same for your existing repository, please
+  follow [this
+  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+
+- e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- 90616bcaa6: Add the new search pagination component to the search page template.
+- 7c6306fc8a: Initializes a git repository when creating an app using @packages/create-app
+- 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
+- 6d00e80146: Updated the root `test` scripts to use `backstage-cli repo test`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "test": "backstage-cli test",
+  -    "test:all": "lerna run test -- --coverage",
+  +    "test": "backstage-cli repo test",
+  +    "test:all": "backstage-cli repo test --coverage",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32-next.2
+
+### Patch Changes
+
+- 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32-next.1
+
+### Patch Changes
+
+- 7c6306fc8a: Initializes a git repository when creating an app using @packages/create-app
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.32-next.0
+
+### Patch Changes
+
+- 58c2264325: Newly created Backstage repositories now use the stable version 6 of
+  `react-router`, just like the main repo does. Please let us know if you find any
+  issues with this.
+
+  Migrating to the stable version of `react-router` is optional for the time
+  being. But if you want to do the same for your existing repository, please
+  follow [this
+  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+
+- e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
+- 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
+- 6d00e80146: Updated the root `test` scripts to use `backstage-cli repo test`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "test": "backstage-cli test",
+  -    "test:all": "lerna run test -- --coverage",
+  +    "test": "backstage-cli repo test",
+  +    "test:all": "backstage-cli repo test --coverage",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.31
+
+### Patch Changes
+
+- 6ff94d60d5: Removed usage of the deprecated `diff` command in the root `package.json`.
+
+  To make this change in an existing app, make the following change in the root `package.json`:
+
+  ```diff
+  -    "diff": "lerna run diff --",
+  ```
+
+- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+- e83de28e36: Fix typo in the documentation
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 208d6780c9: The `packages/backend/Dockerfile` received a couple of updates, it now looks as follows:
+
+  ```Dockerfile
+  FROM node:16-bullseye-slim
+
+  # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+  # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+  RUN apt-get update && \
+      apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+      rm -rf /var/lib/apt/lists/* && \
+      yarn config set python /usr/bin/python3
+
+  # From here on we use the least-privileged `node` user to run the backend.
+  USER node
+  WORKDIR /app
+
+  # This switches many Node.js dependencies to production mode.
+  ENV NODE_ENV production
+
+  # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
+  # The skeleton contains the package.json of each package in the monorepo,
+  # and along with yarn.lock and the root package.json, that's enough to run yarn install.
+  COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+  RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+
+  # Then copy the rest of the backend bundle, along with any other files we might want.
+  COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+  RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  The two notable changes are that a `USER node` instruction has been added and the ordering of instructions has been changed accordingly. This means that the app will now be running using the least-privileged `node` user. In order for this to work we now need to make sure that all app files are owned by the `node` user, which we do by adding the `--chown=node:node` option to the `COPY` instructions.
+
+  The second change is the addition of `ENV NODE_ENV production`, which ensured that all Node.js modules run in production mode. If you apply this change to an existing app, note that one of the more significant changes is that this switches the log formatting to use the default production format, JSON. Rather than your log lines looking like this:
+
+  ```log
+  2022-08-10T11:36:05.478Z catalog info Performing database migration type=plugin
+  ```
+
+  They will now look like this:
+
+  ```log
+  {"level":"info","message":"Performing database migration","plugin":"catalog","service":"backstage","type":"plugin"}
+  ```
+
+  If you wish to keep the existing format, you can override this change by applying the following change to `packages/backend/src/index.ts`:
+
+  ```diff
+     getRootLogger,
+  +  setRootLogger,
+  +  createRootLogger,
+  +  coloredFormat,
+     useHotMemoize,
+   ...
+     ServerTokenManager,
+   } from '@backstage/backend-common';
+
+   ...
+
+   async function main() {
+  +  setRootLogger(createRootLogger({ format: coloredFormat }));
+  +
+     const config = await loadBackendConfig({
+  ```
+
+- 49416194e8: Adds `IdentityApi` configuration to `create-app` scaffolding templates.
+
+  To migrate to the new `IdentityApi`, edit the `packages/backend/src/index.ts` adding the following import:
+
+  ```typescript
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  ```
+
+  Use the factory function to create an `IdentityApi` in the `makeCreateEnv` function and return it from the
+  function as follows:
+
+  ```typescript
+  function makeCreateEnv(config: Config) {
+  ...
+    const identity = DefaultIdentityClient.create({
+      discovery,
+    });
+  ...
+
+    return {
+      ...,
+      identity
+    }
+  }
+  ```
+
+  Backend plugins can be upgraded to work with this new `IdentityApi`.
+
+  Add `identity` to the `RouterOptions` type.
+
+  ```typescript
+  export interface RouterOptions {
+    ...
+    identity: IdentityApi;
+  }
+  ```
+
+  Then you can use the `IdentityApi` from the plugin.
+
+  ```typescript
+  export async function createRouter(
+    options: RouterOptions,
+  ): Promise<express.Router> {
+    const { identity } = options;
+
+    router.get('/user', async (req, res) => {
+      const user = await identity.getIdentity({ request: req });
+      ...
+  ```
+
+- 8d886dd33e: Added `yarn new` as one of the scripts installed by default, which calls `backstage-cli new`. This script replaces `create-plugin`, which you can now remove if you want to. It is kept in the `create-app` template for backwards compatibility.
+
+  The `remove-plugin` command has been removed, as it has been removed from the Backstage CLI.
+
+  To apply these changes to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "remove-plugin": "backstage-cli remove-plugin"
+  +    "new": "backstage-cli new --scope internal"
+  ```
+
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field. You may want to supply that logger in your backend initialization code to
+  ensure that you can get relevant logging data when things happen related to the
+  connection pool.
+
+  In `packages/backend/src/index.ts`:
+
+  ```diff
+   function makeCreateEnv(config: Config) {
+     const root = getRootLogger();
+     ...
+  -  const databaseManager = DatabaseManager.fromConfig(config);
+  +  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
+  ```
+
+- a578558180: Updated the root `package.json` to use the new `backstage-cli repo clean` command.
+
+  To apply this change to an existing project, make the following change to the root `package.json`:
+
+  ```diff
+  -    "clean": "backstage-cli clean && lerna run clean",
+  +    "clean": "backstage-cli repo clean",
+  ```
+
+- c0a08fd08c: Added `EntityLinksCard` to the system `EntityPage`.
+
+  For an existing installation where you want to display the links card for entity pages of kind `system` you should make the following adjustment to `packages/app/src/components/catalog/EntityPage.tsx`
+
+  ```diff
+  const systemPage = (
+    ...
+          <Grid item md={6} xs={12}>
+            <EntityCatalogGraphCard variant="gridItem" height={400} />
+          </Grid>
+  +       <Grid item md={4} xs={12}>
+  +         <EntityLinksCard />
+  +       </Grid>
+  -      <Grid item md={6}>
+  +      <Grid item md={8}>
+            <EntityHasComponentsCard variant="gridItem" />
+          </Grid>
+    ...
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.4.31-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10-next.0
+
+## 0.4.31-next.2
+
+### Patch Changes
+
+- 6ff94d60d5: Removed usage of the deprecated `diff` command in the root `package.json`.
+
+  To make this change in an existing app, make the following change in the root `package.json`:
+
+  ```diff
+  -    "diff": "lerna run diff --",
+  ```
+
+- 49416194e8: Adds `IdentityApi` configuration to `create-app` scaffolding templates.
+
+  To migrate to the new `IdentityApi`, edit the `packages/backend/src/index.ts` adding the following import:
+
+  ```typescript
+  import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+  ```
+
+  Use the factory function to create an `IdentityApi` in the `makeCreateEnv` function and return it from the
+  function as follows:
+
+  ```typescript
+  function makeCreateEnv(config: Config) {
+  ...
+    const identity = DefaultIdentityClient.create({
+      discovery,
+    });
+  ...
+
+    return {
+      ...,
+      identity
+    }
+  }
+  ```
+
+  Backend plugins can be upgraded to work with this new `IdentityApi`.
+
+  Add `identity` to the `RouterOptions` type.
+
+  ```typescript
+  export interface RouterOptions {
+    ...
+    identity: IdentityApi;
+  }
+  ```
+
+  Then you can use the `IdentityApi` from the plugin.
+
+  ```typescript
+  export async function createRouter(
+    options: RouterOptions,
+  ): Promise<express.Router> {
+    const { identity } = options;
+
+    router.get('/user', async (req, res) => {
+      const user = await identity.getIdentity({ request: req });
+      ...
+  ```
+
+- 8d886dd33e: Added `yarn new` as one of the scripts installed by default, which calls `backstage-cli new`. This script replaces `create-plugin`, which you can now remove if you want to. It is kept in the `create-app` template for backwards compatibility.
+
+  The `remove-plugin` command has been removed, as it has been removed from the Backstage CLI.
+
+  To apply these changes to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+  -    "remove-plugin": "backstage-cli remove-plugin"
+  +    "new": "backstage-cli new --scope internal"
+  ```
+
+- a578558180: Updated the root `package.json` to use the new `backstage-cli repo clean` command.
+
+  To apply this change to an existing project, make the following change to the root `package.json`:
+
+  ```diff
+  -    "clean": "backstage-cli clean && lerna run clean",
+  +    "clean": "backstage-cli repo clean",
+  ```
+
+## 0.4.31-next.1
+
+### Patch Changes
+
+- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field. You may want to supply that logger in your backend initialization code to
+  ensure that you can get relevant logging data when things happen related to the
+  connection pool.
+
+  In `packages/backend/src/index.ts`:
+
+  ```diff
+   function makeCreateEnv(config: Config) {
+     const root = getRootLogger();
+     ...
+  -  const databaseManager = DatabaseManager.fromConfig(config);
+  +  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
+  ```
+
+## 0.4.31-next.0
+
+### Patch Changes
+
+- e83de28e36: Fix typo in the documentation
+- 208d6780c9: The `packages/backend/Dockerfile` received a couple of updates, it now looks as follows:
+
+  ```Dockerfile
+  FROM node:16-bullseye-slim
+
+  # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
+  # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+  RUN apt-get update && \
+      apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+      rm -rf /var/lib/apt/lists/* && \
+      yarn config set python /usr/bin/python3
+
+  # From here on we use the least-privileged `node` user to run the backend.
+  USER node
+  WORKDIR /app
+
+  # This switches many Node.js dependencies to production mode.
+  ENV NODE_ENV production
+
+  # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
+  # The skeleton contains the package.json of each package in the monorepo,
+  # and along with yarn.lock and the root package.json, that's enough to run yarn install.
+  COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+  RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+
+  # Then copy the rest of the backend bundle, along with any other files we might want.
+  COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+  RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  The two notable changes are that a `USER node` instruction has been added and the ordering of instructions has been changed accordingly. This means that the app will now be running using the least-privileged `node` user. In order for this to work we now need to make sure that all app files are owned by the `node` user, which we do by adding the `--chown=node:node` option to the `COPY` instructions.
+
+  The second change is the addition of `ENV NODE_ENV production`, which ensured that all Node.js modules run in production mode. If you apply this change to an existing app, note that one of the more significant changes is that this switches the log formatting to use the default production format, JSON. Rather than your log lines looking like this:
+
+  ```log
+  2022-08-10T11:36:05.478Z catalog info Performing database migration type=plugin
+  ```
+
+  They will now look like this:
+
+  ```log
+  {"level":"info","message":"Performing database migration","plugin":"catalog","service":"backstage","type":"plugin"}
+  ```
+
+  If you wish to keep the existing format, you can override this change by applying the following change to `packages/backend/src/index.ts`:
+
+  ```diff
+     getRootLogger,
+  +  setRootLogger,
+  +  createRootLogger,
+  +  coloredFormat,
+     useHotMemoize,
+   ...
+     ServerTokenManager,
+   } from '@backstage/backend-common';
+
+   ...
+
+   async function main() {
+  +  setRootLogger(createRootLogger({ format: coloredFormat }));
+  +
+     const config = await loadBackendConfig({
+  ```
+
+- c0a08fd08c: Added `EntityLinksCard` to the system `EntityPage`.
+
+  For an existing installation where you want to display the links card for entity pages of kind `system` you should make the following adjustment to `packages/app/src/components/catalog/EntityPage.tsx`
+
+  ```diff
+  const systemPage = (
+    ...
+          <Grid item md={6} xs={12}>
+            <EntityCatalogGraphCard variant="gridItem" height={400} />
+          </Grid>
+  +       <Grid item md={4} xs={12}>
+  +         <EntityLinksCard />
+  +       </Grid>
+  -      <Grid item md={6}>
+  +      <Grid item md={8}>
+            <EntityHasComponentsCard variant="gridItem" />
+          </Grid>
+    ...
+  );
+  ```
+
+## 0.4.30
+
+### Patch Changes
+
+- 73cee58fc2: Bumped create-app version.
+- f762386d48: Bumped create-app version.
+- b162bbf464: Bumped create-app version.
+- db76fc6255: The `better-sqlite3` dependency has been moved back to production `"dependencies"` in `packages/backend/package.json`, with instructions in the Dockerfile to move it to `"devDependencies"` if desired. There is no need to apply this change to existing apps, unless you want your production image to have SQLite available as a database option.
+- ab9edd8b58: Updated backend to write stack trace when the backend fails to start up.
+
+  To apply this change to your Backstage installation, make the following change to `packages/backend/src/index.ts`
+
+  ```diff
+      cors:
+      origin: http://localhost:3000
+  -    console.error(`Backend failed to start up, ${error}`);
+  +    console.error('Backend failed to start up', error);
+  ```
+
+- 0174a0a022: Add `PATCH` and `HEAD` to the `Access-Control-Allow-Methods`.
+
+  To apply this change to your Backstage installation make the following change to your `app-config.yaml`
+
+  ```diff
+     cors:
+       origin: http://localhost:3000
+  -    methods: [GET, POST, PUT, DELETE]
+  +    methods: [GET, POST, PUT, DELETE, PATCH, HEAD]
+  ```
+
+## 0.4.30-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.30-next.2
+
+### Patch Changes
+
+- 0174a0a022: Add `PATCH` and `HEAD` to the `Access-Control-Allow-Methods`.
+
+  To apply this change to your Backstage installation make the following change to your `app-config.yaml`
+
+  ```diff
+     cors:
+       origin: http://localhost:3000
+  -    methods: [GET, POST, PUT, DELETE]
+  +    methods: [GET, POST, PUT, DELETE, PATCH, HEAD]
+  ```
+
+## 0.4.30-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.30-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.29
+
+### Patch Changes
+
+- f281ad17c0: Adds the ability to define the Backstage app name using a `BACKSTAGE_APP_NAME`
+  environment variable when running `create-app`.
+- c92deffe39: Bumped create-app version.
+- 0e967f188b: Bumped create-app version.
+- bc87604c26: Added an explicit `node-gyp` dependency to the root `package.json`. This is to work around a bug in older versions of `node-gyp` that causes Python execution to fail on macOS.
+
+  You can add this workaround to your existing project by adding `node-gyp` as a `devDependency` in your root `package.json` file:
+
+  ```diff
+     "devDependencies": {
+  +    "node-gyp": "^9.0.0"
+     },
+  ```
+
+## 0.4.29-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.29-next.2
+
+### Patch Changes
+
+- f281ad17c0: Adds the ability to define the Backstage app name using a `BACKSTAGE_APP_NAME`
+  environment variable when running `create-app`.
+
+## 0.4.29-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.29-next.0
+
+### Patch Changes
+
+- bc87604c26: Added an explicit `node-gyp` dependency to the root `package.json`. This is to work around a bug in older versions of `node-gyp` that causes Python execution to fail on macOS.
+
+  You can add this workaround to your existing project by adding `node-gyp` as a `devDependency` in your root `package.json` file:
+
+  ```diff
+     "devDependencies": {
+  +    "node-gyp": "^9.0.0"
+     },
+  ```
+
+## 0.4.28
+
+### Patch Changes
+
+- 881fbd7e8d: Register `TechDocs` addons on catalog entity pages, follow the steps below to add them manually:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import {
+  +   ReportIssue,
+  + } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  + const techdocsContent = (
+  +   <EntityTechdocsContent>
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+  +   </EntityTechdocsContent>
+  + );
+
+  const defaultEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const serviceEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const websiteEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+  ```
+
+- 0e870fe0ac: Removed peer dependencies, as they are no longer needed.
+- bff65e6958: Use of `SidebarContext` has been deprecated and will be removed in a future release. Instead, `useSidebarOpenState()` should be used to consume the context and `<SidebarOpenStateProvider>` should be used to provide it.
+
+  To prepare your app, update `packages/app/src/components/Root/Root.tsx` as follows:
+
+  ```diff
+  import {
+    Sidebar,
+    sidebarConfig,
+  - SidebarContext
+    SidebarDivider,
+    // ...
+    SidebarSpace,
+  + useSidebarOpenState,
+  } from '@backstage/core-components';
+
+  // ...
+
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+  - const { isOpen } = useContext(SidebarContext);
+  + const { isOpen } = useSidebarOpenState();
+
+    // ...
+  };
+  ```
+
+- 935d8515da: Updated the `--version` flag to output the version of the current backstage release instead of the version of create-app.
+- 18d4c3e50a: Updated `app-config.production.yaml` to specify an empty list of catalog locations. This is done to prevent example locations stored in `app-config.yaml` from being loaded as these are examples.
+- 1f70704580: Accessibility updates:
+
+  - Added `aria-label` to the sidebar Logo link. To enable this for an existing app, please make the following changes:
+
+  `packages/app/src/components/Root/Root.tsx`
+
+  ```diff
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+    const { isOpen } = useContext(SidebarContext);
+
+    return (
+      <div className={classes.root}>
+        <Link
+          component={NavLink}
+          to="/"
+          underline="none"
+          className={classes.link}
+  +       aria-label="Home"
+        >
+          {isOpen ? <LogoFull /> : <LogoIcon />}
+        </Link>
+      </div>
+    );
+  };
+  ```
+
+- 30f04d1497: Components `<DefaultResultListItem>`, `<SearchBar>`, `<SearchFilter>`, and `<SearchResult>` are now deprecated in `@backstage/plugin-search` and should be imported from `@backstage/plugin-search-react` instead.
+
+  To upgrade your App, update the following in `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  import {
+    DefaultResultListItem
+    SearchBar
+    SearchFilter
+    SearchResult
+  - } from `@backstage/plugin-search`;
+  + } from `@backstage/plugin-search-react`;
+  ```
+
+- f7f5a6c6a3: It's now possible to pass result item components a `rank`, which is captured by the analytics API when a user clicks on a search result. To apply this change, update your `/packages/app/src/components/search/SearchPage.tsx` in the following way:
+
+  ```diff
+  // ...
+  <SearchResult>
+    {({ results }) => (
+      <List>
+  -     {results.map(({ type, document, highlight }) => {
+  +     {results.map(({ type, document, highlight, rank }) => {
+          switch (type) {
+            case 'software-catalog':
+              return (
+                <CatalogSearchResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+            case 'techdocs':
+              return (
+                <TechDocsSearchResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+            default:
+              return (
+                <DefaultResultListItem
+                  key={document.location}
+                  result={document}
+                  highlight={highlight}
+  +               rank={rank}
+                />
+              );
+          }
+        })}
+      </List>
+    )}
+  </SearchResult>
+  // ...
+  ```
+
+  If you have implemented a custom Search Modal or other custom search experience, you will want to make similar changes in those components.
+
+- aaf7652084: Bump version of `cypress` in newly scaffolded Backstage Applications. To apply this change to your own instance, please make the following change to `packages/app/package.json` under `devDependencies`.
+
+  ```diff
+  -   "cypress": "^7.3.0",
+  +   "cypress": "^9.7.0",
+  ```
+
+- 141a1caebe: Updated the auth backend setup in the template to include a guest sign-in resolver in order to make it quicker to get up and running with a basic sign-in setup. There is no need to update existing apps to match this change, but in case you want to use the guest sign-in resolver you can find it at https://backstage.io/docs/auth/identity-resolver#guest-sign-in-resolver
+
+## 0.4.28-next.2
+
+### Patch Changes
+
+- aaf7652084: Bump version of `cypress` in newly scaffolded Backstage Applications. To apply this change to your own instance, please make the following change to `packages/app/package.json` under `devDependencies`.
+
+  ```diff
+  -   "cypress": "^7.3.0",
+  +   "cypress": "^9.7.0",
+  ```
+
+## 0.4.28-next.1
+
+### Patch Changes
+
+- bff65e6958: Use of `SidebarContext` has been deprecated and will be removed in a future release. Instead, `useSidebarOpenState()` should be used to consume the context and `<SidebarOpenStateProvider>` should be used to provide it.
+
+  To prepare your app, update `packages/app/src/components/Root/Root.tsx` as follows:
+
+  ```diff
+  import {
+    Sidebar,
+    sidebarConfig,
+  - SidebarContext
+    SidebarDivider,
+    // ...
+    SidebarSpace,
+  + useSidebarOpenState,
+  } from '@backstage/core-components';
+
+  // ...
+
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+  - const { isOpen } = useContext(SidebarContext);
+  + const { isOpen } = useSidebarOpenState();
+
+    // ...
+  };
+  ```
+
+## 0.4.28-next.0
+
+### Patch Changes
+
+- 881fbd7e8d: Register `TechDocs` addons on catalog entity pages, follow the steps below to add them manually:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import {
+  +   ReportIssue,
+  + } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  + const techdocsContent = (
+  +   <EntityTechdocsContent>
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+  +   </EntityTechdocsContent>
+  + );
+
+  const defaultEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const serviceEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const websiteEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+  ```
+
+- 935d8515da: Updated the `--version` flag to output the version of the current backstage release instead of the version of create-app.
+- 1f70704580: Accessibility updates:
+
+  - Added `aria-label` to the sidebar Logo link. To enable this for an existing app, please make the following changes:
+
+  `packages/app/src/components/Root/Root.tsx`
+
+  ```diff
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+    const { isOpen } = useContext(SidebarContext);
+
+    return (
+      <div className={classes.root}>
+        <Link
+          component={NavLink}
+          to="/"
+          underline="none"
+          className={classes.link}
+  +       aria-label="Home"
+        >
+          {isOpen ? <LogoFull /> : <LogoIcon />}
+        </Link>
+      </div>
+    );
+  };
+  ```
+
+## 0.4.27
+
+### Patch Changes
+
+- 73480846dd: Simplified the search collator scheduling by removing the need for the `luxon` dependency.
+
+  For existing installations the scheduling can be simplified by removing the `luxon` dependency and using the human friendly duration object instead.
+  Please note that this only applies if luxon is not used elsewhere in your installation.
+
+  `packages/backend/package.json`
+
+  ```diff
+       "express": "^4.17.1",
+       "express-promise-router": "^4.1.0",
+  -    "luxon": "^2.0.2",
+  ```
+
+  `packages/backend/src/plugins/search.ts`
+
+  ```diff
+   import { Router } from 'express';
+  -import { Duration } from 'luxon';
+
+   // omitted other code
+
+     const schedule = env.scheduler.createScheduledTaskRunner({
+  -    frequency: Duration.fromObject({ minutes: 10 }),
+  -    timeout: Duration.fromObject({ minutes: 15 }),
+  +    frequency: { minutes: 10 },
+  +    timeout: { minutes: 15 },
+       // A 3 second delay gives the backend server a chance to initialize before
+       // any collators are executed, which may attempt requests against the API.
+  -    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +    initialDelay: { seconds: 3 },
+     });
+  ```
+
+- 7cda923c16: Tweaked the `.dockerignore` file so that it's easier to add additional backend packages if desired.
+
+  To apply this change to an existing app, make the following change to `.dockerignore`:
+
+  ```diff
+   cypress
+   microsite
+   node_modules
+  -packages
+  -!packages/backend/dist
+  +packages/*/src
+  +packages/*/node_modules
+   plugins
+  ```
+
+- 3983940a21: Optimized the command order in `packages/backend/Dockerfile` as well as added the `--no-install-recommends` to the `apt-get install` and tweaked the installed packages.
+
+  To apply this change to an existing app, update your `packages/backend/Dockerfile` to match the documented `Dockerfile` at https://backstage.io/docs/deployment/docker#host-build.
+
+- 28bbf5aff6: Added some instruction comments to the generated config files, to clarify the
+  usage of `backend.baseUrl` and `backend.listen.host`. Importantly, it also per
+  default now listens on all IPv4 interfaces, to make it easier to take the step
+  over to production. If you want to do the same, update your
+  `app-config.production.yaml` as follows:
+
+  ```diff
+   backend:
+     listen:
+       port: 7007
+  +    host: 0.0.0.0
+  ```
+
+  Also, updated the builtin backend Dockerfile to honor the
+  `app-config.production.yaml` file. If you want to do the same, change
+  `packages/backend/Dockerfile` as follows:
+
+  ```diff
+  -COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+  +COPY packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+   RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  -CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  +CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  If you look carefully, this adds a glob match on app-config files. For those
+  that try out the build flows locally, you also want to make sure that the docker
+  daemon does NOT pick up any local/private config files that might contain
+  secrets. You should therefore also update your local `.dockerignore` file at the
+  same time:
+
+  ```diff
+  +*.local.yaml
+  ```
+
+- 7b253072c6: Tweaked template to provide an example and guidance for how to configure sign-in in `packages/backend/src/plugins/auth.ts`. There is no need to add this to existing apps, but for more information about sign-in configuration, see https://backstage.io/docs/auth/identity-resolver.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- f55414f895: Added sample catalog data to the template under a top-level `examples` directory. This includes some simple entities, org data, and a template. You can find the sample data at https://github.com/backstage/backstage/tree/master/packages/create-app/templates/default-app/examples.
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 00fa0dada0: Removed the database choice from the `create-app` command.
+
+  This reduces the step from development to production by always installing the dependencies and templating the production configuration in `app-config.production.yaml`.
+
+  Added `app-config.local.yaml` to allow for local configuration overrides.
+  To replicate this behavior in an existing installation simply `touch app-config.local.yaml` in the project root and apply your local configuration.
+
+  `better-sqlite3` has been moved to devDependencies, for existing installations using postgres in production and SQLite in development it's recommended to move SQLite into the devDependencies section to avoid unnecessary dependencies during builds.
+
+  in `packages/backend/package.json`
+
+  ```diff
+    "dependencies": {
+      ...
+      "pg": "^8.3.0",
+  -   "better-sqlite3": "^7.5.0",
+      "winston": "^3.2.1"
+    },
+    "devDependencies": {
+      ...
+      "@types/luxon": "^2.0.4",
+  +   "better-sqlite3": "^7.5.0"
+    }
+  ```
+
+- 10d86dedc0: Integrates TechDocs add-ons with the app package so add-ons are configured when creating an app using the Backstage CLI. To apply these changes to an existing application do the following:
+
+  1. Add the `@backstage/plugin-techdocs-react` and `@backstage/plugin-techdocs-module-addons-contrib` packages to your app's dependencies;
+  2. And then register the `<ReportIssue/ >` Addon in your `packages/app/src/App.tsx` file, there where you define a route to `<TechDocsReaderPage />`:
+
+  ```diff
+  import {
+    DefaultTechDocsHome,
+    TechDocsIndexPage,
+    TechDocsReaderPage,
+  } from '@backstage/plugin-techdocs';
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  // ...
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      // ... other plugin routes
+      <Route path="/docs" element={<TechDocsIndexPage />}>
+        <DefaultTechDocsHome />
+      </Route>
+      <Route
+        path="/docs/:namespace/:kind/:name/*"
+        element={<TechDocsReaderPage />}
+      >
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+      </Route>
+    </FlatRoutes>;
+  };
+  ```
+
+- 806427545f: Added a link to the `${GITHUB_TOKEN}` to document how to generate a token
+- 3a74e203a8: Implement highlighting matching terms in search results. To enable this for an existing app, make the following changes:
+
+  ```diff
+  // packages/app/src/components/search/SearchPage.tsx
+  ...
+  -  {results.map(({ type, document }) => {
+  +  {results.map(({ type, document, highlight }) => {
+       switch (type) {
+         case 'software-catalog':
+           return (
+             <CatalogSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         case 'techdocs':
+           return (
+             <TechDocsSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         default:
+           return (
+             <DefaultResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+       }
+     })}
+  ...
+  ```
+
+- d41f19ca2a: Bumped the `typescript` version in the template to `~4.6.4`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+     dependencies: {
+       ...
+  -    "typescript": "~4.5.4"
+  +    "typescript": "~4.6.4"
+     },
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+
 ## 0.4.27-next.2
 
 ### Patch Changes

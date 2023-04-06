@@ -14,8 +14,6 @@ To run the example backend, first go to the project root and run
 
 ```bash
 yarn install
-yarn tsc
-yarn build
 ```
 
 You should only need to do this once.
@@ -23,25 +21,17 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x \
-AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x \
-AUTH_OAUTH2_CLIENT_ID=x AUTH_OAUTH2_CLIENT_SECRET=x \
-AUTH_OAUTH2_AUTH_URL=x AUTH_OAUTH2_TOKEN_URL=x \
-ROLLBAR_ACCOUNT_TOKEN=x \
-SENTRY_TOKEN=x \
-LOG_LEVEL=debug \
 yarn start
 ```
 
-Substitute `x` for actual values, or leave them as
-dummy values just to try out the backend without using the auth or sentry features.
-You can also, instead of using dummy values for a huge number of environment variables, remove those config directly from app-config.yaml file located in the root folder.
+If you want to override any configuration locally, for example adding any secrets,
+you can do so in `app-config.local.yaml`.
 
 The backend starts up on port 7007 per default.
 
 ### Debugging
 
-The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/cli/commands#backenddev).
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/local-dev/cli-build-system#backend-development).
 
 To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 
@@ -54,7 +44,7 @@ To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 If you want to use the catalog functionality, you need to add so called
 locations to the backend. These are places where the backend can find some
 entity descriptor data to consume and serve. For more information, see
-[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog).
 
 For convenience we already include some statically configured example locations
 in `app-config.yaml` under `catalog.locations`. For local development you can override these in your own `app-config.local.yaml`.
@@ -68,4 +58,4 @@ Read more about the [auth-backend](https://github.com/backstage/backstage/blob/m
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

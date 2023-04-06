@@ -23,7 +23,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
-import { createOidcProvider, OidcAuthProvider, Options } from './provider';
+import { oidc, OidcAuthProvider, Options } from './provider';
 import { AuthResolverContext } from '../types';
 
 const issuerMetadata = {
@@ -83,7 +83,7 @@ describe('OidcAuthProvider', () => {
       };
     };
     // Assert that the expected request to the metadaurl was made.
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
     const { _client, _issuer } = strategy;
     expect(_client.client_id).toBe(clientMetadata.clientId);
     expect(_issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
@@ -155,7 +155,7 @@ describe('OidcAuthProvider', () => {
     expect(requestSequence).toEqual([0, 1, 2].map(i => requests[i].url));
   });
 
-  it('createOidcProvider', async () => {
+  it('oidc.create', async () => {
     const handler = jest.fn((_req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -172,7 +172,7 @@ describe('OidcAuthProvider', () => {
         metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
       },
     } as any);
-    const provider = createOidcProvider()({
+    const provider = oidc.create()({
       globalConfig: {
         appUrl: 'https://oidc.test',
         baseUrl: 'https://oidc.test',
@@ -183,6 +183,6 @@ describe('OidcAuthProvider', () => {
     // Cast provider as any here to be able to inspect private members
     await (provider as any).handlers.get('testEnv').handlers.implementation;
     // Assert that the expected request to the metadaurl was made.
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 });

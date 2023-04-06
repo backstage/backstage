@@ -23,6 +23,7 @@ import { CreatedByTeamsFilter } from './createdByTeamsFilter';
 import { CreatedByUserFilter } from './createdByUserFilter';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 
+/** @public */
 export enum FilterType {
   All = 'All',
 
@@ -41,6 +42,7 @@ export enum FilterType {
   CreatedByCurrentUsersTeams = 'CreatedByCurrentUsersTeams',
 }
 
+/** @public */
 export const FilterTypes = [
   FilterType.All,
 
@@ -57,10 +59,12 @@ export const FilterTypes = [
   FilterType.CreatedByCurrentUsersTeams,
 ] as const;
 
+/** @public */
 export type BaseFilter = {
   type: FilterType;
 };
 
+/** @public */
 export type Filter =
   | AssignedToUserFilter
   | CreatedByUserFilter
@@ -80,4 +84,5 @@ export type {
   AllFilter,
 };
 
+/** @public */
 export type PullRequestFilter = (pullRequest: DashboardPullRequest) => boolean;

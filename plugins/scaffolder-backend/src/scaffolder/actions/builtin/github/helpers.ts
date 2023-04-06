@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
+
+import { Config } from '@backstage/config';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
-import { parseRepoUrl } from '../publish/util';
+import { Octokit } from 'octokit';
+import { Logger } from 'winston';
+import {
+  enableBranchProtectionOnDefaultRepoBranch,
+  initRepoAndPush,
+} from '../helpers';
+import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -82,4 +90,287 @@ export async function getOctokitOptions(options: {
     baseUrl: integrationConfig.apiBaseUrl,
     previews: ['nebula-preview'],
   };
+}
+
+export async function createGithubRepoWithCollaboratorsAndTopics(
+  client: Octokit,
+  repo: string,
+  owner: string,
+  repoVisibility: 'private' | 'internal' | 'public',
+  description: string | undefined,
+  homepage: string | undefined,
+  deleteBranchOnMerge: boolean,
+  allowMergeCommit: boolean,
+  allowSquashMerge: boolean,
+  squashMergeCommitTitle: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined,
+  squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
+  allowRebaseMerge: boolean,
+  allowAutoMerge: boolean,
+  access: string | undefined,
+  collaborators:
+    | (
+        | {
+            user: string;
+            access: string;
+          }
+        | {
+            team: string;
+            access: string;
+          }
+        | {
+            /** @deprecated This field is deprecated in favor of team */
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
+    | undefined,
+  hasProjects: boolean | undefined,
+  hasWiki: boolean | undefined,
+  hasIssues: boolean | undefined,
+  topics: string[] | undefined,
+  logger: Logger,
+) {
+  // eslint-disable-next-line testing-library/no-await-sync-query
+  const user = await client.rest.users.getByUsername({
+    username: owner,
+  });
+
+  if (access?.startsWith(`${owner}/`)) {
+    await validateAccessTeam(client, access);
+  }
+
+  const repoCreationPromise =
+    user.data.type === 'Organization'
+      ? client.rest.repos.createInOrg({
+          name: repo,
+          org: owner,
+          private: repoVisibility === 'private',
+          visibility: repoVisibility,
+          description: description,
+          delete_branch_on_merge: deleteBranchOnMerge,
+          allow_merge_commit: allowMergeCommit,
+          allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
+          allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
+          homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
+        })
+      : client.rest.repos.createForAuthenticatedUser({
+          name: repo,
+          private: repoVisibility === 'private',
+          description: description,
+          delete_branch_on_merge: deleteBranchOnMerge,
+          allow_merge_commit: allowMergeCommit,
+          allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
+          allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
+          homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
+        });
+
+  let newRepo;
+
+  try {
+    newRepo = (await repoCreationPromise).data;
+  } catch (e) {
+    assertError(e);
+    if (e.message === 'Resource not accessible by integration') {
+      logger.warn(
+        `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
+      );
+    }
+    throw new Error(
+      `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+    );
+  }
+
+  if (access?.startsWith(`${owner}/`)) {
+    const [, team] = access.split('/');
+    await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+      org: owner,
+      team_slug: team,
+      owner,
+      repo,
+      permission: 'admin',
+    });
+    // No need to add access if it's the person who owns the personal account
+  } else if (access && access !== owner) {
+    await client.rest.repos.addCollaborator({
+      owner,
+      repo,
+      username: access,
+      permission: 'admin',
+    });
+  }
+
+  if (collaborators) {
+    for (const collaborator of collaborators) {
+      try {
+        if ('user' in collaborator) {
+          await client.rest.repos.addCollaborator({
+            owner,
+            repo,
+            username: collaborator.user,
+            permission: collaborator.access,
+          });
+        } else if ('team' in collaborator) {
+          await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+            org: owner,
+            team_slug: collaborator.team,
+            owner,
+            repo,
+            permission: collaborator.access,
+          });
+        }
+      } catch (e) {
+        assertError(e);
+        const name = extractCollaboratorName(collaborator);
+        logger.warn(
+          `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
+        );
+      }
+    }
+  }
+
+  if (topics) {
+    try {
+      await client.rest.repos.replaceAllTopics({
+        owner,
+        repo,
+        names: topics.map(t => t.toLowerCase()),
+      });
+    } catch (e) {
+      assertError(e);
+      logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
+    }
+  }
+
+  return newRepo;
+}
+
+export async function initRepoPushAndProtect(
+  remoteUrl: string,
+  password: string,
+  workspacePath: string,
+  sourcePath: string | undefined,
+  defaultBranch: string,
+  protectDefaultBranch: boolean,
+  protectEnforceAdmins: boolean,
+  owner: string,
+  client: Octokit,
+  repo: string,
+  requireCodeOwnerReviews: boolean,
+  bypassPullRequestAllowances:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined,
+  requiredApprovingReviewCount: number,
+  restrictions:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined,
+  requiredStatusCheckContexts: string[],
+  requireBranchesToBeUpToDate: boolean,
+  requiredConversationResolution: boolean,
+  config: Config,
+  logger: any,
+  gitCommitMessage?: string,
+  gitAuthorName?: string,
+  gitAuthorEmail?: string,
+  dismissStaleReviews?: boolean,
+  requiredCommitSigning?: boolean,
+) {
+  const gitAuthorInfo = {
+    name: gitAuthorName
+      ? gitAuthorName
+      : config.getOptionalString('scaffolder.defaultAuthor.name'),
+    email: gitAuthorEmail
+      ? gitAuthorEmail
+      : config.getOptionalString('scaffolder.defaultAuthor.email'),
+  };
+
+  const commitMessage = gitCommitMessage
+    ? gitCommitMessage
+    : config.getOptionalString('scaffolder.defaultCommitMessage');
+
+  await initRepoAndPush({
+    dir: getRepoSourceDirectory(workspacePath, sourcePath),
+    remoteUrl,
+    defaultBranch,
+    auth: {
+      username: 'x-access-token',
+      password,
+    },
+    logger,
+    commitMessage,
+    gitAuthorInfo,
+  });
+
+  if (protectDefaultBranch) {
+    try {
+      await enableBranchProtectionOnDefaultRepoBranch({
+        owner,
+        client,
+        repoName: repo,
+        logger,
+        defaultBranch,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
+        requireCodeOwnerReviews,
+        requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate,
+        requiredConversationResolution,
+        enforceAdmins: protectEnforceAdmins,
+        dismissStaleReviews: dismissStaleReviews,
+        requiredCommitSigning: requiredCommitSigning,
+      });
+    } catch (e) {
+      assertError(e);
+      logger.warn(
+        `Skipping: default branch protection on '${repo}', ${e.message}`,
+      );
+    }
+  }
+}
+
+function extractCollaboratorName(
+  collaborator: { user: string } | { team: string } | { username: string },
+) {
+  if ('username' in collaborator) return collaborator.username;
+  if ('user' in collaborator) return collaborator.user;
+  return collaborator.team;
+}
+
+async function validateAccessTeam(client: Octokit, access: string) {
+  const [org, team_slug] = access.split('/');
+  try {
+    // Below rule disabled because of a 'getByName' check for a different library
+    // incorrectly triggers here.
+    // eslint-disable-next-line testing-library/no-await-sync-query
+    await client.rest.teams.getByName({
+      org,
+      team_slug,
+    });
+  } catch (e) {
+    if (e.response.data.message === 'Not Found') {
+      const message = `Received 'Not Found' from the API; one of org:
+        ${org} or team: ${team_slug} was not found within GitHub.`;
+      throw new NotFoundError(message);
+    }
+  }
 }

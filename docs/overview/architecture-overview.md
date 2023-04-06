@@ -205,7 +205,7 @@ A typical plugin consists of up to five packages, two frontend ones, two
 backend, and one isomorphic package. All packages within the plugin must share a
 common prefix, typically of the form `@<scope>/plugin-<plugin-id>`, but
 alternatives like `backstage-plugin-<plugin-id>` or
-`@scope/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
+`@<scope>/backstage-plugin-<plugin-id>` are also valid. Along with this prefix,
 each of the packages have their own unique suffix that denotes their role. In
 addition to these five plugin packages it's also possible for a plugin to have
 additional frontend and backend modules that can be installed to enable optional
@@ -249,7 +249,7 @@ however likely to change in the future.
 The common packages are the packages effectively depended on by all other pages.
 This is a much smaller set of packages but they are also very pervasive. Because
 the common packages are isomorphic and must execute both in the frontend and
-backend, they are never allowed to depend on any of the frontend of backend
+backend, they are never allowed to depend on any of the frontend or backend
 packages.
 
 The Backstage CLI is in a category of its own and is depended on by virtually
@@ -260,7 +260,7 @@ development dependency only.
 
 It can sometimes be difficult to decide where to place your plugin code. For example
 should it go directly in the `-backend` plugin package or in the `-node` package?
-As a rule of thumb you should try to keep the exposure of your code as low
+As a general guideline you should try to keep the exposure of your code as low
 as possible. If it doesn't need to be public API, it's best to avoid. If you don't
 need it to be used by other plugins, then keep it directly in the plugin packages.
 
@@ -341,7 +341,8 @@ separate Docker images.
 The backend container can be built by running the following command:
 
 ```bash
-yarn run docker-build
+yarn run build
+yarn run build-image
 ```
 
 This will create a container called `example-backend`.

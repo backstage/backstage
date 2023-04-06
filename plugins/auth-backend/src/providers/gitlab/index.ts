@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createGitlabProvider } from './provider';
-export type { GitlabProviderOptions } from './provider';
+export { gitlab } from './provider';

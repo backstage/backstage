@@ -8,6 +8,12 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public
+export const ExpandableNavigation: () => JSX.Element | null;
+
+// @public
+export const LightBox: () => JSX.Element | null;
+
+// @public
 export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;
 
 // @public
@@ -23,15 +29,13 @@ export type ReportIssueTemplate = {
 };
 
 // @public
-export type ReportIssueTemplateBuilder = ({
-  selection,
-}: {
+export type ReportIssueTemplateBuilder = (options: {
   selection: Selection;
 }) => ReportIssueTemplate;
 
 // @public
-export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}>;
+export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
-export const TextSize: (props: unknown) => JSX.Element | null;
+export const TextSize: () => JSX.Element | null;
 ```

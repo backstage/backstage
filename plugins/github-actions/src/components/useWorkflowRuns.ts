@@ -19,20 +19,20 @@ import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export type WorkflowRun = {
-  workflowName: string;
+  workflowName?: string;
   id: string;
-  message: string;
+  message?: string;
   url?: string;
   githubUrl?: string;
   source: {
-    branchName: string;
+    branchName?: string;
     commit: {
-      hash: string;
+      hash?: string;
       url?: string;
     };
   };
-  status: string;
-  conclusion: string;
+  status?: string;
+  conclusion?: string;
   onReRunClick: () => void;
 };
 
@@ -75,8 +75,8 @@ export function useWorkflowRuns({
     setTotal(workflowRunsData.total_count);
     // Transformation here
     return workflowRunsData.workflow_runs.map(run => ({
-      workflowName: run.name,
-      message: run.head_commit.message,
+      workflowName: run.name ?? undefined,
+      message: run.head_commit?.message,
       id: `${run.id}`,
       onReRunClick: async () => {
         try {
@@ -87,21 +87,23 @@ export function useWorkflowRuns({
             runId: run.id,
           });
         } catch (e) {
-          errorApi.post(e);
+          errorApi.post(
+            new Error(`Failed to rerun the workflow: ${e.message}`),
+          );
         }
       },
       source: {
-        branchName: run.head_branch,
+        branchName: run.head_branch ?? undefined,
         commit: {
-          hash: run.head_commit.id,
+          hash: run.head_commit?.id,
           url: run.head_repository?.branches_url?.replace(
             '{/branch}',
-            run.head_branch,
+            run.head_branch ?? '',
           ),
         },
       },
-      status: run.status,
-      conclusion: run.conclusion,
+      status: run.status ?? undefined,
+      conclusion: run.conclusion ?? undefined,
       url: run.url,
       githubUrl: run.html_url,
     }));

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from './html';
+export * from './styles';
 export * from './addBaseUrl';
 export * from './addGitFeedbackLink';
 export * from './addSidebarToggle';
@@ -23,7 +25,6 @@ export * from './copyToClipboard';
 export * from './removeMkdocsHeader';
 export * from './simplifyMkdocsFooter';
 export * from './onCssReady';
-export * from './sanitizeDOM';
-export * from './injectCss';
 export * from './scrollIntoAnchor';
+export * from './scrollIntoNavigation';
 export * from './transformer';

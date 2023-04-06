@@ -17,6 +17,8 @@
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
+  WorkloadsByEntityRequest,
+  CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
 
@@ -35,4 +37,15 @@ export interface KubernetesApi {
       oidcTokenProvider?: string | undefined;
     }[]
   >;
+  getWorkloadsByEntity(
+    request: WorkloadsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+  getCustomObjectsByEntity(
+    request: CustomObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }

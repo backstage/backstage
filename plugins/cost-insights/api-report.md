@@ -9,21 +9,27 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { ContentRenderer } from 'recharts';
+import { ChangeStatistic as ChangeStatistic_2 } from '@backstage/plugin-cost-insights-common';
+import * as common from '@backstage/plugin-cost-insights-common';
+import { Cost as Cost_2 } from '@backstage/plugin-cost-insights-common';
 import { Dispatch } from 'react';
+import { Entity as Entity_2 } from '@backstage/plugin-cost-insights-common';
 import { ForwardRefExoticComponent } from 'react';
+import { Group as Group_2 } from '@backstage/plugin-cost-insights-common';
+import { Maybe as Maybe_2 } from '@backstage/plugin-cost-insights-common';
+import { Metric as Metric_2 } from '@backstage/plugin-cost-insights-common';
+import { MetricData as MetricData_2 } from '@backstage/plugin-cost-insights-common';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { Product as Product_2 } from '@backstage/plugin-cost-insights-common';
+import { Project as Project_2 } from '@backstage/plugin-cost-insights-common';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { RechartsFunction } from 'recharts';
 import { RefAttributes } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
 import { TooltipProps } from 'recharts';
 import { TypographyProps } from '@material-ui/core';
 
-// Warning: (ae-missing-release-tag) "Alert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Alert = {
   title: string | JSX.Element;
@@ -32,16 +38,14 @@ export type Alert = {
   status?: AlertStatus;
   url?: string;
   buttonText?: string;
-  SnoozeForm?: Maybe<AlertForm>;
-  AcceptForm?: Maybe<AlertForm>;
-  DismissForm?: Maybe<AlertForm>;
+  SnoozeForm?: Maybe_2<AlertForm>;
+  AcceptForm?: Maybe_2<AlertForm>;
+  DismissForm?: Maybe_2<AlertForm>;
   onSnoozed?(options: AlertOptions): Promise<Alert[]>;
   onAccepted?(options: AlertOptions): Promise<Alert[]>;
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
 };
 
-// Warning: (ae-missing-release-tag) "AlertCost" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AlertCost {
   // (undocumented)
@@ -50,20 +54,16 @@ export interface AlertCost {
   id: string;
 }
 
-// Warning: (ae-missing-release-tag) "AlertDismissFormData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AlertDismissFormData {
   // (undocumented)
-  feedback: Maybe<string>;
+  feedback: Maybe_2<string>;
   // (undocumented)
-  other: Maybe<string>;
+  other: Maybe_2<string>;
   // (undocumented)
   reason: AlertDismissReason;
 }
 
-// Warning: (ae-missing-release-tag) "AlertDismissOption" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AlertDismissOption {
   // (undocumented)
@@ -72,13 +72,9 @@ export interface AlertDismissOption {
   reason: string;
 }
 
-// Warning: (ae-missing-release-tag) "AlertDismissOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const AlertDismissOptions: AlertDismissOption[];
 
-// Warning: (ae-missing-release-tag) "AlertDismissReason" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum AlertDismissReason {
   // (undocumented)
@@ -95,8 +91,6 @@ export enum AlertDismissReason {
   Seasonal = 'seasonal',
 }
 
-// Warning: (ae-missing-release-tag) "AlertForm" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AlertForm<
   A extends Alert = any,
@@ -105,8 +99,6 @@ export type AlertForm<
   AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
 >;
 
-// Warning: (ae-missing-release-tag) "AlertFormProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AlertFormProps<A extends Alert, FormData = {}> = {
   alert: A;
@@ -114,8 +106,6 @@ export type AlertFormProps<A extends Alert, FormData = {}> = {
   disableSubmit: (isDisabled: boolean) => void;
 };
 
-// Warning: (ae-missing-release-tag) "AlertOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface AlertOptions<T = any> {
   // (undocumented)
@@ -124,29 +114,21 @@ export interface AlertOptions<T = any> {
   group: string;
 }
 
-// Warning: (ae-missing-release-tag) "AlertSnoozeFormData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface AlertSnoozeFormData {
   // (undocumented)
   intervals: string;
 }
 
-// Warning: (ae-missing-release-tag) "AlertSnoozeOption" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AlertSnoozeOption = {
   label: string;
   duration: Duration;
 };
 
-// Warning: (ae-missing-release-tag) "AlertSnoozeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const AlertSnoozeOptions: AlertSnoozeOption[];
 
-// Warning: (ae-missing-release-tag) "AlertStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum AlertStatus {
   // (undocumented)
@@ -157,36 +139,17 @@ export enum AlertStatus {
   Snoozed = 'snoozed',
 }
 
-// Warning: (ae-missing-release-tag) "BarChart" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const BarChart: ({
-  resources,
-  responsive,
-  displayAmount,
-  options,
-  tooltip,
-  onClick,
-  onMouseMove,
-}: BarChartProps) => JSX.Element;
+export const BarChart: (props: BarChartProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "BarChartData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @public @deprecated (undocumented)
 export interface BarChartData extends BarChartOptions {}
 
-// Warning: (ae-missing-release-tag) "BarChartLegend" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const BarChartLegend: ({
-  costStart,
-  costEnd,
-  options,
-  children,
-}: PropsWithChildren<BarChartLegendProps>) => JSX.Element;
+export const BarChartLegend: (
+  props: PropsWithChildren<BarChartLegendProps>,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "BarChartLegendOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BarChartLegendOptions = {
   previousName: string;
@@ -196,8 +159,6 @@ export type BarChartLegendOptions = {
   hideMarker?: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "BarChartLegendProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BarChartLegendProps = {
   costStart: number;
@@ -205,8 +166,6 @@ export type BarChartLegendProps = {
   options?: Partial<BarChartLegendOptions>;
 };
 
-// Warning: (ae-missing-release-tag) "BarChartOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BarChartOptions {
   // (undocumented)
@@ -219,47 +178,32 @@ export interface BarChartOptions {
   previousName: string;
 }
 
-// Warning: (ae-missing-release-tag) "BarChartProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BarChartProps = {
   resources: ResourceData[];
   responsive?: boolean;
   displayAmount?: number;
-  options?: Partial<BarChartData>;
-  tooltip?: ContentRenderer<TooltipProps>;
-  onClick?: RechartsFunction;
-  onMouseMove?: RechartsFunction;
+  options?: Partial<BarChartOptions>;
+  tooltip?: TooltipRenderer;
+  onClick?: (...args: any[]) => void;
+  onMouseMove?: (...args: any[]) => void;
 };
 
-// Warning: (ae-missing-release-tag) "BarChartTooltip" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const BarChartTooltip: ({
-  title,
-  content,
-  subtitle,
-  topRight,
-  actions,
-  children,
-}: PropsWithChildren<BarChartTooltipProps>) => JSX.Element;
+export const BarChartTooltip: (
+  props: PropsWithChildren<BarChartTooltipProps>,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "BarChartTooltipItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const BarChartTooltipItem: ({
-  item,
-}: BarChartTooltipItemProps) => JSX.Element;
+export const BarChartTooltipItem: (
+  props: BarChartTooltipItemProps,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "BarChartTooltipItemProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BarChartTooltipItemProps = {
   item: TooltipItem;
 };
 
-// Warning: (ae-missing-release-tag) "BarChartTooltipProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type BarChartTooltipProps = {
   title: string;
@@ -269,18 +213,9 @@ export type BarChartTooltipProps = {
   actions?: ReactNode;
 };
 
-// Warning: (ae-missing-release-tag) "ChangeStatistic" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface ChangeStatistic {
-  // (undocumented)
-  amount: number;
-  // (undocumented)
-  ratio?: number;
-}
+// @public @deprecated (undocumented)
+export type ChangeStatistic = common.ChangeStatistic;
 
-// Warning: (ae-missing-release-tag) "ChangeThreshold" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum ChangeThreshold {
   // (undocumented)
@@ -289,8 +224,6 @@ export enum ChangeThreshold {
   upper = 0.05,
 }
 
-// Warning: (ae-missing-release-tag) "ChartData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ChartData = {
   date: number;
@@ -299,97 +232,91 @@ export type ChartData = {
   [key: string]: number;
 };
 
-// Warning: (ae-missing-release-tag) "Cost" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export interface Cost {
-  // (undocumented)
-  aggregation: DateAggregation[];
-  // (undocumented)
-  change?: ChangeStatistic;
-  // (undocumented)
-  groupedCosts?: Record<string, Cost[]>;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  trendline?: Trendline;
-}
-
-// Warning: (ae-missing-release-tag) "CostGrowth" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CostGrowth: ({ change, duration }: CostGrowthProps) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "CostGrowthIndicator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CostGrowthIndicator: ({
-  change,
-  formatter,
-  className,
-  ...props
-}: CostGrowthIndicatorProps) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "CostGrowthIndicatorProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type CostGrowthIndicatorProps = TypographyProps & {
-  change: ChangeStatistic;
-  formatter?: (change: ChangeStatistic) => Maybe<string>;
+export type ConfigContextProps = {
+  baseCurrency: Intl.NumberFormat;
+  metrics: Metric_2[];
+  products: Product_2[];
+  icons: Icon[];
+  engineerCost: number;
+  engineerThreshold: number;
+  currencies: Currency[];
 };
 
-// Warning: (ae-missing-release-tag) "CostGrowthProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public @deprecated (undocumented)
+export type Cost = common.Cost;
+
+// @public (undocumented)
+export const CostGrowth: (props: CostGrowthProps) => JSX.Element;
+
+// @public (undocumented)
+export const CostGrowthIndicator: (
+  props: CostGrowthIndicatorProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type CostGrowthIndicatorProps = TypographyProps & {
+  change: ChangeStatistic_2;
+  formatter?: (
+    change: ChangeStatistic_2,
+    options?: {
+      absolute: boolean;
+    },
+  ) => Maybe_2<string>;
+};
+
 // @public (undocumented)
 export type CostGrowthProps = {
-  change: ChangeStatistic;
+  change: ChangeStatistic_2;
   duration: Duration;
 };
 
-// Warning: (ae-missing-release-tag) "CostInsightsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CostInsightsApi = {
   getLastCompleteBillingDate(): Promise<string>;
-  getUserGroups(userId: string): Promise<Group[]>;
-  getGroupProjects(group: string): Promise<Project[]>;
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
-  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
-  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
+  getUserGroups(userId: string): Promise<Group_2[]>;
+  getGroupProjects(group: string): Promise<Project_2[]>;
+  getCatalogEntityDailyCost?(
+    catalogEntityRef: string,
+    intervals: string,
+  ): Promise<Cost_2>;
+  getGroupDailyCost(group: string, intervals: string): Promise<Cost_2>;
+  getProjectDailyCost(project: string, intervals: string): Promise<Cost_2>;
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData_2>;
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity_2>;
   getAlerts(group: string): Promise<Alert[]>;
 };
 
-// Warning: (ae-missing-release-tag) "costInsightsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const costInsightsApiRef: ApiRef<CostInsightsApi>;
 
-// Warning: (ae-missing-release-tag) "CostInsightsLabelDataflowInstructionsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const CostInsightsLabelDataflowInstructionsPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "CostInsightsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const CostInsightsPage: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "CostInsightsPaletteAdditions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CostInsightsPalette" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CostInsightsPalette = BackstagePalette &
   CostInsightsPaletteAdditions;
 
-// Warning: (ae-missing-release-tag) "CostInsightsPaletteOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CostInsightsPaletteAdditions = {
+  blue: string;
+  lightBlue: string;
+  darkBlue: string;
+  magenta: string;
+  yellow: string;
+  tooltip: CostInsightsTooltipOptions;
+  navigationText: string;
+  alertBackground: string;
+  dataViz: string[];
+};
+
 // @public (undocumented)
 export type CostInsightsPaletteOptions = PaletteOptions &
   CostInsightsPaletteAdditions;
 
-// Warning: (ae-missing-release-tag) "costInsightsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const costInsightsPlugin: BackstagePlugin<
   {
@@ -397,34 +324,33 @@ const costInsightsPlugin: BackstagePlugin<
     growthAlerts: RouteRef<undefined>;
     unlabeledDataflowAlerts: RouteRef<undefined>;
   },
-  {}
+  {},
+  CostInsightsInputPluginOptions
 >;
 export { costInsightsPlugin };
 export { costInsightsPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "CostInsightsProjectGrowthInstructionsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const CostInsightsProjectGrowthInstructionsPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "CostInsightsTheme" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface CostInsightsTheme extends BackstageTheme {
   // (undocumented)
   palette: CostInsightsPalette;
 }
 
-// Warning: (ae-missing-release-tag) "CostInsightsThemeOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface CostInsightsThemeOptions extends PaletteOptions {
   // (undocumented)
   palette: CostInsightsPaletteOptions;
 }
 
-// Warning: (ae-missing-release-tag) "Currency" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CostInsightsTooltipOptions = {
+  background: string;
+  color: string;
+};
+
 // @public (undocumented)
 export interface Currency {
   // (undocumented)
@@ -439,8 +365,12 @@ export interface Currency {
   unit: string;
 }
 
-// Warning: (ae-missing-release-tag) "CurrencyType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CurrencyContextProps = {
+  currency: Currency;
+  setCurrency: Dispatch<SetStateAction<Currency>>;
+};
+
 // @public (undocumented)
 export enum CurrencyType {
   // (undocumented)
@@ -453,8 +383,6 @@ export enum CurrencyType {
   USD = 'USD',
 }
 
-// Warning: (ae-missing-release-tag) "DataKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum DataKey {
   // (undocumented)
@@ -465,21 +393,12 @@ export enum DataKey {
   Previous = 'previous',
 }
 
-// Warning: (ae-missing-release-tag) "DateAggregation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type DateAggregation = {
-  date: string;
-  amount: number;
-};
+// @public @deprecated (undocumented)
+export type DateAggregation = common.DateAggregation;
 
-// Warning: (ae-missing-release-tag) "DEFAULT_DATE_FORMAT" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const DEFAULT_DATE_FORMAT = 'yyyy-LL-dd';
 
-// Warning: (ae-missing-release-tag) "Duration" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export enum Duration {
   // (undocumented)
@@ -492,56 +411,43 @@ export enum Duration {
   P90D = 'P90D',
 }
 
-// Warning: (ae-missing-release-tag) "EngineerThreshold" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EngineerThreshold = 0.5;
 
-// Warning: (ae-missing-release-tag) "Entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface Entity {
-  // (undocumented)
-  aggregation: [number, number];
-  // (undocumented)
-  change: ChangeStatistic;
-  // (undocumented)
-  entities: Record<string, Entity[]>;
-  // (undocumented)
-  id: Maybe<string>;
-}
+// @public @deprecated (undocumented)
+export type Entity = common.Entity;
 
-// Warning: (ae-missing-release-tag) "ExampleCostInsightsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export const EntityCostInsightsContent: () => JSX.Element;
+
 // @public (undocumented)
 export class ExampleCostInsightsClient implements CostInsightsApi {
   // (undocumented)
   getAlerts(group: string): Promise<Alert[]>;
   // (undocumented)
-  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
+  getCatalogEntityDailyCost(
+    entityRef: string,
+    intervals: string,
+  ): Promise<Cost_2>;
   // (undocumented)
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData_2>;
   // (undocumented)
-  getGroupProjects(group: string): Promise<Project[]>;
+  getGroupDailyCost(group: string, intervals: string): Promise<Cost_2>;
+  // (undocumented)
+  getGroupProjects(group: string): Promise<Project_2[]>;
   // (undocumented)
   getLastCompleteBillingDate(): Promise<string>;
   // (undocumented)
-  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity_2>;
   // (undocumented)
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
+  getProjectDailyCost(project: string, intervals: string): Promise<Cost_2>;
   // (undocumented)
-  getUserGroups(userId: string): Promise<Group[]>;
+  getUserGroups(userId: string): Promise<Group_2[]>;
 }
 
-// Warning: (ae-missing-release-tag) "Group" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type Group = {
-  id: string;
-};
+// @public @deprecated (undocumented)
+export type Group = common.Group;
 
-// Warning: (ae-missing-release-tag) "GrowthType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum GrowthType {
   // (undocumented)
@@ -552,16 +458,12 @@ export enum GrowthType {
   Savings = 1,
 }
 
-// Warning: (ae-missing-release-tag) "Icon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Icon = {
   kind: string;
   component: JSX.Element;
 };
 
-// Warning: (ae-missing-release-tag) "IconType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum IconType {
   // (undocumented)
@@ -578,18 +480,11 @@ export enum IconType {
   Storage = 'storage',
 }
 
-// Warning: (ae-missing-release-tag) "LegendItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const LegendItem: ({
-  title,
-  tooltipText,
-  markerColor,
-  children,
-}: PropsWithChildren<LegendItemProps>) => JSX.Element;
+export const LegendItem: (
+  props: PropsWithChildren<LegendItemProps>,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "LegendItemProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type LegendItemProps = {
   title: string;
@@ -597,98 +492,64 @@ export type LegendItemProps = {
   markerColor?: string;
 };
 
-// Warning: (ae-missing-release-tag) "Loading" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Loading = Record<string, boolean>;
 
-// Warning: (ae-missing-release-tag) "Maybe" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type Maybe<T> = T | null;
+// @public @deprecated (undocumented)
+export type Maybe<T> = common.Maybe<T>;
 
-// Warning: (ae-missing-release-tag) "Metric" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type Metric = {
-  kind: string;
-  name: string;
-  default: boolean;
-};
+// @public @deprecated (undocumented)
+export type Metric = common.Metric;
 
-// Warning: (ae-missing-release-tag) "MetricData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface MetricData {
-  // (undocumented)
-  aggregation: DateAggregation[];
-  // (undocumented)
-  change: ChangeStatistic;
-  // (undocumented)
-  format: 'number' | 'currency';
-  // (undocumented)
-  id: string;
-}
+// @public @deprecated (undocumented)
+export type MetricData = common.MetricData;
 
-// Warning: (ae-forgotten-export) The symbol "MockConfigProviderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MockConfigProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const MockConfigProvider: ({
-  children,
-  ...context
-}: MockConfigProviderProps) => JSX.Element;
+export const MockConfigProvider: (
+  props: MockConfigProviderProps,
+) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "MockCurrencyProviderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MockCurrencyProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const MockCurrencyProvider: ({
-  children,
-  ...context
-}: MockCurrencyProviderProps) => JSX.Element;
+export type MockConfigProviderProps = PropsWithChildren<
+  Partial<ConfigContextProps>
+>;
 
-// Warning: (ae-missing-release-tag) "PageFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export const MockCurrencyProvider: (
+  props: MockCurrencyProviderProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type MockCurrencyProviderProps = PropsWithChildren<
+  Partial<CurrencyContextProps>
+>;
+
 // @public (undocumented)
 export interface PageFilters {
   // (undocumented)
   duration: Duration;
   // (undocumented)
-  group: Maybe<string>;
+  group: Maybe_2<string>;
   // (undocumented)
   metric: string | null;
   // (undocumented)
-  project: Maybe<string>;
+  project: Maybe_2<string>;
 }
 
-// Warning: (ae-missing-release-tag) "Product" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface Product {
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  name: string;
-}
+// @public @deprecated (undocumented)
+export type Product = common.Product;
 
-// Warning: (ae-missing-release-tag) "ProductFilters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ProductFilters = Array<ProductPeriod>;
 
-// Warning: (ae-missing-release-tag) "ProductInsightsOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ProductInsightsOptions = {
   product: string;
   group: string;
   intervals: string;
-  project: Maybe<string>;
+  project: Maybe_2<string>;
 };
 
-// Warning: (ae-missing-release-tag) "ProductPeriod" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ProductPeriod {
   // (undocumented)
@@ -697,18 +558,9 @@ export interface ProductPeriod {
   productType: string;
 }
 
-// Warning: (ae-missing-release-tag) "Project" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface Project {
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  name?: string;
-}
+// @public @deprecated (undocumented)
+export type Project = common.Project;
 
-// Warning: (ae-missing-release-tag) "ProjectGrowthAlert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ProjectGrowthAlert implements Alert {
   constructor(data: ProjectGrowthData);
@@ -724,14 +576,12 @@ export class ProjectGrowthAlert implements Alert {
   get url(): string;
 }
 
-// Warning: (ae-missing-release-tag) "ProjectGrowthData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ProjectGrowthData {
   // (undocumented)
   aggregation: [number, number];
   // (undocumented)
-  change: ChangeStatistic;
+  change: ChangeStatistic_2;
   // (undocumented)
   periodEnd: string;
   // (undocumented)
@@ -742,37 +592,31 @@ export interface ProjectGrowthData {
   project: string;
 }
 
-// Warning: (ae-missing-release-tag) "ResourceData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ResourceData {
   // (undocumented)
   current: number;
   // (undocumented)
-  name: Maybe<string>;
+  name: Maybe_2<string>;
   // (undocumented)
   previous: number;
 }
 
-// Warning: (ae-missing-release-tag) "TooltipItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type TooltipItem = {
   fill: string;
-  label: string;
-  value: string;
+  label?: string;
+  value?: string;
 };
 
-// Warning: (ae-missing-release-tag) "Trendline" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export type Trendline = {
-  slope: number;
-  intercept: number;
-};
+export type TooltipRenderer = (
+  props: TooltipProps<string, string>,
+) => ReactNode;
 
-// Warning: (ae-missing-release-tag) "UnlabeledDataflowAlert" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public @deprecated (undocumented)
+export type Trendline = common.Trendline;
+
 // @public
 export class UnlabeledDataflowAlert implements Alert {
   constructor(data: UnlabeledDataflowData);
@@ -790,8 +634,6 @@ export class UnlabeledDataflowAlert implements Alert {
   get url(): string;
 }
 
-// Warning: (ae-missing-release-tag) "UnlabeledDataflowAlertProject" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface UnlabeledDataflowAlertProject {
   // (undocumented)
@@ -802,8 +644,6 @@ export interface UnlabeledDataflowAlertProject {
   unlabeledCost: number;
 }
 
-// Warning: (ae-missing-release-tag) "UnlabeledDataflowData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface UnlabeledDataflowData {
   // (undocumented)

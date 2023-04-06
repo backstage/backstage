@@ -158,6 +158,7 @@ export function LogLine({
   const elements = useMemo(
     () =>
       chunks.map(({ text, modifiers, highlight }, index) => (
+        // eslint-disable-next-line react/forbid-elements
         <span
           key={index}
           className={classnames(

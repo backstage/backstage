@@ -11,8 +11,6 @@ import { Entity } from '@backstage/catalog-model';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "ActionsGetWorkflowResponseData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ActionsGetWorkflowResponseData = {
   id: string;
@@ -37,16 +35,12 @@ export type ActionsGetWorkflowResponseData = {
   timing: Timing2;
 };
 
-// Warning: (ae-missing-release-tag) "ActionsListWorkflowRunsForRepoResponseData" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ActionsListWorkflowRunsForRepoResponseData {
   // (undocumented)
   builds: ActionsGetWorkflowResponseData[];
 }
 
-// Warning: (ae-missing-release-tag) "BUILD" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface BUILD {
   // (undocumented)
@@ -55,122 +49,78 @@ export interface BUILD {
   startTime: string;
 }
 
-// Warning: (ae-missing-release-tag) "CLOUDBUILD_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';
 
-// Warning: (ae-missing-release-tag) "CloudbuildApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type CloudbuildApi = {
-  listWorkflowRuns: (request: {
+  listWorkflowRuns: (options: {
     projectId: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
-  getWorkflow: ({
-    projectId,
-    id,
-  }: {
+  getWorkflow: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  getWorkflowRun: ({
-    projectId,
-    id,
-  }: {
+  getWorkflowRun: (options: {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  reRunWorkflow: ({
-    projectId,
-    runId,
-  }: {
+  reRunWorkflow: (options: {
     projectId: string;
     runId: string;
   }) => Promise<any>;
 };
 
-// Warning: (ae-missing-release-tag) "cloudbuildApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const cloudbuildApiRef: ApiRef<CloudbuildApi>;
 
-// Warning: (ae-missing-release-tag) "CloudbuildClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class CloudbuildClient implements CloudbuildApi {
   constructor(googleAuthApi: OAuthApi);
   // (undocumented)
   getToken(): Promise<string>;
   // (undocumented)
-  getWorkflow({
-    projectId,
-    id,
-  }: {
+  getWorkflow(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
-  getWorkflowRun({
-    projectId,
-    id,
-  }: {
+  getWorkflowRun(options: {
     projectId: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
-  listWorkflowRuns({
-    projectId,
-  }: {
+  listWorkflowRuns(options: {
     projectId: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData>;
   // (undocumented)
-  reRunWorkflow({
-    projectId,
-    runId,
-  }: {
-    projectId: string;
-    runId: string;
-  }): Promise<void>;
+  reRunWorkflow(options: { projectId: string; runId: string }): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "cloudbuildPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const cloudbuildPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { cloudbuildPlugin };
 export { cloudbuildPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "EntityCloudbuildContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityCloudbuildContent: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestCloudbuildRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestCloudbuildRunCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildRunCard: (props: {
   branch: string;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "EntityLatestCloudbuildsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntityLatestCloudbuildsForBranchCard: ({
-  branch,
-}: {
+export const EntityLatestCloudbuildsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FETCHSOURCE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface FETCHSOURCE {
   // (undocumented)
@@ -179,33 +129,19 @@ export interface FETCHSOURCE {
   startTime: string;
 }
 
-// Warning: (ae-missing-release-tag) "isCloudbuildAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const isCloudbuildAvailable: (entity: Entity) => boolean;
 export { isCloudbuildAvailable };
 export { isCloudbuildAvailable as isPluginApplicableToEntity };
 
-// Warning: (ae-missing-release-tag) "LatestWorkflowRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const LatestWorkflowRunCard: ({
-  branch,
-}: {
+export const LatestWorkflowRunCard: (props: { branch: string }) => JSX.Element;
+
+// @public (undocumented)
+export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const LatestWorkflowsForBranchCard: ({
-  branch,
-}: {
-  branch: string;
-}) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "Options" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Options {
   // (undocumented)
@@ -218,8 +154,6 @@ export interface Options {
   substitutionOption: string;
 }
 
-// Warning: (ae-missing-release-tag) "PullTiming" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface PullTiming {
   // (undocumented)
@@ -228,8 +162,6 @@ export interface PullTiming {
   startTime: string;
 }
 
-// Warning: (ae-missing-release-tag) "ResolvedStorageSource" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ResolvedStorageSource {
   // (undocumented)
@@ -240,8 +172,6 @@ export interface ResolvedStorageSource {
   object: string;
 }
 
-// Warning: (ae-missing-release-tag) "Results" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Results {
   // (undocumented)
@@ -250,21 +180,15 @@ export interface Results {
   buildStepOutputs: string[];
 }
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "Source" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Source {
   // (undocumented)
   storageSource: StorageSource;
 }
 
-// Warning: (ae-missing-release-tag) "SourceProvenance" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface SourceProvenance {
   // (undocumented)
@@ -273,8 +197,6 @@ export interface SourceProvenance {
   resolvedStorageSource: {};
 }
 
-// Warning: (ae-missing-release-tag) "Step" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Step {
   // (undocumented)
@@ -299,8 +221,6 @@ export interface Step {
   waitFor: string[];
 }
 
-// Warning: (ae-missing-release-tag) "StorageSource" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface StorageSource {
   // (undocumented)
@@ -309,8 +229,6 @@ export interface StorageSource {
   object: string;
 }
 
-// Warning: (ae-missing-release-tag) "Substitutions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Substitutions {
   // (undocumented)
@@ -325,8 +243,6 @@ export interface Substitutions {
   SHORT_SHA: string;
 }
 
-// Warning: (ae-missing-release-tag) "Timing" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Timing {
   // (undocumented)
@@ -335,8 +251,6 @@ export interface Timing {
   startTime: string;
 }
 
-// Warning: (ae-missing-release-tag) "Timing2" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Timing2 {
   // (undocumented)
@@ -345,8 +259,6 @@ export interface Timing2 {
   FETCHSOURCE: FETCHSOURCE;
 }
 
-// Warning: (ae-missing-release-tag) "Volume" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface Volume {
   // (undocumented)

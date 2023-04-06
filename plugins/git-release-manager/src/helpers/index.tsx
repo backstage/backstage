@@ -15,6 +15,7 @@
  */
 
 export { calverRegexp, getCalverTagParts } from './tagParts/getCalverTagParts';
+export type { CalverTagParts } from './tagParts/getCalverTagParts';
 export { getBumpedSemverTagParts, getBumpedTag } from './getBumpedTag';
 export { getSemverTagParts, semverRegexp } from './tagParts/getSemverTagParts';
 export { getShortCommitHash } from './getShortCommitHash';

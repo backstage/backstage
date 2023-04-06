@@ -20,7 +20,14 @@
  * @packageDocumentation
  */
 
+export * from './api';
 export * from './components';
 export * from './extensions';
-export { explorePlugin, explorePlugin as plugin } from './plugin';
+export {
+  ToolSearchResultListItem,
+  explorePlugin,
+  explorePlugin as plugin,
+} from './plugin';
 export * from './routes';
+
+export type { ToolSearchResultListItemProps } from './components/ToolSearchResultListItem';

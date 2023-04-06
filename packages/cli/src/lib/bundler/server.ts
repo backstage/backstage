@@ -40,10 +40,10 @@ export async function serveBundle(options: ServeOptions) {
     isDev: true,
     baseUrl: url,
   });
+
   const compiler = webpack(config);
 
   const server = new WebpackDevServer(
-    compiler as any,
     {
       hot: !process.env.CI,
       devMiddleware: {
@@ -60,8 +60,17 @@ export async function serveBundle(options: ServeOptions) {
         // Paths with dots should still use the history fallback.
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
+
+        // The index needs to be rewritten relative to the new public path, including subroutes.
+        index: `${config.output?.publicPath}index.html`,
       },
-      https: url.protocol === 'https:',
+      https:
+        url.protocol === 'https:'
+          ? {
+              cert: options.fullConfig.getString('app.https.certificate.cert'),
+              key: options.fullConfig.getString('app.https.certificate.key'),
+            }
+          : false,
       host,
       port,
       proxy: pkg.proxy,
@@ -71,10 +80,11 @@ export async function serveBundle(options: ServeOptions) {
         webSocketURL: 'auto://0.0.0.0:0/ws',
       },
     } as any,
+    compiler as any,
   );
 
   await new Promise<void>((resolve, reject) => {
-    server.listen(port, host, (err?: Error) => {
+    server.startCallback((err?: Error) => {
       if (err) {
         reject(err);
         return;

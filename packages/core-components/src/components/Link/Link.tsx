@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+// eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import classnames from 'classnames';
+import { trimEnd } from 'lodash';
 import React, { ElementType } from 'react';
 import {
+  createRoutesFromChildren,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
+  Route,
 } from 'react-router-dom';
+
+export function isReactRouterBeta(): boolean {
+  const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
+  return !obj.index;
+}
 
 const useStyles = makeStyles(
   {
@@ -36,17 +46,87 @@ const useStyles = makeStyles(
       height: 1,
       width: 1,
     },
+    externalLink: {
+      position: 'relative',
+    },
   },
   { name: 'Link' },
 );
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
-export type LinkProps = MaterialLinkProps &
-  RouterLinkProps & {
+// See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
+const scriptProtocolPattern =
+  // eslint-disable-next-line no-control-regex
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+
+// We install this globally in order to prevent javascript: URL XSS attacks via window.open
+const originalWindowOpen = window.open as typeof window.open & {
+  __backstage?: true;
+};
+if (originalWindowOpen && !originalWindowOpen.__backstage) {
+  const newOpen = function open(
+    this: Window,
+    ...args: Parameters<typeof window.open>
+  ) {
+    const url = String(args[0]);
+    if (scriptProtocolPattern.test(url)) {
+      throw new Error(
+        'Rejected window.open() with a javascript: URL as a security precaution',
+      );
+    }
+    return originalWindowOpen.apply(this, args);
+  };
+  newOpen.__backstage = true;
+  window.open = newOpen;
+}
+
+export type LinkProps = Omit<MaterialLinkProps, 'to'> &
+  Omit<RouterLinkProps, 'to'> & {
+    to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
   };
+
+/**
+ * Returns the app base url that could be empty if the Config API is not properly implemented.
+ * The only cases there would be no Config API are in tests and in storybook stories, and in those cases, it's unlikely that callers would rely on this subpath behavior.
+ */
+const useBaseUrl = () => {
+  try {
+    const config = useApi(configApiRef);
+    return config.getOptionalString('app.baseUrl');
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * Get the app base path from the configured app baseUrl.
+ * The returned path does not have a trailing slash.
+ */
+const useBasePath = () => {
+  // baseUrl can be specified as just a path
+  const base = 'http://sample.dev';
+  const url = useBaseUrl() ?? '/';
+  const { pathname } = new URL(url, base);
+  return trimEnd(pathname, '/');
+};
+
+/** @deprecated Remove once we no longer support React Router v6 beta */
+export const useResolvedPath = (uri: LinkProps['to']) => {
+  let resolvedPath = String(uri);
+
+  const basePath = useBasePath();
+  const external = isExternalUri(resolvedPath);
+  const startsWithBasePath = resolvedPath.startsWith(basePath);
+
+  if (!external && !startsWithBasePath) {
+    resolvedPath = basePath.concat(resolvedPath);
+  }
+
+  return resolvedPath;
+};
 
 /**
  * Given a react node, try to retrieve its text content.
@@ -80,10 +160,21 @@ export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
-    const to = String(props.to);
+
+    // Adding the base path to URLs breaks react-router v6 stable, so we only
+    // do it for beta. The react router version won't change at runtime so it is
+    // fine to ignore the rules of hooks.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
+
+    if (scriptProtocolPattern.test(to)) {
+      throw new Error(
+        'Link component rejected javascript: URL as a security precaution',
+      );
+    }
 
     const handleClick = (event: React.MouseEvent<any, MouseEvent>) => {
       onClick?.(event);
@@ -95,22 +186,26 @@ export const Link = React.forwardRef<any, LinkProps>(
     return external ? (
       // External links
       <MaterialLink
+        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
+        {...props}
         ref={ref}
         href={to}
         onClick={handleClick}
-        {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
-        {...props}
+        className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
-        <span className={classes.visuallyHidden}>, Opens in a new window</span>
+        <Typography component="span" className={classes.visuallyHidden}>
+          , Opens in a new window
+        </Typography>
       </MaterialLink>
     ) : (
       // Interact with React Router for internal links
       <MaterialLink
+        {...props}
         ref={ref}
         component={RouterLink}
+        to={to}
         onClick={handleClick}
-        {...props}
       />
     );
   },

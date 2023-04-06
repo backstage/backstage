@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { todoPlugin, EntityTodoContent } from './plugin';
 import { todoApiRef } from './api';
@@ -55,7 +55,9 @@ describe('todo', () => {
             metadata: { name: 'Test TODO' },
           }}
         >
-          <Route path="/" element={<EntityTodoContent />} />
+          <Routes>
+            <Route path="/" element={<EntityTodoContent />} />
+          </Routes>
         </EntityProvider>
       </TestApiProvider>,
     );

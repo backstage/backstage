@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Link } from '../../components/Link';
@@ -23,21 +24,21 @@ import { Link } from '../../components/Link';
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<BackstageTheme>(
   theme => ({
     root: {
       textAlign: 'left',
     },
     label: {
-      color: theme.palette.common.white,
-      fontWeight: 'bold',
+      color: theme.page.fontColor,
+      fontWeight: theme.typography.fontWeightBold,
       letterSpacing: 0,
       fontSize: theme.typography.fontSize,
       marginBottom: theme.spacing(1) / 2,
       lineHeight: 1,
     },
     value: {
-      color: 'rgba(255, 255, 255, 0.8)',
+      color: alpha(theme.page.fontColor, 0.8),
       fontSize: theme.typography.fontSize,
       lineHeight: 1,
     },
@@ -50,9 +51,16 @@ type HeaderLabelContentProps = {
   className: string;
 };
 
-const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => (
-  <Typography className={className}>{value}</Typography>
-);
+const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => {
+  return (
+    <Typography
+      component={typeof value === 'string' ? 'p' : 'span'}
+      className={className}
+    >
+      {value}
+    </Typography>
+  );
+};
 
 type HeaderLabelProps = {
   label: string;
@@ -77,10 +85,10 @@ export function HeaderLabel(props: HeaderLabelProps) {
   );
   return (
     <Grid item>
-      <span className={classes.root}>
+      <Typography component="span" className={classes.root}>
         <Typography className={classes.label}>{label}</Typography>
         {url ? <Link to={url}>{content}</Link> : content}
-      </span>
+      </Typography>
     </Grid>
   );
 }

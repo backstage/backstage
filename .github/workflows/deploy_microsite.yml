@@ -10,11 +10,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
+      DOCUSAURUS_SSR_CONCURRENCY: 5
 
     steps:
       - uses: actions/checkout@v3
@@ -29,12 +30,12 @@ jobs:
       # dependencies and the microsite. We leave it to the main master workflow to produce the
       # cache, as that results in a smaller bundle.
       - name: top-level yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: microsite yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: microsite
       - name: storybook yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: storybook
 
       - name: build API reference
@@ -49,13 +50,13 @@ jobs:
         working-directory: storybook
 
       - name: move storybook dist into microsite
-        run: mv storybook/dist/ microsite/build/backstage/storybook
+        run: mv storybook/dist/ microsite/build/storybook
 
       - name: Check the build output
-        run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
+        run: ls microsite/build && ls microsite/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
-          folder: microsite/build/backstage
+          folder: microsite/build

@@ -16,7 +16,10 @@
 
 import React, { ComponentType } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  isTemplateEntityV1beta3,
+  TemplateEntityV1beta3,
+} from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,
@@ -38,8 +41,9 @@ export type TemplateListProps = {
     | undefined;
   group?: {
     title?: React.ReactNode;
-    filter: (entity: Entity) => boolean;
+    filter: (entity: TemplateEntityV1beta3) => boolean;
   };
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 };
 
 /**
@@ -48,12 +52,14 @@ export type TemplateListProps = {
 export const TemplateList = ({
   TemplateCardComponent,
   group,
+  templateFilter,
 }: TemplateListProps) => {
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
-  const maybeFilteredEntities = group
-    ? entities.filter(e => group.filter(e))
-    : entities;
+  const templateEntities = entities.filter(isTemplateEntityV1beta3);
+  const maybeFilteredEntities = (
+    group ? templateEntities.filter(group.filter) : templateEntities
+  ).filter(e => (templateFilter ? templateFilter(e) : true));
 
   const titleComponent: React.ReactNode = (() => {
     if (group && group.title) {

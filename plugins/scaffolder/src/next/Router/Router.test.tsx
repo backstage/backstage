@@ -21,8 +21,12 @@ import { renderInTestApp } from '@backstage/test-utils';
 import {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
-} from '../../extensions';
+} from '@backstage/plugin-scaffolder-react';
 import { scaffolderPlugin } from '../../plugin';
+import {
+  createScaffolderLayout,
+  ScaffolderLayouts,
+} from '@backstage/plugin-scaffolder-react';
 
 jest.mock('../TemplateListPage', () => ({
   TemplateListPage: jest.fn(() => null),
@@ -43,13 +47,70 @@ describe('Router', () => {
 
       expect(TemplateListPage).toHaveBeenCalled();
     });
+
+    it('should render user-provided TemplateListPage', async () => {
+      const { getByText } = await renderInTestApp(
+        <Router
+          components={{
+            TemplateListPageComponent: () => <>foobar</>,
+          }}
+        />,
+        {
+          routeEntries: ['/'],
+        },
+      );
+      expect(getByText('foobar')).toBeInTheDocument();
+      expect(TemplateListPage).not.toHaveBeenCalled();
+    });
   });
 
   describe('/templates/:templateName', () => {
     it('should render the TemplateWizard page', async () => {
-      await renderInTestApp(<Router />, { routeEntries: ['/templates/foo'] });
+      await renderInTestApp(<Router />, {
+        routeEntries: ['/templates/default/foo'],
+      });
 
       expect(TemplateWizardPage).toHaveBeenCalled();
+    });
+
+    it('should render user-provided TemplateWizardPage', async () => {
+      const { getByText } = await renderInTestApp(
+        <Router
+          components={{
+            TemplateWizardPageComponent: () => <>foobar</>,
+          }}
+        />,
+        {
+          routeEntries: ['/templates/default/foo'],
+        },
+      );
+      expect(getByText('foobar')).toBeInTheDocument();
+      expect(TemplateWizardPage).not.toHaveBeenCalled();
+    });
+
+    it('should pass through the FormProps property', async () => {
+      const transformErrorsMock = jest.fn();
+
+      await renderInTestApp(
+        <Router
+          FormProps={{
+            transformErrors: transformErrorsMock,
+            noHtml5Validate: true,
+          }}
+        />,
+        {
+          routeEntries: ['/templates/default/foo'],
+        },
+      );
+
+      const mock = TemplateWizardPage as jest.Mock;
+
+      const [{ FormProps }] = mock.mock.calls[0];
+
+      expect(FormProps).toEqual({
+        transformErrors: transformErrorsMock,
+        noHtml5Validate: true,
+      });
     });
 
     it('should extract the fieldExtensions and pass them through', async () => {
@@ -67,7 +128,7 @@ describe('Router', () => {
             <CustomFieldExtension />
           </ScaffolderFieldExtensions>
         </Router>,
-        { routeEntries: ['/templates/foo'] },
+        { routeEntries: ['/templates/default/foo'] },
       );
 
       const mock = TemplateWizardPage as jest.Mock;
@@ -76,6 +137,37 @@ describe('Router', () => {
       expect(customFieldExtensions).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ name: 'custom', component: mockComponent }),
+        ]),
+      );
+    });
+
+    it('should extract the layouts and pass them through', async () => {
+      const mockLayoutComponent = () => null;
+      const Layout = scaffolderPlugin.provide(
+        createScaffolderLayout({
+          name: 'layout',
+          component: mockLayoutComponent,
+        }),
+      );
+
+      await renderInTestApp(
+        <Router>
+          <ScaffolderLayouts>
+            <Layout />
+          </ScaffolderLayouts>
+        </Router>,
+        { routeEntries: ['/templates/default/foo'] },
+      );
+
+      const mock = TemplateWizardPage as jest.Mock;
+      const [{ layouts }] = mock.mock.calls[0];
+
+      expect(layouts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'layout',
+            component: mockLayoutComponent,
+          }),
         ]),
       );
     });

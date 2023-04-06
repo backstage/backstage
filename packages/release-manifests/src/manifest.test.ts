@@ -14,73 +14,126 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/test-utils';
-import { getManifestByReleaseLine, getManifestByVersion } from './manifest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
+import {
+  getManifestByReleaseLine,
+  getManifestByVersion,
+  withFallback,
+} from './manifest';
 
-describe('getManifestByVersion', () => {
+describe('Release Manifests', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  it('should return a list of packages in a release', async () => {
-    worker.use(
-      rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            packages: [{ name: '@backstage/core', version: '1.2.3' }],
-          }),
+  describe('getManifestByVersion', () => {
+    it('should return a list of packages in a release', async () => {
+      worker.use(
+        rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              packages: [{ name: '@backstage/core', version: '1.2.3' }],
+            }),
+          ),
         ),
-      ),
-      rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
-        res(ctx.status(404), ctx.json({})),
-      ),
-    );
+        rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
+          res(ctx.status(404), ctx.json({})),
+        ),
+      );
 
-    const pkgs = await getManifestByVersion({ version: '0.0.0' });
-    expect(pkgs.packages).toEqual([
-      {
-        name: '@backstage/core',
-        version: '1.2.3',
-      },
-    ]);
+      const pkgs = await getManifestByVersion({ version: '0.0.0' });
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
 
-    await expect(getManifestByVersion({ version: '999.0.1' })).rejects.toThrow(
-      'No release found for 999.0.1 version',
-    );
+      await expect(
+        getManifestByVersion({ version: '999.0.1' }),
+      ).rejects.toThrow('No release found for 999.0.1 version');
+    });
+  });
+
+  describe('getManifestByReleaseLine', () => {
+    it('should return a list of packages in a release', async () => {
+      worker.use(
+        rest.get(
+          'https://versions.backstage.io/v1/tags/main/manifest.json',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                packages: [{ name: '@backstage/core', version: '1.2.3' }],
+              }),
+            ),
+        ),
+        rest.get(
+          'https://versions.backstage.io/v1/tags/foo/manifest.json',
+          (_, res, ctx) => res(ctx.status(404), ctx.json({})),
+        ),
+      );
+
+      const pkgs = await getManifestByReleaseLine({ releaseLine: 'main' });
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
+
+      await expect(
+        getManifestByReleaseLine({ releaseLine: 'foo' }),
+      ).rejects.toThrow("No 'foo' release line found");
+    });
   });
 });
 
-describe('getManifestByReleaseLine', () => {
-  const worker = setupServer();
-  setupRequestMockHandlers(worker);
+describe('withFallback', () => {
+  it('should use the first value to resolve', async () => {
+    const fn1 = jest.fn((_s: AbortSignal) => Promise.resolve(1));
+    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    await expect(withFallback(fn1, fn2, 100)).resolves.toBe(1);
+    expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
+    expect(fn2).not.toHaveBeenCalled();
+  });
 
-  it('should return a list of packages in a release', async () => {
-    worker.use(
-      rest.get('*/v1/tags/main/manifest.json', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            packages: [{ name: '@backstage/core', version: '1.2.3' }],
-          }),
-        ),
-      ),
-      rest.get('*/v1/tags/foo/manifest.json', (_, res, ctx) =>
-        res(ctx.status(404), ctx.json({})),
-      ),
+  it('should fall back on rejection', async () => {
+    const fn1 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
+    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    await expect(withFallback(fn1, fn2, 0)).resolves.toBe(2);
+    expect(fn1.mock.lastCall?.[0].aborted).toBe(true);
+    expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
+  });
+
+  it('should fall back on timeout', async () => {
+    const fn1 = jest.fn((_s: AbortSignal) => new Promise<number>(() => {}));
+    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    await expect(withFallback(fn1, fn2, 0)).resolves.toBe(2);
+    expect(fn1.mock.lastCall?.[0].aborted).toBe(true);
+    expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
+  });
+
+  it('should always reject with the first error', async () => {
+    const fn1 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
+    const fn2 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
+    await expect(withFallback(fn1, fn2, 0)).rejects.toThrow('1');
+    expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
+    expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
+  });
+
+  it('should always reject with the first error even if rejected after', async () => {
+    const fn1 = jest.fn(
+      (_s: AbortSignal) =>
+        new Promise<number>((_resolve, reject) => {
+          setTimeout(() => reject(new Error('1')), 100);
+        }),
     );
-
-    const pkgs = await getManifestByReleaseLine({ releaseLine: 'main' });
-    expect(pkgs.packages).toEqual([
-      {
-        name: '@backstage/core',
-        version: '1.2.3',
-      },
-    ]);
-
-    await expect(
-      getManifestByReleaseLine({ releaseLine: 'foo' }),
-    ).rejects.toThrow("No 'foo' release line found");
+    const fn2 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
+    await expect(withFallback(fn1, fn2, 0)).rejects.toThrow('1');
+    expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
+    expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
   });
 });

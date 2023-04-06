@@ -16,16 +16,18 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { CLOUDBUILD_ANNOTATION } from './useProjectName';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isCloudbuildAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION]);
 
+/** @public */
 export const Router = () => {
   const { entity } = useEntity();
 

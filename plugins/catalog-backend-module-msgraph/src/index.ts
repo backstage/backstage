@@ -20,5 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './processors';
 export * from './microsoftGraph';
+export * from './processors';

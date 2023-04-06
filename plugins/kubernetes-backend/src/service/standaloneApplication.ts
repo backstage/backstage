@@ -18,6 +18,7 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -26,6 +27,8 @@ import helmet from 'helmet';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { CatalogClient } from '@backstage/catalog-client';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -37,7 +40,15 @@ export async function createStandaloneApplication(
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
   const config = new ConfigReader({});
+  const discovery = SingleHostDiscovery.fromConfig(config);
+
   const app = express();
+
+  const catalogApi = new CatalogClient({
+    discoveryApi: SingleHostDiscovery.fromConfig(config),
+  });
+
+  const permissions = {} as PermissionEvaluator;
 
   app.use(helmet());
   if (enableCors) {
@@ -46,7 +57,10 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config }));
+  app.use(
+    '/',
+    await createRouter({ logger, config, discovery, catalogApi, permissions }),
+  );
   app.use(notFoundHandler());
   app.use(errorHandler());
 

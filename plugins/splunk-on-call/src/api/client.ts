@@ -39,12 +39,15 @@ import {
   ConfigApi,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export class UnauthorizedError extends Error {}
 
+/** @public */
 export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
   id: 'plugin.splunk-on-call.api',
 });
 
+/** @public */
 export class SplunkOnCallClient implements SplunkOnCallApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
     const eventsRestEndpoint: string | null =
@@ -61,7 +64,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
       'proxy',
     )}/splunk-on-call/v1/incidents`;
 
-    const { incidents } = await this.getByUrl<IncidentsResponse>(url);
+    const { incidents } = await this.findByUrl<IncidentsResponse>(url);
 
     return incidents;
   }
@@ -70,7 +73,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/oncall/current`;
-    const { teamsOnCall } = await this.getByUrl<OnCallsResponse>(url);
+    const { teamsOnCall } = await this.findByUrl<OnCallsResponse>(url);
 
     return teamsOnCall;
   }
@@ -79,7 +82,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/team`;
-    const teams = await this.getByUrl<Team[]>(url);
+    const teams = await this.findByUrl<Team[]>(url);
 
     return teams;
   }
@@ -88,7 +91,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/org/routing-keys`;
-    const { routingKeys } = await this.getByUrl<ListRoutingKeyResponse>(url);
+    const { routingKeys } = await this.findByUrl<ListRoutingKeyResponse>(url);
 
     return routingKeys;
   }
@@ -97,7 +100,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v2/user`;
-    const { users } = await this.getByUrl<ListUserResponse>(url);
+    const { users } = await this.findByUrl<ListUserResponse>(url);
 
     return users;
   }
@@ -106,19 +109,21 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/splunk-on-call/v1/policies`;
-    const { policies } = await this.getByUrl<EscalationPolicyResponse>(url);
+    const { policies } = await this.findByUrl<EscalationPolicyResponse>(url);
 
     return policies;
   }
 
-  async incidentAction({
-    routingKey,
-    incidentType,
-    incidentId,
-    incidentDisplayName,
-    incidentMessage,
-    incidentStartTime,
-  }: TriggerAlarmRequest): Promise<Response> {
+  async incidentAction(options: TriggerAlarmRequest): Promise<Response> {
+    const {
+      routingKey,
+      incidentType,
+      incidentId,
+      incidentDisplayName,
+      incidentMessage,
+      incidentStartTime,
+    } = options;
+
     const body = JSON.stringify({
       message_type: incidentType,
       ...(incidentId ? { entity_id: incidentId } : {}),
@@ -129,7 +134,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
       ...(incidentStartTime ? { state_start_time: incidentStartTime } : {}),
     });
 
-    const options = {
+    const request = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -140,10 +145,10 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
 
     const url = `${this.config.eventsRestEndpoint}/${routingKey}`;
 
-    return this.request(url, options);
+    return this.request(url, request);
   }
 
-  private async getByUrl<T>(url: string): Promise<T> {
+  private async findByUrl<T>(url: string): Promise<T> {
     const options = {
       method: 'GET',
       headers: {

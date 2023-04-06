@@ -46,7 +46,7 @@
             "type": {
               "type": "string",
               "description": "The type of the API definition.",
-              "examples": ["openapi", "asyncapi", "graphql", "grpc"],
+              "examples": ["openapi", "asyncapi", "graphql", "grpc", "trpc"],
               "minLength": 1
             },
             "lifecycle": {

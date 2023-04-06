@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   RELATION_CHILD_OF,
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { CustomLabel } from './CustomLabel';
 
 describe('<CustomLabel />', () => {
   test('renders label', () => {
-    const { getByText } = render(
+    render(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomLabel
           edge={{
@@ -36,11 +37,11 @@ describe('<CustomLabel />', () => {
       </svg>,
     );
 
-    expect(getByText(RELATION_PARENT_OF)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_PARENT_OF)).toBeInTheDocument();
   });
 
   test('renders label with multiple relations', () => {
-    const { getByText } = render(
+    render(
       <svg xmlns="http://www.w3.org/2000/svg">
         <CustomLabel
           edge={{
@@ -53,7 +54,7 @@ describe('<CustomLabel />', () => {
       </svg>,
     );
 
-    expect(getByText(RELATION_PARENT_OF)).toBeInTheDocument();
-    expect(getByText(RELATION_CHILD_OF)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_PARENT_OF)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_CHILD_OF)).toBeInTheDocument();
   });
 });

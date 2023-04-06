@@ -1,5 +1,680 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- e262738b8a0: Handle difference in expiration time between Microsoft session and Backstage session which caused the Backstage token to be invalid during a time frame.
+- 86cece2c1fb: Updated dependency `@types/passport-microsoft` to `^1.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 529de8c4211: Added authentication provider for Azure Easy Authentication.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.18.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- 86cece2c1fb: Updated dependency `@types/passport-microsoft` to `^1.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 529de8c421: Added authentication provider for Azure Easy Authentication.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+
+## 0.18.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/catalog-model@1.2.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+
+## 0.17.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.17.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+
+## 0.17.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+
+## 0.17.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
+## 0.17.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 0.17.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9-next.0
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+
+## 0.17.2
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
+## 0.17.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+
+## 0.17.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.17.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.17.1
+
+### Patch Changes
+
+- 0d6837ca4e: Fix wrong GitHub callback URL documentation
+- cbe11d1e23: Tweak README
+- 89d705e806: Add support for custom JWT header name in GCP IAP auth.
+- abaed9770e: Improve logging
+- d80833fe0c: Inject optional `CatalogApi` into auth-backend `createRouter` function. This will enable developers to use customized `CatalogApi` when creating the router.
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 0d6837ca4e: Fix wrong GitHub callback URL documentation
+- abaed9770e: Improve logging
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- cbe11d1e23: Tweak README
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.17.0
+
+### Minor Changes
+
+- e2dc42e9f0: Google OAuth refresh tokens will now be revoked on logout by calling Google's API
+- 5fa831ce55: CookieConfigurer can optionally return the `SameSite` cookie attribute.
+  CookieConfigurer now requires an additional argument `appOrigin` - the origin URL of the app - which is used to calculate the `SameSite` attribute.
+  defaultCookieConfigurer returns the `SameSite` attribute which defaults to `Lax`. In cases where an auth-backend is running on a different domain than the App, `SameSite=None` is used - but only for secure contexts. This is so that cookies can be included in third-party requests.
+
+  OAuthAdapterOptions has been modified to require additional arguments, `baseUrl`, and `cookieConfigurer`.
+  OAuthAdapter now resolves cookie configuration using its supplied CookieConfigurer for each request to make sure that the proper attributes always are set.
+
+### Patch Changes
+
+- b5c126010c: Auth0 provider now supports optional `connection` and `connectionScope` parameters to configure social identity providers.
+- 8c6ec175bf: Fix GitLab provider setup so that it supports GitLab installations with a path in the URL.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/catalog-client@1.1.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
+## 0.17.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- e2dc42e9f0: Google OAuth refresh tokens will now be revoked on logout by calling Google's API
+
+### Patch Changes
+
+- b5c126010c: Auth0 provider now supports optional `connection` and `connectionScope` parameters to configure social identity providers.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.2.6-next.1
+
+## 0.17.0-next.0
+
+### Minor Changes
+
+- 5fa831ce55: CookieConfigurer can optionally return the `SameSite` cookie attribute.
+  CookieConfigurer now requires an additional argument `appOrigin` - the origin URL of the app - which is used to calculate the `SameSite` attribute.
+  defaultCookieConfigurer returns the `SameSite` attribute which defaults to `Lax`. In cases where an auth-backend is running on a different domain than the App, `SameSite=None` is used - but only for secure contexts. This is so that cookies can be included in third-party requests.
+
+  OAuthAdapterOptions has been modified to require additional arguments, `baseUrl`, and `cookieConfigurer`.
+  OAuthAdapter now resolves cookie configuration using its supplied CookieConfigurer for each request to make sure that the proper attributes always are set.
+
+### Patch Changes
+
+- 8c6ec175bf: Fix GitLab provider setup so that it supports GitLab installations with a path in the URL.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 2fc41ebf07: Removed the previously deprecated class `AtlassianAuthProvider`. Please use `providers.atlassian.create(...)` instead.
+- a291688bc5: Renamed the `RedirectInfo` type to `OAuthStartResponse`
+- 8600855fbf: The auth0 integration is updated to use the `passport-auth0` library. The configuration under `auth.providers.auth0.\*` now supports an optional `audience` parameter; providing that allows you to connect to the correct API to get permissions, access tokens, and full profile information.
+
+  [What is an Audience](https://community.auth0.com/t/what-is-the-audience/71414)
+
+### Patch Changes
+
+- 5b011fb2e6: Allow adding misc claims to JWT
+- d669d89206: Minor API signatures cleanup
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- e1ebaeb332: Cloudflare Access Provider: Add JWT to CloudflareAccessResult
+- Updated dependencies
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 0.16.0-next.3
+
+### Minor Changes
+
+- 8600855fbf: The auth0 integration is updated to use the `passport-auth0` library. The configuration under `auth.providers.auth0.\*` now supports an optional `audience` parameter; providing that allows you to connect to the correct API to get permissions, access tokens, and full profile information.
+
+  [What is an Audience](https://community.auth0.com/t/what-is-the-audience/71414)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-auth-node@0.2.5-next.3
+
+## 0.16.0-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/plugin-auth-node@0.2.5-next.2
+  - @backstage/catalog-client@1.0.5-next.1
+
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 2fc41ebf07: Removed the previously deprecated class `AtlassianAuthProvider`. Please use `providers.atlassian.create(...)` instead.
+- a291688bc5: Renamed the `RedirectInfo` type to `OAuthStartResponse`
+
+### Patch Changes
+
+- d669d89206: Minor API signatures cleanup
+- e1ebaeb332: Cloudflare Access Provider: Add JWT to CloudflareAccessResult
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.5-next.1
+  - @backstage/backend-common@0.15.1-next.1
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/plugin-auth-node@0.2.5-next.0
+
+## 0.15.1
+
+### Patch Changes
+
+- c676a9e07b: Fixed a bug in auth plugin on the backend where it ignores the skip migration database options when using the database provider.
+- 2d7d6028e1: Updated dependency `@google-cloud/firestore` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/plugin-auth-node@0.2.4
+
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 2d7d6028e1: Updated dependency `@google-cloud/firestore` to `^6.0.0`.
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/plugin-auth-node@0.2.4-next.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 9d4040777e: **BREAKING**: Removed all directly exported auth provider factories, option types, and sign-in resolvers. For example: `AwsAlbProviderOptions`, `bitbucketUserIdSignInResolver`, `createGithubProvider`. These are all still accessible via the `providers` export. For example, use `providers.github.create()` rather than `createGithubProvider()`, and `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` rather than `bitbucketUserIdSignInResolver`.
+
+  **BREAKING**: Removed the exported `AuthProviderFactoryOptions` type as well as the deprecated option fields of the `AuthProviderFactory` callback. This includes the `tokenManager`, `tokenIssuer`, `discovery`, and `catalogApi` fields. Existing usage of these should be replaced with the new utilities in the `resolverContext` field. The deprecated `TokenIssuer` type is now also removed, since it is no longer used.
+
+  **BREAKING**: Removed `getEntityClaims`, use `getDefaultOwnershipEntityRefs` instead.
+
+  **DEPRECATION**: Deprecated `AtlassianAuthProvider` as it was unintentionally exported.
+
+- fe8e025af5: Allowed post method on /refresh path
+
+### Patch Changes
+
+- 3cedfd8365: add Cloudflare Access auth provider to auth-backend
+- f2cf79d62e: Added an option for the auth backend router to select the algorithm for the JWT token signing keys
+- 8e03db907a: Auth provider now also export createAuthProviderIntegration
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- 3a014730dc: Add new config option for okta auth server and IDP
+- Updated dependencies
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/catalog-client@1.0.4
+  - @backstage/plugin-auth-node@0.2.3
+  - @backstage/errors@1.1.0
+
+## 0.15.0-next.3
+
+### Minor Changes
+
+- fe8e025af5: Allowed post method on /refresh path
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 3a014730dc: Add new config option for okta auth server and IDP
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/plugin-auth-node@0.2.3-next.2
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 8e03db907a: Auth provider now also export createAuthProviderIntegration
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 9d4040777e: **BREAKING**: Removed all directly exported auth provider factories, option types, and sign-in resolvers. For example: `AwsAlbProviderOptions`, `bitbucketUserIdSignInResolver`, `createGithubProvider`. These are all still accessible via the `providers` export. For example, use `providers.github.create()` rather than `createGithubProvider()`, and `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` rather than `bitbucketUserIdSignInResolver`.
+
+  **BREAKING**: Removed the exported `AuthProviderFactoryOptions` type as well as the deprecated option fields of the `AuthProviderFactory` callback. This includes the `tokenManager`, `tokenIssuer`, `discovery`, and `catalogApi` fields. Existing usage of these should be replaced with the new utilities in the `resolverContext` field. The deprecated `TokenIssuer` type is now also removed, since it is no longer used.
+
+  **BREAKING**: Removed `getEntityClaims`, use `getDefaultOwnershipEntityRefs` instead.
+
+  **DEPRECATION**: Deprecated `AtlassianAuthProvider` as it was unintentionally exported.
+
+### Patch Changes
+
+- f2cf79d62e: Added an option for the auth backend router to select the algorithm for the JWT token signing keys
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/plugin-auth-node@0.2.3-next.1
+
+## 0.14.2-next.0
+
+### Patch Changes
+
+- 859346bfbb: Updated dependency `google-auth-library` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/plugin-auth-node@0.2.3-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.14.0
+  - @backstage/plugin-auth-node@0.2.2
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+
+## 0.14.1-next.2
+
+### Patch Changes
+
+- bc6fb57094: Updated dependency `passport` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/plugin-auth-node@0.2.2-next.2
+
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 5e055079f0: Increased key field size for signing_keys table to account for larger signature keys
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 467facc6ea: Fix improper binding of 'this' in ALB Auth provider
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 2df2f01a29: Removed the explicit `disableRefresh` option from `OAuthAdapter`. Refresh can still be disabled for a provider by not implementing the `refresh` method.
+
+### Patch Changes
+
+- cac3ba68a2: Fixed a bug that was introduced in `0.13.1-next.0` which caused the `ent` claim of issued tokens to be dropped.
+- 5d268623dd: Updates the OAuth2 Proxy provider to require less infrastructure configuration.
+
+  The auth result object of the OAuth2 Proxy now provides access to the request headers, both through the `headers` object as well as `getHeader` method. The existing logic that parses and extracts the user information from ID tokens is deprecated and will be removed in a future release. See the OAuth2 Proxy provider documentation for more details.
+
+  The OAuth2 Proxy provider now also has a default `authHandler` implementation that reads the display name and email from the incoming request headers.
+
+- 2df2f01a29: The Auth0 adapter no longer disables session refreshing.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 787ae0d541: Add more common predefined sign-in resolvers to auth providers.
+
+  Add the existing resolver to more providers (already available at `google`):
+
+  - `providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName()`
+  - `providers.okta.resolvers.emailLocalPartMatchingUserEntityName()`
+
+  Add a new resolver for simple email-to-email matching:
+
+  - `providers.google.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.microsoft.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.okta.resolvers.emailMatchingUserEntityProfileEmail()`
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-auth-node@0.2.1
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.13.1-next.2
 
 ### Patch Changes

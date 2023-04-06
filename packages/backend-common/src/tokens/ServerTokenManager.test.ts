@@ -16,8 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import * as jose from 'jose';
-import { Logger } from 'winston';
-import { getVoidLogger } from '../logging/voidLogger';
+import { getVoidLogger } from '../logging';
 import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
 
@@ -26,12 +25,11 @@ const configWithSecret = new ConfigReader({
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
 const env = process.env;
-let logger: Logger;
+const logger = getVoidLogger();
 
 describe('ServerTokenManager', () => {
   beforeEach(() => {
     process.env = { ...env };
-    logger = getVoidLogger();
   });
 
   afterEach(() => {
@@ -66,9 +64,9 @@ describe('ServerTokenManager', () => {
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
       });
-      await expect(
-        tokenManager.authenticate('random-string'),
-      ).rejects.toThrowError(/invalid server token/i);
+      await expect(tokenManager.authenticate('random-string')).rejects.toThrow(
+        /invalid server token/i,
+      );
     });
 
     it('should validate server tokens created by a different instance using the same secret', async () => {
@@ -129,7 +127,7 @@ describe('ServerTokenManager', () => {
 
       const { token } = await tokenManager1.getToken();
 
-      await expect(tokenManager2.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager2.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });
@@ -145,7 +143,7 @@ describe('ServerTokenManager', () => {
 
       const { token } = await noopTokenManager.getToken();
 
-      await expect(tokenManager.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });
@@ -164,14 +162,13 @@ describe('ServerTokenManager', () => {
 
       const { token } = await tokenManager2.getToken();
 
-      await expect(tokenManager1.authenticate(token)).rejects.toThrowError(
+      await expect(tokenManager1.authenticate(token)).rejects.toThrow(
         /invalid server token/i,
       );
     });
 
     it('should throw for expired tokens, and re-issue new ones', async () => {
       jest.useFakeTimers();
-      const warn = jest.spyOn(logger, 'warn');
 
       const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
         logger,
@@ -179,14 +176,12 @@ describe('ServerTokenManager', () => {
 
       const { token: token1 } = await tokenManager.getToken();
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
-      expect(warn.mock.calls.length).toBe(0);
 
       // Right before the reissue timeout, it still returns the same token
       jest.advanceTimersByTime(9 * 60 * 1000);
       const { token: token1Again } = await tokenManager.getToken();
       expect(token1).toEqual(token1Again);
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
-      expect(warn.mock.calls.length).toBe(0);
 
       // Right after the reissue timeout, the old ones are still valid but returning a new token
       jest.advanceTimersByTime(2 * 60 * 1000);
@@ -194,14 +189,47 @@ describe('ServerTokenManager', () => {
       expect(token1).not.toEqual(token2);
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
       await expect(tokenManager.authenticate(token2)).resolves.not.toThrow();
-      expect(warn.mock.calls.length).toBe(0);
 
       // After expiry of the first one, it gets warnings but the newest one is still valid
       jest.advanceTimersByTime(52 * 60 * 1000);
-      await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
+      await expect(tokenManager.authenticate(token1)).rejects.toThrow(
+        'Invalid server token; caused by JWTExpired: "exp" claim timestamp check failed',
+      );
       await expect(tokenManager.authenticate(token2)).resolves.not.toThrow();
-      expect(warn.mock.calls[0][0]).toMatchInlineSnapshot(
-        '"#### DEPRECATION WARNING: #### Server-to-server token had an expired exp claim, support for this has been deprecated and will result in errors in a future release"',
+    });
+
+    it('should work with a manually crafted JWT', async () => {
+      const secret = 'a1b2c3';
+      const token = await new jose.SignJWT({})
+        .setProtectedHeader({ alg: 'HS256' })
+        .setSubject('backstage-server')
+        .setExpirationTime(Date.now() + 1000 * 60 * 60)
+        .sign(jose.base64url.decode(secret));
+
+      const tokenManager = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret }] } },
+        }),
+        { logger },
+      );
+      await expect(tokenManager.authenticate(token)).resolves.toBeUndefined();
+    });
+
+    it('should reject tokens without exp claim', async () => {
+      const secret = 'a1b2c3';
+      const token = await new jose.SignJWT({})
+        .setProtectedHeader({ alg: 'HS256' })
+        .setSubject('backstage-server')
+        .sign(jose.base64url.decode(secret));
+
+      const tokenManager = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: { auth: { keys: [{ secret }] } },
+        }),
+        { logger },
+      );
+      await expect(tokenManager.authenticate(token)).rejects.toThrow(
+        'Invalid server token; caused by AuthenticationError: Server-to-server token had no exp claim',
       );
     });
   });

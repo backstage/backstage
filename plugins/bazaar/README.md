@@ -12,6 +12,10 @@ Many companies today are of high need to increase the ease of cross-team coopera
 
 The Bazaar allows engineers and teams to open up and announce their new and exciting projects for transparent cooperation in other parts of larger organizations. The Bazaar ensures that new Inner Sourcing friendly projects gain visibility through Backstage and a way for interested engineers to show their interest and in the future contribute with their specific skill set. The Bazaar also provides an easy way to manage, catalog, and browse these Inner Sourcing friendly projects and components.
 
+# Note
+
+You will **need** to also perform the installation instructions in [Bazaar Backend](https://github.com/backstage/backstage/tree/master/plugins/bazaar-backend) in order for this plugin to work.
+
 ## Getting Started
 
 First install the plugin into your app:
@@ -35,6 +39,8 @@ const routes = (
 
 ```
 
+`BazaarPage` can be given the optional properties `fullHeight` and `fullWidth` which are used to adjust the cards styling to fit more or less on the page as required (both default to `true`).
+
 Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/app/src/components/Root.tsx` add:
 
 ```diff
@@ -49,22 +55,51 @@ Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/a
 Add a **Bazaar card** to the overview tab on the `packages/app/src/components/catalog/EntityPage.tsx` add:
 
 ```diff
-+ import { EntityBazaarInfoCard } from '@backstage/plugin-bazaar';
++ import { EntityBazaarInfoCard, isBazaarAvailable } from '@backstage/plugin-bazaar';
 
 const overviewContent = (
 
     <Grid item md={8} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
-
-+   <Grid item sm={6}>
-+     <EntityBazaarInfoCard />
-+   </Grid>
++   <EntitySwitch>
++     <EntitySwitch.Case if={isBazaarAvailable}>
++       <Grid item sm={6}>
++         <EntityBazaarInfoCard />
++       </Grid>
++     </EntitySwitch.Case>
++    </EntitySwitch>
 
     {/* ...other entity-cards */}
 ```
 
-## How does the Bazaar work?
+Add a **Bazaar overview card** to the homepage that displays either the latest projects or random projects. In `packages/app/src/components/home/HomePage.tsx` add:
+
+```diff
++ import { BazaarOverviewCard } from '@backstage/plugin-bazaar';
+
+export const homePage = (
+
+    <Page themeId="home">
+      <Content>
+       <Grid container spacing={3}>
+
++       <Grid item xs={12} md={6}>
++         <BazaarOverviewCard order='latest'/>
++       </Grid>
+
++       <Grid item xs={12} >
++         <BazaarOverviewCard title='My Orgs Projects' order='random' fullWidth fullHeight />
++       </Grid>
+
+        {/* ...other homepage items */}
+```
+
+The property `title` is optional and can be used to customize the title in the card header. If no title is submitted the default titles `Bazaar Random Projects` or `Bazaar Latest Projects` are displayed.
+
+The properties `fullHeight` and `fullWidth` are also optional and can be used to adjust the cards styling.
+
+# How does the Bazaar work?
 
 ### Layout
 
@@ -72,13 +107,17 @@ The latest modified Bazaar projects are displayed in the Bazaar landing page, lo
 
 ![home](media/layout.png)
 
+The "BazaarOverviewCard" can be displayed in Backstage homepage.
+
+![home](media/overviewCard.png)
+
 ### Workflow
 
 To add a project to the bazaar, simply click on the `add-project` button and fill in the form.
 
 The following fields are mandatory:
 
-- name - name of the project on URL safe format
+- title - title of the project
 - description - present your idea and what skills you are looking for
 - status - whether or not the project has started
 - size - small, medium or large

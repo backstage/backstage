@@ -17,17 +17,17 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { ROLLBAR_ANNOTATION } from '../constants';
 import { EntityPageRollbar } from './EntityPageRollbar/EntityPageRollbar';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ROLLBAR_ANNOTATION]);
 
-type Props = {};
-
-export const Router = (_props: Props) => {
+/** @public */
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isPluginApplicableToEntity(entity)) {

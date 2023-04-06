@@ -37,4 +37,7 @@ export {
 } from './components';
 export * from './api';
 export * from './route-refs';
+export * from './types';
+
+/** @public */
 export const ILertIcon: IconComponent = ILertIconComponent as IconComponent;

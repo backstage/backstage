@@ -17,10 +17,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  IndexBuilder,
-  SearchEngine,
-} from '@backstage/plugin-search-backend-node';
+import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -61,7 +59,10 @@ describe('createRouter', () => {
         'first-type': {},
         'second-type': {},
       },
-      config: new ConfigReader({ permissions: { enabled: false } }),
+      config: new ConfigReader({
+        permissions: { enabled: false },
+        search: { maxPageLimit: 200 },
+      }),
       permissions: mockPermissionEvaluator,
       logger,
     });
@@ -73,6 +74,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /query', () => {
+    it('throws meaningful query errors', async () => {
+      const error = new Error('Query error message');
+      mockSearchEngine.query.mockRejectedValueOnce(error);
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toMatchObject(
+        expect.objectContaining({
+          error: {
+            name: 'Error',
+            message: `There was a problem performing the search query: ${error.message}`,
+          },
+        }),
+      );
+    });
+
     it('returns empty results array', async () => {
       const response = await request(app).get('/query');
 
@@ -114,6 +132,37 @@ describe('createRouter', () => {
       });
     });
 
+    it('should accept per page value under or equal to configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=200`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [],
+      });
+    });
+
+    it('should reject per page value over configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=300`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "300" is greater than "200"/i,
+        },
+      });
+    });
+
+    it('should reject a non number per page value', async () => {
+      const response = await request(app).get(`/query?pageLimit=twohundred`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "twohundred" is not a number"/i,
+        },
+      });
+    });
+
     it('removes backend-only properties from search documents', async () => {
       mockSearchEngine.query.mockResolvedValue({
         results: [
@@ -148,6 +197,25 @@ describe('createRouter', () => {
           },
         ],
       });
+    });
+
+    it('is less restrictive with unknown keys on query endpoint', async () => {
+      const queryString =
+        'term=test&%5BdocType%5D%5B0%5D=Service&filters%5BdocType%5D%5B0%5D=filter1&unknownKey1%5B2%5D=unknownValue1&unknownKey1%5B3%5D=unknownValue2&unknownKey2=unknownValue1&pageCursor';
+      const response = await request(app).get(`/query?${queryString}`);
+      const firstArg: Object = {
+        docType: ['Service'],
+        filters: { docType: ['filter1'] },
+        pageCursor: '',
+        term: 'test',
+        unknownKey1: ['unknownValue1', 'unknownValue2'],
+        unknownKey2: 'unknownValue1',
+      };
+      const secondArg = {
+        token: undefined,
+      };
+      expect(response.status).toEqual(200);
+      expect(mockSearchEngine.query).toHaveBeenCalledWith(firstArg, secondArg);
     });
 
     describe('search result filtering', () => {

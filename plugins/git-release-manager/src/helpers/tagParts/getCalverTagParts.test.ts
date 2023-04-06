@@ -26,28 +26,28 @@ describe('getCalverTagParts', () => {
       const result = getCalverTagParts(mockReleaseCandidateCalver.tagName);
 
       expect(result).toMatchInlineSnapshot(`
-              Object {
-                "tagParts": Object {
-                  "calver": "2020.01.01",
-                  "patch": 1,
-                  "prefix": "rc",
-                },
-              }
-          `);
+        {
+          "tagParts": {
+            "calver": "2020.01.01",
+            "patch": 1,
+            "prefix": "rc",
+          },
+        }
+      `);
     });
 
     it('should return tagParts for Version tag', () => {
       const result = getCalverTagParts(mockReleaseVersionCalver.tagName);
 
       expect(result).toMatchInlineSnapshot(`
-              Object {
-                "tagParts": Object {
-                  "calver": "2020.01.01",
-                  "patch": 1,
-                  "prefix": "version",
-                },
-              }
-          `);
+        {
+          "tagParts": {
+            "calver": "2020.01.01",
+            "patch": 1,
+            "prefix": "version",
+          },
+        }
+      `);
     });
   });
 
@@ -56,9 +56,9 @@ describe('getCalverTagParts', () => {
       const result = getCalverTagParts('invalid-2020.01.01_1');
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"invalid-2020.01.01_1\\"",
+        {
+          "error": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "invalid-2020.01.01_1"",
             "title": "Invalid tag",
           },
         }
@@ -69,9 +69,9 @@ describe('getCalverTagParts', () => {
       const result = getCalverTagParts('rc-2020.1.01_1');
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.1.01_1\\"",
+        {
+          "error": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "rc-2020.1.01_1"",
             "title": "Invalid tag",
           },
         }
@@ -82,9 +82,9 @@ describe('getCalverTagParts', () => {
       const result = getCalverTagParts('rc-2020.01_1');
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.01_1\\"",
+        {
+          "error": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "rc-2020.01_1"",
             "title": "Invalid tag",
           },
         }
@@ -95,9 +95,9 @@ describe('getCalverTagParts', () => {
       const result = getCalverTagParts('rc-2020.01.01_a');
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.01.01_a\\"",
+        {
+          "error": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "rc-2020.01.01_a"",
             "title": "Invalid tag",
           },
         }

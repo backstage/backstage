@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
 import {
   Button,
@@ -45,9 +45,16 @@ type Props = {
   onClose: () => void;
   anchorEl?: Element;
   api: ShortcutApi;
+
+  allowExternalLinks?: boolean;
 };
 
-export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
+export const AddShortcut = ({
+  onClose,
+  anchorEl,
+  api,
+  allowExternalLinks,
+}: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { pathname } = useLocation();
@@ -114,6 +121,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
           onClose={handleClose}
           onSave={handleSave}
           formValues={formValues}
+          allowExternalLinks={allowExternalLinks}
         />
       </Card>
     </Popover>

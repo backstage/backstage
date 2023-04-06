@@ -21,13 +21,11 @@ const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 
 const envOptions = {
-  nextTests: Boolean(process.env.BACKSTAGE_NEXT_TESTS),
-  enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
+  oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
 };
 
 const transformIgnorePattern = [
   '@material-ui',
-  '@rjsf',
   'ajv',
   'core-js',
   'jest-.*',
@@ -37,6 +35,7 @@ const transformIgnorePattern = [
   'react-dom',
   'highlight\\.js',
   'prismjs',
+  'json-schema',
   'react-use',
   'typescript',
 ].join('|');
@@ -49,18 +48,18 @@ function getRoleConfig(role) {
     case 'common-library':
     case 'frontend-plugin':
     case 'frontend-plugin-module':
-      return { testEnvironment: 'jsdom' };
+      return { testEnvironment: require.resolve('jest-environment-jsdom') };
     case 'cli':
     case 'backend':
     case 'node-library':
     case 'backend-plugin':
     case 'backend-plugin-module':
     default:
-      return { testEnvironment: 'node' };
+      return { testEnvironment: require.resolve('jest-environment-node') };
   }
 }
 
-async function getProjectConfig(targetPath, displayName) {
+async function getProjectConfig(targetPath, extraConfig) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
   // If the package has it's own jest config, we use that instead.
@@ -77,7 +76,7 @@ async function getProjectConfig(targetPath, displayName) {
   let closestPkgJson = undefined;
   let currentPath = targetPath;
 
-  // Some sanity check to avoid infinite loop
+  // Some confidence check to avoid infinite loop
   for (let i = 0; i < 100; i++) {
     const packagePath = path.resolve(currentPath, 'package.json');
     const exists = fs.pathExistsSync(packagePath);
@@ -120,36 +119,78 @@ async function getProjectConfig(targetPath, displayName) {
   }
 
   const options = {
-    ...(displayName && { displayName }),
+    ...extraConfig,
     rootDir: path.resolve(targetPath, 'src'),
-    coverageDirectory: path.resolve(targetPath, 'coverage'),
-    coverageProvider: envOptions.nextTests ? 'babel' : 'v8',
-    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
     transform: {
-      '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
-        require.resolve('./jestSucraseTransform.js'),
+      '\\.(mjs|cjs|js)$': [
+        require.resolve('./jestSwcTransform'),
         {
-          enableSourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          jsc: {
+            parser: {
+              syntax: 'ecmascript',
+            },
+          },
+        },
+      ],
+      '\\.jsx$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          jsc: {
+            parser: {
+              syntax: 'ecmascript',
+              jsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
+        },
+      ],
+      '\\.ts$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+            },
+          },
+        },
+      ],
+      '\\.tsx$': [
+        require.resolve('./jestSwcTransform'),
+        {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+          },
         },
       ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
-      '\\.(yaml)$': require.resolve('jest-transform-yaml'),
+      '\\.(yaml)$': require.resolve('./jestYamlTransform'),
     },
 
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
-    moduleLoader: envOptions.nextTests
-      ? require.resolve('./jestCachingModuleLoader')
-      : undefined,
+    runtime: envOptions.oldTests
+      ? undefined
+      : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
-
     ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
@@ -160,16 +201,16 @@ async function getProjectConfig(targetPath, displayName) {
 
   const config = Object.assign(options, ...pkgJsonConfigs);
 
-  // The config name is a cache key that lets us share the jest cache across projects.
-  // If no explicit name was configured, generated one based on the configuration.
-  if (!config.name) {
+  // The config id is a cache key that lets us share the jest cache across projects.
+  // If no explicit id was configured, generated one based on the configuration.
+  if (!config.id) {
     const configHash = crypto
       .createHash('md5')
       .update(version)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config.transform))
       .digest('hex');
-    config.name = `backstage_cli_${configHash}`;
+    config.id = `backstage_cli_${configHash}`;
   }
 
   return config;
@@ -183,15 +224,21 @@ async function getRootConfig() {
   const targetPackagePath = path.resolve(targetPath, 'package.json');
   const exists = await fs.pathExists(targetPackagePath);
 
+  const coverageConfig = {
+    coverageDirectory: path.resolve(targetPath, 'coverage'),
+    coverageProvider: envOptions.oldTests ? 'v8' : 'babel',
+    collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
+  };
+
   if (!exists) {
-    return getProjectConfig(targetPath);
+    return getProjectConfig(targetPath, coverageConfig);
   }
 
   // Check whether the current package is a workspace root or not
   const data = await fs.readJson(targetPackagePath);
   const workspacePatterns = data.workspaces && data.workspaces.packages;
   if (!workspacePatterns) {
-    return getProjectConfig(targetPath);
+    return getProjectConfig(targetPath, coverageConfig);
   }
 
   // If the target package is a workspace root, we find all packages in the
@@ -215,7 +262,9 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli test') ||
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
-        return await getProjectConfig(projectPath, packageData.name);
+        return await getProjectConfig(projectPath, {
+          displayName: packageData.name,
+        });
       }
 
       return undefined;
@@ -225,6 +274,7 @@ async function getRootConfig() {
   return {
     rootDir: targetPath,
     projects: configs,
+    ...coverageConfig,
   };
 }
 

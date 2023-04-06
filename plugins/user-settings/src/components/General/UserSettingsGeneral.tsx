@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
+import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 
+/** @public */
 export const UserSettingsGeneral = () => {
   return (
     <Grid container direction="row" spacing={3}>
@@ -26,6 +29,9 @@ export const UserSettingsGeneral = () => {
       </Grid>
       <Grid item xs={12} md={6}>
         <UserSettingsAppearanceCard />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <UserSettingsIdentityCard />
       </Grid>
     </Grid>
   );

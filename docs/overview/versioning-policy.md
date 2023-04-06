@@ -1,7 +1,7 @@
 ---
 id: versioning-policy
 title: Release & Versioning Policy
-description:
+description: The process and policy for releasing and versioning Backstage
 ---
 
 The Backstage project is comprised of a set of software components that together
@@ -49,7 +49,7 @@ functionality, breaking changes, and bug fixes, according the
 [versioning policy](#release-versioning-policy).
 
 Patch versions will only be released to address critical bug fixes. They are not
-bound to the regular cadence and are instead releases whenever needed.
+bound to the regular cadence and are instead released whenever needed.
 
 ## Next Release Line
 
@@ -99,7 +99,7 @@ This versioning is completely decoupled from the Backstage release versioning,
 meaning you might for example have `@backstage/core-plugin-api` version `3.1.4`
 be part of the `1.12` Backstage release.
 
-Following versioning policy applies to all packages:
+The following versioning policy applies to all packages:
 
 - Breaking changes are noted in the changelog, and documentation is updated.
 - Breaking changes are prefixed with `**BREAKING**: ` in the changelog.
@@ -116,9 +116,27 @@ For packages at version `1.0.0` or above, the following policy also applies:
   before it can be removed.
 - The release of breaking changes document a clear upgrade path in the
   changelog, both when deprecations are introduced and when they are removed.
-- Exports that have been marked as `@alpha` or `@beta` may receive breaking
-  changes without a deprecation period, but the changes must still adhere to
-  semver.
+- Breaking changes to `@alpha` or `@beta` exports must result in at least a minor
+  version bump, and may be done without a deprecation period.
+
+### Changes that are Not Considered Breaking
+
+There are a few changes that would typically be considered breaking changes, but
+that we make exceptions for. This is both to be able to evolve the project more
+rapidly, also because the alternative ends up having a bigger impact on users.
+
+For all Utility APIs and Backend Services that _have_ a built-in implementation,
+we only consider the API stability for consumers of those interfaces. This means
+that it is not considered a breaking change to break the contract for producers
+of the interface.
+
+Changes that fall under the above rule, must be marked with
+`**BREAKING PRODUCERS**:` in the changelog.
+
+For any case of dependency injection, it is not considered a breaking change to
+add a dependency on a Utility API or Backend Service that is provided by the
+framework. This includes any dependency that is provided by the
+`@backstage/app-defaults` and `@backstage/backend-defaults` packages.
 
 ### Release Stages
 
@@ -135,3 +153,22 @@ package export.
   accessed via `<package-name>/beta` or `<package-name>/alpha` imports.
 - `@alpha` - here be dragons. Not visible in the main package entry point, alpha
   exports must be accessed via `<package-name>/alpha` imports.
+
+## Node.js Releases
+
+The Backstage project uses [Node.js](https://nodejs.org/) for both its development
+tooling and backend runtime. In order for expectations to be clear we use the
+following schedule for determining the [Node.js releases](https://nodejs.org/en/about/releases/) that we support:
+
+- At any given point in time we support exactly two adjacent even-numbered
+  releases of Node.js, for example v12 and v14.
+- Once a new Node.js release becomes _Active LTS_ we switch to support that
+  release and the previous one. The switch is not immediate but done as soon
+  as possible. You can find the Node.js version supported by each release
+  in the `engines` field in the root `package.json` of a new app.
+
+When we say _Supporting_ a Node.js release, that means the following:
+
+- The CI pipeline in the main Backstage repo tests towards the supported releases, and we encourage any other Backstage related projects to do the same.
+- New Backstage projects created with `@backstage/create-app` will have their `engines.node` version set accordingly.
+- Dropping compatibility with unsupported releases is not considered a breaking change. This includes using new syntax or APIs, as well as bumping dependencies that drop support for these versions.

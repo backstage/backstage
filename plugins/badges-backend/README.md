@@ -11,8 +11,14 @@ endpoint.
 
 ## Installation
 
-Install the `@backstage/plugin-badges-backend` package in your backend package,
-and then integrate the plugin using the following default setup for
+Install the `@backstage/plugin-badges-backend` package in your backend package:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-badges-backend
+```
+
+Add the plugin using the following default setup for
 `src/plugins/badges.ts`:
 
 ```ts
@@ -38,6 +44,34 @@ The `createDefaultBadgeFactories()` returns an object with badge factories to
 the badges-backend `createRouter()` to forward to the default badge builder. To
 customize the available badges, provide a custom set of badge factories. See
 further down for an example of a custom badge factories function.
+
+Finally, you have to make the following changes in `src/index.ts`:
+
+```ts
+// 1. import the plugin
+import badges from './plugins/badges';
+
+...
+
+const config = await loadBackendConfig({
+  argv: process.argv,
+  logger: rootLogger,
+});
+const createEnv = makeCreateEnv(config);
+
+  ...
+  // 2. Create a PluginEnvironment for the Badges plugin
+  const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
+
+  ...
+
+  const apiRouter = Router();
+  ...
+  // 3. Register the badges plugin in the router
+  apiRouter.use('/badges', await badges(badgesEnv));
+  ...
+  apiRouter.use(notFoundHandler());
+```
 
 ## Badge builder
 

@@ -30,6 +30,7 @@ export const CatalogGraphPage: (props: {
         mergeRelations?: boolean | undefined;
         direction?: Direction | undefined;
         showFilters?: boolean | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
       }
     | undefined;
 }) => JSX.Element;
@@ -48,7 +49,8 @@ export const catalogGraphPlugin: BackstagePlugin<
       },
       true
     >;
-  }
+  },
+  {}
 >;
 
 // @public
@@ -63,19 +65,13 @@ export enum Direction {
 }
 
 // @public
-export const EntityCatalogGraphCard: (props: {
-  variant?: InfoCardVariants | undefined;
-  relationPairs?: RelationPairs | undefined;
-  maxDepth?: number | undefined;
-  unidirectional?: boolean | undefined;
-  mergeRelations?: boolean | undefined;
-  kinds?: string[] | undefined;
-  relations?: string[] | undefined;
-  direction?: Direction | undefined;
-  height?: number | undefined;
-  title?: string | undefined;
-  zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-}) => JSX.Element;
+export const EntityCatalogGraphCard: (
+  props: Partial<EntityRelationsGraphProps> & {
+    variant?: InfoCardVariants | undefined;
+    height?: number | undefined;
+    title?: string | undefined;
+  },
+) => JSX.Element;
 
 // @public
 export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
@@ -101,25 +97,27 @@ export type EntityNodeData = {
 };
 
 // @public
-export const EntityRelationsGraph: (props: {
+export const EntityRelationsGraph: (
+  props: EntityRelationsGraphProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
-  maxDepth?: number | undefined;
-  unidirectional?: boolean | undefined;
-  mergeRelations?: boolean | undefined;
-  kinds?: string[] | undefined;
-  relations?: string[] | undefined;
-  direction?: Direction | undefined;
-  onNodeClick?:
-    | ((value: EntityNode, event: MouseEvent_2<unknown>) => void)
-    | undefined;
-  relationPairs?: RelationPairs | undefined;
-  className?: string | undefined;
-  zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode> | undefined;
-  renderLabel?:
-    | DependencyGraphTypes.RenderLabelFunction<EntityEdge>
-    | undefined;
-}) => JSX.Element;
+  maxDepth?: number;
+  unidirectional?: boolean;
+  mergeRelations?: boolean;
+  kinds?: string[];
+  relations?: string[];
+  direction?: Direction;
+  onNodeClick?: (value: EntityNode, event: MouseEvent_2<unknown>) => void;
+  relationPairs?: RelationPairs;
+  className?: string;
+  zoom?: 'enabled' | 'disabled' | 'enable-on-click';
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
+  renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
+};
 
 // @public
 export type RelationPairs = [string, string][];

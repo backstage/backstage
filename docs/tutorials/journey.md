@@ -28,7 +28,7 @@ organization to easily install and add to their Backstage installation.
 # 1. A New Plugin
 
 Sam chooses to develop this plugin in a standalone project and creates a new
-plugin using `npx @backstage/cli create-plugin`, which detects that it's not
+plugin using `npx @backstage/cli new --select plugin`, which detects that it's not
 being run in an existing project and therefore creates a separate plugin repo.
 
 Spinning up the frontend with `yarn start`, Sam goes to work with getting the

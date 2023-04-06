@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DomainEntity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { DomainCard } from '../DomainCard';
-
 import {
   Content,
   ContentHeader,
@@ -29,8 +28,8 @@ import {
   SupportButton,
   WarningPanel,
 } from '@backstage/core-components';
-
 import { useApi } from '@backstage/core-plugin-api';
+import { EntityCard } from '../EntityCard';
 
 const Body = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -79,22 +78,17 @@ const Body = () => {
   return (
     <ItemCardGrid>
       {entities.map((entity, index) => (
-        <DomainCard key={index} entity={entity} />
+        <EntityCard key={index} entity={entity} />
       ))}
     </ItemCardGrid>
   );
 };
 
-type DomainExplorerContentProps = {
-  title?: string;
-};
-
-export const DomainExplorerContent = ({
-  title,
-}: DomainExplorerContentProps) => {
+/** @public */
+export const DomainExplorerContent = (props: { title?: string }) => {
   return (
     <Content noPadding>
-      <ContentHeader title={title ?? 'Domains'}>
+      <ContentHeader title={props.title ?? 'Domains'}>
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
       <Body />

@@ -26,6 +26,10 @@ export async function serveBackend(options: BackendServeOptions) {
     isDev: true,
   });
 
+  // Webpack only replaces occurrences of this in code it touches, which does
+  // not include dependencies in node_modules. So we set it here at runtime as well.
+  (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
+
   const compiler = webpack(config, (err: Error | undefined) => {
     if (err) {
       console.error(err);

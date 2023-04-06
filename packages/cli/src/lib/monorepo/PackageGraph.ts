@@ -18,11 +18,17 @@ import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
-import { listChangedFiles } from '../git';
+import { listChangedFiles, readFileAtRef } from '../git';
+import { Lockfile } from '../versioning';
+import { JsonValue } from '@backstage/types';
 
 type PackageJSON = Package['packageJson'];
 
 export interface ExtendedPackageJSON extends PackageJSON {
+  main?: string;
+  module?: string;
+  types?: string;
+
   scripts?: {
     [key: string]: string;
   };
@@ -32,6 +38,19 @@ export interface ExtendedPackageJSON extends PackageJSON {
 
   backstage?: {
     role?: PackageRole;
+  };
+
+  exports?: JsonValue;
+  typesVersions?: Record<string, Record<string, string[]>>;
+
+  files?: string[];
+
+  publishConfig?: {
+    access?: 'public' | 'restricted';
+    directory?: string;
+    registry?: string;
+    alphaTypes?: string;
+    betaTypes?: string;
   };
 }
 
@@ -191,7 +210,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     return targets;
   }
 
-  async listChangedPackages(options: { ref: string }) {
+  async listChangedPackages(options: {
+    ref: string;
+    analyzeLockfile?: boolean;
+  }) {
     const changedFiles = await listChangedFiles(options.ref);
 
     const dirMap = new Map(
@@ -230,6 +252,77 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         // Skip through the rest of the changed files for the same package
         while (changedFiles[searchIndex]?.startsWith(packageDir)) {
           searchIndex += 1;
+        }
+      }
+    }
+
+    if (changedFiles.includes('yarn.lock') && options.analyzeLockfile) {
+      // Load the lockfile in the working tree and the one at the ref and diff them
+      let thisLockfile: Lockfile;
+      let otherLockfile: Lockfile;
+      try {
+        thisLockfile = await Lockfile.load(
+          paths.resolveTargetRoot('yarn.lock'),
+        );
+        otherLockfile = Lockfile.parse(
+          await readFileAtRef('yarn.lock', options.ref),
+        );
+      } catch (error) {
+        console.warn(
+          `Failed to read lockfiles, assuming all packages have changed, ${error}`,
+        );
+        return Array.from(this.values());
+      }
+      const diff = thisLockfile.diff(otherLockfile);
+
+      // Create a simplified dependency graph only keeps track of package names
+      const graph = thisLockfile.createSimplifiedDependencyGraph();
+
+      // Merge the dependency graph from the other lockfile into this one in
+      // order to be able to detect removals accurately.
+      {
+        const otherGraph = thisLockfile.createSimplifiedDependencyGraph();
+        for (const [name, dependencies] of otherGraph) {
+          const node = graph.get(name);
+          if (node) {
+            dependencies.forEach(d => node.add(d));
+          } else {
+            graph.set(name, dependencies);
+          }
+        }
+      }
+
+      // The check is simplified by only considering the package names rather
+      // than the exact version range queries that were changed.
+      // TODO(Rugvip): Use a more exact check
+      const changedPackages = new Set(
+        [...diff.added, ...diff.changed, ...diff.removed].map(e => e.name),
+      );
+
+      // Starting with our set of changed packages from the diff, we loop through
+      // the full graph and add any package that has a dependency on a changed package.
+      // We keep looping until all transitive dependencies have been detected.
+      let changed = false;
+      do {
+        changed = false;
+        for (const [name, dependencies] of graph) {
+          if (changedPackages.has(name)) {
+            continue;
+          }
+          for (const dep of dependencies) {
+            if (changedPackages.has(dep)) {
+              changed = true;
+              changedPackages.add(name);
+              break;
+            }
+          }
+        }
+      } while (changed);
+
+      // Add all local packages that had a transitive dependency change to the result set
+      for (const node of this.values()) {
+        if (changedPackages.has(node.name) && !result.includes(node)) {
+          result.push(node);
         }
       }
     }

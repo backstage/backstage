@@ -15,7 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  Link,
+  OverflowTooltip,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -37,14 +42,18 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
       boxShadow: theme.shadows[2],
       borderRadius: '4px',
       padding: theme.spacing(2),
-      color: '#fff',
+      color: theme.palette.common.white,
       transition: `${theme.transitions.duration.standard}ms`,
       '&:hover': {
         boxShadow: theme.shadows[4],
       },
+      height: '100%',
     },
     bold: {
       fontWeight: theme.typography.fontWeightBold,
+    },
+    smallFont: {
+      fontSize: theme.typography.body2.fontSize,
     },
     entityTypeBox: {
       background: (props: { type: string }) =>
@@ -56,15 +65,18 @@ const useStyles = makeStyles((theme: BackstageTheme) =>
 const EntityCountTile = ({
   counter,
   type,
-  name,
+  kind,
   url,
 }: {
   counter: number;
-  type: string;
-  name: string;
+  type?: string;
+  kind: string;
   url: string;
 }) => {
-  const classes = useStyles({ type });
+  const classes = useStyles({ type: type ?? kind });
+
+  const rawTitle = type ?? kind;
+  const isLongText = rawTitle.length > 10;
 
   return (
     <Link to={url} variant="body2">
@@ -77,9 +89,17 @@ const EntityCountTile = ({
         <Typography className={classes.bold} variant="h6">
           {counter}
         </Typography>
-        <Typography className={classes.bold} variant="h6">
-          {pluralize(name, counter)}
-        </Typography>
+        <Box sx={{ width: '100%', textAlign: 'center' }}>
+          <Typography
+            className={`${classes.bold} ${isLongText && classes.smallFont}`}
+            variant="h6"
+          >
+            <OverflowTooltip
+              text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
+            />
+          </Typography>
+        </Box>
+        {type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
     </Link>
   );
@@ -113,11 +133,11 @@ export const ComponentsGrid = ({
   return (
     <Grid container>
       {componentsWithCounters?.map(c => (
-        <Grid item xs={6} md={6} lg={4} key={c.name}>
+        <Grid item xs={6} md={6} lg={4} key={c.type ?? c.kind}>
           <EntityCountTile
             counter={c.counter}
+            kind={c.kind}
             type={c.type}
-            name={c.name}
             url={`${catalogLink()}/?${c.queryParams}`}
           />
         </Grid>

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-/* eslint-disable monorepo/no-relative-import */
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 
 /*
 This is a list of all packages used by the template. If dependencies are added or removed,
 this list should be updated as well.
 
-The list, and the accompanying peerDependencies entries, are here to ensure correct versioning
-and bumping of this package. Without this list the version would not be bumped unless we
-manually trigger a release.
+There is a release step that ensures that this package is always bumped with every
+release, meaning these version will always be up to date.
 
 This does not create an actual dependency on these packages and does not bring in any code.
 Relative imports are used rather than package imports to make sure the packages aren't externalized.
@@ -50,6 +49,7 @@ import { version as theme } from '../../../theme/package.json';
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginAuthNode } from '../../../../plugins/auth-node/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
@@ -75,6 +75,8 @@ import { version as pluginSearchBackendModulePg } from '../../../../plugins/sear
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
+import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
+import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
@@ -95,6 +97,7 @@ export const packageVersions = {
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
+  '@backstage/plugin-auth-node': pluginAuthNode,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
@@ -120,6 +123,9 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
+  '@backstage/plugin-techdocs-react': pluginTechdocsReact,
+  '@backstage/plugin-techdocs-module-addons-contrib':
+    pluginTechdocsModuleAddonsContrib,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
   '@backstage/plugin-user-settings': pluginUserSettings,
   '@backstage/test-utils': testUtils,

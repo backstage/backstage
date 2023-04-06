@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import {
   createStyles,
   makeStyles,
@@ -49,6 +49,7 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * A default grid to use when arranging "item cards" - cards that let users
  * select among several options.
  *
+ * @remarks
  * The immediate children are expected to be MUI Card components.
  *
  * Styles for the grid can be overridden using the `classes` prop, e.g.:
@@ -64,8 +65,8 @@ export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;
   const classes = useStyles(otherProps);
   return (
-    <div className={classes.root} {...otherProps}>
+    <Box className={classes.root} {...otherProps}>
       {children}
-    </div>
+    </Box>
   );
 }

@@ -25,7 +25,7 @@ import { VersioningStrategy } from './VersioningStrategy';
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,
@@ -51,10 +51,10 @@ describe('Repo', () => {
 
     fireEvent.click(radio2);
     expect(mockNavigate.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "?versioningStrategy=calver&owner=mock_owner&repo=mock_repo",
-          Object {
+          {
             "replace": true,
           },
         ],

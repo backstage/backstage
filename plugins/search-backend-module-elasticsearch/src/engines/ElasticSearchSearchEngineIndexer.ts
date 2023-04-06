@@ -15,18 +15,23 @@
  */
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Client } from '@elastic/elasticsearch';
-import { Readable } from 'stream';
 import { Logger } from 'winston';
+import { Readable } from 'stream';
 
+/**
+ * Options for instantiate ElasticSearchSearchEngineIndexer
+ * @public
+ */
 export type ElasticSearchSearchEngineIndexerOptions = {
   type: string;
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
   logger: Logger;
-  elasticSearchClient: Client;
+  elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  batchSize: number;
 };
 
 function duration(startTimestamp: [number, number]): string {
@@ -35,8 +40,11 @@ function duration(startTimestamp: [number, number]): string {
   return `${seconds.toFixed(1)}s`;
 }
 
+/**
+ * Elasticsearch specific search engine indexer.
+ * @public
+ */
 export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
-  private received: number = 0;
   private processed: number = 0;
   private removableIndices: string[] = [];
 
@@ -49,12 +57,15 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly removableAlias: string;
   private readonly logger: Logger;
   private readonly sourceStream: Readable;
-  private readonly elasticSearchClient: Client;
+  private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
+  private configuredBatchSize: number;
   private bulkResult: Promise<any>;
+  private bulkClientError?: Error;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
-    super({ batchSize: 1000 });
-    this.logger = options.logger;
+    super({ batchSize: options.batchSize });
+    this.configuredBatchSize = options.batchSize;
+    this.logger = options.logger.child({ documentType: options.type });
     this.startTimestamp = process.hrtime();
     this.type = options.type;
     this.indexPrefix = options.indexPrefix;
@@ -62,7 +73,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
     this.removableAlias = `${this.alias}_removable`;
-    this.elasticSearchClient = options.elasticSearchClient;
+    this.elasticSearchClientWrapper = options.elasticSearchClientWrapper;
 
     // The ES client bulk helper supports stream-based indexing, but we have to
     // supply the stream directly to it at instantiation-time. We can't supply
@@ -75,7 +86,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     // Keep a reference to the ES Bulk helper so that we can know when all
     // documents have been successfully written to ES.
-    this.bulkResult = this.elasticSearchClient.helpers.bulk({
+    this.bulkResult = this.elasticSearchClientWrapper.bulk({
       datasource: this.sourceStream,
       onDocument() {
         that.processed++;
@@ -85,21 +96,25 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
       },
       refreshOnCompletion: that.indexName,
     });
+
+    // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts
+    this.bulkResult.catch(e => {
+      this.bulkClientError = e;
+    });
   }
 
   async initialize(): Promise<void> {
     this.logger.info(`Started indexing documents for index ${this.type}`);
 
-    const aliases = await this.elasticSearchClient.cat.aliases({
-      format: 'json',
-      name: [this.alias, this.removableAlias],
+    const aliases = await this.elasticSearchClientWrapper.getAliases({
+      aliases: [this.alias, this.removableAlias],
     });
 
     this.removableIndices = [
       ...new Set(aliases.body.map((r: Record<string, any>) => r.index)),
     ] as string[];
 
-    await this.elasticSearchClient.indices.create({
+    await this.elasticSearchClientWrapper.createIndex({
       index: this.indexName,
     });
   }
@@ -107,7 +122,6 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   async index(documents: IndexableDocument[]): Promise<void> {
     await this.isReady();
     documents.forEach(document => {
-      this.received++;
       this.sourceStream.push(document);
     });
   }
@@ -123,6 +137,24 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // Wait for the bulk helper to finish processing.
     const result = await this.bulkResult;
 
+    // Warn that no documents were indexed, early return so that alias swapping
+    // does not occur, and clean up the empty index we just created.
+    if (this.processed === 0) {
+      this.logger.warn(
+        `Index for ${this.type} was not ${
+          this.removableIndices.length ? 'replaced' : 'created'
+        }: indexer received 0 documents`,
+      );
+      try {
+        await this.elasticSearchClientWrapper.deleteIndex({
+          index: this.indexName,
+        });
+      } catch (error) {
+        this.logger.error(`Unable to clean up elastic index: ${error}`);
+      }
+      return;
+    }
+
     // Rotate main alias upon completion. Apply permanent secondary alias so
     // stale indices can be referenced for deletion in case initial attempt
     // fails. Allow errors to bubble up so that we can clean up the created index.
@@ -132,25 +164,23 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
       )}`,
       result,
     );
-    await this.elasticSearchClient.indices.updateAliases({
-      body: {
-        actions: [
-          {
-            remove: { index: this.constructIndexName('*'), alias: this.alias },
-          },
-          this.removableIndices.length
-            ? {
-                add: {
-                  indices: this.removableIndices,
-                  alias: this.removableAlias,
-                },
-              }
-            : undefined,
-          {
-            add: { index: this.indexName, alias: this.alias },
-          },
-        ].filter(Boolean),
-      },
+    await this.elasticSearchClientWrapper.updateAliases({
+      actions: [
+        {
+          remove: { index: this.constructIndexName('*'), alias: this.alias },
+        },
+        this.removableIndices.length
+          ? {
+              add: {
+                indices: this.removableIndices,
+                alias: this.removableAlias,
+              },
+            }
+          : undefined,
+        {
+          add: { index: this.indexName, alias: this.alias },
+        },
+      ].filter(Boolean),
     });
 
     // If any indices are removable, remove them. Do not bubble up this error,
@@ -158,7 +188,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     if (this.removableIndices.length) {
       this.logger.info('Removing stale search indices', this.removableIndices);
       try {
-        await this.elasticSearchClient.indices.delete({
+        await this.elasticSearchClientWrapper.deleteIndex({
           index: this.removableIndices,
         });
       } catch (e) {
@@ -173,11 +203,41 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
    * backpressure in other parts of the indexing pipeline.
    */
   private isReady(): Promise<void> {
-    return new Promise(resolve => {
+    // Early exit if the underlying ES client encountered an error.
+    if (this.bulkClientError) {
+      return Promise.reject(this.bulkClientError);
+    }
+
+    // Optimization: if the stream that ES reads from has fewer docs queued
+    // than the configured batch size, continue early to allow more docs to be
+    // queued
+    if (this.sourceStream.readableLength < this.configuredBatchSize) {
+      return Promise.resolve();
+    }
+
+    // Otherwise, continue periodically checking the stream queue to see if
+    // ES has consumed the documents and continue when it's ready for more.
+    return new Promise((isReady, abort) => {
+      let streamLengthChecks = 0;
       const interval = setInterval(() => {
-        if (this.received === this.processed) {
+        streamLengthChecks++;
+
+        if (this.sourceStream.readableLength < this.configuredBatchSize) {
           clearInterval(interval);
-          resolve();
+          isReady();
+        }
+
+        // Do not allow this interval to loop endlessly; anything longer than 5
+        // minutes likely indicates an unrecoverable error in ES; direct the
+        // user to inspect ES logs for more clues and abort in order to allow
+        // the index to be cleaned up.
+        if (streamLengthChecks >= 6000) {
+          clearInterval(interval);
+          abort(
+            new Error(
+              'Exceeded 5 minutes waiting for elastic to be ready to accept more documents. Check the elastic logs for possible problems.',
+            ),
+          );
         }
       }, 50);
     });

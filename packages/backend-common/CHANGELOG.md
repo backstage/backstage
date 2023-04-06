@@ -1,5 +1,941 @@
 # @backstage/backend-common
 
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-app-api@0.4.2-next.1
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.0
+
+### Patch Changes
+
+- 420164593cf: Improve GitlabUrlReader to only load requested sub-path
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.18.3
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- c1ee073a82b: Added `lastModifiedAt` field on `UrlReaderService` responses and a `lastModifiedAfter` option to `UrlReaderService.readUrl`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config-loader@1.1.9
+  - @backstage/integration@1.4.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-dev-utils@0.1.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.0
+  - @backstage/backend-dev-utils@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2
+
+### Patch Changes
+
+- 5febb216fe: **BREAKING**: The `CacheClient` interface must now also implement the `withOptions` method. The `.get()` method has also received a type parameter that helps ensure that `undefined` in the event of a cache miss is handled.
+
+  Added a `cacheToPluginCacheManager` helper that converts a `CacheService` into a legacy `PluginCacheManager` instance.
+
+- 5febb216fe: Updated to match the new `CacheService` interface.
+- e716946103: Updated usage of the lifecycle service.
+- d31d8e00b3: Updated to work with the new `type: 'pem'` with `createHttpServer` from `@backstage/backend-app-api`
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- f60cca9da1: The `DatabaseManager.forPlugin` method now accepts additional service dependencies. There is no need to update existing code to pass these dependencies.
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-dev-utils@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- e716946103: Updated usage of the lifecycle service.
+- d31d8e00b3: Updated to work with the new `type: 'pem'` with `createHttpServer` from `@backstage/backend-app-api`
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- f60cca9da1: The `DatabaseManager.forPlugin` method now accepts additional service dependencies. There is no need to update existing code to pass these dependencies.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.0-next.2
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-dev-utils@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- 628e2bd89a: Updated dependency `@kubernetes/client-node` to `0.18.1`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-app-api@0.3.2-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.2-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 0.18.0
+
+### Minor Changes
+
+- 5e2cebe9a3: **BREAKING**: Removed deprecated `read` method from the `UrlReader` interface. All implementations should use the `readUrl` method instead.
+
+  Migrated `UrlReader` and related types to `backend/backend-plugin-api`, types remain re-exported from `backend-common` for now.
+
+### Patch Changes
+
+- 0e63aab311: Internal refactor of the logger and configuration loading implementations.
+- 31e2309c8c: Added `legacyPlugin` and the lower level `makeLegacyPlugin` wrappers that convert legacy plugins to the new backend system. This will be used to ease the future migration to the new backend system, but we discourage use of it for now.
+- 8e06f3cf00: Added `loggerToWinstonLogger`, which was moved from `@backstage/backend-plugin-api`.
+- 2b1554cebf: Replaced dependencies on the `Logger` type from `winston` with `LoggerService` from `@backstage/backend-plugin-api`. This is not a breaking change as the `LoggerService` is a subset of the `Logger` interface.
+- 5437fe488f: Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- d592ec4f51: Updated the logger created by `createRootLogger` to make it possible to override the default `service` log label.
+- b99c030f1b: Refactor to rely on `@backstage/backend-app-api` for the implementation of `createServiceBuilder`.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-app-api@0.3.0
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+
+## 0.18.0-next.1
+
+### Patch Changes
+
+- 8e06f3cf00: Added `loggerToWinstonLogger`, which was moved from `@backstage/backend-plugin-api`.
+- 2b1554cebf: Replaced dependencies on the `Logger` type from `winston` with `LoggerService` from `@backstage/backend-plugin-api`. This is not a breaking change as the `LoggerService` is a subset of the `Logger` interface.
+- 5437fe488f: Migrated types related to `TokenManagerService`, `CacheService` and `DatabaseService` into backend-plugin-api.
+- d592ec4f51: Updated the logger created by `createRootLogger` to make it possible to override the default `service` log label.
+- b99c030f1b: Refactor to rely on `@backstage/backend-app-api` for the implementation of `createServiceBuilder`.
+- f23eef3aa2: Updated dependency `better-sqlite3` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.3.0-next.1
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
+## 0.18.0-next.0
+
+### Minor Changes
+
+- 5e2cebe9a3: **BREAKING**: Removed deprecated `read` method from the `UrlReader` interface. All implementations should use the `readUrl` method instead.
+
+  Migrated `UrlReader` and related types to `backend/backend-plugin-api`, types remain re-exported from `backend-common` for now.
+
+### Patch Changes
+
+- 6f02d23b01: Moved `PluginEndpointDiscovery` type from backend-common to backend-plugin-api.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+
+## 0.17.0
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 98776e638a: Fixed GitlabUrlReader to include api tokens in API calls
+- 1f2b2de3fe: exported KubernetesContainerRunner, KubernetesContainerRunnerOptions, KubernetesContainerRunnerMountBase
+- 840f2113c6: Fix `GitlabUrlReader.readTree` bug when there were no matching commits
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 9ce7866ecd: Updated dependency `@kubernetes/client-node` to `0.18.0`.
+- 3c1302c07d: Updated dependency `@types/http-errors` to `^2.0.0`.
+- 6b82598bd8: Added the ability to understand Job Artifact URLs to the GitLab integration
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 8646067e07: Fixed `SingleHostDiscovery` so that it properly handles single-string `backend.listen` configurations such as `:80`.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/config-loader@1.1.7
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+
+## 0.17.0-next.3
+
+### Patch Changes
+
+- 840f2113c6: Fix `GitlabUrlReader.readTree` bug when there were no matching commits
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.17.0-next.2
+
+### Patch Changes
+
+- 98776e638a: Fixed GitlabUrlReader to include api tokens in API calls
+- 20a5161f04: Adds MySQL support for the catalog-backend
+- 3c1302c07d: Updated dependency `@types/http-errors` to `^2.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- de8a975911: Changed to use native `AbortController` and `AbortSignal` from Node.js, instead
+  of the one from `node-abort-controller`. This is possible now that the minimum
+  supported Node.js version of the project is 16.
+
+  Note that their interfaces are very slightly different, but typically not in a
+  way that matters to consumers. If you see any typescript errors as a direct
+  result from this, they are compatible with each other in the ways that we
+  interact with them, and should be possible to type-cast across without ill
+  effects.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- 1f2b2de3fe: exported KubernetesContainerRunner, KubernetesContainerRunnerOptions, KubernetesContainerRunnerMountBase
+- 6b82598bd8: Added the ability to understand Job Artifact URLs to the GitLab integration
+- 8646067e07: Fixed `SingleHostDiscovery` so that it properly handles single-string `backend.listen` configurations such as `:80`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config-loader@1.1.7-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- dfc8edf9c5: Internal refactor to avoid usage of deprecated symbols.
+- Updated dependencies
+  - @backstage/config-loader@1.1.7-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.16.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- e6ced2446a: Change to using `@keyv/memcache` now that `keyv-memcache` is deprecated
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/config-loader@1.1.6
+  - @backstage/errors@1.1.3
+
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- cfb30b700c: Pin `@kubernetes/client-node` version to `0.17.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.16.0-next.0
+
+### Minor Changes
+
+- a7607b5413: **BREAKING CHANGE**: The `UrlReader` interface has been updated to require that `readUrl` is implemented. `readUrl` has previously been optional to implement but a warning has been logged when calling its predecessor `read`.
+  The `read` method is now deprecated and will be removed in a future release.
+
+### Patch Changes
+
+- 55227712dd: Generated development HTTPS backend certificate is now checked for expiration date instead of file age.
+- d05e1841ce: This patch adds GiteaURLReader to the available classes. It currently only reads single files via gitea's public repos api
+- 210a3b5668: Small update to fix compatibility with newer versions of the `keyv` library
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+- Updated dependencies
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 0.15.2
+
+### Patch Changes
+
+- e8d7976413: Added back support for when no branch is provided for the Bitbucket Server `UrlReader`
+- c44cf412de: Fix BitBucket server integration
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.2
+
+### Patch Changes
+
+- c44cf412de: Fix BitBucket server integration
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.1
+
+### Patch Changes
+
+- c31f7cdfbc: Fixed an issue where `getClient()` for a `pluginId` would return different clients and not share them
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/config-loader@1.1.5-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+  - @backstage/config-loader@1.1.5-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+
+## 0.15.1
+
+### Patch Changes
+
+- 399286d7dd: Workaround support for `swc` instead of `sucrase`
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- c3c90280be: Added a keep-alive refresh loop to the `DatabaseManager`, keeping the connection
+  pool up.
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- bf3cc134eb: Implemented KubernetesContainerRunner: a ContainerRunner implementation that leverages Jobs on a kubernetes cluster
+
+  ```ts
+  const kubeConfig = new KubeConfig();
+  kubeConfig.loadFromDefault();
+
+  const options: KubernetesContainerRunnerOptions = {
+    kubeConfig,
+    // namespace where Jobs will be created
+    namespace: 'default',
+    // Jobs name will be prefixed with this name
+    name: 'my-runner',
+    // An existing Kubernetes volume that will be used
+    // as base for mounts
+    mountBase: {
+      volumeName: 'workdir',
+      // Every mount must start with the base path
+      // see example below
+      basePath: '/workdir',
+    },
+    // Define a Pod template for the Jobs. It has to include
+    // a volume definition named as the mountBase volumeName
+    podTemplate: {
+      spec: {
+        containers: [],
+        volumes: [
+          {
+            name: 'workdir',
+            persistentVolumeClaim: {
+              claimName: 'workdir-claim',
+            },
+          },
+        ],
+      },
+    },
+  };
+  const containerRunner = new KubernetesContainerRunner(options);
+
+  const runOptions: RunContainerOptions = {
+    imageName: 'golang:1.17',
+    args: ['echo', 'hello world'],
+    mountDirs: {
+      '/workdir/app': '/app',
+    },
+  };
+  containerRunner.runContainer(runOptions);
+  ```
+
+- e3b1993788: Added port ranges in allowed hosts:
+
+  ```yaml
+  reading:
+      allow:
+        - host: *.examples.org:900-1000
+  ```
+
+- 2f52e74b49: Got rid of usages of the uppercase String type
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 709f468330: The `branch` command has been added to the `isomorphic-git` wrapper.
+- 0c780278e0: Fix for entries being skipped or incomplete when reading large zip archives.
+- 96689fbdcb: Workaround for a rare race condition in tests.
+- Updated dependencies
+  - @backstage/integration@1.3.1
+  - @backstage/config-loader@1.1.4
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 0.15.1-next.3
+
+### Patch Changes
+
+- 96689fbdcb: Workaround for a rare race condition in tests.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.2
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+
+## 0.15.1-next.2
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- bf3cc134eb: Implemented KubernetesContainerRunner: a ContainerRunner implementation that leverages Jobs on a kubernetes cluster
+
+  ```ts
+  const kubeConfig = new KubeConfig();
+  kubeConfig.loadFromDefault();
+
+  const options: KubernetesContainerRunnerOptions = {
+    kubeConfig,
+    // namespace where Jobs will be created
+    namespace: 'default',
+    // Jobs name will be prefixed with this name
+    name: 'my-runner',
+    // An existing Kubernetes volume that will be used
+    // as base for mounts
+    mountBase: {
+      volumeName: 'workdir',
+      // Every mount must start with the base path
+      // see example below
+      basePath: '/workdir',
+    },
+    // Define a Pod template for the Jobs. It has to include
+    // a volume definition named as the mountBase volumeName
+    podTemplate: {
+      spec: {
+        containers: [],
+        volumes: [
+          {
+            name: 'workdir',
+            persistentVolumeClaim: {
+              claimName: 'workdir-claim',
+            },
+          },
+        ],
+      },
+    },
+  };
+  const containerRunner = new KubernetesContainerRunner(options);
+
+  const runOptions: RunContainerOptions = {
+    imageName: 'golang:1.17',
+    args: ['echo', 'hello world'],
+    mountDirs: {
+      '/workdir/app': '/app',
+    },
+  };
+  containerRunner.runContainer(runOptions);
+  ```
+
+- e3b1993788: Added port ranges in allowed hosts:
+
+  ```yaml
+  reading:
+      allow:
+        - host: *.examples.org:900-1000
+  ```
+
+- 2f52e74b49: Got rid of usages of the uppercase String type
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/config-loader@1.1.4-next.1
+
+## 0.15.1-next.1
+
+### Patch Changes
+
+- c3c90280be: Added a keep-alive refresh loop to the `DatabaseManager`, keeping the connection
+  pool up.
+- c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
+  field.
+- 60b85d8ade: Updated dependency `helmet` to `^6.0.0`.
+
+  Please note that these policies are no longer applied by default:
+
+  helmet.contentSecurityPolicy no longer sets block-all-mixed-content directive by default
+  helmet.expectCt is no longer set by default. It can, however, be explicitly enabled. It will be removed in Helmet 7.
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 399286d7dd: Workaround support for `swc` instead of `sucrase`
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.0
+  - @backstage/integration@1.3.1-next.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 12e9b54f0e: Added back support for when no branch is provided to the `UrlReader` for Bitbucket Server
+- 30012e7d8c: - Added `force` and `remoteRef` option to `push` method in `git` actions
+  - Added `addRemote` and `deleteRemote` methods to `git` actions
+
+### Patch Changes
+
+- fc8a5f797b: Improve `scm/git` wrapper around `isomorphic-git` library :
+
+  - Add `checkout` function,
+  - Add optional `remoteRef` parameter in the `push` function.
+
+- 5e4dc173f7: Added a second validation to the `dir()` method of ZIP archive responses returned from `readTree()` that ensures that extracted files do not fall outside the target directory.
+- 1732a18a7a: Exported `redactLogLine` function to be able to use it in custom loggers and renamed it to `redactWinstonLogLine`.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- cfa078e255: The `ZipArchiveResponse` now correctly handles corrupt ZIP archives.
+
+  Before this change, certain corrupt ZIP archives either cause the inflater to throw (as expected), or will hang the parser indefinitely.
+
+  By switching out the `zip` parsing library, we now write to a temporary directory, and load from disk which should ensure that the parsing of the `.zip` files are done correctly because `streaming` of `zip` paths is technically impossible without being able to parse the headers at the end of the file.
+
+- 770d3f92c4: The config prop `ensureExists` now applies to schema creation when `pluginDivisionMode` is set to `schema`. This means schemas will no longer accidentally be automatically created when `ensureExists` is set to `false`.
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+
+## 0.15.0-next.2
+
+### Patch Changes
+
+- 5e4dc173f7: Added a second validation to the `dir()` method of ZIP archive responses returned from `readTree()` that ensures that extracted files do not fall outside the target directory.
+
+## 0.15.0-next.1
+
+### Patch Changes
+
+- 1732a18a7a: Exported `redactLogLine` function to be able to use it in custom loggers and renamed it to `redactWinstonLogLine`.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.1
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- 12e9b54f0e: Added back support for when no branch is provided to the `UrlReader` for Bitbucket Server
+- 30012e7d8c: - Added `force` and `remoteRef` option to `push` method in `git` actions
+  - Added `addRemote` and `deleteRemote` methods to `git` actions
+
+### Patch Changes
+
+- fc8a5f797b: Improve `scm/git` wrapper around `isomorphic-git` library :
+
+  - Add `checkout` function,
+  - Add optional `remoteRef` parameter in the `push` function.
+
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- cfa078e255: The `ZipArchiveResponse` now correctly handles corrupt ZIP archives.
+
+  Before this change, certain corrupt ZIP archives either cause the inflater to throw (as expected), or will hang the parser indefinitely.
+
+  By switching out the `zip` parsing library, we now write to a temporary directory, and load from disk which should ensure that the parsing of the `.zip` files are done correctly because `streaming` of `zip` paths is technically impossible without being able to parse the headers at the end of the file.
+
+- 770d3f92c4: The config prop `ensureExists` now applies to schema creation when `pluginDivisionMode` is set to `schema`. This means schemas will no longer accidentally be automatically created when `ensureExists` is set to `false`.
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.3.0-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- b1edb5cfd9: Fix parsing of S3 URLs for the default region.
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- e57180e45e: Added some more information to the error messages for `isomorphic-git` errors
+- 1f75dfac29: Fix edge case bug when gitlab relativePath is repeated in the target URL.
+- 90c87f28e8: Moving from Bitbucket Server endpoint from https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222 to https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224, to have the last commit in function of different branch, and not only the list of default branch
+- 9de15a41d7: Upgrade @octokit/rest to 19.0.3
+- 0fc57887e8: Improve plural handling in logging output for secrets
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 954a94f52f: Support self-hosted gitlab installations with relative URL.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3
+  - @backstage/integration@1.2.2
+  - @backstage/errors@1.1.0
+
+## 0.14.1-next.3
+
+### Patch Changes
+
+- 90c87f28e8: Moving from Bitbucket Server endpoint from https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222 to https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp224, to have the last commit in function of different branch, and not only the list of default branch
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3-next.1
+  - @backstage/integration@1.2.2-next.3
+
+## 0.14.1-next.2
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/integration@1.2.2-next.2
+
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 0fc57887e8: Improve plural handling in logging output for secrets
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.1
+  - @backstage/config-loader@1.1.3-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- b1edb5cfd9: Fix parsing of S3 URLs for the default region.
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- Updated dependencies
+  - @backstage/integration@1.2.2-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 55647ec7df: **BREAKING**: Server-to-server tokens that are authenticated by the `ServerTokenManager` now must have an `exp` claim that has not expired. Tokens where the `exp` claim is in the past or missing are considered invalid and will throw an error. This is a followup to the deprecation from the `1.2` release of Backstage where perpetual tokens were deprecated. Be sure to update any usage of the `getToken()` method to have it be called every time a token is needed. Do not store tokens for later use.
+
+### Patch Changes
+
+- f72a6b8c62: Applied the `luxon` dependency fix from the `0.13.4` patch release.
+- 5b22a8c97f: Applied the AWS S3 reading patch from the `0.13.5` patch release.
+- f5283a42e2: Updated dependency `@google-cloud/storage` to `^6.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/integration@1.2.1
+  - @backstage/config-loader@1.1.2
+
+## 0.14.0-next.2
+
+### Minor Changes
+
+- 55647ec7df: **BREAKING**: Server-to-server tokens that are authenticated by the `ServerTokenManager` now must have an `exp` claim that has not expired. Tokens where the `exp` claim is in the past or missing are considered invalid and will throw an error. This is a followup to the deprecation from the `1.2` release of Backstage where perpetual tokens were deprecated. Be sure to update any usage of the `getToken()` method to have it be called every time a token is needed. Do not store tokens for later use.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.1-next.2
+
+## 0.13.6-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.2-next.0
+  - @backstage/integration@1.2.1-next.1
+
+## 0.13.6-next.0
+
+### Patch Changes
+
+- f72a6b8c62: Applied the `luxon` dependency fix from the `0.13.4` patch release.
+- 5b22a8c97f: Applied the AWS S3 reading patch from the `0.13.5` patch release.
+- Updated dependencies
+  - @backstage/integration@1.2.1-next.0
+
+## 0.13.5
+
+### Patch Changes
+
+- 667d2ed6f8: Fix a bug in the URL Reading towards AWS S3 where it would hang indefinitely.
+
+## 0.13.4
+
+### Patch Changes
+
+- 739be2b079: Fixed potential crash by bumping the `luxon` dependency to `^2.3.1`.
+
+## 0.13.3
+
+### Patch Changes
+
+- e0a6360b80: Added a `stream()` method to complement the `buffer()` method on `ReadUrlResponse`. A `ReadUrlResponseFactory` utility class is now also available, providing a simple, consistent way to provide a valid `ReadUrlResponse`.
+
+  This method, though optional for now, will be required on the responses of `UrlReader.readUrl()` implementations in a future release.
+
+- 4b811aafce: Implemented the `UrlReader.search()` method for Google Cloud Storage. Due to limitations in the underlying storage API, only prefix-based searches are supported right now (for example, `https://storage.cloud.google.com/your-bucket/some-path/*`).
+- 6673babab9: Gerrit integration: Added optional `cloneUrl` string to config.
+- 75bf9e1da9: Split BitbucketUrlReader into BitbucketCloudUrlReader and BitbucketServerUrlReader. Backwards compatible.
+- 28b0e4ddef: Update types to match the new version of `@keyv/redis`
+- 5fcbd86960: **DEPRECATION**: Server-to-server authentication tokens issued from a
+  `TokenManager` (specifically, `ServerTokenManager`) now has an expiry time set,
+  for one hour in the future from when issued. This improves security. The ability
+  to pass in and validate tokens that either have a missing `exp` claim, or an
+  `exp` claim that expired in the past, is now deprecated. Trying to do so will
+  lead to logged warnings, and in a future release will instead lead to errors.
+
+  It was always the case that users of this interface were expected to call its
+  `getToken()` method for every outgoing call and never hold on to any given token
+  for reuse. But this now has become even more important advice to heed, and you
+  should verify that you do not hold on to and reuse tokens such as these in your
+  own code.
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/integration@1.2.0
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/config-loader@1.1.1
+
 ## 0.13.3-next.2
 
 ### Patch Changes

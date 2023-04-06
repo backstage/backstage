@@ -20,7 +20,7 @@ import React, {
   useContext,
   PropsWithChildren,
 } from 'react';
-import { Maybe } from '../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 
 export type ScrollTo = Maybe<string>;
 

@@ -20,8 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './service/router';
-export * from './service/KubernetesBuilder';
-export * from './types/types';
-
-export { DEFAULT_OBJECTS } from './service/KubernetesFanOutHandler';
+export * from './kubernetes-auth-translator';
+export * from './service';
+export * from './types';

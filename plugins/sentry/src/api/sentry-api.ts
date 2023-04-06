@@ -16,15 +16,20 @@
 
 import { SentryIssue } from './sentry-issue';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export const sentryApiRef = createApiRef<SentryApi>({
   id: 'plugin.sentry.service',
 });
 
+/** @public */
 export interface SentryApi {
   fetchIssues(
-    project: string,
-    statsFor: string,
-    query?: string,
+    entity: Entity,
+    options: {
+      statsFor: string;
+      query?: string;
+    },
   ): Promise<SentryIssue[]>;
 }

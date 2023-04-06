@@ -19,6 +19,8 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
+import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
+import fs from 'fs-extra';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
@@ -26,6 +28,12 @@ export default async function serveMkdocs(opts: OptionValues) {
   const dockerAddr = `http://0.0.0.0:${opts.port}`;
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
+
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
+    './',
+    opts.siteName,
+  );
+
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
@@ -62,6 +70,7 @@ export default async function serveMkdocs(opts: OptionValues) {
     port: opts.port,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
+    dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
     stdoutLogFunc: logFunc,
     stderrLogFunc: logFunc,
@@ -69,4 +78,10 @@ export default async function serveMkdocs(opts: OptionValues) {
 
   // Keep waiting for user to cancel the process
   await waitForSignal([childProcess]);
+
+  if (configIsTemporary) {
+    process.on('exit', async () => {
+      fs.rmSync(mkdocsYmlPath, {});
+    });
+  }
 }

@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createOneLoginProvider } from './provider';
-export type { OneLoginProviderOptions } from './provider';
+export { onelogin } from './provider';

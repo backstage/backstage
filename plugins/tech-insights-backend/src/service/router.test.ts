@@ -87,59 +87,94 @@ describe('Tech Insights router tests', () => {
 
     app = express().use(router);
   });
-
-  it('should be able to retrieve latest schemas', async () => {
-    await request(app).get('/fact-schemas').expect(200);
-    expect(latestSchemasMock).toHaveBeenCalled();
+  describe('/fact-schemas', () => {
+    it('should be able to retrieve latest schemas', async () => {
+      await request(app).get('/fact-schemas').expect(200);
+      expect(latestSchemasMock).toHaveBeenCalled();
+    });
   });
 
-  it('should not contain check endpoints when checker not present', async () => {
-    await request(app).get('/checks').expect(404);
-    await request(app).post('/checks/a/a/a').expect(404);
+  describe('/checks', () => {
+    it('should not contain check endpoints when checker not present', async () => {
+      await request(app).get('/checks').expect(404);
+      await request(app).post('/checks/a/a/a').expect(404);
+    });
   });
 
-  it('should be able to parse id request params for fact retrieval', async () => {
-    await request(app)
-      .get('/facts/latest')
-      .query({
-        entity: 'a:a/a',
-        ids: ['firstId', 'secondId'],
-      })
-      .expect(200);
-    expect(latestFactsByIdsMock).toHaveBeenCalledWith(
-      ['firstId', 'secondId'],
-      'a:a/a',
-    );
+  describe('/facts/latest', () => {
+    it('should be able to parse id request params for fact retrieval', async () => {
+      await request(app)
+        .get('/facts/latest')
+        .query({
+          entity: 'a:a/a',
+          ids: ['firstId', 'secondId'],
+        })
+        .expect(200);
+      expect(latestFactsByIdsMock).toHaveBeenCalledWith(
+        ['firstId', 'secondId'],
+        'a:a/a',
+      );
+    });
+    it('should handle singular ids in query params correctly', async () => {
+      await request(app)
+        .get('/facts/latest')
+        .query({
+          entity: 'a:a/a',
+          ids: ['secondId'],
+        })
+        .expect(200);
+      expect(latestFactsByIdsMock).toHaveBeenCalledWith(['secondId'], 'a:a/a');
+    });
   });
 
-  it('should be able to parse datetime request params for fact retrieval', async () => {
-    await request(app)
-      .get('/facts/range')
-      .query({
-        entity: 'a:a/a',
-        ids: ['firstId', 'secondId'],
-        startDatetime: '2021-12-12T12:12:12',
-        endDatetime: '2022-11-11T11:11:11',
-      })
-      .expect(200);
-    expect(factsBetweenTimestampsByIdsMock).toHaveBeenCalledWith(
-      ['firstId', 'secondId'],
-      'a:a/a',
-      DateTime.fromISO('2021-12-12T12:12:12.000+00:00'),
-      DateTime.fromISO('2022-11-11T11:11:11.000+00:00'),
-    );
-  });
+  describe('/facts/range', () => {
+    it('should be able to parse datetime request params for fact retrieval', async () => {
+      await request(app)
+        .get('/facts/range')
+        .query({
+          entity: 'a:a/a',
+          ids: ['firstId', 'secondId'],
+          startDatetime: '2021-12-12T12:12:12',
+          endDatetime: '2022-11-11T11:11:11',
+        })
+        .expect(200);
+      expect(factsBetweenTimestampsByIdsMock).toHaveBeenCalledWith(
+        ['firstId', 'secondId'],
+        'a:a/a',
+        DateTime.fromISO('2021-12-12T12:12:12.000+00:00'),
+        DateTime.fromISO('2022-11-11T11:11:11.000+00:00'),
+      );
+    });
 
-  it('should respond gracefully on parsing errors', async () => {
-    await request(app)
-      .get('/facts/range')
-      .query({
-        entity: 'a:a/a',
-        ids: ['firstId', 'secondId'],
-        startDatetime: '2021-12-1222T12:12:12',
-        endDatetime: '2022-1122-11T11:11:11',
-      })
-      .expect(422);
-    expect(latestFactsByIdsMock).toHaveBeenCalledTimes(0);
+    it('should respond gracefully on parsing errors', async () => {
+      await request(app)
+        .get('/facts/range')
+        .query({
+          entity: 'a:a/a',
+          ids: ['firstId', 'secondId'],
+          startDatetime: '2021-12-1222T12:12:12',
+          endDatetime: '2022-1122-11T11:11:11',
+        })
+        .expect(422);
+      expect(latestFactsByIdsMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('should handle singular ids in query params correctly', async () => {
+      await request(app)
+        .get('/facts/range')
+        .query({
+          entity: 'a:a/a',
+          ids: ['firstId'],
+          startDatetime: '2021-12-12T12:12:12',
+          endDatetime: '2022-11-11T11:11:11',
+        })
+        .expect(200);
+      expect(factsBetweenTimestampsByIdsMock).toHaveBeenCalledWith(
+        ['firstId'],
+        'a:a/a',
+        DateTime.fromISO('2021-12-12T12:12:12.000+00:00'),
+        DateTime.fromISO('2022-11-11T11:11:11.000+00:00'),
+      );
+    });
   });
 });

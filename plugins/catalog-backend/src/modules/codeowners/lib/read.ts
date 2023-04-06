@@ -28,14 +28,9 @@ export async function readCodeOwners(
 ): Promise<string | undefined> {
   const readOwnerLocation = async (path: string): Promise<string> => {
     const url = `${sourceUrl}${path}`;
-
-    if (reader.readUrl) {
-      const data = await reader.readUrl(url);
-      const buffer = await data.buffer();
-      return buffer.toString();
-    }
-    const data = await reader.read(url);
-    return data.toString();
+    const data = await reader.readUrl(url);
+    const buffer = await data.buffer();
+    return buffer.toString();
   };
 
   const candidates = codeownersPaths.map(readOwnerLocation);
@@ -75,7 +70,7 @@ export async function findCodeOwnerByTarget(
     return undefined;
   }
 
-  const owner = resolveCodeOwner(contents);
+  const owner = resolveCodeOwner(contents, targetUrl);
 
   return owner;
 }

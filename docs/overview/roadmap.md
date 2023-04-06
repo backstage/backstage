@@ -12,12 +12,12 @@ and the broader Backstage community.
 
 The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future
 work"](#future-work). With "next" we mean features planned for release within
-the ongoing quarter from January through March 2022. With "future" we mean
+the ongoing quarter from July through September 2022. With "future" we mean
 features on the radar, but not yet scheduled.
 
-| [What's next](#whats-next)                                                                                                                                                                                                                                                                                            | [Future work](#future-work)                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| [Ease of onboarding](#ease-of-onboarding) <br/> [Search 1.0](#search-1.0) <br/> [TechDocs Addon framework](#techdocs-addon-framework) <br/> [Backend Services (initial)](#backend-services-initial) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [SIGs for contributors](#sigs-for-contributors) | Security Plan (and Strategy) <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
+| [What's next](#whats-next)                                                                                                                                                                                                                                          | [Future work](#future-work)                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Backend Services (MVP)](#backend-services-mvp) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us
@@ -30,48 +30,18 @@ The feature set below is planned for the ongoing quarter, and grouped by theme.
 The list order doesn't necessarily reflect priority, and the development/release
 cycle will vary based on maintainer schedules.
 
-### Ease of onboarding
-
-A faster (with less development) and easier setup of a proof-of-concept
-deployment, as part of the onboarding experience, has been a common and loud
-suggestion from new adopters as well as analysts looking at Backstage.
-
-With this initiative we plan to start facing this important topic with the most
-commonly used and challenging tasks. More in particular we plan to reduce the
-effort required to go from zero to production in installing and customizing
-Backstage, as well as reducing the effort required to populate the Software
-Catalog.
-
-More iterations will be required in the following quarters, but this will be a
-good improvement in the onboarding experience, especially for the benefit of new
-adopters.
-
-### Search 1.0
-
-Fix the few remaining issues to get Backstage Search platform up to 1.0
-([here](https://github.com/backstage/backstage/milestone/27) and
-[here](https://github.com/backstage/backstage/milestone/28)).
-
-### TechDocs Addon framework
-
-Addons are TechDocs features that are added on top of the base docs-like-code
-experience. An example would be a feature that showed comments on the page. We
-plan to add an Addon framework and open source a selection of the Addons that we
-use internally at Spotify. Further Addons can then be added by the Community.
-
-### Backend Services (initial)
+### Backend Services (MVP)
 
 To better scale and maintain the Backstage instances, a backend services system
 is planned to be introduced as part of the software architecture. This layer of
 backend services will help in decoupling the various modules (e.g. Catalog and
 Scaffolder) from the frontend experience.
 
-In this quarter we plan to start designing the new architecture, together with
-the first experimentation and development of the software components.
+After the experimentation and design happened in the past quarter, soon we plan to release a first version to start providing the first benefits to adopters and developers.
 
 ### Backstage Security Audit
 
-This is the continuation of the initiative started in the previous quarter. This
+This is the continuation of the initiative started in the previous quarters. This
 quarter will see the publication of the report describing the outcome of the
 audit, together the first fixes and the development of some of the changes
 required to address the vulnerabilities.
@@ -85,12 +55,26 @@ initiative.
 This initiative is done together with, and with the support of, the [Cloud
 Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
-### SIGs for contributors
+### Backstage Threat Model
 
-The request to better coordinate the increasing number of contributions coming
-from the various adopters' developers is loud and clear. We think that the
-community is mature enough to start launching the SIGs (Special Interest Groups)
-following the successful model of Kubernetes.
+This is another (relevant) initiative planned to make Backstage a secure product for the adopters. The goals of this initiative are:
+
+1. Understand where security investment and attention is needed.
+2. Guide the upcoming security audit.
+3. Communicate expectations to Backstage adopters and inform and attract security researchers.
+
+The planned artifacts are:
+
+- Concise high level threat model that will be included as part of the Backstage security documentation.
+- Granular threat model created in conjunction with the security audit to inform further security investment areas for Backstage.
+
+### Software Catalog pagination
+
+Today adopters with a big catalog (with several thousands of software components) might not have an ideal end-user experience when viewing the `/catalog` page. The issue is related to how the entities are fetched by the frontend. In order to provide a better end-user experience the pagination of the catalog’s entities needs to be enforced. Some experimentation is already completed but in this quarter we plan to continue, and hopefully complete, this relevant enhancement.
+
+### More SIGs
+
+In the last quarter we launched the [Catalog SIG (Special Interest Group)](https://github.com/backstage/community/tree/main/sigs/sig-catalog) to better coordinate the increasing number of contributions to the project. We think that this is the proper path to follow to engage more with the contributors. For this reason we will launch other SIGs dedicated to the most interesting topics for the community.
 
 ## Future work
 
@@ -98,18 +82,17 @@ The following feature list doesn't represent a commitment to develop, and the
 list order doesn't reflect any priority or importance, but these features are on
 the maintainers' radar, with clear interest expressed by the community.
 
-- **Security Plan (and Strategy):** The purpose of the Security Strategy is to
-  move another step along the path to maturing the platform, setting the
-  expectations of any adopters from a security standpoint.
+- **Ease of onboarding:** A faster (with less development) and easier setup of
+  Backstage and the most relevant/adopted plugins.
 - **Composable Homepage 1.0:** Driving this to 1.0 by adding some composable
   components.
+- **Creator experience:** Provide a better Backstage user experience through
+  visual guidelines and templates, especially navigation across plug-ins and
+  portal functionalities.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
   Backstage backend services with a standard query language for APIs.
 - **Telemetry:** To efficiently generate logging and metrics in such a way that
   adopters can get insights so that Backstage can be monitored and improved.
-- **Improved UX design:** Provide a better Backstage user experience through
-  visual guidelines and templates, especially navigation across plug-ins and
-  portal functionalities.
 
 ## How to influence the roadmap
 
@@ -128,5 +111,4 @@ guidelines to get started.
 
 If you have specific questions about the roadmap, please create an
 [issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
-[Discord](https://discord.gg/qxsEfa8Vq8), or [book
-time](http://calendly.com/spotify-backstage) with the Spotify team.
+[Discord](https://discord.gg/backstage-687207715902193673), or [book time](https://info.backstage.spotify.com/office-hours) with the Spotify team.

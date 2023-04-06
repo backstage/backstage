@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement, ComponentType } from 'react';
+import React, { Fragment, ReactElement } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,15 +23,18 @@ import ListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
-import { VerticalMenuIcon } from './VerticalMenuIcon';
+import MoreVert from '@material-ui/icons/MoreVert';
+import { useTheme } from '@material-ui/core/styles';
 
-type ActionItemProps = {
+/**
+ * @public
+ */
+export type HeaderActionMenuItem = {
   label?: ListItemTextProps['primary'];
   secondaryLabel?: ListItemTextProps['secondary'];
   icon?: ReactElement;
   disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-  WrapperComponent?: ComponentType;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const ActionItem = ({
@@ -40,10 +43,9 @@ const ActionItem = ({
   icon,
   disabled = false,
   onClick,
-  WrapperComponent = React.Fragment,
-}: ActionItemProps) => {
+}: HeaderActionMenuItem) => {
   return (
-    <WrapperComponent>
+    <Fragment>
       <ListItem
         data-testid="header-action-item"
         disabled={disabled}
@@ -57,15 +59,26 @@ const ActionItem = ({
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText primary={label} secondary={secondaryLabel} />
       </ListItem>
-    </WrapperComponent>
+    </Fragment>
   );
 };
 
+/**
+ * @public
+ */
 export type HeaderActionMenuProps = {
-  actionItems: ActionItemProps[];
+  actionItems: HeaderActionMenuItem[];
 };
 
+/**
+ * @public
+ */
 export function HeaderActionMenu(props: HeaderActionMenuProps) {
+  const {
+    palette: {
+      common: { white },
+    },
+  } = useTheme();
   const { actionItems } = props;
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
@@ -77,14 +90,14 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
         data-testid="header-action-menu"
         ref={anchorElRef}
         style={{
-          color: 'white',
+          color: white,
           height: 56,
           width: 56,
           marginRight: -4,
           padding: 0,
         }}
       >
-        <VerticalMenuIcon titleAccess="menu" style={{ fontSize: 40 }} />
+        <MoreVert />
       </IconButton>
       <Popover
         open={open}

@@ -13,6 +13,7 @@ import { InfoCardVariants } from '@backstage/core-components';
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
+  showLinks?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -32,11 +33,13 @@ export const EntityOwnershipCard: (props: {
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
+  showLinks?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
   variant?: InfoCardVariants;
+  showLinks?: boolean;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -50,6 +53,7 @@ export const MyGroupsSidebarItem: (props: {
   singularTitle: string;
   pluralTitle: string;
   icon: IconComponent;
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
 }) => JSX.Element | null;
 
 // @public (undocumented)
@@ -57,7 +61,8 @@ const orgPlugin: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined, false>;
-  }
+  },
+  {}
 >;
 export { orgPlugin };
 export { orgPlugin as plugin };
@@ -73,5 +78,6 @@ export const OwnershipCard: (props: {
 // @public (undocumented)
 export const UserProfileCard: (props: {
   variant?: InfoCardVariants;
+  showLinks?: boolean;
 }) => JSX.Element;
 ```

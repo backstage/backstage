@@ -17,6 +17,7 @@
 import { bitrisePlugin } from './plugin';
 import { createComponentExtension } from '@backstage/core-plugin-api';
 
+/** @public */
 export const EntityBitriseContent = bitrisePlugin.provide(
   createComponentExtension({
     name: 'EntityBitriseContent',

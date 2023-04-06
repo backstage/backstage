@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  Divider,
-  ListItem,
+  ListItemIcon,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
@@ -30,16 +29,22 @@ import {
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-const useStyles = makeStyles({
-  flexContainer: {
-    flexWrap: 'wrap',
+const useStyles = makeStyles(
+  {
+    item: {
+      display: 'flex',
+    },
+    flexContainer: {
+      flexWrap: 'wrap',
+    },
+    itemText: {
+      width: '100%',
+      wordBreak: 'break-all',
+      marginBottom: '1rem',
+    },
   },
-  itemText: {
-    width: '100%',
-    wordBreak: 'break-all',
-    marginBottom: '1rem',
-  },
-});
+  { name: 'CatalogSearchResultListItem' },
+);
 
 /**
  * Props for {@link CatalogSearchResultListItem}.
@@ -47,8 +52,10 @@ const useStyles = makeStyles({
  * @public
  */
 export interface CatalogSearchResultListItemProps {
-  result: IndexableDocument;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
+  result?: IndexableDocument;
   highlight?: ResultHighlight;
+  rank?: number;
 }
 
 /** @public */
@@ -56,31 +63,42 @@ export function CatalogSearchResultListItem(
   props: CatalogSearchResultListItemProps,
 ) {
   const result = props.result as any;
+  const highlight = props.highlight as ResultHighlight;
 
   const classes = useStyles();
+
+  if (!result) return null;
+
   return (
-    <Link to={result.location}>
-      <ListItem alignItems="flex-start" className={classes.flexContainer}>
+    <div className={classes.item}>
+      {props.icon && (
+        <ListItemIcon>
+          {typeof props.icon === 'function' ? props.icon(result) : props.icon}
+        </ListItemIcon>
+      )}
+      <div className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
           primary={
-            props.highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={props.highlight.fields.title}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
-              />
-            ) : (
-              result.title
-            )
+            <Link noTrack to={result.location}>
+              {highlight?.fields.title ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.title}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.title
+              )}
+            </Link>
           }
           secondary={
-            props.highlight?.fields.text ? (
+            highlight?.fields.text ? (
               <HighlightedSearchResultText
-                text={props.highlight.fields.text}
-                preTag={props.highlight.preTag}
-                postTag={props.highlight.postTag}
+                text={highlight.fields.text}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
               />
             ) : (
               result.text
@@ -93,8 +111,7 @@ export function CatalogSearchResultListItem(
             <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
           )}
         </Box>
-      </ListItem>
-      <Divider component="li" />
-    </Link>
+      </div>
+    </div>
   );
 }

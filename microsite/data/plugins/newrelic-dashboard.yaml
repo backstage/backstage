@@ -5,7 +5,7 @@ authorUrl: https://github.com/mufaddal7
 category: Monitoring
 description: Easily view your New Relic Dashboards in Backstage, via real-time snapshots of your dashboards
 documentation: https://github.com/backstage/backstage/tree/master/plugins/newrelic-dashboard
-iconUrl: https://newrelic.com/themes/custom/curio/assets/mediakit/NR_logo_Horizontal_Rev.svg
+iconUrl: https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_vertical_white.svg
 npmPackageName: '@backstage/plugin-newrelic-dashboard'
 tags:
   - performance
@@ -13,3 +13,4 @@ tags:
   - errors
   - alerting
   - dashboards
+addedDate: '2021-12-23'

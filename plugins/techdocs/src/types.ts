@@ -25,11 +25,7 @@ import {
  *
  * @public
  */
-export type TechDocsReaderPageRenderFunction = ({
-  techdocsMetadataValue,
-  entityMetadataValue,
-  entityRef,
-}: {
+export type TechDocsReaderPageRenderFunction = (options: {
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
   entityRef: CompoundEntityRef;

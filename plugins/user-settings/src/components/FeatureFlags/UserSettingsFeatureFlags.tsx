@@ -24,7 +24,6 @@ import {
 } from '@material-ui/core';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
-
 import {
   featureFlagsApiRef,
   FeatureFlagState,
@@ -33,6 +32,7 @@ import {
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
 
+/** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
@@ -73,23 +73,18 @@ export const UserSettingsFeatureFlags = () => {
     inputRef?.current?.focus();
   };
 
-  let filteredFeatureFlags = Array.from(featureFlags);
-
-  const filterInputParts = filterInput
-    .split(/\s/)
-    .map(part => part.trim().toLocaleLowerCase('en-US'));
-
-  filterInputParts.forEach(
-    part =>
-      (filteredFeatureFlags = filteredFeatureFlags.filter(featureFlag =>
-        featureFlag.name.toLocaleLowerCase('en-US').includes(part),
-      )),
-  );
+  const filteredFeatureFlags = featureFlags.filter(featureFlag => {
+    const featureFlagName = featureFlag.name.toLocaleLowerCase('en-US');
+    return featureFlagName.includes(filterInput.toLocaleLowerCase('en-US'));
+  });
 
   const Header = () => (
     <Grid container style={{ justifyContent: 'space-between' }}>
       <Grid item xs={6} md={8}>
         <Typography variant="h5">Feature Flags</Typography>
+        <Typography variant="subtitle1">
+          Please refresh the page when toggling feature flags
+        </Typography>
       </Grid>
       {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>

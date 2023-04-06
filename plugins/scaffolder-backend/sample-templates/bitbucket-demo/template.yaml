@@ -20,7 +20,17 @@ spec:
           ui:options:
             allowedHosts:
               - bitbucket.org
-              - server.bitbucket.com
+            # The rest of these options are optional.
+            # You can read more at: https://backstage.io/docs/reference/plugin-scaffolder.repourlpickerfieldextension
+            # allowedOwners:
+            #   - WORKSPACE1
+            #   - WORKSPACE2
+            # allowedProjects:
+            #   - PROJECT1
+            #   - PROJECT2
+            # allowedRepos:
+            #   - REPO1
+            #   - REPO2
     - title: Fill in some steps
       required:
         - name
@@ -39,8 +49,8 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
 
   steps:
     - id: fetch-base
@@ -68,13 +78,13 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}

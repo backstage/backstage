@@ -1,7 +1,7 @@
 # Scaffolder Frontend
 
 This is the React frontend for the default Backstage [software
-templates](https://backstage.io/docs/features/software-templates/software-templates-index).
+templates](https://backstage.io/docs/features/software-templates/).
 This package supplies interfaces related to showing available templates in the
 Backstage catalog and the workflow to create software using those templates.
 
@@ -78,6 +78,48 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       ...
     </Sidebar>
 ```
+
+### Troubleshooting
+
+If you encounter the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
+which auto-updates logs during task execution, you can enable long polling. To do so,
+update your `packages/app/src/apis.ts` file to register a `ScaffolderClient` with the
+`useLongPollingLogs` set to `true`. By default, it is `false`.
+
+```typescript
+import {
+  createApiFactory,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import {
+  scaffolderApiRef,
+  ScaffolderClient,
+} from '@backstage/plugin-scaffolder';
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
+      new ScaffolderClient({
+        discoveryApi,
+        identityApi,
+        scmIntegrationsApi,
+        fetchApi,
+        useLongPollingLogs: true,
+      }),
+  }),
+  // ... other factories
+```
+
+This replaces the default implementation of the `scaffolderApiRef`.
 
 ## Links
 

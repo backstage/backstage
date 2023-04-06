@@ -10,8 +10,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const dismissButton = banner.querySelector('[data-banner-dismiss]');
     if (dismissButton) {
       dismissButton.addEventListener('click', () => {
-        banner.classList.add('Banner--hidden');
+        banner.classList.add('Banner--hiding');
         localStorage.setItem(storageKey, 'true');
+        setTimeout(() => banner.classList.add('Banner--hidden'), 300);
       });
     }
   });

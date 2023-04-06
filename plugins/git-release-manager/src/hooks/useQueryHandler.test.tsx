@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import { mockSearchSemver } from '../test-helpers/test-helpers';
 import { useQueryHandler } from './useQueryHandler';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(() => ({
     search: mockSearchSemver,
   })),
@@ -50,14 +50,14 @@ describe('useQueryHandler', () => {
     const result = getByTestId(TEST_ID).innerHTML;
 
     expect(result).toMatchInlineSnapshot(`
-        "{
-          \\"parsedQuery\\": {
-            \\"versioningStrategy\\": \\"semver\\",
-            \\"owner\\": \\"mock_owner\\",
-            \\"repo\\": \\"mock_repo\\"
-          },
-          \\"queryParams\\": \\"versioningStrategy=semver&amp;owner=mock_owner&amp;repo=updated_mock_repo\\"
-        }"
-      `);
+      "{
+        "parsedQuery": {
+          "versioningStrategy": "semver",
+          "owner": "mock_owner",
+          "repo": "mock_repo"
+        },
+        "queryParams": "versioningStrategy=semver&amp;owner=mock_owner&amp;repo=updated_mock_repo"
+      }"
+    `);
   });
 });

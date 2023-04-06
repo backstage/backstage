@@ -23,6 +23,7 @@ import {
   googleAuthApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const gcpProjectsPlugin = createPlugin({
   id: 'gcp-projects',
   routes: {
@@ -39,6 +40,7 @@ export const gcpProjectsPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const GcpProjectsPage = gcpProjectsPlugin.provide(
   createRoutableExtension({
     name: 'GcpProjectsPage',

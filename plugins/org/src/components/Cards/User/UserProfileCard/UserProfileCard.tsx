@@ -14,32 +14,40 @@
  * limitations under the License.
  */
 
-import { RELATION_MEMBER_OF, UserEntity } from '@backstage/catalog-model';
 import {
-  EntityRefLinks,
-  getEntityRelations,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-} from '@material-ui/core';
-import EmailIcon from '@material-ui/icons/Email';
-import GroupIcon from '@material-ui/icons/Group';
-import PersonIcon from '@material-ui/icons/Person';
-import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+  ANNOTATION_EDIT_URL,
+  RELATION_MEMBER_OF,
+  UserEntity,
+} from '@backstage/catalog-model';
 import {
   Avatar,
   InfoCard,
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import {
+  Box,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from '@material-ui/core';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+
+import Alert from '@material-ui/lab/Alert';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailIcon from '@material-ui/icons/Email';
+import GroupIcon from '@material-ui/icons/Group';
+import { LinksGroup } from '../../Meta';
+import PersonIcon from '@material-ui/icons/Person';
+import React from 'react';
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -50,14 +58,20 @@ const CardTitle = (props: { title?: string }) =>
   ) : null;
 
 /** @public */
-export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
+export const UserProfileCard = (props: {
+  variant?: InfoCardVariants;
+  showLinks?: boolean;
+}) => {
   const { entity: user } = useEntity<UserEntity>();
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
   }
 
+  const entityMetadataEditUrl =
+    user.metadata.annotations?.[ANNOTATION_EDIT_URL];
+
   const {
-    metadata: { name: metaName, description },
+    metadata: { name: metaName, description, links },
     spec: { profile },
   } = user;
   const displayName = profile?.displayName ?? metaName;
@@ -71,6 +85,20 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={props.variant}
+      action={
+        <>
+          {entityMetadataEditUrl && (
+            <IconButton
+              aria-label="Edit"
+              title="Edit Metadata"
+              component={Link}
+              to={entityMetadataEditUrl}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
+        </>
+      }
     >
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>
@@ -105,6 +133,8 @@ export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
                 />
               </ListItemText>
             </ListItem>
+
+            {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>

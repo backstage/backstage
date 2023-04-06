@@ -15,7 +15,8 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { FormProps } from '@rjsf/core';
+import { FormProps, UiSchema } from '@rjsf/core';
+import type { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -50,7 +51,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
         continue;
       }
       const innerUiSchema = {};
-      uiSchema[propName] = innerUiSchema;
+      uiSchema[propName] = uiSchema[propName] || innerUiSchema;
       extractUiSchema(schemaNode, innerUiSchema);
     }
   }
@@ -99,14 +100,30 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
   }
 }
 
-export function transformSchemaToProps(inputSchema: JsonObject): {
+export function transformSchemaToProps(
+  inputSchema: JsonObject,
+  layouts: LayoutOptions[] = [],
+): {
   schema: FormProps<any>['schema'];
   uiSchema: FormProps<any>['uiSchema'];
 } {
+  const customLayoutName = inputSchema['ui:ObjectFieldTemplate'];
   inputSchema.type = inputSchema.type || 'object';
   const schema = JSON.parse(JSON.stringify(inputSchema));
   delete schema.title; // Rendered separately
-  const uiSchema = {};
+  const uiSchema: UiSchema = {};
   extractUiSchema(schema, uiSchema);
+
+  if (customLayoutName) {
+    const Layout = layouts.find(
+      layout => layout.name === customLayoutName,
+    )?.component;
+
+    if (Layout) {
+      uiSchema['ui:ObjectFieldTemplate'] =
+        Layout as unknown as FormProps<any>['ObjectFieldTemplate'];
+    }
+  }
+
   return { schema, uiSchema };
 }

@@ -45,17 +45,16 @@ export const TodoListPage = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const { fetch } = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
-  const title = useRef('');
   const [key, refetchTodos] = useReducer(i => i + 1, 0);
   const [editElement, setEdit] = useState<Todo | undefined>();
 
-  const handleAdd = async () => {
+  const handleAdd = async (title: string) => {
     try {
       const response = await fetch(
         `${await discoveryApi.getBaseUrl('todolist')}/todos`,
         {
           method: 'POST',
-          body: JSON.stringify({ title: title.current }),
+          body: JSON.stringify({ title }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -117,21 +116,7 @@ export const TodoListPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <Typography variant="body1">Add todo</Typography>
-            <Box
-              component="span"
-              alignItems="flex-end"
-              display="flex"
-              flexDirection="row"
-            >
-              <TextField
-                placeholder="Write something here..."
-                onChange={e => (title.current = e.target.value)}
-              />
-              <Button variant="contained" onClick={handleAdd}>
-                Add
-              </Button>
-            </Box>
+            <AddTodo onAdd={handleAdd} />
           </Grid>
           <Grid item>
             <TodoList key={key} onEdit={setEdit} />
@@ -149,13 +134,37 @@ export const TodoListPage = () => {
   );
 };
 
+function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
+  const title = useRef('');
+
+  return (
+    <>
+      <Typography variant="body1">Add todo</Typography>
+      <Box
+        component="span"
+        alignItems="flex-end"
+        display="flex"
+        flexDirection="row"
+      >
+        <TextField
+          placeholder="Write something here..."
+          onChange={e => (title.current = e.target.value)}
+        />
+        <Button variant="contained" onClick={() => onAdd(title.current)}>
+          Add
+        </Button>
+      </Box>
+    </>
+  );
+}
+
 function EditModal({
   todo,
   onCancel,
   onSubmit,
 }: {
   todo?: Todo;
-  onSubmit(todo: Todo): any;
+  onSubmit(t: Todo): any;
   onCancel(): any;
 }) {
   const title = useRef('');

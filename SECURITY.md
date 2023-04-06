@@ -2,9 +2,7 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.x     | :white_check_mark: |
+See our [Release & Versioning Policy](https://backstage.io/docs/overview/versioning-policy#release-versioning-policy).
 
 ## Reporting a Vulnerability
 

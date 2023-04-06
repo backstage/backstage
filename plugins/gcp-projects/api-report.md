@@ -10,8 +10,6 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "GcpApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GcpApi = {
   listProjects(): Promise<Project[]>;
@@ -22,13 +20,9 @@ export type GcpApi = {
   }): Promise<Operation>;
 };
 
-// Warning: (ae-missing-release-tag) "gcpApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const gcpApiRef: ApiRef<GcpApi>;
 
-// Warning: (ae-missing-release-tag) "GcpClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class GcpClient implements GcpApi {
   constructor(googleAuthApi: OAuthApi);
@@ -45,25 +39,20 @@ export class GcpClient implements GcpApi {
   listProjects(): Promise<Project[]>;
 }
 
-// Warning: (ae-missing-release-tag) "GcpProjectsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const GcpProjectsPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "gcpProjectsPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const gcpProjectsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export { gcpProjectsPlugin };
 export { gcpProjectsPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "Operation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Operation = {
   name: string;
@@ -73,8 +62,6 @@ export type Operation = {
   response: string;
 };
 
-// Warning: (ae-missing-release-tag) "Project" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Project = {
   name: string;
@@ -84,15 +71,11 @@ export type Project = {
   createTime?: string;
 };
 
-// Warning: (ae-missing-release-tag) "ProjectDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ProjectDetails = {
   details: string;
 };
 
-// Warning: (ae-missing-release-tag) "Status" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Status = {
   code: number;

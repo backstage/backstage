@@ -15,7 +15,7 @@
  */
 import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import { default as React, useState } from 'react';
@@ -126,12 +126,12 @@ const generatedColumns: TableColumn[] = [
     field: 'lastBuild.source.branchName',
     render: (row: Partial<Project>) => (
       <>
-        <p>
+        <Typography paragraph>
           <Link to={row.lastBuild?.source?.url ?? ''}>
             {row.lastBuild?.source?.branchName}
           </Link>
-        </p>
-        <p>{row.lastBuild?.source?.commit?.hash}</p>
+        </Typography>
+        <Typography paragraph>{row.lastBuild?.source?.commit?.hash}</Typography>
       </>
     ),
   },
@@ -152,7 +152,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => {
       return (
         <>
-          <p>
+          <Typography paragraph>
             {row.lastBuild?.tests && (
               <Link to={row.lastBuild?.tests.testUrl ?? ''}>
                 {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
@@ -165,7 +165,7 @@ const generatedColumns: TableColumn[] = [
             )}
 
             {!row.lastBuild?.tests && 'n/a'}
-          </p>
+          </Typography>
         </>
       );
     },

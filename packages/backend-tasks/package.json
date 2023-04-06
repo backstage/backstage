@@ -1,10 +1,9 @@
 {
   "name": "@backstage/backend-tasks",
   "description": "Common distributed task management library for Backstage backends",
-  "version": "0.3.1-next.1",
+  "version": "0.5.1-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -33,24 +32,23 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.3-next.2",
-    "@backstage/config": "^1.0.1-next.0",
-    "@backstage/errors": "^1.0.0",
-    "@backstage/types": "^1.0.0",
-    "@types/luxon": "^2.0.4",
-    "cron": "^1.8.2",
-    "knex": "^1.0.2",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@types/luxon": "^3.0.0",
+    "cron": "^2.0.0",
+    "knex": "^2.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^2.0.2",
-    "node-abort-controller": "^3.0.1",
+    "luxon": "^3.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "zod": "^3.9.5"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^0.1.24-next.1",
-    "@backstage/cli": "^0.17.1-next.2",
-    "@types/cron": "^1.7.3",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/cron": "^2.0.0",
     "wait-for-expect": "^3.0.2"
   },
   "files": [

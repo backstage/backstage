@@ -15,17 +15,19 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import {
-  SignJWT,
-  generateKeyPair,
   decodeProtectedHeader,
   exportJWK,
+  generateKeyPair,
+  SignJWT,
 } from 'jose';
 import { cloneDeep } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { IdentityClient } from './IdentityClient';
 import { v4 as uuid } from 'uuid';
+
+import { IdentityClient } from './IdentityClient';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -100,15 +102,74 @@ describe('IdentityClient', () => {
   let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     client = IdentityClient.create({ discovery, issuer: mockBaseUrl });
     factory = new FakeTokenFactory({
       issuer: mockBaseUrl,
       keyDurationSeconds,
+    });
+  });
+
+  describe('identity client configuration', () => {
+    beforeEach(() => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/.well-known/jwks.json`,
+          async (_, res, ctx) => {
+            const keys = await factory.listPublicKeys();
+            return res(ctx.json(keys));
+          },
+        ),
+      );
+    });
+
+    it('should defaults to ES256 when no algorithm is supplied', async () => {
+      const identityClient = IdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+      });
+
+      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      const response = await identityClient.authenticate(token);
+
+      // expect that the authenticate is able to validate a token with ES256, which is the one set to FakeTokenFactory.
+      // This means that IdentityClient set ES256 by default.
+      expect(response).toEqual({
+        token: token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: [],
+        },
+      });
+    });
+
+    it('should throw error on empty algorithms array', async () => {
+      const identityClient = IdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+        algorithms: [''],
+      });
+
+      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      return expect(
+        async () => await identityClient.authenticate(token),
+      ).rejects.toThrow();
+    });
+
+    it('should throw error on empty algorithm string', async () => {
+      const identityClient = IdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+        algorithms: [],
+      });
+
+      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      return expect(
+        async () => await identityClient.authenticate(token),
+      ).rejects.toThrow();
     });
   });
 

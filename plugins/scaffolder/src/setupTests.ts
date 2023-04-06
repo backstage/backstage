@@ -19,3 +19,16 @@ import 'cross-fetch/polyfill';
 
 const { EventSourcePolyfill } = jest.requireMock('event-source-polyfill');
 global.EventSource = EventSourcePolyfill;
+
+// Patch jsdom to add feature used by CodeMirror
+document.createRange = () => {
+  const range = new Range();
+
+  range.getClientRects = () => ({
+    item: () => null,
+    length: 0,
+    [Symbol.iterator]: jest.fn(),
+  });
+
+  return range;
+};

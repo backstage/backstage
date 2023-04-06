@@ -17,10 +17,8 @@
 import { PullRequestTable } from '../PullRequestTable/PullRequestTable';
 import React from 'react';
 
-export const EntityPageAzurePullRequests = ({
-  defaultLimit,
-}: {
+export const EntityPageAzurePullRequests = (props: {
   defaultLimit?: number;
 }) => {
-  return <PullRequestTable defaultLimit={defaultLimit} />;
+  return <PullRequestTable defaultLimit={props.defaultLimit} />;
 };

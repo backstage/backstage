@@ -24,6 +24,7 @@ import {
 } from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
 
+const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
 
@@ -37,6 +38,7 @@ export function createThemeOptions(
 ): BackstageThemeOptions {
   const {
     palette,
+    htmlFontSize = DEFAULT_HTML_FONT_SIZE,
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme,
     pageTheme = defaultPageThemes,
@@ -57,9 +59,17 @@ export function createThemeOptions(
       },
     },
     typography: {
+      htmlFontSize,
       fontFamily,
+      h6: {
+        fontWeight: 700,
+        fontSize: 20,
+        marginBottom: 2,
+      },
       h5: {
         fontWeight: 700,
+        fontSize: 24,
+        marginBottom: 4,
       },
       h4: {
         fontWeight: 700,
@@ -149,7 +159,7 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
       head: {
         wordBreak: 'break-word',
         overflow: 'hidden',
-        color: 'rgb(179, 179, 179)',
+        color: theme.palette.textSubtle,
         fontWeight: 'normal',
         lineHeight: '1',
       },

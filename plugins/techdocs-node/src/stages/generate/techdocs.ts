@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import {
   GeneratorBase,
   GeneratorConfig,
@@ -53,9 +53,9 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.0.3';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.1.0';
   private readonly logger: Logger;
-  private readonly containerRunner: ContainerRunner;
+  private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
@@ -77,7 +77,7 @@ export class TechdocsGenerator implements GeneratorBase {
 
   constructor(options: {
     logger: Logger;
-    containerRunner: ContainerRunner;
+    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
@@ -96,10 +96,14 @@ export class TechdocsGenerator implements GeneratorBase {
       etag,
       logger: childLogger,
       logStream,
+      siteOptions,
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(
+      inputDir,
+      siteOptions,
+    );
 
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
@@ -111,10 +115,10 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
+    }
 
-      if (this.options.legacyCopyReadmeMdToIndexMd) {
-        await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
-      }
+    if (this.options.legacyCopyReadmeMdToIndexMd) {
+      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
     if (!this.options.omitTechdocsCoreMkdocsPlugin) {
@@ -143,6 +147,11 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
+          if (this.containerRunner === undefined) {
+            throw new Error(
+              "Invalid state: containerRunner cannot be undefined when runIn is 'docker'",
+            );
+          }
           await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,

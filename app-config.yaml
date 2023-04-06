@@ -1,13 +1,11 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
-  googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
-
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
@@ -19,12 +17,12 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
   # auth:
   #   keys:
@@ -39,7 +37,7 @@ backend:
     store: memory
   cors:
     origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
@@ -115,6 +113,16 @@ proxy:
     headers:
       Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 
+  '/dynatrace':
+    target: https://your.dynatrace.instance.com/api/v2
+    headers:
+      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+
+  '/stackstorm':
+    target: https://your.stackstorm.instance.com/api
+    headers:
+      St2-Api-Key: ${ST2_API_KEY}
+
 organization:
   name: My Company
 
@@ -130,6 +138,14 @@ techdocs:
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
+
+dynatrace:
+  baseUrl: https://your.dynatrace.instance.com
+
+# Score-cards sample configuration.
+scorecards:
+  jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage-plugins/main/plugins/score-card/sample-data/
+  wikiLinkTemplate: https://link-to-wiki/{id}
 
 sentry:
   organization: my-company
@@ -153,6 +169,7 @@ kafka:
   clientId: backstage
   clusters:
     - name: cluster
+      dashboardUrl: https://akhq.io/
       brokers:
         - localhost:9092
 
@@ -163,26 +180,26 @@ integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using the API:
-    # - host: ghe.example.net
-    #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token: ${GHE_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-    # - host: ghe.example.net
-    #   rawBaseUrl: https://ghe.example.net/raw
-    #   token: ${GHE_TOKEN}
+  ### Example for how to add your GitHub Enterprise instance using the API:
+  # - host: ghe.example.net
+  #   apiBaseUrl: https://ghe.example.net/api/v3
+  #   token: ${GHE_TOKEN}
+  ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+  # - host: ghe.example.net
+  #   rawBaseUrl: https://ghe.example.net/raw
+  #   token: ${GHE_TOKEN}
   gitlab:
     - host: gitlab.com
       token: ${GITLAB_TOKEN}
-  bitbucket:
-    - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
-      appPassword: ${BITBUCKET_APP_PASSWORD}
-    ### Example for how to add your bitbucket server instance using the API:
-    # - host: server.bitbucket.com
-    #   apiBaseUrl: server.bitbucket.com
-    #   username: ${BITBUCKET_SERVER_USERNAME}
-    #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+  ### Example for how to add a bitbucket cloud integration
+  # bitbucketCloud:
+  #   - username: ${BITBUCKET_USERNAME}
+  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  ### Example for how to add your bitbucket server instance using the API:
+  # - host: server.bitbucket.com
+  #   apiBaseUrl: server.bitbucket.com
+  #   username: ${BITBUCKET_SERVER_USERNAME}
+  #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
@@ -203,7 +220,6 @@ catalog:
         - Component
         - API
         - Resource
-        - Template
         - System
         - Domain
         - Location
@@ -226,16 +242,6 @@ catalog:
       #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
       #       options:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
-    microsoftGraphOrg:
-      ### Example for how to add your Microsoft Graph tenant
-      #providers:
-      #  - target: https://graph.microsoft.com/v1.0
-      #    authority: https://login.microsoftonline.com
-      #    tenantId: ${MICROSOFT_GRAPH_TENANT_ID}
-      #    clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
-      #    clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
-      #    userFilter: accountEnabled eq true and userType eq 'member'
-      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
     # Add a location here to ingest it, for example from a URL:
@@ -268,6 +274,8 @@ catalog:
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      rules:
+        - allow: [Template]
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
@@ -370,6 +378,7 @@ auth:
       development: {}
 costInsights:
   engineerCost: 200000
+  engineerThreshold: 0.5
   products:
     computeEngine:
       name: Compute Engine
@@ -417,16 +426,6 @@ costInsights:
       kind: 'PINTS_OF_ICE_CREAM'
       unit: 'ice cream pint'
       rate: 5.5
-homepage:
-  clocks:
-    - label: UTC
-      timezone: UTC
-    - label: NYC
-      timezone: 'America/New_York'
-    - label: STO
-      timezone: 'Europe/Stockholm'
-    - label: TYO
-      timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
 jenkins:
@@ -446,3 +445,9 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+stackstorm:
+  webUrl: https://your.stackstorm.webui.instance.com
+
+permission:
+  enabled: true

@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { AbortController } from 'node-abort-controller';
 import { LocalTaskWorker } from './LocalTaskWorker';
 
 describe('LocalTaskWorker', () => {
@@ -37,16 +36,16 @@ describe('LocalTaskWorker', () => {
     );
 
     // TODO(freben): Rewrite to fake timers - tried, but it wouldn't work
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 100));
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 200));
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     await new Promise(r => setTimeout(r, 200));
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
     controller.abort();
     await new Promise(r => setTimeout(r, 200));
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 
   it('runs the happy path (with a cron expression) and handles cancellation', async () => {
@@ -69,16 +68,16 @@ describe('LocalTaskWorker', () => {
     );
 
     // TODO(freben): Rewrite to fake timers - tried, but it wouldn't work
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 100));
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 200));
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     await new Promise(r => setTimeout(r, 1000));
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
     controller.abort();
     await new Promise(r => setTimeout(r, 1000));
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 
   it('can trigger to abort wait', async () => {
@@ -93,13 +92,13 @@ describe('LocalTaskWorker', () => {
     });
 
     // TODO(freben): Rewrite to fake timers - tried, but it wouldn't work
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 100));
-    expect(fn).toBeCalledTimes(0);
+    expect(fn).toHaveBeenCalledTimes(0);
     await new Promise(r => setTimeout(r, 200));
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     worker.trigger();
     await new Promise(r => setTimeout(r, 10));
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 });

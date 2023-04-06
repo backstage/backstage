@@ -22,4 +22,7 @@
 
 export { bitrisePlugin } from './plugin';
 export { EntityBitriseContent } from './extensions';
-export { isBitriseAvailable } from './components/BitriseBuildsComponent';
+export {
+  isBitriseAvailable,
+  BITRISE_APP_ANNOTATION,
+} from './components/BitriseBuildsComponent';

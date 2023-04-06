@@ -22,6 +22,7 @@ import {
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const githubDeploymentsPlugin = createPlugin({
   id: 'github-deployments',
   apis: [
@@ -37,6 +38,7 @@ export const githubDeploymentsPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const EntityGithubDeploymentsCard = githubDeploymentsPlugin.provide(
   createComponentExtension({
     name: 'EntityGithubDeploymentsCard',

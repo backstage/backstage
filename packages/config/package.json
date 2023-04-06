@@ -1,8 +1,7 @@
 {
   "name": "@backstage/config",
   "description": "Config API used by Backstage core, backend, and CLI",
-  "version": "1.0.1-next.0",
-  "private": false,
+  "version": "1.0.7",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -33,12 +32,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/types": "^1.0.0",
+    "@backstage/types": "workspace:^",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage/test-utils": "^1.1.0-next.2",
-    "@types/jest": "^26.0.7",
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@types/node": "^16.0.0"
   },
   "files": [

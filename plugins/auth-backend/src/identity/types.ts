@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -28,21 +30,24 @@ export interface AnyJWK extends Record<string, string> {
  * @public
  */
 export type TokenParams = {
-  /** The claims that will be embedded within the token */
+  /**
+   * The claims that will be embedded within the token. At a minimum, this should include
+   * the subject claim, `sub`. It is common to also list entity ownership relations in the
+   * `ent` list. Additional claims may also be added at the developer's discretion except
+   * for the following list, which will be overwritten by the TokenIssuer: `iss`, `aud`,
+   * `iat`, and `exp`. The Backstage team also maintains the right add new claims in the future
+   * without listing the change as a "breaking change".
+   */
   claims: {
     /** The token subject, i.e. User ID */
     sub: string;
     /** A list of entity references that the user claims ownership through */
     ent?: string[];
-  };
+  } & Record<string, JsonValue>;
 };
 
-// TODO(Rugvip): This should at least be made internal
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
- *
- * @public
- * @deprecated This interface is deprecated and will be removed in a future release.
  */
 export type TokenIssuer = {
   /**

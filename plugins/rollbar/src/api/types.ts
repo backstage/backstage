@@ -16,9 +16,13 @@
 
 // TODO: Make this shared/dry with backend
 
+/** @public */
 export type RollbarProjectAccessTokenScope = 'read' | 'write';
+
+/** @public */
 export type RollbarEnvironment = 'production' | string;
 
+/** @public */
 export enum RollbarLevel {
   debug = 10,
   info = 20,
@@ -27,6 +31,7 @@ export enum RollbarLevel {
   critical = 50,
 }
 
+/** @public */
 export enum RollbarFrameworkId {
   'unknown' = 0,
   'rails' = 1,
@@ -49,6 +54,7 @@ export enum RollbarFrameworkId {
   'rq' = 18,
 }
 
+/** @public */
 export enum RollbarPlatformId {
   'unknown' = 0,
   'browser' = 1,
@@ -60,6 +66,7 @@ export enum RollbarPlatformId {
   'client' = 7,
 }
 
+/** @public */
 export type RollbarProject = {
   id: number;
   name: string;
@@ -67,6 +74,7 @@ export type RollbarProject = {
   status: 'enabled' | string;
 };
 
+/** @public */
 export type RollbarProjectAccessToken = {
   projectId: number;
   name: string;
@@ -75,6 +83,7 @@ export type RollbarProjectAccessToken = {
   status: 'enabled' | string;
 };
 
+/** @public */
 export type RollbarItem = {
   publicItemId: number;
   integrationsData: null;
@@ -107,17 +116,20 @@ export type RollbarItem = {
   lastResolvedTimestamp: number;
 };
 
+/** @public */
 export type RollbarItemsResponse = {
   items: RollbarItem[];
   page: number;
   totalCount: number;
 };
 
+/** @public */
 export type RollbarItemCount = {
   timestamp: number;
   count: number;
 };
 
+/** @public */
 export type RollbarTopActiveItem = {
   item: {
     id: number;

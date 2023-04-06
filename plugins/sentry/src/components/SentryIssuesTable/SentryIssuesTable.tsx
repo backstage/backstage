@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { SentryIssue } from '../../api';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
 import { Table, TableColumn } from '@backstage/core-components';
+import Select from '@material-ui/core/Select';
 import { Options } from '@material-table/core';
+import { FormControl, Grid, MenuItem } from '@material-ui/core';
+
+const ONE_DAY_IN_MILLIS = 86400000;
+const SEVEN_DAYS_IN_MILLIS = ONE_DAY_IN_MILLIS * 7;
+const FOURTEEN_DAYS_IN_MILLIS = ONE_DAY_IN_MILLIS * 14;
 
 const columns: TableColumn[] = [
   {
@@ -64,19 +70,57 @@ type SentryIssuesTableProps = {
   tableOptions: Options<never>;
 };
 
-const SentryIssuesTable = ({
-  sentryIssues,
-  statsFor,
-  tableOptions,
-}: SentryIssuesTableProps) => {
+const SentryIssuesTable = (props: SentryIssuesTableProps) => {
+  const { sentryIssues, statsFor, tableOptions } = props;
+  const [selected, setSelected] = useState(ONE_DAY_IN_MILLIS);
+
+  const filterByDate = useCallback((issue, selectedFilter) => {
+    return (
+      DateTime.fromISO(issue.lastSeen) >
+      DateTime.now().minus(Duration.fromMillis(selectedFilter))
+    );
+  }, []);
+  const [filteredIssues, setFilteredIssues] = useState(
+    sentryIssues.filter(i => filterByDate(i, selected)),
+  );
+
+  const handleFilterChange = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    const item = event.target.value;
+    if (typeof item === 'number') {
+      setSelected(item);
+      if (item === Number.NEGATIVE_INFINITY) {
+        setFilteredIssues(sentryIssues);
+        return;
+      }
+      setFilteredIssues(sentryIssues.filter(i => filterByDate(i, item)));
+    }
+  };
   return (
-    <Table
-      columns={columns}
-      options={tableOptions}
-      title="Sentry issues"
-      subtitle={statsFor ? `Last ${statsFor}` : undefined}
-      data={sentryIssues}
-    />
+    <>
+      <Table
+        columns={columns}
+        options={tableOptions}
+        title={
+          <Grid container>
+            <Grid item>Sentry Issues</Grid>
+            <Grid item>
+              <FormControl variant="outlined" size="small">
+                <Select value={selected} onChange={handleFilterChange}>
+                  <MenuItem value={ONE_DAY_IN_MILLIS}>24H</MenuItem>
+                  <MenuItem value={SEVEN_DAYS_IN_MILLIS}>7D</MenuItem>
+                  <MenuItem value={FOURTEEN_DAYS_IN_MILLIS}>14D</MenuItem>
+                  <MenuItem value={Number.NEGATIVE_INFINITY}>All</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        }
+        subtitle={statsFor ? `Stats for ${statsFor}` : undefined}
+        data={filteredIssues}
+      />
+    </>
   );
 };
 

@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import { CodeScenePageComponent } from './CodeScenePageComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { rootRouteRef } from '../../routes';
@@ -54,9 +52,7 @@ describe('CodeScenePageComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ThemeProvider theme={lightTheme}>
-          <CodeScenePageComponent />
-        </ThemeProvider>
+        <CodeScenePageComponent />
       </ApiProvider>,
       {
         mountedRoutes: {

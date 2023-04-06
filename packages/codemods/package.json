@@ -1,8 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.38-next.1",
-  "private": false,
+  "version": "0.1.44",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js"
@@ -26,23 +25,24 @@
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.9-next.0",
+    "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "jscodeshift": "^0.13.0",
+    "commander": "^9.1.0",
+    "jscodeshift": "^0.14.0",
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {
+    "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.11.0",
     "@types/node": "^16.11.26",
-    "commander": "^9.1.0",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {

@@ -27,7 +27,7 @@ describe('clusterLinks - OpenShift formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('OpenShift dashboard requires a dashboardUrl option');
+    ).toThrow('OpenShift dashboard requires a dashboardUrl option');
   });
   it('should return an url on the workloads when there is a namespace only', () => {
     const url = openshiftFormatter({

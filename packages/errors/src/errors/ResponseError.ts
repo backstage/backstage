@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { deserializeError } from '../serialization';
+import { deserializeError } from '../serialization/error';
 import {
   ErrorResponseBody,
   parseErrorResponseBody,
 } from '../serialization/response';
+import { ConsumedResponse } from './types';
 
 /**
  * An error thrown as the result of a failed server request.
@@ -34,7 +35,7 @@ export class ResponseError extends Error {
    * Note that the body of this response is always consumed. Its parsed form is
    * in the `body` field.
    */
-  readonly response: Response;
+  readonly response: ConsumedResponse;
 
   /**
    * The parsed JSON error body, as sent by the server.
@@ -59,7 +60,9 @@ export class ResponseError extends Error {
    * function consumes the body of the response, and assumes that it hasn't
    * been consumed before.
    */
-  static async fromResponse(response: Response): Promise<ResponseError> {
+  static async fromResponse(
+    response: ConsumedResponse & { text(): Promise<string> },
+  ): Promise<ResponseError> {
     const data = await parseErrorResponseBody(response);
 
     const status = data.response.statusCode || response.status;
@@ -77,7 +80,7 @@ export class ResponseError extends Error {
 
   private constructor(props: {
     message: string;
-    response: Response;
+    response: ConsumedResponse;
     data: ErrorResponseBody;
     cause: Error;
   }) {

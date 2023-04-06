@@ -40,10 +40,14 @@ import {
 import {
   AuthHandler,
   AuthResolverContext,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -91,7 +95,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     this.resolverContext = options.resolverContext;
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     const { strategy } = await this.implementation;
     const options: Record<string, string> = {
       scope: req.scope || this.scope || 'openid profile email',
@@ -199,18 +203,6 @@ export class OidcAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type OidcProviderOptions = {
-  authHandler?: AuthHandler<OidcAuthResult>;
-
-  signIn?: {
-    resolver: SignInResolver<OidcAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for generic OpenID Connect auth
  *
  * @public
@@ -267,10 +259,14 @@ export const oidc = createAuthProviderIntegration({
         });
       });
   },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
+  },
 });
-
-/**
- * @public
- * @deprecated Use `providers.oidc.create` instead
- */
-export const createOidcProvider = oidc.create;

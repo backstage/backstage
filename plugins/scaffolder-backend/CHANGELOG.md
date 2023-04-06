@@ -1,5 +1,1495 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.13.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.1-next.2
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/plugin-scaffolder-node@0.1.2-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+
+## 1.13.0-next.1
+
+### Minor Changes
+
+- 30ffdae70f9: Added `fetch:plain:file` action to fetch a single file, this action is also added to the list of built-in actions.
+- 65e989f4018: Added the possibility to authorize parameters and steps of a template
+
+  The scaffolder plugin is now integrated with the permission framework.
+  It is possible to toggle parameters or actions within templates by marking each section with specific `tags`, inside a `backstage:permissions` property under each parameter or action. Each parameter or action can then be permissioned by using a conditional decision containing the `scaffolderTemplateRules.hasTag` rule.
+
+- 95ea9f69b6f: Provide some more default filters out of the box and refactoring how the filters are applied to the `SecureTemplater`.
+
+  - `parseEntityRef` will take an string entity triplet and return a parsed object.
+  - `pick` will allow you to reference a specific property in the piped object.
+
+  So you can now combine things like this: `${{ parameters.entity | parseEntityRef | pick('name') }}` to get the name of a specific entity, or `${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}` to get the owner of a repo.
+
+### Patch Changes
+
+- a7eb36c6e38: Improve type-check for scaffolder output parameters
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+  - @backstage/plugin-scaffolder-node@0.1.2-next.1
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.1
+  - @backstage/backend-tasks@0.5.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- e23abb37ec1: Rename output parameter `mergeRequestURL` of `publish:gitlab:merge-request` action to `mergeRequestUrl`.
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.2-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- c6c78b4acbe: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 9968f455921: catalog write action should allow any shape of object
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 7af12854970: Extended scaffolder action `catalog:fetch` to fetch multiple catalog entities by entity references.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-scaffolder-node@0.1.1
+
+## 1.12.0-next.2
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- 9968f455921: catalog write action should allow any shape of object
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-scaffolder-node@0.1.1-next.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- c6c78b4acb: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.1.1-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- 6c70919f1a: Provide better error messaging when GitHub fails due to missing team definitions
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-scaffolder-common@1.2.5
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+
+### Patch Changes
+
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-backend@1.7.2-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- a6808b67a7: Implement `Required approving review count`, `Restrictions`, and `Required commit signing` support for `publish:github` action
+- 04a2048fb8: Allow custom repository roles to be configured on github repos
+- c0ad7341f7: Add Scaffolder action `catalog:fetch` to get entity by entity reference from catalog
+- b44eb68bcb: This change adds changes to provide examples alongside scaffolder task actions.
+
+  The `createTemplateAction` function now takes a list of examples e.g.
+
+  ```typescript
+  const actionExamples = [
+    {
+      description: 'Example 1',
+      example: yaml.stringify({
+        steps: [
+          {
+            action: 'test:action',
+            id: 'test',
+            input: {
+              input1: 'value',
+            },
+          },
+        ],
+      }),
+    },
+  ];
+
+  export function createTestAction() {
+    return createTemplateAction({
+        id: 'test:action',
+        examples: [
+            {
+                description: 'Example 1',
+                examples: actionExamples
+            }
+        ],
+        ...,
+    });
+  ```
+
+  These examples can be retrieved later from the api.
+
+  ```bash
+  curl http://localhost:7007/api/scaffolder/v2/actions
+  ```
+
+  ```json
+  [
+    {
+      "id": "test:action",
+      "examples": [
+        {
+          "description": "Example 1",
+          "example": "steps:\n  - action: test:action\n    id: test\n    input:\n      input1: value\n"
+        }
+      ],
+      "schema": {
+        "input": {
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "Input 1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+  ```
+
+- 72d6b9f4e2: Added ability to override the commit message and author details for the `publish:bitbucketServer` action.
+- a69664faee: Add Github repository support for squash merge commit title and message options
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/plugin-catalog-backend@1.7.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
+## 1.10.0-next.2
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- b44eb68bcb: This patch adds changes to provide examples alongside scaffolder task actions.
+
+  The `createTemplateAction` function now takes a list of examples e.g.
+
+  ```typescript
+  const actionExamples = [
+    {
+      description: 'Example 1',
+      example: yaml.stringify({
+        steps: [
+          {
+            action: 'test:action',
+            id: 'test',
+            input: {
+              input1: 'value',
+            },
+          },
+        ],
+      }),
+    },
+  ];
+
+  export function createTestAction() {
+    return createTemplateAction({
+        id: 'test:action',
+        examples: [
+            {
+                description: 'Example 1',
+                examples: actionExamples
+            }
+        ],
+        ...,
+    });
+  ```
+
+  These examples can be retrieved later from the api.
+
+  ```bash
+  curl http://localhost:7007/api/scaffolder/v2/actions
+  ```
+
+  ```json
+  [
+    {
+      "id": "test:action",
+      "examples": [
+        {
+          "description": "Example 1",
+          "example": "steps:\n  - action: test:action\n    id: test\n    input:\n      input1: value\n"
+        }
+      ],
+      "schema": {
+        "input": {
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "Input 1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+  ```
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-catalog-backend@1.7.0-next.2
+  - @backstage/plugin-catalog-node@1.3.1-next.2
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+
+## 1.10.0-next.1
+
+### Minor Changes
+
+- 04a2048fb8: Allow custom repository roles to be configured on github repos
+- a69664faee: Add Github repository support for squash merge commit title and message options
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.1
+  - @backstage/plugin-catalog-node@1.3.1-next.1
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/plugin-catalog-node@1.3.1-next.0
+
+## 1.9.0
+
+### Minor Changes
+
+- a20a0ea698: Added `requiredConversationResolution` template option to `github:repo:create`, `github:repo:push` and `publish:github`
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+- fc51bd8aa0: Add support for disabling Github repository wiki, issues and projects
+- 0053d07bee: Update the `github:publish` action to allow passing wether to dismiss stale reviews on the protected default branch.
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 26404430bc: Use Json types from @backstage/types
+- b07ccffad0: Backend now returns 'ui:options' value from template metadata, it can be used by all your custom scaffolder components.
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-scaffolder-common@1.2.3
+
+## 1.9.0-next.3
+
+### Minor Changes
+
+- 0053d07bee: Update the `github:publish` action to allow passing wether to dismiss stale reviews on the protected default branch.
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.3
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-catalog-node@1.3.0-next.3
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.9.0-next.2
+
+### Minor Changes
+
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-catalog-backend@1.6.0-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 26404430bc: Use Json types from @backstage/types
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@1.6.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-scaffolder-common@1.2.3-next.0
+
+## 1.8.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-scaffolder-common@1.2.2
+
+## 1.8.0-next.2
+
+### Minor Changes
+
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/plugin-catalog-backend@1.5.1-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 1.7.0-next.2
+
+### Minor Changes
+
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-backend@1.5.0-next.2
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.2
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.2.6-next.1
+  - @backstage/plugin-catalog-backend@1.4.1-next.1
+  - @backstage/plugin-catalog-node@1.1.1-next.1
+  - @backstage/plugin-scaffolder-common@1.2.1-next.1
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+
+### Patch Changes
+
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/plugin-catalog-backend@1.4.1-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/plugin-catalog-node@1.1.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/backend-tasks@0.3.6-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+
+## 1.6.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 7db9613671: Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
+- d1f7ba58e3: Added `repositoryId` output when create a repository in Azure
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- de8ee4afe3: Provide information about the user into scaffolder template action's context
+- 096631e571: Added support for handling broken symlinks within the scaffolder backend. This is intended for templates that may hold a symlink that is invalid at build time but valid within the destination repo.
+- 0d8d650e32: Applied the fix from version 1.5.1 of this package, which is part of the v1.5.1 release of Backstage.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- 0ecc9a6784: Properly set `ctx.isDryRun` when running actions in dry run mode. Also always log action inputs for debugging purposes when running in dry run mode.
+- 6b9f6c0a4d: Added alpha `scaffolderPlugin` to be used with experimental backend system.
+- 83c037cd46: Disable octokit throttling in publish:github:pull-request
+- 2cbd533426: Uptake the `IdentityApi` change to use `getIdentity` instead of `authenticate` for retrieving the logged in users identity.
+- ef9ab322de: Minor API signatures cleanup
+- 50467bc15b: The number of task workers used to execute templates now default to 3, rather than 1.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/plugin-catalog-node@1.1.0
+  - @backstage/integration@1.3.1
+  - @backstage/plugin-catalog-backend@1.4.0
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.0
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 50467bc15b: The number of task workers used to execute templates now default to 3, rather than 1.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.1.0-next.2
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-catalog-backend@1.4.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-scaffolder-common@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.2.5-next.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- d1f7ba58e3: Added `repositoryId` output when create a repository in Azure
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 096631e571: Added support for handling broken symlinks within the scaffolder backend. This is intended for templates that may hold a symlink that is invalid at build time but valid within the destination repo.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 6b9f6c0a4d: Added alpha `scaffolderPlugin` to be used with experimental backend system.
+- 83c037cd46: Disable octokit throttling in publish:github:pull-request
+- 2cbd533426: Uptake the `IdentityApi` change to use `getIdentity` instead of `authenticate` for retrieving the logged in users identity.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.2
+  - @backstage/plugin-auth-node@0.2.5-next.2
+  - @backstage/catalog-client@1.0.5-next.1
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 7db9613671: Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
+
+### Patch Changes
+
+- 0d8d650e32: Applied the fix from version 1.5.1 of this package, which is part of the v1.5.1 release of Backstage.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+
+## 1.5.1
+
+### Patch Changes
+
+- Fix minimum required version for `vm2`
+
+## 1.5.0
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- c971afbf21: The `publish:file` action has been deprecated in favor of testing templates using the template editor instead. Note that this action is not and was never been installed by default.
+- b10b6c4aa4: Fix issue on Windows where templated files where not properly skipped as intended.
+- 56e1b4b89c: Fixed typos in alpha types.
+- dad0f65494: Fail gracefully if an invalid `Authorization` header is passed to `POST /v2/tasks`
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-catalog-backend@1.3.1-next.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.0
+  - @backstage/integration@1.3.0-next.0
+  - @backstage/backend-plugin-api@0.1.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.1-next.0
+  - @backstage/plugin-catalog-node@1.0.1-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- e1a08d872c: Added optional assignee parameter for Gitlab Merge Request action
+- dab9bcf2e7: Add `protectEnforceAdmins` as an option to GitHub publish actions
+- 4baf8a4ece: Update GitLab Merge Request Action to allow source branch to be deleted
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+- d10ccc2ed1: Introduced audit log message when a new scaffolder task is created
+- 2db07887cb: Added two new scaffolder actions: `github:repo:create` and `github:repo:push`
+
+### Patch Changes
+
+- ff316b86d8: Add `copyWithoutTemplating` to the fetch template action input. `copyWithoutTemplating` also accepts an array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.
+
+  Deprecate `copyWithoutRender` in favor of `copyWithoutTemplating`.
+
+- 801d606909: Improve error messaging when passing in malformed auth
+- 089d846962: Fix issues with optional directories and files
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 945a27fa6a: Add sourcePath option to publish:gerrit action
+- 1764296a68: Allow to create Gerrit project using default owner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0
+  - @backstage/plugin-catalog-backend@1.3.0
+  - @backstage/backend-common@0.14.1
+  - @backstage/catalog-model@1.1.0
+  - @backstage/plugin-catalog-node@1.0.0
+  - @backstage/integration@1.2.2
+  - @backstage/catalog-client@1.0.4
+  - @backstage/errors@1.1.0
+  - @backstage/plugin-scaffolder-common@1.1.2
+
+## 1.4.0-next.3
+
+### Minor Changes
+
+- 91c1d12123: Export experimental `scaffolderCatalogExtension` for the new backend system. This export is not considered stable and should not be used in production.
+
+### Patch Changes
+
+- ea6dcb84a4: Don't resolve symlinks, treat them as binary files and copy them as-is
+- af02f54483: new setUserAsOwner flag for publish:gitlab action
+
+  The field default is `false`. When true it will use the token configured in the gitlab integration for the matching host, to try and set the user logged in via `repoUrlPicker` `requestUserCredentials` OAuth flow as owner of the repository created in GitLab.
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- 511f49ee43: Updated dependency `octokit` to `^2.0.0`.
+- 735853353b: Updated dependency `@octokit/webhooks` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.3.0-next.3
+  - @backstage/plugin-catalog-node@1.0.0-next.0
+  - @backstage/backend-common@0.14.1-next.3
+  - @backstage/catalog-client@1.0.4-next.2
+  - @backstage/integration@1.2.2-next.3
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.4.0-next.2
+
+### Minor Changes
+
+- 4baf8a4ece: Update GitLab Merge Request Action to allow source branch to be deleted
+- 2db07887cb: Added two new scaffolder actions: `github:repo:create` and `github:repo:push`
+
+### Patch Changes
+
+- 679b32172e: Updated dependency `knex` to `^2.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.2
+  - @backstage/backend-common@0.14.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.1-next.2
+  - @backstage/integration@1.2.2-next.2
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 801d606909: Improve error messaging when passing in malformed auth
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/backend-common@0.14.1-next.1
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.1
+  - @backstage/catalog-client@1.0.4-next.1
+  - @backstage/integration@1.2.2-next.1
+
+## 1.4.0-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.1-next.0
+  - @backstage/catalog-model@1.1.0-next.0
+  - @backstage/integration@1.2.2-next.0
+  - @backstage/plugin-catalog-backend@1.2.1-next.0
+  - @backstage/catalog-client@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.1.2-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 35a26131b3: **DEPRECATION**: The `projectid` input parameters to the `publish:gitlab:merge-request`, it's no longer required as it can be decoded from the `repoUrl` input parameter.
+  **DEPRECATION**: The `projectid` output of the action in favour of `projectPath`
+- 72dfcbc8bf: A new scaffolder action has been added: `gerrit:publish`
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+- c042c5eaff: Add an option to not protect the default branch.
+- f93af969cd: Added the ability to support running of templates that are not in the `default` namespace
+- 3500c13a33: Added a new `/v2/dry-run` endpoint that allows for a synchronous dry run of a provided template. A `supportsDryRun` option has been added to `createTemplateAction`, which signals whether the action should be executed during dry runs. When enabled, the action context will have the new `isDryRun` property set to signal if the action is being executed during a dry run.
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 6901f6be4a: Adds more of an explanation when the `publish:github` scaffolder action fails to create a repository.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.2.0
+  - @backstage/backend-common@0.14.0
+  - @backstage/integration@1.2.1
+  - @backstage/catalog-client@1.0.3
+  - @backstage/catalog-model@1.0.3
+  - @backstage/plugin-scaffolder-common@1.1.1
+
+## 1.3.0-next.2
+
+### Minor Changes
+
+- ce0d8d7eb1: Fixed a bug in `publish:github` action that didn't permit to add users as collaborators.
+  This fix required changing the way parameters are passed to the action.
+  In order to add a team as collaborator, now you must use the `team` field instead of `username`.
+  In order to add a user as collaborator, you must use the `user` field.
+
+  It's still possible to use the field `username` but is deprecated in favor of `team`.
+
+  ```yaml
+  - id: publish
+    name: Publish
+    action: publish:github
+    input:
+      repoUrl: ...
+      collaborators:
+        - access: ...
+          team: my_team
+        - access: ...
+          user: my_username
+  ```
+
+- 582003a059: - Added an optional `list` method on the `TaskBroker` and `TaskStore` interface to list tasks by an optional `userEntityRef`
+  - Implemented a `list` method on the `DatabaseTaskStore` class to list tasks by an optional `userEntityRef`
+  - Added a route under `/v2/tasks` to list tasks by a `userEntityRef` using the `createdBy` query parameter
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.14.0-next.2
+  - @backstage/integration@1.2.1-next.2
+  - @backstage/plugin-catalog-backend@1.2.0-next.2
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- c042c5eaff: Add an option to not protect the default branch.
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/catalog-client@1.0.3-next.0
+  - @backstage/integration@1.2.1-next.1
+  - @backstage/plugin-catalog-backend@1.2.0-next.1
+  - @backstage/catalog-model@1.0.3-next.0
+  - @backstage/plugin-scaffolder-common@1.1.1-next.0
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 72dfcbc8bf: A new scaffolder action has been added: `gerrit:publish`
+
+### Patch Changes
+
+- 6901f6be4a: Adds more of an explanation when the `publish:github` scaffolder action fails to create a repository.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-catalog-backend@1.2.0-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 9818112d12: Update the `github:publish` action to allow passing required status check
+  contexts before merging to the main branch.
+- f8baf7df44: Added the ability to reference the user in the `template.yaml` manifest
+- 8d5a2238a9: Split `publish:bitbucket` into `publish:bitbucketCloud` and `publish:bitbucketServer`.
+
+  In order to migrate from the deprecated action, you need to replace the use of action
+  `publish:bitbucket` in your templates with the use of either `publish:bitbucketCloud`
+  or `publish:bitbucketServer` - depending on which destination SCM provider you use.
+
+  Additionally, these actions will not utilize `integrations.bitbucket` anymore,
+  but `integrations.bitbucketCloud` or `integrations.bitbucketServer` respectively.
+  You may or may not have migrated to these already.
+
+  As described in a previous changeset, using these two replacement integrations configs
+  will not compromise use cases which still rely on `integrations.bitbucket` as this was
+  set up in a backwards compatible way.
+
+  Additionally, please mind that the option `enableLFS` is only available (and always was)
+  for Bitbucket Server use cases and therefore, is not even part of the schema for
+  `publish:bitbucketCloud` anymore.
+
+### Patch Changes
+
+- 0fc65cbf89: Override default commit message and author details in GitHub, Azure, bitbucket
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-catalog-backend@1.1.2
+  - @backstage/integration@1.2.0
+  - @backstage/plugin-scaffolder-common@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 1.2.0-next.1
 
 ### Minor Changes

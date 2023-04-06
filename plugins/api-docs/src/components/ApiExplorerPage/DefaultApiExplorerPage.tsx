@@ -40,6 +40,7 @@ import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
+  CatalogTable.columns.createTitleColumn({ hidden: true }),
   CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
   CatalogTable.columns.createSystemColumn(),
   CatalogTable.columns.createOwnerColumn(),
@@ -63,11 +64,9 @@ export type DefaultApiExplorerPageProps = {
  * DefaultApiExplorerPage
  * @public
  */
-export const DefaultApiExplorerPage = ({
-  initiallySelectedFilter = 'all',
-  columns,
-  actions,
-}: DefaultApiExplorerPageProps) => {
+export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+  const { initiallySelectedFilter = 'all', columns, actions } = props;
+
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
     configApi.getOptionalString('organization.name') ?? 'Backstage'

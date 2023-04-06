@@ -32,11 +32,24 @@ export type SignInProviderConfig = {
   apiRef: ApiRef<ProfileInfoApi & BackstageIdentityApi & SessionApi>;
 };
 
-/** @public **/
+/** @public */
 export type IdentityProviders = ('guest' | 'custom' | SignInProviderConfig)[];
 
+/**
+ * Invoked when the sign-in process has failed.
+ */
+export type onSignInFailure = () => void;
+/**
+ * Invoked when the sign-in process has started.
+ */
+export type onSignInStarted = () => void;
+
 export type ProviderComponent = ComponentType<
-  SignInPageProps & { config: SignInProviderConfig }
+  SignInPageProps & {
+    config: SignInProviderConfig;
+    onSignInStarted(): void;
+    onSignInFailure(): void;
+  }
 >;
 
 export type ProviderLoader = (

@@ -4,29 +4,17 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
+import * as common from '@backstage/plugin-explore-common';
 
-// Warning: (ae-missing-release-tag) "ExploreTool" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type ExploreTool = {
-  title: string;
-  description?: string;
-  url: string;
-  image: string;
-  tags?: string[];
-  lifecycle?: string;
-};
+// @public @deprecated (undocumented)
+export type ExploreTool = common.ExploreTool;
 
-// Warning: (ae-missing-release-tag) "ExploreToolsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface ExploreToolsConfig {
   // (undocumented)
   getTools: () => Promise<ExploreTool[]>;
 }
 
-// Warning: (ae-missing-release-tag) "exploreToolsConfigRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const exploreToolsConfigRef: ApiRef<ExploreToolsConfig>;
 ```

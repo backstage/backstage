@@ -15,18 +15,14 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { CodeClimateTable } from './CodeClimateTable';
-import { mockData } from '../../api/mock';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { mockData } from '../../api/mock/mock-api';
 
 describe('CodeClimateTable', () => {
   it('should render values in a table', async () => {
-    const table = await render(
-      <ThemeProvider theme={lightTheme}>
-        <CodeClimateTable codeClimateData={mockData} />
-      </ThemeProvider>,
+    const table = await renderInTestApp(
+      <CodeClimateTable codeClimateData={mockData} />,
     );
     expect(await table.findByText('3 months')).toBeInTheDocument();
     expect(await table.findByText('88%')).toBeInTheDocument();

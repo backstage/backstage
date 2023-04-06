@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -26,6 +26,7 @@ import React, {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+
 import { usePortal } from './lib/usePortal';
 import { useShowCallout } from './lib/useShowCallout';
 
@@ -40,7 +41,7 @@ export type FeatureCalloutCircleClassKey =
   | 'text';
 
 const useStyles = makeStyles(
-  {
+  theme => ({
     '@keyframes pulsateSlightly': {
       '0%': { transform: 'scale(1.0)' },
       '100%': { transform: 'scale(1.1)' },
@@ -77,7 +78,7 @@ const useStyles = makeStyles(
       height: '100%',
       backgroundColor: 'transparent',
       borderRadius: '100%',
-      border: '2px solid white',
+      border: `2px solid ${theme.palette.common.white}`,
       zIndex: 2001,
       transformOrigin: 'center center',
       animation:
@@ -85,10 +86,10 @@ const useStyles = makeStyles(
     },
     text: {
       position: 'absolute',
-      color: 'white',
+      color: theme.palette.common.white,
       zIndex: 2003,
     },
-  },
+  }),
   { name: 'BackstageFeatureCalloutCircular' },
 );
 
@@ -168,14 +169,14 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
 
   return (
     <>
-      <div className={classes.featureWrapper} ref={wrapperRef}>
+      <Box className={classes.featureWrapper} {...{ ref: wrapperRef }}>
         {children}
-      </div>
+      </Box>
       {createPortal(
-        <div className={classes.backdrop}>
+        <Box className={classes.backdrop}>
           <ClickAwayListener onClickAway={hide}>
             <>
-              <div
+              <Box
                 className={classes.dot}
                 data-testid="dot"
                 style={{
@@ -190,9 +191,9 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
                 role="button"
                 tabIndex={0}
               >
-                <div className={classes.pulseCircle} />
-              </div>
-              <div
+                <Box className={classes.pulseCircle} />
+              </Box>
+              <Box
                 className={classes.text}
                 data-testid="text"
                 style={{
@@ -205,10 +206,10 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
                   {title}
                 </Typography>
                 <Typography>{description}</Typography>
-              </div>
+              </Box>
             </>
           </ClickAwayListener>
-        </div>,
+        </Box>,
         portalElement,
       )}
     </>

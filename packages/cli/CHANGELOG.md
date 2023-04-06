@@ -1,5 +1,949 @@
 # @backstage/cli
 
+## 0.22.6-next.2
+
+### Patch Changes
+
+- 8075b67e64c: When building a backend package with dependencies any `--config <path>` options will now be forwarded to any dependent app package builds, unless the build script in the app package already contains a `--config` option.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.1
+
+### Patch Changes
+
+- 24432ae52fb: Fix the build for packages with multiple entry points to avoid duplicated modules.
+- 79e91d4c30a: Support importing `.md` files in build loader
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- b588ab73972: Ensure that the `package prepack` command and backend bundling uses posix paths in `package.json` on all OSes.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.0
+
+### Patch Changes
+
+- b9839d7135c: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+- c07c3b7364b: Add `onboard` command. While still in development, this command aims to guide users in setting up their Backstage App.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.22.4
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 2011b86052c: Added templates for new plugin Web and Node.js libraries.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- b4cd145b574: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 8bf24946c66: Adjust express dependencies to be the same as the rest of the project
+- 17271841de8: Updated frontend plugin template to use some more recent features
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2
+  - @backstage/errors@1.1.5
+  - @backstage/config-loader@1.1.9
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.22.4-next.1
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/release-manifests@0.0.9-next.0
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/types@1.0.2
+
+## 0.22.4-next.0
+
+### Patch Changes
+
+- b4cd145b57: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 8bf24946c6: Adjust express dependencies to be the same as the rest of the project
+- 17271841de: Updated frontend plugin template to use some more recent features
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- a9c50af76b: Fixed Webpack loader patterns so that they properly match the file suffix only.
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.1
+
+### Patch Changes
+
+- dd8a9afe66: Replaced several monorepo lint rules with new rules from `@backstage/eslint-plugin`. See the [README](https://github.com/import-js/eslint-plugin-import/blob/main/packages/eslint-plugin/README.md) for a full list of rules.
+- 90616df9a8: Added an experimental mode for the `package start` command for backend packages. Enabled by setting `EXPERIMENTAL_BACKEND_START`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.0-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.2-next.0
+
+### Patch Changes
+
+- 561df21ea3: The `backstage-cli repo test` command now sets a default Jest `--workerIdleMemoryLimit` of 1GB. If needed to ensure that tests are not run in band, `--maxWorkers=2` is set as well. This is the recommended workaround for dealing with Jest workers leaking memory and eventually hitting the heap limit.
+- 2815981057: Show module name causing error during build
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- 6d3abfded1: Switch to inline source maps for test transpilation, simplifying editor setups.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.1
+
+### Patch Changes
+
+- db2e137744: Removed unnecessary usage of `ThemeProvider` from the `ExampleComponent` test in the plugin template.
+- 47c10706df: Fixed an issue where the CLI would fail to function when there was a mix of workspace and non-workspace versions of the same package in `yarn.lock` when using Yarn 3.
+- 2b435be4cf: Updated backend plugin ID during creation to match user-entered input.
+- 4b572126f1: Add experimental environment variable to enable caching for production builds.
+- 7b407b303b: Slightly improve readability of "base URL conflict" error handling code
+- a62a1f9dca: The frontend serve task now filters out allowed package duplicates during its package check, just like `versions:bump` and `versions:check`.
+- d06a7890c6: Removed unused package `type-fest`
+- 7c8a974515: The `repo test`, `repo lint`, and `repo build` commands will now analyze `yarn.lock` for dependency changes when searching for changed packages. This allows you to use the `--since <ref>` flag even if you have `yarn.lock` changes.
+- e1b71e142e: Workspace ranges are no longer considered invalid by version commands.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.1-next.2
+
+### Patch Changes
+
+- 7b407b303b: Slightly improve readability of "base URL conflict" error handling code
+- d06a7890c6: Removed unused package `type-fest`
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6-next.0
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.1-next.1
+
+### Patch Changes
+
+- db2e137744: Removed unnecessary usage of `ThemeProvider` from the `ExampleComponent` test in the plugin template.
+- 4b572126f1: Add experimental environment variable to enable caching for production builds.
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config-loader@1.1.8-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.1-next.0
+
+### Patch Changes
+
+- 47c10706df: Fixed an issue where the CLI would fail to function when there was a mix of workspace and non-workspace versions of the same package in `yarn.lock` when using Yarn 3.
+- a62a1f9dca: The frontend serve task now filters out allowed package duplicates during its package check, just like `versions:bump` and `versions:check`.
+- 7c8a974515: The `repo test`, `repo lint`, and `repo build` commands will now analyze `yarn.lock` for dependency changes when searching for changed packages. This allows you to use the `--since <ref>` flag even if you have `yarn.lock` changes.
+- e1b71e142e: Workspace ranges are no longer considered invalid by version commands.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+  - @backstage/config-loader@1.1.7
+  - @backstage/errors@1.1.4
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+
+## 0.22.0
+
+### Minor Changes
+
+- 736f893f72: The Jest configuration that was previously enabled with `BACKSTAGE_NEXT_TESTS` is now enabled by default. To revert to the old configuration you can now instead set `BACKSTAGE_OLD_TESTS`.
+
+  This new configuration uses the `babel` coverage provider rather than `v8`. It used to be that `v8` worked better when using Sucrase for transpilation, but now that we have switched to SWC, `babel` seems to work better. In addition, the new configuration also enables source maps by default, as they no longer have a negative impact on code coverage accuracy, and it also enables a modified Jest runtime with additional caching of script objects.
+
+### Patch Changes
+
+- 91d050c140: changed tests created by create-plugin to follow eslint-rules best practices particularly testing-library/prefer-screen-queries and testing-library/render-result-naming-convention
+- 43b2b9c791: Removed the unused dependency on `@sucrase/jest-plugin`.
+- dd721148b5: Updated Jest coverage configuration to only apply either in the root project or package configuration, depending on whether repo or package tests are run.
+- 5850ef9b84: Fix webpack dev server issue where it wasn't serving `index.html` from correct endpoint on subsequent requests.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 459a3457e1: Bump `msw` version in default plugin/app templates
+- c27eabef6b: Adds new web-library package option when generating a new plugin
+- 8fffe42708: JSX and React Fast Refresh transforms are no longer enabled when bundling backend code.
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- ee14bab716: Updated dependency `minimatch` to `5.1.1` and switch version range to `^`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- ed0cf59c59: Updated dependency `@rollup/plugin-commonjs` to `^23.0.0`.
+- 16b7c2fccd: Updated dependency `@rollup/plugin-yaml` to `^4.0.0`.
+- 086c0bbb45: Updated dependency `@rollup/plugin-json` to `^5.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- d9d9a7a134: Removed all copyright notices from package templates.
+- 8e0358e18d: Added `--skip-install` parameter to `backstage-cli versions:bump`
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/config-loader@1.1.7
+  - @backstage/release-manifests@0.0.8
+  - @backstage/types@1.0.2
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+
+## 0.22.0-next.4
+
+### Minor Changes
+
+- 736f893f72: The Jest configuration that was previously enabled with `BACKSTAGE_NEXT_TESTS` is now enabled by default. To revert to the old configuration you can now instead set `BACKSTAGE_OLD_TESTS`.
+
+  This new configuration uses the `babel` coverage provider rather than `v8`. It used to be that `v8` worked better when using Sucrase for transpilation, but now that we have switched to SWC, `babel` seems to work better. In addition, the new configuration also enables source maps by default, as they no longer have a negative impact on code coverage accuracy, and it also enables a modified Jest runtime with additional caching of script objects.
+
+### Patch Changes
+
+- dd721148b5: Updated Jest coverage configuration to only apply either in the root project or package configuration, depending on whether repo or package tests are run.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- c27eabef6b: Adds new web-library package option when generating a new plugin
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- d9d9a7a134: Removed all copyright notices from package templates.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.1
+
+## 0.21.2-next.3
+
+### Patch Changes
+
+- 43b2b9c791: Removed the unused dependency on `@sucrase/jest-plugin`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.1
+
+## 0.21.2-next.2
+
+### Patch Changes
+
+- 5850ef9b84: Fix webpack dev server issue where it wasn't serving `index.html` from correct endpoint on subsequent requests.
+- ee14bab716: Updated dependency `minimatch` to `5.1.1` and switch version range to `^`.
+- ed0cf59c59: Updated dependency `@rollup/plugin-commonjs` to `^23.0.0`.
+- 16b7c2fccd: Updated dependency `@rollup/plugin-yaml` to `^4.0.0`.
+- 086c0bbb45: Updated dependency `@rollup/plugin-json` to `^5.0.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/config-loader@1.1.7-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.1
+
+## 0.21.2-next.1
+
+### Patch Changes
+
+- 8fffe42708: JSX and React Fast Refresh transforms are no longer enabled when bundling backend code.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config-loader@1.1.7-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
+## 0.21.2-next.0
+
+### Patch Changes
+
+- 91d050c140: changed tests created by create-plugin to follow eslint-rules best practices particularly testing-library/prefer-screen-queries and testing-library/render-result-naming-convention
+- 459a3457e1: Bump `msw` version in default plugin/app templates
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.7-next.0
+  - @backstage/release-manifests@0.0.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 0.21.0
+
+### Minor Changes
+
+- 7539b36748: Added a new ESLint rule that restricts imports of Link from @material-ui
+
+  The rule can be can be overridden in the following way:
+
+  ```diff
+  module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  +  restrictedImports: [
+  +    { name: '@material-ui/core', importNames: [] },
+  +    { name: '@material-ui/core/Link', importNames: [] },
+  +  ],
+  });
+  ```
+
+- 384eaa2307: Switched `tsconfig.json` to target and support `ES2021`, in line with the bump to Node.js 16 & 18.
+
+### Patch Changes
+
+- e52d6ad861: Updated the `backstage-cli` so that the `list-deprecations` command is visible and also removed the "[EXPERIMENTAL]" tag.
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- df21bbd4ad: Removed googleAnalyticsTrackingId configSchema.
+- 286d474675: Minor update to the `index.html` template that updates the comment at the end to be more accurate.
+- 4c16213e7d: The built-in Jest configuration now always uses the Jest environments that are bundled with the CLI by default. This avoids a situation where Jest potentially picks up an incompatible version of the environment package from a different dependency in the project.
+- 4091c73e68: Updated `@swc/core` to version 1.3.9 which fixes a `.tsx` parser bug
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9c767e8f45: Updated dependency `@svgr/plugin-jsx` to `6.5.x`.
+  Updated dependency `@svgr/plugin-svgo` to `6.5.x`.
+  Updated dependency `@svgr/rollup` to `6.5.x`.
+  Updated dependency `@svgr/webpack` to `6.5.x`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.7
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/config-loader@1.1.6
+  - @backstage/errors@1.1.3
+
+## 0.21.0-next.1
+
+### Minor Changes
+
+- 384eaa2307: Switched `tsconfig.json` to target and support `ES2021`, in line with the bump to Node.js 16 & 18.
+
+### Patch Changes
+
+- 88f99b8b13: Bumped `tar` dependency to `^6.1.12` in order to ensure Node.js v18 compatibility.
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.7-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 0.21.0-next.0
+
+### Minor Changes
+
+- 7539b36748: Added a new ESLint rule that restricts imports of Link from @material-ui
+
+  The rule can be can be overridden in the following way:
+
+  ```diff
+  module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  +  restrictedImports: [
+  +    { name: '@material-ui/core', importNames: [] },
+  +    { name: '@material-ui/core/Link', importNames: [] },
+  +  ],
+  });
+  ```
+
+### Patch Changes
+
+- 4091c73e68: Updated `@swc/core` to version 1.3.9 which fixes a `.tsx` parser bug
+- 9c767e8f45: Updated dependency `@svgr/plugin-jsx` to `6.5.x`.
+  Updated dependency `@svgr/plugin-svgo` to `6.5.x`.
+  Updated dependency `@svgr/rollup` to `6.5.x`.
+  Updated dependency `@svgr/webpack` to `6.5.x`.
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/config-loader@1.1.6-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/release-manifests@0.0.6
+
+## 0.20.0
+
+### Minor Changes
+
+- f368ad7279: **BREAKING**: Bumped `jest`, `jest-runtime`, and `jest-environment-jsdom` to v29. This is up from v27, so check out both the [v28](https://jestjs.io/docs/28.x/upgrading-to-jest28) and [v29](https://jestjs.io/docs/upgrading-to-jest29) (later [here](https://jestjs.io/docs/29.x/upgrading-to-jest29)) migration guides.
+
+  Particular changes that where encountered in the main Backstage repo are:
+
+  - The updated snapshot format.
+  - `jest.useFakeTimers('legacy')` is now `jest.useFakeTimers({ legacyFakeTimers: true })`.
+  - Error objects collected by `withLogCollector` from `@backstage/test-utils` are now objects with a `detail` property rather than a string.
+
+### Patch Changes
+
+- 78d5eb299e: Tweak the Jest Caching loader to only operate when in `watch` mode
+- 9c595302cb: Normalize on winston version ^3.2.1
+- 24b40140c4: Treat files in `__testUtils__` and `__mocks__` directories as test files for linting
+  purposes.
+
+  Updates the parts of the eslint configuration generator that specify which files
+  should be treated as test code to include any files under two additional
+  directories:
+
+  - `__mocks__`: this is the directory used by Jest[0] for mock code.
+  - `__testUtils__`: a suggested location for utility code executed only when
+    running tests.
+
+  [0]: https://jestjs.io/docs/manual-mocks#mocking-user-modules
+
+- 3e309107ca: Updated fallback versions of dependencies in all templates.
+- 292a088807: Added a new `repo test` command.
+- ba63cae41c: Updated lockfile parsing to have better support for Yarn 3.
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- 2dddb32fea: Switched the Jest transform for YAML files to use a custom one available at `@backstage/cli/config/jestYamlTransform.js`.
+- a541a3a78a: Switch to upfront resolution of `swc-loader` in Webpack config.
+- cfb3598410: Removed `tsx` and `jsx` as supported extensions in backend packages. For most
+  repos, this will not have any effect. But if you inadvertently had added some
+  `tsx`/`jsx` files to your backend package, you may now start to see `code: 'MODULE_NOT_FOUND'` errors when launching the backend locally. The reason for
+  this is that the offending files get ignored during transpilation. Hence, the
+  importing file can no longer find anything to import.
+
+  The fix is to rename any `.tsx` files in your backend packages to `.ts` instead,
+  or `.jsx` to `.js`.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/config-loader@1.1.5
+  - @backstage/errors@1.1.2
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
+## 0.20.0-next.2
+
+### Patch Changes
+
+- 2d3a5f09ab: Use `response.json` rather than `response.send` where appropriate, as outlined in `SECURITY.md`
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/config-loader@1.1.5-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
+## 0.20.0-next.1
+
+### Patch Changes
+
+- 78d5eb299e: Tweak the Jest Caching loader to only operate when in `watch` mode
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/config-loader@1.1.5-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
+## 0.20.0-next.0
+
+### Minor Changes
+
+- f368ad7279: **BREAKING**: Bumped `jest`, `jest-runtime`, and `jest-environment-jsdom` to v29. This is up from v27, so check out both the [v28](https://jestjs.io/docs/28.x/upgrading-to-jest28) and [v29](https://jestjs.io/docs/upgrading-to-jest29) (later [here](https://jestjs.io/docs/29.x/upgrading-to-jest29)) migration guides.
+
+  Particular changes that where encountered in the main Backstage repo are:
+
+  - The updated snapshot format.
+  - `jest.useFakeTimers('legacy')` is now `jest.useFakeTimers({ legacyFakeTimers: true })`.
+  - Error objects collected by `withLogCollector` from `@backstage/test-utils` are now objects with a `detail` property rather than a string.
+
+### Patch Changes
+
+- 3e309107ca: Updated fallback versions of dependencies in all templates.
+- 292a088807: Added a new `repo test` command.
+- ba63cae41c: Updated lockfile parsing to have better support for Yarn 3.
+- 2dddb32fea: Switched the Jest transform for YAML files to use a custom one available at `@backstage/cli/config/jestYamlTransform.js`.
+- a541a3a78a: Switch to upfront resolution of `swc-loader` in Webpack config.
+- cfb3598410: Removed `tsx` and `jsx` as supported extensions in backend packages. For most
+  repos, this will not have any effect. But if you inadvertently had added some
+  `tsx`/`jsx` files to your backend package, you may now start to see `code: 'MODULE_NOT_FOUND'` errors when launching the backend locally. The reason for
+  this is that the offending files get ignored during transpilation. Hence, the
+  importing file can no longer find anything to import.
+
+  The fix is to rename any `.tsx` files in your backend packages to `.ts` instead,
+  or `.jsx` to `.js`.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+  - @backstage/config-loader@1.1.5-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/release-manifests@0.0.6
+  - @backstage/types@1.0.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
+
+  Note that this major update to the Jest plugin contains some breaking changes.
+  This means that some of your tests may start seeing some new lint errors. [Read
+  about them
+  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+
+  These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
+  corrected.
+
+### Patch Changes
+
+- 8d886dd33e: The `create-plugin` and `create` commands have both been deprecated in favor of a new `new` command. The `new` command is functionally identical to `create`, but the new naming makes it possible to use as yarn script, since `yarn create` is reserved.
+- cc63eb8611: Sort entries in skeleton.tar.gz for better docker layer caching
+- 548053614a: Deprecated the `plugin:diff` command. If you wish to keep running similar checks in your project we recommend using bespoke scripts. A useful utility for such scripts is `@manypkg/get-packages`, which helps you enumerate all packages in a monorepo.
+- 513b4dd4ef: The `versions:bump` command will now update dependency ranges in `package.json`, even if the new version is within the current range.
+- 221e951298: Added support for custom certificate for webpack dev server.
+- 934cc34563: Avoid validating the backend configuration schema when loading static configuration for building the frontend.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- 817f3196f6: Added a new `migrate react-router-deps` command to aid in the migration to React Router v6 stable.
+- 742cb4f3d7: Fix issue when using `.jsx` files inside tests
+- e7600bdb04: Tweaked workspace packaging to not rewrite existing `package.json` files.
+- 6ae0f6a719: Switch out `sucrase` for `swc` for transpilation.
+
+  `sucrase` is a little more relaxed when it comes to supporting the ways of mocking in `jest`. You might have to make some changes to your tests to meet the `jest` standard and spec if your tests seems to start failing.
+
+  Mocks that look like this are invalid, and they will throw a reference error in line with the `jest` documentation [here on example 3](https://jestjs.io/docs/es6-class-mocks#calling-jestmock-with-the-module-factory-parameter)
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock('command-exists', () => mockCommandExists);
+  ```
+
+  You might need to update these mocks to look a little like the following to defer the call to the `jest.fn()` spy until the mock is called.
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock(
+    'command-exists',
+    () =>
+      (...args: any[]) =>
+        commandExists(...args),
+  );
+  ```
+
+  Also, imports are immutable. So it means that you might get some errors when trying to use `jest.spyOn` with starred imports. You might see an error like this:
+
+  ```log
+  TypeError: Cannot redefine property: executeFrameHandlerStrategy
+          at Function.defineProperty (<anonymous>)
+
+        20 | import { AuthResolverContext } from '../types';
+        21 |
+      > 22 | const mockFrameHandler = jest.spyOn(
+           |                               ^
+        23 |   helpers,
+        24 |   'executeFrameHandlerStrategy',
+        25 | ) as unknown as jest.MockedFunction<
+  ```
+
+  This happens when you try to do `import * as something from './something'` and then `jest.spyOn(something, 'test)`. You will need to add a `jest.mock` call to mock out the required starred import to return `jest.fn()` functions from the start. Something like this fixes the above test:
+
+  ```ts
+  jest.mock('../../helpers', () => ({
+    executeFrameHandlerStrategy: jest.fn(),
+  }));
+  ```
+
+  You can also remove any occurrence of `hot(App)` and any import of `react-hot-loader` if you're using the that package locally, as all this has now been replaced with [React Refresh](https://www.npmjs.com/package/react-refresh) which you will get out of the box with the new CLI.
+
+  **Note** If you're experiencing difficulties with running tests after the migration, please reach out to us on Discord to see if we can help, or raise an issue. But in the meantime you can switch back to the existing behaviour by using the following config in your root `package.json`.
+
+  ```json
+  "jest": {
+    "transform": {
+      "\\.(js|jsx|ts|tsx|mjs|cjs)$": "@backstage/cli/config/jestSucraseTransform.js",
+      "\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$": "@backstage/cli/config/jestFileTransform.js",
+      "\\.(yaml)$": "jest-transform-yaml"
+    }
+  }
+  ```
+
+- 1cb078ad9f: Fixed a misconfiguration where all modules where treated as ESM by the React Refresh plugin for Webpack.
+- 1fd4f2746f: Removed internal dependencies on Lerna. It is now no longer necessary to have Lerna installed in a project to use all features of the Backstage CLI.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 33fbd9f9a4: Updated dependency `@types/minimatch` to `^5.0.0`.
+- 68c2697077: Added a new `backstage-cli repo clean` command that cleans the repo root and runs the clean script in all packages.
+- 7d47def9c4: Added dependency on `@types/jest` v27. The `@types/jest` dependency has also been removed from the plugin template and should be removed from any of your own internal packages. If you wish to override the version of `@types/jest` or `jest`, use Yarn resolutions.
+- a7e82c9b01: Updated `versions:bump` command to be compatible with Yarn 3.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/release-manifests@0.0.6
+
+## 0.19.0-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Added dependency on `@types/jest` v27. The `@types/jest` dependency has also been removed from the plugin template and should be removed from any of your own internal packages. If you wish to override the version of `@types/jest` or `jest`, use Yarn resolutions.
+- a7e82c9b01: Updated `versions:bump` command to be compatible with Yarn 3.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.2
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/release-manifests@0.0.6-next.2
+
+## 0.19.0-next.2
+
+### Patch Changes
+
+- 8d886dd33e: The `create-plugin` and `create` commands have both been deprecated in favor of a new `new` command. The `new` command is functionally identical to `create`, but the new naming makes it possible to use as yarn script, since `yarn create` is reserved.
+- 548053614a: Deprecated the `plugin:diff` command. If you wish to keep running similar checks in your project we recommend using bespoke scripts. A useful utility for such scripts is `@manypkg/get-packages`, which helps you enumerate all packages in a monorepo.
+- 513b4dd4ef: The `versions:bump` command will now update dependency ranges in `package.json`, even if the new version is within the current range.
+- 221e951298: Added support for custom certificate for webpack dev server.
+- 934cc34563: Avoid validating the backend configuration schema when loading static configuration for building the frontend.
+- 3d4f5daadf: Remove use of deprecated trimLeft/trimRight
+- 742cb4f3d7: Fix issue when using `.jsx` files inside tests
+- e7600bdb04: Tweaked workspace packaging to not rewrite existing `package.json` files.
+- 1cb078ad9f: Fixed a misconfiguration where all modules where treated as ESM by the React Refresh plugin for Webpack.
+- 1fd4f2746f: Removed internal dependencies on Lerna. It is now no longer necessary to have Lerna installed in a project to use all features of the Backstage CLI.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 68c2697077: Added a new `backstage-cli repo clean` command that cleans the repo root and runs the clean script in all packages.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.1
+  - @backstage/release-manifests@0.0.6-next.1
+
+## 0.19.0-next.1
+
+### Minor Changes
+
+- 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
+
+  Note that this major update to the Jest plugin contains some breaking changes.
+  This means that some of your tests may start seeing some new lint errors. [Read
+  about them
+  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+
+  These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
+  corrected.
+
+### Patch Changes
+
+- 817f3196f6: Added a new `migrate react-router-deps` command to aid in the migration to React Router v6 stable.
+- 33fbd9f9a4: Updated dependency `@types/minimatch` to `^5.0.0`.
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- 6ae0f6a719: Switch out `sucrase` for `swc` for transpilation.
+
+  `sucrase` is a little more relaxed when it comes to supporting the ways of mocking in `jest`. You might have to make some changes to your tests to meet the `jest` standard and spec if your tests seems to start failing.
+
+  Mocks that look like this are invalid, and they will throw a reference error in line with the `jest` documentation [here on example 3](https://jestjs.io/docs/es6-class-mocks#calling-jestmock-with-the-module-factory-parameter)
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock('command-exists', () => mockCommandExists);
+  ```
+
+  You might need to update these mocks to look a little like the following to defer the call to the `jest.fn()` spy until the mock is called.
+
+  ```ts
+  const mockCommandExists = jest.fn();
+  jest.mock(
+    'command-exists',
+    () =>
+      (...args: any[]) =>
+        commandExists(...args),
+  );
+  ```
+
+  Also, imports are immutable. So it means that you might get some errors when trying to use `jest.spyOn` with starred imports. You might see an error like this:
+
+  ```log
+  TypeError: Cannot redefine property: executeFrameHandlerStrategy
+          at Function.defineProperty (<anonymous>)
+
+        20 | import { AuthResolverContext } from '../types';
+        21 |
+      > 22 | const mockFrameHandler = jest.spyOn(
+           |                               ^
+        23 |   helpers,
+        24 |   'executeFrameHandlerStrategy',
+        25 | ) as unknown as jest.MockedFunction<
+  ```
+
+  This happens when you try to do `import * as something from './something'` and then `jest.spyOn(something, 'test)`. You will need to add a `jest.mock` call to mock out the required starred import to return `jest.fn()` functions from the start. Something like this fixes the above test:
+
+  ```ts
+  jest.mock('../../helpers', () => ({
+    executeFrameHandlerStrategy: jest.fn(),
+  }));
+  ```
+
+  You can also remove any occurrence of `hot(App)` and any import of `react-hot-loader` if you're using the that package locally, as all this has now been replaced with [React Refresh](https://www.npmjs.com/package/react-refresh) which you will get out of the box with the new CLI.
+
+  **Note** If you're experiencing difficulties with running tests after the migration, please reach out to us on Discord to see if we can help, or raise an issue. But in the meantime you can switch back to the existing behaviour by using the following config in your root `package.json`.
+
+  ```json
+  "jest": {
+    "transform": {
+      "\\.(js|jsx|ts|tsx|mjs|cjs)$": "@backstage/cli/config/jestSucraseTransform.js",
+      "\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$": "@backstage/cli/config/jestFileTransform.js",
+      "\\.(yaml)$": "jest-transform-yaml"
+    }
+  }
+  ```
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.4-next.0
+  - @backstage/release-manifests@0.0.6-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- d45bbfeb69: Linting is now ignored for any `.eslintrc.*` files, not just `.eslintrc.js`.
+- 72c228fdb8: Fixed a bug where `NODE_ENV` was not set in the environment when starting the backend in development mode. It has always been the case that Webpack transformed `NODE_ENV` when running in development mode, but this did not affect dependencies in `node_modules` as they are treated as external.
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- fd68d6f138: Added resolution of `.json` and `.wasm` files to the Webpack configuration in order to match defaults.
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- a539564c0d: Added Backstage version to output of `yarn backstage-cli info` command
+- 94155a41e0: Updated dependencies `@svgr/*` to `6.3.x`.
+
+## 0.18.0
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- e8ed804d4f: Updated dependency `@spotify/prettier-config` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-base` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-react` to `^14.0.0`.
+  Updated dependency `@spotify/eslint-config-typescript` to `^14.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3
+  - @backstage/release-manifests@0.0.5
+  - @backstage/errors@1.1.0
+
+## 0.18.0-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- e662b573cf: Updated dependency `@octokit/request` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.3-next.1
+  - @backstage/release-manifests@0.0.5-next.0
+
+## 0.18.0-next.2
+
+### Patch Changes
+
+- f6b6fb7165: The `test` command now ensures that all IO is flushed before exiting when printing `--help`.
+
+## 0.18.0-next.1
+
+### Minor Changes
+
+- 96a82d9791: **BREAKING**: Removed the following deprecated package commands:
+
+  - `app:build` - Use `package build` instead
+  - `app:serve` - Use `package start` instead
+  - `backend:build` - Use `package build` instead
+  - `backend:bundle` - Use `package build` instead
+  - `backend:dev` - Use `package start` instead
+  - `plugin:build` - Use `package build` instead
+  - `plugin:serve` - Use `package start` instead
+  - `build` - Use `package build` instead
+  - `lint` - Use `package lint` instead
+  - `prepack` - Use `package prepack` instead
+  - `postpack` - Use `package postpack` instead
+
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+
+### Patch Changes
+
+- 86640214f0: Upgrade `@rollup/plugin-node-resolve` to `^13.0.6`
+- e661242844: Updated dependency `run-script-webpack-plugin` to `^0.1.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+  - @backstage/config-loader@1.1.3-next.0
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- d2256c0384: Fix `webpack-dev-server` deprecations.
+
+## 0.17.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- b8970b8941: Improved the `create-github-app` permissions selection prompt by converting it into a multi-select with clearer descriptions. The `members` permission is now also included in the list which is required for ingesting user data into the catalog.
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+- Updated dependencies
+  - @backstage/config-loader@1.1.2
+  - @backstage/release-manifests@0.0.4
+
+## 0.17.2-next.2
+
+### Patch Changes
+
+- 026cfe525a: Fix the public path configuration of the frontend app build so that a trailing `/` is always appended when needed.
+- 9002ebd76b: Updated dependency `@rollup/plugin-commonjs` to `^22.0.0`.
+- 1a33e8b287: Updated dependency `minimatch` to `5.1.0`.
+
+## 0.17.2-next.1
+
+### Patch Changes
+
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.2-next.0
+  - @backstage/release-manifests@0.0.4-next.0
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+
+## 0.17.1
+
+### Patch Changes
+
+- 52fb9920ac: Fixed coverage configuration when using `BACKSTAGE_NEXT_TESTS`.
+- 6cd1f50ae1: Extended lint rule to prevents imports of stories or tests from production code.
+- 97cce67ac7: Add instructions to `create-github-app` command.
+- 08e12a3a14: Add package global-agent to support behind a proxy for backstage-cli commands like versions:bump.
+- 4d8736eded: Changed Rollup configuration for TypeScript definition plugin to ignore `css`,
+  `scss`, `sass`, `svg`, `eot`, `woff`, `woff2` and `ttf` files.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2737777e02: Added the ability to help a user get started with a new organization
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 8ab2a8226b: Updated the `create-github-app` command to throw an error if the organization argument is a user or a non existing organization.
+- 632be18bbc: Updated `create-github-app` command to prompt for read or write permissions to simplify setup.
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/release-manifests@0.0.3
+  - @backstage/config-loader@1.1.1
+
 ## 0.17.1-next.2
 
 ### Patch Changes

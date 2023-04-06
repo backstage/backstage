@@ -22,7 +22,8 @@
 
 import { program } from 'commander';
 import { exitWithError } from './lib/errors';
-import { version } from '../package.json';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { version } from '../../../package.json';
 import createApp from './createApp';
 
 const main = (argv: string[]) => {

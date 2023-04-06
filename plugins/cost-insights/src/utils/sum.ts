@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DateAggregation } from '../types';
+import { DateAggregation } from '@backstage/plugin-cost-insights-common';
 
 export const aggregationSum = (aggregation: DateAggregation[]) =>
   aggregation.reduce((total, curAgg) => total + curAgg.amount, 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,16 @@
  */
 import { makeStyles, Theme } from '@material-ui/core';
 import React from 'react';
-import { WithLink } from '../../utils/components';
-import type { Entry, Quadrant, Ring } from '../../utils/types';
-import { RadarDescription } from '../RadarDescription';
-
-type Segments = {
-  [k: number]: { [k: number]: Entry[] };
-};
-
-export type Props = {
-  quadrants: Quadrant[];
-  rings: Ring[];
-  entries: Entry[];
-  onEntryMouseEnter?: (entry: Entry) => void;
-  onEntryMouseLeave?: (entry: Entry) => void;
-};
+import { RadarLegendQuadrant } from './RadarLegendQuadrant';
+import { RadarLegendProps } from './types';
+import { setupSegments } from './utils';
 
 const useStyles = makeStyles<Theme>(theme => ({
-  quadrantLegend: {
-    overflowY: 'auto',
-    scrollbarWidth: 'thin',
-  },
   quadrant: {
     height: '100%',
     width: '100%',
+    overflowY: 'auto',
     scrollbarWidth: 'thin',
-    pointerEvents: 'none',
   },
   quadrantHeading: {
     pointerEvents: 'none',
@@ -61,6 +45,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   ringEmpty: {
     color: theme.palette.text.secondary,
+    fontSize: '12px',
   },
   ringHeading: {
     pointerEvents: 'none',
@@ -84,215 +69,38 @@ const useStyles = makeStyles<Theme>(theme => ({
     userSelect: 'none',
     fontSize: '11px',
   },
+  activeEntry: {
+    pointerEvents: 'visiblePainted',
+    userSelect: 'none',
+    fontSize: '11px',
+    background: '#6f6f6f',
+    color: theme.palette.common.white,
+  },
   entryLink: {
     pointerEvents: 'visiblePainted',
+    cursor: 'pointer',
   },
 }));
 
-const RadarLegend = (props: Props): JSX.Element => {
+const RadarLegend = ({
+  quadrants,
+  rings,
+  entries,
+  onEntryMouseEnter,
+  onEntryMouseLeave,
+  ...props
+}: RadarLegendProps): JSX.Element => {
   const classes = useStyles(props);
-
-  const getSegment = (
-    segmented: Segments,
-    quadrant: Quadrant,
-    ring: Ring,
-    ringOffset = 0,
-  ) => {
-    const quadrantIndex = quadrant.index;
-    const ringIndex = ring.index;
-    const segmentedData =
-      quadrantIndex === undefined ? {} : segmented[quadrantIndex] || {};
-    return ringIndex === undefined
-      ? []
-      : segmentedData[ringIndex + ringOffset] || [];
-  };
-
-  type RadarLegendRingProps = {
-    ring: Ring;
-    entries: Entry[];
-    onEntryMouseEnter?: Props['onEntryMouseEnter'];
-    onEntryMouseLeave?: Props['onEntryMouseEnter'];
-  };
-
-  type RadarLegendLinkProps = {
-    url?: string;
-    description?: string;
-    title?: string;
-  };
-
-  const RadarLegendLink = ({
-    url,
-    description,
-    title,
-  }: RadarLegendLinkProps) => {
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-
-    const handleClose = () => {
-      setOpen(false);
-    };
-
-    const toggle = () => {
-      setOpen(!open);
-    };
-
-    if (description) {
-      return (
-        <>
-          <span
-            className={classes.entryLink}
-            onClick={handleClickOpen}
-            role="button"
-            tabIndex={0}
-            onKeyPress={toggle}
-          >
-            <span className={classes.entry}>{title}</span>
-          </span>
-          {open && (
-            <RadarDescription
-              open={open}
-              onClose={handleClose}
-              title={title ? title : 'no title'}
-              url={url}
-              description={description}
-            />
-          )}
-        </>
-      );
-    }
-    return (
-      <WithLink url={url} className={classes.entryLink}>
-        <span className={classes.entry}>{title}</span>
-      </WithLink>
-    );
-  };
-
-  const RadarLegendRing = ({
-    ring,
-    entries,
-    onEntryMouseEnter,
-    onEntryMouseLeave,
-  }: RadarLegendRingProps) => {
-    return (
-      <div data-testid="radar-ring" key={ring.id} className={classes.ring}>
-        <h3 className={classes.ringHeading}>{ring.name}</h3>
-        {entries.length === 0 ? (
-          <p className={classes.ringEmpty}>(empty)</p>
-        ) : (
-          <ol className={classes.ringList}>
-            {entries.map(entry => (
-              <li
-                key={entry.id}
-                value={(entry.index || 0) + 1}
-                onMouseEnter={
-                  onEntryMouseEnter && (() => onEntryMouseEnter(entry))
-                }
-                onMouseLeave={
-                  onEntryMouseLeave && (() => onEntryMouseLeave(entry))
-                }
-              >
-                <RadarLegendLink
-                  url={entry.url}
-                  title={entry.title}
-                  description={entry.description}
-                />
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-    );
-  };
-
-  type RadarLegendQuadrantProps = {
-    segments: Segments;
-    quadrant: Quadrant;
-    rings: Ring[];
-    onEntryMouseEnter: Props['onEntryMouseEnter'];
-    onEntryMouseLeave: Props['onEntryMouseLeave'];
-  };
-
-  const RadarLegendQuadrant = ({
-    segments,
-    quadrant,
-    rings,
-    onEntryMouseEnter,
-    onEntryMouseLeave,
-  }: RadarLegendQuadrantProps) => {
-    return (
-      <foreignObject
-        key={quadrant.id}
-        x={quadrant.legendX}
-        y={quadrant.legendY}
-        width={quadrant.legendWidth}
-        height={quadrant.legendHeight}
-        className={classes.quadrantLegend}
-        data-testid="radar-quadrant"
-      >
-        <div className={classes.quadrant}>
-          <h2 className={classes.quadrantHeading}>{quadrant.name}</h2>
-          <div className={classes.rings}>
-            {rings.map(ring => (
-              <RadarLegendRing
-                key={ring.id}
-                ring={ring}
-                entries={getSegment(segments, quadrant, ring)}
-                onEntryMouseEnter={onEntryMouseEnter}
-                onEntryMouseLeave={onEntryMouseLeave}
-              />
-            ))}
-          </div>
-        </div>
-      </foreignObject>
-    );
-  };
-
-  const setupSegments = (entries: Entry[]) => {
-    const segments: Segments = {};
-
-    for (const entry of entries) {
-      const quadrantIndex = entry.quadrant.index;
-      const ringIndex = entry.ring.index;
-      let quadrantData: { [k: number]: Entry[] } = {};
-      if (quadrantIndex !== undefined) {
-        if (segments[quadrantIndex] === undefined) {
-          segments[quadrantIndex] = {};
-        }
-
-        quadrantData = segments[quadrantIndex];
-      }
-
-      let ringData = [];
-      if (ringIndex !== undefined) {
-        if (quadrantData[ringIndex] === undefined) {
-          quadrantData[ringIndex] = [];
-        }
-
-        ringData = quadrantData[ringIndex];
-      }
-
-      ringData.push(entry);
-    }
-
-    return segments;
-  };
-
-  const { quadrants, rings, entries, onEntryMouseEnter, onEntryMouseLeave } =
-    props;
-
-  const segments: Segments = setupSegments(entries);
 
   return (
     <g data-testid="radar-legend">
       {quadrants.map(quadrant => (
         <RadarLegendQuadrant
           key={quadrant.id}
-          segments={segments}
+          segments={setupSegments(entries)}
           quadrant={quadrant}
           rings={rings}
+          classes={classes}
           onEntryMouseEnter={onEntryMouseEnter}
           onEntryMouseLeave={onEntryMouseLeave}
         />

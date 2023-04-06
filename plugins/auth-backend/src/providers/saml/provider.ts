@@ -133,28 +133,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type SamlProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<SamlAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<SamlAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for SAML auth
  *
  * @public
@@ -230,16 +208,3 @@ export const saml = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.saml.create` instead
- */
-export const createSamlProvider = saml.create;
-
-/**
- * @public
- * @deprecated Use `providers.saml.resolvers.nameIdMatchingUserEntityName()` instead.
- */
-export const samlNameIdEntityNameSignInResolver =
-  saml.resolvers.nameIdMatchingUserEntityName();

@@ -30,10 +30,10 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "bumpedTag": "rc-2020.01.01_2",
           "error": undefined,
-          "tagParts": Object {
+          "tagParts": {
             "calver": "2020.01.01",
             "patch": 2,
             "prefix": "rc",
@@ -50,10 +50,10 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "bumpedTag": "rc-2020.01.01_2",
           "error": undefined,
-          "tagParts": Object {
+          "tagParts": {
             "calver": "2020.01.01",
             "patch": 2,
             "prefix": "rc",
@@ -72,10 +72,10 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "bumpedTag": "rc-1.2.4",
           "error": undefined,
-          "tagParts": Object {
+          "tagParts": {
             "major": 1,
             "minor": 2,
             "patch": 4,
@@ -93,10 +93,10 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "bumpedTag": "rc-1.3.0",
           "error": undefined,
-          "tagParts": Object {
+          "tagParts": {
             "major": 1,
             "minor": 3,
             "patch": 0,
@@ -114,10 +114,10 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "bumpedTag": "rc-2.0.0",
           "error": undefined,
-          "tagParts": Object {
+          "tagParts": {
             "major": 2,
             "minor": 0,
             "patch": 0,
@@ -137,9 +137,9 @@ describe('getBumpedTag', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"😬\\"",
+        {
+          "error": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "😬"",
             "title": "Invalid tag",
           },
         }

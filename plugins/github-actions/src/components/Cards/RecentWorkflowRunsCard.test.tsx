@@ -15,22 +15,19 @@
  */
 
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
 import { ConfigReader } from '@backstage/core-app-api';
 import {
-  errorApiRef,
-  configApiRef,
   ConfigApi,
+  configApiRef,
+  errorApiRef,
 } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import { rootRouteRef } from '../../routes';
+import { render } from '@testing-library/react';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
@@ -75,22 +72,25 @@ describe('<RecentWorkflowRunsCard />', () => {
     jest.resetAllMocks();
   });
 
-  const renderSubject = (props: RecentWorkflowRunsCardProps = {}) =>
+  const renderSubject = (props: any = {}) =>
     render(
-      <ThemeProvider theme={lightTheme}>
-        <MemoryRouter>
-          <TestApiProvider
-            apis={[
-              [errorApiRef, mockErrorApi],
-              [configApiRef, configApi],
-            ]}
-          >
-            <EntityProvider entity={entity}>
-              <RecentWorkflowRunsCard {...props} />
-            </EntityProvider>
-          </TestApiProvider>
-        </MemoryRouter>
-      </ThemeProvider>,
+      wrapInTestApp(
+        <TestApiProvider
+          apis={[
+            [errorApiRef, mockErrorApi],
+            [configApiRef, configApi],
+          ]}
+        >
+          <EntityProvider entity={entity}>
+            <RecentWorkflowRunsCard {...props} />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/ci-cd': rootRouteRef,
+          },
+        },
+      ),
     );
 
   it('renders a table with a row for each workflow', async () => {

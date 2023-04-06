@@ -60,7 +60,7 @@ describe('AddShortcut', () => {
 
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         title: 'some title',
         url: '/some-url',
       });
@@ -77,7 +77,7 @@ describe('AddShortcut', () => {
     fireEvent.click(screen.getByText('Use current page'));
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         title: 'some document title',
         url: '/some-initial-url',
       });

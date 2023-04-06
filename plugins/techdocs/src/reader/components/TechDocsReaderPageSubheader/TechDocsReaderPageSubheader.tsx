@@ -47,9 +47,7 @@ const useStyles = makeStyles(theme => ({
  * Please use the Tech Docs add-ons to customize it
  * @public
  */
-export const TechDocsReaderPageSubheader = ({
-  toolbarProps,
-}: {
+export const TechDocsReaderPageSubheader = (props: {
   toolbarProps?: ToolbarProps;
 }) => {
   const classes = useStyles();
@@ -81,7 +79,7 @@ export const TechDocsReaderPageSubheader = ({
   if (entityMetadataLoading === false && !entityMetadata) return null;
 
   return (
-    <Toolbar classes={classes} {...toolbarProps}>
+    <Toolbar classes={classes} {...props.toolbarProps}>
       <Box
         display="flex"
         justifyContent="flex-end"
@@ -109,7 +107,7 @@ export const TechDocsReaderPageSubheader = ({
               onClose={handleClose}
               keepMounted
             >
-              {settingsAddons}
+              <div>{settingsAddons}</div>
             </Menu>
           </>
         ) : null}

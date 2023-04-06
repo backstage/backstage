@@ -15,13 +15,16 @@
  */
 
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { kafkaApiRef } from '../../api/types';
+import { kafkaApiRef, kafkaDashboardApiRef } from '../../api/types';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const useConsumerGroupsOffsetsForEntity = () => {
   const consumers = useConsumerGroupsForEntity();
+  const { entity } = useEntity();
   const api = useApi(kafkaApiRef);
+  const apiDashboard = useApi(kafkaDashboardApiRef);
   const errorApi = useApi(errorApiRef);
 
   const {
@@ -36,14 +39,23 @@ export const useConsumerGroupsOffsetsForEntity = () => {
             clusterId,
             consumerGroup,
           );
-          return { clusterId, consumerGroup, topics: response.offsets };
+          return {
+            clusterId,
+            dashboardUrl: apiDashboard.getDashboardUrl(
+              clusterId,
+              consumerGroup,
+              entity,
+            ).url,
+            consumerGroup,
+            topics: response.offsets,
+          };
         }),
       );
     } catch (e) {
       errorApi.post(e);
       throw e;
     }
-  }, [consumers, api, errorApi]);
+  }, [consumers, api, apiDashboard, errorApi, entity]);
 
   return [
     {

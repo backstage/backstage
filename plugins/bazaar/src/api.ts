@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
+  ApiHolder,
   createApiRef,
   DiscoveryApi,
   FetchApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 export const bazaarApiRef = createApiRef<BazaarApi>({
   id: 'bazaar',
@@ -40,10 +43,29 @@ export interface BazaarApi {
 
   addMember(id: number, userId: string): Promise<void>;
 
-  getProjects(): Promise<any>;
+  getProjects(limit?: number, order?: string): Promise<any>;
 
   deleteProject(id: number): Promise<void>;
 }
+
+/** @public */
+export const isBazaarAvailable = async (
+  entity: Entity,
+  context: { apis: ApiHolder },
+): Promise<boolean> => {
+  const bazaarClient = context.apis.get(bazaarApiRef);
+  if (bazaarClient === undefined) {
+    return false;
+  }
+  const entityRef = stringifyEntityRef({
+    kind: entity.kind,
+    name: entity.metadata.name,
+    namespace: entity.metadata.namespace,
+  });
+  const response = await bazaarClient.getProjectByRef(entityRef);
+  const project = await response.json();
+  return project.data.length > 0;
+};
 
 export class BazaarClient implements BazaarApi {
   private readonly identityApi: IdentityApi;
@@ -148,12 +170,20 @@ export class BazaarClient implements BazaarApi {
     );
   }
 
-  async getProjects(): Promise<any> {
+  async getProjects(limit?: number, order?: string): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('bazaar');
+    const params = {
+      ...(limit ? { limit: limit.toString() } : {}),
+      ...(order ? { order } : {}),
+    };
+    const query = new URLSearchParams(params);
+    const url = `projects?${query.toString()}`;
 
-    return await this.fetchApi
-      .fetch(`${baseUrl}/projects`)
-      .then(resp => resp.json());
+    const data = await this.fetchApi.fetch(`${baseUrl}/${url}`);
+    if (!data.ok) {
+      throw await ResponseError.fromResponse(data);
+    }
+    return data.json();
   }
 
   async deleteProject(id: number): Promise<void> {

@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { LogViewer } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionSummary,
@@ -80,7 +80,7 @@ export const WorkflowRunLogs = ({
   const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName && projectName.split('/')) || [];
@@ -105,8 +105,6 @@ export const WorkflowRunLogs = ({
     <Accordion TransitionProps={{ unmountOnExit: true }} disabled={inProgress}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls={`panel-${name}-content`}
-        id={`panel-${name}-header`}
         IconButtonProps={{
           className: classes.button,
         }}

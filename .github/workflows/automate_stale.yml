@@ -8,7 +8,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@main
+      - uses: actions/stale@v7
         id: stale
         with:
           stale-issue-message: >
@@ -17,14 +17,15 @@ jobs:
             for your contributions.
           days-before-issue-stale: 60
           days-before-issue-close: 7
-          exempt-issue-labels: 'pinned,security,plugin,help wanted,good first issue,rfc,will-fix'
+          exempt-issue-labels: plugin,after-vacations,will-fix
           stale-issue-label: stale
           stale-pr-message: >
             This PR has been automatically marked as stale because it has not had
             recent activity from the author. It will be closed if no further activity occurs.
-            If you are the author and the PR has been closed, feel free to re-open the PR and continue the contribution!
+            If the PR was closed and you want it re-opened, let us know
+            and we'll re-open the PR so that you can continue the contribution!
           days-before-pr-stale: 7
           days-before-pr-close: 5
-          exempt-pr-labels: reviewer-approved,awaiting-review,will-fix
+          exempt-pr-labels: after-vacations,will-fix
           stale-pr-label: stale
           operations-per-run: 100

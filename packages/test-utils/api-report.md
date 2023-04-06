@@ -23,6 +23,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { MatcherFunction } from '@testing-library/react';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactElement } from 'react';
@@ -172,7 +173,9 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   forBucket(name: string): StorageApi;
   // (undocumented)
-  observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;
   // (undocumented)
@@ -234,6 +237,9 @@ export type TestAppOptions = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
 };
+
+// @public
+export const textContentMatcher: (text: string) => MatcherFunction;
 
 // @public
 export function withLogCollector(

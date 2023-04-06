@@ -1,12 +1,14 @@
 ---
 title: GitLab
-author: Loblaw
-authorUrl: https://github.com/loblaw-sre/backstage-plugin-gitlab
+author: ImmobiliareLabs
+authorUrl: https://github.com/immobiliare
 category: CI/CD
 description: View GitLab pipelines, merge requests, languages and contributors.
-documentation: https://github.com/loblaw-sre/backstage-plugin-gitlab
+documentation: https://github.com/immobiliare/backstage-plugin-gitlab
 iconUrl: https://about.gitlab.com/images/press/logo/png/gitlab-icon-rgb.png
-npmPackageName: '@loblaw/backstage-plugin-gitlab'
+npmPackageName: '@immobiliarelabs/backstage-plugin-gitlab'
 tags:
   - ci
   - cd
+  - gitlab
+addedDate: '2021-08-17'

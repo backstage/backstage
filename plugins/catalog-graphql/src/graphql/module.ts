@@ -27,11 +27,13 @@ import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { Entity } from '@backstage/catalog-model';
 import typeDefs from '../schema';
 
+/** @public */
 export interface ModuleOptions {
   logger: Logger;
   config: Config;
 }
 
+/** @public */
 export async function createModule(options: ModuleOptions): Promise<Module> {
   const catalogClient = new CatalogClient(
     options.config.getString('backend.baseUrl'),

@@ -20,9 +20,9 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import limiterFactory from 'p-limit';
 
 /**
@@ -31,6 +31,7 @@ import limiterFactory from 'p-limit';
  * `https://testbucket.s3.us-east-2.amazonaws.com`.
  *
  * @public
+ * @deprecated Use the `AwsS3EntityProvider` instead (see https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-aws/CHANGELOG.md#014).
  */
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}

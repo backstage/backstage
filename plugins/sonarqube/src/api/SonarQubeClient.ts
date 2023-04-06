@@ -15,27 +15,25 @@
  */
 
 import fetch from 'cross-fetch';
-import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
-import { ComponentWrapper, MeasuresWrapper } from './types';
+import {
+  FindingSummary,
+  Metrics,
+  SonarQubeApi,
+} from '@backstage/plugin-sonarqube-react';
+import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;
-  baseUrl: string;
   identityApi: IdentityApi;
 
-  constructor({
-    discoveryApi,
-    identityApi,
-    baseUrl = 'https://sonarcloud.io/',
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
-    baseUrl?: string;
   }) {
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   private async callApi<T>(
@@ -44,7 +42,7 @@ export class SonarQubeClient implements SonarQubeApi {
   ): Promise<T | undefined> {
     const { token: idToken } = await this.identityApi.getCredentials();
 
-    const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
+    const apiUrl = `${await this.discoveryApi.getBaseUrl('sonarqube')}`;
     const response = await fetch(
       `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
       {
@@ -60,40 +58,18 @@ export class SonarQubeClient implements SonarQubeApi {
     return undefined;
   }
 
-  private async getSupportedMetrics(): Promise<string[]> {
-    const metrics: string[] = [];
-    let nextPage: number = 1;
-
-    for (;;) {
-      const result = await this.callApi<{
-        metrics: Array<{ key: string }>;
-        total: number;
-      }>('metrics/search', { ps: 500, p: nextPage });
-
-      metrics.push(...(result?.metrics?.map(m => m.key) ?? []));
-
-      if (result && metrics.length < result.total) {
-        nextPage++;
-        continue;
-      }
-
-      return metrics;
-    }
-  }
-
-  async getFindingSummary(
-    componentKey?: string,
-  ): Promise<FindingSummary | undefined> {
+  async getFindingSummary({
+    componentKey,
+    projectInstance,
+  }: {
+    componentKey?: string;
+    projectInstance?: string;
+  } = {}): Promise<FindingSummary | undefined> {
     if (!componentKey) {
       return undefined;
     }
 
-    const component = await this.callApi<ComponentWrapper>('components/show', {
-      component: componentKey,
-    });
-    if (!component) {
-      return undefined;
-    }
+    const instanceKey = projectInstance || '';
 
     const metrics: Metrics = {
       alert_status: undefined,
@@ -109,44 +85,49 @@ export class SonarQubeClient implements SonarQubeApi {
       duplicated_lines_density: undefined,
     };
 
-    // select the metrics that are supported by the SonarQube instance
-    const supportedMetrics = await this.getSupportedMetrics();
-    const metricKeys = Object.keys(metrics).filter(m =>
-      supportedMetrics.includes(m),
+    const baseUrlWrapper = await this.callApi<InstanceUrlWrapper>(
+      'instanceUrl',
+      {
+        instanceKey,
+      },
     );
+    let baseUrl = baseUrlWrapper?.instanceUrl;
+    if (!baseUrl) {
+      return undefined;
+    }
+    // ensure trailing slash for later on
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
 
-    const measures = await this.callApi<MeasuresWrapper>('measures/search', {
-      projectKeys: componentKey,
-      metricKeys: metricKeys.join(','),
+    const findings = await this.callApi<FindingsWrapper>('findings', {
+      componentKey,
+      instanceKey,
     });
-    if (!measures) {
+    if (!findings) {
       return undefined;
     }
 
-    measures.measures
-      .filter(m => m.component === componentKey)
-      .forEach(m => {
-        metrics[m.metric] = m.value;
-      });
+    findings.measures.forEach(m => {
+      metrics[m.metric] = m.value;
+    });
 
     return {
-      lastAnalysis: component.component.analysisDate,
+      lastAnalysis: findings.analysisDate,
       metrics,
-      projectUrl: `${this.baseUrl}dashboard?id=${encodeURIComponent(
-        componentKey,
-      )}`,
+      projectUrl: `${baseUrl}dashboard?id=${encodeURIComponent(componentKey)}`,
       getIssuesUrl: identifier =>
-        `${this.baseUrl}project/issues?id=${encodeURIComponent(
+        `${baseUrl}project/issues?id=${encodeURIComponent(
           componentKey,
         )}&types=${identifier.toLocaleUpperCase('en-US')}&resolved=false`,
       getComponentMeasuresUrl: identifier =>
-        `${this.baseUrl}component_measures?id=${encodeURIComponent(
+        `${baseUrl}component_measures?id=${encodeURIComponent(
           componentKey,
         )}&metric=${identifier.toLocaleLowerCase(
           'en-US',
         )}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
-        `${this.baseUrl}project/security_hotspots?id=${encodeURIComponent(
+        `${baseUrl}project/security_hotspots?id=${encodeURIComponent(
           componentKey,
         )}`,
     };

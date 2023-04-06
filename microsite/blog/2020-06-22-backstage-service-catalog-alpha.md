@@ -49,6 +49,6 @@ Alpha is our shorthand for "we don’t yet think Backstage is ready for producti
 
 As with most alpha releases, you should expect things to change quite a lot until we reach the beta stage (we’re targeting the end of summer). There are obviously many things missing as well, but we wanted to start collecting feedback early and make it easier to see the end-to-end flow.
 
-If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/EBHEGzX) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
+If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/backstage-687207715902193673) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
 
-To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://mailchi.mp/spotify/backstage-community).
+To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://info.backstage.spotify.com/newsletter_subscribe).

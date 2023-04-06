@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import {
   IconButton,
@@ -22,15 +22,18 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  ListItemIcon,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
-import qs from 'qs';
+import _unescape from 'lodash/unescape';
 import React from 'react';
 import {
   StackOverflowQuestion,
   StackOverflowQuestionsContentProps,
 } from '../../types';
+import { stackOverflowApiRef } from '../../api';
 
 /**
  * A component to display a list of stack overflow questions on the homepage.
@@ -40,38 +43,33 @@ import {
 
 export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { requestParams } = props;
-  const configApi = useApi(configApiRef);
-  const baseUrl =
-    configApi.getOptionalString('stackoverflow.baseUrl') ||
-    'https://api.stackexchange.com/2.2';
+  const stackOverflowApi = useApi(stackOverflowApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<
     StackOverflowQuestion[]
   > => {
-    const params = qs.stringify(requestParams, { addQueryPrefix: true });
-    const response = await fetch(`${baseUrl}/questions${params}`);
-    const data = await response.json();
-    return data.items;
+    return await stackOverflowApi.listQuestions({ requestParams });
   }, []);
 
   if (loading) {
-    return <p>loading...</p>;
+    return <Typography paragraph>loading...</Typography>;
   }
 
   if (error || !value || !value.length) {
-    return <p>could not load questions</p>;
+    return <Typography paragraph>could not load questions</Typography>;
   }
 
-  const getSecondaryText = (answer_count: Number) =>
+  const getSecondaryText = (answer_count: number) =>
     answer_count > 1 ? `${answer_count} answers` : `${answer_count} answer`;
 
   return (
     <List>
       {value.map(question => (
-        <ListItem key={question.link}>
-          <Link to={question.link}>
+        <Link to={question.link}>
+          <ListItem key={question.link}>
+            {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
             <ListItemText
-              primary={question.title}
+              primary={_unescape(question.title)}
               secondary={getSecondaryText(question.answer_count)}
             />
             <ListItemSecondaryAction>
@@ -79,8 +77,8 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
                 <OpenInNewIcon />
               </IconButton>
             </ListItemSecondaryAction>
-          </Link>
-        </ListItem>
+          </ListItem>
+        </Link>
       ))}
     </List>
   );

@@ -43,7 +43,7 @@ describe('getTagDates', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": undefined,
         "startDate": "TAG-START",
       }
@@ -65,7 +65,7 @@ describe('getTagDates', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": undefined,
         "startDate": "COMMIT_START",
       }
@@ -91,7 +91,7 @@ describe('getTagDates', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": "TAG-END",
         "startDate": "TAG-START",
       }
@@ -117,7 +117,7 @@ describe('getTagDates', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": "COMMIT_END",
         "startDate": "COMMIT_START",
       }
@@ -160,7 +160,7 @@ describe('getTagDates', () => {
       [{ owner, ref: 'OBJECT_SHA_START', repo }],
     ]);
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": "COMMIT_START",
         "startDate": "COMMIT_END",
       }
@@ -203,7 +203,7 @@ describe('getTagDates', () => {
       [{ owner, ref: 'OBJECT_SHA_END', repo }],
     ]);
     expect(result).toMatchInlineSnapshot(`
-      Object {
+      {
         "endDate": "COMMIT_END",
         "startDate": "COMMIT_START",
       }

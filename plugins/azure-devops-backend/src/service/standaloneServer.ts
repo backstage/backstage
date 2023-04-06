@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -39,6 +40,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
+    reader: UrlReaders.default({ logger, config }),
   });
 
   let service = createServiceBuilder(module)

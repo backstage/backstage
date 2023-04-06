@@ -11,7 +11,7 @@
     "incremental": true,
     "isolatedModules": true,
     "jsx": "react",
-    "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2020"],
+    "lib": ["DOM", "DOM.Iterable", "ScriptHost", "ES2021"],
     "module": "ESNext",
     "moduleResolution": "node",
     "noEmit": false,
@@ -32,7 +32,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2019",
+    "target": "ES2021",
     "types": ["node", "jest", "webpack-env"],
     "useDefineForClassFields": true
   }

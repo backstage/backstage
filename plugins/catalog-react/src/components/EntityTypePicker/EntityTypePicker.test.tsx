@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import { fireEvent, waitFor } from '@testing-library/react';
-import { capitalize } from 'lodash';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { catalogApiRef } from '../../api';
 import { EntityKindFilter, EntityTypeFilter } from '../../filters';
-
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
@@ -85,7 +83,7 @@ const apis = TestApiRegistry.from(
 
 describe('<EntityTypePicker/>', () => {
   it('renders available entity types', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{ filters: { kind: new EntityKindFilter('component') } }}
@@ -94,23 +92,21 @@ describe('<EntityTypePicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(rendered.getByText('Type')).toBeInTheDocument();
+    expect(screen.getByText('Type')).toBeInTheDocument();
 
-    const input = rendered.getByTestId('select');
+    const input = screen.getByTestId('select');
     fireEvent.click(input);
 
-    await waitFor(() => rendered.getByText('Service'));
+    await waitFor(() => screen.getByText('service'));
 
     entities.forEach(entity => {
-      expect(
-        rendered.getByText(capitalize(entity.spec!.type as string)),
-      ).toBeInTheDocument();
+      expect(screen.getByText(entity.spec!.type as string)).toBeInTheDocument();
     });
   });
 
   it('sets the selected type filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -122,18 +118,18 @@ describe('<EntityTypePicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = rendered.getByTestId('select');
+    const input = screen.getByTestId('select');
     fireEvent.click(input);
 
-    await waitFor(() => rendered.getByText('Service'));
-    fireEvent.click(rendered.getByText('Service'));
+    await waitFor(() => screen.getByText('service'));
+    fireEvent.click(screen.getByText('service'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
       type: new EntityTypeFilter(['service']),
     });
 
     fireEvent.click(input);
-    fireEvent.click(rendered.getByText('All'));
+    fireEvent.click(screen.getByText('all'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
   });

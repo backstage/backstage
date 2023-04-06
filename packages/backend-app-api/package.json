@@ -1,0 +1,82 @@
+{
+  "name": "@backstage/backend-app-api",
+  "description": "Core API used by Backstage backend apps",
+  "version": "0.4.2-next.2",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "node-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-app-api"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@manypkg/get-packages": "^1.1.3",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.6",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "fs-extra": "10.1.0",
+    "helmet": "^6.0.0",
+    "lodash": "^4.17.21",
+    "logform": "^2.3.2",
+    "minimatch": "^5.0.0",
+    "minimist": "^1.2.5",
+    "morgan": "^1.10.0",
+    "node-forge": "^1.3.1",
+    "selfsigned": "^2.0.0",
+    "stoppable": "^1.1.0",
+    "winston": "^3.2.1",
+    "winston-transport": "^4.5.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/compression": "^1.7.0",
+    "@types/fs-extra": "^9.0.3",
+    "@types/http-errors": "^2.0.0",
+    "@types/minimist": "^1.2.0",
+    "@types/morgan": "^1.9.0",
+    "@types/node-forge": "^1.3.0",
+    "@types/stoppable": "^1.1.0",
+    "http-errors": "^2.0.0",
+    "supertest": "^6.1.3"
+  },
+  "files": [
+    "dist",
+    "alpha"
+  ]
+}

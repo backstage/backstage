@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { parseRepoUrl, isExecutable } from './util';
-
+import path from 'path';
+import { parseRepoUrl } from './util';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { zipObject } from 'lodash';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import globby from 'globby';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../github/helpers';
+import {
+  SerializedFile,
+  serializeDirectoryContents,
+} from '../../../../lib/files';
+import { Logger } from 'winston';
 
 export type Encoding = 'utf-8' | 'base64';
 
 class GithubResponseError extends CustomErrorBase {}
 
 /** @public */
-export interface OctokitWithPullRequestPluginClient {
+export type OctokitWithPullRequestPluginClient = Octokit & {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
       number: number;
     };
   } | null>;
-}
+};
 
 /**
  * The options passed to the client factory function.
@@ -77,7 +79,10 @@ export const defaultClientFactory = async ({
   });
 
   const OctokitPR = Octokit.plugin(createPullRequest);
-  return new OctokitPR(octokitOptions);
+  return new OctokitPR({
+    ...octokitOptions,
+    ...{ throttle: { enabled: false } },
+  });
 };
 
 /**
@@ -101,15 +106,25 @@ export interface CreateGithubPullRequestActionOptions {
   ) => Promise<OctokitWithPullRequestPluginClient>;
 }
 
+type GithubPullRequest = {
+  owner: string;
+  repo: string;
+  number: number;
+};
+
 /**
  * Creates a Github Pull Request action.
  * @public
  */
-export const createPublishGithubPullRequestAction = ({
-  integrations,
-  githubCredentialsProvider,
-  clientFactory = defaultClientFactory,
-}: CreateGithubPullRequestActionOptions) => {
+export const createPublishGithubPullRequestAction = (
+  options: CreateGithubPullRequestActionOptions,
+) => {
+  const {
+    integrations,
+    githubCredentialsProvider,
+    clientFactory = defaultClientFactory,
+  } = options;
+
   return createTemplateAction<{
     title: string;
     branchName: string;
@@ -119,6 +134,9 @@ export const createPublishGithubPullRequestAction = ({
     targetPath?: string;
     sourcePath?: string;
     token?: string;
+    reviewers?: string[];
+    teamReviewers?: string[];
+    commitMessage?: string;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -167,6 +185,29 @@ export const createPublishGithubPullRequestAction = ({
             type: 'string',
             description: 'The token to use for authorization to GitHub',
           },
+          reviewers: {
+            title: 'Pull Request Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'The users that will be added as reviewers to the pull request',
+          },
+          teamReviewers: {
+            title: 'Pull Request Team Reviewers',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'The teams that will be added as reviewers to the pull request',
+          },
+          commitMessage: {
+            type: 'string',
+            title: 'Commit Message',
+            description: 'The commit message for the pull request commit',
+          },
         },
       },
       output: {
@@ -196,6 +237,9 @@ export const createPublishGithubPullRequestAction = ({
         targetPath,
         sourcePath,
         token: providedToken,
+        reviewers,
+        teamReviewers,
+        commitMessage,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -219,56 +263,51 @@ export const createPublishGithubPullRequestAction = ({
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
-      const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
-        cwd: fileRoot,
+      const directoryContents = await serializeDirectoryContents(fileRoot, {
         gitignore: true,
-        dot: true,
       });
 
-      const fileContents = await Promise.all(
-        localFilePaths.map(filePath => {
-          const absPath = resolveSafeChildPath(fileRoot, filePath);
-          const base64EncodedContent = fs
-            .readFileSync(absPath)
-            .toString('base64');
-          const fileStat = fs.statSync(absPath);
-          // See the properties of tree items
-          // in https://docs.github.com/en/rest/reference/git#trees
-          const githubTreeItemMode = isExecutable(fileStat.mode)
-            ? '100755'
-            : '100644';
-          // Always use base64 encoding to avoid doubling a binary file in size
-          // due to interpreting a binary file as utf-8 and sending github
-          // the utf-8 encoded content.
-          //
-          // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
-          // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-          const encoding: Encoding = 'base64';
-          return {
-            encoding: encoding,
-            content: base64EncodedContent,
-            mode: githubTreeItemMode,
-          };
-        }),
+      const determineFileMode = (file: SerializedFile): string => {
+        if (file.symlink) return '120000';
+        if (file.executable) return '100755';
+        return '100644';
+      };
+
+      const determineFileEncoding = (
+        file: SerializedFile,
+      ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
+
+      const files = Object.fromEntries(
+        directoryContents.map(file => [
+          targetPath ? path.posix.join(targetPath, file.path) : file.path,
+          {
+            // See the properties of tree items
+            // in https://docs.github.com/en/rest/reference/git#trees
+            mode: determineFileMode(file),
+            // Always use base64 encoding where possible to avoid doubling a binary file in size
+            // due to interpreting a binary file as utf-8 and sending github
+            // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
+            // being formatted as a series of scrambled characters
+            //
+            // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+            // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+            encoding: determineFileEncoding(file),
+            content: file.content.toString(determineFileEncoding(file)),
+          },
+        ]),
       );
-
-      const repoFilePaths = localFilePaths.map(repoFilePath => {
-        return targetPath ? `${targetPath}/${repoFilePath}` : repoFilePath;
-      });
-
-      const changes = [
-        {
-          files: zipObject(repoFilePaths, fileContents),
-          commit: title,
-        },
-      ];
 
       try {
         const response = await client.createPullRequest({
           owner,
           repo,
           title,
-          changes,
+          changes: [
+            {
+              files,
+              commit: commitMessage ?? title,
+            },
+          ],
           body: description,
           head: branchName,
           draft,
@@ -278,11 +317,51 @@ export const createPublishGithubPullRequestAction = ({
           throw new GithubResponseError('null response from Github');
         }
 
+        const pullRequestNumber = response.data.number;
+        if (reviewers || teamReviewers) {
+          const pullRequest = { owner, repo, number: pullRequestNumber };
+          await requestReviewersOnPullRequest(
+            pullRequest,
+            reviewers,
+            teamReviewers,
+            client,
+            ctx.logger,
+          );
+        }
+
         ctx.output('remoteUrl', response.data.html_url);
-        ctx.output('pullRequestNumber', response.data.number);
+        ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
       }
     },
   });
+
+  async function requestReviewersOnPullRequest(
+    pr: GithubPullRequest,
+    reviewers: string[] | undefined,
+    teamReviewers: string[] | undefined,
+    client: Octokit,
+    logger: Logger,
+  ) {
+    try {
+      const result = await client.rest.pulls.requestReviewers({
+        owner: pr.owner,
+        repo: pr.repo,
+        pull_number: pr.number,
+        reviewers,
+        team_reviewers: teamReviewers,
+      });
+      const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
+      const addedTeams = result.data.requested_teams?.join(', ') ?? '';
+      logger.info(
+        `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
+      );
+    } catch (e) {
+      logger.error(
+        `Failure when adding reviewers to Pull request ${pr.number}`,
+        e,
+      );
+    }
+  }
 };

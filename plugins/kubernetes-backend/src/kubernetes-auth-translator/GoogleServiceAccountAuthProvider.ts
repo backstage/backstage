@@ -17,6 +17,10 @@ import { KubernetesAuthTranslator } from './types';
 import { GKEClusterDetails } from '../types/types';
 import * as container from '@google-cloud/container';
 
+/**
+ *
+ * @public
+ */
 export class GoogleServiceAccountAuthTranslator
   implements KubernetesAuthTranslator
 {

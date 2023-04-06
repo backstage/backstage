@@ -80,6 +80,7 @@ describe('readLdapConfig', () => {
         {
           target: 'target',
           bind: { dn: 'bdn', secret: 's' },
+          tls: { rejectUnauthorized: false },
           users: {
             dn: 'udn',
             options: {
@@ -139,6 +140,7 @@ describe('readLdapConfig', () => {
       {
         target: 'target',
         bind: { dn: 'bdn', secret: 's' },
+        tls: { rejectUnauthorized: false },
         users: {
           dn: 'udn',
           options: {

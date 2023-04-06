@@ -5,10 +5,9 @@ Backstage Catalog.
 
 Backend code may import and use this package directly.
 
-However, frontend code will not want to import this package directly - use the
-`@backstage/plugin-catalog` package instead, which re-exports all of the types
-and classes from this package. Thereby, you will also gain access to its
-`catalogApiRef`.
+However, frontend code will not want to instantiate a catalog client directly -
+use the `@backstage/plugin-catalog-react` package instead, which exports a
+`catalogApiRef` that can be leveraged like other frontend utility APIs.
 
 ## Links
 

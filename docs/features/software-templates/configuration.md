@@ -14,8 +14,7 @@ appropriate source code repository for your organization.
 
 > Note: Integrations may already be set up as part of your `app-config.yaml`.
 
-The next step is to add
-[add templates](http://backstage.io/docs/features/software-templates/adding-templates)
+The next step is to [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
 
 ## Publishing defaults
@@ -94,3 +93,18 @@ You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
 default `ContentHeader` with the `title` set as it's value.
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
+
+There is also an option to hide some templates.
+You can have several use cases for that:
+
+- it's still in an experimental phase, so you can combine it with feature flagging for example
+- you don't want to make them accessible from template list, but only open it on some action with pre-filled data.
+- show different set of templates depends on target environment
+
+```typescript jsx
+<ScaffolderPage
+  templateFilter={entity =>
+    entity?.metadata?.tags?.includes('experimental') ?? false
+  }
+/>
+```

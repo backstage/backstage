@@ -15,6 +15,7 @@
  */
 
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
@@ -80,20 +81,32 @@ export class EntityTextFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
   filterEntity(entity: Entity): boolean {
-    const upperCaseValue = this.value.toLocaleUpperCase('en-US');
+    const words = this.toUpperArray(this.value.split(/\s/));
+    const exactMatch = this.toUpperArray([entity.metadata.tags]);
+    const partialMatch = this.toUpperArray([
+      entity.metadata.name,
+      entity.metadata.title,
+    ]);
 
-    return (
-      entity.metadata.name
-        .toLocaleUpperCase('en-US')
-        .includes(upperCaseValue) ||
-      `${entity.metadata.title}`
-        .toLocaleUpperCase('en-US')
-        .includes(upperCaseValue) ||
-      entity.metadata.tags
-        ?.join('')
-        .toLocaleUpperCase('en-US')
-        .indexOf(upperCaseValue) !== -1
-    );
+    for (const word of words) {
+      if (
+        exactMatch.every(m => m !== word) &&
+        partialMatch.every(m => !m.includes(word))
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private toUpperArray(
+    value: Array<string | string[] | undefined>,
+  ): Array<string> {
+    return value
+      .flat()
+      .filter((m): m is string => Boolean(m))
+      .map(m => m.toLocaleUpperCase('en-US'));
   }
 }
 
@@ -157,5 +170,30 @@ export class UserListFilter implements EntityFilter {
 
   toQueryValue(): string {
     return this.value;
+  }
+}
+
+/**
+ * Filters entities based if it is an orphan or not.
+ * @public
+ */
+export class EntityOrphanFilter implements EntityFilter {
+  constructor(readonly value: boolean) {}
+  filterEntity(entity: Entity): boolean {
+    const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
+    return orphan !== undefined && this.value.toString() === orphan;
+  }
+}
+
+/**
+ * Filters entities based on if it has errors or not.
+ * @public
+ */
+export class EntityErrorFilter implements EntityFilter {
+  constructor(readonly value: boolean) {}
+  filterEntity(entity: Entity): boolean {
+    const error =
+      ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
+    return error !== undefined && this.value === error;
   }
 }

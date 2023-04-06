@@ -43,6 +43,11 @@ declare namespace Cypress {
      */
     getTechDocsNavigation(): Chainable<Element>;
     /**
+     * Get the Catalog docs tab
+     * @example cy.getCatalogDocsTab
+     */
+    getCatalogDocsTab(): Chainable<Element>;
+    /**
      * Intercept the TechDocs API calls
      * @example cy.interceptTechDocsAPICalls
      */
@@ -72,5 +77,10 @@ declare namespace Cypress {
      * @example cy.isNotInViewport
      */
     isNotInViewport(element: string): Chainable<Element>;
+    /**
+     * Check if we have not caused error by our last action
+     * @example cy.checkForErrors
+     */
+    checkForErrors(): Chainable<Element>;
   }
 }

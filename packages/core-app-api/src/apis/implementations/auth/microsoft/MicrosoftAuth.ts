@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
-import { OAuth2 } from '../oauth2';
-import { OAuthApiCreateOptions } from '../types';
+import {
+  microsoftAuthApiRef,
+  AuthRequestOptions,
+  AuthProviderInfo,
+  ConfigApi,
+  DiscoveryApi,
+  OAuthRequestApi,
+} from '@backstage/core-plugin-api';
+import { OAuth2, OAuth2CreateOptions } from '../oauth2';
 
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
@@ -30,8 +36,22 @@ const DEFAULT_PROVIDER = {
  * @public
  */
 export default class MicrosoftAuth {
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
+  private oauth2: { [aud: string]: OAuth2 };
+  private configApi: ConfigApi | undefined;
+  private environment: string;
+  private provider: AuthProviderInfo;
+  private oauthRequestApi: OAuthRequestApi;
+  private discoveryApi: DiscoveryApi;
+  private scopeTransform: (scopes: string[]) => string[];
+
+  private static MicrosoftGraphID = '00000003-0000-0000-c000-000000000000';
+
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T {
+    return new MicrosoftAuth(options);
+  }
+  private constructor(options: OAuth2CreateOptions) {
     const {
+      configApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
@@ -43,14 +63,114 @@ export default class MicrosoftAuth {
         'email',
         'User.Read',
       ],
+      scopeTransform = scopes => scopes.concat('offline_access'),
     } = options;
 
-    return OAuth2.create({
-      discoveryApi,
-      oauthRequestApi,
-      provider,
-      environment,
-      defaultScopes,
-    });
+    this.configApi = configApi;
+    this.environment = environment;
+    this.provider = provider;
+    this.oauthRequestApi = oauthRequestApi;
+    this.discoveryApi = discoveryApi;
+    this.scopeTransform = scopeTransform;
+
+    this.oauth2 = {
+      [MicrosoftAuth.MicrosoftGraphID]: OAuth2.create({
+        configApi: this.configApi,
+        discoveryApi: this.discoveryApi,
+        oauthRequestApi: this.oauthRequestApi,
+        provider: this.provider,
+        environment: this.environment,
+        scopeTransform: this.scopeTransform,
+        defaultScopes,
+      }),
+    };
+  }
+
+  private microsoftGraph(): OAuth2 {
+    return this.oauth2[MicrosoftAuth.MicrosoftGraphID];
+  }
+
+  private static resourceForScopes(scope: string): Promise<string> {
+    const audiences = scope
+      .split(' ')
+      .map(MicrosoftAuth.resourceForScope)
+      .filter(aud => aud !== 'openid');
+    if (audiences.length > 1) {
+      return Promise.reject(
+        new Error(
+          `Requested access token with scopes from multiple Azure resources: ${audiences.join(
+            ', ',
+          )}. Access tokens can only have a single audience.`,
+        ),
+      );
+    }
+    const audience = audiences[0] ?? MicrosoftAuth.MicrosoftGraphID;
+    return Promise.resolve(audience);
+  }
+
+  private static resourceForScope(scope: string): string {
+    const groups = scope.match(/^(?<resourceURI>.*)\/(?<scp>[^\/]*)$/)?.groups;
+    if (groups) {
+      const { resourceURI } = groups;
+      const aud = resourceURI.replace(/^api:\/\//, '');
+      return aud;
+    }
+    switch (scope) {
+      case 'email':
+      case 'openid':
+      case 'offline_access':
+      case 'profile': {
+        return 'openid';
+      }
+      default:
+        return MicrosoftAuth.MicrosoftGraphID;
+    }
+  }
+
+  async getAccessToken(
+    scope?: string | string[],
+    options?: AuthRequestOptions,
+  ): Promise<string> {
+    const aud =
+      scope === undefined
+        ? MicrosoftAuth.MicrosoftGraphID
+        : await MicrosoftAuth.resourceForScopes(
+            Array.isArray(scope) ? scope.join(' ') : scope,
+          );
+    if (!(aud in this.oauth2)) {
+      this.oauth2[aud] = OAuth2.create({
+        configApi: this.configApi,
+        discoveryApi: this.discoveryApi,
+        oauthRequestApi: this.oauthRequestApi,
+        provider: this.provider,
+        environment: this.environment,
+        scopeTransform: this.scopeTransform,
+      });
+    }
+    return this.oauth2[aud].getAccessToken(scope, options);
+  }
+
+  getIdToken(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getIdToken(options);
+  }
+
+  getProfile(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getProfile(options);
+  }
+
+  getBackstageIdentity(options?: AuthRequestOptions) {
+    return this.microsoftGraph().getBackstageIdentity(options);
+  }
+
+  signIn() {
+    return this.microsoftGraph().signIn();
+  }
+
+  signOut() {
+    return this.microsoftGraph().signOut();
+  }
+
+  sessionState$() {
+    return this.microsoftGraph().sessionState$();
   }
 }

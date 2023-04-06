@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { BitbucketIntegrationConfig } from './config';
 import {
   getBitbucketDefaultBranch,
@@ -136,6 +136,20 @@ describe('bitbucket core', () => {
       );
       expect(result).toEqual(
         'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=main&prefix=backstage-mock&path=docs',
+      );
+    });
+
+    it('does not double encode the filepath', async () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/%2Fdocs?at=some-branch',
+        config,
+      );
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=some-branch&prefix=backstage-mock&path=%2Fdocs',
       );
     });
 

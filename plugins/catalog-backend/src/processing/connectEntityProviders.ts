@@ -17,13 +17,15 @@
 import {
   Entity,
   entityEnvelopeSchemaValidator,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { ProcessingDatabase } from '../database/types';
+import { ProviderDatabase } from '../database/types';
 import {
   EntityProvider,
   EntityProviderConnection,
+  EntityProviderRefreshOptions,
   EntityProviderMutation,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
@@ -31,12 +33,12 @@ class Connection implements EntityProviderConnection {
   constructor(
     private readonly config: {
       id: string;
-      processingDatabase: ProcessingDatabase;
+      providerDatabase: ProviderDatabase;
     },
   ) {}
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
-    const db = this.config.processingDatabase;
+    const db = this.config.providerDatabase;
 
     if (mutation.type === 'full') {
       this.check(mutation.entities.map(e => e.entity));
@@ -49,16 +51,37 @@ class Connection implements EntityProviderConnection {
       });
     } else if (mutation.type === 'delta') {
       this.check(mutation.added.map(e => e.entity));
-      this.check(mutation.removed.map(e => e.entity));
+      this.check(
+        mutation.removed
+          .map(e => ('entity' in e ? e.entity : undefined))
+          .filter((e): e is Entity => Boolean(e)),
+      );
       await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
           type: 'delta',
           added: mutation.added,
-          removed: mutation.removed,
+          removed: mutation.removed.map(r =>
+            'entityRef' in r
+              ? r
+              : {
+                  entityRef: stringifyEntityRef(r.entity),
+                  locationKey: r.locationKey,
+                },
+          ),
         });
       });
     }
+  }
+
+  async refresh(options: EntityProviderRefreshOptions): Promise<void> {
+    const db = this.config.providerDatabase;
+
+    await db.transaction(async (tx: any) => {
+      return db.refreshByRefreshKeys(tx, {
+        keys: options.keys,
+      });
+    });
   }
 
   private check(entities: Entity[]) {
@@ -73,14 +96,14 @@ class Connection implements EntityProviderConnection {
 }
 
 export async function connectEntityProviders(
-  db: ProcessingDatabase,
+  db: ProviderDatabase,
   providers: EntityProvider[],
 ) {
   await Promise.all(
     providers.map(async provider => {
       const connection = new Connection({
         id: provider.getProviderName(),
-        processingDatabase: db,
+        providerDatabase: db,
       });
       return provider.connect(connection);
     }),

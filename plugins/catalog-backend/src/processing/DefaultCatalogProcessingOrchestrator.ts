@@ -32,12 +32,12 @@ import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import { Logger } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -76,6 +76,7 @@ export class DefaultCatalogProcessingOrchestrator
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
       rulesEnforcer: CatalogRulesEnforcer;
+      legacySingleProcessorValidation: boolean;
     },
   ) {}
 
@@ -186,7 +187,7 @@ export class DefaultCatalogProcessingOrchestrator
           res = await processor.preProcessEntity(
             res,
             context.location,
-            context.collector.onEmit,
+            context.collector.forProcessor(processor),
             context.originLocation,
             context.cache.forProcessor(processor),
           );
@@ -211,11 +212,18 @@ export class DefaultCatalogProcessingOrchestrator
     try {
       policyEnforcedEntity = await this.options.policy.enforce(entity);
     } catch (e) {
-      throw new InputError('Policy check failed', e);
+      throw new InputError(
+        `Policy check failed for ${stringifyEntityRef(entity)}`,
+        e,
+      );
     }
 
     if (!policyEnforcedEntity) {
-      throw new Error('Policy unexpectedly returned no data');
+      throw new Error(
+        `Policy unexpectedly returned no data for ${stringifyEntityRef(
+          entity,
+        )}`,
+      );
     }
 
     return policyEnforcedEntity;
@@ -246,19 +254,17 @@ export class DefaultCatalogProcessingOrchestrator
       );
     }
 
-    let foundKind = false;
+    let valid = false;
 
     for (const processor of this.options.processors) {
       if (processor.validateEntityKind) {
         try {
-          foundKind = await processor.validateEntityKind(entity);
-          if (foundKind) {
-            // TODO(freben): It would make sense to keep running, so that
-            // multiple processors could have a go at making checks. For
-            // example, an org may want to add additional rules on top of the
-            // provided ones. But that would be a breaking change, so we'll
-            // postpone that to a future processors rewrite.
-            break;
+          const thisValid = await processor.validateEntityKind(entity);
+          if (thisValid) {
+            valid = true;
+            if (this.options.legacySingleProcessorValidation) {
+              break;
+            }
           }
         } catch (e) {
           throw new InputError(
@@ -269,7 +275,7 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    if (!foundKind) {
+    if (!valid) {
       throw new InputError(
         `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
       );
@@ -294,7 +300,7 @@ export class DefaultCatalogProcessingOrchestrator
 
     for (const maybeRelativeTarget of targets) {
       if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
-        context.collector.onEmit(
+        context.collector.generic()(
           processingResult.inputError(
             context.location,
             `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
@@ -320,7 +326,7 @@ export class DefaultCatalogProcessingOrchestrator
                 presence,
               },
               presence === 'optional',
-              context.collector.onEmit,
+              context.collector.forProcessor(processor),
               this.options.parser,
               context.cache.forProcessor(processor, target),
             );
@@ -359,7 +365,7 @@ export class DefaultCatalogProcessingOrchestrator
           res = await processor.postProcessEntity(
             res,
             context.location,
-            context.collector.onEmit,
+            context.collector.forProcessor(processor),
             context.cache.forProcessor(processor),
           );
         } catch (e) {

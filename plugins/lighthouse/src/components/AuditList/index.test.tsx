@@ -33,10 +33,10 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
 import {
-  lighthouseApiRef,
   LighthouseRestApi,
   WebsiteListResponse,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import * as data from '../../__fixtures__/website-list-response.json';
 import AuditList from './index';
 import { ApiProvider } from '@backstage/core-app-api';

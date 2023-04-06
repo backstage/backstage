@@ -15,21 +15,16 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { FossaApi, fossaApiRef } from '../../api';
 import { FossaPage } from './FossaPage';
 
 describe('<FossaPage />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
+  const catalogApi = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
     getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
@@ -37,6 +32,7 @@ describe('<FossaPage />', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
   const fossaApi: jest.Mocked<FossaApi> = {
     getFindingSummary: jest.fn(),
@@ -170,7 +166,7 @@ describe('<FossaPage />', () => {
       },
     );
 
-    expect(catalogApi.getEntities).toBeCalledWith(
+    expect(catalogApi.getEntities).toHaveBeenCalledWith(
       expect.objectContaining({
         filter: { kind: 'API' },
       }),

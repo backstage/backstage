@@ -50,17 +50,21 @@ export async function run() {
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
+  // Otherwise yarn will refuse to install with CI=true
+  process.env.YARN_ENABLE_IMMUTABLE_INSTALLS = 'false';
+
   print('Creating a Backstage App');
   const appDir = await createApp('test-app', workspaceDir, rootDir);
 
   print('Creating a Backstage Plugin');
-  const pluginName = await createPlugin('test-plugin', appDir);
+  const pluginId = 'test';
+  await createPlugin({ appDir, pluginId, select: 'plugin' });
 
   print('Creating a Backstage Backend Plugin');
-  await createPlugin('test-plugin', appDir, ['--backend']);
+  await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
 
   print('Starting the app');
-  await testAppServe(pluginName, appDir);
+  await testAppServe(pluginId, appDir);
 
   if (Boolean(process.env.POSTGRES_USER)) {
     print('Testing the PostgreSQL backend startup');
@@ -155,7 +159,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     appendDeps(pkg);
   }
 
-  // eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line @backstage/no-forbidden-package-imports
   appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
@@ -172,7 +176,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   await pinYarnVersion(workspaceDir);
 
   print('Installing workspace dependencies');
-  await runPlain(['yarn', 'install', '--production', '--frozen-lockfile'], {
+  await runPlain(['yarn', 'workspaces', 'focus', '--all', '--production'], {
     cwd: workspaceDir,
   });
 
@@ -183,20 +187,33 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
 async function pinYarnVersion(dir: string) {
-  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc'), 'utf8');
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
   const yarnRcLines = yarnRc.split('\n');
-  const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarn-path'));
+  const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
   if (!yarnPathLine) {
-    throw new Error(`Unable to find 'yarn-path' in ${yarnRc}`);
+    throw new Error(`Unable to find 'yarnPath' in ${yarnRc}`);
   }
-  const match = yarnPathLine.match(/"(.*)"/);
+  const match = yarnPathLine.match(/^yarnPath: (.*)$/);
   if (!match) {
-    throw new Error(`Invalid 'yarn-path' in ${yarnRc}`);
+    throw new Error(`Invalid 'yarnPath' in ${yarnRc}`);
   }
   const [, localYarnPath] = match;
   const yarnPath = paths.resolveOwnRoot(localYarnPath);
+  const yarnPluginPath = paths.resolveOwnRoot(
+    localYarnPath,
+    '../../plugins/@yarnpkg/plugin-workspace-tools.cjs',
+  );
 
-  await fs.writeFile(resolvePath(dir, '.yarnrc'), `yarn-path "${yarnPath}"\n`);
+  await fs.writeFile(
+    resolvePath(dir, '.yarnrc.yml'),
+    `yarnPath: ${yarnPath}
+nodeLinker: node-modules
+enableGlobalCache: true
+plugins:
+  - path: ${yarnPluginPath}
+    spec: '@yarnpkg/plugin-workspace-tools'
+`,
+  );
 }
 
 /**
@@ -235,6 +252,18 @@ async function createApp(
     print('Rewriting module resolutions of app to use workspace packages');
     await overrideModuleResolutions(appDir, workspaceDir);
 
+    // Yarn does not clean up node_module folders in the linked in dependencies by itself
+    print('Cleaning up node_modules in workspace');
+    await fs.remove(resolvePath(workspaceDir, 'node_modules'));
+    for (const wsDir of ['packages', 'plugins']) {
+      for (const dir of await fs.readdir(resolvePath(workspaceDir, wsDir))) {
+        const moduleDir = resolvePath(workspaceDir, wsDir, dir, 'node_modules');
+        if (await fs.pathExists(moduleDir)) {
+          await fs.remove(moduleDir);
+        }
+      }
+    }
+
     print('Pinning yarn version and registry in app');
     await pinYarnVersion(appDir);
     await fs.writeFile(
@@ -247,7 +276,7 @@ async function createApp(
     for (const cmd of [
       'install',
       'tsc:full',
-      'build',
+      'build:all',
       'lint:all',
       'prettier:check',
       'test:all',
@@ -300,14 +329,18 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
 /**
  * Uses create-plugin command to create a new plugin in the app
  */
-async function createPlugin(
-  pluginName: string,
-  appDir: string,
-  options: string[] = [],
-) {
-  const child = spawnPiped(['yarn', 'create-plugin', ...options], {
-    cwd: appDir,
-  });
+async function createPlugin(options: {
+  appDir: string;
+  pluginId: string;
+  select: string;
+}) {
+  const { appDir, pluginId, select } = options;
+  const child = spawnPiped(
+    ['yarn', 'new', '--select', select, '--option', `id=${pluginId}`],
+    {
+      cwd: appDir,
+    },
+  );
 
   try {
     let stdout = '';
@@ -315,27 +348,22 @@ async function createPlugin(
       stdout = stdout + data.toString('utf8');
     });
 
-    await waitFor(() => stdout.includes('Enter an ID for the plugin'));
-    child.stdin?.write(`${pluginName}\n`);
-
-    // await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
-    // child.stdin.write('@someuser\n');
-
     print('Waiting for plugin create script to be done');
     await waitForExit(child);
 
-    const canonicalName = options.includes('--backend')
-      ? `${pluginName}-backend`
-      : pluginName;
+    const pluginDir = resolvePath(
+      appDir,
+      'plugins',
+      select === 'backend-plugin' ? `${pluginId}-backend` : pluginId,
+    );
 
-    const pluginDir = resolvePath(appDir, 'plugins', canonicalName);
+    print(`Running 'yarn tsc' in root for newly created plugin`);
+    await runPlain(['yarn', 'tsc'], { cwd: appDir });
 
-    for (const cmd of [['tsc'], ['lint'], ['test', '--no-watch']]) {
+    for (const cmd of [['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
       await runPlain(['yarn', ...cmd], { cwd: pluginDir });
     }
-
-    return canonicalName;
   } finally {
     child.kill();
   }
@@ -344,7 +372,7 @@ async function createPlugin(
 /**
  * Start serving the newly created app and make sure that the create plugin is rendering correctly
  */
-async function testAppServe(pluginName: string, appDir: string) {
+async function testAppServe(pluginId: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
     env: {
@@ -367,8 +395,8 @@ async function testAppServe(pluginName: string, appDir: string) {
         await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(
           page,
-          `/${pluginName}`,
-          `Welcome to ${pluginName}!`,
+          `/${pluginId}`,
+          `Welcome to ${pluginId}!`,
         );
 
         print('Both App and Plugin loaded correctly');
@@ -462,6 +490,17 @@ async function testBackendStart(appDir: string, ...args: string[]) {
           !l.includes('Update this package.json to use a subpath') &&
           !l.includes(
             '(Use `node --trace-deprecation ...` to show where the warning was created)',
+          ) &&
+          // These 4 are all for the AWS SDK v2 deprecation
+          !l.includes(
+            'The AWS SDK for JavaScript (v2) will be put into maintenance mode',
+          ) &&
+          !l.includes(
+            'Please migrate your code to use AWS SDK for JavaScript',
+          ) &&
+          !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
+          !l.includes(
+            '(Use `node --trace-warnings ...` to show where the warning was created)',
           ),
       ).length !== 0
     );
@@ -476,6 +515,7 @@ async function testBackendStart(appDir: string, ...args: string[]) {
       // Skipping the whole block
       throw new Error(stderr);
     }
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok

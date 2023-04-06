@@ -22,22 +22,33 @@ import {
   MenuItem,
   MenuList,
   Popover,
+  Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import CancelIcon from '@material-ui/icons/Cancel';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
+import React, { useCallback, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react';
-import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
+import { BackstageTheme } from '@backstage/theme';
+import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 
-// TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
-const useStyles = makeStyles({
-  button: {
-    color: 'white',
+/** @public */
+export type EntityContextMenuClassKey = 'button';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => {
+    return {
+      button: {
+        color: theme.page.fontColor,
+      },
+    };
   },
-});
+  { name: 'PluginCatalogEntityContextMenu' },
+);
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below
@@ -47,14 +58,9 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
-// unstable context menu option, eg: disable the unregister entity menu
-interface contextMenuOptions {
-  disableUnregister: boolean;
-}
-
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: contextMenuOptions;
+  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -71,6 +77,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const unregisterPermission = useEntityPermission(
     catalogEntityDeletePermission,
   );
+  const isAllowed = unregisterPermission.allowed;
 
   const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -79,6 +86,18 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const onClose = () => {
     setAnchorEl(undefined);
   };
+
+  const alertApi = useApi(alertApiRef);
+
+  const copyToClipboard = useCallback(() => {
+    window.navigator.clipboard.writeText(window.location.toString()).then(() =>
+      alertApi.post({
+        message: 'Copied!',
+        severity: 'info',
+        display: 'transient',
+      }),
+    );
+  }, [alertApi]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -98,26 +117,23 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <Divider key="the divider is here!" />,
   ];
 
-  const disableUnregister =
-    (!unregisterPermission.allowed ||
-      UNSTABLE_contextMenuOptions?.disableUnregister) ??
-    false;
-
   return (
     <>
-      <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
-        aria-expanded={!!anchorEl}
-        role="button"
-        onClick={onOpen}
-        data-testid="menu-button"
-        className={classes.button}
-        id="long-menu"
-      >
-        <MoreVert />
-      </IconButton>
+      <Tooltip title="More" arrow>
+        <IconButton
+          aria-label="more"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          aria-expanded={!!anchorEl}
+          role="button"
+          onClick={onOpen}
+          data-testid="menu-button"
+          className={classes.button}
+          id="long-menu"
+        >
+          <MoreVert />
+        </IconButton>
+      </Tooltip>
       <Popover
         open={Boolean(anchorEl)}
         onClose={onClose}
@@ -128,18 +144,12 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList>
           {extraItems}
-          <MenuItem
-            onClick={() => {
-              onClose();
-              onUnregisterEntity();
-            }}
-            disabled={disableUnregister}
-          >
-            <ListItemIcon>
-              <CancelIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Unregister entity" />
-          </MenuItem>
+          <UnregisterEntity
+            unregisterEntityOptions={UNSTABLE_contextMenuOptions}
+            isUnregisterAllowed={isAllowed}
+            onUnregisterEntity={onUnregisterEntity}
+            onClose={onClose}
+          />
           <MenuItem
             onClick={() => {
               onClose();
@@ -150,6 +160,17 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
               <BugReportIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Inspect entity" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              onClose();
+              copyToClipboard();
+            }}
+          >
+            <ListItemIcon>
+              <FileCopyTwoToneIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Copy entity URL" />
           </MenuItem>
         </MenuList>
       </Popover>

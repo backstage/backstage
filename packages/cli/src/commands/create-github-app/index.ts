@@ -26,19 +26,38 @@ import openBrowser from 'react-dev-utils/openBrowser';
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
 export default async (org: string) => {
-  const answers: Answers = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'appType',
-      message: chalk.blue('What will the app be used for [required]'),
-      choices: ['Read and Write (needed by Software Templates)', 'Read only'],
-    },
-  ]);
-  const readWrite = answers.appType !== 'Read only';
+  const answers: Answers = await inquirer.prompt({
+    name: 'appType',
+    type: 'checkbox',
+    message:
+      'Select permissions [required] (these can be changed later but then require approvals in all installations)',
+    choices: [
+      {
+        name: 'Read access to content (required by Software Catalog to ingest data from repositories)',
+        value: 'read',
+        checked: true,
+      },
+      {
+        name: 'Read access to members (required by Software Catalog to ingest GitHub teams)',
+        value: 'members',
+        checked: true,
+      },
+      {
+        name: 'Read and Write to content and actions (required by Software Templates to create new repositories)',
+        value: 'write',
+      },
+    ],
+  });
+
+  if (answers.appType.length === 0) {
+    console.log(chalk.red('You must select at least one permission'));
+    process.exit(1);
+  }
+
   await verifyGithubOrg(org);
   const { slug, name, ...config } = await GithubCreateAppServer.run({
     org,
-    readWrite,
+    permissions: answers.appType,
   });
 
   const fileName = `github-app-${slug}-credentials.yaml`;

@@ -287,13 +287,10 @@ export async function loadConfig(
     let handle: NodeJS.Timeout | undefined;
     try {
       handle = setInterval(async () => {
-        console.info(`Checking for config update`);
         const newRemoteConfigs = await loadRemoteConfigFiles();
         if (await hasConfigChanged(remoteConfigs, newRemoteConfigs)) {
           remoteConfigs = newRemoteConfigs;
-          console.info(`Remote config change, reloading config ...`);
           watchProp.onChange([...remoteConfigs, ...fileConfigs, ...envConfigs]);
-          console.info(`Remote config reloaded`);
         }
       }, remoteProp.reloadIntervalSeconds * 1000);
     } catch (error) {
@@ -303,7 +300,6 @@ export async function loadConfig(
     if (watchProp.stopSignal) {
       watchProp.stopSignal.then(() => {
         if (handle !== undefined) {
-          console.info(`Stopping remote config watch`);
           clearInterval(handle);
           handle = undefined;
         }

@@ -44,6 +44,7 @@ export interface LogViewerProps {
 /**
  * A component that displays logs in a scrollable text area.
  *
+ * @remarks
  * The LogViewer has support for search and filtering, as well as displaying
  * text content with ANSI color escape codes.
  *

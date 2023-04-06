@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
-import { CatalogApi, GetEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   BackstageIdentityResponse,
@@ -26,10 +23,8 @@ import {
 } from '@backstage/plugin-auth-node';
 import express from 'express';
 import { Logger } from 'winston';
-import { TokenIssuer, TokenParams } from '../identity/types';
+import { TokenParams } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
-import { CatalogIdentityClient } from '../lib/catalog';
-import { Entity } from '@backstage/catalog-model';
 
 /**
  * A query for a single user in the catalog.
@@ -69,13 +64,6 @@ export type AuthResolverCatalogUserQuery =
  * @public
  */
 export type AuthResolverContext = {
-  /** @deprecated Will be removed from the context, access it via a closure instead if needed */
-  logger: Logger;
-  /** @deprecated Use the `issueToken` method instead */
-  tokenIssuer: TokenIssuer;
-  /** @deprecated Use the `findCatalogUser` and `signInWithCatalogUser` methods instead, and the `getDefaultOwnershipEntityRefs` helper */
-  catalogIdentityClient: CatalogIdentityClient;
-
   /**
    * Issues a Backstage token using the provided parameters.
    */
@@ -112,7 +100,14 @@ export type CookieConfigurer = (ctx: {
   baseUrl: string;
   /** The configured callback URL of the auth provider */
   callbackUrl: string;
-}) => { domain: string; path: string; secure: boolean };
+  /** The origin URL of the app */
+  appOrigin: string;
+}) => {
+  domain: string;
+  path: string;
+  secure: boolean;
+  sameSite?: 'none' | 'lax' | 'strict';
+};
 
 /** @public */
 export type AuthProviderConfig = {
@@ -138,7 +133,8 @@ export type AuthProviderConfig = {
   cookieConfigurer?: CookieConfigurer;
 };
 
-export type RedirectInfo = {
+/** @public */
+export type OAuthStartResponse = {
   /**
    * URL to redirect to
    */
@@ -159,6 +155,8 @@ export type RedirectInfo = {
  * `/auth/[provider]/handler/frame -> frameHandler`
  * `/auth/[provider]/refresh -> refresh`
  * `/auth/[provider]/logout -> logout`
+ *
+ * @public
  */
 export interface AuthProviderRouteHandlers {
   /**
@@ -204,35 +202,13 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
-/**
- * @deprecated This type is deprecated and will be removed in a future release.
- */
-export type AuthProviderFactoryOptions = {
-  providerId: string;
-  globalConfig: AuthProviderConfig;
-  config: Config;
-  logger: Logger;
-  tokenManager: TokenManager;
-  tokenIssuer: TokenIssuer;
-  discovery: PluginEndpointDiscovery;
-  catalogApi: CatalogApi;
-};
-
+/** @public */
 export type AuthProviderFactory = (options: {
   providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger;
   resolverContext: AuthResolverContext;
-
-  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
-  tokenManager: TokenManager;
-  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
-  tokenIssuer: TokenIssuer;
-  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
-  discovery: PluginEndpointDiscovery;
-  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
-  catalogApi: CatalogApi;
 }) => AuthProviderRouteHandlers;
 
 /** @public */

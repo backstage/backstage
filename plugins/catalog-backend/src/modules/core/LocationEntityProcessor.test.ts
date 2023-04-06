@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import path from 'path';
 import { toAbsoluteUrl } from './LocationEntityProcessor';
-import { LocationSpec } from '../../api';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 describe('LocationEntityProcessor', () => {
   describe('toAbsoluteUrl', () => {
@@ -57,7 +57,7 @@ describe('LocationEntityProcessor', () => {
         'http://b.com/z',
       );
 
-      expect(integrations.resolveUrl).toBeCalledTimes(3);
+      expect(integrations.resolveUrl).toHaveBeenCalledTimes(3);
     });
 
     it('handles azure urls specifically', () => {

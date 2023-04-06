@@ -1,14 +1,22 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.1.24-next.1",
+  "version": "0.1.36-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "private": false,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "node-library"
@@ -34,19 +42,25 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.3-next.2",
-    "@backstage/cli": "^0.17.1-next.2",
-    "@backstage/config": "^1.0.1-next.0",
-    "better-sqlite3": "^7.5.0",
-    "knex": "^1.0.2",
-    "msw": "^0.35.0",
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "better-sqlite3": "^8.0.0",
+    "express": "^4.17.1",
+    "knex": "^2.0.0",
+    "msw": "^1.0.0",
     "mysql2": "^2.2.5",
     "pg": "^8.3.0",
     "testcontainers": "^8.1.2",
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2"
+    "@backstage/cli": "workspace:^",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^6.1.3"
   },
   "files": [
     "dist"

@@ -15,11 +15,15 @@
  */
 
 import { ClusterDetails } from '../types/types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 
+/**
+ *
+ * @public
+ */
 export interface KubernetesAuthTranslator {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
-    requestBody: KubernetesRequestBody,
+    authConfig: KubernetesRequestAuth,
   ): Promise<ClusterDetails>;
 }

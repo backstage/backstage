@@ -15,35 +15,33 @@
  */
 
 import { DetectedError, ErrorMapper } from './types';
-import { V1Deployment } from '@kubernetes/client-node';
+import { Deployment } from 'kubernetes-models/apps/v1';
 import { detectErrorsInObjects } from './common';
 
-const deploymentErrorMappers: ErrorMapper<V1Deployment>[] = [
+const deploymentErrorMappers: ErrorMapper<Deployment>[] = [
   {
-    // this is probably important
-    severity: 6,
-    errorExplanation: 'condition-message-present',
-    errorExists: deployment => {
-      return (deployment.status?.conditions ?? [])
-        .filter(c => c.status === 'False')
-        .some(c => c.message !== undefined);
-    },
-    messageAccessor: deployment => {
+    detectErrors: deployment => {
       return (deployment.status?.conditions ?? [])
         .filter(c => c.status === 'False')
         .filter(c => c.message !== undefined)
-        .map(c => c.message ?? '');
+        .map(c => ({
+          type: 'condition-message-present',
+          message: c.message ?? '',
+          severity: 6,
+          proposedFix: [], // TODO next PR
+          sourceRef: {
+            name: deployment.metadata?.name ?? 'unknown hpa',
+            namespace: deployment.metadata?.namespace ?? 'unknown namespace',
+            kind: 'Deployment',
+            apiGroup: 'apps/v1',
+          },
+          occuranceCount: 1,
+        }));
     },
   },
 ];
 
 export const detectErrorsInDeployments = (
-  deployments: V1Deployment[],
-  clusterName: string,
+  deployments: Deployment[],
 ): DetectedError[] =>
-  detectErrorsInObjects(
-    deployments,
-    'Deployment',
-    clusterName,
-    deploymentErrorMappers,
-  );
+  detectErrorsInObjects(deployments, deploymentErrorMappers);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { generatePath } from 'react-router';
+import { generatePath } from 'react-router-dom';
 import { ResponseError } from '@backstage/errors';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { BadgesApi, BadgeSpec } from './types';

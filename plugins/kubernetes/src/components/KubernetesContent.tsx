@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Divider, Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
 import { ErrorPanel } from './ErrorPanel';
 import { ErrorReporting } from './ErrorReporting';
@@ -25,10 +25,20 @@ import EmptyStateImage from '../assets/emptystate.svg';
 import { useKubernetesObjects } from '../hooks';
 import { Content, Page, Progress } from '@backstage/core-components';
 
-type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
+type KubernetesContentProps = {
+  entity: Entity;
+  refreshIntervalMs?: number;
+  children?: React.ReactNode;
+};
 
-export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
-  const { kubernetesObjects, error } = useKubernetesObjects(entity);
+export const KubernetesContent = ({
+  entity,
+  refreshIntervalMs,
+}: KubernetesContentProps) => {
+  const { kubernetesObjects, error } = useKubernetesObjects(
+    entity,
+    refreshIntervalMs,
+  );
 
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
@@ -73,9 +83,6 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               <ErrorReporting detectedErrors={detectedErrors} />
             </Grid>
             <Grid item>
-              <Divider />
-            </Grid>
-            <Grid item>
               <Typography variant="h3">Your Clusters</Typography>
             </Grid>
             <Grid item container>
@@ -107,9 +114,8 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
                   const podsWithErrors = new Set<string>(
                     detectedErrors
                       .get(item.cluster.name)
-                      ?.filter(de => de.kind === 'Pod')
-                      .map(de => de.names)
-                      .flat() ?? [],
+                      ?.filter(de => de.sourceRef.kind === 'Pod')
+                      .map(de => de.sourceRef.name),
                   );
 
                   return (

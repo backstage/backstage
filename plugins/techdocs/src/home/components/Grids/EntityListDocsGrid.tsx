@@ -15,20 +15,93 @@
  */
 
 import { DocsCardGrid } from './DocsCardGrid';
+import { Entity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  Content,
+  ContentHeader,
+  Link,
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { useEntityList } from '@backstage/plugin-catalog-react';
+import {
+  useEntityList,
+  useEntityOwnership,
+} from '@backstage/plugin-catalog-react';
+import { Typography } from '@material-ui/core';
 import React from 'react';
+
+/**
+ * Props for {@link EntityListDocsGrid}
+ *
+ * @public
+ */
+export type DocsGroupConfig = {
+  title: React.ReactNode;
+  filterPredicate: ((entity: Entity) => boolean) | string;
+};
+
+/**
+ * Props for {@link EntityListDocsGrid}
+ *
+ * @public
+ */
+export type EntityListDocsGridPageProps = {
+  groups?: DocsGroupConfig[];
+};
+
+const allEntitiesGroup: DocsGroupConfig = {
+  title: 'All Documentation',
+  filterPredicate: () => true,
+};
+
+const EntityListDocsGridGroup = (props: {
+  group: DocsGroupConfig;
+  entities: Entity[];
+}) => {
+  const { entities, group } = props;
+  const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
+
+  const shownEntities = entities.filter(entity => {
+    if (group.filterPredicate === 'ownedByUser') {
+      if (loadingOwnership) {
+        return false;
+      }
+      return isOwnedEntity(entity);
+    }
+
+    return (
+      typeof group.filterPredicate === 'function' &&
+      group.filterPredicate(entity)
+    );
+  });
+
+  const titleComponent: React.ReactNode = (() => {
+    return typeof group.title === 'string' ? (
+      <ContentHeader title={group.title} />
+    ) : (
+      group.title
+    );
+  })();
+
+  if (shownEntities.length === 0) {
+    return null;
+  }
+
+  return (
+    <Content>
+      {titleComponent}
+      <DocsCardGrid entities={shownEntities} />
+    </Content>
+  );
+};
 
 /**
  * Component responsible to get entities from entity list context and pass down to DocsCardGrid
  *
  * @public
  */
-export const EntityListDocsGrid = () => {
+export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   const { loading, error, entities } = useEntityList();
 
   if (error) {
@@ -42,8 +115,22 @@ export const EntityListDocsGrid = () => {
     );
   }
 
-  if (loading || !entities) {
+  if (loading) {
     return <Progress />;
+  }
+
+  if (entities.length === 0) {
+    return (
+      <div data-testid="doc-not-found">
+        <Typography variant="body2">
+          No documentation found that match your filter. Learn more about{' '}
+          <Link to="https://backstage.io/docs/features/techdocs/creating-and-publishing">
+            publishing documentation
+          </Link>
+          .
+        </Typography>
+      </div>
+    );
   }
 
   entities.sort((a, b) =>
@@ -52,5 +139,15 @@ export const EntityListDocsGrid = () => {
     ),
   );
 
-  return <DocsCardGrid entities={entities} />;
+  return (
+    <Content>
+      {(props.groups || [allEntitiesGroup]).map((group, index: number) => (
+        <EntityListDocsGridGroup
+          entities={entities}
+          group={group}
+          key={`${group.title}-${index}`}
+        />
+      ))}
+    </Content>
+  );
 };

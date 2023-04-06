@@ -45,6 +45,21 @@ describe('FetchUrlReader', () => {
           );
         }
 
+        if (
+          req.headers.get('if-modified-since') &&
+          new Date(req.headers.get('if-modified-since') ?? '') <
+            new Date('2021-01-01T00:00:00Z')
+        ) {
+          return res(
+            ctx.status(304),
+            ctx.set('Content-Type', 'text/plain'),
+            ctx.set(
+              'last-modified',
+              new Date('2021-01-01T00:00:00Z').toUTCString(),
+            ),
+          );
+        }
+
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'text/plain'),
@@ -74,9 +89,14 @@ describe('FetchUrlReader', () => {
           reading: {
             allow: [
               { host: 'example.com' },
+              { host: 'example.com:100-200' },
               { host: 'example.com:700' },
               { host: '*.examples.org' },
               { host: '*.examples.org:700' },
+              { host: '*.examples.org:900-1000' },
+              { host: '*.examples.org:900-1000' },
+              { host: 'https.org:443' },
+              { host: 'http.org:80' },
               {
                 host: 'foobar.org',
                 paths: ['/dir1/'],
@@ -113,34 +133,92 @@ describe('FetchUrlReader', () => {
     expect(predicate(new URL('https://foobar.org/dir1/subpath'))).toBe(true);
     expect(predicate(new URL('https://foobar.org/dir12'))).toBe(false);
     expect(predicate(new URL('https://foobar.org/'))).toBe(false);
+    expect(predicate(new URL('https://a.examples.org:900/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:1000/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:950/test'))).toBe(true);
+    expect(predicate(new URL('https://a.examples.org:1050/test'))).toBe(false);
+    expect(predicate(new URL('https://example.com:150/test'))).toBe(true);
+    expect(predicate(new URL('https://example.com:4000/test'))).toBe(false);
+    expect(predicate(new URL('https://https.org'))).toBe(true);
+    expect(predicate(new URL('http://https.org'))).toBe(false);
+    expect(predicate(new URL('http://http.org'))).toBe(true);
+    expect(predicate(new URL('https://http.org'))).toBe(false);
+  });
+
+  it('factory should throw for malformed uri', async () => {
+    const buildFactory = (hosts: string[]) => {
+      return FetchUrlReader.factory({
+        config: new ConfigReader({
+          backend: {
+            reading: {
+              allow: hosts.map(host => ({ host })),
+            },
+          },
+        }),
+        logger: getVoidLogger(),
+        treeResponseFactory: DefaultReadTreeResponseFactory.create({
+          config: new ConfigReader({}),
+        }),
+      });
+    };
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:100-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:500-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:100-50']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-330-']),
+    ).toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:-100-300']),
+    ).not.toThrow();
+    expect(() =>
+      buildFactory(['example.com:100-200', 'example.com:nb-300']),
+    ).toThrow();
   });
 
   describe('read', () => {
     it('should return etag from the response', async () => {
-      const buffer = await fetchUrlReader.read(
+      const { buffer } = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
-      expect(buffer.toString()).toBe('content foo');
+      const response = await buffer();
+      expect(response.toString()).toBe('content foo');
     });
 
     it('should throw NotFound if server responds with 404', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/not-exists'),
+        fetchUrlReader.readUrl('https://backstage.io/not-exists'),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw Error if server responds with 500', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/error'),
+        fetchUrlReader.readUrl('https://backstage.io/error'),
       ).rejects.toThrow(Error);
     });
   });
 
   describe('readUrl', () => {
-    it('should throw NotModified if server responds with 304', async () => {
+    it('should throw NotModified if server responds with 304 from etag', async () => {
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/some-resource', {
           etag: 'foo',
+        }),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/some-resource', {
+          lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
         }),
       ).rejects.toThrow(NotModifiedError);
     });

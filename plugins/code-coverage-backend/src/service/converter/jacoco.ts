@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { BranchHit, FileEntry } from '../types';
 import { JacocoSourceFile, JacocoXML } from './types';
 import { Logger } from 'winston';

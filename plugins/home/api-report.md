@@ -11,8 +11,11 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "ClockConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type CardExtensionProps<T> = ComponentRenderer & {
+  title?: string;
+} & T;
+
 // @public (undocumented)
 export type ClockConfig = {
   label: string;
@@ -28,6 +31,14 @@ export const ComponentAccordion: (props: {
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
+
+// @public (undocumented)
+export type ComponentParts = {
+  Content: (props?: any) => JSX.Element;
+  Actions?: () => JSX.Element;
+  Settings?: () => JSX.Element;
+  ContextProvider?: (props: any) => JSX.Element;
+};
 
 // @public (undocumented)
 export type ComponentRenderer = {
@@ -50,8 +61,6 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "CardExtensionProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function createCardExtension<T>(options: {
   title: string;
@@ -59,9 +68,10 @@ export function createCardExtension<T>(options: {
   name?: string;
 }): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
 
-// @public (undocumented)
+// @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
+  customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
 }) => JSX.Element | null;
 
 // @public
@@ -78,27 +88,19 @@ export const HomepageCompositionRoot: (props: {
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
-  props: ComponentRenderer & {
-    title?: string | undefined;
-  } & {
+  props: CardExtensionProps<{
     defaultCategory?: 'any' | 'programming' | undefined;
-  },
+  }>,
 ) => JSX.Element;
 
 // @public
 export const HomePageStarredEntities: (
-  props: ComponentRenderer & {
-    title?: string | undefined;
-  },
+  props: CardExtensionProps<unknown>,
 ) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "ToolkitContentProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const HomePageToolkit: (
-  props: ComponentRenderer & {
-    title?: string | undefined;
-  } & ToolkitContentProps,
+  props: CardExtensionProps<ToolkitContentProps>,
 ) => JSX.Element;
 
 // @public (undocumented)
@@ -106,11 +108,15 @@ export const homePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "SettingsModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public (undocumented)
+export type RendererProps = {
+  title: string;
+} & ComponentParts;
+
 // @public (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
@@ -119,24 +125,29 @@ export const SettingsModal: (props: {
   children: JSX.Element;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "TemplateBackstageLogoProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "TemplateBackstageLogo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const TemplateBackstageLogo: (
-  props: TemplateBackstageLogoProps,
-) => JSX.Element;
+export const TemplateBackstageLogo: (props: {
+  classes: {
+    svg: string;
+    path: string;
+  };
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "TemplateBackstageLogoIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const TemplateBackstageLogoIcon: () => JSX.Element;
 
+// @public (undocumented)
+export type Tool = {
+  label: string;
+  url: string;
+  icon: React_2.ReactNode;
+};
+
+// @public
+export type ToolkitContentProps = {
+  tools: Tool[];
+};
+
 // @public
 export const WelcomeTitle: () => JSX.Element;
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:6:5 - (ae-forgotten-export) The symbol "RendererProps" needs to be exported by the entry point index.d.ts
-// src/extensions.d.ts:27:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
 ```

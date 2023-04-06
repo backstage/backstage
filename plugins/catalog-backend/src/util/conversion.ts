@@ -23,7 +23,7 @@ import {
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
-import { LocationSpec } from '../api';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')

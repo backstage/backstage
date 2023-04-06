@@ -133,16 +133,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -174,16 +174,16 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
@@ -215,21 +215,21 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -260,7 +260,7 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -291,25 +291,25 @@ describe('LunrSearchEngine', () => {
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
 
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 100,
         usePipeline: true,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 10,
         usePipeline: false,
         wildcard: lunr.Query.wildcard.TRAILING,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testTerm'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testTerm'), {
         boost: 1,
         usePipeline: false,
         editDistance: 2,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testKind'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testKind'), {
         fields: ['kind'],
         presence: lunr.Query.presence.REQUIRED,
       });
-      expect(query.term).toBeCalledWith(lunr.tokenizer('testNameSpace'), {
+      expect(query.term).toHaveBeenCalledWith(lunr.tokenizer('testNameSpace'), {
         fields: ['namespace'],
         presence: lunr.Query.presence.REQUIRED,
       });
@@ -381,7 +381,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -412,7 +412,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -431,6 +431,7 @@ describe('LunrSearchEngine', () => {
               location: 'test/location',
             },
             type: 'test-index',
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -451,7 +452,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -469,6 +470,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               location: 'test/location',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -493,7 +495,7 @@ describe('LunrSearchEngine', () => {
         inspectableSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -521,6 +523,7 @@ describe('LunrSearchEngine', () => {
                 location: `${highlightTags.pre}test/location${highlightTags.post}`,
               },
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -541,7 +544,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -559,6 +562,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               location: 'test/location',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -579,7 +583,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -598,6 +602,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               location: 'test/location',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -618,7 +623,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -637,6 +642,7 @@ describe('LunrSearchEngine', () => {
               text: 'Hello World.',
               location: 'test/location',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -657,7 +663,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -676,6 +682,7 @@ describe('LunrSearchEngine', () => {
               text: 'Searching',
               location: 'test/location',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -701,7 +708,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -722,6 +729,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               location: 'test/location2',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -755,10 +763,10 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer1)
+      await TestPipeline.fromIndexer(indexer1)
         .withDocuments(mockDocuments)
         .execute();
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -777,6 +785,7 @@ describe('LunrSearchEngine', () => {
               location: 'test/location2',
               extraField: 'testExtraField',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -802,7 +811,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -823,6 +832,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               location: 'test:location2',
             },
+            rank: 1,
           },
         ],
         nextPageCursor: undefined,
@@ -861,14 +871,14 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
       const indexer2 = await getActualIndexer(
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -886,6 +896,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               title: 'testTitle',
             },
+            rank: 1,
           },
           {
             document: {
@@ -893,6 +904,7 @@ describe('LunrSearchEngine', () => {
               text: 'testText',
               title: 'testTitle',
             },
+            rank: 2,
           },
         ],
         nextPageCursor: undefined,
@@ -912,7 +924,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -931,10 +943,24 @@ describe('LunrSearchEngine', () => {
               location: `test/location/${i}`,
             },
             type: 'test-index',
+            rank: i + 1,
           })),
         nextPageCursor: 'MQ==',
         previousPageCursor: undefined,
       });
+    });
+
+    it('should throws missing index error', async () => {
+      await expect(
+        async () =>
+          await testLunrSearchEngine.query({
+            term: 'testTerm',
+            types: ['unknown'],
+            filters: {},
+          }),
+      ).rejects.toThrow(
+        "Missing index for unknown. This could be because the index hasn't been created yet or there was a problem during index creation.",
+      );
     });
   });
 
@@ -948,7 +974,7 @@ describe('LunrSearchEngine', () => {
       }));
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -968,6 +994,7 @@ describe('LunrSearchEngine', () => {
             location: `test/location/${i}`,
           },
           type: 'test-index',
+          rank: i + 1,
         }))
         .slice(25),
       nextPageCursor: undefined,
@@ -999,7 +1026,7 @@ describe('LunrSearchEngine', () => {
 
       // Get the indexer and invoke its close handler.
       await inspectableSearchEngine.getIndexer('test-index');
-      const onClose = indexerMock.on.mock.calls[0][1] as Function;
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
       onClose();
 
       // Ensure mocked methods were called.
@@ -1015,6 +1042,60 @@ describe('LunrSearchEngine', () => {
       expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
         'existing-location': doc,
         'new-location': doc,
+      });
+    });
+
+    it('should not replace index or docs if no docs were indexed', async () => {
+      // Set up an inspectable search engine to pre-set some data.
+      const doc = { title: 'A doc', text: 'test', location: 'some-location' };
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
+        logger: getVoidLogger(),
+      });
+      inspectableSearchEngine.setDocStore({ 'existing-location': doc });
+
+      // Mock methods called by close handler (resolving no documents)
+      indexerMock.buildIndex.mockReturnValueOnce('expected-index');
+      indexerMock.getDocumentStore.mockReturnValueOnce({});
+
+      // Get the indexer and invoke its close handler.
+      await inspectableSearchEngine.getIndexer('test-index');
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
+      onClose();
+
+      // Ensure buildIndex method was not called.
+      expect(indexerMock.buildIndex).not.toHaveBeenCalled();
+
+      // Ensure pre-existing documents still exist in the store
+      expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
+        'existing-location': doc,
+      });
+    });
+
+    it('should not replace index or docs if an error was thrown', async () => {
+      // Set up an inspectable search engine to pre-set some data.
+      const doc = { title: 'A doc', text: 'test', location: 'some-location' };
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
+        logger: getVoidLogger(),
+      });
+      inspectableSearchEngine.setDocStore({ 'existing-location': doc });
+
+      // Mock methods called by close handler (resolving no documents)
+      indexerMock.buildIndex.mockReturnValueOnce('expected-index');
+      indexerMock.getDocumentStore.mockReturnValueOnce({});
+
+      // Get the indexer and invoke its close handler after firing an error.
+      await inspectableSearchEngine.getIndexer('test-index');
+      const onError = indexerMock.on.mock.calls[0][1] as Function;
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
+      onError(new Error('Some collator error'));
+      onClose();
+
+      // Ensure buildIndex method was not called.
+      expect(indexerMock.buildIndex).not.toHaveBeenCalled();
+
+      // Ensure pre-existing documents still exist in the store
+      expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
+        'existing-location': doc,
       });
     });
   });
@@ -1062,6 +1143,126 @@ describe('parseHighlightFields', () => {
     ).toEqual({
       foo: '<>abc</> <>def</>',
       bar: 'ghi <>jkl</>',
+    });
+  });
+});
+
+describe('stopword testing', () => {
+  let testLunrSearchEngine: SearchEngine;
+
+  beforeEach(() => {
+    testLunrSearchEngine = new LunrSearchEngine({ logger: getVoidLogger() });
+    jest.clearAllMocks();
+  });
+
+  it('test with stopword in title', async () => {
+    const mockDocuments = [
+      {
+        title: 'a home',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.fromIndexer(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a home',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a home',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
+    });
+  });
+
+  it('test with stopword connected with dash', async () => {
+    const mockDocuments = [
+      {
+        title: 'a-home',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.fromIndexer(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a-home',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a-home',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
+    });
+  });
+
+  it('test with only stop word in title', async () => {
+    const mockDocuments = [
+      {
+        title: 'a',
+        text: 'mary had a little lamb at home',
+        location: 'test/location',
+      },
+    ];
+
+    const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
+
+    await TestPipeline.fromIndexer(indexer)
+      .withDocuments(mockDocuments)
+      .execute();
+
+    const mockedSearchResult = await testLunrSearchEngine.query({
+      term: 'mary',
+      filters: {
+        title: 'a',
+      },
+    });
+
+    expect(mockedSearchResult).toMatchObject({
+      results: [
+        {
+          document: {
+            title: 'a',
+            text: 'mary had a little lamb at home',
+            location: 'test/location',
+          },
+          rank: 1,
+        },
+      ],
+      nextPageCursor: undefined,
     });
   });
 });

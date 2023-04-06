@@ -25,6 +25,7 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import fetch from 'node-fetch';
+import pLimit, { Limit } from 'p-limit';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
@@ -43,28 +44,36 @@ export type DocsSynchronizerSyncOpts = {
 export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
   private readonly logger: winston.Logger;
+  private readonly buildLogTransport: winston.transport;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly cache: TechDocsCache | undefined;
+  private readonly buildLimiter: Limit;
 
   constructor({
     publisher,
     logger,
+    buildLogTransport,
     config,
     scmIntegrations,
     cache,
   }: {
     publisher: PublisherBase;
     logger: winston.Logger;
+    buildLogTransport: winston.transport;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
     cache: TechDocsCache | undefined;
   }) {
     this.config = config;
     this.logger = logger;
+    this.buildLogTransport = buildLogTransport;
     this.publisher = publisher;
     this.scmIntegrations = scmIntegrations;
     this.cache = cache;
+
+    // Single host/process: limit concurrent builds up to 10 at a time.
+    this.buildLimiter = pLimit(10);
   }
 
   async doSync({
@@ -96,6 +105,7 @@ export class DocsSynchronizer {
     });
 
     taskLogger.add(new winston.transports.Stream({ stream: logStream }));
+    taskLogger.add(this.buildLogTransport);
 
     // check if the last update check was too recent
     if (!shouldCheckForUpdate(entity.metadata.uid!)) {
@@ -118,7 +128,13 @@ export class DocsSynchronizer {
         cache: this.cache,
       });
 
-      const updated = await docsBuilder.build();
+      const interval = setInterval(() => {
+        taskLogger.info(
+          'The docs building process is taking a little bit longer to process this entity. Please bear with us.',
+        );
+      }, 10000);
+      const updated = await this.buildLimiter(() => docsBuilder.build());
+      clearInterval(interval);
 
       if (!updated) {
         finish({ updated: false });
@@ -149,7 +165,7 @@ export class DocsSynchronizer {
       );
       error(
         new NotFoundError(
-          'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+          'Sorry! It took too long for the generated docs to show up in storage. Are you sure the docs project is generating an `index.html` file? Otherwise, check back later.',
         ),
       );
       return;

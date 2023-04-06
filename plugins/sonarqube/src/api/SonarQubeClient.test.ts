@@ -17,10 +17,11 @@
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { FindingSummary, SonarQubeClient } from './index';
-import { ComponentWrapper, MeasuresWrapper } from './types';
+import { SonarQubeClient } from './index';
+import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react';
 
 const server = setupServer();
 
@@ -40,133 +41,77 @@ const identityApiGuest: IdentityApi = {
 describe('SonarQubeClient', () => {
   setupRequestMockHandlers(server);
 
-  const mockBaseUrl = 'http://backstage:9191/api/proxy';
+  const mockBaseUrl = 'http://backstage:9191/api/sonarqube';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const setupHandlers = (
-    metricKeys = [
-      'alert_status',
-      'bugs',
-      'reliability_rating',
-      'vulnerabilities',
-      'security_rating',
-      'security_hotspots_reviewed',
-      'security_review_rating',
-      'code_smells',
-      'sqale_rating',
-      'coverage',
-      'duplicated_lines_density',
-    ],
-  ) => {
+  const setupHandlers = () => {
     server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/metrics/search`, (req, res, ctx) => {
-        expect(req.url.searchParams.get('ps')).toBe('500');
-
-        // emulate paging to check if everything is requested
-        if (req.url.searchParams.get('p') === '1') {
-          return res(
-            ctx.json({
-              metrics: metricKeys.slice(0, 5).map(k => ({ key: k })),
-              total: metricKeys.length,
-            }),
-          );
-        }
-
-        // make sure this is only called twice
-        expect(req.url.searchParams.get('p')).toBe('2');
-        return res(
-          ctx.json({
-            metrics: metricKeys.slice(5).map(k => ({ key: k })),
-            total: metricKeys.length,
-          }),
-        );
-      }),
-    );
-
-    server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
-        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
-        return res(
-          ctx.json({
-            component: {
-              analysisDate: '2020-01-01T00:00:00Z',
-            },
-          } as ComponentWrapper),
-        );
-      }),
-    );
-
-    server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/measures/search`, (req, res, ctx) => {
+      rest.get(`${mockBaseUrl}/findings`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          `projectKeys=our%3Aservice&metricKeys=${metricKeys.join('%2C')}`,
+          'componentKey=our%3Aservice&instanceKey=',
         );
 
         return res(
           ctx.json({
+            analysisDate: '2020-01-01T00:00:00Z',
             measures: [
               {
                 metric: 'alert_status',
                 value: 'OK',
-                component: 'our:service',
-              },
-              {
-                metric: 'alert_status',
-                value: 'ERROR',
-                component: 'other-service',
               },
               {
                 metric: 'bugs',
                 value: '2',
-                component: 'our:service',
               },
               {
                 metric: 'reliability_rating',
                 value: '3.0',
-                component: 'our:service',
               },
               {
                 metric: 'vulnerabilities',
                 value: '4',
-                component: 'our:service',
               },
               {
                 metric: 'security_rating',
                 value: '1.0',
-                component: 'our:service',
               },
               {
                 metric: 'security_hotspots_reviewed',
                 value: '100',
-                component: 'our:service',
               },
               {
                 metric: 'security_review_rating',
                 value: '1.0',
-                component: 'our:service',
               },
               {
                 metric: 'code_smells',
                 value: '100',
-                component: 'our:service',
               },
               {
                 metric: 'sqale_rating',
                 value: '2.0',
-                component: 'our:service',
               },
               {
                 metric: 'coverage',
                 value: '55.5',
-                component: 'our:service',
               },
               {
                 metric: 'duplicated_lines_density',
                 value: '1.0',
-                component: 'our:service',
               },
-            ].filter(m => metricKeys.includes(m.metric)),
-          } as MeasuresWrapper),
+            ],
+          } as FindingsWrapper),
+        );
+      }),
+    );
+    server.use(
+      rest.get(`${mockBaseUrl}/instanceUrl`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe('instanceKey=');
+
+        return res(
+          ctx.json({
+            instanceUrl: 'https://sonarcloud.io',
+          } as InstanceUrlWrapper),
         );
       }),
     );
@@ -180,7 +125,9 @@ describe('SonarQubeClient', () => {
       identityApi: identityApiAuthenticated,
     });
 
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
     expect(summary).toEqual(
       expect.objectContaining({
         lastAnalysis: '2020-01-01T00:00:00Z',
@@ -210,59 +157,63 @@ describe('SonarQubeClient', () => {
 
   it('should report finding summary (custom baseUrl)', async () => {
     setupHandlers();
+    server.use(
+      rest.get(`${mockBaseUrl}/instanceUrl`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe('instanceKey=custom');
+
+        return res(
+          ctx.json({
+            instanceUrl: 'http://a.instance.local',
+          } as InstanceUrlWrapper),
+        );
+      }),
+    );
+
+    server.use(
+      rest.get(`${mockBaseUrl}/findings`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe(
+          'componentKey=our%3Aservice&instanceKey=custom',
+        );
+
+        return res(
+          ctx.json({
+            analysisDate: '2020-01-03T00:00:00Z',
+            measures: [
+              {
+                metric: 'alert_status',
+                value: 'ERROR',
+              },
+              {
+                metric: 'bugs',
+                value: '45',
+              },
+              {
+                metric: 'reliability_rating',
+                value: '5.0',
+              },
+            ],
+          } as FindingsWrapper),
+        );
+      }),
+    );
 
     const client = new SonarQubeClient({
       discoveryApi,
-      baseUrl: 'http://a.instance.local',
       identityApi: identityApiAuthenticated,
     });
 
-    const summary = await client.getFindingSummary('our:service');
-
-    expect(summary).toEqual(
-      expect.objectContaining({
-        lastAnalysis: '2020-01-01T00:00:00Z',
-        metrics: {
-          alert_status: 'OK',
-          bugs: '2',
-          reliability_rating: '3.0',
-          vulnerabilities: '4',
-          security_rating: '1.0',
-          security_hotspots_reviewed: '100',
-          security_review_rating: '1.0',
-          code_smells: '100',
-          sqale_rating: '2.0',
-          coverage: '55.5',
-          duplicated_lines_density: '1.0',
-        },
-        projectUrl: 'http://a.instance.local/dashboard?id=our%3Aservice',
-      }) as FindingSummary,
-    );
-    expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
-      'http://a.instance.local/project/issues?id=our%3Aservice&types=CODE_SMELL&resolved=false',
-    );
-    expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
-      'http://a.instance.local/component_measures?id=our%3Aservice&metric=coverage&resolved=false&view=list',
-    );
-  });
-
-  it('should only request selected metrics', async () => {
-    setupHandlers(['alert_status', 'bugs']);
-
-    const client = new SonarQubeClient({
-      discoveryApi,
-      baseUrl: 'http://a.instance.local',
-      identityApi: identityApiAuthenticated,
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+      projectInstance: 'custom',
     });
 
-    const summary = await client.getFindingSummary('our:service');
-
     expect(summary).toEqual(
       expect.objectContaining({
-        lastAnalysis: '2020-01-01T00:00:00Z',
+        lastAnalysis: '2020-01-03T00:00:00Z',
         metrics: {
-          alert_status: 'OK',
-          bugs: '2',
+          alert_status: 'ERROR',
+          bugs: '45',
+          reliability_rating: '5.0',
         },
         projectUrl: 'http://a.instance.local/dashboard?id=our%3Aservice',
       }) as FindingSummary,
@@ -278,25 +229,27 @@ describe('SonarQubeClient', () => {
   it('should add identity token for logged in users', async () => {
     setupHandlers();
     server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
-        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
+      rest.get(`${mockBaseUrl}/findings`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe(
+          'componentKey=our%3Aservice&instanceKey=',
+        );
         expect(req.headers.get('Authorization')).toBe('Bearer fake-id-token');
         return res(
           ctx.json({
-            component: {
-              analysisDate: '2020-01-01T00:00:00Z',
-            },
-          } as ComponentWrapper),
+            analysisDate: '2020-01-01T00:00:00Z',
+            measures: [],
+          } as FindingsWrapper),
         );
       }),
     );
 
     const client = new SonarQubeClient({
       discoveryApi,
-      baseUrl: 'http://a.instance.local',
       identityApi: identityApiAuthenticated,
     });
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
 
     expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
   });
@@ -304,25 +257,27 @@ describe('SonarQubeClient', () => {
   it('should omit identity token for guest users', async () => {
     setupHandlers();
     server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
-        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
+      rest.get(`${mockBaseUrl}/findings`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe(
+          'componentKey=our%3Aservice&instanceKey=',
+        );
         expect(req.headers.has('Authorization')).toBeFalsy();
         return res(
           ctx.json({
-            component: {
-              analysisDate: '2020-01-01T00:00:00Z',
-            },
-          } as ComponentWrapper),
+            analysisDate: '2020-01-01T00:00:00Z',
+            measures: [],
+          } as FindingsWrapper),
         );
       }),
     );
 
     const client = new SonarQubeClient({
       discoveryApi,
-      baseUrl: 'http://a.instance.local',
       identityApi: identityApiGuest,
     });
-    const summary = await client.getFindingSummary('our:service');
+    const summary = await client.getFindingSummary({
+      componentKey: 'our:service',
+    });
 
     expect(summary?.lastAnalysis).toBe('2020-01-01T00:00:00Z');
   });

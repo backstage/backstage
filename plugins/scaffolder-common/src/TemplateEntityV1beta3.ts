@@ -50,18 +50,12 @@ export interface TemplateEntityV1beta3 extends Entity {
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.
      */
-    parameters?: JsonObject | JsonObject[];
+    parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
      */
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
+    steps: Array<TemplateEntityStepV1beta3>;
     /**
      * The output is an object where template authors can pull out information from template actions and return them in a known standard way.
      */
@@ -71,6 +65,38 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     owner?: string;
   };
+}
+
+/**
+ * Step that is part of a Template Entity.
+ *
+ * @public
+ */
+export interface TemplateEntityStepV1beta3 extends JsonObject {
+  id?: string;
+  name?: string;
+  action: string;
+  input?: JsonObject;
+  if?: string | boolean;
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+}
+
+/**
+ * Parameter that is part of a Template Entity.
+ *
+ * @public
+ */
+export interface TemplateParametersV1beta3 extends JsonObject {
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+}
+
+/**
+ *  Access control properties for parts of a template.
+ *
+ * @public
+ */
+export interface TemplatePermissionsV1beta3 extends JsonObject {
+  tags?: string[];
 }
 
 const validator = entityKindSchemaValidator(schema);
@@ -86,3 +112,13 @@ export const templateEntityV1beta3Validator: KindValidator = {
     return validator(data) === data;
   },
 };
+
+/**
+ * Typeguard for filtering entities and ensuring v1beta3 entities
+ * @public
+ */
+export const isTemplateEntityV1beta3 = (
+  entity: Entity,
+): entity is TemplateEntityV1beta3 =>
+  entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
+  entity.kind === 'Template';

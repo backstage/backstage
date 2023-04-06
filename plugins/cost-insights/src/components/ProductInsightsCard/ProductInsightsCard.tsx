@@ -28,7 +28,8 @@ import { PeriodSelect } from '../PeriodSelect';
 import { ProductInsightsChart } from './ProductInsightsChart';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { DefaultLoadingAction } from '../../utils/loading';
-import { Duration, Entity, Maybe, Product } from '../../types';
+import { Duration } from '../../types';
+import { Entity, Maybe, Product } from '@backstage/plugin-cost-insights-common';
 import {
   MapLoadingToProps,
   useLastCompleteBillingDate,

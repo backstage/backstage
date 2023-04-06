@@ -38,7 +38,7 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -49,6 +49,10 @@ import {
 } from '../resolvers';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
+import { decodeJwt } from 'jose';
+import { Profile as PassportProfile } from 'passport';
+
+const BACKSTAGE_SESSION_EXPIRATION = 3600;
 
 type PrivateInfo = {
   refreshToken: string;
@@ -84,6 +88,12 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
         passReqToCallback: false,
+        skipUserProfile: (
+          accessToken: string,
+          done: (err: unknown, skip: boolean) => void,
+        ) => {
+          done(null, this.skipUserProfile(accessToken));
+        },
       },
       (
         accessToken: any,
@@ -97,7 +107,18 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  private skipUserProfile = (accessToken: string): boolean => {
+    const { aud, scp } = decodeJwt(accessToken);
+    const hasGraphReadScope =
+      aud === '00000003-0000-0000-c000-000000000000' &&
+      (scp as string)
+        .split(' ')
+        .map(s => s.toLowerCase())
+        .includes('user.read');
+    return !hasGraphReadScope;
+  };
+
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
       state: encodeState(req.state),
@@ -124,48 +145,62 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
         req.scope,
       );
 
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
-      accessToken,
-    );
-
     return {
       response: await this.handleResult({
-        fullProfile,
         params,
         accessToken,
+        ...(!this.skipUserProfile(accessToken) && {
+          fullProfile: await executeFetchUserProfileStrategy(
+            this._strategy,
+            accessToken,
+          ),
+        }),
       }),
       refreshToken,
     };
   }
 
-  private async handleResult(result: OAuthResult) {
-    const photo = await this.getUserPhoto(result.accessToken);
-    result.fullProfile.photos = photo ? [{ value: photo }] : undefined;
-
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const response: OAuthResponse = {
-      providerInfo: {
-        idToken: result.params.id_token,
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
-      },
-      profile,
+  private async handleResult(result: {
+    fullProfile?: PassportProfile;
+    params: {
+      id_token?: string;
+      scope: string;
+      expires_in: number;
     };
-
-    if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
+    accessToken: string;
+    refreshToken?: string;
+  }): Promise<OAuthResponse> {
+    let profile = {};
+    if (result.fullProfile) {
+      const photo = await this.getUserPhoto(result.accessToken);
+      result.fullProfile.photos = photo ? [{ value: photo }] : undefined;
+      ({ profile } = await this.authHandler(
+        result as OAuthResult,
         this.resolverContext,
-      );
+      ));
     }
 
-    return response;
+    const expiresInSeconds =
+      result.params.expires_in === undefined
+        ? BACKSTAGE_SESSION_EXPIRATION
+        : Math.min(result.params.expires_in, BACKSTAGE_SESSION_EXPIRATION);
+
+    return {
+      providerInfo: {
+        accessToken: result.accessToken,
+        scope: result.params.scope,
+        expiresInSeconds,
+        ...{ idToken: result.params.id_token },
+      },
+      profile,
+      ...(result.fullProfile &&
+        this.signInResolver && {
+          backstageIdentity: await this.signInResolver(
+            { result: result as OAuthResult, profile },
+            this.resolverContext,
+          ),
+        }),
+    };
   }
 
   private async getUserPhoto(accessToken: string): Promise<string | undefined> {
@@ -189,28 +224,6 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     }
   }
 }
-
-/**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type MicrosoftProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
 
 /**
  * Auth provider integration for Microsoft auth
@@ -251,7 +264,7 @@ export const microsoft = createAuthProviderIntegration({
         const authHandler: AuthHandler<OAuthResult> = options?.authHandler
           ? options.authHandler
           : async ({ fullProfile, params }) => ({
-              profile: makeProfileInfo(fullProfile, params.id_token),
+              profile: makeProfileInfo(fullProfile ?? {}, params.id_token),
             });
 
         const provider = new MicrosoftAuthProvider({
@@ -301,16 +314,3 @@ export const microsoft = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.microsoft.create` instead
- */
-export const createMicrosoftProvider = microsoft.create;
-
-/**
- * @public
- * @deprecated Use `providers.microsoft.resolvers.emailMatchingUserEntityAnnotation()` instead.
- */
-export const microsoftEmailSignInResolver =
-  microsoft.resolvers.emailMatchingUserEntityAnnotation();

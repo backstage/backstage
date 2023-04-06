@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import {
@@ -29,8 +32,12 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+/** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
-  static async create(knex: Knex): Promise<DatabaseDocumentStore> {
+  static async create(
+    database: PluginDatabaseManager,
+  ): Promise<DatabaseDocumentStore> {
+    const knex = await database.getClient();
     try {
       const majorVersion = await queryPostgresMajorVersion(knex);
 
@@ -49,9 +56,12 @@ export class DatabaseDocumentStore implements DatabaseStore {
       );
     }
 
-    await knex.migrate.latest({
-      directory: migrationsDir,
-    });
+    if (!database.migrations?.skip) {
+      await knex.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
     return new DatabaseDocumentStore(knex);
   }
 
@@ -132,10 +142,13 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async query(
     tx: Knex.Transaction,
-    { types, pgTerm, fields, offset, limit }: PgSearchQuery,
+    searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
+    const { types, pgTerm, fields, offset, limit, options } = searchQuery;
+    // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
-    // SELECT ts_rank_cd(body, query) AS rank,  type, document
+    // SELECT ts_rank_cd(body, query) AS rank, type, document,
+    // ts_headline('english', document, query) AS highlight
     // FROM documents, to_tsquery('english', 'consent') query
     // WHERE query @@ body AND (document @> '{"kind": "API"}')
     // ORDER BY rank DESC
@@ -170,7 +183,17 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
     query.select('type', 'document');
 
-    if (pgTerm) {
+    if (pgTerm && options.useHighlight) {
+      const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
+      query
+        .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
+        .select(
+          tx.raw(
+            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
+          ),
+        )
+        .orderBy('rank', 'desc');
+    } else if (pgTerm && !options.useHighlight) {
       query
         .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .orderBy('rank', 'desc');

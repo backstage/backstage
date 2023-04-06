@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { PgSearchEngine } from './PgSearchEngine';
-export type { ConcretePgSearchQuery } from './PgSearchEngine';
+export type {
+  ConcretePgSearchQuery,
+  PgSearchQueryTranslatorOptions,
+  PgSearchQueryTranslator,
+  PgSearchOptions,
+  PgSearchHighlightOptions,
+} from './PgSearchEngine';
 export type {
   PgSearchEngineIndexer,
   PgSearchEngineIndexerOptions,

@@ -13,38 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Grid,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import {
   ApiRef,
   SessionApi,
-  useApi,
-  IconComponent,
   SessionState,
+  ProfileInfoApi,
+  ProfileInfo,
+  useApi,
+  errorApiRef,
+  IconComponent,
 } from '@backstage/core-plugin-api';
+import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
 
-type Props = {
+/** @public */
+export const ProviderSettingsItem = (props: {
   title: string;
   description: string;
   icon: IconComponent;
-  apiRef: ApiRef<SessionApi>;
-};
+  apiRef: ApiRef<ProfileInfoApi & SessionApi>;
+}) => {
+  const { title, description, icon: Icon, apiRef } = props;
 
-export const ProviderSettingsItem = ({
-  title,
-  description,
-  icon: Icon,
-  apiRef,
-}: Props) => {
   const api = useApi(apiRef);
+  const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
+  const emptyProfile: ProfileInfo = {};
+  const [profile, setProfile] = useState(emptyProfile);
 
   useEffect(() => {
     let didCancel = false;
@@ -53,7 +59,18 @@ export const ProviderSettingsItem = ({
       .sessionState$()
       .subscribe((sessionState: SessionState) => {
         if (!didCancel) {
-          setSignedIn(sessionState === SessionState.SignedIn);
+          api
+            .getProfile({ optional: true })
+            .then((profileResponse: ProfileInfo | undefined) => {
+              if (!didCancel) {
+                if (sessionState === SessionState.SignedIn) {
+                  setSignedIn(true);
+                }
+                if (profileResponse) {
+                  setProfile(profileResponse);
+                }
+              }
+            });
         }
       });
 
@@ -72,7 +89,30 @@ export const ProviderSettingsItem = ({
         primary={title}
         secondary={
           <Tooltip placement="top" arrow title={description}>
-            <span>{description}</span>
+            <Grid container spacing={6}>
+              <Grid item>
+                <ProviderSettingsAvatar size={48} picture={profile.picture} />
+              </Grid>
+              <Grid item xs={12} sm container>
+                <Grid item xs container direction="column" spacing={2}>
+                  <Grid item xs>
+                    <Typography
+                      variant="subtitle1"
+                      color="textPrimary"
+                      gutterBottom
+                    >
+                      {profile.displayName}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {profile.email}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {description}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
           </Tooltip>
         }
         secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
@@ -86,7 +126,10 @@ export const ProviderSettingsItem = ({
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => (signedIn ? api.signOut() : api.signIn())}
+            onClick={() => {
+              const action = signedIn ? api.signOut() : api.signIn();
+              action.catch(error => errorApi.post(error));
+            }}
           >
             {signedIn ? `Sign out` : `Sign in`}
           </Button>

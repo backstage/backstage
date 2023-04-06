@@ -20,7 +20,7 @@ export const parseBazaarProject = (metadata: any): BazaarProject => {
   return {
     id: metadata.id,
     entityRef: metadata.entity_ref,
-    name: metadata.name,
+    title: metadata.title,
     community: metadata.community,
     description: metadata.description,
     status: metadata.status,
@@ -37,6 +37,7 @@ export const parseMember = (member: any): Member => {
   return {
     itemId: member.item_id,
     userId: member.user_id,
+    userRef: member.user_ref,
     joinDate: member.join_date,
     picture: member.picture,
   } as Member;

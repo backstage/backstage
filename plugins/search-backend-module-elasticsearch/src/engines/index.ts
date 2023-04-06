@@ -14,15 +14,43 @@
  * limitations under the License.
  */
 
-export { ElasticSearchSearchEngine } from './ElasticSearchSearchEngine';
+export {
+  decodePageCursor as decodeElasticSearchPageCursor,
+  ElasticSearchSearchEngine,
+} from './ElasticSearchSearchEngine';
+export { isOpenSearchCompatible } from './ElasticSearchClientOptions';
 export type {
-  ConcreteElasticSearchQuery,
+  BaseElasticSearchClientOptions,
+  ElasticSearchAgentOptions,
+  ElasticSearchConnectionConstructor,
+  ElasticSearchElasticSearchClientOptions,
+  ElasticSearchTransportConstructor,
+  ElasticSearchNodeOptions,
+  ElasticSearchAuth,
+  OpenSearchAuth,
+  OpenSearchConnectionConstructor,
+  OpenSearchElasticSearchClientOptions,
+  OpenSearchNodeOptions,
+} from './ElasticSearchClientOptions';
+export type {
+  ElasticSearchAliasAction,
+  ElasticSearchClientWrapper,
+  ElasticSearchIndexAction,
+} from './ElasticSearchClientWrapper';
+export type {
+  ElasticSearchConcreteQuery,
   ElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
   ElasticSearchHighlightOptions,
+  ElasticSearchQueryTranslator,
   ElasticSearchQueryTranslatorOptions,
+  ElasticSearchOptions,
 } from './ElasticSearchSearchEngine';
 export type {
   ElasticSearchSearchEngineIndexer,
   ElasticSearchSearchEngineIndexerOptions,
 } from './ElasticSearchSearchEngineIndexer';
+export type {
+  ElasticSearchCustomIndexTemplate,
+  ElasticSearchCustomIndexTemplateBody,
+} from './types';

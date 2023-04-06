@@ -18,12 +18,9 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import {
-  IdentityClient,
-  getBearerTokenFromAuthorizationHeader,
-} from '@backstage/plugin-auth-node';
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * Dependencies of the todo-list router
@@ -32,7 +29,7 @@ import { InputError } from '@backstage/errors';
  */
 export interface RouterOptions {
   logger: Logger;
-  identity: IdentityClient;
+  identity: IdentityApi;
 }
 
 /**
@@ -54,7 +51,7 @@ export async function createRouter(
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.get('/todos', async (_req, res) => {
@@ -62,12 +59,9 @@ export async function createRouter(
   });
 
   router.post('/todos', async (req, res) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
     let author: string | undefined = undefined;
 
-    const user = token ? await identity.authenticate(token) : undefined;
+    const user = await identity.getIdentity({ request: req });
     author = user?.identity.userEntityRef;
 
     if (!isTodoCreateRequest(req.body)) {

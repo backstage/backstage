@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
-import { Incident } from '../types';
+import { PagerDutyIncident } from '../types';
 import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
@@ -30,23 +31,24 @@ describe('Incidents', () => {
   it('Renders an empty state when there are no incidents', async () => {
     mockPagerDutyApi.getIncidentsByServiceId = jest
       .fn()
-      .mockImplementationOnce(async () => []);
+      .mockImplementationOnce(async () => ({ incidents: [] }));
 
-    const { getByText, queryByTestId } = render(
+    render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
   });
 
   it('Renders all incidents', async () => {
-    mockPagerDutyApi.getIncidentsByServiceId = jest.fn().mockImplementationOnce(
-      async () =>
-        [
+    mockPagerDutyApi.getIncidentsByServiceId = jest
+      .fn()
+      .mockImplementationOnce(async () => ({
+        incidents: [
           {
             id: 'id1',
             status: 'triggered',
@@ -82,27 +84,27 @@ describe('Incidents', () => {
             html_url: 'http://a.com/id2',
             serviceId: 'sId2',
           },
-        ] as Incident[],
-    );
-    const { getByText, getAllByTitle, queryByTestId } = render(
+        ] as PagerDutyIncident[],
+      }));
+    render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('title1')).toBeInTheDocument();
-    expect(getByText('title2')).toBeInTheDocument();
-    expect(getByText('person1')).toBeInTheDocument();
-    expect(getByText('person2')).toBeInTheDocument();
-    expect(getByText('triggered')).toBeInTheDocument();
-    expect(getByText('acknowledged')).toBeInTheDocument();
-    expect(queryByTestId('chip-triggered')).toBeInTheDocument();
-    expect(queryByTestId('chip-acknowledged')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('title1')).toBeInTheDocument();
+    expect(screen.getByText('title2')).toBeInTheDocument();
+    expect(screen.getByText('person1')).toBeInTheDocument();
+    expect(screen.getByText('person2')).toBeInTheDocument();
+    expect(screen.getByText('triggered')).toBeInTheDocument();
+    expect(screen.getByText('acknowledged')).toBeInTheDocument();
+    expect(screen.getByTestId('chip-triggered')).toBeInTheDocument();
+    expect(screen.getByTestId('chip-acknowledged')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
-    expect(getAllByTitle('View in PagerDuty').length).toEqual(2);
+    expect(screen.getAllByTitle('View in PagerDuty').length).toEqual(2);
   });
 
   it('Handle errors', async () => {
@@ -110,16 +112,18 @@ describe('Incidents', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error occurred'));
 
-    const { getByText, queryByTestId } = render(
+    render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
     expect(
-      getByText('Error encountered while fetching information. Error occurred'),
+      screen.getByText(
+        'Error encountered while fetching information. Error occurred',
+      ),
     ).toBeInTheDocument();
   });
 });

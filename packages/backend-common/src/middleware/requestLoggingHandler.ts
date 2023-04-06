@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { MiddlewareFactory } from '@backstage/backend-app-api';
 import { RequestHandler } from 'express';
-import { Logger } from 'winston';
-import morgan from 'morgan';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
+import { ConfigReader } from '@backstage/config';
 
 /**
  * Logs incoming requests.
@@ -26,16 +27,9 @@ import { getRootLogger } from '../logging';
  * @param logger - An optional logger to use. If not specified, the root logger will be used.
  * @returns An Express request handler
  */
-export function requestLoggingHandler(logger?: Logger): RequestHandler {
-  const actualLogger = (logger || getRootLogger()).child({
-    type: 'incomingRequest',
-  });
-
-  return morgan('combined', {
-    stream: {
-      write(message: String) {
-        actualLogger.info(message.trimRight());
-      },
-    },
-  });
+export function requestLoggingHandler(logger?: LoggerService): RequestHandler {
+  return MiddlewareFactory.create({
+    config: new ConfigReader({}),
+    logger: logger ?? getRootLogger(),
+  }).logging();
 }

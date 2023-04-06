@@ -84,6 +84,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
       ref: opts.since,
+      analyzeLockfile: true,
     });
     const withDevDependents = graph.collectPackageNames(
       changedPackages.map(pkg => pkg.name),
@@ -129,6 +130,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     return {
       targetDir: pkg.dir,
+      packageJson: pkg.packageJson,
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
       minify: buildOptions.minify,

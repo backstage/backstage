@@ -18,6 +18,7 @@ import express from 'express';
 import request from 'supertest';
 import { AuthResolverContext } from '../types';
 import { GcpIapProvider } from './provider';
+import { DEFAULT_IAP_JWT_HEADER } from './types';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -28,44 +29,47 @@ describe('GcpIapProvider', () => {
   const signInResolver = jest.fn();
   const tokenValidator = jest.fn();
 
-  it('runs the happy path', async () => {
-    const provider = new GcpIapProvider({
-      authHandler,
-      signInResolver,
-      tokenValidator,
-      resolverContext: {} as AuthResolverContext,
-    });
+  it.each([undefined, 'x-custom-header'])(
+    'runs the happy path',
+    async jwtHeader => {
+      const provider = new GcpIapProvider({
+        authHandler,
+        signInResolver,
+        tokenValidator,
+        resolverContext: {} as AuthResolverContext,
+        jwtHeader: jwtHeader,
+      });
 
-    // { "sub": "user:default/me", "ent": ["group:default/home"] }
-    const backstageToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvbWUiLCJlbnQiOlsiZ3JvdXA6ZGVmYXVsdC9ob21lIl19.CbmAKzFErGmtsnpRxyPc7dHv7WEjb5lY6206YCzR_Rc';
-    const iapToken = { sub: 's', email: 'e@mail.com' };
+      // { "sub": "user:default/me", "ent": ["group:default/home"] }
+      const backstageToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvbWUiLCJlbnQiOlsiZ3JvdXA6ZGVmYXVsdC9ob21lIl19.CbmAKzFErGmtsnpRxyPc7dHv7WEjb5lY6206YCzR_Rc';
+      const iapToken = { sub: 's', email: 'e@mail.com' };
 
-    authHandler.mockResolvedValueOnce({ email: 'e@mail.com' });
-    signInResolver.mockResolvedValueOnce({ token: backstageToken });
-    tokenValidator.mockResolvedValueOnce(iapToken);
+      authHandler.mockResolvedValueOnce({ email: 'e@mail.com' });
+      signInResolver.mockResolvedValueOnce({ token: backstageToken });
+      tokenValidator.mockResolvedValueOnce(iapToken);
 
-    const app = express();
-    app.use('/refresh', provider.refresh.bind(provider));
+      const app = express();
+      app.use('/refresh', provider.refresh.bind(provider));
 
-    const response = await request(app)
-      .get('/refresh')
-      .set('x-goog-iap-jwt-assertion', 'token');
+      const header = jwtHeader || DEFAULT_IAP_JWT_HEADER;
+      const response = await request(app).get('/refresh').set(header, 'token');
 
-    expect(response.status).toBe(200);
-    expect(response.get('content-type')).toBe(
-      'application/json; charset=utf-8',
-    );
-    expect(response.body).toEqual({
-      backstageIdentity: {
-        token: backstageToken,
-        identity: {
-          type: 'user',
-          userEntityRef: 'user:default/me',
-          ownershipEntityRefs: ['group:default/home'],
+      expect(response.status).toBe(200);
+      expect(response.get('content-type')).toBe(
+        'application/json; charset=utf-8',
+      );
+      expect(response.body).toEqual({
+        backstageIdentity: {
+          token: backstageToken,
+          identity: {
+            type: 'user',
+            userEntityRef: 'user:default/me',
+            ownershipEntityRefs: ['group:default/home'],
+          },
         },
-      },
-      providerInfo: { iapToken },
-    });
-  });
+        providerInfo: { iapToken },
+      });
+    },
+  );
 });

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { PropsWithChildren } from 'react';
 import Box from '@material-ui/core/Box';
+import React, { PropsWithChildren } from 'react';
 
 export interface TabPanelProps {
   value?: any;
@@ -26,13 +25,13 @@ export const TabPanel = (props: PropsWithChildren<TabPanelProps>) => {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
       {value === index && <Box p={3}>{children}</Box>}
-    </div>
+    </Box>
   );
 };

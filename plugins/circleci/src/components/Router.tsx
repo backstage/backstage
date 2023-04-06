@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import { circleCIBuildRouteRef } from '../route-refs';
 import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
@@ -24,9 +24,11 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
+/** @public */
 export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
+/** @public */
 export const Router = () => {
   const { entity } = useEntity();
 

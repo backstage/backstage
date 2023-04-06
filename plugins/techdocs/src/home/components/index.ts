@@ -24,5 +24,6 @@ export type {
   TabsConfig,
   TechDocsCustomHomeProps,
 } from './TechDocsCustomHome';
+export type { TechDocsIndexPageProps } from './TechDocsIndexPage';
 export * from './TechDocsPageWrapper';
 export * from './TechDocsPicker';

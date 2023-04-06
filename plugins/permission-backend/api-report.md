@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -20,7 +20,7 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
-  identity: IdentityClient;
+  identity: IdentityApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)

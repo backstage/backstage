@@ -15,11 +15,11 @@
  */
 import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useLocation as useLocationMocked } from 'react-router';
+import { useLocation as useLocationMocked } from 'react-router-dom';
 import { Direction } from '../EntityRelationsGraph';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(),
 }));
 
@@ -106,7 +106,7 @@ describe('useCatalogGraphPage', () => {
 
     act(() => result.current.setMaxDepth(5));
 
-    expect(windowHistoryReplaceState).toBeCalledWith(
+    expect(windowHistoryReplaceState).toHaveBeenCalledWith(
       null,
       '',
       '/?maxDepth=5&unidirectional=true&mergeRelations=true&direction=LR&showFilters=true',
@@ -114,7 +114,7 @@ describe('useCatalogGraphPage', () => {
 
     act(() => result.current.setUnidirectional(false));
 
-    expect(windowHistoryReplaceState).toBeCalledWith(
+    expect(windowHistoryReplaceState).toHaveBeenCalledWith(
       null,
       '',
       '/?maxDepth=5&unidirectional=false&mergeRelations=true&direction=LR&showFilters=true',
@@ -138,7 +138,7 @@ describe('useCatalogGraphPage', () => {
 
     rerender();
 
-    expect(windowHistoryPushState).toBeCalledWith(
+    expect(windowHistoryPushState).toHaveBeenCalledWith(
       null,
       '',
       '/?rootEntityRefs%5B%5D=component%3Adefault%2Fmy&maxDepth=%E2%88%9E&unidirectional=true&mergeRelations=true&direction=LR&showFilters=true',

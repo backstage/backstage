@@ -20,7 +20,9 @@ import { LegendItem } from '../LegendItem';
 import { currencyFormatter } from '../../utils/formatters';
 import { CostInsightsTheme } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
+import { useConfig } from '../../hooks';
 
+/** @public */
 export type BarChartLegendOptions = {
   previousName: string;
   previousFill: string;
@@ -29,20 +31,22 @@ export type BarChartLegendOptions = {
   hideMarker?: boolean;
 };
 
+/** @public */
 export type BarChartLegendProps = {
   costStart: number;
   costEnd: number;
   options?: Partial<BarChartLegendOptions>;
 };
 
-export const BarChartLegend = ({
-  costStart,
-  costEnd,
-  options = {},
-  children,
-}: PropsWithChildren<BarChartLegendProps>) => {
+/** @public */
+export const BarChartLegend = (
+  props: PropsWithChildren<BarChartLegendProps>,
+) => {
+  const { costStart, costEnd, options = {}, children } = props;
+
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles();
+  const { baseCurrency } = useConfig();
 
   const data = Object.assign(
     {
@@ -61,7 +65,7 @@ export const BarChartLegend = ({
           title={data.previousName}
           markerColor={options.hideMarker ? undefined : data.previousFill}
         >
-          {currencyFormatter.format(costStart)}
+          {currencyFormatter(baseCurrency).format(costStart)}
         </LegendItem>
       </Box>
       <Box marginRight={2}>
@@ -69,7 +73,7 @@ export const BarChartLegend = ({
           title={data.currentName}
           markerColor={options.hideMarker ? undefined : data.currentFill}
         >
-          {currencyFormatter.format(costEnd)}
+          {currencyFormatter(baseCurrency).format(costEnd)}
         </LegendItem>
       </Box>
       {children}

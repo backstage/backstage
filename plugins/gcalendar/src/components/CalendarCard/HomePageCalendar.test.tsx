@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
+import React from 'react';
 import { googleAuthApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-
-import { HomePageCalendar } from '.';
-import { gcalendarApiRef, gcalendarPlugin } from '../..';
+import { HomePageCalendar } from './HomePageCalendar';
+import { gcalendarApiRef } from '../../api';
+import { gcalendarPlugin } from '../../plugin';
 
 describe('<HomePageCalendar />', () => {
   const primaryCalendar = {
@@ -75,7 +75,7 @@ describe('<HomePageCalendar />', () => {
       </TestApiProvider>,
     );
 
-    expect(rendered.queryByText('Sign in')).toBeInTheDocument();
+    expect(await rendered.findByText('Sign in')).toBeInTheDocument();
   });
 
   it('should render empty card', async () => {
@@ -90,8 +90,8 @@ describe('<HomePageCalendar />', () => {
       </TestApiProvider>,
     );
 
-    expect(rendered.queryByText('No events')).toBeInTheDocument();
-    expect(rendered.queryByText('Go to Calendar')).toBeInTheDocument();
+    expect(await rendered.findByText('No events')).toBeInTheDocument();
+    expect(await rendered.findByText('Go to Calendar')).toBeInTheDocument();
   });
 
   it('should select primary calendar by default', async () => {
@@ -106,7 +106,9 @@ describe('<HomePageCalendar />', () => {
       </TestApiProvider>,
     );
 
-    expect(rendered.queryByText(primaryCalendar.summary)).toBeInTheDocument();
+    expect(
+      await rendered.findByText(primaryCalendar.summary),
+    ).toBeInTheDocument();
     expect(
       rendered.queryByText(nonPrimaryCalendar.summary),
     ).not.toBeInTheDocument();
@@ -124,12 +126,12 @@ describe('<HomePageCalendar />', () => {
       </TestApiProvider>,
     );
 
+    expect(await rendered.findAllByText('Test event')).toHaveLength(2);
     expect(rendered.queryByText('No events')).not.toBeInTheDocument();
-    expect(rendered.queryAllByText('Test event')).toHaveLength(2);
   });
 
   it('should select stored calendar', async () => {
-    mockStorage
+    await mockStorage
       .forBucket(gcalendarPlugin.getId())
       .set('google_calendars_selected', [nonPrimaryCalendar.id]);
 
@@ -146,7 +148,7 @@ describe('<HomePageCalendar />', () => {
     );
 
     expect(
-      rendered.queryByText(nonPrimaryCalendar.summary),
+      await rendered.findByText(nonPrimaryCalendar.summary),
     ).toBeInTheDocument();
     expect(
       rendered.queryByText(primaryCalendar.summary),

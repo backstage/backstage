@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export type { ExploreLayoutProps, SubRoute } from './ExploreLayout';
 export { ExploreLayout } from './ExploreLayout';

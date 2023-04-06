@@ -129,6 +129,98 @@ const testChecks: Record<string, TechInsightJsonRuleCheck[]> = {
     },
   ],
 
+  twoRetrieversSame: [
+    {
+      id: 'twoRetrieversSameCheck',
+      name: 'twoRetrieversSameCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Two Retriever Check For Testing',
+      factIds: [
+        'test-factretriever',
+        'test-factretriever-same-fact',
+        'non-existing-factretriever',
+      ],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'greaterThan',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
+
+  twoRetrieversDifferent: [
+    {
+      id: 'twoRetrieversDifferentCheck',
+      name: 'twoRetrieversDifferentCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Two Retriever Check For Testing',
+      factIds: ['test-factretriever-different-fact', 'test-factretriever'],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'greaterThan',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
+
+  twoRetrieversDifferentOrder: [
+    {
+      id: 'twoRetrieversDifferentOrderCheck',
+      name: 'twoRetrieversDifferentOrderCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Two Retriever Check For Testing',
+      factIds: ['test-factretriever', 'test-factretriever-different-fact'],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'greaterThan',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
+
+  twoRetrieversOnlyOneData: [
+    {
+      id: 'twoRetrieversOnlyOneDataCheck',
+      name: 'twoRetrieversOnlyOneDataCheck',
+      type: JSON_RULE_ENGINE_CHECK_TYPE,
+      description: 'Two Retriever Check For Testing',
+      factIds: [
+        'test-factretriever',
+        'test-factretriever-no-fact',
+        'non-existing-factretriever',
+      ],
+      rule: {
+        conditions: {
+          all: [
+            {
+              fact: 'testnumberfact',
+              operator: 'greaterThan',
+              value: 2,
+            },
+          ],
+        },
+      },
+    },
+  ],
+
   customOperator: [
     {
       id: 'customOperatorTestCheck',
@@ -184,16 +276,75 @@ const latestSchemasMock = jest.fn().mockImplementation(() => [
       description: '',
     },
   },
-]);
-const factsBetweenTimestampsByIdsMock = jest.fn();
-const latestFactsByIdsMock = jest.fn().mockResolvedValue({
-  ['test-factretriever']: {
-    id: 'test-factretriever',
-    facts: {
-      testnumberfact: 3,
+  {
+    version: '0.0.1',
+    id: 3,
+    ref: 'test-factretriever-no-fact',
+    entityTypes: ['component'],
+    testnumberfact: {
+      type: 'integer',
+      description: '',
     },
   },
-});
+  {
+    version: '0.0.1',
+    id: 4,
+    ref: 'test-factretriever-same-fact',
+    entityTypes: ['component'],
+    testnumberfact: {
+      type: 'integer',
+      description: '',
+    },
+  },
+  {
+    version: '0.0.1',
+    id: 5,
+    ref: 'test-factretriever-different-fact',
+    entityTypes: ['users'],
+    testnumberfact: {
+      type: 'integer',
+      description: '',
+    },
+  },
+]);
+const factsBetweenTimestampsByIdsMock = jest.fn();
+const latestFactsByIdsMock = jest
+  .fn()
+  .mockImplementation((factIds: string[]) => {
+    const facts = [
+      {
+        id: 'test-factretriever-different-fact',
+        facts: {
+          testnumberfact: 1,
+        },
+      },
+      {
+        id: 'test-factretriever-same-fact',
+        facts: {
+          testnumberfact: 3,
+        },
+      },
+      {
+        id: 'test-factretriever',
+        facts: {
+          testnumberfact: 3,
+        },
+      },
+      {
+        id: 'test-factretriever-no-fact',
+        facts: {},
+      },
+    ];
+
+    const factResults = Object.fromEntries(
+      factIds
+        .map(factId => facts.filter(fact => fact.id === factId))
+        .flat()
+        .map(fact => [fact.id, fact]),
+    );
+
+    return factResults;
+  });
 const mockCheckRegistry = {
   getAll(checks: string[]) {
     return checks.flatMap(check => testChecks[check]);
@@ -219,14 +370,14 @@ describe('JsonRulesEngineFactChecker', () => {
   describe('when running checks', () => {
     it('should throw on incorrectly configured checks conditions', async () => {
       const cur = async () => await factChecker.runChecks('a/a/a', ['broken']);
-      await expect(cur()).rejects.toThrowError(
+      await expect(cur()).rejects.toThrow(
         'Failed to run rules engine, Unknown operator: largerThan',
       );
     });
 
     it('should handle cases where wrong facts are referenced', async () => {
       const cur = async () => await factChecker.runChecks('a/a/a', ['broken2']);
-      await expect(cur()).rejects.toThrowError(
+      await expect(cur()).rejects.toThrow(
         'Failed to run rules engine, Undefined fact: somefact',
       );
     });
@@ -272,6 +423,174 @@ describe('JsonRulesEngineFactChecker', () => {
                   operator: 'lessThan',
                   result: true,
                   value: 5,
+                },
+              ],
+              priority: 1,
+            },
+          },
+        },
+      });
+    });
+
+    it('should respond with result, facts, fact schemas and checks for multiple retrievers', async () => {
+      const results = await factChecker.runChecks('a/a/a', [
+        'twoRetrieversSame',
+      ]);
+      expect(results).toHaveLength(1);
+      expect(results[0]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
+          },
+        },
+        result: true,
+        check: {
+          id: 'twoRetrieversSameCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'twoRetrieversSameCheck',
+          description: 'Two Retriever Check For Testing',
+          factIds: [
+            'test-factretriever',
+            'test-factretriever-same-fact',
+            'non-existing-factretriever',
+          ],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'greaterThan',
+                  result: true,
+                  value: 2,
+                },
+              ],
+              priority: 1,
+            },
+          },
+        },
+      });
+    });
+
+    it('should respond with result, facts, fact schemas and checks for multiple retrievers with the last fact winning', async () => {
+      const results = await factChecker.runChecks('a/a/a', [
+        'twoRetrieversDifferent',
+        'twoRetrieversDifferentOrder',
+      ]);
+
+      expect(results).toHaveLength(2);
+      expect(results[0]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
+          },
+        },
+        result: true,
+        check: {
+          id: 'twoRetrieversDifferentCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'twoRetrieversDifferentCheck',
+          description: 'Two Retriever Check For Testing',
+          factIds: ['test-factretriever-different-fact', 'test-factretriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'greaterThan',
+                  result: true,
+                  value: 2,
+                },
+              ],
+              priority: 1,
+            },
+          },
+        },
+      });
+      expect(results[1]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
+          },
+        },
+        result: true,
+        check: {
+          id: 'twoRetrieversDifferentOrderCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'twoRetrieversDifferentOrderCheck',
+          description: 'Two Retriever Check For Testing',
+          factIds: ['test-factretriever', 'test-factretriever-different-fact'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'greaterThan',
+                  result: true,
+                  value: 2,
+                },
+              ],
+              priority: 1,
+            },
+          },
+        },
+      });
+    });
+
+    it('the ordering of the factIds do not effect the result, its just which fact is last.', async () => {
+      const resultsDIfferentFirst = await factChecker.runChecks('a/a/a', [
+        'twoRetrieversDifferent',
+      ]);
+      const resultsDIfferentSecond = await factChecker.runChecks('a/a/a', [
+        'twoRetrieversDifferentOrder',
+      ]);
+
+      expect(resultsDIfferentFirst[0].result).not.toEqual(
+        resultsDIfferentSecond[0].result,
+      );
+    });
+
+    it('should respond with result, facts, fact schemas and checks for multiple retrievers one without data', async () => {
+      const results = await factChecker.runChecks('a/a/a', [
+        'twoRetrieversOnlyOneData',
+      ]);
+      expect(results).toHaveLength(1);
+      expect(results[0]).toMatchObject({
+        facts: {
+          testnumberfact: {
+            value: 3,
+            type: 'integer',
+            description: '',
+          },
+        },
+        result: true,
+        check: {
+          id: 'twoRetrieversOnlyOneDataCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'twoRetrieversOnlyOneDataCheck',
+          description: 'Two Retriever Check For Testing',
+          factIds: [
+            'test-factretriever',
+            'test-factretriever-no-fact',
+            'non-existing-factretriever',
+          ],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'testnumberfact',
+                  factResult: 3,
+                  operator: 'greaterThan',
+                  result: true,
+                  value: 2,
                 },
               ],
               priority: 1,

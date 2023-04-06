@@ -68,13 +68,47 @@ describe('buildOrgHierarchy', () => {
 describe('assignGroupsToUsers', () => {
   it('should assign groups to users', () => {
     const users: UserEntity[] = [u('u1'), u('u2')];
-    const groupMemberUsers = new Map<string, string[]>([
-      ['g1', ['u1', 'u2']],
-      ['g2', ['u2']],
-      ['g3', ['u3']],
-    ]);
 
-    assignGroupsToUsers(users, groupMemberUsers);
+    const groups: GroupEntity[] = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'g1',
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['default/u1', 'default/u2'],
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'g2',
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['u2'],
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'g3',
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: ['u3'],
+        },
+      },
+    ];
+
+    assignGroupsToUsers(users, groups);
 
     expect(users[0].spec.memberOf).toEqual(['g1']);
     expect(users[1].spec.memberOf).toEqual(['g1', 'g2']);

@@ -4,15 +4,15 @@
 
 ```ts
 import { BitbucketIntegration } from '@backstage/integration';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorResult } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
@@ -37,7 +37,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public
+// @public @deprecated
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;

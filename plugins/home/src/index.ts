@@ -31,9 +31,15 @@ export {
   ComponentTabs,
   ComponentTab,
   WelcomeTitle,
+  HeaderWorldClock,
 } from './plugin';
-export { SettingsModal, HeaderWorldClock } from './components';
+export { SettingsModal } from './components';
 export * from './assets';
-export type { ClockConfig } from './components';
+export * from './homePageComponents';
 export { createCardExtension } from './extensions';
-export type { ComponentRenderer } from './extensions';
+export type {
+  CardExtensionProps,
+  ComponentParts,
+  ComponentRenderer,
+  RendererProps,
+} from './extensions';

@@ -20,9 +20,13 @@
  * @packageDocumentation
  */
 
+import { isCodeCoverageAvailable } from './components/Router';
+
 export { codeCoveragePlugin, EntityCodeCoverageContent } from './plugin';
-export {
-  Router,
-  isCodeCoverageAvailable,
-  isCodeCoverageAvailable as isPluginApplicableToEntity,
-} from './components/Router';
+export { isCodeCoverageAvailable };
+
+/**
+ * @public
+ * @deprecated Use `isPluginApplicableToEntity` instead.
+ */
+export const isPluginApplicableToEntity = isCodeCoverageAvailable;

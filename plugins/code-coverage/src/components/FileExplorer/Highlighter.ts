@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import 'highlight.js/styles/atom-one-dark.css';
 import highlight from 'highlight.js';
 

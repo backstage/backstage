@@ -31,17 +31,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/** @public */
 export type SplunkOnCallPageProps = {
   title?: string;
   subtitle?: string;
   pageTitle?: string;
 };
 
-export const SplunkOnCallPage = ({
-  title,
-  subtitle,
-  pageTitle,
-}: SplunkOnCallPageProps): JSX.Element => {
+export const SplunkOnCallPage = (props: SplunkOnCallPageProps): JSX.Element => {
+  const { title, subtitle, pageTitle } = props;
   const classes = useStyles();
 
   return (

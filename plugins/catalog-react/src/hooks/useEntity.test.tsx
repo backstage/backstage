@@ -23,6 +23,11 @@ import {
   AsyncEntityProvider,
 } from './useEntity';
 import { Entity } from '@backstage/catalog-model';
+import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
+import { MockAnalyticsApi, TestApiRegistry } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
+
+const entity = { metadata: { name: 'my-entity' }, kind: 'MyKind' } as Entity;
 
 describe('useEntity', () => {
   it('should throw if no entity is provided', async () => {
@@ -34,7 +39,6 @@ describe('useEntity', () => {
   });
 
   it('should provide an entity', async () => {
-    const entity = { kind: 'MyEntity' } as Entity;
     const { result } = renderHook(() => useEntity(), {
       wrapper: ({ children }) => (
         <EntityProvider entity={entity} children={children} />
@@ -42,6 +46,24 @@ describe('useEntity', () => {
     });
 
     expect(result.current.entity).toBe(entity);
+  });
+
+  it('should provide entityRef analytics context', () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
+    const { result } = renderHook(() => useAnalytics(), {
+      wrapper: ({ children }) => (
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity} children={children} />
+        </ApiProvider>
+      ),
+    });
+
+    result.current.captureEvent('test', 'value');
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      context: { entityRef: 'mykind:default/my-entity' },
+    });
   });
 });
 
@@ -60,7 +82,6 @@ describe('useAsyncEntity', () => {
   });
 
   it('should provide an entity', async () => {
-    const entity = { kind: 'MyEntity' } as Entity;
     const refresh = () => {};
     const { result } = renderHook(() => useAsyncEntity(), {
       wrapper: ({ children }) => (
@@ -95,5 +116,44 @@ describe('useAsyncEntity', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe(error);
     expect(result.current.refresh).toBe(undefined);
+  });
+
+  it('should provide entityRef analytics context', () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
+    const { result } = renderHook(() => useAnalytics(), {
+      wrapper: ({ children }) => (
+        <ApiProvider apis={apis}>
+          <AsyncEntityProvider
+            loading={false}
+            entity={entity}
+            refresh={() => {}}
+            children={children}
+          />
+        </ApiProvider>
+      ),
+    });
+
+    result.current.captureEvent('test', 'value');
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      context: { entityRef: 'mykind:default/my-entity' },
+    });
+  });
+
+  it('should omit entityRef analytics context', () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
+    const { result } = renderHook(() => useAnalytics(), {
+      wrapper: ({ children }) => (
+        <ApiProvider apis={apis}>
+          <AsyncEntityProvider loading={false} children={children} />
+        </ApiProvider>
+      ),
+    });
+
+    result.current.captureEvent('test', 'value');
+
+    expect(analyticsSpy.getEvents()[0].context).not.toHaveProperty('entityRef');
   });
 });

@@ -26,7 +26,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { Button } from '@backstage/core-components';
+import { LinkButton } from '@backstage/core-components';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -41,7 +41,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
   lifecycle: {
     lineHeight: '0.8em',
-    color: 'white',
+    color: theme.palette.common.white,
   },
   ga: {
     backgroundColor: theme.palette.status.ok,
@@ -97,9 +97,9 @@ export const ToolCard = ({ card, objectFit }: Props) => {
         )}
       </CardContent>
       <CardActions>
-        <Button color="primary" to={url} disabled={!url}>
+        <LinkButton color="primary" to={url} disabled={!url}>
           Explore
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );

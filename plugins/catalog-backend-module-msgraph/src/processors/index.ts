@@ -15,5 +15,8 @@
  */
 
 export { MicrosoftGraphOrgEntityProvider } from './MicrosoftGraphOrgEntityProvider';
-export type { MicrosoftGraphOrgEntityProviderOptions } from './MicrosoftGraphOrgEntityProvider';
+export type {
+  MicrosoftGraphOrgEntityProviderOptions,
+  MicrosoftGraphOrgEntityProviderLegacyOptions,
+} from './MicrosoftGraphOrgEntityProvider';
 export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';

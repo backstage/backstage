@@ -10,3 +10,4 @@ npmPackageName: '@backstage/plugin-gocd'
 tags:
   - ci
   - cd
+addedDate: '2022-01-15'

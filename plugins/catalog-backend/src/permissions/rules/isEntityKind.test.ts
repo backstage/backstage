@@ -27,7 +27,11 @@ describe('isEntityKind', () => {
           name: 'some-component',
         },
       };
-      expect(isEntityKind.apply(component, ['b'])).toBe(true);
+      expect(
+        isEntityKind.apply(component, {
+          kinds: ['b'],
+        }),
+      ).toBe(true);
     });
 
     it('returns false when entity is not the correct kind', () => {
@@ -38,13 +42,21 @@ describe('isEntityKind', () => {
           name: 'some-component',
         },
       };
-      expect(isEntityKind.apply(component, ['c'])).toBe(false);
+      expect(
+        isEntityKind.apply(component, {
+          kinds: ['c'],
+        }),
+      ).toBe(false);
     });
   });
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(isEntityKind.toQuery(['b'])).toEqual({
+      expect(
+        isEntityKind.toQuery({
+          kinds: ['b'],
+        }),
+      ).toEqual({
         key: 'kind',
         values: ['b'],
       });

@@ -22,6 +22,7 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -237,7 +238,7 @@ export const HomePageBazaarInfoCard = ({
               {parseEntityRef(bazaarProject.value?.entityRef!).name}
             </b>,
             ' from ',
-            <b className={classes.wordBreak}>{bazaarProject.value?.name}</b>,
+            <b className={classes.wordBreak}>{bazaarProject.value?.title}</b>,
             ' ?',
           ]}
           type="unlink"
@@ -256,9 +257,9 @@ export const HomePageBazaarInfoCard = ({
 
         <CardHeader
           title={
-            <p className={classes.wordBreak}>
-              {bazaarProject.value?.name || initProject.name}
-            </p>
+            <Typography paragraph className={classes.wordBreak}>
+              {bazaarProject.value?.title || initProject.title}
+            </Typography>
           }
           action={
             <div>

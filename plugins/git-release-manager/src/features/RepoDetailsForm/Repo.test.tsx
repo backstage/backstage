@@ -26,7 +26,7 @@ import { Repo } from './Repo';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,
@@ -65,7 +65,7 @@ describe('Repo', () => {
 
     await waitFor(() => screen.getAllByTestId(TEST_IDS.form.repo.empty));
     expect(getAllByTestId(TEST_IDS.form.repo.empty)).toMatchInlineSnapshot(`
-      Array [
+      [
         <p
           class="MuiFormHelperText-root Mui-required"
           data-testid="grm--form--repo--empty"

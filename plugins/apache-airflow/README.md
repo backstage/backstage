@@ -42,6 +42,26 @@ yarn --cwd packages/app add @backstage/plugin-apache-airflow
  );
 ```
 
+If you just want to embed the DAGs into an existing page, you can use the `ApacheAirflowDagTable`
+
+```tsx
+import { ApacheAirflowDagTable } from '@backstage/plugin-apache-airflow';
+
+export function SomeEntityPage(): JSX.Element {
+  return (
+    <Grid item md={6} xs={12}>
+      <ApacheAirflowDagTable
+        dagIds={[
+          'example_bash_operator',
+          'example_branch_datetime_operator_2',
+          'example_branch_labels',
+        ]}
+      />
+    </Grid>
+  );
+}
+```
+
 ## Configuration
 
 For links to the Airflow instance, the `baseUrl` must be defined in

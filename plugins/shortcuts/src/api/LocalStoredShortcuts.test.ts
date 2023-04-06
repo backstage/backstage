@@ -27,17 +27,23 @@ describe('LocalStoredShortcuts', () => {
     );
     const shortcut: Shortcut = { id: 'id', title: 'title', url: '/url' };
 
-    await shortcutApi.add(shortcut);
+    const observerNextHandler = jest.fn();
 
     await new Promise<void>(resolve => {
-      const subscription = shortcutApi.shortcut$().subscribe(data => {
-        expect(data).toEqual(
-          expect.arrayContaining([{ ...shortcut, id: expect.anything() }]),
-        );
-        subscription.unsubscribe();
-        resolve();
+      shortcutApi.shortcut$().subscribe({
+        next: data => {
+          observerNextHandler(data);
+          resolve();
+        },
       });
     });
+    observerNextHandler.mockClear(); // handler is called with current state to start
+    await shortcutApi.add(shortcut);
+
+    expect(observerNextHandler).toHaveBeenCalledTimes(1);
+    expect(observerNextHandler).toHaveBeenCalledWith(
+      expect.arrayContaining([{ ...shortcut, id: expect.anything() }]),
+    );
   });
 
   it('should add shortcuts with ids', async () => {

@@ -33,6 +33,8 @@ export type {
   PolicyDecision,
   PermissionCondition,
   PermissionCriteria,
+  PermissionRuleParam,
+  PermissionRuleParams,
   AllOfCriteria,
   AnyOfCriteria,
   NotCriteria,

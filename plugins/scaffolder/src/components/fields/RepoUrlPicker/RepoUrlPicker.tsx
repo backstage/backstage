@@ -23,32 +23,16 @@ import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { FieldExtensionComponentProps } from '../../../extensions';
+import { GerritRepoPicker } from './GerritRepoPicker';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
+import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useTemplateSecrets } from '../../secrets';
+import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `RepoUrlPicker` field extension.
- *
- * @public
- */
-export interface RepoUrlPickerUiOptions {
-  allowedHosts?: string[];
-  allowedOwners?: string[];
-  requestUserCredentials?: {
-    secretsKey: string;
-    additionalScopes?: {
-      github?: string[];
-      gitlab?: string[];
-      bitbucket?: string[];
-      azure?: string[];
-    };
-  };
-}
+export { RepoUrlPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `RepoUrlPicker`
@@ -56,9 +40,7 @@ export interface RepoUrlPickerUiOptions {
  *
  * @public
  */
-export const RepoUrlPicker = (
-  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
-) => {
+export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   const { uiSchema, onChange, rawErrors, formData } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
@@ -70,10 +52,24 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
   );
+  const allowedOrganizations = useMemo(
+    () => uiSchema?.['ui:options']?.allowedOrganizations ?? [],
+    [uiSchema],
+  );
   const allowedOwners = useMemo(
     () => uiSchema?.['ui:options']?.allowedOwners ?? [],
     [uiSchema],
   );
+  const allowedProjects = useMemo(
+    () => uiSchema?.['ui:options']?.allowedProjects ?? [],
+    [uiSchema],
+  );
+  const allowedRepos = useMemo(
+    () => uiSchema?.['ui:options']?.allowedRepos ?? [],
+    [uiSchema],
+  );
+
+  const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
     onChange(serializeRepoPickerUrl(state));
@@ -81,10 +77,37 @@ export const RepoUrlPicker = (
 
   /* we deal with calling the repo setting here instead of in each components for ease */
   useEffect(() => {
-    if (allowedOwners.length === 1) {
-      setState(prevState => ({ ...prevState, owner: allowedOwners[0] }));
+    if (allowedOrganizations.length > 0 && !organization) {
+      setState(prevState => ({
+        ...prevState,
+        organization: allowedOrganizations[0],
+      }));
     }
-  }, [setState, allowedOwners]);
+  }, [setState, allowedOrganizations, organization]);
+
+  useEffect(() => {
+    if (allowedOwners.length > 0 && !owner) {
+      setState(prevState => ({
+        ...prevState,
+        owner: allowedOwners[0],
+      }));
+    }
+  }, [setState, allowedOwners, owner]);
+
+  useEffect(() => {
+    if (allowedProjects.length > 0 && !project) {
+      setState(prevState => ({
+        ...prevState,
+        project: allowedProjects[0],
+      }));
+    }
+  }, [setState, allowedProjects, project]);
+
+  useEffect(() => {
+    if (allowedRepos.length > 0 && !repoName) {
+      setState(prevState => ({ ...prevState, repoName: allowedRepos[0] }));
+    }
+  }, [setState, allowedRepos, repoName]);
 
   const updateLocalState = useCallback(
     (newState: RepoUrlPickerState) => {
@@ -97,16 +120,17 @@ export const RepoUrlPicker = (
     async () => {
       const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
 
+      const workspace = state.owner ? state.owner : state.project;
       if (
         !requestUserCredentials ||
-        !(state.host && state.owner && state.repoName)
+        !(state.host && workspace && state.repoName)
       ) {
         return;
       }
 
-      const [host, owner, repoName] = [
+      const [encodedHost, encodedWorkspace, encodedRepoName] = [
         state.host,
-        state.owner,
+        workspace,
         state.repoName,
       ].map(encodeURIComponent);
 
@@ -114,14 +138,14 @@ export const RepoUrlPicker = (
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${host}/${owner}/${repoName}`,
+        url: `https://${encodedHost}/${encodedWorkspace}/${encodedRepoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
         },
       });
 
-      // set the secret using the key provided in the the ui:options for use
+      // set the secret using the key provided in the ui:options for use
       // in the templating the manifest with ${{ secrets[secretsKey] }}
       setSecrets({ [requestUserCredentials.secretsKey]: token });
     },
@@ -143,9 +167,9 @@ export const RepoUrlPicker = (
       {hostType === 'github' && (
         <GithubRepoPicker
           allowedOwners={allowedOwners}
+          onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
-          onChange={updateLocalState}
         />
       )}
       {hostType === 'gitlab' && (
@@ -158,6 +182,8 @@ export const RepoUrlPicker = (
       )}
       {hostType === 'bitbucket' && (
         <BitbucketRepoPicker
+          allowedOwners={allowedOwners}
+          allowedProjects={allowedProjects}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
@@ -165,11 +191,28 @@ export const RepoUrlPicker = (
       )}
       {hostType === 'azure' && (
         <AzureRepoPicker
+          allowedOrganizations={allowedOrganizations}
+          allowedOwners={allowedOwners}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
         />
       )}
+      {hostType === 'gerrit' && (
+        <GerritRepoPicker
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
+      )}
+      <RepoUrlPickerRepoName
+        repoName={state.repoName}
+        allowedRepos={allowedRepos}
+        onChange={repo =>
+          setState(prevState => ({ ...prevState, repoName: repo }))
+        }
+        rawErrors={rawErrors}
+      />
     </>
   );
 };

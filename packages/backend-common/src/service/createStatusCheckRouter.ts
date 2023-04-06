@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import express from 'express';
 import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
@@ -32,7 +32,7 @@ import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
  * @public
  */
 export async function createStatusCheckRouter(options: {
-  logger: Logger;
+  logger: LoggerService;
   /**
    * The path (including a leading slash) that the health check should be
    * mounted on.

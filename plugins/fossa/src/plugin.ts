@@ -24,6 +24,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const fossaPlugin = createPlugin({
   id: 'fossa',
   apis: [
@@ -39,6 +40,9 @@ export const fossaPlugin = createPlugin({
           discoveryApi,
           identityApi,
           organizationId: configApi.getOptionalString('fossa.organizationId'),
+          externalLinkBaseUrl: configApi.getOptionalString(
+            'fossa.externalLinkBaseUrl',
+          ),
         }),
     }),
   ],

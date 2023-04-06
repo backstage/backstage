@@ -27,7 +27,7 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError('AKS dashboard requires a dashboardParameters option');
+    ).toThrow('AKS dashboard requires a dashboardParameters option');
   });
   it('should provide a subscriptionId in the dashboardParameters options', () => {
     expect(() =>
@@ -44,7 +44,7 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError(
+    ).toThrow(
       'AKS dashboard requires a "subscriptionId" of type string in the dashboardParameters option',
     );
   });
@@ -63,7 +63,7 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError(
+    ).toThrow(
       'AKS dashboard requires a "resourceGroup" of type string in the dashboardParameters option',
     );
   });
@@ -82,7 +82,7 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrowError(
+    ).toThrow(
       'AKS dashboard requires a "clusterName" of type string in the dashboardParameters option',
     );
   });

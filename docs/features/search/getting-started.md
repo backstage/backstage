@@ -18,7 +18,7 @@ If you haven't setup Backstage already, start
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-search
+yarn add --cwd packages/app @backstage/plugin-search @backstage/plugin-search-react
 ```
 
 Create a new `packages/app/src/components/search/SearchPage.tsx` file in your
@@ -33,8 +33,8 @@ import {
   SearchResult,
   DefaultResultListItem,
   SearchFilter,
-} from '@backstage/plugin-search';
-import { CatalogResultListItem } from '@backstage/plugin-catalog';
+} from '@backstage/plugin-search-react';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 
 export const searchPage = (
   <Page themeId="home">
@@ -68,7 +68,7 @@ export const searchPage = (
                   switch (result.type) {
                     case 'software-catalog':
                       return (
-                        <CatalogResultListItem
+                        <CatalogSearchResultListItem
                           key={result.document.location}
                           result={result.document}
                           highlight={result.highlight}
@@ -213,7 +213,7 @@ apiRouter.use('/search', await search(searchEnv));
 
 ### Frontend
 
-The Search Plugin exposes several default filter types as static properties,
+The Search Plugin web library (`@backstage/plugin-search-react`) exposes several default filter types as static properties,
 including `<SearchFilter.Select />` and `<SearchFilter.Checkbox />`. These allow
 you to provide values relevant to your Backstage instance that, when selected,
 get passed to the backend.
@@ -237,7 +237,7 @@ If you have advanced filter needs, you can specify your own filter component
 like this (although new core filter contributions are welcome):
 
 ```tsx
-import { useSearch, SearchFilter } from '@backstage/plugin-search';
+import { useSearch, SearchFilter } from '@backstage/plugin-search-react';
 
 const MyCustomFilter = () => {
   // Note: filters contain filter data from other filter components. Be sure
@@ -253,7 +253,7 @@ const MyCustomFilter = () => {
 
 It's good practice for search results to highlight information that was used to
 return it in the first place! The code below highlights how you might specify a
-custom result item component, using the `<CatalogResultListItem />` component as
+custom result item component, using the `<CatalogSearchResultListItem />` component as
 an example:
 
 ```tsx {7-13}
@@ -265,7 +265,7 @@ an example:
         switch (result.type) {
           case 'software-catalog':
             return (
-              <CatalogResultListItem
+              <CatalogSearchResultListItem
                 key={result.document.location}
                 result={result.document}
                 highlight={result.highlight}
@@ -279,12 +279,14 @@ an example:
 </SearchResult>
 ```
 
+> For more advanced customization of the Search frontend, also see how to guides such as [How to implement your own Search API](./how-to-guides.md#how-to-implement-your-own-search-api) and [How to customize search results highlighting styling](./how-to-guides.md#how-to-customize-search-results-highlighting-styling)
+
 ### Backend
 
 Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a
 [Search Engine](./concepts.md#search-engines) of your choice. Currently, we only
-support two engines, an in-memory search Engine called Lunr and ElasticSearch.
+support two engines, an in-memory search Engine called Lunr and Elasticsearch.
 See [Search Engines](./search-engines.md) documentation for more information how
 to configure these in your Backstage instance.
 
@@ -380,3 +382,5 @@ indexBuilder.addCollator({
   }),
 });
 ```
+
+> For more advanced customization of the Search backend, also see how to guides such as [How to index TechDocs documents](./how-to-guides.md#how-to-index-techdocs-documents) and [How to limit what can be searched in the Software Catalog](./how-to-guides.md#how-to-limit-what-can-be-searched-in-the-software-catalog)

@@ -102,9 +102,9 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
   it('throws error when there is no triplet', () => {
     const originalPath = '/default/component/IMAGE.png';
     const error = `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`;
-    expect(() =>
-      lowerCaseEntityTripletInStoragePath(originalPath),
-    ).toThrowError(error);
+    expect(() => lowerCaseEntityTripletInStoragePath(originalPath)).toThrow(
+      error,
+    );
   });
 });
 
@@ -157,6 +157,16 @@ describe('getStaleFiles', () => {
     const staleFiles = getStaleFiles(newFiles, oldFiles);
     expect(staleFiles).toHaveLength(1);
     expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
+  });
+
+  it('should not return directories as stale files if they are parent directories of new files', () => {
+    const oldFiles = [...defaultFiles, 'default/Component/backstage/foo'];
+    const newFiles = [
+      ...defaultFiles,
+      'default/Component/backstage/foo/bar/index.html',
+    ];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(0);
   });
 });
 

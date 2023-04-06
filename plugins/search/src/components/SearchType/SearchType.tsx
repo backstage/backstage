@@ -47,6 +47,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
+ * Props for {@link SearchType}.
+ *
  * @public
  */
 export type SearchTypeProps = {
@@ -56,6 +58,9 @@ export type SearchTypeProps = {
   defaultValue?: string[] | string | null;
 };
 
+/**
+ * @public
+ */
 const SearchType = (props: SearchTypeProps) => {
   const { className, defaultValue, name, values = [] } = props;
   const classes = useStyles();

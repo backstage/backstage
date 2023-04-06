@@ -32,7 +32,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import { ToggleButton } from '@material-ui/lab';
 import React, { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import {
   ALL_RELATION_PAIRS,
   Direction,
@@ -40,6 +40,7 @@ import {
   EntityRelationsGraph,
   RelationPairs,
 } from '../EntityRelationsGraph';
+import { CurveFilter } from './CurveFilter';
 import { DirectionFilter } from './DirectionFilter';
 import { MaxDepthFilter } from './MaxDepthFilter';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
@@ -47,57 +48,60 @@ import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
-const useStyles = makeStyles(theme => ({
-  content: {
-    minHeight: 0,
-  },
-  container: {
-    height: '100%',
-    maxHeight: '100%',
-    minHeight: 0,
-  },
-  fullHeight: {
-    maxHeight: '100%',
-    display: 'flex',
-    minHeight: 0,
-  },
-  graphWrapper: {
-    position: 'relative',
-    flex: 1,
-    minHeight: 0,
-    display: 'flex',
-  },
-  graph: {
-    flex: 1,
-    minHeight: 0,
-  },
-  legend: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    padding: theme.spacing(1),
-    '& .icon': {
-      verticalAlign: 'bottom',
+const useStyles = makeStyles(
+  theme => ({
+    content: {
+      minHeight: 0,
     },
-  },
-  filters: {
-    display: 'grid',
-    gridGap: theme.spacing(1),
-    gridAutoRows: 'auto',
-    [theme.breakpoints.up('lg')]: {
-      display: 'block',
+    container: {
+      height: '100%',
+      maxHeight: '100%',
+      minHeight: 0,
     },
-    [theme.breakpoints.only('md')]: {
-      gridTemplateColumns: 'repeat(3, 1fr)',
+    fullHeight: {
+      maxHeight: '100%',
+      display: 'flex',
+      minHeight: 0,
     },
-    [theme.breakpoints.only('sm')]: {
-      gridTemplateColumns: 'repeat(2, 1fr)',
+    graphWrapper: {
+      position: 'relative',
+      flex: 1,
+      minHeight: 0,
+      display: 'flex',
     },
-    [theme.breakpoints.down('xs')]: {
-      gridTemplateColumns: 'repeat(1, 1fr)',
+    graph: {
+      flex: 1,
+      minHeight: 0,
     },
-  },
-}));
+    legend: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      padding: theme.spacing(1),
+      '& .icon': {
+        verticalAlign: 'bottom',
+      },
+    },
+    filters: {
+      display: 'grid',
+      gridGap: theme.spacing(1),
+      gridAutoRows: 'auto',
+      [theme.breakpoints.up('lg')]: {
+        display: 'block',
+      },
+      [theme.breakpoints.only('md')]: {
+        gridTemplateColumns: 'repeat(3, 1fr)',
+      },
+      [theme.breakpoints.only('sm')]: {
+        gridTemplateColumns: 'repeat(2, 1fr)',
+      },
+      [theme.breakpoints.down('xs')]: {
+        gridTemplateColumns: 'repeat(1, 1fr)',
+      },
+    },
+  }),
+  { name: 'PluginCatalogGraphCatalogGraphPage' },
+);
 
 export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;
@@ -110,6 +114,7 @@ export const CatalogGraphPage = (props: {
     mergeRelations?: boolean;
     direction?: Direction;
     showFilters?: boolean;
+    curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
 }) => {
   const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
@@ -130,6 +135,8 @@ export const CatalogGraphPage = (props: {
     setMergeRelations,
     direction,
     setDirection,
+    curve,
+    setCurve,
     rootEntityNames,
     setRootEntityNames,
     showFilters,
@@ -201,6 +208,7 @@ export const CatalogGraphPage = (props: {
                 relationPairs={relationPairs}
               />
               <DirectionFilter value={direction} onChange={setDirection} />
+              <CurveFilter value={curve} onChange={setCurve} />
               <SwitchFilter
                 value={unidirectional}
                 onChange={setUnidirectional}
@@ -245,6 +253,7 @@ export const CatalogGraphPage = (props: {
                 relationPairs={relationPairs}
                 className={classes.graph}
                 zoom="enabled"
+                curve={curve}
               />
             </Paper>
           </Grid>

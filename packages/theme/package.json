@@ -1,8 +1,7 @@
 {
   "name": "@backstage/theme",
   "description": "material-ui theme for use with Backstage.",
-  "version": "0.2.15",
-  "private": false,
+  "version": "0.2.19-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -35,8 +34,13 @@
   "dependencies": {
     "@material-ui/core": "^4.12.2"
   },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0"
+  },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.0"
+    "@backstage/cli": "workspace:^",
+    "@types/react": "^16.13.1 || ^17.0.0"
   },
   "files": [
     "dist"

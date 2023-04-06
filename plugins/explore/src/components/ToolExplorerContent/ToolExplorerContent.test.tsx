@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  ExploreTool,
-  exploreToolsConfigRef,
-} from '@backstage/plugin-explore-react';
+import { ExploreTool } from '@backstage/plugin-explore-common';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { exploreApiRef } from '../../api';
 import { ToolExplorerContent } from './ToolExplorerContent';
 
 describe('<ToolExplorerContent />', () => {
-  const exploreToolsConfigApi: jest.Mocked<typeof exploreToolsConfigRef.T> = {
+  const exploreApi: jest.Mocked<typeof exploreApiRef.T> = {
     getTools: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <ThemeProvider theme={lightTheme}>
-      <TestApiProvider apis={[[exploreToolsConfigRef, exploreToolsConfigApi]]}>
-        {children}
-      </TestApiProvider>
-    </ThemeProvider>
+    <TestApiProvider apis={[[exploreApiRef, exploreApi]]}>
+      {children}
+    </TestApiProvider>
   );
 
   beforeEach(() => {
@@ -63,7 +57,7 @@ describe('<ToolExplorerContent />', () => {
         tags: ['standards', 'landscape'],
       },
     ];
-    exploreToolsConfigApi.getTools.mockResolvedValue(tools);
+    exploreApi.getTools.mockResolvedValue({ tools });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
@@ -78,7 +72,7 @@ describe('<ToolExplorerContent />', () => {
   });
 
   it('renders a custom title', async () => {
-    exploreToolsConfigApi.getTools.mockResolvedValue([]);
+    exploreApi.getTools.mockResolvedValue({ tools: [] });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
@@ -90,7 +84,7 @@ describe('<ToolExplorerContent />', () => {
   });
 
   it('renders empty state', async () => {
-    exploreToolsConfigApi.getTools.mockResolvedValue([]);
+    exploreApi.getTools.mockResolvedValue({ tools: [] });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>

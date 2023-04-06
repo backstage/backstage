@@ -54,17 +54,24 @@ export const getOwnedPodsThroughReplicaSets = (
   }, [] as V1Pod[]);
 };
 
+interface ResourceRef {
+  kind: string;
+  namespace?: string;
+  name?: string;
+}
+
 export const getMatchingHpa = (
-  ownerName: string | undefined,
-  ownerKind: string,
+  owner: ResourceRef,
   hpas: V1HorizontalPodAutoscaler[],
 ): V1HorizontalPodAutoscaler | undefined => {
   return hpas.find(hpa => {
     return (
       (hpa.spec?.scaleTargetRef?.kind ?? '').toLocaleLowerCase('en-US') ===
-        ownerKind.toLocaleLowerCase('en-US') &&
+        owner.kind.toLocaleLowerCase('en-US') &&
+      (hpa.metadata?.namespace ?? '') ===
+        (owner.namespace ?? 'unknown-namespace') &&
       (hpa.spec?.scaleTargetRef?.name ?? '') ===
-        (ownerName ?? 'unknown-deployment')
+        (owner.name ?? 'unknown-deployment')
     );
   });
 };

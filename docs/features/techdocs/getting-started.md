@@ -31,18 +31,16 @@ Once the package has been installed, you need to import the plugin in your app.
 In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 
-// ...
-
 const AppRoutes = () => {
   <FlatRoutes>
-    // ... other plugin routes
+    {/* ... other plugin routes */}
     <Route path="/docs" element={<TechDocsIndexPage />}>
       <DefaultTechDocsHome />
     </Route>
@@ -54,8 +52,54 @@ const AppRoutes = () => {
 };
 ```
 
-That's it! But now, we need the TechDocs Backend plugin for the frontend to
-work.
+It would be nice to decorate your pages with something else... Having a link that redirects you to a new issue page when you highlight text in your documentation would be really cool, right? Let's learn how to do this using the TechDocs Addon Framework!
+
+With the [TechDocs Addon framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these Addons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` Addon in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
+
+```tsx
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
+/* highlight-add-start */
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+/* highlight-add-end */
+
+const AppRoutes = () => {
+  <FlatRoutes>
+    {/* ... other plugin routes */}
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    >
+      {/* highlight-add-start */}
+      <TechDocsAddons>
+        <ReportIssue />
+      </TechDocsAddons>
+      {/* highlight-add-end */}
+    </Route>
+  </FlatRoutes>;
+};
+```
+
+I know, you're curious to see how it looks, aren't you? See the image below:
+
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
+
+By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
+
+<!-- todo: Needs zoomable plugin -->
+
+![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
+
+That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 
@@ -222,12 +266,12 @@ You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt).
 
-You can do so by including the following lines in the last step of your
+You can do so by including the following lines right above `USER node` of your
 `Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==1.0.1
+RUN pip3 install mkdocs-techdocs-core==1.1.7
 ```
 
 Please be aware that the version requirement could change, you need to check our
@@ -238,10 +282,7 @@ Note: We recommend Python version 3.7 or higher.
 
 > Caveat: Please install the `mkdocs-techdocs-core` package after all other
 > Python packages. The order is important to make sure we get correct version of
-> some of the dependencies. For example, we want `Markdown` version to be
-> [3.2.2](https://github.com/backstage/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
-> You can also explicitly install `Markdown==3.2.2` after installing all other
-> Python packages.
+> some of the dependencies.
 
 ## Running Backstage locally
 

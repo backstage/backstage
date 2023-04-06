@@ -20,7 +20,7 @@ import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react';
 
-import { TextSize } from '..';
+import { TextSize } from '../plugin';
 
 describe('TextSize', () => {
   it('renders without exploding', async () => {
@@ -59,7 +59,7 @@ describe('TextSize', () => {
 
     expect(slider).toHaveTextContent('115%');
 
-    let style = getComputedStyle(getByText('TEST_CONTENT'));
+    let style = window.getComputedStyle(getByText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
 
@@ -73,7 +73,7 @@ describe('TextSize', () => {
 
     expect(slider).toHaveTextContent('100%');
 
-    style = getComputedStyle(getByText('TEST_CONTENT'));
+    style = window.getComputedStyle(getByText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('16px');
   });
@@ -105,7 +105,7 @@ describe('TextSize', () => {
 
     expect(slider).toHaveTextContent('115%');
 
-    let style = getComputedStyle(getByText('TEST_CONTENT'));
+    let style = window.getComputedStyle(getByText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
 
@@ -117,7 +117,7 @@ describe('TextSize', () => {
 
     expect(slider).toHaveTextContent('100%');
 
-    style = getComputedStyle(getByText('TEST_CONTENT'));
+    style = window.getComputedStyle(getByText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('16px');
   });

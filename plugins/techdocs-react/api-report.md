@@ -7,12 +7,19 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { ComponentType } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
+
+// @public
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
 
 // @public
 export function createTechDocsAddonExtension<TComponentProps>(
@@ -20,7 +27,13 @@ export function createTechDocsAddonExtension<TComponentProps>(
 ): Extension<(props: TComponentProps) => JSX.Element | null>;
 
 // @public
+export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
+
+// @public
 export type SyncResult = 'cached' | 'updated';
+
+// @public
+export const TECHDOCS_ADDONS_KEY = 'techdocs.addons.addon.v1';
 
 // @public
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
@@ -43,7 +56,9 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
 };
 
 // @public
-export const TechDocsAddons: React_2.ComponentType;
+export const TechDocsAddons: React_2.ComponentType<
+  React_2.PropsWithChildren<{}>
+>;
 
 // @public
 export interface TechDocsApi {
@@ -76,7 +91,7 @@ export type TechDocsMetadata = {
 
 // @public
 export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => JSX.Element
+  (props: TechDocsReaderPageProviderProps) => JSX.Element
 >;
 
 // @public
@@ -105,6 +120,15 @@ export type TechDocsReaderPageValue = {
 };
 
 // @public
+export const TechDocsShadowDom: (props: TechDocsShadowDomProps) => JSX.Element;
+
+// @public
+export type TechDocsShadowDomProps = PropsWithChildren<{
+  element: Element;
+  onAppend?: (shadowRoot: ShadowRoot) => void;
+}>;
+
+// @public
 export interface TechDocsStorageApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -131,6 +155,15 @@ export interface TechDocsStorageApi {
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
 // @public
+export function toLowercaseEntityRefMaybe(
+  entityRef: CompoundEntityRef,
+  config: Config,
+): CompoundEntityRef;
+
+// @public
+export const useShadowDomStylesLoading: (element: Element | null) => boolean;
+
+// @public
 export const useShadowRoot: () => ShadowRoot | undefined;
 
 // @public
@@ -141,7 +174,7 @@ export const useShadowRootElements: <
 ) => TReturnedElement[];
 
 // @public
-export const useShadowRootSelection: (wait?: number) => Selection | null;
+export const useShadowRootSelection: (waitMillis?: number) => Selection | null;
 
 // @public
 export const useTechDocsAddons: () => {

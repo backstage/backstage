@@ -18,6 +18,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
 import { createConditionExports } from './createConditionExports';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -30,23 +31,28 @@ const testIntegration = () =>
         name: 'testRule1',
         description: 'Test rule 1',
         resourceType: 'test-resource',
-        apply: jest.fn(
-          (_resource: any, _firstParam: string, _secondParam: number) => true,
-        ),
-        toQuery: jest.fn((firstParam: string, secondParam: number) => ({
+        paramsSchema: z.object({
+          foo: z.string(),
+          bar: z.number(),
+        }),
+        apply: (_resource: any, _params) => true,
+        toQuery: params => ({
           query: 'testRule1',
-          params: [firstParam, secondParam],
-        })),
+          params,
+        }),
       }),
       testRule2: createPermissionRule({
         name: 'testRule2',
         description: 'Test rule 2',
         resourceType: 'test-resource',
-        apply: jest.fn((_resource: any, _firstParam: object) => false),
-        toQuery: jest.fn((firstParam: object) => ({
+        paramsSchema: z.object({
+          foo: z.string().optional(),
+        }),
+        apply: (_resource: any) => false,
+        toQuery: params => ({
           query: 'testRule2',
-          params: [firstParam],
-        })),
+          params,
+        }),
       }),
     },
   });
@@ -56,16 +62,24 @@ describe('createConditionExports', () => {
     it('creates condition factories for the supplied rules', () => {
       const { conditions } = testIntegration();
 
-      expect(conditions.testRule1('a', 1)).toEqual({
+      expect(
+        conditions.testRule1({
+          foo: 'a',
+          bar: 1,
+        }),
+      ).toEqual({
         rule: 'testRule1',
         resourceType: 'test-resource',
-        params: ['a', 1],
+        params: {
+          foo: 'a',
+          bar: 1,
+        },
       });
 
-      expect(conditions.testRule2({ baz: 'quux' })).toEqual({
+      expect(conditions.testRule2({})).toEqual({
         rule: 'testRule2',
         resourceType: 'test-resource',
-        params: [{ baz: 'quux' }],
+        params: {},
       });
     });
   });
@@ -85,7 +99,10 @@ describe('createConditionExports', () => {
             {
               rule: 'testRule1',
               resourceType: 'test-resource',
-              params: ['a', 1],
+              params: {
+                foo: 'a',
+                bar: 1,
+              },
             },
           ],
         }),
@@ -98,7 +115,10 @@ describe('createConditionExports', () => {
             {
               rule: 'testRule1',
               resourceType: 'test-resource',
-              params: ['a', 1],
+              params: {
+                foo: 'a',
+                bar: 1,
+              },
             },
           ],
         },

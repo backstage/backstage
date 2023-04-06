@@ -21,23 +21,36 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
-import {
-  CatalogProcessingOrchestrator,
-  DeferredEntity,
-} from '../processing/types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
+import { InputError } from '@backstage/errors';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
+
+export type DefaultLocationServiceOptions = {
+  allowedLocationTypes: string[];
+};
 
 export class DefaultLocationService implements LocationService {
   constructor(
     private readonly store: LocationStore,
     private readonly orchestrator: CatalogProcessingOrchestrator,
+    private readonly options: DefaultLocationServiceOptions = {
+      allowedLocationTypes: ['url'],
+    },
   ) {}
 
   async createLocation(
     input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
+    if (!this.options.allowedLocationTypes.includes(input.type)) {
+      throw new InputError(
+        `Registered locations must be of an allowed type ${JSON.stringify(
+          this.options.allowedLocationTypes,
+        )}`,
+      );
+    }
     if (dryRun) {
       return this.dryRunCreateLocation(input);
     }
@@ -77,7 +90,7 @@ export class DefaultLocationService implements LocationService {
               stringifyEntityRef(processed.completedEntity),
           )
         ) {
-          throw new Error(
+          throw new InputError(
             `Duplicate nested entity: ${stringifyEntityRef(
               processed.completedEntity,
             )}`,
@@ -86,7 +99,7 @@ export class DefaultLocationService implements LocationService {
         unprocessedEntities.push(...processed.deferredEntities);
         entities.push(processed.completedEntity);
       } else {
-        throw Error(processed.errors.map(String).join(', '));
+        throw new InputError(processed.errors.map(String).join(', '));
       }
     }
     return entities;

@@ -21,8 +21,8 @@ import React from 'react';
 import { DefaultExplorePage } from './DefaultExplorePage';
 
 describe('<DefaultExplorePage />', () => {
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
-    addLocation: jest.fn(_a => new Promise(() => {})),
+  const catalogApi = {
+    addLocation: jest.fn(),
     getEntities: jest.fn(),
     getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
@@ -32,6 +32,7 @@ describe('<DefaultExplorePage />', () => {
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (

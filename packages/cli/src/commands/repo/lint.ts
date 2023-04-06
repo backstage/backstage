@@ -34,7 +34,10 @@ export async function command(opts: OptionValues): Promise<void> {
 
   if (opts.since) {
     const graph = PackageGraph.fromPackages(packages);
-    packages = await graph.listChangedPackages({ ref: opts.since });
+    packages = await graph.listChangedPackages({
+      ref: opts.since,
+      analyzeLockfile: true,
+    });
   }
 
   // Packages are ordered from most to least number of dependencies, as a
@@ -101,7 +104,7 @@ export async function command(opts: OptionValues): Promise<void> {
     if (resultText) {
       console.log();
       console.log(chalk.red(`Lint failed in ${relativeDir}:`));
-      console.log(resultText.trimLeft());
+      console.log(resultText.trimStart());
 
       failed = true;
     }

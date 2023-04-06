@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Team = {
   name?: string;
   slug?: string;
@@ -26,34 +27,41 @@ export type Team = {
   _adminsUrl?: string;
 };
 
+/** @public */
 export type OnCall = {
   team?: OnCallTeamResource;
   oncallNow?: OnCallNowResource[];
 };
 
+/** @public */
 export type OnCallTeamResource = {
   name?: string;
   slug?: string;
 };
 
+/** @public */
 export type OnCallNowResource = {
   escalationPolicy?: OnCallEscalationPolicyResource;
   users?: OnCallUsersResource[];
 };
 
+/** @public */
 export type OnCallEscalationPolicyResource = {
   name?: string;
   slug?: string;
 };
 
+/** @public */
 export type OnCallUsersResource = {
   onCalluser?: OnCallUser;
 };
 
+/** @public */
 export type OnCallUser = {
   username?: string;
 };
 
+/** @public */
 export type User = {
   firstName?: string;
   lastName?: string;
@@ -66,8 +74,10 @@ export type User = {
   _selfUrl?: string;
 };
 
+/** @public */
 export type IncidentPhase = 'UNACKED' | 'ACKED' | 'RESOLVED';
 
+/** @public */
 export type Incident = {
   incidentNumber?: string;
   startTime?: string;
@@ -92,11 +102,13 @@ export type Incident = {
   incidentLink?: string;
 };
 
+/** @public */
 export type EscalationPolicyInfo = {
   policy: EscalationPolicySummary;
   team?: EscalationPolicyTeam;
 };
 
+/** @public */
 export type IncidentTransition = {
   name?: string;
   at?: string;
@@ -107,23 +119,27 @@ export type IncidentTransition = {
   alertUrl?: string;
 };
 
+/** @public */
 export type EscalationPolicySummary = {
   name: string;
   slug: string;
   _selfUrl: string;
 };
 
+/** @public */
 export type EscalationPolicyTeam = {
   name: string;
   slug: string;
 };
 
+/** @public */
 export type RoutingKey = {
   routingKey: string;
   targets: RoutingKeyTarget[];
   isDefault: boolean;
 };
 
+/** @public */
 export type RoutingKeyTarget = {
   policyName: string;
   policySlug: string;

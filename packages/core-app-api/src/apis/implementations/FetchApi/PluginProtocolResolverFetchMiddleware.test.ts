@@ -31,7 +31,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
 
       await outer(url);
       expect(inner.mock.calls[0][0]).toBe(url);
-      expect(resolve).not.toBeCalled();
+      expect(resolve).not.toHaveBeenCalled();
     },
   );
 

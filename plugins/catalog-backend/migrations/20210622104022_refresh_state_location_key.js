@@ -24,9 +24,7 @@ exports.up = async function up(knex) {
     table
       .text('location_key')
       .nullable()
-      .comment(
-        'An opaque key that uniquely identifies the location of an entity in order to support conflict resolution',
-      );
+      .comment('Opaque conflict resolution key');
   });
 };
 

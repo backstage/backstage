@@ -22,8 +22,10 @@
 
 export {
   techdocsModuleAddonsContribPlugin,
+  ExpandableNavigation,
   ReportIssue,
   TextSize,
+  LightBox,
 } from './plugin';
 export type {
   ReportIssueProps,

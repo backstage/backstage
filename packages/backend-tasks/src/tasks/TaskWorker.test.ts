@@ -17,12 +17,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
-import { AbortController } from 'node-abort-controller';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
+
+jest.setTimeout(60_000);
 
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
@@ -116,7 +117,30 @@ describe('TaskWorker', () => {
         }),
       );
     },
-    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
+    'logs error when the task throws, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      jest.spyOn(logger, 'error');
+      const fn = jest.fn().mockRejectedValue(new Error('failed'));
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+      };
+      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+      worker.start(settings);
+
+      await waitForExpect(() => {
+        expect(logger.error).toHaveBeenCalled();
+      });
+    },
   );
 
   it.each(databases.eachSupportedId())(
@@ -137,10 +161,9 @@ describe('TaskWorker', () => {
       worker.start(settings);
 
       await waitForExpect(() => {
-        expect(fn).toBeCalledTimes(3);
+        expect(fn).toHaveBeenCalledTimes(3);
       });
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -199,7 +222,6 @@ describe('TaskWorker', () => {
         }),
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -256,7 +278,6 @@ describe('TaskWorker', () => {
         false,
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -284,9 +305,9 @@ describe('TaskWorker', () => {
       );
       await worker1.start(settings, { signal: abortFirst.signal });
 
-      expect(fn1).toBeCalledTimes(0);
+      expect(fn1).toHaveBeenCalledTimes(0);
       await new Promise(resolve => setTimeout(resolve, 250));
-      expect(fn1).toBeCalledTimes(0);
+      expect(fn1).toHaveBeenCalledTimes(0);
       await new Promise(resolve => setTimeout(resolve, 100));
       expect(fn1.mock.calls.length).toBeGreaterThan(0);
 
@@ -310,6 +331,5 @@ describe('TaskWorker', () => {
       await promise2;
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
-    60_000,
   );
 });

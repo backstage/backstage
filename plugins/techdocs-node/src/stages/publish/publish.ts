@@ -35,8 +35,10 @@ export class Publisher {
    */
   static async fromConfig(
     config: Config,
-    { logger, discovery }: PublisherFactory,
+    options: PublisherFactory,
   ): Promise<PublisherBase> {
+    const { logger, discovery } = options;
+
     const publisherType = (config.getOptionalString(
       'techdocs.publisher.type',
     ) ?? 'local') as PublisherType;
@@ -47,7 +49,7 @@ export class Publisher {
         return GoogleGCSPublish.fromConfig(config, logger);
       case 'awsS3':
         logger.info('Creating AWS S3 Bucket publisher for TechDocs');
-        return AwsS3Publish.fromConfig(config, logger);
+        return await AwsS3Publish.fromConfig(config, logger);
       case 'azureBlobStorage':
         logger.info(
           'Creating Azure Blob Storage Container publisher for TechDocs',

@@ -19,6 +19,21 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
 
 describe('BitbucketRepoPicker', () => {
+  it('renders a select if there is a list of allowed owners', async () => {
+    const allowedOwners = ['owner1', 'owner2'];
+    const { findByText } = render(
+      <BitbucketRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{ host: 'bitbucket.org', repoName: 'repo' }}
+        allowedOwners={allowedOwners}
+      />,
+    );
+
+    expect(await findByText('owner1')).toBeInTheDocument();
+    expect(await findByText('owner2')).toBeInTheDocument();
+  });
+
   it('renders workspace input when host is bitbucket.org', () => {
     const state = { host: 'bitbucket.org', workspace: 'lolsWorkspace' };
 
@@ -26,7 +41,7 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(3);
+    expect(getAllByRole('textbox')).toHaveLength(2);
     expect(getAllByRole('textbox')[0]).toHaveValue('lolsWorkspace');
   });
 
@@ -39,8 +54,9 @@ describe('BitbucketRepoPicker', () => {
       <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
     );
 
-    expect(getAllByRole('textbox')).toHaveLength(2);
+    expect(getAllByRole('textbox')).toHaveLength(1);
   });
+
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', () => {
       const onChange = jest.fn();
@@ -77,24 +93,47 @@ describe('BitbucketRepoPicker', () => {
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
     });
-  });
 
-  describe('repoName field', () => {
-    it('calls onChange when the repoName changes', () => {
-      const onChange = jest.fn();
+    it('Does not render a select if the list of allowed projects does not exist', async () => {
       const { getAllByRole } = render(
         <BitbucketRepoPicker
-          onChange={onChange}
+          onChange={jest.fn()}
           rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
         />,
       );
 
-      const repoNameInput = getAllByRole('textbox')[2];
+      expect(getAllByRole('textbox')).toHaveLength(2);
+      expect(getAllByRole('textbox')[1]).toHaveValue('');
+    });
 
-      fireEvent.change(repoNameInput, { target: { value: 'test-repo' } });
+    it('Does not render a select if the list of allowed projects is empty', async () => {
+      const { getAllByRole } = render(
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          allowedProjects={[]}
+        />,
+      );
 
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'test-repo' });
+      expect(getAllByRole('textbox')).toHaveLength(2);
+      expect(getAllByRole('textbox')[1]).toHaveValue('');
+    });
+
+    it('Does render a select if there is a list of allowed projects', async () => {
+      const allowedProjects = ['project1', 'project2'];
+      const { findByText } = render(
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          allowedProjects={allowedProjects}
+        />,
+      );
+
+      expect(await findByText('project1')).toBeInTheDocument();
+      expect(await findByText('project2')).toBeInTheDocument();
     });
   });
 });

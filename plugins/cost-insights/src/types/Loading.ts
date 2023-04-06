@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Loading = Record<string, boolean>;

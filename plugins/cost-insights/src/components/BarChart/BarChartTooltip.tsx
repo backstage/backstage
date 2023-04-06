@@ -19,6 +19,7 @@ import classnames from 'classnames';
 import { Box, Divider, Typography } from '@material-ui/core';
 import { useTooltipStyles as useStyles } from '../../utils/styles';
 
+/** @public */
 export type BarChartTooltipProps = {
   title: string;
   content?: ReactNode | string;
@@ -27,14 +28,12 @@ export type BarChartTooltipProps = {
   actions?: ReactNode;
 };
 
-export const BarChartTooltip = ({
-  title,
-  content,
-  subtitle,
-  topRight,
-  actions,
-  children,
-}: PropsWithChildren<BarChartTooltipProps>) => {
+/** @public */
+export const BarChartTooltip = (
+  props: PropsWithChildren<BarChartTooltipProps>,
+) => {
+  const { title, content, subtitle, topRight, actions, children } = props;
+
   const classes = useStyles();
   const titleClassName = classnames(classes.truncate, {
     [classes.maxWidth]: topRight === undefined,

@@ -15,11 +15,12 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import mock from 'mock-fs';
+import mockFs from 'mock-fs';
 import os from 'os';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
+import yaml from 'yaml';
 
 describe('debug:log', () => {
   const logStream = {
@@ -40,7 +41,7 @@ describe('debug:log', () => {
   const action = createDebugLogAction();
 
   beforeEach(() => {
-    mock({
+    mockFs({
       [`${mockContext.workspacePath}/README.md`]: '',
       [`${mockContext.workspacePath}/a-directory/index.md`]: '',
     });
@@ -48,13 +49,13 @@ describe('debug:log', () => {
   });
 
   afterEach(() => {
-    mock.restore();
+    mockFs.restore();
   });
 
   it('should do nothing', async () => {
     await action.handler(mockContext);
 
-    expect(logStream.write).toBeCalledTimes(0);
+    expect(logStream.write).toHaveBeenCalledTimes(0);
   });
 
   it('should log the workspace content, if active', async () => {
@@ -67,11 +68,11 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
@@ -86,8 +87,47 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining('Hello Backstage!'),
+    );
+  });
+
+  it('should log the workspace content from an example, if active', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'List the workspace directory',
+    )?.example as string;
+    expect(typeof example).toEqual('string');
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining('README.md'),
+    );
+    expect(logStream.write).toHaveBeenCalledWith(
+      expect.stringContaining(join('a-directory', 'index.md')),
+    );
+  });
+
+  it('should log message from an example', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'Write a debug message',
+    )?.example as string;
+
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logStream.write).toHaveBeenCalledTimes(1);
+    expect(logStream.write).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });

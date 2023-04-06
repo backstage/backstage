@@ -30,6 +30,7 @@ import {
   RepoBuild,
   Team,
   TeamMember,
+  Project,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
@@ -41,19 +42,42 @@ import {
   convertDashboardPullRequest,
   convertPolicy,
   getArtifactId,
+  replaceReadme,
+  buildEncodedUrl,
 } from '../utils';
 
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import { WebApi } from 'azure-devops-node-api';
-import { WebApiTeam } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import {
+  TeamProjectReference,
+  WebApiTeam,
+} from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
+/** @public */
 export class AzureDevOpsApi {
   public constructor(
     private readonly logger: Logger,
     private readonly webApi: WebApi,
+    private readonly urlReader: UrlReader,
   ) {}
+
+  public async getProjects(): Promise<Project[]> {
+    const client = await this.webApi.getCoreApi();
+    const projectList: TeamProjectReference[] = await client.getProjects();
+
+    const projects: Project[] = projectList.map(project => ({
+      id: project.id,
+      name: project.name,
+      description: project.description,
+    }));
+
+    return projects.sort((a, b) =>
+      a.name && b.name ? a.name.localeCompare(b.name) : 0,
+    );
+  }
 
   public async getGitRepository(
     projectName: string,
@@ -276,13 +300,11 @@ export class AzureDevOpsApi {
     );
   }
 
-  public async getTeamMembers({
-    projectId,
-    teamId,
-  }: {
+  public async getTeamMembers(options: {
     projectId: string;
     teamId: string;
   }): Promise<TeamMember[] | undefined> {
+    const { projectId, teamId } = options;
     this.logger?.debug(`Getting team member ids for team '${teamId}'.`);
 
     const client = await this.webApi.getCoreApi();
@@ -375,6 +397,29 @@ export class AzureDevOpsApi {
 
     return buildRuns;
   }
+
+  public async getReadme(
+    host: string,
+    org: string,
+    project: string,
+    repo: string,
+  ): Promise<{
+    url: string;
+    content: string;
+  }> {
+    const url = buildEncodedUrl(host, org, project, repo, 'README.md');
+    const response = await this.urlReader.readUrl(url);
+    const buffer = await response.buffer();
+    const content = await replaceReadme(
+      this.urlReader,
+      host,
+      org,
+      project,
+      repo,
+      buffer.toString(),
+    );
+    return { url, content };
+  }
 }
 
 export function mappedRepoBuild(build: Build): RepoBuild {
@@ -389,7 +434,7 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }
@@ -444,7 +489,7 @@ export function mappedBuildRun(build: Build): BuildRun {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }

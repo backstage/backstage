@@ -1,5 +1,299 @@
 # @backstage/catalog-client
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- c1c4e080b79: Fixed bug in `queryEntities` of `CatalogClient` where the `sortField` is supposed to be changed to `orderField`.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+
+## 1.4.0
+
+### Minor Changes
+
+- 8c030b1826c: Add `queryEntities` method to `CatalogApi`.
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- c630360631f: Ensure that `getEntitiesByRefs` returns `undefined` instead of `null` for missing items
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 8c030b1826: Add `queryEntities` method to `CatalogApi`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/errors@1.1.4
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0
+  - @backstage/errors@1.1.4
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/errors@1.1.4
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- f75bf76330: Implemented support for the `order` directive on `getEntities`
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/errors@1.1.4
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- e23f13a573: Enable the `by-refs` endpoint to receive `fields` through the POST body as well as through query parameters.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+
+## 1.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- f75bf76330: Implemented support for the `order` directive on `getEntities`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/errors@1.1.4
+
+## 1.2.0
+
+### Minor Changes
+
+- 00d90b520a: **BREAKING PRODUCERS**: Added a new `getEntitiesByRefs` endpoint to `CatalogApi`, for efficient batch fetching of entities by ref.
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/catalog-model@1.1.4
+
+## 1.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- 00d90b520a: **BREAKING PRODUCERS**: Added a new `getEntitiesByRefs` endpoint to `CatalogApi`, for efficient batch fetching of entities by ref.
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3
+  - @backstage/errors@1.1.3
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 4f2ac624b4: Renamed argument in `validateEntity` from `location` to `locationRef`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/errors@1.1.2
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/errors@1.1.2-next.2
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 4f2ac624b4: Renamed argument in `validateEntity` from `location` to `locationRef`
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/errors@1.1.2-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/errors@1.1.2-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 65d1d4343f: Adding `validateEntity` method that calls `/validate-entity` endpoint.
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 65d1d4343f: Adding `validateEntity` method that calls `/validate-entity` endpoint.
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/errors@1.1.1-next.0
+
+## 1.0.5-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+
+## 1.0.4
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0
+  - @backstage/errors@1.1.0
+
+## 1.0.4-next.2
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.3
+
+## 1.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.1
+  - @backstage/errors@1.1.0-next.0
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.0-next.0
+
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- 35bc0a7c27: Update README to point to catalog-react for frontend usage
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.3-next.0
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.2
+
 ## 1.0.2-next.0
 
 ### Patch Changes

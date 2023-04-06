@@ -70,13 +70,9 @@ export class JsonRulesEngineFactChecker
   private readonly validationSchema: SchemaObject;
   private readonly operators: Operator[];
 
-  constructor({
-    checks,
-    repository,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerOptions) {
+  constructor(options: JsonRulesEngineFactCheckerOptions) {
+    const { checks, repository, logger, checkRegistry, operators } = options;
+
     this.repository = repository;
     this.logger = logger;
     this.operators = operators || [];
@@ -108,14 +104,13 @@ export class JsonRulesEngineFactChecker
       : await this.checkRegistry.list();
     const factIds = techInsightChecks.flatMap(it => it.factIds);
     const facts = await this.repository.getLatestFactsByIds(factIds, entity);
+
     techInsightChecks.forEach(techInsightCheck => {
       const rule = techInsightCheck.rule;
       rule.name = techInsightCheck.id;
       // Only run checks that have all the facts available:
-      const hasAllFacts = techInsightCheck.factIds.every(
-        factId => facts[factId],
-      );
-      if (hasAllFacts) {
+      const hasFacts = techInsightCheck.factIds.some(factId => facts[factId]);
+      if (hasFacts) {
         engine.addRule({ ...techInsightCheck.rule, event: noopEvent });
       } else {
         this.logger.debug(
@@ -141,7 +136,9 @@ export class JsonRulesEngineFactChecker
       );
     } catch (e) {
       if (isError(e)) {
-        throw new Error(`Failed to run rules engine, ${e.message}`);
+        throw new Error(`Failed to run rules engine, ${e.message}`, {
+          cause: e,
+        });
       }
       throw e;
     }
@@ -359,16 +356,11 @@ export class JsonRulesEngineFactCheckerFactory {
   private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private readonly operators?: Operator[];
 
-  constructor({
-    checks,
-    logger,
-    checkRegistry,
-    operators,
-  }: JsonRulesEngineFactCheckerFactoryOptions) {
-    this.logger = logger;
-    this.checks = checks;
-    this.checkRegistry = checkRegistry;
-    this.operators = operators;
+  constructor(options: JsonRulesEngineFactCheckerFactoryOptions) {
+    this.logger = options.logger;
+    this.checks = options.checks;
+    this.checkRegistry = options.checkRegistry;
+    this.operators = options.operators;
   }
 
   /**

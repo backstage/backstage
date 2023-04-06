@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -22,6 +22,7 @@ const { getPackages } = require('@manypkg/get-packages');
 const path = require('path');
 const { execFile: execFileCb } = require('child_process');
 const { promisify } = require('util');
+const { default: parseChangeset } = require('@changesets/parse');
 
 const execFile = promisify(execFileCb);
 
@@ -208,7 +209,11 @@ async function applyPatchVersions(repo, patchVersions) {
       const deps = packageJson[depType];
       for (const depName of Object.keys(deps ?? {})) {
         const currentRange = deps[depName];
-        if (currentRange === '*' || currentRange === '') {
+        if (
+          currentRange === '*' ||
+          currentRange === '' ||
+          currentRange.startsWith('workspace:')
+        ) {
           continue;
         }
 
@@ -332,6 +337,58 @@ async function updateBackstageReleaseVersion(repo, type) {
   );
 }
 
+/**
+ * Ensures that the changesets include a version bump of create-app otherwise
+ * generates a new patch changeset for create-app.
+ */
+async function ensureCreateAppChangeset() {
+  const changesetPath = path.resolve(__dirname, '../.changeset');
+  const fileNames = await fs.readdir(changesetPath);
+  const changesetNames = fileNames.filter(
+    name => name.endsWith('.md') && name !== 'README.md',
+  );
+
+  const changesets = await Promise.all(
+    changesetNames.map(async name => {
+      const content = await fs.readFile(path.join(changesetPath, name), 'utf8');
+      return { name, ...parseChangeset(content) };
+    }),
+  );
+
+  const excludeList = [];
+  const prePath = path.resolve(changesetPath, 'pre.json');
+  if (await fs.pathExists(prePath)) {
+    const data = await fs.readJSON(prePath);
+    // Only exclude changesets in pre-release mode.
+    if (data.mode === 'pre') {
+      excludeList.push(...data.changesets.map(name => `${name}.md`));
+    }
+  }
+
+  const hasCreateAppChanges = changesets
+    .filter(({ name }) => !excludeList.includes(name))
+    .some(changeset =>
+      changeset.releases.some(
+        release => release.name === '@backstage/create-app',
+      ),
+    );
+
+  if (hasCreateAppChanges) {
+    console.log(
+      'Contains create-app changeset, no need to create additional changeset',
+    );
+    return;
+  }
+  const ts = Math.round(new Date().getTime() / 1000);
+  const fileName = `create-app-${ts}.md`;
+  console.log(`Creating ${fileName}`);
+  const data = `---
+'@backstage/create-app': patch
+---\n
+Bumped create-app version.\n`;
+  await fs.writeFile(path.join(changesetPath, fileName), data);
+}
+
 async function main() {
   const repo = await getPackages(__dirname);
   const branchName = await getCurrentBranch(repo);
@@ -341,6 +398,7 @@ async function main() {
   if (isMainBranch) {
     console.log('Main release, updating package versions');
     await updatePackageVersions(repo);
+    await ensureCreateAppChangeset();
   }
 
   await updateBackstageReleaseVersion(repo, isMainBranch ? 'minor' : 'patch');

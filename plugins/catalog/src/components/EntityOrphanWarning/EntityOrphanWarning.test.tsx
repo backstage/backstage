@@ -15,8 +15,8 @@
  */
 
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
-
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { EntityOrphanWarning } from './EntityOrphanWarning';
@@ -39,7 +39,7 @@ describe('<EntityOrphanWarning />', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -61,7 +61,7 @@ describe('<EntityOrphanWarning />', () => {
       },
     );
     expect(
-      getByText(
+      screen.getByText(
         'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
       ),
     ).toBeInTheDocument();

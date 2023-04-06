@@ -15,7 +15,7 @@ thing well". The module would be consumed
 (`const localName = require('the-module');`) without having to know the internal
 structure.
 
-Now, ESModules are the primary authoring format. They have numerous benefits,
+Now, `ESModules` are the primary authoring format. They have numerous benefits,
 such as compile-time verification of exports, and standards-defined semantics.
 They have a similar mechanism known as "default exports", which allows for a
 consumer to `import localName from 'the-module';`. This is implicitly the same

@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
+import { Knex as KnexType } from 'knex';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
 const logger = getVoidLogger();
+
+function createDatabaseManager(
+  client: KnexType,
+  skipMigrations: boolean = false,
+) {
+  return {
+    getClient: async () => client,
+    migrations: {
+      skip: skipMigrations,
+    },
+  };
+}
+
+jest.setTimeout(60_000);
 
 describe('StaticAssetsStore', () => {
   const databases = TestDatabases.create({
@@ -28,9 +43,11 @@ describe('StaticAssetsStore', () => {
   it.each(databases.eachSupportedId())(
     'should store and retrieve assets, %p',
     async databaseId => {
+      const client = await databases.init(databaseId);
+      const database = createDatabaseManager(client);
       const store = await StaticAssetsStore.create({
         logger,
-        database: await databases.init(databaseId),
+        database,
       });
 
       await store.storeAssets([
@@ -63,15 +80,16 @@ describe('StaticAssetsStore', () => {
         store.getAsset('does-not-exist.txt'),
       ).resolves.toBeUndefined();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
     'should update assets timestamps, but not contents, %p',
     async databaseId => {
+      const client = await databases.init(databaseId);
+      const database = createDatabaseManager(client);
       const store = await StaticAssetsStore.create({
         logger,
-        database: await databases.init(databaseId),
+        database,
       });
 
       await store.storeAssets([
@@ -113,13 +131,13 @@ describe('StaticAssetsStore', () => {
       const sameBar = await store.getAsset('bar');
       expect(oldBar!.lastModifiedAt).toEqual(sameBar!.lastModifiedAt);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
     'should trim old assets, %p',
     async databaseId => {
-      const database = await databases.init(databaseId);
+      const knex = await databases.init(databaseId);
+      const database = createDatabaseManager(knex);
       const store = await StaticAssetsStore.create({
         logger,
         database,
@@ -137,12 +155,12 @@ describe('StaticAssetsStore', () => {
       ]);
 
       // Rewrite modified time of "old" to be 1h in the past
-      const updated = await database('static_assets_cache')
+      const updated = await knex('static_assets_cache')
         .where({ path: 'old' })
         .update({
-          last_modified_at: database.client.config.client.includes('sqlite3')
-            ? database.raw(`datetime('now', '-3600 seconds')`)
-            : database.raw(`now() + interval '-3600 seconds'`),
+          last_modified_at: knex.client.config.client.includes('sqlite3')
+            ? knex.raw(`datetime('now', '-3600 seconds')`)
+            : knex.raw(`now() + interval '-3600 seconds'`),
         });
       expect(updated).toBe(1);
 
@@ -154,6 +172,5 @@ describe('StaticAssetsStore', () => {
       await expect(store.getAsset('new')).resolves.toBeDefined();
       await expect(store.getAsset('old')).resolves.toBeUndefined();
     },
-    60_000,
   );
 });

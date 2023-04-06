@@ -37,8 +37,8 @@ import {
   AlertDismissReason,
   AlertDismissOptions,
   AlertDismissFormData,
-  Maybe,
 } from '../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { useAlertDialogStyles as useStyles } from '../utils/styles';
 
 export type AlertDismissFormProps = AlertFormProps<Alert, AlertDismissFormData>;

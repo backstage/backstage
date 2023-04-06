@@ -24,6 +24,7 @@ export {
   costInsightsPlugin,
   costInsightsPlugin as plugin,
   CostInsightsPage,
+  EntityCostInsightsContent,
   CostInsightsProjectGrowthInstructionsPage,
   CostInsightsLabelDataflowInstructionsPage,
 } from './plugin';
@@ -38,8 +39,13 @@ export {
   LegendItem,
 } from './components';
 export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
+export type {
+  MockConfigProviderProps,
+  MockCurrencyProviderProps,
+} from './testUtils';
 export * from './api';
 export * from './alerts';
+export type { ConfigContextProps, CurrencyContextProps } from './hooks';
 export * from './types';
 
 export type {

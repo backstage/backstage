@@ -19,7 +19,7 @@ import {
   loadBackendConfig,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -39,7 +39,7 @@ export async function startStandaloneServer(
   const discovery = SingleHostDiscovery.fromConfig(config);
   const router = await createRouter({
     logger,
-    identity: IdentityClient.create({
+    identity: DefaultIdentityClient.create({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),
     }),

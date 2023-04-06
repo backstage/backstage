@@ -21,7 +21,7 @@ import { resolve as resolvePath } from 'path';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from './helpers';
+import { fetchContents, fetchFile } from './helpers';
 import os from 'os';
 
 describe('fetchContent helper', () => {
@@ -37,9 +37,10 @@ describe('fetchContent helper', () => {
     }),
   );
 
+  const readUrl = jest.fn();
   const readTree = jest.fn();
   const reader: UrlReader = {
-    read: jest.fn(),
+    readUrl,
     readTree,
     search: jest.fn(),
   };
@@ -50,73 +51,165 @@ describe('fetchContent helper', () => {
     outputPath: os.tmpdir(),
   };
 
-  it('should reject absolute file locations', async () => {
-    await expect(
-      fetchContents({
-        ...options,
-        baseUrl: 'file:///some/path',
-        fetchUrl: '/etc/passwd',
-      }),
-    ).rejects.toThrow(
-      'Relative path is not allowed to refer to a directory outside its parent',
-    );
-  });
-
-  it('should reject relative file locations that exit the baseUrl', async () => {
-    await expect(
-      fetchContents({
-        ...options,
-        baseUrl: 'file:///some/path',
-        fetchUrl: '../test',
-      }),
-    ).rejects.toThrow(
-      'Relative path is not allowed to refer to a directory outside its parent',
-    );
-  });
-
-  it('should copy file to outputpath', async () => {
-    await fetchContents({
-      ...options,
-      baseUrl: 'file:///some/path',
-      fetchUrl: 'foo',
-      outputPath: 'somepath',
+  describe('fetch contents', () => {
+    it('should reject absolute file locations', async () => {
+      await expect(
+        fetchContents({
+          ...options,
+          baseUrl: 'file:///some/path',
+          fetchUrl: '/etc/passwd',
+        }),
+      ).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
     });
-    expect(fs.copy).toBeCalledWith(resolvePath('/some/foo'), 'somepath');
-  });
 
-  it('should reject if no integration matches location', async () => {
-    await expect(
-      fetchContents({
-        ...options,
-        baseUrl: 'http://example.com/some/folder',
-      }),
-    ).rejects.toThrow(
-      'No integration found for location http://example.com/some/folder',
-    );
-  });
+    it('should reject relative file locations that exit the baseUrl', async () => {
+      await expect(
+        fetchContents({
+          ...options,
+          baseUrl: 'file:///some/path',
+          fetchUrl: '../test',
+        }),
+      ).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
 
-  it('should reject if fetch url is relative and no base url is specified', async () => {
-    await expect(
-      fetchContents({
+    it('should copy file to outputpath', async () => {
+      await fetchContents({
         ...options,
+        baseUrl: 'file:///some/path',
         fetchUrl: 'foo',
-      }),
-    ).rejects.toThrow(
-      'Failed to fetch, template location could not be determined and the fetch URL is relative, foo',
-    );
+        outputPath: 'somepath',
+      });
+      expect(fs.copy).toHaveBeenCalledWith(
+        resolvePath('/some/foo'),
+        'somepath',
+      );
+    });
+
+    it('should reject if no integration matches location', async () => {
+      await expect(
+        fetchContents({
+          ...options,
+          baseUrl: 'http://example.com/some/folder',
+        }),
+      ).rejects.toThrow(
+        'No integration found for location http://example.com/some/folder',
+      );
+    });
+
+    it('should reject if fetch url is relative and no base url is specified', async () => {
+      await expect(
+        fetchContents({
+          ...options,
+          fetchUrl: 'foo',
+        }),
+      ).rejects.toThrow(
+        'Failed to fetch, template location could not be determined and the fetch URL is relative, foo',
+      );
+    });
+
+    it('should fetch url contents', async () => {
+      const dirFunction = jest.fn();
+      readTree.mockResolvedValue({
+        dir: dirFunction,
+      });
+      await fetchContents({
+        ...options,
+        outputPath: 'foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+      });
+      expect(fs.ensureDir).toHaveBeenCalledWith('foo');
+      expect(dirFunction).toHaveBeenCalledWith({ targetDir: 'foo' });
+    });
   });
 
-  it('should fetch url contents', async () => {
-    const dirFunction = jest.fn();
-    readTree.mockResolvedValue({
-      dir: dirFunction,
+  describe('fetch file', () => {
+    it('should reject absolute file locations', async () => {
+      await expect(
+        fetchFile({
+          ...options,
+          baseUrl: 'file:///some/path',
+          fetchUrl: '/etc/passwd',
+        }),
+      ).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
     });
-    await fetchContents({
-      ...options,
-      outputPath: 'foo',
-      fetchUrl: 'https://github.com/backstage/foo',
+
+    it('should reject relative file locations that exit the baseUrl', async () => {
+      await expect(
+        fetchFile({
+          ...options,
+          baseUrl: 'file:///some/path',
+          fetchUrl: '../test',
+        }),
+      ).rejects.toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
     });
-    expect(fs.ensureDir).toBeCalled();
-    expect(dirFunction).toBeCalledWith({ targetDir: 'foo' });
+
+    it('should copy file to outputpath', async () => {
+      await fetchFile({
+        ...options,
+        baseUrl: 'file:///some/path',
+        fetchUrl: 'foo',
+        outputPath: 'somepath',
+      });
+      expect(fs.copyFile).toHaveBeenCalledWith(
+        resolvePath('/some/foo'),
+        'somepath',
+      );
+    });
+
+    it('should reject if no integration matches location', async () => {
+      await expect(
+        fetchFile({
+          ...options,
+          baseUrl: 'http://example.com/some/folder',
+        }),
+      ).rejects.toThrow(
+        'No integration found for location http://example.com/some/folder',
+      );
+    });
+
+    it('should reject if fetch url is relative and no base url is specified', async () => {
+      await expect(
+        fetchFile({
+          ...options,
+          fetchUrl: 'foo',
+        }),
+      ).rejects.toThrow(
+        'Failed to fetch, template location could not be determined and the fetch URL is relative, foo',
+      );
+    });
+
+    it('should fetch content from url', async () => {
+      readUrl.mockResolvedValue({
+        buffer: () => Buffer.from('test', 'utf8'),
+      });
+      await fetchFile({
+        ...options,
+        outputPath: 'foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+      });
+      expect(fs.ensureDir).toHaveBeenCalledWith('.');
+      expect(fs.outputFile).toHaveBeenCalledWith('foo', 'test');
+    });
+
+    it('should fetch content from url into directory', async () => {
+      readUrl.mockResolvedValue({
+        buffer: () => Buffer.from('test', 'utf8'),
+      });
+      await fetchFile({
+        ...options,
+        outputPath: 'mydir/foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+      });
+      expect(fs.ensureDir).toHaveBeenCalledWith('mydir');
+      expect(fs.outputFile).toHaveBeenCalledWith('mydir/foo', 'test');
+    });
   });
 });

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { CopyTextButton } from '../CopyTextButton';
-import { LightAsync } from 'react-syntax-highlighter';
+import Box from '@material-ui/core/Box';
+import { useTheme } from '@material-ui/core/styles';
+import React from 'react';
+import type {} from 'react-syntax-highlighter';
+import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
+
+import { CopyTextButton } from '../CopyTextButton';
 
 /**
  * Properties for {@link CodeSnippet}
@@ -86,7 +88,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
 
   return (
-    <div style={{ position: 'relative' }}>
+    <Box position="relative">
       <LightAsync
         customStyle={customStyle}
         language={language}
@@ -107,10 +109,10 @@ export function CodeSnippet(props: CodeSnippetProps) {
         {text}
       </LightAsync>
       {showCopyCodeButton && (
-        <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Box position="absolute" top={0} right={0}>
           <CopyTextButton text={text} />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

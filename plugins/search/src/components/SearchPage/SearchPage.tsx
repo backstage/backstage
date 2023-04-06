@@ -17,13 +17,12 @@
 import React, { useEffect } from 'react';
 import usePrevious from 'react-use/lib/usePrevious';
 import qs from 'qs';
-import { useLocation, useOutlet } from 'react-router';
+import { useLocation, useOutlet } from 'react-router-dom';
 import {
   SearchContextProvider,
   useSearch,
 } from '@backstage/plugin-search-react';
 import { JsonObject } from '@backstage/types';
-import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {
   const location = useLocation();
@@ -87,13 +86,16 @@ export const UrlUpdater = () => {
   return null;
 };
 
+/**
+ * @public
+ */
 export const SearchPage = () => {
   const outlet = useOutlet();
 
   return (
     <SearchContextProvider>
       <UrlUpdater />
-      {outlet || <LegacySearchPage />}
+      {outlet}
     </SearchContextProvider>
   );
 };

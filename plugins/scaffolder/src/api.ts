@@ -16,9 +16,9 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
-  createApiRef,
   DiscoveryApi,
   FetchApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -29,23 +29,18 @@ import {
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
-  TemplateParameterSchema,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
-} from './types';
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
+  TemplateParameterSchema,
+} from '@backstage/plugin-scaffolder-react';
 
-/**
- * Utility API reference for the {@link ScaffolderApi}.
- *
- * @public
- */
-export const scaffolderApiRef = createApiRef<ScaffolderApi>({
-  id: 'plugin.scaffolder.service',
-});
+import queryString from 'qs';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -56,11 +51,13 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly fetchApi: FetchApi;
+  private readonly identityApi?: IdentityApi;
   private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
@@ -68,6 +65,30 @@ export class ScaffolderClient implements ScaffolderApi {
     this.fetchApi = options.fetchApi ?? { fetch };
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.useLongPollingLogs = options.useLongPollingLogs ?? false;
+    this.identityApi = options.identityApi;
+  }
+
+  async listTasks(options: {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{ tasks: ScaffolderTask[] }> {
+    if (!this.identityApi) {
+      throw new Error(
+        'IdentityApi is not available in the ScaffolderClient, please pass through the IdentityApi to the ScaffolderClient constructor in order to use the listTasks method',
+      );
+    }
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+
+    const query = queryString.stringify(
+      options.filterByOwnership === 'owned' ? { createdBy: userEntityRef } : {},
+    );
+
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/tasks?${query}`);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
   }
 
   async getIntegrationsList(
@@ -84,6 +105,7 @@ export class ScaffolderClient implements ScaffolderApi {
         ),
       ...this.scmIntegrationsApi.bitbucketCloud.list(),
       ...this.scmIntegrationsApi.bitbucketServer.list(),
+      ...this.scmIntegrationsApi.gerrit.list(),
       ...this.scmIntegrationsApi.github.list(),
       ...this.scmIntegrationsApi.gitlab.list(),
     ]
@@ -118,12 +140,6 @@ export class ScaffolderClient implements ScaffolderApi {
     return schema;
   }
 
-  /**
-   * Executes the scaffolding of a component, given a template and its
-   * parameter values.
-   *
-   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
-   */
   async scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse> {
@@ -171,6 +187,30 @@ export class ScaffolderClient implements ScaffolderApi {
     return this.streamLogsEventStream(options);
   }
 
+  async dryRun(
+    options: ScaffolderDryRunOptions,
+  ): Promise<ScaffolderDryRunResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dry-run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        template: options.template,
+        values: options.values,
+        secrets: options.secrets,
+        directoryContents: options.directoryContents,
+      }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
+  }
+
   private streamLogsEventStream({
     taskId,
     after,
@@ -189,24 +229,22 @@ export class ScaffolderClient implements ScaffolderApi {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
+
+          const processEvent = (event: any) => {
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+          };
+
           const eventSource = new EventSource(url, { withCredentials: true });
-          eventSource.addEventListener('log', (event: any) => {
-            if (event.data) {
-              try {
-                subscriber.next(JSON.parse(event.data));
-              } catch (ex) {
-                subscriber.error(ex);
-              }
-            }
-          });
+          eventSource.addEventListener('log', processEvent);
+          eventSource.addEventListener('cancelled', processEvent);
           eventSource.addEventListener('completion', (event: any) => {
-            if (event.data) {
-              try {
-                subscriber.next(JSON.parse(event.data));
-              } catch (ex) {
-                subscriber.error(ex);
-              }
-            }
+            processEvent(event);
             eventSource.close();
             subscriber.complete();
           });
@@ -264,6 +302,21 @@ export class ScaffolderClient implements ScaffolderApi {
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const response = await this.fetchApi.fetch(`${baseUrl}/v2/actions`);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
+
+  async cancelTask(taskId: string): Promise<void> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/cancel`;
+
+    const response = await this.fetchApi.fetch(url, {
+      method: 'POST',
+    });
+
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }

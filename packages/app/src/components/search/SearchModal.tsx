@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { KeyboardEvent, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
-  List,
   makeStyles,
   Paper,
-  useTheme,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import BuildIcon from '@material-ui/icons/Build';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Link, useContent } from '@backstage/core-components';
+import { CatalogIcon, DocsIcon, Link } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchFilter,
-  searchPlugin,
   SearchResult,
   SearchResultPager,
-  SearchType,
-} from '@backstage/plugin-search';
-import { useSearch } from '@backstage/plugin-search-react';
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles(theme => ({
@@ -67,29 +67,40 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
+const rootRouteRef = searchPlugin.routes.root;
+
 export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
-  const getSearchLink = useRouteRef(searchPlugin.routes.root);
   const classes = useStyles();
-
+  const navigate = useNavigate();
   const catalogApi = useApi(catalogApiRef);
+
   const { term, types } = useSearch();
-  const { focusContent } = useContent();
-  const { transitions } = useTheme();
+  const searchBarRef = useRef<HTMLInputElement | null>(null);
+  const searchPagePath = `${useRouteRef(rootRouteRef)()}?query=${term}`;
 
-  const handleResultClick = () => {
-    toggleModal();
-    setTimeout(focusContent, transitions.duration.leavingScreen);
-  };
+  useEffect(() => {
+    searchBarRef?.current?.focus();
+  });
 
-  const handleKeyPress = () => {
-    handleResultClick();
-  };
+  const handleSearchBarKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        toggleModal();
+        navigate(searchPagePath);
+      }
+    },
+    [navigate, searchPagePath, toggleModal],
+  );
 
   return (
     <>
       <DialogTitle>
         <Paper className={classes.container}>
-          <SearchBar className={classes.input} />
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onKeyDown={handleSearchBarKeyDown}
+          />
         </Paper>
       </DialogTitle>
       <DialogContent>
@@ -105,6 +116,10 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                 {
                   value: 'techdocs',
                   name: 'Documentation',
+                },
+                {
+                  value: 'tools',
+                  name: 'Tools',
                 },
               ]}
             />
@@ -158,19 +173,13 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
               alignItems="center"
             >
               <Grid item>
-                <Link
-                  onClick={() => {
-                    toggleModal();
-                    setTimeout(
-                      focusContent,
-                      transitions.duration.leavingScreen,
-                    );
-                  }}
-                  to={`${getSearchLink()}?query=${term}`}
-                >
-                  <span className={classes.viewResultsLink}>
+                <Link to={searchPagePath} onClick={toggleModal}>
+                  <Typography
+                    component="span"
+                    className={classes.viewResultsLink}
+                  >
                     View Full Results
-                  </span>
+                  </Typography>
                   <LaunchIcon color="primary" />
                 </Link>
               </Grid>
@@ -178,52 +187,9 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
           </Grid>
           <Grid item xs>
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight }) => {
-                    let resultItem;
-                    switch (type) {
-                      case 'software-catalog':
-                        resultItem = (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                        break;
-                      case 'techdocs':
-                        resultItem = (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                        break;
-                      default:
-                        resultItem = (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                          />
-                        );
-                    }
-                    return (
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        key={`${document.location}-btn`}
-                        onClick={handleResultClick}
-                        onKeyPress={handleKeyPress}
-                      >
-                        {resultItem}
-                      </div>
-                    );
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
+              <ToolSearchResultListItem icon={<BuildIcon />} />
             </SearchResult>
           </Grid>
         </Grid>

@@ -1,5 +1,387 @@
 # @backstage/integration
 
+## 1.4.4-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 1.4.3
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+
+## 1.4.3-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
+## 1.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+
+## 1.4.1
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 34b039ca9f: Added `integrations.github.apps.allowedInstallationOwners` to the configuration schema.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/config@1.0.5
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 34b039ca9f: Added `integrations.github.apps.allowedInstallationOwners` to the configuration schema.
+- Updated dependencies
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- d05e1841ce: This patch brings Gitea as a valid integration: target, via the ScmIntegration interface. It adds gitea to the relevant static properties (get integration by name, get integration by type) for plugins to be able to reference the same Gitea server.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+
+  Deprecates:
+
+  - `getGitHubFileFetchUrl` replaced by `getGithubFileFetchUrl`
+  - `GitHubIntegrationConfig` replaced by `GithubIntegrationConfig`
+  - `GitHubIntegration` replaced by `GithubIntegration`
+  - `readGitHubIntegrationConfig` replaced by `readGithubIntegrationConfig`
+  - `readGitHubIntegrationConfigs` replaced by `readGithubIntegrationConfigs`
+  - `replaceGitHubUrlType` replaced by `replaceGithubUrlType`
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- d05e1841ce: This patch brings Gitea as a valid integration: target, via the ScmIntegration interface. It adds gitea to the relevant static properties (get integration by name, get integration by type) for plugins to be able to reference the same Gitea server.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+
+  Deprecates:
+
+  - `getGitHubFileFetchUrl` replaced by `getGithubFileFetchUrl`
+  - `GitHubIntegrationConfig` replaced by `GithubIntegrationConfig`
+  - `GitHubIntegration` replaced by `GithubIntegration`
+  - `readGitHubIntegrationConfig` replaced by `readGithubIntegrationConfig`
+  - `readGitHubIntegrationConfigs` replaced by `readGithubIntegrationConfigs`
+  - `replaceGitHubUrlType` replaced by `replaceGithubUrlType`
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+- f76f22c649: Improved caching around github app tokens.
+  Tokens are now cached for 50 minutes, not 10.
+  Calls to get app installations are also included in this cache.
+  If you have more than one github app configured, consider adding `allowedInstallationOwners` to your apps configuration to gain the most benefit from these performance changes.
+- Updated dependencies
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- f76f22c649: Improved caching around github app tokens.
+  Tokens are now cached for 50 minutes, not 10.
+  Calls to get app installations are also included in this cache.
+  If you have more than one github app configured, consider adding `allowedInstallationOwners` to your apps configuration to gain the most benefit from these performance changes.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
+## 1.3.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- 163243a4d1: Handle incorrect return type from Octokit paginate plugin to resolve reading URLs from GitHub
+- c4b460a47d: Avoid double encoding of the file path in `getBitbucketDownloadUrl`
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- 1f27d83933: Fixed bug in getGitLabFileFetchUrl where a target whose path did not contain the
+  `/-/` scope would result in a fetch URL that did not support
+  private-token-based authentication.
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- 1f27d83933: Fixed bug in getGitLabFileFetchUrl where a target whose path did not contain the
+  `/-/` scope would result in a fetch URL that did not support
+  private-token-based authentication.
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+
+### Patch Changes
+
+- 163243a4d1: Handle incorrect return type from Octokit paginate plugin to resolve reading URLs from GitHub
+- c4b460a47d: Avoid double encoding of the file path in `getBitbucketDownloadUrl`
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+
+## 1.2.2
+
+### Patch Changes
+
+- 9de15a41d7: Upgrade @octokit/rest to 19.0.3
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 1f29047bad: Updated dependency `@octokit/auth-app` to `^4.0.0`.
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+- 954a94f52f: Support self-hosted gitlab installations with relative URL.
+- 4df3390795: Avoid double encoding of the file path in `getBitbucketServerDownloadUrl`
+- Updated dependencies
+  - @backstage/errors@1.1.0
+
+## 1.2.2-next.3
+
+### Patch Changes
+
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 4e9a90e307: Updated dependency `luxon` to `^3.0.0`.
+- 1f29047bad: Updated dependency `@octokit/auth-app` to `^4.0.0`.
+- 4df3390795: Avoid double encoding of the file path in `getBitbucketServerDownloadUrl`
+
+## 1.2.2-next.2
+
+### Patch Changes
+
+- e2d7b76f43: Upgrade git-url-parse to 12.0.0.
+
+  Motivation for upgrade is transitively upgrading parse-url which is vulnerable
+  to several CVEs detected by Snyk.
+
+  - SNYK-JS-PARSEURL-2935944
+  - SNYK-JS-PARSEURL-2935947
+  - SNYK-JS-PARSEURL-2936249
+
+## 1.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 8829e175f2: Allow frontend visibility for `integrations` itself.
+
+## 1.2.1
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- e37c71b5a4: Updated to support deployments of Azure DevOps Server under TFS or similar sub path
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+
+## 1.2.0
+
+### Minor Changes
+
+- e295ce87de: added the possibility to handle raw Gitlab URLs with nested namespaces
+- 6673babab9: Gerrit UrlReader: Implemented `readTree`
+- 1b4e1e2306: Split `bitbucket` integration into `bitbucketCloud` and `bitbucketServer`
+  (backwards compatible).
+
+  In order to migrate to the new integration configs,
+  move your configs from `integrations.bitbucket`
+  to `integrations.bitbucketCloud` or `integrations.bitbucketServer`.
+
+  Migration example:
+
+  **Before:**
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.org
+        username: bitbucket_user
+        appPassword: app-password
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+  **After:**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: bitbucket_user
+        appPassword: app-password
+    bitbucketServer:
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+- 566407bf8a: Gerrit Integration: Added the `getGerritProjectsApiUrl` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.1
+
 ## 1.2.0-next.1
 
 ### Patch Changes

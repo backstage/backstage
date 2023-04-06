@@ -23,6 +23,9 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export const codeCoveragePlugin = createPlugin({
   id: 'code-coverage',
   routes: {
@@ -37,6 +40,11 @@ export const codeCoveragePlugin = createPlugin({
   ],
 });
 
+/**
+ * An entity code coverage page.
+ *
+ * @public
+ */
 export const EntityCodeCoverageContent = codeCoveragePlugin.provide(
   createRoutableExtension({
     name: 'EntityCodeCoverageContent',

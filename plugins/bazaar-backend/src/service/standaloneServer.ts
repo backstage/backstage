@@ -19,6 +19,7 @@ import {
   loadBackendConfig,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -54,6 +55,7 @@ export async function startStandaloneServer(
     logger,
     database: { getClient: async () => db },
     config: config,
+    identity: {} as IdentityApi,
   });
 
   let service = createServiceBuilder(module)

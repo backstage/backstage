@@ -1,11 +1,9 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "0.1.1-next.2",
-  "private": false,
+  "version": "1.1.5-next.2",
   "publishConfig": {
     "access": "public",
-    "alphaTypes": "dist/index.alpha.d.ts",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
@@ -26,7 +24,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -35,28 +33,32 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.0.2-next.0",
-    "@backstage/core-components": "^0.9.4-next.1",
-    "@backstage/core-plugin-api": "^1.0.2-next.1",
-    "@backstage/version-bridge": "^1.0.1",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.11.0",
-    "jss": "~10.8.2",
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
-    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
-    "@testing-library/react-hooks": "^8.0.0",
-    "@backstage/test-utils": "^1.1.0-next.2",
-    "@backstage/theme": "^0.2.15"
+    "@testing-library/react-hooks": "^8.0.0"
   },
   "files": [
     "alpha",

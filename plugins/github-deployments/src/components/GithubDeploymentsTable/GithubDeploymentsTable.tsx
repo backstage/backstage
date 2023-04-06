@@ -17,7 +17,7 @@ import React from 'react';
 import { GithubDeployment } from '../../api';
 import { Typography, makeStyles } from '@material-ui/core';
 import SyncIcon from '@material-ui/icons/Sync';
-import * as columnFactories from './columns';
+import { columnFactories } from './columns';
 import { defaultDeploymentColumns } from './presets';
 import { Table, TableColumn } from '@backstage/core-components';
 
@@ -29,14 +29,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type GithubDeploymentsTableProps = {
+/** @public */
+export const GithubDeploymentsTable = (props: {
   deployments: GithubDeployment[];
   isLoading: boolean;
   reload: () => void;
   columns: TableColumn<GithubDeployment>[];
-};
-
-export function GithubDeploymentsTable(props: GithubDeploymentsTableProps) {
+}) => {
   const { deployments, isLoading, reload, columns } = props;
   const classes = useStyles();
 
@@ -64,7 +63,7 @@ export function GithubDeploymentsTable(props: GithubDeploymentsTableProps) {
       }
     />
   );
-}
+};
 
 GithubDeploymentsTable.columns = columnFactories;
 

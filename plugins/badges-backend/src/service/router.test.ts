@@ -29,7 +29,19 @@ import { BadgeBuilder } from '../lib';
 describe('createRouter', () => {
   let app: express.Express;
   let badgeBuilder: jest.Mocked<BadgeBuilder>;
-  let catalog: jest.Mocked<CatalogApi>;
+  const catalog = {
+    addLocation: jest.fn(),
+    getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
+    getLocationByRef: jest.fn(),
+    getLocationById: jest.fn(),
+    removeLocationById: jest.fn(),
+    removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
+    validateEntity: jest.fn(),
+  };
   let config: Config;
   let discovery: PluginEndpointDiscovery;
 
@@ -57,19 +69,6 @@ describe('createRouter', () => {
       createBadgeJson: jest.fn(),
       createBadgeSvg: jest.fn(),
     };
-    catalog = {
-      addLocation: jest.fn(),
-      getEntities: jest.fn(),
-      getEntityByRef: jest.fn(),
-      getLocationByRef: jest.fn(),
-      getLocationById: jest.fn(),
-      removeLocationById: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityFacets: jest.fn(),
-    };
-
     config = new ConfigReader({
       backend: {
         baseUrl: 'http://127.0.0.1',
@@ -80,7 +79,7 @@ describe('createRouter', () => {
 
     const router = await createRouter({
       badgeBuilder,
-      catalog,
+      catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
     });
@@ -94,7 +93,7 @@ describe('createRouter', () => {
   it('works', async () => {
     const router = await createRouter({
       badgeBuilder,
-      catalog,
+      catalog: catalog as Partial<CatalogApi> as CatalogApi,
       config,
       discovery,
     });
@@ -113,7 +112,7 @@ describe('createRouter', () => {
       );
 
       expect(response.status).toEqual(200);
-      expect(response.text).toEqual(JSON.stringify([badge], null, 2));
+      expect(response.body).toEqual([badge]);
 
       expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
       expect(catalog.getEntityByRef).toHaveBeenCalledWith(

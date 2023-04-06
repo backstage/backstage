@@ -12,13 +12,44 @@ If you want to use an auth provider to sign in users, you need to explicitly con
 it have sign-in enabled and also tell it how the external identities should
 be mapped to user identities within Backstage.
 
+## Quick Start
+
+> See [providers](../reference/plugin-auth-backend.providers.md)
+> for a full list of auth providers and their built-in sign-in resolvers.
+
+Backstage projects created with `npx @backstage/create-app` come configured with a
+sign-in resolver for GitHub guest access. This resolver makes all users share
+a single "guest" identity and is only intended as a minimum requirement to quickly
+get up and running. You can replace `github` for any of the other providers if you need.
+
+This resolver should not be used in production, as it uses a single shared identity,
+and has no restrictions on who is able to sign-in. Be sure to read through the rest
+of this page to understand the Backstage identity system once you need to install
+a resolver for your production environment.
+
+The guest resolver can be useful for testing purposes too, and it looks like this:
+
+```ts
+signIn: {
+  resolver(_, ctx) {
+    const userRef = 'user:default/guest'
+    return ctx.issueToken({
+      claims: {
+        sub: userRef,
+        ent: [userRef],
+      },
+    }),
+  },
+},
+```
+
 ## Backstage User Identity
 
 A user identity within Backstage is built up from two pieces of information, a
 user [entity reference](../features/software-catalog/references.md), and a
 set of ownership entity references.
 When a user signs in, a Backstage token is generated with these two pieces of information,
-which is then used to identity the user within the Backstage ecosystem.
+which is then used to identify the user within the Backstage ecosystem.
 
 The user entity reference should uniquely identify the logged in user in Backstage.
 It is encouraged that a matching user entity also exists within the Software Catalog,
@@ -59,6 +90,11 @@ the given auth provider, as well as a context object that contains various helpe
 for looking up users and issuing tokens. There are also a number of built-in sign-in
 resolvers that can be used, which are covered a bit further down.
 
+Note that while it possible to configure multiple auth providers to be used for sign-in,
+you should take care when doing so. It is best to make sure that the different auth
+providers either do not have any user overlap, or that any users that are able to log
+in with multiple providers always end up with the same Backstage identity.
+
 ### Custom Resolver Example
 
 Let's look at an example of a custom sign-in resolver for the Google auth provider.
@@ -74,6 +110,7 @@ Now let's look at the example, with the rest of the commentary being made with i
 the code comments:
 
 ```ts
+// File: packages/backend/src/plugins/auth.ts
 import {
   createRouter,
   providers,
@@ -129,16 +166,26 @@ export default async function createPlugin(
 ### Built-in Resolvers
 
 You don't always have to write your own custom resolver. The auth backend plugin provides
-build-in resolvers for many of the common sign-in patterns. You access these via the `resolvers`
+built-in resolvers for many of the common sign-in patterns. You access these via the `resolvers`
 property of each of the auth provider integrations. For example, the Google provider has
 a built in resolver that works just like the one we defined above:
 
 ```ts
-providers.google.create({
-  signIn: {
-    resolver: providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
-  },
-});
+// File: packages/backend/src/plugins/auth.ts
+export default async function createPlugin(
+  // ...
+  return await createRouter({
+    // ...
+    providerFactories: {
+      // ...
+      google: providers.google.create({
+        signIn: {
+          resolver: providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
+        },
+      });
+    }
+  })
+)
 ```
 
 There are also other options, like the this one that looks up a user
@@ -159,40 +206,49 @@ that happens during sign-in you can replace `ctx.signInWithCatalogUser` with a s
 of lower-level calls:
 
 ```ts
-import { getDefaultOwnershipRefs } from '@backstage/plugin-auth-backend';
+// File: packages/backend/src/plugins/auth.ts
+import { getDefaultOwnershipEntityRefs } from '@backstage/plugin-auth-backend';
 
-// This example only shows the resolver function itself.
-async ({ profile: { email } }, ctx) => {
-  if (!email) {
-    throw new Error('User profile contained no email');
-  }
+export default async function createPlugin(
+  // ...
+  return await createRouter({
+    // ...
+    providerFactories: {
+      // ...
+      google: async ({ profile: { email } }, ctx) => {
+        if (!email) {
+          throw new Error('User profile contained no email');
+        }
 
-  // This step calls the catalog to look up a user entity. You could for example
-  // replace it with a call to a different external system.
-  const { entity } = await ctx.findCatalogUser({
-    annotations: {
-      'acme.org/email': email,
-    },
-  });
+        // This step calls the catalog to look up a user entity. You could for example
+        // replace it with a call to a different external system.
+        const { entity } = await ctx.findCatalogUser({
+          annotations: {
+            'acme.org/email': email,
+          },
+        });
 
-  // In this step we extract the ownership references from the user entity using
-  // the standard logic. It uses a reference to the entity itself, as well as the
-  // target of each `memberOf` relation where the target is of the kind `Group`.
-  //
-  // If you replace the catalog lookup with something does not return
-  // an entity you will need to replace this step as well.
-  //
-  // You might also replace it if you for example want to filter out certain groups.
-  const ownershipRefs = getDefaultOwnershipRefs(entity);
+        // In this step we extract the ownership references from the user entity using
+        // the standard logic. It uses a reference to the entity itself, as well as the
+        // target of each `memberOf` relation where the target is of the kind `Group`.
+        //
+        // If you replace the catalog lookup with something that does not return
+        // an entity you will need to replace this step as well.
+        //
+        // You might also replace it if you for example want to filter out certain groups.
+        const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
 
-  // The last step is to issue the token, where we might provide more options in the future.
-  return ctx.issueToken({
-    claims: {
-      sub: stringifyEntityRef(entity),
-      ent: ownershipRefs,
-    },
-  });
-};
+        // The last step is to issue the token, where we might provide more options in the future.
+        return ctx.issueToken({
+          claims: {
+            sub: stringifyEntityRef(entity),
+            ent: ownershipRefs,
+          },
+        });
+      };
+    }
+  })
+)
 ```
 
 ## Sign-In without Users in the Catalog
@@ -210,33 +266,64 @@ is that it can be tricky to determine the ownership references, although it can
 be achieved for example through a lookup to an external service. You typically
 want to at least use the user itself as a lone ownership reference.
 
+Because we no longer use the catalog as an allow-list of users, it is often important
+that you limit what users are allowed to sign in. This could be a simple email domain
+check like in the example below, or you might for example look up the GitHub organizations
+that the user belongs to using the user access token in the provided result object.
+
 ```ts
-import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
+// File: packages/backend/src/plugins/auth.ts
+import { createRouter, providers } from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import {
+  stringifyEntityRef,
+  DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 
-// This example only shows the resolver function itself.
-async ({ profile }, ctx) => {
-  if (!profile.email) {
-    throw new Error(
-      'Login failed, user profile does not contain an email',
-    );
-  }
-  // We again use the local part of the email as the user name.
-  const [localPart] = profile.email.split('@');
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    ...env,
+    providerFactories: {
+      google: providers.google.create({
+        signIn: {
+          resolver: async ({ profile }, ctx) => {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            // Split the email into the local part and the domain.
+            const [localPart, domain] = profile.email.split('@');
 
-  // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
-  const userEntityRef = stringifyEntityRef({
-    kind: 'User',
-    name: localPart,
-    namespace: DEFAULT_NAMESPACE,
-  });
+            // Next we verify the email domain. It is recommended to include this
+            // kind of check if you don't look up the user in an external service.
+            if (domain !== 'acme.org') {
+              throw new Error(
+                `Login failed, this email ${profile.email} does not belong to the expected domain`,
+              );
+            }
 
-  return ctx.issueToken({
-    claims: {
-      sub: userEntityRef,
-      ent: [userEntityRef],
+            // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+            const userEntity = stringifyEntityRef({
+              kind: 'User',
+              name: localPart,
+              namespace: DEFAULT_NAMESPACE,
+            });
+            return ctx.issueToken({
+              claims: {
+                sub: userEntity,
+                ent: [userEntity],
+              },
+            });
+          },
+        },
+      }),
     },
   });
-},
+}
 ```
 
 ## AuthHandler
@@ -257,7 +344,7 @@ export default async function createPlugin(
   return await createRouter({
     ...
     providerFactories: {
-      google: createGoogleProvider({
+      google: providers.google.create({
         authHandler: async ({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,

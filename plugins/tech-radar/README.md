@@ -90,9 +90,17 @@ export class MyOwnClient implements TechRadarApi {
 
     const data = await fetch('https://mydata.json').then(res => res.json());
 
-    // maybe you'll need to do some data transformation here to make it look like TechRadarLoaderResponse
-
-    return data;
+    // For example, this converts the timeline dates into date objects
+    return {
+      ...data,
+      entries: data.entries.map(entry => ({
+        ...entry,
+        timeline: entry.timeline.map(timeline => ({
+          ...timeline,
+          date: new Date(timeline.date),
+        })),
+      })),
+    };
   }
 }
 

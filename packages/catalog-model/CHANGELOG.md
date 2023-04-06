@@ -1,5 +1,265 @@
 # @backstage/catalog-model
 
+## 1.2.1
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- d51668882d: Adds the tRPC API type to the catalog.
+
+### Patch Changes
+
+- aece6c57d2: Add additional validation for location references.
+- 2518ef5b8a: Add deprecation tag to kubernetes constants in catalog, constants are now defined in plugin-kubernetes-common
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- d51668882d: Adds the tRPC API type to the catalog.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.6-next.0
+
+### Patch Changes
+
+- 2518ef5b8a: Add deprecation tag to kubernetes constants in catalog, constants are now defined in plugin-kubernetes-common
+
+## 1.1.5
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 6f3b8d0962: Defer `ajv` compilation of schema validators to improve module-import performance
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 6f3b8d0962: Defer `ajv` compilation of schema validators to improve module-import performance
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 4cc81372f8: Introduced `GroupDefaultParentEntityPolicy` to set a default group entity parent.
+- 1380b389dc: Adding an optional type field to entity links to group and categorize links
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+- f9f1de8100: Add shared annotations for Kubernetes clusters
+- f1dcc6f3c6: Added type predicates for all entity types, e.g. isUserEntity
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.0
+
+## 1.1.0-next.3
+
+### Patch Changes
+
+- 72622d9143: Updated dependency `yaml` to `^2.0.0`.
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 4cc81372f8: Introduced `GroupDefaultParentEntityPolicy` to set a default group entity parent.
+
+## 1.1.0-next.1
+
+### Patch Changes
+
+- f1dcc6f3c6: Added type predicates for all entity types, e.g. isUserEntity
+- Updated dependencies
+  - @backstage/errors@1.1.0-next.0
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 1380b389dc: Adding an optional type field to entity links to group and categorize links
+
+### Patch Changes
+
+- c3cfc83af2: Updated JSDoc to be MDX compatible.
+
+## 1.0.3
+
+### Patch Changes
+
+- 131a99e909: Added targetRef to common.schema.json to match the Typescript type
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 131a99e909: Added targetRef to common.schema.json to match the Typescript type
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.1
+
 ## 1.0.2-next.0
 
 ### Patch Changes

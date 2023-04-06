@@ -69,10 +69,10 @@ New components, of course, get added automatically to the Backstage Service Cata
 
 ## Define your standards
 
-Backstage ships with four example templates, but since these are likely not the (only) ones you want to promote inside your company, the next step is to add [your own templates](https://backstage.io/docs/features/software-templates/software-templates-index). Using Backstage’s Software Templates feature, it’s easy to help your engineers get started building software with your organization’s best practices built-in.
+Backstage ships with four example templates, but since these are likely not the (only) ones you want to promote inside your company, the next step is to add [your own templates](https://backstage.io/docs/features/software-templates/). Using Backstage’s Software Templates feature, it’s easy to help your engineers get started building software with your organization’s best practices built-in.
 
 We have learned that one of the keys to getting these standards adopted is to keep an open process. Templates are code. By making it clear to your engineers that you are open to pull requests, and that teams with different needs can add their own templates, you are on the path of striking a good balance between autonomy and standardization.
 
-If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/EBHEGzX) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
+If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/backstage-687207715902193673) or send us an email at [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com) 🙏
 
-To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://mailchi.mp/spotify/backstage-community).
+To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://info.backstage.spotify.com/newsletter_subscribe).

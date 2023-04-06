@@ -15,29 +15,26 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { screen } from '@testing-library/react';
 
 import { Props, RadarDescription } from './RadarDescription';
+import { renderInTestApp } from '@backstage/test-utils';
 
 const minProps: Props = {
   open: true,
   title: 'example-title',
   description: 'example-description',
+  links: [{ url: 'https://example.com/docs', title: 'example-link' }],
   onClose: () => {},
 };
 
 describe('RadarDescription', () => {
-  it('should render', () => {
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <RadarDescription {...minProps} />
-      </ThemeProvider>,
-    );
+  it('should render', async () => {
+    await renderInTestApp(<RadarDescription {...minProps} />);
 
     const radarDescription = screen.getByTestId('radar-description');
     expect(radarDescription).toBeInTheDocument();
     expect(screen.getByText(String(minProps.description))).toBeInTheDocument();
+    expect(screen.getByText(String('example-link'))).toBeInTheDocument();
   });
 });

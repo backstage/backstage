@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Error as LDAPError, SearchEntry } from 'ldapjs';
+import { Error as LDAPError, SearchEntry, SearchOptions } from 'ldapjs';
+import { cloneDeep } from 'lodash';
 import { LdapVendor } from './vendors';
 
 /**
@@ -52,6 +53,18 @@ export function mapStringAttr(
       setter(values[0]);
     }
   }
+}
+
+export function createOptions(inputOptions: SearchOptions): SearchOptions {
+  const result = cloneDeep(inputOptions);
+
+  if (result.paged === true) {
+    result.paged = { pagePause: true };
+  } else if (typeof result.paged === 'object') {
+    result.paged.pagePause = true;
+  }
+
+  return result;
 }
 
 export type RecursivePartial<T> = {

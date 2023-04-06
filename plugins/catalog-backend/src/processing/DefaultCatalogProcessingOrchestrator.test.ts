@@ -20,6 +20,7 @@ import {
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
   EntityPolicies,
+  EntityPolicy,
   LocationEntity,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
@@ -30,11 +31,12 @@ import {
   CatalogProcessorParser,
   LocationSpec,
   processingResult,
-} from '../api';
+} from '@backstage/plugin-catalog-node';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { ConfigReader } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 
 class FooBarProcessor implements CatalogProcessor {
   getProcessorName = () => 'foo-bar';
@@ -95,6 +97,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
       rulesEnforcer: { isAllowed: () => true },
+      legacySingleProcessorValidation: false,
     });
 
     it('runs a minimal processing', async () => {
@@ -102,6 +105,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ok: true,
         completedEntity: entity,
         deferredEntities: [],
+        refreshKeys: [],
         errors: [],
         relations: [],
         state: {
@@ -119,6 +123,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       ).resolves.toEqual({
         ok: true,
         completedEntity: entity,
+        refreshKeys: [],
         deferredEntities: [
           {
             locationKey: 'url:./new-place',
@@ -186,32 +191,89 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         ok: true,
       });
     });
+
+    it('runs all processor validations when asked to', async () => {
+      const validate = jest.fn(async () => true);
+      const processor1: Partial<CatalogProcessor> = {
+        validateEntityKind: validate,
+      };
+      const processor2: Partial<CatalogProcessor> = {
+        validateEntityKind: validate,
+      };
+
+      const legacy = new DefaultCatalogProcessingOrchestrator({
+        processors: [
+          processor1 as CatalogProcessor,
+          processor2 as CatalogProcessor,
+        ],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: getVoidLogger(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+        legacySingleProcessorValidation: true,
+      });
+
+      const modern = new DefaultCatalogProcessingOrchestrator({
+        processors: [
+          processor1 as CatalogProcessor,
+          processor2 as CatalogProcessor,
+        ],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: getVoidLogger(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+        legacySingleProcessorValidation: false,
+      });
+
+      await expect(legacy.process({ entity })).resolves.toMatchObject({
+        ok: true,
+      });
+      expect(validate).toHaveBeenCalledTimes(1);
+
+      validate.mockClear();
+
+      await expect(modern.process({ entity })).resolves.toMatchObject({
+        ok: true,
+      });
+      expect(validate).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('rules', () => {
-    it('enforces catalog rules', async () => {
-      const entity: LocationEntity = {
-        apiVersion: 'backstage.io/v1beta1',
-        kind: 'Location',
-        metadata: {
-          name: 'l',
-          annotations: {
-            [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
-            [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
-          },
+    const entity: LocationEntity = {
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'Location',
+      metadata: {
+        name: 'l',
+        annotations: {
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
+          [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
         },
-        spec: {
-          type: 'url',
-          target: 'http://example.com/entity.yaml',
-        },
-      };
+      },
+      spec: {
+        type: 'url',
+        target: 'http://example.com/entity.yaml',
+      },
+    };
 
+    const child: Entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: {
+        name: 'Test2',
+        namespace: 'test1',
+      },
+    };
+
+    it('enforces catalog rules', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(processingResult.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
@@ -227,6 +289,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         parser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer,
+        legacySingleProcessorValidation: false,
       });
 
       rulesEnforcer.isAllowed.mockReturnValueOnce(true);
@@ -238,6 +301,51 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       await expect(
         orchestrator.process({ entity, state: {} }),
       ).resolves.toEqual(expect.objectContaining({ ok: false }));
+    });
+
+    it('includes entity ref within error', async () => {
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
+        validateEntityKind: jest.fn(async () => true),
+        readLocation: jest.fn(async (_l, _o, emit) => {
+          emit(processingResult.entity({ type: 't', target: 't' }, child));
+          return true;
+        }),
+      };
+      const parser: CatalogProcessorParser = jest.fn();
+      const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
+        isAllowed: jest.fn(),
+      };
+
+      class FailingEntityPolicy implements EntityPolicy {
+        async enforce(_entity: Entity): Promise<Entity> {
+          // eslint-disable-next-line no-throw-literal
+          throw 'boom';
+        }
+      }
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations,
+        logger: getVoidLogger(),
+        parser,
+        policy: EntityPolicies.allOf([new FailingEntityPolicy()]),
+        rulesEnforcer,
+        legacySingleProcessorValidation: false,
+      });
+
+      await expect(
+        orchestrator.process({ entity, state: {} }),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          ok: false,
+          errors: [
+            new InputError(
+              "Policy check failed for location:default/l; caused by unknown error 'boom'",
+            ),
+          ],
+        }),
+      );
     });
   });
 });

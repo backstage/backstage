@@ -14,30 +14,51 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Alert } from '@material-ui/lab';
-import { useEntityList } from '../../hooks';
+import { Select } from '@backstage/core-components';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Box } from '@material-ui/core';
+import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
+import { useEntityList } from '../../hooks';
+import { filterKinds, useAllKinds } from './kindFilterUtils';
 
-/**
- * Props for {@link EntityKindPicker}.
- *
- * @public
- */
-export interface EntityKindPickerProps {
-  initialFilter?: string;
-  hidden: boolean;
-}
-
-/** @public */
-export const EntityKindPicker = (props: EntityKindPickerProps) => {
-  const { initialFilter, hidden } = props;
-
+function useEntityKindFilter(opts: { initialFilter: string }): {
+  loading: boolean;
+  error?: Error;
+  allKinds: string[];
+  selectedKind: string;
+  setSelectedKind: (kind: string) => void;
+} {
   const {
-    updateFilters,
+    filters,
     queryParameters: { kind: kindParameter },
+    updateFilters,
   } = useEntityList();
-  const [selectedKind] = useState([kindParameter].flat()[0] ?? initialFilter);
+
+  const queryParamKind = useMemo(
+    () => [kindParameter].flat()[0],
+    [kindParameter],
+  );
+
+  const [selectedKind, setSelectedKind] = useState(
+    queryParamKind ?? filters.kind?.value ?? opts.initialFilter,
+  );
+
+  // Set selected kinds on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamKind) {
+      setSelectedKind(queryParamKind);
+    }
+  }, [queryParamKind]);
+
+  // Set selected kind from filters; this happens when the kind filter is
+  // updated from another component
+  useEffect(() => {
+    if (filters.kind?.value) {
+      setSelectedKind(filters.kind?.value);
+    }
+  }, [filters.kind]);
 
   useEffect(() => {
     updateFilters({
@@ -45,10 +66,69 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
     });
   }, [selectedKind, updateFilters]);
 
-  if (hidden) return null;
+  const { allKinds, loading, error } = useAllKinds();
 
-  // TODO(timbonicus): This should load available kinds from the catalog-backend, similar to
-  // EntityTypePicker.
+  return {
+    loading,
+    error,
+    allKinds: allKinds ?? [],
+    selectedKind,
+    setSelectedKind,
+  };
+}
 
-  return <Alert severity="warning">Kind filter not yet available</Alert>;
+/**
+ * Props for {@link EntityKindPicker}.
+ *
+ * @public
+ */
+export interface EntityKindPickerProps {
+  /**
+   * Entity kinds to show in the dropdown; by default all kinds are fetched from the catalog and
+   * displayed.
+   */
+  allowedKinds?: string[];
+  initialFilter?: string;
+  hidden?: boolean;
+}
+
+/** @public */
+export const EntityKindPicker = (props: EntityKindPickerProps) => {
+  const { allowedKinds, hidden, initialFilter = 'component' } = props;
+
+  const alertApi = useApi(alertApiRef);
+
+  const { error, allKinds, selectedKind, setSelectedKind } =
+    useEntityKindFilter({
+      initialFilter: initialFilter,
+    });
+
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: `Failed to load entity kinds`,
+        severity: 'error',
+      });
+    }
+  }, [error, alertApi]);
+
+  if (error) return null;
+
+  const options = filterKinds(allKinds, allowedKinds, selectedKind);
+
+  const items = Object.keys(options).map(key => ({
+    value: key,
+    label: options[key],
+  }));
+
+  return hidden ? null : (
+    <Box pb={1} pt={1}>
+      <Select
+        label="Kind"
+        items={items}
+        selected={selectedKind.toLocaleLowerCase('en-US')}
+        onChange={value => setSelectedKind(String(value))}
+      />
+    </Box>
+  );
 };

@@ -10,3 +10,4 @@ npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
 tags:
   - cd
   - ci
+addedDate: '2021-04-20'

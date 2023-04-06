@@ -15,41 +15,33 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { GraphiQLBrowser } from './GraphiQLBrowser';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 
-jest.mock('graphiql', () => () => '<GraphiQL />');
+jest.mock('graphiql', () => ({ GraphiQL: () => '<GraphiQL />' }));
 
 describe('GraphiQLBrowser', () => {
-  it('should render error text if there are no endpoints', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <GraphiQLBrowser endpoints={[]} />
-      </ThemeProvider>,
-    );
+  it('should render error text if there are no endpoints', async () => {
+    const rendered = await renderInTestApp(<GraphiQLBrowser endpoints={[]} />);
     rendered.getByText('No endpoints available');
   });
 
-  it('should render endpoint tabs', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <GraphiQLBrowser
-          endpoints={[
-            {
-              id: 'a',
-              title: 'Endpoint A',
-              async fetcher() {},
-            },
-            {
-              id: 'b',
-              title: 'Endpoint B',
-              async fetcher() {},
-            },
-          ]}
-        />
-      </ThemeProvider>,
+  it('should render endpoint tabs', async () => {
+    const rendered = await renderInTestApp(
+      <GraphiQLBrowser
+        endpoints={[
+          {
+            id: 'a',
+            title: 'Endpoint A',
+            async fetcher() {},
+          },
+          {
+            id: 'b',
+            title: 'Endpoint B',
+            async fetcher() {},
+          },
+        ]}
+      />,
     );
     rendered.getByText('Endpoint A');
     rendered.getByText('Endpoint B');

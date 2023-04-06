@@ -10,7 +10,7 @@ description: Architecture Decision Record (ADR) for Luxon Date Library
 Date formatting (e.g. `a day ago`) and calculations are common within Backstage.
 Some of these useful features are not supported by the standard JavaScript
 `Date` object. The popular [Moment.js](https://momentjs.com/) library has been
-commonly used to fill this gap but suffers from large bundle sizes and mutable
+commonly used to fill this gap but is affected by large bundle sizes and mutable
 state issues. On top of this, `momentjs` is
 [being sunset](https://momentjs.com/docs/#/-project-status/) and the project
 recommends using one of the more modern alternative libraries.

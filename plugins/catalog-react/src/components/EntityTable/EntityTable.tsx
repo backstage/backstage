@@ -85,6 +85,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
         paging: false,
         actionsColumnIndex: -1,
         padding: 'dense',
+        draggable: false,
       }}
       data={entities}
     />

@@ -39,7 +39,7 @@ import {
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   AuthHandler,
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
@@ -54,6 +54,7 @@ type Options = OAuthProviderOptions & {
   resolverContext: AuthResolverContext;
 };
 
+/** @public */
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
   params: {
@@ -65,6 +66,7 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
+/** @public */
 export type BitbucketPassportProfile = PassportProfile & {
   id?: string;
   displayName?: string;
@@ -119,7 +121,7 @@ export class BitbucketAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       accessType: 'offline',
       prompt: 'consent',
@@ -189,28 +191,6 @@ export class BitbucketAuthProvider implements OAuthHandlers {
     return response;
   }
 }
-
-/**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type BitbucketProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
 
 /**
  * Auth provider integration for BitBucket auth
@@ -305,23 +285,3 @@ export const bitbucket = createAuthProviderIntegration({
     },
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.bitbucket.create` instead
- */
-export const createBitbucketProvider = bitbucket.create;
-
-/**
- * @public
- * @deprecated Use `providers.bitbucket.resolvers.usernameMatchingUserEntityAnnotation()` instead.
- */
-export const bitbucketUsernameSignInResolver =
-  bitbucket.resolvers.usernameMatchingUserEntityAnnotation();
-
-/**
- * @public
- * @deprecated Use `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` instead.
- */
-export const bitbucketUserIdSignInResolver =
-  bitbucket.resolvers.userIdMatchingUserEntityAnnotation();

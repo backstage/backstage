@@ -4,34 +4,28 @@ The Backstage backend APIs are by default available without authentication. To a
 
 API requests from frontend plugins include an authorization header with a Backstage identity token acquired when the user logs in. By adding a middleware that verifies said token to be valid and signed by Backstage, non-authenticated requests can be blocked with a 401 Unauthorized response.
 
-**NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them.
+**NOTE**: Enabling this means that Backstage will stop working for guests, as no token is issued for them. If you have not done so already, you will also need to implement [service-to-service auth](https://backstage.io/docs/auth/service-to-service-auth).
 
 As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
 
+Create `packages/backend/src/authMiddleware.ts`:
+
 ```typescript
-// packages/backend/src/index.ts from a create-app deployment
-
-import cookieParser from 'cookie-parser';
-import { Request, Response, NextFunction } from 'express';
-import { JWT } from 'jose';
+import type { Config } from '@backstage/config';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { NextFunction, Request, Response, RequestHandler } from 'express';
+import { decodeJwt } from 'jose';
 import { URL } from 'url';
-import {
-  IdentityClient,
-  getBearerTokenFromAuthorizationHeader,
-} from '@backstage/plugin-auth-node';
-
-// ...
+import { PluginEnvironment } from './types';
 
 function setTokenCookie(
   res: Response,
   options: { token: string; secure: boolean; cookieDomain: string },
 ) {
   try {
-    const payload = JWT.decode(options.token) as object & {
-      exp: number;
-    };
-    res.cookie(`token`, options.token, {
-      expires: new Date(payload?.exp ? payload?.exp * 1000 : 0),
+    const payload = decodeJwt(options.token);
+    res.cookie('token', options.token, {
+      expires: new Date(payload.exp ? payload.exp * 1000 : 0),
       secure: options.secure,
       sameSite: 'lax',
       domain: options.cookieDomain,
@@ -43,18 +37,14 @@ function setTokenCookie(
   }
 }
 
-async function main() {
-  // ...
-
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const identity = IdentityClient.create({
-    discovery,
-    issuer: await discovery.getExternalBaseUrl('auth'),
-  });
+export const createAuthMiddleware = async (
+  config: Config,
+  appEnv: PluginEnvironment,
+) => {
   const baseUrl = config.getString('backend.baseUrl');
   const secure = baseUrl.startsWith('https://');
   const cookieDomain = new URL(baseUrl).hostname;
-  const authMiddleware = async (
+  const authMiddleware: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -62,13 +52,21 @@ async function main() {
     try {
       const token =
         getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
-        req.cookies['token'];
-      req.user = await identity.authenticate(token);
+        (req.cookies?.token as string | undefined);
+      if (!token) {
+        res.status(401).send('Unauthorized');
+        return;
+      }
+      try {
+        req.user = await appEnv.identity.getIdentity({ request: req });
+      } catch {
+        await appEnv.tokenManager.authenticate(token);
+      }
       if (!req.headers.authorization) {
         // Authorization header may be forwarded by plugin requests
         req.headers.authorization = `Bearer ${token}`;
       }
-      if (token !== req.cookies['token']) {
+      if (token && token !== req.cookies?.token) {
         setTokenCookie(res, {
           token,
           secure,
@@ -77,9 +75,24 @@ async function main() {
       }
       next();
     } catch (error) {
-      res.status(401).send(`Unauthorized`);
+      res.status(401).send('Unauthorized');
     }
   };
+  return authMiddleware;
+};
+```
+
+```typescript
+// packages/backend/src/index.ts from a create-app deployment
+
+import { createAuthMiddleware } from './authMiddleware';
+
+// ...
+
+async function main() {
+  // ...
+
+  const authMiddleware = await createAuthMiddleware(config, appEnv);
 
   const apiRouter = Router();
   apiRouter.use(cookieParser());
@@ -99,12 +112,10 @@ async function main() {
 }
 ```
 
+Create `packages/app/src/cookieAuth.ts`:
+
 ```typescript
-// packages/app/src/App.tsx from a create-app deployment
-
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
-
-// ...
+import type { IdentityApi } from '@backstage/core-plugin-api';
 
 // Parses supplied JWT token and returns the payload
 function parseJwt(token: string): { exp: number } {
@@ -113,9 +124,11 @@ function parseJwt(token: string): { exp: number } {
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split('')
-      .map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      })
+      .map(
+        c =>
+          // eslint-disable-next-line prefer-template
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2),
+      )
       .join(''),
   );
 
@@ -132,7 +145,7 @@ function msUntilExpiry(token: string): number {
 
 // Calls the specified url regularly using an auth token to set a token cookie
 // to authorize regular HTTP requests when loading techdocs
-async function setTokenCookie(url: string, identityApi: IdentityApi) {
+export async function setTokenCookie(url: string, identityApi: IdentityApi) {
   const { token } = await identityApi.getCredentials();
   if (!token) {
     return;
@@ -155,6 +168,19 @@ async function setTokenCookie(url: string, identityApi: IdentityApi) {
     ms > 0 ? ms : 10000,
   );
 }
+```
+
+```typescript
+// required types and packages for example below
+
+import type { IdentityApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+
+// additional packages/app/src/App.tsx from a create-app deployment
+
+import { setTokenCookie } from './cookieAuth';
+
+// ...
 
 const app = createApp({
   // ...

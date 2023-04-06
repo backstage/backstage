@@ -8,5 +8,8 @@ import { BasicPermission } from '@backstage/plugin-permission-common';
 // @public
 export const tempExamplePermission: BasicPermission;
 
+// @public
+export const todoListPermissions: BasicPermission[];
+
 // (No @packageDocumentation comment for this package)
 ```

@@ -1,5 +1,362 @@
 # @backstage/core-plugin-api
 
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.5.0
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.0
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.2.0
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- d56127c712: useRouteRef - Limit re-resolving to location pathname changes only
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.1.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.6
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/config@1.0.2
+
+## 1.0.6-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+
+## 1.0.6-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 1.0.6-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+
+## 1.0.5
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+- 87649a06bf: Add a note that the `fetchApi` utility should not be used on sign-in page implementations and similar.
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+## 1.0.4
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 8006d0f9bf: Updated dependency `msw` to `^0.44.0`.
+- 2990fff4e5: Enabled the `@backstage/core-plugin-api/alpha` entry point.
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- 881fc75a75: Internal tweak removing usage of explicit type parameters for the `BackstagePlugin` type.
+- a70869e775: Updated dependency `msw` to `^0.43.0`.
+- 2990fff4e5: Enabled the `@backstage/core-plugin-api/alpha` entry point.
+
+## 1.0.3
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+
+## 1.0.2
+
+### Patch Changes
+
+- b653a5595c: The authentication APIs are no longer `@alpha`. Since the `@backstage/core-plugin-api` has no `/alpha` entrypoint, the only effect of marking the APIs as `@alpha` was to hide them in documentation. They are still expected to be widely used and there will be a migration path if they are changed in the future.
+- Updated dependencies
+  - @backstage/config@1.0.1
+
 ## 1.0.2-next.1
 
 ### Patch Changes

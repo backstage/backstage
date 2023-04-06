@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
 
 import RadarGrid, { Props } from './RadarGrid';
@@ -36,16 +34,26 @@ describe('RadarGrid', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <svg>
-          <RadarGrid {...minProps} />
-        </svg>
-      </ThemeProvider>,
+  it('should render', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarGrid {...minProps} />
+      </svg>,
     );
 
     expect(rendered.getByTestId('radar-grid-x-line')).toBeInTheDocument();
     expect(rendered.getByTestId('radar-grid-y-line')).toBeInTheDocument();
+  });
+
+  it('should have the correct text color', async () => {
+    const rendered = await renderInTestApp(
+      <svg>
+        <RadarGrid {...minProps} />
+      </svg>,
+    );
+
+    expect(rendered.getByTestId('radar-ring-heading')).toHaveStyle({
+      fill: '#93c47d',
+    });
   });
 });

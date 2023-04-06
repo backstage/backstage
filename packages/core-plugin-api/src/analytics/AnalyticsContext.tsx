@@ -61,7 +61,7 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
  * Analytics contexts are additive, meaning the context ultimately emitted with
  * an event is the combination of all contexts in the parent tree.
  *
- * @alpha
+ * @public
  */
 export const AnalyticsContext = (options: {
   attributes: Partial<AnalyticsContextValue>;
@@ -91,11 +91,11 @@ export const AnalyticsContext = (options: {
  * @param values - Analytics context key/value pairs.
  * @internal
  */
-export function withAnalyticsContext<P>(
-  Component: React.ComponentType<P>,
+export function withAnalyticsContext<TProps extends {}>(
+  Component: React.ComponentType<TProps>,
   values: AnalyticsContextValue,
 ) {
-  const ComponentWithAnalyticsContext = (props: P) => {
+  const ComponentWithAnalyticsContext = (props: TProps) => {
     return (
       <AnalyticsContext attributes={values}>
         <Component {...props} />

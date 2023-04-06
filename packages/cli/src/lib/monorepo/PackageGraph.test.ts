@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
-import { listChangedFiles } from '../git';
+import { Lockfile } from '../versioning/Lockfile';
+import { listChangedFiles, readFileAtRef } from '../git';
 
 jest.mock('../git');
 
 const mockListChangedFiles = listChangedFiles as jest.MockedFunction<
   typeof listChangedFiles
 >;
+const mockReadFileAtRef = readFileAtRef as jest.MockedFunction<
+  typeof readFileAtRef
+>;
 
 jest.mock('../paths', () => ({
   paths: {
     targetRoot: '/',
+    resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),
   },
 }));
 
@@ -176,5 +182,55 @@ describe('PackageGraph', () => {
     await expect(
       graph.listChangedPackages({ ref: 'origin/master' }),
     ).resolves.toEqual([graph.get('a'), graph.get('b')]);
+  });
+
+  it('lists changed packages with lockfile analysis', async () => {
+    const graph = PackageGraph.fromPackages(testPackages);
+
+    mockListChangedFiles.mockResolvedValueOnce(
+      ['README.md', 'packages/a/src/foo.ts', 'yarn.lock'].sort(),
+    );
+    mockReadFileAtRef.mockResolvedValueOnce(`
+a@^1:
+  version: "1.0.0"
+
+c@^1:
+  version: "1.0.0"
+  dependencies:
+      c-dep: ^1
+
+c-dep@^2:
+  version: "2.0.0"
+  integrity: sha512-xyz
+`);
+    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
+      Lockfile.parse(`
+a@^1:
+  version: "1.0.0"
+
+c@^1:
+  version: "1.0.0"
+  dependencies:
+      c-dep: ^1
+
+c-dep@^2:
+  version: "2.0.0"
+  integrity: sha512-xyz-other
+`),
+    );
+
+    await expect(
+      graph
+        .listChangedPackages({
+          ref: 'origin/master',
+          analyzeLockfile: true,
+        })
+        .then(pkgs => pkgs.map(pkg => pkg.name)),
+    ).resolves.toEqual(['a', 'c']);
+
+    expect(mockReadFileAtRef).toHaveBeenCalledWith(
+      'yarn.lock',
+      'origin/master',
+    );
   });
 });

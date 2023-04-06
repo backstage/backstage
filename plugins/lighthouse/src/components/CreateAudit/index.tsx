@@ -25,6 +25,10 @@ import {
 } from '@material-ui/core';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  FormFactor,
+  LighthouseConfigSettings,
+} from '@backstage/plugin-lighthouse-common';
 import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
@@ -65,6 +69,23 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const formFactorToScreenEmulationMap: Record<
+  FormFactor,
+  LighthouseConfigSettings['screenEmulation']
+> = {
+  // the default is mobile, so no need to override
+  mobile: undefined,
+  // Values from lighthouse's cli "desktop" preset
+  // https://github.com/GoogleChrome/lighthouse/blob/a6738e0033e7e5ca308b97c1c36f298b7d399402/lighthouse-core/config/constants.js#L71-L77
+  desktop: {
+    mobile: false,
+    width: 1350,
+    height: 940,
+    deviceScaleFactor: 1,
+    disabled: false,
+  },
+};
+
 export const CreateAuditContent = () => {
   const errorApi = useApi(errorApiRef);
   const lighthouseApi = useApi(lighthouseApiRef);
@@ -73,7 +94,7 @@ export const CreateAuditContent = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [url, setUrl] = useState<string>(query.get('url') || '');
-  const [emulatedFormFactor, setEmulatedFormFactor] = useState('mobile');
+  const [formFactor, setFormFactor] = useState<FormFactor>('mobile');
 
   const triggerAudit = useCallback(async (): Promise<void> => {
     setSubmitting(true);
@@ -85,7 +106,9 @@ export const CreateAuditContent = () => {
         options: {
           lighthouseConfig: {
             settings: {
-              emulatedFormFactor,
+              formFactor,
+              emulatedFormFactor: formFactor,
+              screenEmulation: formFactorToScreenEmulationMap[formFactor],
             },
           },
         },
@@ -96,14 +119,7 @@ export const CreateAuditContent = () => {
     } finally {
       setSubmitting(false);
     }
-  }, [
-    url,
-    emulatedFormFactor,
-    lighthouseApi,
-    setSubmitting,
-    errorApi,
-    navigate,
-  ]);
+  }, [url, formFactor, lighthouseApi, setSubmitting, errorApi, navigate]);
 
   return (
     <>
@@ -146,8 +162,10 @@ export const CreateAuditContent = () => {
                     select
                     required
                     disabled={submitting}
-                    onChange={ev => setEmulatedFormFactor(ev.target.value)}
-                    value={emulatedFormFactor}
+                    onChange={ev =>
+                      setFormFactor(ev.target.value as FormFactor)
+                    }
+                    value={formFactor}
                     inputProps={{ 'aria-label': 'Emulated form factor' }}
                   >
                     <MenuItem value="mobile">Mobile</MenuItem>

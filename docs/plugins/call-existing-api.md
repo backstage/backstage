@@ -79,7 +79,7 @@ proxy:
 ```ts
 // Inside your component
 const backendUrl = config.getString('backend.baseUrl');
-fetch(`${backendUrl}/proxy/frobs/list`)
+fetch(`${backendUrl}/api/proxy/frobs/list`)
   .then(response => response.json())
   .then(payload => setFrobs(payload as Frob[]));
 ```
@@ -132,7 +132,7 @@ router.use('/summary', async (req, res) => {
   ]).then(async ([frobs, flerps, thunk]) => {
     return computeAggregate(await frobs.json(), await flerps.json(), thunk);
   });
-  res.status(200).send(agg);
+  res.status(200).json(agg);
 });
 ```
 

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useEffect, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+
 import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';
 
@@ -39,7 +40,7 @@ const useFilterStyles = makeStyles<BackstageTheme>(
     header: {
       display: 'flex',
       alignItems: 'center',
-      height: '60px',
+      height: theme.spacing(7.5),
       justifyContent: 'space-between',
       borderBottom: `1px solid ${theme.palette.grey[500]}`,
     },
@@ -93,14 +94,14 @@ export const Filters = (props: Props) => {
 
   // As material table doesn't provide a way to add a column filter tab we will make our own filter logic
   return (
-    <div className={classes.root}>
-      <div className={classes.header}>
-        <div className={classes.value}>Filters</div>
+    <Box className={classes.root}>
+      <Box className={classes.header}>
+        <Box className={classes.value}>Filters</Box>
         <Button color="primary" onClick={handleClick}>
           Clear all
         </Button>
-      </div>
-      <div className={classes.filters}>
+      </Box>
+      <Box className={classes.filters}>
         {props.filters?.length &&
           props.filters.map(filter => (
             <Select
@@ -116,7 +117,7 @@ export const Filters = (props: Props) => {
               }
             />
           ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };

@@ -5,19 +5,32 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentRenderer } from '@backstage/plugin-home';
+import { CardExtensionProps } from '@backstage/plugin-home';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 
 // @public
 export const HomePageStackOverflowQuestions: (
-  props: ComponentRenderer & {
-    title?: string | undefined;
-  } & StackOverflowQuestionsContentProps,
+  props: CardExtensionProps<StackOverflowQuestionsContentProps>,
 ) => JSX.Element;
 
+// @public (undocumented)
+export type StackOverflowApi = {
+  listQuestions(options?: {
+    requestParams: StackOverflowQuestionsRequestParams;
+  }): Promise<StackOverflowQuestion[]>;
+};
+
+// @public (undocumented)
+export const stackOverflowApiRef: ApiRef<StackOverflowApi>;
+
 // @public
-export const stackOverflowPlugin: BackstagePlugin<{}, {}>;
+export const StackOverflowIcon: () => JSX.Element;
+
+// @public
+export const stackOverflowPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export type StackOverflowQuestion = {
@@ -31,6 +44,7 @@ export type StackOverflowQuestion = {
 // @public
 export type StackOverflowQuestionsContentProps = {
   requestParams: StackOverflowQuestionsRequestParams;
+  icon?: React.ReactNode;
 };
 
 // @public
@@ -42,5 +56,7 @@ export type StackOverflowQuestionsRequestParams = {
 export const StackOverflowSearchResultListItem: (props: {
   result: any;
   icon?: ReactNode;
+  rank?: number | undefined;
+  highlight?: ResultHighlight | undefined;
 }) => JSX.Element;
 ```

@@ -24,8 +24,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { scaffolderApiRef, ScaffolderClient } from '../src';
-import { ScaffolderPage } from '../src/plugin';
-import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import { NextScaffolderPage, ScaffolderPage } from '../src/plugin';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 createDevApp()
@@ -49,13 +53,60 @@ createDevApp()
       discoveryApi: discoveryApiRef,
       fetchApi: fetchApiRef,
       scmIntegrationsApi: scmIntegrationsApiRef,
+      identityApi: identityApiRef,
     },
-    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi }) =>
-      new ScaffolderClient({ discoveryApi, fetchApi, scmIntegrationsApi }),
+    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi, identityApi }) =>
+      new ScaffolderClient({
+        discoveryApi,
+        fetchApi,
+        scmIntegrationsApi,
+        identityApi,
+      }),
   })
   .addPage({
     path: '/create',
     title: 'Create',
     element: <ScaffolderPage />,
+  })
+  .addPage({
+    path: '/next-create',
+    title: 'Create (next)',
+    element: <NextScaffolderPage />,
+  })
+  .addPage({
+    path: '/create-groups',
+    title: 'Groups',
+    element: (
+      <ScaffolderPage
+        groups={[
+          {
+            filter: e => e.metadata.tags?.includes('techdocs') || false,
+            title: 'Techdocs',
+          },
+          {
+            filter: e => e.metadata.tags?.includes('react') || false,
+            title: 'React',
+          },
+        ]}
+      />
+    ),
+  })
+  .addPage({
+    path: '/next-create-groups',
+    title: 'Groups (next)',
+    element: (
+      <NextScaffolderPage
+        groups={[
+          {
+            filter: e => e.metadata.tags?.includes('techdocs') || false,
+            title: 'Techdocs',
+          },
+          {
+            filter: e => e.metadata.tags?.includes('react') || false,
+            title: 'React',
+          },
+        ]}
+      />
+    ),
   })
   .render();

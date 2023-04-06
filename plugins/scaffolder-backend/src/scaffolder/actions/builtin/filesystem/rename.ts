@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTemplateAction } from '../../createTemplateAction';
-import { resolveSafeChildPath } from '@backstage/backend-common';
 
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
 
@@ -66,6 +66,7 @@ export const createFilesystemRenameAction = () => {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       if (!Array.isArray(ctx.input?.files)) {
         throw new InputError('files must be an Array');

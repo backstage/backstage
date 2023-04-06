@@ -18,6 +18,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
@@ -61,6 +62,7 @@ describe('DefaultCatalogCollator', () => {
   let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultCatalogCollator;
 
+  setupRequestMockHandlers(server);
   beforeAll(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
@@ -74,7 +76,6 @@ describe('DefaultCatalogCollator', () => {
       discovery: mockDiscoveryApi,
       tokenManager: mockTokenManager,
     });
-    server.listen();
   });
   beforeEach(() => {
     server.use(
@@ -91,9 +92,7 @@ describe('DefaultCatalogCollator', () => {
       }),
     );
   });
-  afterEach(() => server.resetHandlers());
   afterAll(() => {
-    server.close();
     jest.useRealTimers();
   });
 

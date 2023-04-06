@@ -32,7 +32,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
-import { Audit, lighthouseApiRef, LighthouseRestApi } from '../../api';
+import { Audit, LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import * as data from '../../__fixtures__/create-audit-response.json';
 import CreateAudit from './index';
 
@@ -107,6 +108,88 @@ describe('CreateAudit', () => {
 
       expect(rendered.getByLabelText(/URL/)).toBeDisabled();
       expect(rendered.getByText(/Create Audit/).parentElement).toBeDisabled();
+    });
+  });
+
+  describe('when creating the audit', () => {
+    it('sends the correct payload for mobile', async () => {
+      let triggerAuditPayload: {} | undefined = undefined;
+      server.use(
+        rest.post('http://lighthouse/v1/audits', async (req, res, ctx) => {
+          triggerAuditPayload = await req.json();
+          return res(ctx.json(createAuditResponse));
+        }),
+      );
+
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <CreateAudit />
+          </ApiProvider>,
+        ),
+      );
+
+      fireEvent.change(rendered.getByLabelText(/URL/), {
+        target: { value: 'https://spotify.com' },
+      });
+      fireEvent.click(rendered.getByText(/Create Audit/));
+
+      await waitFor(() =>
+        expect(triggerAuditPayload).toMatchObject({
+          options: {
+            lighthouseConfig: {
+              settings: { formFactor: 'mobile', emulatedFormFactor: 'mobile' },
+            },
+          },
+          url: 'https://spotify.com',
+        }),
+      );
+    });
+
+    it('sends the correct payload for desktop', async () => {
+      let triggerAuditPayload: {} | undefined = undefined;
+      server.use(
+        rest.post('http://lighthouse/v1/audits', async (req, res, ctx) => {
+          triggerAuditPayload = await req.json();
+          return res(ctx.json(createAuditResponse));
+        }),
+      );
+
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <CreateAudit />
+          </ApiProvider>,
+        ),
+      );
+
+      fireEvent.change(rendered.getByLabelText(/URL/), {
+        target: { value: 'https://spotify.com' },
+      });
+      fireEvent.mouseDown(rendered.getByText(/Mobile/));
+      fireEvent.click(rendered.getByText(/Desktop/));
+      fireEvent.click(rendered.getByText(/Create Audit/));
+
+      await waitFor(() =>
+        expect(triggerAuditPayload).toMatchObject({
+          options: {
+            lighthouseConfig: {
+              settings: {
+                formFactor: 'desktop',
+                screenEmulation: {
+                  mobile: false,
+                  width: 1350,
+                  height: 940,
+                  deviceScaleFactor: 1,
+                  disabled: false,
+                },
+                emulatedFormFactor: 'desktop',
+              },
+            },
+          },
+          url: 'https://spotify.com',
+        }),
+      );
     });
   });
 

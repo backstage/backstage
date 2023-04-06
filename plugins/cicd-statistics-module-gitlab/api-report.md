@@ -4,6 +4,7 @@
 
 ```ts
 import { CicdConfiguration } from '@backstage/plugin-cicd-statistics';
+import { CicdDefaults } from '@backstage/plugin-cicd-statistics';
 import { CicdState } from '@backstage/plugin-cicd-statistics';
 import { CicdStatisticsApi } from '@backstage/plugin-cicd-statistics';
 import { Entity } from '@backstage/catalog-model';
@@ -13,7 +14,7 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 
 // @public
 export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
-  constructor(gitLabAuthApi: OAuthApi);
+  constructor(gitLabAuthApi: OAuthApi, cicdDefaults?: Partial<CicdDefaults>);
   // (undocumented)
   createGitlabApi(entity: Entity, scopes: string[]): Promise<GitlabClient>;
   // (undocumented)

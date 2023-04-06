@@ -15,17 +15,9 @@
  */
 import React from 'react';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
-import { FieldExtensionComponentProps } from '../../../extensions';
+import { OwnerPickerProps } from './schema';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `OwnerPicker` field extension.
- *
- * @public
- */
-export interface OwnerPickerUiOptions {
-  allowedKinds?: string[];
-}
+export { OwnerPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `OwnerPicker`
@@ -33,23 +25,28 @@ export interface OwnerPickerUiOptions {
  *
  * @public
  */
-export const OwnerPicker = (
-  props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
-) => {
+export const OwnerPicker = (props: OwnerPickerProps) => {
   const {
     schema: { title = 'Owner', description = 'The owner of the component' },
     uiSchema,
     ...restProps
   } = props;
 
+  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
+    kind: allowedKinds || ['Group', 'User'],
+  };
+
   const ownerUiSchema = {
     ...uiSchema,
     'ui:options': {
-      allowedKinds: (uiSchema['ui:options']?.allowedKinds || [
-        'Group',
-        'User',
-      ]) as string[],
+      catalogFilter,
       defaultKind: 'Group',
+      allowArbitraryValues:
+        uiSchema['ui:options']?.allowArbitraryValues ?? true,
+      ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
     },
   };
 

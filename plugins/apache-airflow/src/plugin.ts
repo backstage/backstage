@@ -17,13 +17,15 @@
 import { rootRouteRef } from './routes';
 import { apacheAirflowApiRef, ApacheAirflowClient } from './api';
 import {
+  configApiRef,
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 
+/** @public */
 export const apacheAirflowPlugin = createPlugin({
   id: 'apache-airflow',
   routes: {
@@ -42,10 +44,28 @@ export const apacheAirflowPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const ApacheAirflowPage = apacheAirflowPlugin.provide(
   createRoutableExtension({
     name: 'ApacheAirflowPage',
     component: () => import('./components/HomePage').then(m => m.HomePage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * Render the DAGs in a table
+ * If the dagIds is specified, only those DAGs are loaded.
+ * Otherwise, it's going to list all the DAGs
+ * @public
+ * @param dagIds - optional string[] of the DAGs to show in the table. If undefined, it will list all DAGs
+ */
+export const ApacheAirflowDagTable = apacheAirflowPlugin.provide(
+  createComponentExtension({
+    name: 'ApacheAirflowDagTable',
+    component: {
+      lazy: () =>
+        import('./components/DagTableComponent').then(m => m.DagTableComponent),
+    },
   }),
 );

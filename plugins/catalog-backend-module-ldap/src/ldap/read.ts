@@ -128,7 +128,6 @@ export async function readLdapUsers(
     mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
       ensureItems(userMemberOf, myDn, vs);
     });
-
     entities.push(entity);
   });
 
@@ -365,11 +364,13 @@ export function resolveRelations(
   for (const user of users) {
     userMap.set(stringifyEntityRef(user), user);
     userMap.set(user.metadata.annotations![LDAP_DN_ANNOTATION], user);
+    userMap.set(user.metadata.annotations![LDAP_RDN_ANNOTATION], user);
     userMap.set(user.metadata.annotations![LDAP_UUID_ANNOTATION], user);
   }
   for (const group of groups) {
     groupMap.set(stringifyEntityRef(group), group);
     groupMap.set(group.metadata.annotations![LDAP_DN_ANNOTATION], group);
+    groupMap.set(group.metadata.annotations![LDAP_RDN_ANNOTATION], group);
     groupMap.set(group.metadata.annotations![LDAP_UUID_ANNOTATION], group);
   }
 

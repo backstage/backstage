@@ -38,8 +38,8 @@ export class UrlPreparer implements PreparerBase {
    * Returns a directory preparer instance
    * @param config - A URL preparer config containing the a logger and reader
    */
-  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer {
-    return new UrlPreparer(reader, logger);
+  static fromConfig(options: PreparerConfig): UrlPreparer {
+    return new UrlPreparer(options.reader, options.logger);
   }
 
   private constructor(reader: UrlReader, logger: Logger) {

@@ -21,8 +21,9 @@ const IGNORED = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
   /^.*[/\\]CHANGELOG\.md$/,
-  /^.*[/\\]api-report\.md$/,
+  /^.*[/\\]([^\/]+-)?api-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
+  /^docs[/\\]reference[/\\]/,
 ];
 
 const rootDir = resolvePath(__dirname, '..');
@@ -55,6 +56,7 @@ async function listFiles(dir = '') {
 // caused by the script. In CI, we want to ensure vale linter is run.
 async function exitIfMissingVale() {
   try {
+    // eslint-disable-next-line @backstage/no-undeclared-imports
     await require('command-exists')('vale');
   } catch (e) {
     if (process.env.CI) {
@@ -72,7 +74,7 @@ async function exitIfMissingVale() {
 async function runVale(files) {
   const result = spawnSync(
     'vale',
-    ['--config', resolvePath(rootDir, '.github/vale/config.ini'), ...files],
+    ['--config', resolvePath(rootDir, '.vale.ini'), ...files],
     {
       stdio: 'inherit',
     },
@@ -97,7 +99,7 @@ async function main() {
   if (process.argv.includes('--ci-args')) {
     process.stdout.write(
       // Workaround for not being able to pass arguments to the vale action
-      JSON.stringify(['--config=.github/vale/config.ini', ...files]),
+      JSON.stringify([...files]),
     );
     return;
   }

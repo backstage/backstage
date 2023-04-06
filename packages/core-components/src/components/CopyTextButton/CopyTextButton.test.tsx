@@ -55,13 +55,14 @@ const apis = [[errorApiRef, mockErrorApi] as const] as const;
 
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByTitle, queryByText } = await renderInTestApp(
+    const { getByTitle, queryByText, getByLabelText } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
     expect(getByTitle('mockTooltip')).toBeInTheDocument();
     expect(queryByText('mockTooltip')).not.toBeInTheDocument();
+    expect(getByLabelText('Copy text')).toBeInTheDocument();
   });
 
   it('displays tooltip and copy the text on click', async () => {
@@ -98,5 +99,14 @@ describe('<CopyTextButton />', () => {
       </TestApiProvider>,
     );
     expect(mockErrorApi.post).toHaveBeenCalledWith(error);
+  });
+
+  it('aria-label', async () => {
+    const { getByLabelText } = await renderInTestApp(
+      <TestApiProvider apis={apis}>
+        <CopyTextButton {...props} aria-label="text for aria-label" />
+      </TestApiProvider>,
+    );
+    expect(getByLabelText('text for aria-label')).toBeInTheDocument();
   });
 });

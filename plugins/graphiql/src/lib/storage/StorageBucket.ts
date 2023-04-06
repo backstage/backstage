@@ -47,7 +47,7 @@ export class StorageBucket implements Storage {
     private readonly bucket: string,
   ) {}
 
-  [name: string]: any;
+  [itemName: string]: any;
 
   get length(): number {
     throw new Error('Method not implemented.');

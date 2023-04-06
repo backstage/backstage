@@ -22,16 +22,16 @@ import {
   ListItemText,
   makeStyles,
   IconButton,
-  Link,
   Typography,
   Chip,
 } from '@material-ui/core';
 import Done from '@material-ui/icons/Done';
 import Warning from '@material-ui/icons/Warning';
 import { DateTime, Duration } from 'luxon';
-import { Incident } from '../types';
+import { PagerDutyIncident } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { BackstageTheme } from '@backstage/theme';
+import { Link } from '@backstage/core-components';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   denseListIcon: {
@@ -61,7 +61,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 type Props = {
-  incident: Incident;
+  incident: PagerDutyIncident;
 };
 
 export const IncidentListItem = ({ incident }: Props) => {
@@ -100,13 +100,7 @@ export const IncidentListItem = ({ incident }: Props) => {
         secondary={
           <Typography noWrap variant="body2" color="textSecondary">
             Created {createdAt} and assigned to{' '}
-            <Link
-              href={user?.html_url ?? '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {user?.summary ?? 'nobody'}
-            </Link>
+            <Link to={user?.html_url ?? '#'}>{user?.summary ?? 'nobody'}</Link>
           </Typography>
         }
       />

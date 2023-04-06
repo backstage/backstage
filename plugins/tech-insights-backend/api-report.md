@@ -5,12 +5,15 @@
 ```ts
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import express from 'express';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
 import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
+import { HumanDuration } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -44,16 +47,50 @@ export const entityMetadataFactRetriever: FactRetriever;
 // @public
 export const entityOwnershipFactRetriever: FactRetriever;
 
+// @public
+export interface FactRetrieverEngine {
+  getJobRegistration(ref: string): Promise<FactRetrieverRegistration>;
+  schedule(): Promise<void>;
+  triggerJob(ref: string): Promise<void>;
+}
+
 // @public (undocumented)
 export type FactRetrieverRegistrationOptions = {
   cadence: string;
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
+  timeout?: Duration | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
 };
+
+// @public (undocumented)
+export interface FactRetrieverRegistry {
+  // (undocumented)
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  // (undocumented)
+  getSchemas(): Promise<FactSchema[]>;
+  // (undocumented)
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  // (undocumented)
+  listRetrievers(): Promise<FactRetriever[]>;
+  // (undocumented)
+  register(registration: FactRetrieverRegistration): Promise<void>;
+}
+
+// @public
+export const initializePersistenceContext: (
+  database: PluginDatabaseManager,
+  options?: PersistenceContextOptions,
+) => Promise<PersistenceContext>;
 
 // @public
 export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
+};
+
+// @public
+export type PersistenceContextOptions = {
+  logger: Logger;
 };
 
 // @public
@@ -77,6 +114,7 @@ export type TechInsightsContext<
 > = {
   factChecker?: FactChecker<CheckType, CheckResultType>;
   persistenceContext: PersistenceContext;
+  factRetrieverEngine: FactRetrieverEngine;
 };
 
 // @public (undocumented)
@@ -91,9 +129,11 @@ export interface TechInsightsOptions<
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
-  factRetrievers: FactRetrieverRegistration[];
+  factRetrieverRegistry?: FactRetrieverRegistry;
+  factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  persistenceContext?: PersistenceContext;
   // (undocumented)
   scheduler: PluginTaskScheduler;
   // (undocumented)

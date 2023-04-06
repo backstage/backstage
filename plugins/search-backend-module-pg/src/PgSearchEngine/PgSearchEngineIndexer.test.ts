@@ -53,7 +53,7 @@ describe('PgSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
@@ -73,12 +73,21 @@ describe('PgSearchEngineIndexer', () => {
       location: `location-${i}`,
     }));
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
-    expect(database.insertDocuments).toBeCalledTimes(4);
+    expect(database.insertDocuments).toHaveBeenCalledTimes(4);
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+  });
+
+  it('should rollback transaction if no documents indexed', async () => {
+    await TestPipeline.fromIndexer(indexer).withDocuments([]).execute();
+
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
+    expect(database.insertDocuments).not.toHaveBeenCalled();
+    expect(database.completeInsert).not.toHaveBeenCalled();
+    expect(tx.rollback).toHaveBeenCalled();
   });
 
   it('should close out stream and bubble up error on prepare', async () => {
@@ -92,7 +101,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.prepareInsert.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 
@@ -114,7 +123,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.insertDocuments.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 
@@ -136,7 +145,7 @@ describe('PgSearchEngineIndexer', () => {
     ];
 
     database.completeInsert.mockRejectedValueOnce(expectedError);
-    const result = await TestPipeline.withSubject(indexer)
+    const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
       .execute();
 

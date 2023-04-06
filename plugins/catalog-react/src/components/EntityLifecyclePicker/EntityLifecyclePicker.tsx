@@ -47,7 +47,8 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
-export const EntityLifecyclePicker = () => {
+export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
+  const { initialFilter = [] } = props;
   const classes = useStyles();
   const {
     updateFilters,
@@ -64,7 +65,7 @@ export const EntityLifecyclePicker = () => {
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
-      : filters.lifecycles?.values ?? [],
+      : filters.lifecycles?.values ?? initialFilter,
   );
 
   // Set selected lifecycles on query parameter updates; this happens at initial page load and from
@@ -74,14 +75,6 @@ export const EntityLifecyclePicker = () => {
       setSelectedLifecycles(queryParamLifecycles);
     }
   }, [queryParamLifecycles]);
-
-  useEffect(() => {
-    updateFilters({
-      lifecycles: selectedLifecycles.length
-        ? new EntityLifecycleFilter(selectedLifecycles)
-        : undefined,
-    });
-  }, [selectedLifecycles, updateFilters]);
 
   const availableLifecycles = useMemo(
     () =>
@@ -95,35 +88,53 @@ export const EntityLifecyclePicker = () => {
     [backendEntities],
   );
 
+  useEffect(() => {
+    updateFilters({
+      lifecycles:
+        selectedLifecycles.length && availableLifecycles.length
+          ? new EntityLifecycleFilter(selectedLifecycles)
+          : undefined,
+    });
+  }, [selectedLifecycles, updateFilters, availableLifecycles]);
+
   if (!availableLifecycles.length) return null;
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Lifecycle</Typography>
-      <Autocomplete
-        aria-label="Lifecycle"
-        multiple
-        options={availableLifecycles}
-        value={selectedLifecycles}
-        onChange={(_: object, value: string[]) => setSelectedLifecycles(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
+      <Typography variant="button" component="label">
+        Lifecycle
+        <Autocomplete
+          multiple
+          disableCloseOnSelect
+          options={availableLifecycles}
+          value={selectedLifecycles}
+          onChange={(_: object, value: string[]) =>
+            setSelectedLifecycles(value)
+          }
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              onClick={event => event.preventDefault()}
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };

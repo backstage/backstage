@@ -20,19 +20,19 @@ const drawerWidthClosed = 72;
 const iconPadding = 24;
 const userBadgePadding = 18;
 
-/** @public **/
+/** @public */
 export type SidebarOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
-/** @public **/
+/** @public */
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
-/** @internal **/
+/** @internal */
 export type SidebarConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
@@ -78,7 +78,7 @@ export const makeSidebarConfig = (
     sidebarConfig.drawerWidthClosed - sidebarConfig.userBadgePadding * 2,
 });
 
-/** @internal **/
+/** @internal */
 export type SubmenuConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
@@ -100,22 +100,6 @@ export const makeSidebarSubmenuConfig = (
 
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
-
-/**
- * Types for the `SidebarContext`
- */
-export type SidebarContextType = {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
-};
-
-/**
- * Context whether the `Sidebar` is open
- */
-export const SidebarContext = createContext<SidebarContextType>({
-  isOpen: false,
-  setOpen: () => {},
-});
 
 export type SidebarConfigContextType = {
   sidebarConfig: SidebarConfig;

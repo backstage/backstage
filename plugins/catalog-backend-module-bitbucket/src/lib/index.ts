@@ -16,8 +16,6 @@
 
 export { defaultRepositoryParser } from './BitbucketRepositoryParser';
 export type { BitbucketRepositoryParser } from './BitbucketRepositoryParser';
-export { BitbucketCloudClient, paginated20 } from './BitbucketCloudClient';
 export { BitbucketServerClient, paginated } from './BitbucketServerClient';
-export type { PagedResponse20 } from './BitbucketCloudClient';
 export type { PagedResponse } from './BitbucketServerClient';
-export type { BitbucketRepository, BitbucketRepository20 } from './types';
+export type { BitbucketRepository } from './types';

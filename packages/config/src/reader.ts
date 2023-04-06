@@ -280,10 +280,25 @@ export class ConfigReader implements Config {
 
   /** {@inheritdoc Config.getOptionalBoolean} */
   getOptionalBoolean(key: string): boolean | undefined {
-    return this.readConfigValue(
+    const value = this.readConfigValue<string | number | boolean>(
       key,
-      value => typeof value === 'boolean' || { expected: 'boolean' },
+      val =>
+        typeof val === 'boolean' ||
+        typeof val === 'number' ||
+        typeof val === 'string' || { expected: 'boolean' },
     );
+    if (typeof value === 'boolean' || value === undefined) {
+      return value;
+    }
+    const valueString = String(value).trim();
+
+    if (/^(?:y|yes|true|1|on)$/i.test(valueString)) {
+      return true;
+    }
+    if (/^(?:n|no|false|0|off)$/i.test(valueString)) {
+      return false;
+    }
+    throw new Error(errors.convert(this.fullKey(key), this.context, 'boolean'));
   }
 
   /** {@inheritdoc Config.getString} */

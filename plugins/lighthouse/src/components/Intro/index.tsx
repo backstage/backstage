@@ -22,6 +22,7 @@ import LighthouseSupportButton from '../SupportButton';
 import {
   ContentHeader,
   InfoCard,
+  Link,
   MarkdownContent,
 } from '@backstage/core-components';
 
@@ -50,8 +51,8 @@ with the environment variable \`LAS_CORS\` set to \`true\`._
 When you have an instance running that Backstage can hook into, first install the plugin into your app:
 
 \`\`\`sh
-cd packages/app
-yarn add @backstage/plugin-lighthouse
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-lighthouse
 \`\`\`
 
 Modify your app routes in \`App.tsx\` to include the \`LighthousePage\` component exported from the plugin, for example:
@@ -108,10 +109,9 @@ function GettingStartedCard() {
           <Grid container direction="row" justifyContent="flex-end">
             <Grid item>
               <Button
-                component="a"
-                href="https://github.com/spotify/lighthouse-audit-service"
+                component={Link}
+                to="https://github.com/spotify/lighthouse-audit-service"
                 size="small"
-                target="_blank"
               >
                 Check out the README
               </Button>

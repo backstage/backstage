@@ -26,17 +26,12 @@ export { BuildSummary };
 
 export { BuildWithSteps };
 
-// Warning: (ae-missing-release-tag) "CIRCLECI_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const CIRCLECI_ANNOTATION = 'circleci.com/project-slug';
 
-// Warning: (ae-missing-release-tag) "CircleCIApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class CircleCIApi {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options);
+  constructor(options: { discoveryApi: DiscoveryApi; proxyPath?: string });
   // (undocumented)
   getBuild(
     buildNumber: number,
@@ -44,10 +39,7 @@ export class CircleCIApi {
   ): Promise<BuildWithSteps>;
   // (undocumented)
   getBuilds(
-    {
-      limit,
-      offset,
-    }: {
+    pagination: {
       limit: number;
       offset: number;
     },
@@ -62,44 +54,30 @@ export class CircleCIApi {
   ): Promise<BuildSummary>;
 }
 
-// Warning: (ae-missing-release-tag) "circleCIApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const circleCIApiRef: ApiRef<CircleCIApi>;
 
-// Warning: (ae-missing-release-tag) "circleCIBuildRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const circleCIBuildRouteRef: SubRouteRef<PathParams<'/:buildId'>>;
 
-// Warning: (ae-missing-release-tag) "circleCIPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-const circleCIPlugin: BackstagePlugin<{}, {}>;
+const circleCIPlugin: BackstagePlugin<{}, {}, {}>;
 export { circleCIPlugin };
 export { circleCIPlugin as plugin };
 
-// Warning: (ae-missing-release-tag) "circleCIRouteRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const circleCIRouteRef: RouteRef<undefined>;
 
-// Warning: (ae-missing-release-tag) "EntityCircleCIContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityCircleCIContent: () => JSX.Element;
 
 export { GitType };
 
-// Warning: (ae-missing-release-tag) "isCircleCIAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const isCircleCIAvailable: (entity: Entity) => boolean;
 export { isCircleCIAvailable };
 export { isCircleCIAvailable as isPluginApplicableToEntity };
 
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const Router: () => JSX.Element;
 ```

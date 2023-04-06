@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
   Typography,
 } from '@material-ui/core';
@@ -72,17 +71,15 @@ const DeploymentSummary = ({
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={4} item>
         <DeploymentDrawer deployment={deployment} />
       </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
-      </Grid>
       {hpa && (
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <HorizontalPodAutoscalerDrawer hpa={hpa}>
             <Grid
               item
@@ -117,10 +114,11 @@ const DeploymentSummary = ({
       <Grid
         item
         container
-        xs={3}
+        xs={4}
         direction="column"
         justifyContent="flex-start"
-        alignItems="flex-start"
+        alignItems="flex-end"
+        spacing={0}
       >
         <Grid item>
           <StatusOK>{numberOfCurrentPods} pods</StatusOK>
@@ -152,7 +150,7 @@ const DeploymentAccordion = ({
   );
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <DeploymentSummary
           deployment={deployment}
@@ -186,8 +184,11 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
           <Grid item xs>
             <DeploymentAccordion
               matchingHpa={getMatchingHpa(
-                deployment.metadata?.name,
-                'deployment',
+                {
+                  name: deployment.metadata?.name,
+                  namespace: deployment.metadata?.namespace,
+                  kind: 'deployment',
+                },
                 groupedResponses.horizontalPodAutoscalers,
               )}
               ownedPods={getOwnedPodsThroughReplicaSets(

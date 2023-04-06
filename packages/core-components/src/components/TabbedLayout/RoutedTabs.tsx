@@ -15,7 +15,12 @@
  */
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useNavigate, useParams, useRoutes } from 'react-router';
+import {
+  matchRoutes,
+  useNavigate,
+  useParams,
+  useRoutes,
+} from 'react-router-dom';
 import { Content } from '../../layout/Content';
 import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
@@ -41,7 +46,15 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const element = useRoutes(sortedRoutes) ?? subRoutes[0].children;
 
-  const [matchedRoute] = matchRoutes(sortedRoutes, `/${params['*']}`) ?? [];
+  // TODO(Rugvip): Once we only support v6 stable we can always prefix
+  // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
+  // the tab highlighting when using relative paths for the tabs.
+  let currentRoute = params['*'] ?? '';
+  if (!currentRoute.startsWith('/')) {
+    currentRoute = `/${currentRoute}`;
+  }
+
+  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
   const foundIndex = matchedRoute
     ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;
@@ -67,13 +80,16 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
     [routes],
   );
 
-  const onTabChange = (tabIndex: number) =>
+  const onTabChange = (tabIndex: number) => {
+    let { path } = routes[tabIndex];
     // Remove trailing /*
+    path = path.replace(/\/\*$/, '');
     // And remove leading / for relative navigation
+    path = path.replace(/^\//, '');
     // Note! route resolves relative to the position in the React tree,
     // not relative to current location
-    navigate(routes[tabIndex].path.replace(/\/\*$/, '').replace(/^\//, ''));
-
+    navigate(path);
+  };
   return (
     <>
       <HeaderTabs

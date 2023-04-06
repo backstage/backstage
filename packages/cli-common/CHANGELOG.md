@@ -1,5 +1,47 @@
 # @backstage/cli-common
 
+## 0.1.12
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.1.11
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+
+## 0.1.10
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 0.1.9
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+
 ## 0.1.9-next.0
 
 ### Patch Changes

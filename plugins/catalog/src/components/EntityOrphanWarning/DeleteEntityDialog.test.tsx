@@ -80,7 +80,7 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Cancel'));
 
     await waitFor(() => {
-      expect(onClose).toBeCalled();
+      expect(onClose).toHaveBeenCalled();
     });
   });
 
@@ -101,8 +101,8 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
-      expect(catalogClient.removeEntityByUid).toBeCalledWith('123');
-      expect(onConfirm).toBeCalled();
+      expect(catalogClient.removeEntityByUid).toHaveBeenCalledWith('123');
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 
@@ -124,8 +124,8 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
-      expect(catalogClient.removeEntityByUid).toBeCalledWith('123');
-      expect(alertApi.post).toBeCalledWith({ message: 'no no no' });
+      expect(catalogClient.removeEntityByUid).toHaveBeenCalledWith('123');
+      expect(alertApi.post).toHaveBeenCalledWith({ message: 'no no no' });
     });
   });
 });

@@ -35,10 +35,10 @@ import {
   AlertFormProps,
   Duration,
   DEFAULT_DATE_FORMAT,
-  Maybe,
   AlertSnoozeFormData,
   AlertSnoozeOptions,
 } from '../types';
+import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { useAlertDialogStyles as useStyles } from '../utils/styles';
 import { intervalsOf } from '../utils/duration';
 

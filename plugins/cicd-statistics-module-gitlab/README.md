@@ -7,13 +7,14 @@ This is an extension module to the `cicd-statistics` plugin, providing a `CicdSt
 1. Install the `cicd-statistics` and `cicd-statistics-module-gitlab` plugins in the `app` package.
 
 2. Configure your ApiFactory:
+   - You can optionally pass in a second argument to `CicdStatisticsApiGitlab` of type [CicdDefaults](https://github.com/backstage/backstage/blob/2881c53cb383bf127c150f837f37fe535d8cf97b/plugins/cicd-statistics/src/apis/types.ts#L179) to alter the default CICD UI configuration
 
 ```tsx
 // packages/app/src/apis.ts
 import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 
 import { cicdStatisticsApiRef } from '@backstage/plugin-cicd-statistics';
-import { CicdStatisticsApiGitlab } from '@backstage plugin-cicd-statistics-module-gitlab';
+import { CicdStatisticsApiGitlab } from '@backstage/plugin-cicd-statistics-module-gitlab';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({

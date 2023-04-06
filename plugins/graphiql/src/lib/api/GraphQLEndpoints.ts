@@ -26,7 +26,7 @@ export type EndpointConfig = {
   id: string;
   title: string;
   // Endpoint URL
-  url: string;
+  url: string | Promise<string>;
   // only supports POST right now
   method?: 'POST';
   // Defaults to setting Content-Type to application/json
@@ -59,13 +59,14 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
     return {
       id,
       title,
-      fetcher: async (params: any) => {
+      fetcher: async (params: any, options: any = {}) => {
         const body = JSON.stringify(params);
         const headers = {
           'Content-Type': 'application/json',
           ...config.headers,
+          ...options.headers,
         };
-        const res = await fetch(url, {
+        const res = await fetch(await url, {
           method,
           headers,
           body,
@@ -96,7 +97,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
     return {
       id,
       title,
-      fetcher: async (params: any) => {
+      fetcher: async (params: any, options: any = {}) => {
         let retried = false;
 
         const doRequest = async (): Promise<any> => {
@@ -105,6 +106,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${await githubAuthApi.getAccessToken()}`,
+              ...options.headers,
             },
             body: JSON.stringify(params),
           });

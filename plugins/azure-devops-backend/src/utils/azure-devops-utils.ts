@@ -30,9 +30,11 @@ import {
   GitRepository,
   IdentityRefWithVote,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import mime from 'mime-types';
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
+import { UrlReader } from '@backstage/backend-common';
 
 export function convertDashboardPullRequest(
   pullRequest: GitPullRequest,
@@ -205,6 +207,48 @@ export function convertPolicy(
   };
 }
 
+export async function replaceReadme(
+  urlReader: UrlReader,
+  host: string,
+  org: string,
+  project: string,
+  repo: string,
+  readmeContent: string,
+) {
+  const filesPath = extractAssets(readmeContent);
+  if (!filesPath) return readmeContent;
+  return await filesPath.reduce(
+    async (promise: Promise<string>, filePath: string) =>
+      promise.then(async content => {
+        const { label, path, ext } = extractPartsFromAsset(filePath);
+        const data = mime.lookup(ext);
+        const url = buildEncodedUrl(host, org, project, repo, path + ext);
+        const response = await urlReader.readUrl(url);
+        const buffer = await response.buffer();
+        const file = buffer.toString('base64');
+        return content.replace(
+          filePath,
+          `[${label}](data:${data};base64,${file})`,
+        );
+      }),
+    Promise.resolve(readmeContent),
+  );
+}
+
+export function buildEncodedUrl(
+  host: string,
+  org: string,
+  project: string,
+  repo: string,
+  path: string,
+): string {
+  const encodedOrg = encodeURIComponent(org);
+  const encodedProject = encodeURIComponent(project);
+  const encodedRepo = encodeURIComponent(repo);
+  const encodedPath = encodeURIComponent(path);
+  return `https://${host}/${encodedOrg}/${encodedProject}/_git/${encodedRepo}?path=${encodedPath}`;
+}
+
 function convertReviewer(
   identityRef?: IdentityRefWithVote,
 ): Reviewer | undefined {
@@ -262,4 +306,25 @@ function convertCreatedBy(identityRef?: IdentityRef): CreatedBy | undefined {
 
 function hasAutoComplete(pullRequest: GitPullRequest): boolean {
   return pullRequest.isDraft !== true && !!pullRequest.completionOptions;
+}
+
+export function extractAssets(content: string) {
+  const regExp =
+    /\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim;
+  return content.match(regExp);
+}
+
+export function extractPartsFromAsset(content: string): {
+  label: string;
+  path: string;
+  ext: string;
+} {
+  const regExp =
+    /\[(.*?)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/i;
+  const [_, label, path, ext] = regExp.exec(content) || [];
+  return {
+    ext,
+    label,
+    path: path.startsWith('.') ? path.substring(1, path.length) : path,
+  };
 }

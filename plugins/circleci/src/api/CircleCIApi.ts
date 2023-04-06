@@ -28,28 +28,31 @@ import {
 } from 'circleci-api';
 import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export { GitType };
+
+/** @public */
 export type { BuildWithSteps, BuildStepAction, BuildSummary };
 
+/** @public */
 export const circleCIApiRef = createApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',
 });
 
 const DEFAULT_PROXY_PATH = '/circleci/api';
 
-type Options = {
-  discoveryApi: DiscoveryApi;
-  /**
-   * Path to use for requests via the proxy, defaults to /circleci/api
-   */
-  proxyPath?: string;
-};
-
+/** @public */
 export class CircleCIApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
 
-  constructor(options: Options) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    /**
+     * Path to use for requests via the proxy, defaults to /circleci/api
+     */
+    proxyPath?: string;
+  }) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
   }
@@ -62,9 +65,10 @@ export class CircleCIApi {
   }
 
   async getBuilds(
-    { limit = 10, offset = 0 }: { limit: number; offset: number },
+    pagination: { limit: number; offset: number },
     options: Partial<CircleCIOptions>,
   ) {
+    const { limit = 10, offset = 0 } = pagination;
     return getBuildSummaries('', {
       options: {
         limit,

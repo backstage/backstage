@@ -18,15 +18,14 @@ import React from 'react';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 
-export const HorizontalPodAutoscalerDrawer = ({
-  hpa,
-  expanded,
-  children,
-}: {
+/** @public */
+export const HorizontalPodAutoscalerDrawer = (props: {
   hpa: V1HorizontalPodAutoscaler;
   expanded?: boolean;
   children?: React.ReactNode;
 }) => {
+  const { hpa, expanded, children } = props;
+
   return (
     <KubernetesDrawer
       kind="HorizontalPodAutoscaler"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityLayout } from '@backstage/plugin-catalog';
+import { EntityLayout } from '@internal/plugin-catalog-customized';
 import {
   EntityProvider,
   starredEntitiesApiRef,

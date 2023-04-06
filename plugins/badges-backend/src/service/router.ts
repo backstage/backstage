@@ -26,6 +26,7 @@ import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 
+/** @public */
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
   badgeFactories?: BadgeFactories;
@@ -34,6 +35,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -76,8 +78,7 @@ export async function createRouter(
       specs.push(badge);
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(JSON.stringify(specs, null, 2));
+    res.status(200).json(specs);
   });
 
   router.get(

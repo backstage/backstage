@@ -12,22 +12,15 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EventAttendee" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type EventAttendee = gapi.client.calendar.EventAttendee;
 
-// Warning: (ae-missing-release-tag) "GCalendar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GCalendar = gapi.client.calendar.CalendarListEntry;
 
-// Warning: (ae-missing-release-tag) "GCalendarApiClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class GCalendarApiClient {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options);
+  constructor(options: { authApi: OAuthApi; fetchApi: FetchApi });
   // (undocumented)
   getCalendars(params?: any): Promise<gapi.client.calendar.CalendarList>;
   // (undocumented)
@@ -39,13 +32,9 @@ export class GCalendarApiClient {
   }>;
 }
 
-// Warning: (ae-missing-release-tag) "gcalendarApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const gcalendarApiRef: ApiRef<GCalendarApiClient>;
 
-// Warning: (ae-missing-release-tag) "GCalendarEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GCalendarEvent = gapi.client.calendar.Event &
   Pick<GCalendar, 'backgroundColor' | 'primary'> &
@@ -53,28 +42,21 @@ export type GCalendarEvent = gapi.client.calendar.Event &
     calendarId?: string;
   };
 
-// Warning: (ae-missing-release-tag) "GCalendarList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GCalendarList = gapi.client.calendar.CalendarList;
 
-// Warning: (ae-missing-release-tag) "gcalendarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const gcalendarPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "HomePageCalendar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const HomePageCalendar: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ResponseStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export enum ResponseStatus {
   // (undocumented)

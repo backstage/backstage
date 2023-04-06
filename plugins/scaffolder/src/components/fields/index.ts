@@ -18,3 +18,4 @@ export * from './OwnerPicker';
 export * from './RepoUrlPicker';
 export * from './OwnedEntityPicker';
 export * from './EntityTagsPicker';
+export { type FieldSchema, makeFieldSchemaFromZod } from './utils';

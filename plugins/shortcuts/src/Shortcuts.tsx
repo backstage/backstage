@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
@@ -35,13 +35,12 @@ import { IconComponent, useApi } from '@backstage/core-plugin-api';
  */
 export interface ShortcutsProps {
   icon?: IconComponent;
+  allowExternalLinks?: boolean;
 }
 
 export const Shortcuts = (props: ShortcutsProps) => {
   const shortcutApi = useApi(shortcutsApiRef);
-  const shortcuts = useObservable(
-    useMemo(() => shortcutApi.shortcut$(), [shortcutApi]),
-  );
+  const shortcuts = useObservable(shortcutApi.shortcut$(), shortcutApi.get());
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
   const loading = Boolean(!shortcuts);
 
@@ -64,6 +63,7 @@ export const Shortcuts = (props: ShortcutsProps) => {
         onClose={handleClose}
         anchorEl={anchorEl}
         api={shortcutApi}
+        allowExternalLinks={props.allowExternalLinks}
       />
       {loading ? (
         <Progress />
@@ -73,6 +73,7 @@ export const Shortcuts = (props: ShortcutsProps) => {
             key={shortcut.id}
             shortcut={shortcut}
             api={shortcutApi}
+            allowExternalLinks={props.allowExternalLinks}
           />
         ))
       )}

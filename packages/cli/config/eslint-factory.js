@@ -60,7 +60,7 @@ function createConfig(dir, extraConfig = {}) {
       '@spotify/eslint-config-typescript',
       'prettier',
       'plugin:jest/recommended',
-      'plugin:monorepo/recommended',
+      'plugin:@backstage/recommended',
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
@@ -76,7 +76,7 @@ function createConfig(dir, extraConfig = {}) {
       ...parserOptions,
     },
     ignorePatterns: [
-      '.eslintrc.js',
+      '.eslintrc.*',
       '**/dist/**',
       '**/dist-types/**',
       ...(ignorePatterns ?? []),
@@ -88,28 +88,6 @@ function createConfig(dir, extraConfig = {}) {
       '@typescript-eslint/no-redeclare': 'error',
       'no-undef': 'off',
       'import/newline-after-import': 'error',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: dir
-            ? [
-                `!${joinPath(dir, 'src/**')}`,
-                joinPath(dir, 'src/**/*.test.*'),
-                joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/setupTests.*'),
-              ]
-            : [
-                // Legacy config for packages that don't provide a dir
-                '**/*.test.*',
-                '**/*.stories.*',
-                '**/src/setupTests.*',
-                '**/dev/**',
-              ],
-          optionalDependencies: true,
-          peerDependencies: true,
-          bundledDependencies: true,
-        },
-      ],
       'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
@@ -131,12 +109,11 @@ function createConfig(dir, extraConfig = {}) {
             ...(restrictedSrcImports ?? []),
           ],
           patterns: [
-            // Avoid cross-package imports
-            '**/../../**/*/src/**',
-            '**/../../**/*/src',
             // Prevent imports of stories or tests
             '*.stories*',
             '*.test*',
+            '**/__testUtils__/**',
+            '**/__mocks__/**',
           ],
         },
       ],
@@ -159,7 +136,14 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/*.test.*', '**/*.stories.*', 'src/setupTests.*', '!src/**'],
+        files: [
+          '**/*.test.*',
+          '**/*.stories.*',
+          '**/__testUtils__/**',
+          '**/__mocks__/**',
+          'src/setupTests.*',
+          '!src/**',
+        ],
         rules: {
           ...testRules,
           'no-restricted-syntax': [
@@ -174,8 +158,6 @@ function createConfig(dir, extraConfig = {}) {
                 ...(restrictedImports ?? []),
                 ...(restrictedTestImports ?? []),
               ],
-              // Avoid cross-package imports
-              patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
             },
           ],
         },
@@ -218,7 +200,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         },
         restrictedImports: [
           {
-            // Importing the entire MUI icons packages kills build performance as the list of icons is huge.
+            // Importing the entire MUI icons packages impedes build performance as the list of icons is huge.
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },

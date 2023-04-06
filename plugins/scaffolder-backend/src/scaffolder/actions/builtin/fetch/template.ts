@@ -19,14 +19,16 @@ import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import {
   TemplateFilter,
   SecureTemplater,
+  TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
+import { createDefaultFilters } from '../../../../lib/templating/filters';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -39,8 +41,16 @@ export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
-  const { reader, integrations, additionalTemplateFilters } = options;
+  const {
+    reader,
+    integrations,
+    additionalTemplateFilters,
+    additionalTemplateGlobals,
+  } = options;
+
+  const defaultTemplateFilters = createDefaultFilters({ integrations });
 
   return createTemplateAction<{
     url: string;
@@ -49,12 +59,17 @@ export function createFetchTemplateAction(options: {
     templateFileExtension?: string | boolean;
 
     // Cookiecutter compat options
+    /**
+     * @deprecated This field is deprecated in favor of copyWithoutTemplating.
+     */
     copyWithoutRender?: string[];
+    copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
+    replace?: boolean;
   }>({
     id: 'fetch:template',
     description:
-      "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
+      'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
         type: 'object',
@@ -78,9 +93,18 @@ export function createFetchTemplateAction(options: {
             type: 'object',
           },
           copyWithoutRender: {
-            title: 'Copy Without Render',
+            title: '[Deprecated] Copy Without Render',
             description:
               'An array of glob patterns. Any files or directories which match are copied without being processed as templates.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          copyWithoutTemplating: {
+            title: 'Copy Without Templating',
+            description:
+              'An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.',
             type: 'array',
             items: {
               type: 'string',
@@ -98,9 +122,16 @@ export function createFetchTemplateAction(options: {
               'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
             type: ['string', 'boolean'],
           },
+          replace: {
+            title: 'Replace files',
+            description:
+              'If set, replace files in targetPath instead of skipping existing ones.',
+            type: 'boolean',
+          },
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
 
@@ -109,22 +140,37 @@ export function createFetchTemplateAction(options: {
 
       const targetPath = ctx.input.targetPath ?? './';
       const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
-
-      if (
-        ctx.input.copyWithoutRender &&
-        !Array.isArray(ctx.input.copyWithoutRender)
-      ) {
+      if (ctx.input.copyWithoutRender && ctx.input.copyWithoutTemplating) {
         throw new InputError(
-          'Fetch action input copyWithoutRender must be an Array',
+          'Fetch action input copyWithoutRender and copyWithoutTemplating can not be used at the same time',
+        );
+      }
+
+      let copyOnlyPatterns: string[] | undefined;
+      let renderFilename: boolean;
+      if (ctx.input.copyWithoutRender) {
+        ctx.logger.warn(
+          '[Deprecated] Please use copyWithoutTemplating instead.',
+        );
+        copyOnlyPatterns = ctx.input.copyWithoutRender;
+        renderFilename = false;
+      } else {
+        copyOnlyPatterns = ctx.input.copyWithoutTemplating;
+        renderFilename = true;
+      }
+
+      if (copyOnlyPatterns && !Array.isArray(copyOnlyPatterns)) {
+        throw new InputError(
+          'Fetch action input copyWithoutRender/copyWithoutTemplating must be an Array',
         );
       }
 
       if (
         ctx.input.templateFileExtension &&
-        (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
+        (copyOnlyPatterns || ctx.input.cookiecutterCompat)
       ) {
         throw new InputError(
-          'Fetch action input extension incompatible with copyWithoutRender and cookiecutterCompat',
+          'Fetch action input extension incompatible with copyWithoutRender/copyWithoutTemplating and cookiecutterCompat',
         );
       }
 
@@ -153,17 +199,19 @@ export function createFetchTemplateAction(options: {
         dot: true,
         onlyFiles: false,
         markDirectories: true,
+        followSymbolicLinks: false,
       });
 
       const nonTemplatedEntries = new Set(
         (
           await Promise.all(
-            (ctx.input.copyWithoutRender || []).map(pattern =>
+            (copyOnlyPatterns || []).map(pattern =>
               globby(pattern, {
                 cwd: templateDir,
                 dot: true,
                 onlyFiles: false,
                 markDirectories: true,
+                followSymbolicLinks: false,
               }),
             ),
           )
@@ -186,30 +234,47 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        additionalTemplateFilters,
+        templateFilters: {
+          ...defaultTemplateFilters,
+          ...additionalTemplateFilters,
+        },
+        templateGlobals: additionalTemplateGlobals,
       });
 
       for (const location of allEntriesInTemplate) {
-        let renderFilename: boolean;
         let renderContents: boolean;
 
         let localOutputPath = location;
         if (extension) {
-          renderFilename = true;
           renderContents = extname(localOutputPath) === extension;
           if (renderContents) {
             localOutputPath = localOutputPath.slice(0, -extension.length);
           }
-        } else {
-          renderFilename = renderContents = !nonTemplatedEntries.has(location);
-        }
-        if (renderFilename) {
+          // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
+          // therefore the output path is always rendered.
           localOutputPath = renderTemplate(localOutputPath, context);
+        } else {
+          renderContents = !nonTemplatedEntries.has(location);
+          // The logic here is a bit tangled because it depends on two variables.
+          // If renderFilename is true, which means copyWithoutTemplating is used,
+          // then the path is always rendered.
+          // If renderFilename is false, which means copyWithoutRender is used,
+          // then matched file/directory won't be processed, same as before.
+          if (renderFilename) {
+            localOutputPath = renderTemplate(localOutputPath, context);
+          } else {
+            localOutputPath = renderContents
+              ? renderTemplate(localOutputPath, context)
+              : localOutputPath;
+          }
         }
+
+        if (containsSkippedContent(localOutputPath)) {
+          continue;
+        }
+
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-        // variables have been expanded to make an empty file name
-        // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip
-        if (outputDir === outputPath) {
+        if (fs.existsSync(outputPath) && !ctx.input.replace) {
           continue;
         }
 
@@ -226,10 +291,11 @@ export function createFetchTemplateAction(options: {
           await fs.ensureDir(outputPath);
         } else {
           const inputFilePath = resolveSafeChildPath(templateDir, location);
+          const stats = await fs.promises.lstat(inputFilePath);
 
-          if (await isBinaryFile(inputFilePath)) {
+          if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
             ctx.logger.info(
-              `Copying binary file ${location} to template output path.`,
+              `Copying file binary or symbolic link at ${location}, to template output path.`,
             );
             await fs.copy(inputFilePath, outputPath);
           } else {
@@ -252,4 +318,16 @@ export function createFetchTemplateAction(options: {
       ctx.logger.info(`Template result written to ${outputDir}`);
     },
   });
+}
+
+function containsSkippedContent(localOutputPath: string): boolean {
+  // if the path is empty means that there is a file skipped in the root
+  // if the path starts with a separator it means that the root directory has been skipped
+  // if the path includes // means that there is a subdirectory skipped
+  // All paths returned are considered with / seperator because of globby returning the linux seperator for all os'.
+  return (
+    localOutputPath === '' ||
+    localOutputPath.startsWith('/') ||
+    localOutputPath.includes('//')
+  );
 }

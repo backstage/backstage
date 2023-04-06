@@ -22,8 +22,9 @@ import { Alert, AlertStatus, UnlabeledDataflowData } from '../types';
  * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning
  * any implementation of the Alert type, so adopters can create their own. The CostInsightsApi
  * fetches alert data from the backend, then creates Alert classes with the data.
+ *
+ * @public
  */
-
 export class UnlabeledDataflowAlert implements Alert {
   data: UnlabeledDataflowData;
   status?: AlertStatus;

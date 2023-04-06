@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 
 /**
@@ -25,7 +26,7 @@ export const createPermissionRule = <
   TResource,
   TQuery,
   TResourceType extends string,
-  TParams extends unknown[],
+  TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => rule;
@@ -40,7 +41,7 @@ export const createPermissionRule = <
  */
 export const makeCreatePermissionRule =
   <TResource, TQuery, TResourceType extends string>() =>
-  <TParams extends unknown[]>(
+  <TParams extends PermissionRuleParams = undefined>(
     rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
   ) =>
     createPermissionRule(rule);

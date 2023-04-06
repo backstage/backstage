@@ -38,7 +38,7 @@ In addition, there are a number of hard and soft requirements:
 - Scale - It should scale to hundreds of large packages without excessive wait
   times
 - Reloads - The development flow should support quick on-save hot reloads
-- Simple - Usage should simple and configuration should be kept minimal
+- Simple - Usage should be simple and configuration should be kept minimal
 - Universal - Development towards both web applications, isomorphic packages,
   and Node.js
 - Modern - The build system targets modern environments
@@ -95,7 +95,7 @@ These are the available roles that are currently supported by the Backstage buil
 
 | Role                   | Description                                  | Example                                      |
 | ---------------------- | -------------------------------------------- | -------------------------------------------- |
-| frontend               | Bundled frontend application                 | `package/app`                                |
+| frontend               | Bundled frontend application                 | `packages/app`                               |
 | backend                | Bundled backend application                  | `packages/backend`                           |
 | cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
 | web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
@@ -505,6 +505,7 @@ of all supported file extensions:
 | `.jpg`      | URL Path        | Image                                                                         |
 | `.png`      | URL Path        | Image                                                                         |
 | `.svg`      | URL Path        | Image                                                                         |
+| `.md`       | URL Path        | Markdown File                                                                 |
 | `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
 
 ## Jest Configuration
@@ -556,7 +557,22 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
-If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look something like this:
+### Debugging Jest Tests
+
+For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
+
+#### IntelliJ IDEA
+
+1. Update Jest configuration template by:
+
+- Click on "Edit Configurations" on top panel
+- In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
+- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. `~/proj/backstage/node_modules/jest`
+- In "Jest config" point to your jest configuration file, use absolute path for that, i.e. `--config /Users/user/proj/backstage/packages/cli/config/jest.js --runInBand`
+
+2. Now you can run any tests by clicking on green arrow located on `describe` or `it`.
+
+#### VS Code
 
 ```jsonc
 {
@@ -571,7 +587,7 @@ If you want to configure editor integration for tests we recommend executing the
 }
 ```
 
-If you also want to enable source maps when debugging tests, you can do so by setting the `ENABLE_SOURCE_MAPS` environment variable. For example, a complete launch configuration for VS Code debugging may look like this:
+A complete launch configuration for VS Code debugging may look like this:
 
 ```json
 {
@@ -583,9 +599,6 @@ If you also want to enable source maps when debugging tests, you can do so by se
   "disableOptimisticBPs": true,
   "program": "${workspaceFolder}/node_modules/.bin/jest",
   "cwd": "${workspaceFolder}",
-  "env": {
-    "ENABLE_SOURCE_MAPS": "true"
-  },
   "args": [
     "--config",
     "node_modules/@backstage/cli/config/jest.js",
@@ -638,7 +651,33 @@ The following is an excerpt of a typical setup of an isomorphic library package:
   "files": ["dist"],
 ```
 
+## Subpath Exports
+
+The Backstage CLI supports implementation of subpath exports through the `"exports"` field in `package.json`. It might for example look like this:
+
+```json
+  "name": "@backstage/plugin-foo",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components.ts",
+  },
+```
+
+This in turn would allow you to import anything exported in `src/index.ts` via `@backstage/plugins-foo`, and `src/components.ts` via `@backstage/plugins-foo/components`. Note that patterns are not supported, meaning the exports may not contain `*` wildcards.
+
+As with the rest of the Backstage CLI build system, the setup is optimized for local development, which is why the `"exports"` targets point directly to source files. The `package build` command will detect the `"exports"` field and automatically generate the corresponding `dist` files, and the `prepublish` command will rewrite the `"exports"` field to point to the `dist` files, as well as generating folder-based entry points for backwards compatibility.
+
+TypeScript support is currently handled though the `typesVersions` field, as there is not yet a module resolution mode that works well with `"exports"`. You can craft the `typesVersions` yourself, but it will also be automatically generated by the `migrate package-exports` command.
+
+To add subpath exports to an existing package, simply add the desired `"exports"` fields and then run the following command:
+
+```bash
+yarn backstage-cli migrate package-exports
+```
+
 ## Experimental Type Build
+
+> Note: Experimental type builds are deprecated and will be removed in the future. They have been replaced by [subpath exports](#subpath-exports).
 
 The Backstage CLI has an experimental feature where multiple different type definition files can be generated for different release stages. The release stages are marked in the [TSDoc](https://tsdoc.org/) for each individual export, using either `@public`, `@alpha`, or `@beta`. Rather than just building a single `index.d.ts` file, the build process will instead output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
 

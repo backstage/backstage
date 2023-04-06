@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
 
 import { ResponseStep } from '../types/types';
@@ -30,9 +31,9 @@ export function useResponseSteps() {
       message: (
         <b>
           Something went wrong{' '}
-          <span role="img" aria-label="fire">
+          <Typography component="span" role="img" aria-label="fire">
             🔥
-          </span>
+          </Typography>
         </b>
       ),
       secondaryMessage: `Error message: ${

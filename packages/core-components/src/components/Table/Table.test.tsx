@@ -142,6 +142,62 @@ describe('<Table />', () => {
     });
   });
 
+  describe('with style headers', () => {
+    describe('with CSS properties object', () => {
+      it('renders styled headers', async () => {
+        const columns = [
+          column1,
+          {
+            ...column2,
+            headerStyle: {
+              backgroundColor: 'pink',
+            },
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+
+        expect(rendered.getByText(column1.title).closest('th')).not.toHaveStyle(
+          {
+            backgroundColor: 'pink',
+          },
+        );
+        expect(rendered.getByText(column2.title).closest('th')).toHaveStyle({
+          backgroundColor: 'pink',
+        });
+      });
+
+      it('renders styled headers with highlight', async () => {
+        const columns = [
+          {
+            ...column1,
+            highlight: true,
+          },
+          {
+            ...column2,
+            highlight: true,
+            headerStyle: {
+              backgroundColor: 'pink',
+            },
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+
+        const column1Header = rendered.getByText(column1.title).closest('th');
+        expect(column1Header?.style.backgroundColor).toBe('');
+        expect(column1Header?.style.color).toBe('rgb(0, 0, 0)');
+        const column2Header = rendered.getByText(column2.title).closest('th');
+        expect(column2Header?.style.backgroundColor).toBe('pink');
+        expect(column2Header?.style.color).toBe('rgb(0, 0, 0)');
+      });
+    });
+  });
+
   it('renders with subtitle', async () => {
     const rendered = await renderInTestApp(
       <Table subtitle="subtitle" {...minProps} />,
@@ -159,5 +215,56 @@ describe('<Table />', () => {
       />,
     );
     expect(rendered.getByText('EMPTY')).toBeInTheDocument();
+  });
+
+  describe('with custom components', () => {
+    const CustomRow = ({ data }: any) => {
+      return (
+        <tr>
+          <td>customised cell {data.col1}</td>
+          <td>customised cell {data.col2}</td>
+        </tr>
+      );
+    };
+
+    it('should not override the toolbar implementation', async () => {
+      const rendered = await renderInTestApp(
+        <Table
+          subtitle="subtitle"
+          emptyContent={<div>EMPTY</div>}
+          columns={minProps.columns}
+          data={minProps.data}
+          filters={[
+            {
+              column: column1.title,
+              type: 'select',
+            },
+          ]}
+          components={{
+            Row: CustomRow,
+          }}
+        />,
+      );
+
+      expect(rendered.getByText('Filters (0)')).toBeInTheDocument();
+    });
+
+    it('should render the provided custom row component correctly', async () => {
+      const rendered = await renderInTestApp(
+        <Table
+          subtitle="subtitle"
+          emptyContent={<div>EMPTY</div>}
+          columns={minProps.columns}
+          data={minProps.data}
+          components={{
+            Row: CustomRow,
+          }}
+        />,
+      );
+
+      expect(
+        rendered.getByText('customised cell first value, first row'),
+      ).toBeInTheDocument();
+    });
   });
 });

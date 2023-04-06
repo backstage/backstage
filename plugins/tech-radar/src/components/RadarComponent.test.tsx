@@ -15,10 +15,7 @@
  */
 
 import React from 'react';
-import { act, render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
-import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarComponent } from './RadarComponent';
@@ -36,7 +33,9 @@ describe('RadarComponent', () => {
   });
 
   class MockClient implements TechRadarApi {
+    constructor(private delay = 0) {}
     async load(): Promise<TechRadarLoaderResponse> {
+      await new Promise(resolve => setTimeout(resolve, this.delay));
       return {
         entries: [],
         quadrants: [],
@@ -45,87 +44,52 @@ describe('RadarComponent', () => {
     }
   }
 
-  const mockClient = new MockClient();
-
   it('should render a progress bar', async () => {
     jest.useFakeTimers();
 
-    const errorApi = { post: () => {} };
-    const { getByTestId, findByTestId } = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider
-          apis={[
-            [errorApiRef, errorApi],
-            [techRadarApiRef, mockClient],
-          ]}
-        >
-          <RadarComponent
-            width={1200}
-            height={800}
-            svgProps={{ 'data-testid': 'tech-radar-svg' }}
-          />
-        </TestApiProvider>
-      </ThemeProvider>,
+    const { findByTestId } = await renderInTestApp(
+      <TestApiProvider apis={[[techRadarApiRef, new MockClient(500)]]}>
+        <RadarComponent
+          width={1200}
+          height={800}
+          svgProps={{ 'data-testid': 'tech-radar-svg' }}
+        />
+      </TestApiProvider>,
     );
 
-    act(() => {
-      jest.advanceTimersByTime(250);
-    });
-    expect(getByTestId('progress')).toBeInTheDocument();
+    jest.advanceTimersByTime(250);
+    await expect(findByTestId('progress')).resolves.toBeInTheDocument();
 
-    await findByTestId('tech-radar-svg');
+    jest.advanceTimersByTime(250);
+    await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
+
     jest.useRealTimers();
   });
 
   it('should call the errorApi if load fails', async () => {
     const errorApi = { post: jest.fn() };
+    const mockClient = new MockClient();
     jest
       .spyOn(mockClient, 'load')
       .mockRejectedValue(new Error('404 Page Not Found'));
 
-    const { queryByTestId } = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider
-          apis={[
-            [errorApiRef, errorApi],
-            [techRadarApiRef, mockClient],
-          ]}
-        >
-          <RadarComponent
-            width={1200}
-            height={800}
-            svgProps={{ 'data-testid': 'tech-radar-svg' }}
-          />
-        </TestApiProvider>
-      </ThemeProvider>,
+    const { queryByTestId } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, errorApi],
+          [techRadarApiRef, mockClient],
+        ]}
+      >
+        <RadarComponent
+          width={1200}
+          height={800}
+          svgProps={{ 'data-testid': 'tech-radar-svg' }}
+        />
+      </TestApiProvider>,
     );
-
-    await waitFor(() => !queryByTestId('progress'));
 
     expect(errorApi.post).toHaveBeenCalledTimes(1);
     expect(errorApi.post).toHaveBeenCalledWith(new Error('404 Page Not Found'));
     expect(queryByTestId('tech-radar-svg')).not.toBeInTheDocument();
-  });
-
-  it('should not render without errorApiRef', () => {
-    expect(
-      withLogCollector(['error'], () => {
-        expect(() => {
-          render(
-            <ThemeProvider theme={lightTheme}>
-              <TestApiProvider apis={[]}>
-                <RadarComponent
-                  width={1200}
-                  height={800}
-                  svgProps={{ 'data-testid': 'tech-radar-svg' }}
-                />
-              </TestApiProvider>
-            </ThemeProvider>,
-          );
-        }).toThrow();
-      }).error[0],
-    ).toMatch(
-      /^Error: Uncaught \[Error: No implementation available for apiRef{core.error}\]/,
-    );
   });
 });

@@ -34,8 +34,8 @@ Follow this link, [Create new OAuth App](https://github.com/settings/application
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. You can set the Homepage URL to whatever you want to.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
-   1. Set this to `http://localhost:7007/api/auth/github` for local development.
-   1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/github` for non-local deployments.
+   1. Set this to `http://localhost:7007/api/auth/github/handler/frame` for local development.
+   1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/github/handler/frame` for non-local deployments.
 
 ```bash
 export AUTH_GITHUB_CLIENT_ID=x
@@ -91,9 +91,9 @@ export AUTH_GITLAB_CLIENT_SECRET=x
 
 Add a new Okta application using the following URI conventions:
 
-Login redirect URI's: `http://localhost:7007/api/auth/okta/handler/frame`
-Logout redirect URI's: `http://localhost:7007/api/auth/okta/logout`
-Initiate login URI's: `http://localhost:7007/api/auth/okta/start`
+Login redirect URIs: `http://localhost:7007/api/auth/okta/handler/frame`
+Logout redirect URIs: `http://localhost:7007/api/auth/okta/logout`
+Initiate login URIs: `http://localhost:7007/api/auth/okta/start`
 
 Then configure the following environment variables to be used in the `app-config.yaml` file:
 

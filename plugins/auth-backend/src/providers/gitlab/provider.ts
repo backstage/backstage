@@ -25,7 +25,7 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  RedirectInfo,
+  OAuthStartResponse,
   SignInResolver,
   AuthHandler,
   AuthResolverContext,
@@ -91,6 +91,9 @@ export class GitlabAuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         baseURL: options.baseUrl,
+        authorizationURL: `${options.baseUrl}/oauth/authorize`,
+        tokenURL: `${options.baseUrl}/oauth/token`,
+        profileURL: `${options.baseUrl}/api/v4/user`,
       },
       (
         accessToken: any,
@@ -110,7 +113,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
     );
   }
 
-  async start(req: OAuthStartRequest): Promise<RedirectInfo> {
+  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
     return await executeRedirectStrategy(req, this._strategy, {
       scope: req.scope,
       state: encodeState(req.state),
@@ -179,31 +182,6 @@ export class GitlabAuthProvider implements OAuthHandlers {
 }
 
 /**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type GitlabProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
-   */
-  signIn?: {
-    resolver: SignInResolver<OAuthResult>;
-  };
-};
-
-/**
  * Auth provider integration for GitLab auth
  *
  * @public
@@ -254,9 +232,3 @@ export const gitlab = createAuthProviderIntegration({
       });
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.gitlab.create` instead
- */
-export const createGitlabProvider = gitlab.create;

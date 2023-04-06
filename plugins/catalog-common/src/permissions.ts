@@ -22,7 +22,7 @@ import {
 /**
  * Permission resource type which corresponds to catalog entities.
  *
- * {@link https://backstage.io/docs/features/software-catalog/software-catalog-overview}
+ * {@link https://backstage.io/docs/features/software-catalog/}
  * @alpha
  */
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
@@ -129,3 +129,17 @@ export const catalogLocationDeletePermission = createPermission({
     action: 'delete',
   },
 });
+
+/**
+ * List of all catalog permissions.
+ * @alpha
+ */
+export const catalogPermissions = [
+  catalogEntityReadPermission,
+  catalogEntityCreatePermission,
+  catalogEntityDeletePermission,
+  catalogEntityRefreshPermission,
+  catalogLocationReadPermission,
+  catalogLocationCreatePermission,
+  catalogLocationDeletePermission,
+];

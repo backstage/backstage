@@ -16,10 +16,10 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
 
 /**
@@ -43,6 +43,8 @@ export function createPublishGitlabAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    setUserAsOwner?: boolean;
+    topics?: string[];
   }>({
     id: 'publish:gitlab',
     description:
@@ -92,6 +94,20 @@ export function createPublishGitlabAction(options: {
             type: 'string',
             description: 'The token to use for authorization to GitLab',
           },
+          setUserAsOwner: {
+            title: 'Set User As Owner',
+            type: 'boolean',
+            description:
+              'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
+          },
+          topics: {
+            title: 'Topic labels',
+            description: 'Topic labels to apply on the repository.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
       output: {
@@ -105,6 +121,10 @@ export function createPublishGitlabAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          projectId: {
+            title: 'The ID of the project',
+            type: 'string',
+          },
         },
       },
     },
@@ -116,6 +136,8 @@ export function createPublishGitlabAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        setUserAsOwner = false,
+        topics = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -149,18 +171,35 @@ export function createPublishGitlabAction(options: {
         id: number;
       };
 
+      const { id: userId } = (await client.Users.current()) as {
+        id: number;
+      };
+
       if (!targetNamespace) {
-        const { id } = (await client.Users.current()) as {
-          id: number;
-        };
-        targetNamespace = id;
+        targetNamespace = userId;
       }
 
-      const { http_url_to_repo } = await client.Projects.create({
+      const { id: projectId, http_url_to_repo } = await client.Projects.create({
         namespace_id: targetNamespace,
         name: repo,
         visibility: repoVisibility,
+        ...(topics.length ? { topics } : {}),
       });
+
+      // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
+      // OAuth flow. In this case GitLab works in a way that allows the unprivileged user to
+      // create the repository, but not to push the default protected branch (e.g. master).
+      // In order to set the user as owner of the newly created repository we need to check that the
+      // GitLab integration configuration for the matching host contains a token and use
+      // such token to bootstrap a new privileged client.
+      if (setUserAsOwner && integrationConfig.config.token) {
+        const adminClient = new Gitlab({
+          host: integrationConfig.config.baseUrl,
+          token: integrationConfig.config.token,
+        });
+
+        await adminClient.ProjectMembers.add(projectId, userId, 50);
+      }
 
       const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
       const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
@@ -190,6 +229,7 @@ export function createPublishGitlabAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('projectId', projectId);
     },
   });
 }

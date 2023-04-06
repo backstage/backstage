@@ -18,7 +18,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
   Typography,
 } from '@material-ui/core';
@@ -29,7 +28,7 @@ import { CronJobDrawer } from './CronJobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
 import { GroupedResponsesContext } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
-import cronstrue from 'cronstrue';
+import { humanizeCron } from '../../utils/crons';
 
 type CronJobsAccordionsProps = {
   children?: React.ReactNode;
@@ -51,22 +50,21 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
     <Grid
       container
       direction="row"
-      justifyContent="flex-start"
+      justifyContent="space-between"
       alignItems="center"
+      spacing={0}
     >
-      <Grid xs={3} item>
+      <Grid xs={6} item>
         <CronJobDrawer cronJob={cronJob} />
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       <Grid
         item
         container
-        xs={5}
+        xs={6}
         direction="column"
         justifyContent="flex-start"
-        alignItems="flex-start"
+        alignItems="flex-end"
+        spacing={0}
       >
         <Grid item>
           {cronJob.spec?.suspend ? (
@@ -79,7 +77,7 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
           <Typography variant="body1">
             Schedule:{' '}
             {cronJob.spec?.schedule
-              ? `${cronJob.spec.schedule} (${cronstrue.toString(
+              ? `${cronJob.spec.schedule} (${humanizeCron(
                   cronJob.spec.schedule,
                 )})`
               : 'N/A'}
@@ -92,7 +90,7 @@ const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {
 
 const CronJobAccordion = ({ cronJob, ownedJobs }: CronJobAccordionProps) => {
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion TransitionProps={{ unmountOnExit: true }} variant="outlined">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <CronJobSummary cronJob={cronJob} />
       </AccordionSummary>

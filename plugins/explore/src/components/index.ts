@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { DomainCard } from './DomainCard';
-export { ExploreLayout } from './ExploreLayout';
+export * from './CatalogKindExploreContent';
+export * from './ExploreLayout';
+export * from './DomainCard';

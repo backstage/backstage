@@ -43,6 +43,7 @@ export default async function createPlugin(
       config: env.config,
       catalog,
     }),
+    permissions: env.permissions,
   });
 }
 ```
@@ -89,6 +90,9 @@ jenkins:
   baseUrl: https://jenkins.example.com
   username: backstage-bot
   apiKey: 123456789abcdef0123456789abcedf012
+  # optionally add extra headers
+  # extraRequestHeaders:
+  #   extra-header: my-value
 ```
 
 Catalog

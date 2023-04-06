@@ -15,10 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
-import { AuthenticationError, NotAllowedError } from '@backstage/errors';
+import { AuthenticationError } from '@backstage/errors';
 import { base64url, exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
 import { DateTime, Duration } from 'luxon';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenManager } from './types';
 
 const TOKEN_ALG = 'HS256';
@@ -27,7 +27,7 @@ const TOKEN_EXPIRY_AFTER = Duration.fromObject({ hours: 1 });
 const TOKEN_REISSUE_AFTER = Duration.fromObject({ minutes: 10 });
 
 /**
- * A token manager that issues static dummy tokens and never fails
+ * A token manager that issues static fake tokens and never fails
  * authentication. This can be useful for testing.
  */
 class NoopTokenManager implements TokenManager {
@@ -49,11 +49,11 @@ export interface ServerTokenManagerOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 }
 
 /**
- * Creates and validates tokens for use during backend-to-backend
+ * Creates and validates tokens for use during service-to-service
  * authentication.
  *
  * @public
@@ -64,11 +64,9 @@ export class ServerTokenManager implements TokenManager {
   private signingKey: Uint8Array;
   private privateKeyPromise: Promise<void> | undefined;
   private currentTokenPromise: Promise<{ token: string }> | undefined;
-  private warnedForMissingExpClaim = false;
-  private warnedForExpiredExpClaim = false;
 
   /**
-   * Creates a token manager that issues static dummy tokens and never fails
+   * Creates a token manager that issues static fake tokens and never fails
    * authentication. This can be useful for testing.
    */
   static noop(): TokenManager {
@@ -92,7 +90,7 @@ export class ServerTokenManager implements TokenManager {
 
     // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
     options.logger.warn(
-      'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
+      'Generated a secret for service-to-service authentication: DEVELOPMENT USE ONLY.',
     );
     return new ServerTokenManager([], options);
   }
@@ -184,36 +182,20 @@ export class ServerTokenManager implements TokenManager {
         const {
           protectedHeader: { alg },
           payload: { sub, exp },
-        } = await jwtVerify(token, key, {
-          // TODO(freben): Holding on to tokens and reusing them is deprecated; remove this tolerance in a future release
-          clockTolerance: 3e9,
-        });
+        } = await jwtVerify(token, key);
 
         if (alg !== TOKEN_ALG) {
-          throw new NotAllowedError(`Illegal alg "${alg}"`);
+          throw new AuthenticationError(`Illegal alg "${alg}"`);
         }
 
         if (sub !== TOKEN_SUB) {
-          throw new NotAllowedError(`Illegal sub "${sub}"`);
+          throw new AuthenticationError(`Illegal sub "${sub}"`);
         }
 
-        // TODO(freben): Passing in tokens without an exp is deprecated; change this warning to an error in a future release
         if (typeof exp !== 'number') {
-          if (!this.warnedForMissingExpClaim) {
-            this.warnedForMissingExpClaim = true;
-            this.options.logger.warn(
-              `#### DEPRECATION WARNING: #### Server-to-server token had no exp claim, support for this has been deprecated and will result in errors in a future release`,
-            );
-          }
-        }
-        // TODO(freben): Holding on to tokens and reusing them is deprecated; remove this tolerance in a future release
-        else if (exp * 1000 < Date.now()) {
-          if (!this.warnedForExpiredExpClaim) {
-            this.warnedForExpiredExpClaim = true;
-            this.options.logger.warn(
-              `#### DEPRECATION WARNING: #### Server-to-server token had an expired exp claim, support for this has been deprecated and will result in errors in a future release`,
-            );
-          }
+          throw new AuthenticationError(
+            'Server-to-server token had no exp claim',
+          );
         }
         return;
       } catch (e) {
@@ -222,6 +204,6 @@ export class ServerTokenManager implements TokenManager {
       }
     }
 
-    throw new AuthenticationError(`Invalid server token: ${verifyError}`);
+    throw new AuthenticationError('Invalid server token', verifyError);
   }
 }

@@ -1,0 +1,29 @@
+name: PR
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    # Avoid running on issue comments
+    if: github.repository == 'backstage/backstage' && ( github.event.pull_request || github.event.issue.pull_request )
+    steps:
+      - name: PR sync
+        uses: backstage/actions/pr-sync@v0.6.3
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN  }}
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-id: PVT_kwDOBFKqdc02LQ
+          auto-assign: false
+          owning-teams: '@backstage/techdocs-core'

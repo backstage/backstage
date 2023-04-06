@@ -84,24 +84,4 @@ describe('GitlabRepoPicker', () => {
       expect(onChange).toHaveBeenCalledWith({ owner: 'my-mock-owner' });
     });
   });
-
-  describe('repo name', () => {
-    it('should render free text field for input of repo name', () => {
-      const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <GitlabRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ repoName: 'repo' }}
-        />,
-      );
-
-      const repoNameField = getAllByRole('textbox')[1];
-      fireEvent.change(repoNameField, {
-        target: { value: 'my-mock-repo-name' },
-      });
-
-      expect(onChange).toHaveBeenCalledWith({ repoName: 'my-mock-repo-name' });
-    });
-  });
 });

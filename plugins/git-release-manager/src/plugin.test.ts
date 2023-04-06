@@ -19,7 +19,7 @@ import * as plugin from './plugin';
 describe('git-release-manager', () => {
   it('should export plugin & friends', () => {
     expect(Object.keys(plugin)).toMatchInlineSnapshot(`
-      Array [
+      [
         "gitReleaseManagerApiRef",
         "constants",
         "helpers",

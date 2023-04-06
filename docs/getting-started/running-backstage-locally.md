@@ -21,12 +21,12 @@ This is made easy with a version manager such as
 # Installing current LTS release
 nvm install --lts
 > Installing latest LTS version.
-> Downloading and installing node v14.15.1...
-> Now using node v14.15.1 (npm v6.14.8)
+> Downloading and installing node v16.16.0...
+> Now using node v16.16.0 (npm v8.11.0)
 
 # Checking your version
 node --version
-> v14.15.1
+> v16.16.0
 ```
 
 - Yarn
@@ -41,47 +41,38 @@ locally to use features like Software Templates and TechDocs. Please refer to
 the
 [installation instructions for Docker](https://docs.docker.com/engine/install/).
 
-## Clone and Build
+## Clone and Install
 
 To get up and running with a local Backstage to evaluate it, let's clone it off
-of GitHub and run an initial build.
+of GitHub and run an initial install.
 
 ```bash
 # Start from your local development folder
-git clone --depth 1 git@github.com:backstage/backstage.git
+git clone --depth 1 https://github.com/backstage/backstage.git
 cd backstage
 
-# Fetch our dependencies and run an initial build
+# Install our dependencies
 yarn install
-yarn tsc
-yarn build
 ```
 
 Phew! Now you have a local repository that's ready to run and to add any open
 source contributions into.
 
 We are now going to launch two things: an example Backstage frontend app, and an
-example Backstage backend that the frontend talks to. You are going to need two
-terminal windows, both starting from the Backstage project root.
-
-In the first window, run
+example Backstage backend that the frontend talks to. These can both be launched
+through the following command:
 
 ```bash
-# From your Backstage root directory
-yarn --cwd packages/backend start
+# From your Backstage root directory, launches both the frontend and backend
+yarn dev
 ```
 
-That starts up a backend instance on port 7007.
+If you prefer to run the frontend and backend separately, you can instead use `yarn start`
+and `yarn start-backend` in two separate terminal windows.
 
-In the other window, we will then launch the frontend. This command is run from
-the project root, not inside the backend directory.
-
-```bash
-yarn start
-```
-
-That starts up the frontend on port 3000, and should automatically open a
-browser window showing it.
+Which ever way you choose, you will now have a backend instance running on port 7007,
+and the frontend running on port 3000. A browser window should also automatically open,
+showing the frontend.
 
 ## Authentication
 
@@ -95,7 +86,7 @@ option will be GitHub. To setup GitHub authentication in Backstage, see
 ---
 
 Congratulations! That should be it. Let us know how it went
-[on discord](https://discord.gg/EBHEGzX), file issues for any
+[on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
 [plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),

@@ -21,14 +21,18 @@ import Docker from 'dockerode';
 import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
+  getMkdocsYml,
 } from '@backstage/plugin-techdocs-node';
-import { DockerContainerRunner } from '@backstage/backend-common';
+import {
+  ContainerRunner,
+  DockerContainerRunner,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   convertTechDocsRefToLocationAnnotation,
   createLogger,
+  getLogStream,
 } from '../../lib/utility';
-import { stdout } from 'process';
 
 export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
@@ -51,14 +55,18 @@ export default async function generate(opts: OptionValues) {
 
   await fs.ensureDir(outputDir);
 
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
+    sourceDir,
+  );
+
   const config = new ConfigReader({
     techdocs: {
       generator: {
         runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
-        legacyCopyReadmeMdToIndexMd,
         mkdocs: {
+          legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
         },
       },
@@ -66,8 +74,12 @@ export default async function generate(opts: OptionValues) {
   });
 
   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
-  const containerRunner = new DockerContainerRunner({ dockerClient });
+  let containerRunner: ContainerRunner | undefined;
+
+  if (opts.docker) {
+    const dockerClient = new Docker();
+    containerRunner = new DockerContainerRunner({ dockerClient });
+  }
 
   let parsedLocationAnnotation = {} as ParsedLocationAnnotation;
   if (opts.techdocsRef) {
@@ -98,8 +110,15 @@ export default async function generate(opts: OptionValues) {
       : {}),
     logger,
     etag: opts.etag,
-    ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
+    logStream: getLogStream(logger),
+    siteOptions: { name: opts.siteName },
   });
+
+  if (configIsTemporary) {
+    process.on('exit', async () => {
+      fs.rmSync(mkdocsYmlPath, {});
+    });
+  }
 
   logger.info('Done!');
 }

@@ -4,6 +4,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: sync-version-packages
+  cancel-in-progress: true
+
 jobs:
   create-release-pr:
     name: Create Changeset PR
@@ -14,7 +18,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
       - name: Create Release Pull Request
         uses: backstage/changesets-action@v2
         with:

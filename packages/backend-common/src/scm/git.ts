@@ -21,16 +21,20 @@ import git, {
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /*
-provider    username         password
-GitHub      'x-access-token' token
-BitBucket   'x-token-auth'   token
-GitLab      'oauth2'         token
+provider          username         password
+Azure             'notempty'       token
+Bitbucket Cloud   'x-token-auth'   token
+Bitbucket Server  username         password or token
+GitHub            'x-access-token' token
+GitLab            'oauth2'         token
+
 From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 
-Azure       'notempty'      token
+Or token provided as `token` for Bearer auth header
+instead of Basic Auth (e.g., Bitbucket Server).
 */
 
 /**
@@ -39,13 +43,23 @@ Azure       'notempty'      token
  * @public
  */
 export class Git {
+  private readonly headers: {
+    [x: string]: string;
+  };
+
   private constructor(
     private readonly config: {
       username?: string;
       password?: string;
-      logger?: Logger;
+      token?: string;
+      logger?: LoggerService;
     },
-  ) {}
+  ) {
+    this.headers = {
+      'user-agent': 'git/@isomorphic-git',
+      ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
+    };
+  }
 
   async add(options: { dir: string; filepath: string }): Promise<void> {
     const { dir, filepath } = options;
@@ -58,12 +72,33 @@ export class Git {
     dir: string;
     remote: string;
     url: string;
+    force?: boolean;
   }): Promise<void> {
-    const { dir, url, remote } = options;
+    const { dir, url, remote, force } = options;
     this.config.logger?.info(
       `Creating new remote {dir=${dir},remote=${remote},url=${url}}`,
     );
-    return git.addRemote({ fs, dir, remote, url });
+    return git.addRemote({ fs, dir, remote, url, force });
+  }
+
+  async deleteRemote(options: { dir: string; remote: string }): Promise<void> {
+    const { dir, remote } = options;
+    this.config.logger?.info(`Deleting remote {dir=${dir},remote=${remote}}`);
+    return git.deleteRemote({ fs, dir, remote });
+  }
+
+  async checkout(options: { dir: string; ref: string }): Promise<void> {
+    const { dir, ref } = options;
+    this.config.logger?.info(`Checking out branch {dir=${dir},ref=${ref}}`);
+
+    return git.checkout({ fs, dir, ref });
+  }
+
+  async branch(options: { dir: string; ref: string }): Promise<void> {
+    const { dir, ref } = options;
+    this.config.logger?.info(`Creating branch {dir=${dir},ref=${ref}`);
+
+    return git.branch({ fs, dir, ref });
   }
 
   async commit(options: {
@@ -90,21 +125,28 @@ export class Git {
   }): Promise<void> {
     const { url, dir, ref, depth, noCheckout } = options;
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
-    return git.clone({
-      fs,
-      http,
-      url,
-      dir,
-      ref,
-      singleBranch: true,
-      depth: depth ?? 1,
-      noCheckout,
-      onProgress: this.onProgressHandler(),
-      headers: {
-        'user-agent': 'git/@isomorphic-git',
-      },
-      onAuth: this.onAuth,
-    });
+
+    try {
+      return await git.clone({
+        fs,
+        http,
+        url,
+        dir,
+        ref,
+        singleBranch: true,
+        depth: depth ?? 1,
+        noCheckout,
+        onProgress: this.onProgressHandler(),
+        headers: this.headers,
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(`Failed to clone repo {dir=${dir},url=${url}}`);
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   /** https://isomorphic-git.org/docs/en/currentBranch */
@@ -124,15 +166,26 @@ export class Git {
     this.config.logger?.info(
       `Fetching remote=${remote} for repository {dir=${dir}}`,
     );
-    await git.fetch({
-      fs,
-      http,
-      dir,
-      remote,
-      onProgress: this.onProgressHandler(),
-      headers: { 'user-agent': 'git/@isomorphic-git' },
-      onAuth: this.onAuth,
-    });
+
+    try {
+      await git.fetch({
+        fs,
+        http,
+        dir,
+        remote,
+        onProgress: this.onProgressHandler(),
+        headers: this.headers,
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(
+        `Failed to fetch repo {dir=${dir},remote=${remote}}`,
+      );
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   async init(options: { dir: string; defaultBranch?: string }): Promise<void> {
@@ -170,22 +223,37 @@ export class Git {
     });
   }
 
-  async push(options: { dir: string; remote: string }) {
-    const { dir, remote } = options;
+  async push(options: {
+    dir: string;
+    remote: string;
+    remoteRef?: string;
+    force?: boolean;
+  }) {
+    const { dir, remote, remoteRef, force } = options;
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
-    return git.push({
-      fs,
-      dir,
-      http,
-      onProgress: this.onProgressHandler(),
-      headers: {
-        'user-agent': 'git/@isomorphic-git',
-      },
-      remote: remote,
-      onAuth: this.onAuth,
-    });
+    try {
+      return await git.push({
+        fs,
+        dir,
+        http,
+        onProgress: this.onProgressHandler(),
+        remoteRef,
+        force,
+        headers: this.headers,
+        remote,
+        onAuth: this.onAuth,
+      });
+    } catch (ex) {
+      this.config.logger?.error(
+        `Failed to push to repo {dir=${dir}, remote=${remote}}`,
+      );
+      if (ex.data) {
+        throw new Error(`${ex.message} {data=${JSON.stringify(ex.data)}}`);
+      }
+      throw ex;
+    }
   }
 
   /** https://isomorphic-git.org/docs/en/readCommit */
@@ -239,9 +307,10 @@ export class Git {
   static fromAuth = (options: {
     username?: string;
     password?: string;
-    logger?: Logger;
+    token?: string;
+    logger?: LoggerService;
   }) => {
-    const { username, password, logger } = options;
-    return new Git({ username, password, logger });
+    const { username, password, token, logger } = options;
+    return new Git({ username, password, token, logger });
   };
 }

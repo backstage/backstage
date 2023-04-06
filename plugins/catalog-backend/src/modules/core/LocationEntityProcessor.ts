@@ -17,12 +17,12 @@
 import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
-} from '../../api';
+} from '@backstage/plugin-catalog-node';
 
 export function toAbsoluteUrl(
   integrations: ScmIntegrationRegistry,

@@ -44,6 +44,7 @@ const useStyles = makeStyles(
 /**
  * Renders a warning panel as the effect of a failed server request.
  *
+ * @remarks
  * Has special treatment for ResponseError errors, to display rich
  * server-provided information about what happened.
  */

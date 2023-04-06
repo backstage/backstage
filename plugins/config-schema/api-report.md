@@ -11,35 +11,32 @@ import { Observable } from '@backstage/types';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { Schema } from 'jsonschema';
 
-// Warning: (ae-missing-release-tag) "ConfigSchemaApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface ConfigSchemaApi {
-  // Warning: (ae-forgotten-export) The symbol "ConfigSchemaResult" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   schema$(): Observable<ConfigSchemaResult>;
 }
 
-// Warning: (ae-missing-release-tag) "configSchemaApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const configSchemaApiRef: ApiRef<ConfigSchemaApi>;
 
-// Warning: (ae-missing-release-tag) "ConfigSchemaPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ConfigSchemaPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "configSchemaPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const configSchemaPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
+
+// @public (undocumented)
+export interface ConfigSchemaResult {
+  // (undocumented)
+  schema?: Schema;
+}
 
 // @public
 export class StaticSchemaLoader implements ConfigSchemaApi {

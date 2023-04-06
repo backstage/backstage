@@ -13,14 +13,17 @@ Run `yarn dev` in the root directory, and then navigate to [/search](http://loca
 This search plugin is primarily responsible for the following:
 
 - Providing a `<SearchPage />` routable extension.
-- Exposing various search-related components (like `<SearchBar />`,
-  `<SearchFilter />`, etc), which can be composed by a Backstage App or by
+- Exposing various search-related components (like `<SearchModal />`,
+  `<SidebarSearch />`, etc), which can be composed by a Backstage App or by
   other Backstage Plugins to power search experiences of all kinds.
-- Exposing a `<SearchContextProvider />`, which manages search state and API
-  communication with the Backstage backend.
 
-Don't forget, a lot of functionality is available in backend plugins:
+Don't forget, a lot of functionality is available in web libraries and backend plugins:
 
+- `@backstage/plugin-search-react`, which is responsible for:
+  - Exposing a `<SearchContextProvider />`, which manages search state and API
+    communication with the Backstage backend.
+  - Exposing the `SearchApi` and its corresponding ref.
+  - Exposing reusable components, such as `<SearchBar>` and `<SearchFilter>`, etc.
 - `@backstage/plugin-search-backend-node`, which is responsible for the search
   index management
 - `@backstage/plugin-search-backend`, which is responsible for query processing

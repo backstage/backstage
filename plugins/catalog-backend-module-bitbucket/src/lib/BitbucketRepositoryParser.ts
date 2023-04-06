@@ -18,7 +18,7 @@ import { BitbucketIntegration } from '@backstage/integration';
 import {
   CatalogProcessorResult,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 
 /**
@@ -26,6 +26,7 @@ import { Logger } from 'winston';
  * results.
  *
  * @public
+ * @deprecated Please migrate to `@backstage/plugin-catalog-backend-module-bitbucket-cloud` or `@backstage/plugin-catalog-backend-module-bitbucket-server` instead.
  */
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;

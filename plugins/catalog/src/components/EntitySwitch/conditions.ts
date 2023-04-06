@@ -14,33 +14,68 @@
  * limitations under the License.
  */
 
-import { Entity, ComponentEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
-function strCmp(a: string | undefined, b: string | undefined): boolean {
+/** @public */
+export interface EntityPredicates {
+  kind?: string | string[];
+  type?: string | string[];
+}
+
+function strCmp(a: unknown, b: string | undefined): boolean {
   return Boolean(
-    a && a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
+    a &&
+      typeof a === 'string' &&
+      a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
   );
+}
+
+function strCmpAll(value: unknown, cmpValues: string | string[]) {
+  return typeof cmpValues === 'string'
+    ? strCmp(value, cmpValues)
+    : cmpValues.length === 0 || cmpValues.some(cmpVal => strCmp(value, cmpVal));
 }
 
 /**
  * For use in EntitySwitch.Case. Matches if the entity is of a given kind.
  * @public
  */
-export function isKind(kind: string) {
-  return (entity: Entity) => strCmp(entity.kind, kind);
+export function isKind(kinds: string | string[]) {
+  return isEntityWith({ kind: kinds });
 }
 
 /**
  * For use in EntitySwitch.Case. Matches if the entity is a Component of a given spec.type.
  * @public
  */
-export function isComponentType(type: string) {
+export function isComponentType(types: string | string[]) {
+  return isEntityWith({ kind: 'component', type: types });
+}
+
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is a Resource of a given spec.type.
+ * @public
+ */
+export function isResourceType(types: string | string[]) {
+  return isEntityWith({ kind: 'resource', type: types });
+}
+
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is the specified kind and type (if present).
+ * @public
+ */
+export function isEntityWith(predicate: EntityPredicates) {
   return (entity: Entity) => {
-    if (!strCmp(entity.kind, 'component')) {
+    if (predicate.kind && !strCmpAll(entity.kind, predicate.kind)) {
       return false;
     }
-    const componentEntity = entity as ComponentEntity;
-    return strCmp(componentEntity.spec.type, type);
+
+    if (predicate.type && !strCmpAll(entity.spec?.type, predicate.type)) {
+      return false;
+    }
+
+    // there's no type check, return true
+    return true;
   };
 }
 
@@ -48,6 +83,6 @@ export function isComponentType(type: string) {
  * For use in EntitySwitch.Case. Matches if the entity is in a given namespace.
  * @public
  */
-export function isNamespace(namespace: string) {
-  return (entity: Entity) => strCmp(entity.metadata?.namespace, namespace);
+export function isNamespace(namespaces: string | string[]) {
+  return (entity: Entity) => strCmpAll(entity.metadata?.namespace, namespaces);
 }

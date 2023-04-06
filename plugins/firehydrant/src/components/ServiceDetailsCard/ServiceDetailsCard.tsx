@@ -39,6 +39,7 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { isFireHydrantAvailable, getFireHydrantServiceName } from '../hooks';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -66,7 +67,7 @@ const useStyles = makeStyles(theme => ({
   },
   buttonLink: {
     backgroundColor: '#3b2492',
-    color: '#FFF',
+    color: theme.palette.common.white,
     textTransform: 'none',
     '&:hover': {
       backgroundColor: '#614ab6',
@@ -149,14 +150,14 @@ export const ServiceDetailsCard = () => {
   const startDate = DateTime.now().minus({ days: 30 }).toUTC();
   const endDate = DateTime.now().toUTC();
 
+  // The service name is provided by an annotation or a Backstage generated service name.
   // The Backstage service name in FireHydrant is a unique formatted string
   // that requires the entity's kind, name, and namespace.
-  const fireHydrantServiceName = `${entity?.kind}:${
-    entity?.metadata?.namespace ?? 'default'
-  }/${entity?.metadata?.name}`;
+  const fireHydrantServiceName = getFireHydrantServiceName(entity);
 
   const { loading, value, error } = useServiceDetails({
     serviceName: fireHydrantServiceName,
+    lookupByName: isFireHydrantAvailable(entity),
   });
 
   const activeIncidents: string[] = value?.service?.active_incidents ?? [];
@@ -192,7 +193,10 @@ export const ServiceDetailsCard = () => {
       {!showServiceDetails && !loading && (
         <div className={classes.warning}>
           <WarningIcon />
-          &nbsp;&nbsp;<span>This service does not exist in FireHydrant.</span>
+          &nbsp;&nbsp;
+          <Typography component="span">
+            This service does not exist in FireHydrant.
+          </Typography>
         </div>
       )}
       {showServiceDetails && (
@@ -251,7 +255,7 @@ export const ServiceDetailsCard = () => {
                 <AddIcon className={classes.icon} />
               </Box>
               <Box>
-                <span>Declare an incident</span>
+                <Typography component="span">Declare an incident</Typography>
               </Box>
             </Box>
           </MaterialButton>
@@ -267,7 +271,7 @@ export const ServiceDetailsCard = () => {
                 <WhatshotIcon className={classes.icon} />
               </Box>
               <Box>
-                <span>View all incidents</span>
+                <Typography component="span">View all incidents</Typography>
               </Box>
             </Box>
           </MaterialButton>
@@ -284,7 +288,7 @@ export const ServiceDetailsCard = () => {
                   <NotesIcon className={classes.icon} />
                 </Box>
                 <Box>
-                  <span>View Service Details</span>
+                  <Typography component="span">View Service Details</Typography>
                 </Box>
               </Box>
             </MaterialButton>

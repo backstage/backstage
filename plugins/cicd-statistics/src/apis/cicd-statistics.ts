@@ -15,9 +15,9 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-
 import { CicdStatisticsApi } from './types';
 
+/** @public */
 export const cicdStatisticsApiRef = createApiRef<CicdStatisticsApi>({
   id: 'cicd-statistics-api',
 });

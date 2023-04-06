@@ -16,54 +16,57 @@
 import React, { useState } from 'react';
 import { DateTime } from 'luxon';
 import {
-  useTheme,
   Box,
-  Typography,
   Divider,
   emphasize,
+  Typography,
+  useTheme,
 } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
+  Area,
   AreaChart,
-  ContentRenderer,
-  TooltipProps,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
-  Tooltip as RechartsTooltip,
-  Area,
-  ResponsiveContainer,
-  CartesianGrid,
 } from 'recharts';
-import { Cost, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
+import { Cost } from '@backstage/plugin-cost-insights-common';
 import {
+  BarChartLegend,
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,
-  BarChartLegend,
 } from '../BarChart';
 import {
-  overviewGraphTickFormatter,
   formatGraphValue,
   isInvalid,
+  overviewGraphTickFormatter,
 } from '../../utils/graphs';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
-import { useFilters, useLastCompleteBillingDate } from '../../hooks';
+import { useConfig, useFilters, useLastCompleteBillingDate } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { getPreviousPeriodTotalCost } from '../../utils/change';
 import { formatPeriod } from '../../utils/formatters';
 import { aggregationSum } from '../../utils/sum';
-import { BarChartLegendOptions } from '../BarChart/BarChartLegend';
+import { BarChartLegendOptions } from '../BarChart';
+import { TooltipRenderer } from '../../types';
 
 export type CostOverviewBreakdownChartProps = {
   costBreakdown: Cost[];
+  responsive?: boolean;
 };
 
 const LOW_COST_THRESHOLD = 0.1;
 
 export const CostOverviewBreakdownChart = ({
   costBreakdown,
+  responsive = true,
 }: CostOverviewBreakdownChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles(theme);
+  const { baseCurrency } = useConfig();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
   const [isExpanded, setExpanded] = useState(false);
@@ -113,8 +116,8 @@ export const CostOverviewBreakdownChart = ({
     {} as Record<string, Record<string, number>>,
   );
 
-  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate).map(
-    date => {
+  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate)
+    .map(date => {
       const costsForDate = Object.keys(breakdownsByDate[date]).reduce(
         (dateCosts, breakdown) => {
           // Group costs for items that belong to 'Other' in the chart.
@@ -131,8 +134,8 @@ export const CostOverviewBreakdownChart = ({
         ...costsForDate,
         date: Date.parse(date),
       };
-    },
-  );
+    })
+    .sort((a, b) => a.date - b.date);
 
   const sortedBreakdowns = costBreakdown.sort(
     (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
@@ -168,17 +171,15 @@ export const CostOverviewBreakdownChart = ({
           fill={color}
           onClick={() => setExpanded(true)}
           style={{
-            cursor: breakdown === 'Other' && !isExpanded ? 'pointer' : null,
+            cursor:
+              breakdown === 'Other' && !isExpanded ? 'pointer' : undefined,
           }}
         />
       );
     });
   };
 
-  const tooltipRenderer: ContentRenderer<TooltipProps> = ({
-    label,
-    payload = [],
-  }) => {
+  const tooltipRenderer: TooltipRenderer = ({ label, payload = [] }) => {
     if (isInvalid({ label, payload })) return null;
 
     const date =
@@ -186,10 +187,11 @@ export const CostOverviewBreakdownChart = ({
         ? DateTime.fromMillis(label)
         : DateTime.fromISO(label!);
     const dateTitle = date.toUTC().toFormat(DEFAULT_DATE_FORMAT);
-    const items = payload.map(p => ({
+    const formatGraphValueWith = formatGraphValue(baseCurrency);
+    const items = payload.map((p, i) => ({
       label: p.dataKey as string,
-      value: formatGraphValue(p.value as number),
-      fill: p.fill!,
+      value: formatGraphValueWith(Number(p.value), i),
+      fill: p.color!,
     }));
     const expandText = (
       <Box>
@@ -231,7 +233,7 @@ export const CostOverviewBreakdownChart = ({
         />
       </Box>
       <ResponsiveContainer
-        width={classes.container.width}
+        width={responsive ? '100%' : classes.container.width}
         height={classes.container.height}
       >
         <AreaChart
@@ -254,7 +256,7 @@ export const CostOverviewBreakdownChart = ({
           <YAxis
             domain={[() => 0, 'dataMax']}
             tick={{ fill: classes.axis.fill }}
-            tickFormatter={formatGraphValue}
+            tickFormatter={formatGraphValue(baseCurrency)}
             width={classes.yAxis.width}
           />
           {renderAreas()}

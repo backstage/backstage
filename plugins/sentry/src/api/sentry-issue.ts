@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-type SentryPlatform = 'javascript' | 'javascript-react' | string;
+/** @public */
+export type SentryPlatform = 'javascript' | 'javascript-react' | string;
 
-type EventPoint = number[];
+/** @public */
+export type EventPoint = number[];
 
-type SentryProject = {
+/** @public */
+export type SentryProject = {
   platform: SentryPlatform;
   slug: string;
   id: string;
   name: string;
 };
 
-type SentryIssueMetadata = {
+/** @public */
+export type SentryIssueMetadata = {
   function?: string;
   type?: string;
   value?: string;
   filename?: string;
 };
 
+/** @public */
 export type SentryIssue = {
   platform: SentryPlatform;
   lastSeen: string;
@@ -65,6 +70,7 @@ export type SentryIssue = {
   statusDetails: any;
 };
 
+/** @public */
 export type SentryApiError = {
   detail: string;
 };

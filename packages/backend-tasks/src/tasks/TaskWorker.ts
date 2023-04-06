@@ -18,7 +18,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
@@ -51,28 +50,36 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-
+    let attemptNum = 1;
     (async () => {
-      try {
-        if (settings.initialDelayDuration) {
-          await sleep(
-            Duration.fromISO(settings.initialDelayDuration),
-            options?.signal,
-          );
-        }
-
-        while (!options?.signal?.aborted) {
-          const runResult = await this.runOnce(options?.signal);
-          if (runResult.result === 'abort') {
-            break;
+      for (;;) {
+        try {
+          if (settings.initialDelayDuration) {
+            await sleep(
+              Duration.fromISO(settings.initialDelayDuration),
+              options?.signal,
+            );
           }
 
-          await sleep(this.workCheckFrequency, options?.signal);
-        }
+          while (!options?.signal?.aborted) {
+            const runResult = await this.runOnce(options?.signal);
+            if (runResult.result === 'abort') {
+              break;
+            }
 
-        this.logger.info(`Task worker finished: ${this.taskId}`);
-      } catch (e) {
-        this.logger.warn(`Task worker failed unexpectedly, ${e}`);
+            await sleep(this.workCheckFrequency, options?.signal);
+          }
+
+          this.logger.info(`Task worker finished: ${this.taskId}`);
+          attemptNum = 0;
+          break;
+        } catch (e) {
+          attemptNum += 1;
+          this.logger.warn(
+            `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
+          );
+          await sleep(Duration.fromObject({ seconds: 1 }));
+        }
       }
     })();
   }
@@ -137,6 +144,7 @@ export class TaskWorker {
       await this.fn(taskAbortController.signal);
       taskAbortController.abort(); // releases resources
     } catch (e) {
+      this.logger.error(e);
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
     } finally {
@@ -166,8 +174,9 @@ export class TaskWorker {
     } else if (isCron) {
       const time = new CronTime(settings.cadence)
         .sendAt()
-        .add({ seconds: -1 }) // immediately, if "* * * * * *"
-        .toISOString();
+        .minus({ seconds: 1 }) // immediately, if "* * * * * *"
+        .toUTC()
+        .toISO();
       startAt = this.knex.client.config.client.includes('sqlite3')
         ? this.knex.raw('datetime(?)', [time])
         : this.knex.raw(`?`, [time]);
@@ -270,7 +279,7 @@ export class TaskWorker {
 
     let nextRun: Knex.Raw;
     if (isCron) {
-      const time = new CronTime(settings.cadence).sendAt().toISOString();
+      const time = new CronTime(settings.cadence).sendAt().toUTC().toISO();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
       nextRun = this.knex.client.config.client.includes('sqlite3')
         ? this.knex.raw('datetime(?)', [time])
@@ -282,14 +291,21 @@ export class TaskWorker {
           seconds: dt,
         })}`,
       );
-      nextRun = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw(
-            `max(datetime(next_run_start_at, ?), datetime('now'))`,
-            [`+${dt} seconds`],
-          )
-        : this.knex.raw(
-            `greatest(next_run_start_at + interval '${dt} seconds', now())`,
-          );
+
+      if (this.knex.client.config.client.includes('sqlite3')) {
+        nextRun = this.knex.raw(
+          `max(datetime(next_run_start_at, ?), datetime('now'))`,
+          [`+${dt} seconds`],
+        );
+      } else if (this.knex.client.config.client.includes('mysql')) {
+        nextRun = this.knex.raw(
+          `greatest(next_run_start_at + interval ${dt} second, now())`,
+        );
+      } else {
+        nextRun = this.knex.raw(
+          `greatest(next_run_start_at + interval '${dt} seconds', now())`,
+        );
+      }
     }
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)

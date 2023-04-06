@@ -31,7 +31,7 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
+        {
           "tagNameError": undefined,
         }
       `);
@@ -43,10 +43,10 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-              Object {
-                "tagNameError": null,
-              }
-            `);
+        {
+          "tagNameError": null,
+        }
+      `);
     });
   });
 
@@ -58,9 +58,9 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "tagNameError": Object {
-            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found calver \\"rc-2020.01.01_1\\"",
+        {
+          "tagNameError": {
+            "subtitle": "Expected semver matching "/(rc|version)-([0-9]+)\\.([0-9]+)\\.([0-9]+)/", found calver "rc-2020.01.01_1"",
             "title": "Invalid tag",
           },
         }
@@ -74,9 +74,9 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "tagNameError": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-1.2.3\\"",
+        {
+          "tagNameError": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "rc-1.2.3"",
             "title": "Invalid tag",
           },
         }
@@ -92,9 +92,9 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "tagNameError": Object {
-            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found \\"this-is-so-invalid\\"",
+        {
+          "tagNameError": {
+            "subtitle": "Expected semver matching "/(rc|version)-([0-9]+)\\.([0-9]+)\\.([0-9]+)/", found "this-is-so-invalid"",
             "title": "Invalid tag",
           },
         }
@@ -108,9 +108,9 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "tagNameError": Object {
-            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"this-is-so-invalid\\"",
+        {
+          "tagNameError": {
+            "subtitle": "Expected calver matching "/(rc|version)-([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})_([0-9]+)/", found "this-is-so-invalid"",
             "title": "Invalid tag",
           },
         }

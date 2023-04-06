@@ -189,7 +189,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     };
   }
 
-  async getKey(header: JWTHeaderParameters): Promise<KeyObject> {
+  getKey = async (header: JWTHeaderParameters): Promise<KeyObject> => {
     if (!header.kid) {
       throw new AuthenticationError('No key id was specified in header');
     }
@@ -208,30 +208,8 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
       keyValue.export({ format: 'pem', type: 'spki' }),
     );
     return keyValue;
-  }
-}
-
-/**
- * @public
- * @deprecated This type has been inlined into the create method and will be removed.
- */
-export type AwsAlbProviderOptions = {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<AwsAlbResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     */
-    resolver: SignInResolver<AwsAlbResult>;
   };
-};
+}
 
 /**
  * Auth provider integration for AWS ALB auth
@@ -282,9 +260,3 @@ export const awsAlb = createAuthProviderIntegration({
     };
   },
 });
-
-/**
- * @public
- * @deprecated Use `providers.awsAlb.create` instead
- */
-export const createAwsAlbProvider = awsAlb.create;

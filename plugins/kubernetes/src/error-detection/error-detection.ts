@@ -20,9 +20,16 @@ import { groupResponses } from '../utils/response';
 import { detectErrorsInPods } from './pods';
 import { detectErrorsInDeployments } from './deployments';
 import { detectErrorsInHpa } from './hpas';
+import { Deployment } from 'kubernetes-models/apps/v1';
+import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v1';
+import { Pod } from 'kubernetes-models/v1';
 
-// For each cluster try to find errors in each of the object types provided
-// returning a map of cluster names to errors in that cluster
+/**
+ * For each cluster try to find errors in each of the object types provided
+ * returning a map of cluster names to errors in that cluster
+ *
+ * @public
+ */
 export const detectErrors = (
   objects: ObjectsByEntityResponse,
 ): DetectedErrorsByCluster => {
@@ -34,20 +41,16 @@ export const detectErrors = (
     const groupedResponses = groupResponses(clusterResponse.resources);
 
     clusterErrors = clusterErrors.concat(
-      detectErrorsInPods(groupedResponses.pods, clusterResponse.cluster.name),
+      detectErrorsInPods(groupedResponses.pods as Pod[]),
     );
 
     clusterErrors = clusterErrors.concat(
-      detectErrorsInDeployments(
-        groupedResponses.deployments,
-        clusterResponse.cluster.name,
-      ),
+      detectErrorsInDeployments(groupedResponses.deployments as Deployment[]),
     );
 
     clusterErrors = clusterErrors.concat(
       detectErrorsInHpa(
-        groupedResponses.horizontalPodAutoscalers,
-        clusterResponse.cluster.name,
+        groupedResponses.horizontalPodAutoscalers as HorizontalPodAutoscaler[],
       ),
     );
 

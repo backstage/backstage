@@ -6,49 +6,68 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { SonarQubeApi } from '@backstage/plugin-sonarqube-react';
 
-// Warning: (ae-missing-release-tag) "EntitySonarQubeCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const EntitySonarQubeCard: ({
-  variant,
-  duplicationRatings,
-}: {
-  variant?: InfoCardVariants | undefined;
-  duplicationRatings?:
-    | {
-        greaterThan: number;
-        rating: '1.0' | '2.0' | '3.0' | '4.0' | '5.0';
-      }[]
-    | undefined;
-}) => JSX.Element;
+export type DuplicationRating = {
+  greaterThan: number;
+  rating: '1.0' | '2.0' | '3.0' | '4.0' | '5.0';
+};
 
-// Warning: (ae-missing-release-tag) "isSonarQubeAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const isSonarQubeAvailable: (entity: Entity) => boolean;
-
-// Warning: (ae-missing-release-tag) "SonarQubeCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const SonarQubeCard: ({
-  variant,
-  duplicationRatings,
-}: {
+export const EntitySonarQubeCard: (props: {
   variant?: InfoCardVariants | undefined;
   duplicationRatings?: DuplicationRating[] | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "sonarQubePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-const sonarQubePlugin: BackstagePlugin<{}, {}>;
-export { sonarQubePlugin as plugin };
-export { sonarQubePlugin };
+export const EntitySonarQubeContentPage: (
+  props: SonarQubeContentPageProps,
+) => JSX.Element;
 
-// Warnings were encountered during analysis:
-//
-// src/components/SonarQubeCard/SonarQubeCard.d.ts:9:5 - (ae-forgotten-export) The symbol "DuplicationRating" needs to be exported by the entry point index.d.ts
+// @public @deprecated (undocumented)
+export const isSonarQubeAvailable: (entity: Entity) => boolean;
+
+// @public @deprecated (undocumented)
+export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
+
+// @public (undocumented)
+export const SonarQubeCard: (props: {
+  variant?: InfoCardVariants;
+  duplicationRatings?: DuplicationRating[];
+}) => JSX.Element;
+
+// @public (undocumented)
+export class SonarQubeClient implements SonarQubeApi {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  });
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+  // (undocumented)
+  getFindingSummary({
+    componentKey,
+    projectInstance,
+  }?: {
+    componentKey?: string;
+    projectInstance?: string;
+  }): Promise<FindingSummary | undefined>;
+  // (undocumented)
+  identityApi: IdentityApi;
+}
+
+// @public (undocumented)
+export type SonarQubeContentPageProps = {
+  title?: string;
+  supportTitle?: string;
+};
+
+// @public (undocumented)
+export const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
 ```

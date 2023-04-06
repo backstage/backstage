@@ -55,7 +55,7 @@ export const TechDocsThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const classes = useStyles();
   const [theme, setTheme] = useState<Themes>(
-    (appThemeApi.getActiveThemeId() as Themes) || Themes.LIGHT,
+    appThemeApi.getActiveThemeId() === Themes.DARK ? Themes.DARK : Themes.LIGHT,
   );
 
   const themes = {

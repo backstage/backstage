@@ -19,11 +19,21 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
+/**
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
+  discovery: PluginEndpointDiscovery;
+  permissions: PermissionEvaluator;
 }
 
 /**
@@ -38,6 +48,8 @@ export interface RouterOptions {
  *   config,
  * }).build();
  * ```
+ *
+ * @public
  */
 export async function createRouter(
   options: RouterOptions,

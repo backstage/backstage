@@ -16,6 +16,8 @@
 
 import {
   ReadTreeResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
   SearchResponse,
   UrlReader,
 } from '@backstage/backend-common';
@@ -290,6 +292,13 @@ describe('getDocFilesFromRepository', () => {
     class MockUrlReader implements UrlReader {
       async read() {
         return Buffer.from('mock');
+      }
+
+      async readUrl(
+        _url: string,
+        _options?: ReadUrlOptions | undefined,
+      ): Promise<ReadUrlResponse> {
+        throw new Error('Method not implemented.');
       }
 
       async readTree(): Promise<ReadTreeResponse> {

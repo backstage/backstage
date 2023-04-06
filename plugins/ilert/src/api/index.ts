@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-export { ILertClient, ilertApiRef } from './client';
+export { ilertApiRef, ILertClient } from './client';
 export type {
+  EventRequest as EventRequest,
+  GetAlertsCountOpts,
+  GetAlertsOpts,
+  GetServicesOpts,
+  GetStatusPagesOpts,
   ILertApi,
-  GetIncidentsCountOpts,
-  GetIncidentsOpts,
   TableState,
 } from './types';

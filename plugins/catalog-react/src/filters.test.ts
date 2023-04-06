@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { EntityTextFilter } from './filters';
+import {
+  EntityErrorFilter,
+  EntityOrphanFilter,
+  EntityTextFilter,
+} from './filters';
 
 const entities: Entity[] = [
   {
@@ -89,5 +94,52 @@ describe('EntityTextFilter', () => {
     const filter = new EntityTextFilter('JaVa');
     expect(filter.filterEntity(entities[0])).toBeFalsy();
     expect(filter.filterEntity(entities[1])).toBeTruthy();
+  });
+});
+
+describe('EntityOrphanFilter', () => {
+  const orphanAnnotation: Record<string, string> = {};
+  orphanAnnotation['backstage.io/orphan'] = 'true';
+
+  const orphan: Entity = {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'orphaned-service',
+      annotations: orphanAnnotation,
+    },
+  };
+
+  it('should find orphans', () => {
+    const filter = new EntityOrphanFilter(true);
+    expect(filter.filterEntity(orphan)).toBeTruthy();
+    expect(filter.filterEntity(entities[1])).toBeFalsy();
+  });
+});
+
+describe('EntityErrorFilter', () => {
+  const error: AlphaEntity = {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'service-with-error',
+      tags: ['Invalid Tag'],
+    },
+    status: {
+      items: [
+        {
+          type: 'invalid-tag',
+          level: 'error',
+          message: 'Tag is not valid',
+          error: undefined,
+        },
+      ],
+    },
+  };
+
+  it('should find errors', () => {
+    const filter = new EntityErrorFilter(true);
+    expect(filter.filterEntity(error)).toBeTruthy();
+    expect(filter.filterEntity(entities[1])).toBeFalsy();
   });
 });

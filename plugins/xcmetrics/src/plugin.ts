@@ -22,6 +22,7 @@ import {
 import { xcmetricsApiRef, XcmetricsClient } from './api';
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const xcmetricsPlugin = createPlugin({
   id: 'xcmetrics',
   routes: {
@@ -40,6 +41,7 @@ export const xcmetricsPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const XcmetricsPage = xcmetricsPlugin.provide(
   createRoutableExtension({
     name: 'XcmetricsPage',

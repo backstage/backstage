@@ -27,6 +27,7 @@ import {
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
@@ -49,10 +50,19 @@ const clockConfigs: ClockConfig[] = [
   },
 ];
 
+const timeFormat: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
+
 export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HeaderWorldClock clockConfigs={clockConfigs} />
+      <HeaderWorldClock
+        clockConfigs={clockConfigs}
+        customTimeFormat={timeFormat}
+      />
     </Header>
     <Content>
       <Grid container spacing={3}>
@@ -104,6 +114,9 @@ export const homePage = (
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageCalendar />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <MicrosoftCalendarCard />
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageStarredEntities />

@@ -48,7 +48,7 @@ describe('AuthorizedRefreshService', () => {
         entityRef: 'some entity ref',
         authorizationToken: 'some auth token',
       }),
-    ).rejects.toThrowError(NotAllowedError);
+    ).rejects.toThrow(NotAllowedError);
   });
 
   it('calls refresh on allow', async () => {

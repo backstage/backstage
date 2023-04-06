@@ -4,16 +4,14 @@ title: Search Architecture
 description: Documentation on Search Architecture
 ---
 
-> _This architecture has not been fully implemented yet. Find our milestones to
-> follow our progress and help contribute on the
-> [Search Roadmap](./README.md#project-roadmap)._
-
 Below you can explore the Search Architecture. Our aim with this architecture is
 to support a wide variety of search engines, while providing a simple developer
 experience for plugin developers, and a good out-of-the-box experience for
 Backstage end-users.
 
-<img data-zoomable src="../../assets/search/architecture.drawio.svg" alt="Search Architecture" />
+<!-- todo: Needs zoomable plugin -->
+
+![Search Architecture](../../assets/search/architecture.drawio.svg)
 
 At a base-level, we want to support the following:
 
@@ -44,3 +42,15 @@ Architecture non-goals:
 - At this time, we do not intend to directly support event-driven or incremental
   index management. Instead, we'll be focused on scheduled, bulk index
   management.
+
+## Tech Stack
+
+| Stack                     | Location                                              |
+| ------------------------- | ----------------------------------------------------- |
+| Frontend Plugin           | @backstage/plugin-search                              |
+| Frontend Plugin Library   | @backstage/plugin-search-react                        |
+| Isomorphic Plugin Library | @backstage/plugin-search-common                       |
+| Backend Plugin            | @backstage/plugin-search-backend                      |
+| Backend Plugin Library    | @backstage/plugin-search-backend-node                 |
+| Backend Plugin Module     | @backstage/plugin-search-backend-module-elasticsearch |
+| Backend Plugin Module     | @backstage/plugin-search-backend-module-pg            |

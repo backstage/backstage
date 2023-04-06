@@ -26,7 +26,7 @@ import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
 // TODO: Implement proper support for more generators.
@@ -101,9 +101,12 @@ export const getRepoUrlFromLocationAnnotation = (
   if (locationType === 'url') {
     const integration = scmIntegrations.byUrl(target);
 
-    // We only support it for github and gitlab for now as the edit_uri
+    // We only support it for github, gitlab and bitbucketServer for now as the edit_uri
     // is not properly supported for others yet.
-    if (integration && ['github', 'gitlab'].includes(integration.type)) {
+    if (
+      integration &&
+      ['github', 'gitlab', 'bitbucketServer'].includes(integration.type)
+    ) {
       // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
       const { filepathtype } = gitUrlParse(target);
       if (filepathtype === '') {
@@ -114,7 +117,10 @@ export const getRepoUrlFromLocationAnnotation = (
         url: `./${docsFolder}`,
         base: target,
       });
-      return { edit_uri: integration.resolveEditUrl(sourceFolder) };
+      return {
+        repo_url: target,
+        edit_uri: integration.resolveEditUrl(sourceFolder),
+      };
     }
   }
 
@@ -145,35 +151,89 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
+ * Generates a mkdocs.yml configuration file
+ *
+ * @param inputDir - base dir to where the mkdocs.yml file will be created
+ * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Documentation Site"
+ */
+export const generateMkdocsYml = async (
+  inputDir: string,
+  siteOptions?: { name?: string },
+) => {
+  try {
+    // TODO(awanlin): Use a provided default mkdocs.yml
+    // from config or some specified location. If this is
+    // not provided then fall back to generating bare
+    // minimum mkdocs.yml file
+
+    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
+    const defaultMkdocsContent: DefaultMkdocsContent = {
+      site_name: defaultSiteName,
+      docs_dir: 'docs',
+      plugins: ['techdocs-core'],
+    };
+
+    await fs.writeFile(
+      mkdocsYmlPath,
+      yaml.dump(defaultMkdocsContent, { schema: MKDOCS_SCHEMA }),
+    );
+  } catch (error) {
+    throw new ForwardedError('Could not generate mkdocs.yml file', error);
+  }
+};
+
+/**
  * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
  * depending on which is present (MkDocs supports both as of v1.2.2).
+ * @public
  *
- * @param inputDir - base dir to be searched for either an mkdocs.yml or
- *   mkdocs.yaml file.
+ * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
+ * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Documentation Site"
  */
 export const getMkdocsYml = async (
   inputDir: string,
-): Promise<{ path: string; content: string }> => {
+  siteOptions?: { name?: string },
+): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
   try {
     mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch {
-    try {
-      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
       mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-    } catch (error) {
-      throw new ForwardedError(
-        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation',
-        error,
-      );
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
     }
+
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+
+    // No mkdocs file, generate it
+    await generateMkdocsYml(inputDir, siteOptions);
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch (error) {
+    throw new ForwardedError(
+      'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
+      error,
+    );
   }
 
   return {
     path: mkdocsYmlPath,
     content: mkdocsYmlFileString,
+    configIsTemporary: true,
   };
 };
 

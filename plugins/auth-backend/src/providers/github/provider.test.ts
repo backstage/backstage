@@ -21,6 +21,15 @@ import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 import { OAuthStartRequest, encodeState } from '../../lib/oauth';
 import { AuthResolverContext } from '../types';
 
+jest.mock('../../lib/passport/PassportStrategyHelper', () => {
+  return {
+    ...jest.requireActual('../../lib/passport/PassportStrategyHelper'),
+    executeFrameHandlerStrategy: jest.fn(),
+    executeRefreshTokenStrategy: jest.fn(),
+    executeFetchUserProfileStrategy: jest.fn(),
+  };
+});
+
 const mockFrameHandler = jest.spyOn(
   helpers,
   'executeFrameHandlerStrategy',

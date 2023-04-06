@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React from 'react';
-
 import { renderInTestApp } from '@backstage/test-utils';
-
 import { CalendarEvent } from './CalendarEvent';
 
 describe('<CalendarEvent />', () => {
@@ -42,16 +42,14 @@ describe('<CalendarEvent />', () => {
   };
 
   it('should render calendar event', async () => {
-    const { queryByText, queryByTestId } = await renderInTestApp(
-      <CalendarEvent event={event} />,
-    );
-    expect(queryByText(event.summary)).toBeInTheDocument();
-    expect(queryByTestId('calendar-event-zoom-link')).toBeInTheDocument();
-    expect(queryByTestId('calendar-event-zoom-link')).toHaveAttribute(
+    await renderInTestApp(<CalendarEvent event={event} />);
+    expect(screen.getByText(event.summary)).toBeInTheDocument();
+    expect(screen.getByTestId('calendar-event-zoom-link')).toBeInTheDocument();
+    expect(screen.queryByTestId('calendar-event-zoom-link')).toHaveAttribute(
       'href',
       event.conferenceData.entryPoints[0].uri,
     );
-    expect(queryByTestId('calendar-event-time')).toBeInTheDocument();
+    expect(screen.getByTestId('calendar-event-time')).toBeInTheDocument();
   });
 
   it('should not render time for events longer than 1 day', async () => {
@@ -64,20 +62,18 @@ describe('<CalendarEvent />', () => {
         date: '2022-02-19',
       },
     };
-    const { queryByText, queryByTestId } = await renderInTestApp(
-      <CalendarEvent event={allDayEvent} />,
-    );
-    expect(queryByText(allDayEvent.summary)).toBeInTheDocument();
-    expect(queryByTestId('calendar-event-time')).not.toBeInTheDocument();
+    await renderInTestApp(<CalendarEvent event={allDayEvent} />);
+    expect(screen.getByText(allDayEvent.summary)).toBeInTheDocument();
+    expect(screen.queryByTestId('calendar-event-time')).not.toBeInTheDocument();
   });
 
   it('should show popover on click', async () => {
-    const { queryByTestId, getByTestId } = await renderInTestApp(
-      <CalendarEvent event={event} />,
-    );
-    expect(queryByTestId('calendar-event-popover')).not.toBeInTheDocument();
+    await renderInTestApp(<CalendarEvent event={event} />);
+    expect(
+      screen.queryByTestId('calendar-event-popover'),
+    ).not.toBeInTheDocument();
 
-    fireEvent.click(getByTestId('calendar-event'));
-    expect(queryByTestId('calendar-event-popover')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('calendar-event'));
+    expect(screen.getByTestId('calendar-event-popover')).toBeInTheDocument();
   });
 });

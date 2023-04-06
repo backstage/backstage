@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
@@ -46,7 +46,7 @@ const useStyles = makeStyles<BackstageTheme>(
       paddingBottom: theme.spacing(5),
       [theme.breakpoints.down('xs')]: {
         paddingBottom: theme.spacing(4),
-        fontSize: 32,
+        fontSize: theme.typography.h3.fontSize,
       },
     },
     subtitle: {
@@ -70,7 +70,6 @@ export function ErrorPage(props: IErrorPageProps) {
 
   return (
     <Grid container spacing={0} className={classes.container}>
-      <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
         <Typography
           data-testid="error"
@@ -94,6 +93,7 @@ export function ErrorPage(props: IErrorPageProps) {
           think this is a bug.
         </Typography>
       </Grid>
+      <MicDrop />
     </Grid>
   );
 }

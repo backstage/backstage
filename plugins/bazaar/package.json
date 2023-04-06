@@ -1,10 +1,9 @@
 {
   "name": "@backstage/plugin-bazaar",
-  "version": "0.1.20-next.2",
+  "version": "0.2.7-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -18,38 +17,41 @@
     "start": "backstage-cli package start",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "diff": "backstage-cli plugin:diff",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-client": "^1.0.2-next.0",
-    "@backstage/catalog-model": "^1.0.2-next.0",
-    "@backstage/cli": "^0.17.1-next.2",
-    "@backstage/core-components": "^0.9.4-next.2",
-    "@backstage/core-plugin-api": "^1.0.2-next.1",
-    "@backstage/plugin-catalog": "^1.2.0-next.2",
-    "@backstage/plugin-catalog-react": "^1.1.0-next.2",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
     "@testing-library/jest-dom": "^5.10.1",
-    "luxon": "^2.0.2",
+    "luxon": "^3.0.0",
     "material-ui-search-bar": "^1.0.0",
     "react-hook-form": "^7.13.0",
-    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2",
-    "@backstage/dev-utils": "^1.0.2-next.2",
+    "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^5.10.1",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "cross-fetch": "^3.1.5"
   },
   "files": [

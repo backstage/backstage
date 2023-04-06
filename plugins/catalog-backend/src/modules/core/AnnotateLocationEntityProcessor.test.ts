@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { LocationSpec } from '../../api';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 
 describe('AnnotateLocationEntityProcessor', () => {

@@ -16,8 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from './types';
-import { readBaseOptions } from '../service/lib/config';
-import { DEFAULT_PORT } from '../service/lib/ServiceBuilderImpl';
+import { readHttpServerOptions } from '@backstage/backend-app-api';
 
 /**
  * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
@@ -43,14 +42,14 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
     const basePath = options?.basePath ?? '/api';
     const externalBaseUrl = config.getString('backend.baseUrl');
 
-    const { listenHost = '::', listenPort = DEFAULT_PORT } = readBaseOptions(
-      config.getConfig('backend'),
-    );
+    const {
+      listen: { host: listenHost = '::', port: listenPort },
+    } = readHttpServerOptions(config.getConfig('backend'));
     const protocol = config.has('backend.https') ? 'https' : 'http';
 
     // Translate bind-all to localhost, and support IPv6
     let host = listenHost;
-    if (host === '::') {
+    if (host === '::' || host === '') {
       // We use localhost instead of ::1, since IPv6-compatible systems should default
       // to using IPv6 when they see localhost, but if the system doesn't support IPv6
       // things will still work.

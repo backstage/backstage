@@ -1,11 +1,10 @@
 {
   "name": "@backstage/plugin-jenkins",
   "description": "A Backstage plugin that integrates towards Jenkins",
-  "version": "0.7.4-next.2",
+  "version": "0.7.16-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -29,43 +28,43 @@
     "start": "backstage-cli package start",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "diff": "backstage-cli plugin:diff",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^1.0.2-next.0",
-    "@backstage/core-components": "^0.9.4-next.2",
-    "@backstage/core-plugin-api": "^1.0.2-next.1",
-    "@backstage/errors": "^1.0.0",
-    "@backstage/plugin-catalog-react": "^1.1.0-next.2",
-    "@backstage/plugin-jenkins-common": "^0.1.4-next.0",
-    "@backstage/theme": "^0.2.15",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-jenkins-common": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
-    "luxon": "^2.0.2",
-    "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "luxon": "^3.0.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.2",
-    "@backstage/core-app-api": "^1.0.2-next.1",
-    "@backstage/dev-utils": "^1.0.2-next.2",
-    "@backstage/test-utils": "^1.1.0-next.2",
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
-    "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "@types/testing-library__jest-dom": "^5.9.1",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.35.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './index';
+import type { Transformer } from './transformer';
 import {
-  replaceGitHubUrlType,
+  replaceGithubUrlType,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
@@ -59,7 +59,7 @@ export const addGitFeedbackLink = (
     // Convert GitHub edit url to blob type so it can be parsed by git-url-parse correctly
     const gitUrl =
       integration?.type === 'github'
-        ? replaceGitHubUrlType(sourceURL.href, 'blob')
+        ? replaceGithubUrlType(sourceURL.href, 'blob')
         : sourceURL.href;
     const gitInfo = parseGitUrl(gitUrl);
     const repoPath = `/${gitInfo.organization}/${gitInfo.name}`;

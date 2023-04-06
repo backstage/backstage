@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { RefreshOptions, RefreshService } from './types';
 
 export class DefaultRefreshService implements RefreshService {
-  private database: DefaultProcessingDatabase;
+  private database: DefaultCatalogDatabase;
 
-  constructor(options: { database: DefaultProcessingDatabase }) {
+  constructor(options: { database: DefaultCatalogDatabase }) {
     this.database = options.database;
   }
 

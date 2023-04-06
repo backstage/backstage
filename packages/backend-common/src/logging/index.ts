@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export * from './formats';
-export { createRootLogger, getRootLogger, setRootLogger } from './rootLogger';
-export * from './voidLogger';
+export { getRootLogger, getVoidLogger, setRootLogger } from './globalLoggers';
+export {
+  createRootLogger,
+  redactWinstonLogLine,
+  coloredFormat,
+} from './createRootLogger';
+export { loggerToWinstonLogger } from './loggerToWinstonLogger';

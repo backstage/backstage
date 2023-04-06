@@ -34,6 +34,7 @@ export type StackOverflowQuestion = {
  */
 export type StackOverflowQuestionsContentProps = {
   requestParams: StackOverflowQuestionsRequestParams;
+  icon?: React.ReactNode;
 };
 
 /**
