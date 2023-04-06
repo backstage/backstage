@@ -59,24 +59,6 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
-  private async handleText(response: Response): Promise<string> {
-    if (!response.ok) {
-      const payload = await response.text();
-      let message;
-      switch (response.status) {
-        case 404:
-          message =
-            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
-          break;
-        default:
-          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      }
-      throw new Error(message);
-    }
-
-    return await response.text();
-  }
-
   private async postRequired(path: string, requestBody: any): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
     const { token: idToken } = await this.identityApi.getCredentials();
@@ -150,29 +132,6 @@ export class KubernetesBackendClient implements KubernetesApi {
     });
 
     return (await this.handleResponse(response)).items;
-  }
-
-  async getPodLogs({
-    podName,
-    namespace,
-    clusterName,
-    containerName,
-  }: {
-    podName: string;
-    namespace: string;
-    clusterName: string;
-    containerName: string;
-  }): Promise<string> {
-    const params = new URLSearchParams({
-      container: containerName,
-    });
-    return await this.proxy({
-      clusterName: clusterName,
-      path: `/api/v1/namespaces/${namespace}/pods/${podName}/log?${params.toString()}`,
-      init: {
-        method: 'GET',
-      },
-    }).then(response => this.handleText(response));
   }
 
   async proxy(options: {

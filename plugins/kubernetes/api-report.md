@@ -260,13 +260,6 @@ export interface KubernetesApi {
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
   // (undocumented)
-  getPodLogs(request: {
-    podName: string;
-    namespace: string;
-    clusterName: string;
-    containerName: string;
-  }): Promise<string>;
-  // (undocumented)
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
@@ -349,18 +342,6 @@ export class KubernetesBackendClient implements KubernetesApi {
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
   // (undocumented)
-  getPodLogs({
-    podName,
-    namespace,
-    clusterName,
-    containerName,
-  }: {
-    podName: string;
-    namespace: string;
-    clusterName: string;
-    containerName: string;
-  }): Promise<string>;
-  // (undocumented)
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
@@ -428,6 +409,43 @@ const kubernetesPlugin: BackstagePlugin<
 >;
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
+
+// Warning: (ae-missing-release-tag) "KubernetesProxyApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesProxyApi {
+  // (undocumented)
+  getPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<string>;
+}
+
+// Warning: (ae-missing-release-tag) "kubernetesProxyApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
+
+// Warning: (ae-missing-release-tag) "KubernetesProxyClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class KubernetesProxyClient {
+  constructor(options: { kubernetesApi: KubernetesApi });
+  // (undocumented)
+  getPodLogs({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<string>;
+}
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerable" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts

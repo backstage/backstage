@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { kubernetesApiRef } from '@backstage/plugin-kubernetes';
+import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
 import { ContainerLogContext } from './types';
@@ -25,9 +25,9 @@ interface PodLogsOptions {
 }
 
 export const usePodLogs = ({ logContext, previous }: PodLogsOptions) => {
-  const kubernetesApi = useApi(kubernetesApiRef);
+  const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {
-    return await kubernetesApi.getPodLogs({
+    return await kubernetesProxyApi.getPodLogs({
       podName: logContext.podName,
       namespace: logContext.podNamespace,
       containerName: logContext.containerName,

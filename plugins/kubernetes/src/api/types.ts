@@ -26,6 +26,10 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
 });
 
+export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
+  id: 'plugin.kubernetesproxy.service',
+});
+
 export interface KubernetesApi {
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
@@ -48,7 +52,9 @@ export interface KubernetesApi {
     path: string;
     init?: RequestInit;
   }): Promise<Response>;
-  // TODO how should we separate this?
+}
+
+export interface KubernetesProxyApi {
   getPodLogs(request: {
     podName: string;
     namespace: string;
