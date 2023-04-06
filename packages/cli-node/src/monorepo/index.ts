@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-export { PackageGraph } from './PackageGraph';
-export type {
-  PackageGraphNode,
-  BackstagePackage,
-  BackstagePackageJson,
+export {
+  PackageGraph,
+  type PackageGraphNode,
+  type BackstagePackage,
+  type BackstagePackageJson,
 } from './PackageGraph';
+export {
+  Lockfile,
+  type LockfileDiff,
+  type LockfileDiffEntry,
+} from './Lockfile';

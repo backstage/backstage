@@ -19,6 +19,7 @@ import fs from 'fs-extra';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 
+/** @internal */
 type LockfileData = {
   [entry: string]: {
     version: string;
@@ -30,18 +31,29 @@ type LockfileData = {
   };
 };
 
+/** @internal */
 type LockfileQueryEntry = {
   range: string;
   version: string;
   dataKey: string;
 };
 
-type LockfileDiffEntry = {
+/**
+ * An entry for a single difference between two {@link Lockfile}s.
+ *
+ * @public
+ */
+export type LockfileDiffEntry = {
   name: string;
   range: string;
 };
 
-type LockfileDiff = {
+/**
+ * Represents the difference between two {@link Lockfile}s.
+ *
+ * @public
+ */
+export type LockfileDiff = {
   added: LockfileDiffEntry[];
   changed: LockfileDiffEntry[];
   removed: LockfileDiffEntry[];
@@ -60,13 +72,26 @@ const SPECIAL_OBJECT_KEYS = [
   `binaries`,
 ];
 
+/**
+ * Represents a package manager lockfile.
+ *
+ * @public
+ */
 export class Lockfile {
-  static async load(path: string) {
+  /**
+   * Load a {@link Lockfile} from a file path.
+   */
+  static async load(path: string): Promise<Lockfile> {
     const lockfileContents = await fs.readFile(path, 'utf8');
     return Lockfile.parse(lockfileContents);
   }
 
-  static parse(content: string) {
+  /**
+   * Parse lockfile contents into a {@link Lockfile}.
+   *
+   * @public
+   */
+  static parse(content: string): Lockfile {
     let data: LockfileData;
     try {
       data = parseSyml(content);
@@ -108,6 +133,11 @@ export class Lockfile {
     private readonly data: LockfileData,
   ) {}
 
+  /**
+   * Creates a simplified dependency graph from the lockfile data, where each
+   * key is a package, and the value is a set of all packages that it depends on
+   * across all versions.
+   */
   createSimplifiedDependencyGraph(): Map<string, Set<string>> {
     const graph = new Map<string, Set<string>>();
 
