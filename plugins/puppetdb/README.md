@@ -1,13 +1,42 @@
-# puppetdb
+# PuppetDB Plugin
 
-Welcome to the puppetdb plugin!
-
-_This plugin was created through the Backstage CLI_
+A frontend plugin to integrate PuppetDB with Backstage. When combined with the
+[catalog-backend-module-puppetdb](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-puppetdb/README.md) plugin, this
+frontend plugin allows viewing PuppetDB reports, including their logs and events, of Backstage resource entities.
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/puppetdb](http://localhost:3000/puppetdb).
+To get started, you need a running instance of PuppetDB. You can find instructions on how to install it
+[here](https://www.puppet.com/docs/puppetdb/7/install_via_module.html).
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+### Installation
+
+1. Install the plugin with `yarn` in the root of your Backstage application directory:
+
+```bash
+yarn --cwd packages/app add @backstage/plugin-puppetdb
+```
+
+1. Import and use the plugin in `packages/app/src/App.tsx`:
+
+```tsx
+import { PuppetDbPage } from '@backstage/plugin-puppetdb';
+
+const routes = (
+  <FlatRoutes>
+    {/* ...other routes */}
+    <Route path="/puppetdb" element={<PuppetDbPage />} />
+  </FlatRoutes>
+);
+```
+
+### Configuration
+
+1. Configure `puppetdb` proxy. As this plugin uses the Backstage proxy to securely communicate with PuppetDB API,
+   add the following to your `app-config.yaml` to enable this configuration:
+
+```yaml
+proxy:
+  '/puppetdb':
+    target: https://your.puppetdb.instance.com
+```
