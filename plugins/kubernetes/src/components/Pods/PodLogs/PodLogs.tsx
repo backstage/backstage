@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DismissableBanner, LogViewer } from '@backstage/core-components';
-import { Skeleton } from '@material-ui/lab';
 import React from 'react';
+
+import { DismissableBanner, LogViewer } from '@backstage/core-components';
+import { Paper } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import { ContainerLogContext } from './types';
 import { usePodLogs } from './usePodLogs';
@@ -46,10 +48,13 @@ export const PodLogs: React.FC<PodLogsProps> = ({
           id="pod-logs"
         />
       )}
-      <div style={{ height: '50rem', width: '100rem' }}>
-        {loading && <Skeleton variant="rect" width="100rem" height="50rem" />}
+      <Paper
+        elevation={1}
+        style={{ height: '100%', width: '100%', minHeight: '30rem' }}
+      >
+        {loading && <Skeleton variant="rect" width="100%" height="100%" />}
         {!loading && value !== undefined && <LogViewer text={value} />}
-      </div>
+      </Paper>
     </>
   );
 };

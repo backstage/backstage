@@ -43,16 +43,16 @@ export interface KubernetesApi {
   getCustomObjectsByEntity(
     request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
-  getPodLogs(request: {
-    podName: string;
-    namespace: string;
-    clusterName: string;
-    containerName: string;
-    token: string;
-  }): Promise<string>;
   proxy(options: {
     clusterName: string;
     path: string;
     init?: RequestInit;
   }): Promise<Response>;
+  // TODO how should we separate this?
+  getPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<string>;
 }

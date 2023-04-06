@@ -175,22 +175,22 @@ export class KubernetesBackendClient implements KubernetesApi {
     namespace,
     clusterName,
     containerName,
-    token,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
-    token: string;
   }): Promise<string> {
     const params = new URLSearchParams({
       container: containerName,
     });
-    return await this.getProxyRequired(
-      `/proxy/api/v1/namespaces/${namespace}/pods/${podName}/log?${params.toString()}`,
-      clusterName,
-      token,
-    ).then(response => this.handleText(response));
+    return await this.proxy({
+      clusterName: clusterName,
+      path: `/api/v1/namespaces/${namespace}/pods/${podName}/log?${params.toString()}`,
+      init: {
+        method: 'GET',
+      },
+    }).then(response => this.handleText(response));
   }
 
   async proxy(options: {

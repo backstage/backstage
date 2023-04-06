@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  kubernetesApiRef,
-  kubernetesAuthProvidersApiRef,
-} from '@backstage/plugin-kubernetes';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
 import { ContainerLogContext } from './types';
 import { useApi } from '@backstage/core-plugin-api';
-import { generateProxyToken } from '../../../hooks/auth';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 interface PodLogsOptions {
   logContext: ContainerLogContext;
@@ -31,22 +26,12 @@ interface PodLogsOptions {
 
 export const usePodLogs = ({ logContext, previous }: PodLogsOptions) => {
   const kubernetesApi = useApi(kubernetesApiRef);
-  const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-  const { entity } = useEntity();
   return useAsync(async () => {
-    const token = await generateProxyToken(
-      entity,
-      logContext.clusterName,
-      kubernetesApi,
-      kubernetesAuthProvidersApi,
-    );
-
     return await kubernetesApi.getPodLogs({
       podName: logContext.podName,
       namespace: logContext.podNamespace,
       containerName: logContext.containerName,
       clusterName: logContext.clusterName,
-      token: token,
     });
   }, [JSON.stringify(logContext), previous]);
 };
