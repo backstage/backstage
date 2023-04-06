@@ -119,6 +119,13 @@ describe('DefaultCatalogPage', () => {
         ],
       };
     },
+    /**
+     * For the purposes of this test case, use existing functionality. The picker
+     *  isn't being tested, just needs this method to render correctly.
+     */
+    getEntitiesByRefs: async refs => {
+      return { items: refs.entityRefs.map(() => undefined) };
+    },
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
