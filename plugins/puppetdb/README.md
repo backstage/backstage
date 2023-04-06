@@ -4,6 +4,8 @@ A frontend plugin to integrate PuppetDB with Backstage. When combined with the
 [catalog-backend-module-puppetdb](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-puppetdb/README.md) plugin, this
 frontend plugin allows viewing PuppetDB reports, including their logs and events, of Backstage resource entities.
 
+![Reports list](https://raw.githubusercontent.com/backstage/backstage/42b65232e763d3e39e2e641b105d2ad469db7a59/plugins/puppetdb/assets/Reports.png)
+
 ## Getting started
 
 To get started, you need a running instance of PuppetDB. You can find instructions on how to install it
