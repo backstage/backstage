@@ -18,15 +18,22 @@ import {
   CatalogClient,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
+import { TokenManager } from '@backstage/backend-common';
 
-export async function loadLighthouseEntities(catalogClient: CatalogClient) {
+export async function loadLighthouseEntities(
+  catalogClient: CatalogClient,
+  tokenManager: TokenManager,
+) {
   const filter: Record<string, symbol | string> = {
     kind: 'Component',
     'spec.type': 'website',
     ['lighthouse.com/website-url']: CATALOG_FILTER_EXISTS,
   };
 
+  const { token } = await tokenManager.getToken();
+
   return await catalogClient.getEntities({
     filter: [filter],
+    token,
   });
 }

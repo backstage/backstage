@@ -31,13 +31,14 @@ export interface CreateLighthouseSchedulerOptions {
   config: Config;
   scheduler?: PluginTaskScheduler;
   catalogClient: CatalogClient;
+  tokenManager: TokenManager;
 }
 
 /** @public **/
 export async function createScheduler(
   options: CreateLighthouseSchedulerOptions,
 ) {
-  const { logger, scheduler, catalogClient, config } = options;
+  const { logger, scheduler, catalogClient, config, tokenManager } = options;
   const lighthouseApi = LighthouseRestApi.fromConfig(config);
 
   const lighthouseAuditConfig = LighthouseAuditScheduleImpl.fromConfig(config);
@@ -77,8 +78,10 @@ export async function createScheduler(
 
         logger.info('Running Lighthouse Audit Task');
 
+        const { token } = await tokenManager.getToken();
         const websitesWithUrl = await catalogClient.getEntities({
           filter: [filter],
+          token,
         });
 
         let index = 0;
