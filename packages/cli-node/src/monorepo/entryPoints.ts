@@ -15,7 +15,7 @@
  */
 
 import { extname } from 'path';
-import { ExtendedPackageJSON } from './PackageGraph';
+import { BackstagePackageJson } from './PackageGraph';
 
 export interface EntryPoint {
   mount: string;
@@ -47,7 +47,7 @@ function parseEntryPoint(mount: string, path: string): EntryPoint {
   return { mount, path, name, ext: extname(path) };
 }
 
-export function readEntryPoints(pkg: ExtendedPackageJSON): Array<EntryPoint> {
+export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {
   const exp = pkg.exports;
   if (typeof exp === 'string') {
     return [defaultIndex];

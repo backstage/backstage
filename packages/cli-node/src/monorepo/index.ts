@@ -17,6 +17,6 @@
 export { PackageGraph } from './PackageGraph';
 export type {
   PackageGraphNode,
-  ExtendedPackage,
-  ExtendedPackageJSON,
+  BackstagePackage,
+  BackstagePackageJson,
 } from './PackageGraph';
