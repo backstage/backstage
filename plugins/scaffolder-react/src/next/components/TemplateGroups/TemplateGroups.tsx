@@ -91,7 +91,7 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
       {groups.map(({ title, filter }, index) => {
         const templates = entities
           .filter(isTemplateEntityV1beta3)
-          .filter(e => (templateFilter ? !templateFilter(e) : true))
+          .filter(e => (templateFilter ? templateFilter(e) : true))
           .filter(filter)
           .map(template => {
             const additionalLinks =

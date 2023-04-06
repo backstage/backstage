@@ -21,11 +21,15 @@ export interface Config {
       | 'services'
       | 'configmaps'
       | 'deployments'
+      | 'limitranges'
       | 'replicasets'
       | 'horizontalpodautoscalers'
       | 'jobs'
       | 'cronjobs'
       | 'ingresses'
+      | 'customresources'
+      | 'statefulsets'
+      | 'daemonsets'
     >;
     serviceLocatorMethod: {
       type: 'multiTenant';
@@ -99,11 +103,15 @@ export interface Config {
       services?: string;
       configmaps?: string;
       deployments?: string;
+      limitranges?: string;
       replicasets?: string;
       horizontalpodautoscalers?: string;
-      cronjobs?: string;
       jobs?: string;
+      cronjobs?: string;
       ingresses?: string;
+      customresources?: string;
+      statefulsets?: string;
+      daemonsets?: string;
     } & { [pluralKind: string]: string };
   };
 }

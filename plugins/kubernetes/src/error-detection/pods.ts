@@ -14,82 +14,121 @@
  * limitations under the License.
  */
 
-import { V1Pod } from '@kubernetes/client-node';
-import { totalRestarts } from '../utils/pod';
+import { Pod, IContainerStatus, IContainer } from 'kubernetes-models/v1';
 import { DetectedError, ErrorMapper } from './types';
 import { detectErrorsInObjects } from './common';
+import lodash from 'lodash';
+import { DateTime } from 'luxon';
 
-const podErrorMappers: ErrorMapper<V1Pod>[] = [
+function isPodReadinessProbeUnready({
+  container,
+  containerStatus,
+}: ContainerSpecAndStatus): boolean {
+  if (
+    containerStatus.ready ||
+    containerStatus.state?.running?.startedAt === undefined ||
+    !container.readinessProbe
+  ) {
+    return false;
+  }
+  const startDateTime = DateTime.fromISO(
+    containerStatus.state?.running?.startedAt,
+  )
+    // Add initial delay
+    .plus({
+      seconds: container.readinessProbe?.initialDelaySeconds ?? 0,
+    })
+    // Add failure threshold
+    .plus({
+      seconds:
+        (container.readinessProbe?.periodSeconds ?? 0) *
+        (container.readinessProbe?.failureThreshold ?? 0),
+    });
+  return startDateTime < DateTime.now();
+}
+
+interface ContainerSpecAndStatus {
+  container: IContainer;
+  containerStatus: IContainerStatus;
+}
+
+const podToContainerSpecsAndStatuses = (pod: Pod): ContainerSpecAndStatus[] => {
+  const specs = lodash.groupBy(pod.spec?.containers ?? [], value => value.name);
+
+  const result: ContainerSpecAndStatus[] = [];
+
+  for (const cs of pod.status?.containerStatuses ?? []) {
+    const spec = specs[cs.name];
+    if (spec.length > 0) {
+      result.push({
+        container: spec[0],
+        containerStatus: cs,
+      });
+    }
+  }
+
+  return result;
+};
+
+const podErrorMappers: ErrorMapper<Pod>[] = [
   {
-    severity: 5,
-    errorExplanation: 'status-message',
-    errorExists: pod => {
-      return pod.status?.message !== undefined;
-    },
-    messageAccessor: pod => {
-      return [pod.status?.message ?? ''];
+    detectErrors: pod => {
+      return podToContainerSpecsAndStatuses(pod)
+        .filter(isPodReadinessProbeUnready)
+        .map(cs => ({
+          type: 'readiness-probe-taking-too-long',
+          message: `The container ${cs.container.name} failed to start properly, but is not crashing`,
+          severity: 4,
+          proposedFix: [], // TODO next PR
+          sourceRef: {
+            name: pod.metadata?.name ?? 'unknown pod',
+            namespace: pod.metadata?.namespace ?? 'unknown namespace',
+            kind: 'Pod',
+            apiGroup: 'v1',
+          },
+          occuranceCount: 1,
+        }));
     },
   },
   {
-    severity: 4,
-    errorExplanation: 'containers-restarting',
-    errorExists: pod => {
-      // TODO magic number
-      return totalRestarts(pod) > 3;
-    },
-    messageAccessor: pod => {
-      return (pod.status?.containerStatuses ?? [])
-        .filter(cs => cs.restartCount > 0)
-        .map(cs => `container=${cs.name} restarted ${cs.restartCount} times`);
-    },
-  },
-  {
-    severity: 5,
-    errorExplanation: 'condition-message-present',
-    errorExists: pod => {
-      return (pod.status?.conditions ?? []).some(c => c.message !== undefined);
-    },
-    messageAccessor: pod => {
-      return (pod.status?.conditions ?? [])
-        .filter(c => c.message !== undefined)
-        .map(c => c.message ?? '');
-    },
-  },
-  {
-    severity: 6,
-    errorExplanation: 'container-waiting',
-    errorExists: pod => {
-      return (pod.status?.containerStatuses ?? []).some(
-        cs => cs.state?.waiting?.message !== undefined,
-      );
-    },
-    messageAccessor: pod => {
+    detectErrors: pod => {
       return (pod.status?.containerStatuses ?? [])
         .filter(cs => cs.state?.waiting?.message !== undefined)
-        .map(cs => cs.state?.waiting?.message ?? '');
+        .map(cs => ({
+          type: 'container-waiting',
+          message: cs.state?.waiting?.message ?? 'container waiting',
+          severity: 4,
+          proposedFix: [], // TODO next PR
+          sourceRef: {
+            name: pod.metadata?.name ?? 'unknown pod',
+            namespace: pod.metadata?.namespace ?? 'unknown namespace',
+            kind: 'Pod',
+            apiGroup: 'v1',
+          },
+          occuranceCount: 1,
+        }));
     },
   },
   {
-    severity: 4,
-    errorExplanation: 'container-last-state-error',
-    errorExists: pod => {
-      return (pod.status?.containerStatuses ?? []).some(
-        cs => (cs.lastState?.terminated?.reason ?? '') === 'Error',
-      );
-    },
-    messageAccessor: pod => {
+    detectErrors: pod => {
       return (pod.status?.containerStatuses ?? [])
-        .filter(cs => (cs.lastState?.terminated?.reason ?? '') === 'Error')
-        .map(
-          cs =>
-            `container=${cs.name} exited with error code (${cs.lastState?.terminated?.exitCode})`,
-        );
+        .filter(cs => cs.restartCount > 0)
+        .map(cs => ({
+          type: 'containers-restarting',
+          message: `container=${cs.name} restarted ${cs.restartCount} times`,
+          severity: 4,
+          proposedFix: [], // TODO next PR
+          sourceRef: {
+            name: pod.metadata?.name ?? 'unknown pod',
+            namespace: pod.metadata?.namespace ?? 'unknown namespace',
+            kind: 'Pod',
+            apiGroup: 'v1',
+          },
+          occuranceCount: cs.restartCount,
+        }));
     },
   },
 ];
 
-export const detectErrorsInPods = (
-  pods: V1Pod[],
-  clusterName: string,
-): DetectedError[] =>
-  detectErrorsInObjects(pods, 'Pod', clusterName, podErrorMappers);
+export const detectErrorsInPods = (pods: Pod[]): DetectedError[] =>
+  detectErrorsInObjects(pods, podErrorMappers);

@@ -15,7 +15,6 @@
  */
 
 export type {
-  ErrorDetectableKind,
   DetectedError,
   DetectedErrorsByCluster,
   ErrorSeverity,

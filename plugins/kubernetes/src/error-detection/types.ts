@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-// Higher is more sever, but it's relative
-import {
-  V1Deployment,
-  V1HorizontalPodAutoscaler,
-  V1Pod,
-} from '@kubernetes/client-node';
-
 /**
  * Severity of the error, where 10 is critical and 0 is very low.
  *
  * @public
  */
 export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-
-export type ErrorDetectable = V1Pod | V1Deployment | V1HorizontalPodAutoscaler;
-
-/**
- * Kubernetes kinds that errors might be reported by the plugin
- *
- * @public
- */
-export type ErrorDetectableKind =
-  | 'Pod'
-  | 'Deployment'
-  | 'HorizontalPodAutoscaler';
 
 /**
  * A list of errors keyed by Cluster name
@@ -47,23 +28,51 @@ export type ErrorDetectableKind =
  */
 export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
 
+export interface ResourceRef {
+  name: string;
+  namespace: string;
+  kind: string;
+  apiGroup: string;
+}
+
 /**
  * Represents an error found on a Kubernetes object
  *
  * @public
  */
 export interface DetectedError {
+  type: string;
   severity: ErrorSeverity;
-  cluster: string;
-  namespace: string;
-  kind: ErrorDetectableKind;
-  names: string[];
-  message: string[];
+  message: string;
+  proposedFix: ProposedFix[];
+  sourceRef: ResourceRef;
+  occuranceCount: number;
 }
 
-export interface ErrorMapper<T extends ErrorDetectable> {
-  severity: ErrorSeverity;
-  errorExplanation: string;
-  errorExists: (object: T) => boolean;
-  messageAccessor: (object: T) => string[];
+type ProposedFix = LogSolution | DocsSolution | EventsSolution;
+
+interface ProposedFixBase {
+  errorType: string;
+  rootCauseExplanation: string;
+  possibleFixes: string[];
+}
+
+export interface LogSolution extends ProposedFixBase {
+  type: 'logs';
+  container: string;
+}
+
+export interface DocsSolution extends ProposedFixBase {
+  type: 'docs';
+  docsLink: string;
+}
+
+export interface EventsSolution extends ProposedFixBase {
+  type: 'events';
+  docsLink: string;
+  podName: string;
+}
+
+export interface ErrorMapper<T> {
+  detectErrors: (resource: T) => DetectedError[];
 }

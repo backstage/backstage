@@ -76,36 +76,37 @@ Additionally, you need to decide how you want to receive events from external so
 
 Set up your provider
 
-```ts title="packages/backend/src/plugins/catalogEventBasedProviders.ts"
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 /* highlight-add-start */
-import { CatalogClient } from '@backstage/catalog-client';
 import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
 /* highlight-add-end */
-import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createCatalogEventBasedProviders(
-  /* highlight-remove-next-line */
-  _: PluginEnvironment,
-  /* highlight-add-next-line */
+export default async function createPlugin(
   env: PluginEnvironment,
-): Promise<Array<EntityProvider & EventSubscriber>> {
-  const providers: Array<
-    (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-  > = [];
-  // add your event-based entity providers here
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
-  providers.push(
-    BitbucketCloudEntityProvider.fromConfig(env.config, {
+  const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
+    env.config,
+    {
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
       logger: env.logger,
       scheduler: env.scheduler,
       tokenManager: env.tokenManager,
-    }),
+    },
   );
+  env.eventBroker.subscribe(bitbucketCloudProvider);
+  builder.addEntityProvider(bitbucketCloudProvider);
   /* highlight-add-end */
-  return providers.flat();
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
 }
 ```
 

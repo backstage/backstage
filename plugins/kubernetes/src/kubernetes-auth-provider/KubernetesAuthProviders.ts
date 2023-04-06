@@ -91,4 +91,22 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       `authProvider "${authProvider}" has no KubernetesAuthProvider defined for it`,
     );
   }
+
+  async getCredentials(authProvider: string): Promise<{ token: string }> {
+    const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
+      this.kubernetesAuthProviderMap.get(authProvider);
+
+    if (kubernetesAuthProvider) {
+      return await kubernetesAuthProvider.getCredentials();
+    }
+
+    if (authProvider.startsWith('oidc.')) {
+      throw new Error(
+        `KubernetesAuthProviders has no oidcProvider configured for ${authProvider}`,
+      );
+    }
+    throw new Error(
+      `authProvider "${authProvider}" has no KubernetesAuthProvider defined for it`,
+    );
+  }
 }

@@ -559,6 +559,7 @@ export const createPublishGithubPullRequestAction: (
     token?: string | undefined;
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
+    commitMessage?: string | undefined;
   },
   JsonObject
 >;

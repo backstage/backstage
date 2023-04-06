@@ -28,14 +28,19 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const googleAuthToken: string = await this.authProvider.getAccessToken(
-      'https://www.googleapis.com/auth/cloud-platform',
-    );
+    const googleAuthToken: string = (await this.getCredentials()).token;
     if ('auth' in requestBody) {
       requestBody.auth!.google = googleAuthToken;
     } else {
       requestBody.auth = { google: googleAuthToken };
     }
     return requestBody;
+  }
+  async getCredentials(): Promise<{ token: string }> {
+    return {
+      token: await this.authProvider.getAccessToken(
+        'https://www.googleapis.com/auth/cloud-platform',
+      ),
+    };
   }
 }

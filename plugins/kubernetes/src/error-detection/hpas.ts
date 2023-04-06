@@ -14,37 +14,39 @@
  * limitations under the License.
  */
 
-import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v1';
 import { DetectedError, ErrorMapper } from './types';
 import { detectErrorsInObjects } from './common';
 
-const hpaErrorMappers: ErrorMapper<V1HorizontalPodAutoscaler>[] = [
+const hpaErrorMappers: ErrorMapper<HorizontalPodAutoscaler>[] = [
   {
-    // this is probably important
-    severity: 8,
-    errorExplanation: 'hpa-max-current-replicas',
-    errorExists: hpa => {
-      return (hpa.spec?.maxReplicas ?? -1) === hpa.status?.currentReplicas;
-    },
-    messageAccessor: hpa => {
-      return [
-        `Current number of replicas (${
-          hpa.status?.currentReplicas
-        }) is equal to the configured max number of replicas (${
-          hpa.spec?.maxReplicas ?? -1
-        })`,
-      ];
+    detectErrors: hpa => {
+      if ((hpa.spec?.maxReplicas ?? -1) === hpa.status?.currentReplicas) {
+        return [
+          {
+            type: 'hpa-max-current-replicas',
+            message: `Current number of replicas (${
+              hpa.status?.currentReplicas
+            }) is equal to the configured max number of replicas (${
+              hpa.spec?.maxReplicas ?? -1
+            })`,
+            severity: 8,
+            proposedFix: [], // TODO next PR
+            sourceRef: {
+              name: hpa.metadata?.name ?? 'unknown hpa',
+              namespace: hpa.metadata?.namespace ?? 'unknown namespace',
+              kind: 'HorizontalPodAutoscaler',
+              apiGroup: 'autoscaling/v1',
+            },
+            occuranceCount: 1,
+          },
+        ];
+      }
+      return [];
     },
   },
 ];
 
 export const detectErrorsInHpa = (
-  hpas: V1HorizontalPodAutoscaler[],
-  clusterName: string,
-): DetectedError[] =>
-  detectErrorsInObjects(
-    hpas,
-    'HorizontalPodAutoscaler',
-    clusterName,
-    hpaErrorMappers,
-  );
+  hpas: HorizontalPodAutoscaler[],
+): DetectedError[] => detectErrorsInObjects(hpas, hpaErrorMappers);

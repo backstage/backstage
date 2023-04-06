@@ -17,15 +17,15 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
-import { InMemoryEventBroker } from './InMemoryEventBroker';
+import { DefaultEventBroker } from './DefaultEventBroker';
 
 const logger = getVoidLogger();
 
-describe('InMemoryEventBroker', () => {
+describe('DefaultEventBroker', () => {
   it('passes events to interested subscribers', () => {
     const subscriber1 = new TestEventSubscriber('test1', ['topicA', 'topicB']);
     const subscriber2 = new TestEventSubscriber('test2', ['topicB', 'topicC']);
-    const eventBroker = new InMemoryEventBroker(logger);
+    const eventBroker = new DefaultEventBroker(logger);
 
     eventBroker.subscribe(subscriber1);
     eventBroker.subscribe(subscriber2);
@@ -86,7 +86,7 @@ describe('InMemoryEventBroker', () => {
     })();
 
     const errorSpy = jest.spyOn(logger, 'error');
-    const eventBroker = new InMemoryEventBroker(logger);
+    const eventBroker = new DefaultEventBroker(logger);
 
     eventBroker.subscribe(subscriber1);
     await eventBroker.publish({ topic, eventPayload: '1' });

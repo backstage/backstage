@@ -230,7 +230,7 @@ export class CatalogClient implements CatalogApi {
       }
       if (orderFields !== undefined) {
         (Array.isArray(orderFields) ? orderFields : [orderFields]).forEach(
-          ({ field, order }) => params.push(`sortField=${field},${order}`),
+          ({ field, order }) => params.push(`orderField=${field},${order}`),
         );
       }
       if (fields.length) {

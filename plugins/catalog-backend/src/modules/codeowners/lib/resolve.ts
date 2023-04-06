@@ -15,8 +15,7 @@
  */
 
 import * as codeowners from 'codeowners-utils';
-import { CodeOwnersEntry } from 'codeowners-utils';
-import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import parseGitUrl from 'git-url-parse';
 
 const USER_PATTERN = /^@.*/;
 const GROUP_PATTERN = /^@.*\/.*/;
@@ -24,18 +23,14 @@ const EMAIL_PATTERN = /^.*@.*\..*$/;
 
 export function resolveCodeOwner(
   contents: string,
-  pattern = '*',
+  catalogInfoFileUrl: string,
 ): string | undefined {
-  const owners = codeowners.parse(contents);
+  const codeOwnerEntries = codeowners.parse(contents);
 
-  return pipe(
-    filter((e: CodeOwnersEntry) => e.pattern === pattern),
-    reverse,
-    head,
-    get('owners'),
-    head,
-    normalizeCodeOwner,
-  )(owners);
+  const { filepath } = parseGitUrl(catalogInfoFileUrl);
+  const match = codeowners.matchFile(filepath, codeOwnerEntries);
+
+  return match ? normalizeCodeOwner(match.owners[0]) : undefined;
 }
 
 export function normalizeCodeOwner(owner: string) {
