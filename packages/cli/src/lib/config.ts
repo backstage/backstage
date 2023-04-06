@@ -23,7 +23,7 @@ import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 import { isValidUrl } from './urls';
 import { getPackages } from '@manypkg/get-packages';
-import { PackageGraph } from './monorepo';
+import { PackageGraph } from '@backstage/cli-node';
 
 type Options = {
   args: string[];

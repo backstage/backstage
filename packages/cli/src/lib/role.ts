@@ -17,16 +17,17 @@
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
 import { paths } from './paths';
+import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
 export async function findRoleFromCommand(
   opts: OptionValues,
 ): Promise<PackageRole> {
   if (opts.role) {
-    return getRoleInfo(opts.role)?.role;
+    return PackageRoles.getRoleInfo(opts.role)?.role;
   }
 
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));
-  const info = getRoleFromPackage(pkg);
+  const info = PackageRoles.getRoleFromPackage(pkg);
   if (!info) {
     throw new Error(`Target package must have 'backstage.role' set`);
   }

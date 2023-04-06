@@ -3694,7 +3694,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-node@workspace:packages/cli-node":
+"@backstage/cli-node@workspace:^, @backstage/cli-node@workspace:packages/cli-node":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-node@workspace:packages/cli-node"
   dependencies:
@@ -3717,6 +3717,7 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/core-app-api": "workspace:^"

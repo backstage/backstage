@@ -19,7 +19,7 @@ import { ESLint } from 'eslint';
 import { join as joinPath, basename } from 'path';
 import fs from 'fs-extra';
 import { isChildPath } from '@backstage/cli-common';
-import { PackageGraph } from '../lib/monorepo';
+import { PackageGraph } from '@backstage/cli-node';
 
 function isTestPath(filePath: string) {
   if (!isChildPath(joinPath(paths.targetDir, 'src'), filePath)) {

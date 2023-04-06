@@ -15,7 +15,7 @@
  */
 
 import { extname } from 'path';
-import { BackstagePackageJson } from './PackageGraph';
+import { BackstagePackageJson } from '@backstage/cli-node';
 
 export interface EntryPoint {
   mount: string;

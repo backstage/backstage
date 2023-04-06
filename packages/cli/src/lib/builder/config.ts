@@ -30,9 +30,9 @@ import { RollupOptions, OutputOptions, RollupWarning } from 'rollup';
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
+import { BackstagePackageJson } from '@backstage/cli-node';
 import { svgrTemplate } from '../svgrTemplate';
-import { ExtendedPackageJSON } from '../monorepo';
-import { readEntryPoints } from '../monorepo/entryPoints';
+import { readEntryPoints } from '../entryPoints';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -58,7 +58,7 @@ export async function makeRollupConfigs(
   let targetPkg = options.packageJson;
   if (!targetPkg) {
     const packagePath = resolvePath(targetDir, 'package.json');
-    targetPkg = (await fs.readJson(packagePath)) as ExtendedPackageJSON;
+    targetPkg = (await fs.readJson(packagePath)) as BackstagePackageJson;
   }
 
   const onwarn = ({ code, message }: RollupWarning) => {

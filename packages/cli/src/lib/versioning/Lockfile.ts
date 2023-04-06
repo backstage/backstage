@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import semver from 'semver';
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
-import { ExtendedPackage } from '../monorepo';
+import { BackstagePackage } from '@backstage/cli-node';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 
@@ -156,7 +156,7 @@ export class Lockfile {
   /** Analyzes the lockfile to identify possible actions and warnings for the entries */
   analyze(options: {
     filter?: (name: string) => boolean;
-    localPackages: Map<string, ExtendedPackage>;
+    localPackages: Map<string, BackstagePackage>;
   }): AnalyzeResult {
     const { filter, localPackages } = options;
     const result: AnalyzeResult = {
