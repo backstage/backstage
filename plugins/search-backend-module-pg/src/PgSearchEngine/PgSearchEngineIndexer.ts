@@ -45,18 +45,21 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async initialize(): Promise<void> {
+    console.log('========== INITIALIZE ==========');
     this.tx = await this.store.getTransaction();
     try {
       await this.store.prepareInsert(this.tx);
     } catch (e) {
       // In case of error, rollback the transaction and re-throw the error so
       // that the stream can be closed and destroyed properly.
+      console.log('++++++++++ ROLLBACK ++++++++++');
       this.tx.rollback(e);
       throw e;
     }
   }
 
   async index(documents: IndexableDocument[]): Promise<void> {
+    console.log('========== INDEX ==========');
     this.numRecords += documents.length;
 
     try {
@@ -64,12 +67,14 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     } catch (e) {
       // In case of error, rollback the transaction and re-throw the error so
       // that the stream can be closed and destroyed properly.
+      console.log('++++++++++ ROLLBACK ++++++++++');
       this.tx!.rollback(e);
       throw e;
     }
   }
 
   async finalize(): Promise<void> {
+    console.log('========== FINALIZE ==========');
     // If no documents were indexed, rollback the transaction, log a warning,
     // and do not continue. This ensures that collators that return empty sets
     // of documents do not cause the index to be deleted.
@@ -77,6 +82,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
       this.logger.warn(
         `Index for ${this.type} was not replaced: indexer received 0 documents`,
       );
+      console.log('++++++++++ ROLLBACK ++++++++++');
       this.tx!.rollback!();
       return;
     }
@@ -88,6 +94,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     } catch (e) {
       // Otherwise, rollback the transaction and re-throw the error so that the
       // stream can be closed and destroyed properly.
+      console.log('++++++++++ ROLLBACK ++++++++++');
       this.tx!.rollback!(e);
       throw e;
     }

@@ -144,6 +144,10 @@ export class IndexBuilder {
             pipeline(
               [collator, ...decorators, indexer],
               (error: NodeJS.ErrnoException | null) => {
+                console.log('========== INDEXING DONE ==========');
+                if (error) {
+                  console.log('Error: ', error);
+                }
                 if (error) {
                   taskLogger.error(
                     `Collating documents for ${type} failed: ${error}`,
