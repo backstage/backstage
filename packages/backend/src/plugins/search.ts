@@ -21,10 +21,14 @@ import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
+  DecoratorBase,
   IndexBuilder,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import {
+  IndexableDocument,
+  SearchEngine,
+} from '@backstage/plugin-search-common';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -91,6 +95,30 @@ export default async function createPlugin(
       discovery: env.discovery,
       logger: env.logger,
     }),
+  });
+
+  class TestDecorator extends DecoratorBase {
+    #decorateCount = 0;
+    async initialize() {}
+
+    async decorate(document: IndexableDocument) {
+      this.#decorateCount++;
+
+      // Wait until at least one decoration operation
+      // has completed to make sure the indexer has
+      // had a chance to call initialize.
+      if (this.#decorateCount > 1) {
+        throw new Error('Fake error for testing');
+      }
+
+      return document;
+    }
+
+    async finalize() {}
+  }
+
+  indexBuilder.addDecorator({
+    factory: { getDecorator: async () => new TestDecorator() },
   });
 
   // The scheduler controls when documents are gathered from collators and sent
