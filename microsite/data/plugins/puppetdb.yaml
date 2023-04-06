@@ -5,7 +5,7 @@ authorUrl: https://github.com/tdabasinskas
 category: Configuration Management
 description: Visualize resource information and Puppet facts from PuppetDB.
 documentation: https://github.com/backstage/backstage/blob/master/plugins/puppetdb/README.md
-iconUrl: https://avatars.githubusercontent.com/u/234268?s=200&v=4
+iconUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Puppet_boxes_logo.svg/800px-Puppet_boxes_logo.svg.png
 npmPackageName: '@backstage/plugin-puppetdb'
 tags:
   - puppet
