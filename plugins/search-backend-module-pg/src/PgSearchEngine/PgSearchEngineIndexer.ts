@@ -118,6 +118,6 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     } catch {
       // Unlikely! It was likely rolled back earlier.
     }
-    done();
+    done(error);
   }
 }
