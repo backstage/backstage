@@ -134,6 +134,13 @@ describe('Linguist database', () => {
     expect(unprocessedEntities).toMatchObject(validUnprocessedEntities);
   });
 
+  it('should return string[] when there is no unprocessed entities', async () => {
+    await testDbClient('entity_result').delete();
+    const unprocessedEntities = await store.getUnprocessedEntities();
+
+    expect(unprocessedEntities).toMatchObject([]);
+  });
+
   it('should be able to return processed entities', async () => {
     const validProcessedEntities: ProcessedEntity[] = [
       {
@@ -153,6 +160,13 @@ describe('Linguist database', () => {
     const processedEntities = await store.getProcessedEntities();
 
     expect(processedEntities).toMatchObject(validProcessedEntities);
+  });
+
+  it('should return string[] when there is no processed entities', async () => {
+    await testDbClient('entity_result').delete();
+    const unprocessedEntities = await store.getProcessedEntities();
+
+    expect(unprocessedEntities).toMatchObject([]);
   });
 
   it('should insert new entities and ignore duplicates', async () => {

@@ -175,7 +175,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
       .map(pe => pe.entityRef);
 
     const unprocessedEntities = await this.store.getUnprocessedEntities();
-    const filteredEntities = staleEntities.concat(unprocessedEntities);
+    const filteredEntities = unprocessedEntities.concat(staleEntities);
 
     const entitiesOverview: EntitiesOverview = {
       entityCount: unprocessedEntities.length + processedEntities.length,

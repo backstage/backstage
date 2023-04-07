@@ -60,9 +60,9 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
   // (undocumented)
   getEntityResults(entityRef: string): Promise<Languages>;
   // (undocumented)
-  getProcessedEntities(): Promise<ProcessedEntity[] | []>;
+  getProcessedEntities(): Promise<ProcessedEntity[]>;
   // (undocumented)
-  getUnprocessedEntities(): Promise<string[] | []>;
+  getUnprocessedEntities(): Promise<string[]>;
   // (undocumented)
   insertEntityResults(entityLanguages: EntityResults): Promise<string>;
   // (undocumented)
@@ -74,9 +74,9 @@ export interface LinguistBackendStore {
   // (undocumented)
   getEntityResults(entityRef: string): Promise<Languages>;
   // (undocumented)
-  getProcessedEntities(): Promise<ProcessedEntity[] | []>;
+  getProcessedEntities(): Promise<ProcessedEntity[]>;
   // (undocumented)
-  getUnprocessedEntities(): Promise<string[] | []>;
+  getUnprocessedEntities(): Promise<string[]>;
   // (undocumented)
   insertEntityResults(entityLanguages: EntityResults): Promise<string>;
   // (undocumented)

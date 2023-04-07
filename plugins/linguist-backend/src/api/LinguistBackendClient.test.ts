@@ -234,10 +234,10 @@ describe('Linguist backend API', () => {
     expect(overview.staleCount).toEqual(1);
     expect(overview.pendingCount).toEqual(4);
     expect(overview.filteredEntities).toEqual([
-      'component:default/stale-service-two',
       'component:default/service-three',
       'component:default/service-four',
       'component:default/service-five',
+      'component:default/stale-service-two',
     ]);
   });
 

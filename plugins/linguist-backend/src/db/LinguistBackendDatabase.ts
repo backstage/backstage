@@ -35,8 +35,8 @@ export interface LinguistBackendStore {
   insertEntityResults(entityLanguages: EntityResults): Promise<string>;
   insertNewEntity(entityRef: string): Promise<void>;
   getEntityResults(entityRef: string): Promise<Languages>;
-  getProcessedEntities(): Promise<ProcessedEntity[] | []>;
-  getUnprocessedEntities(): Promise<string[] | []>;
+  getProcessedEntities(): Promise<ProcessedEntity[]>;
+  getUnprocessedEntities(): Promise<string[]>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -108,7 +108,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     }
   }
 
-  async getProcessedEntities(): Promise<ProcessedEntity[] | []> {
+  async getProcessedEntities(): Promise<ProcessedEntity[]> {
     const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
       .whereNotNull('processed_date')
       .whereNotNull('languages');
@@ -140,7 +140,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     return processedEntities;
   }
 
-  async getUnprocessedEntities(): Promise<string[] | []> {
+  async getUnprocessedEntities(): Promise<string[]> {
     const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
       // TODO(ahhhndre) processed_date should always be null as well but it had a default to the current date
       // once the default has been removed and released, we can then come back an enable this check
