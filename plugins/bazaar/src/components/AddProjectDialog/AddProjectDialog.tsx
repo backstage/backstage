@@ -45,6 +45,7 @@ export const AddProjectDialog = ({
     title: '',
     community: '',
     description: '',
+    docs: '',
     status: 'proposed' as Status,
     size: 'medium' as Size,
     responsible: '',

@@ -26,6 +26,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
+import Description from '@material-ui/icons/Description';
 import { EditProjectDialog } from '../EditProjectDialog';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { BazaarProject, Member } from '../../types';
@@ -127,6 +128,12 @@ export const EntityBazaarInfoContent = ({
       icon: <ChatIcon />,
       href: bazaarProject?.community,
       disabled: bazaarProject?.community === '' || !isMember,
+    },
+    {
+      label: 'Docs',
+      icon: <Description />,
+      href: bazaarProject?.docs,
+      disabled: bazaarProject?.docs === null || bazaarProject?.docs === '',
     },
   ];
 
