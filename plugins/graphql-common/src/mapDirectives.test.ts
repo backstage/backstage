@@ -19,8 +19,9 @@ import { DocumentNode, GraphQLNamedType, printType } from 'graphql';
 import { createModule, gql } from 'graphql-modules';
 import { createGraphQLAPI } from './__testUtils__';
 import { transformSchema } from './transformSchema';
-import { GraphQLContext, NodeId } from './types';
+import { NodeId } from './types';
 import { CoreSync } from './core';
+import { decodeId, encodeId } from './helpers';
 
 describe('mapDirectives', () => {
   const transform = (source: DocumentNode, generateOpaqueTypes?: boolean) =>
@@ -620,7 +621,7 @@ describe('mapDirectives', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       node(id: ${JSON.stringify(
-        JSON.stringify({ source: 'Mock', typename: 'Entity', ref: 'test' }),
+        encodeId({ source: 'Mock', typename: 'Entity', ref: 'test' }),
       )}) { ...on Entity { first, second, third } }
     `);
     expect(result).toEqual({
@@ -657,7 +658,7 @@ describe('mapDirectives', () => {
     const query = await createGraphQLAPI(TestModule, loader);
     const result = await query(/* GraphQL */ `
       component(id: ${JSON.stringify(
-        JSON.stringify({ source: 'Mock', typename: 'Component', ref: 'test' }),
+        encodeId({ source: 'Mock', typename: 'Component', ref: 'test' }),
       )}) { name }
     `);
     expect(result).toEqual({
@@ -713,7 +714,7 @@ describe('mapDirectives', () => {
       name: 'backend-system',
       spec: { type: 'backend' },
     };
-    const loader = ({ decodeId }: GraphQLContext) =>
+    const loader = () =>
       new DataLoader(async ids =>
         ids.map(id => {
           const { ref } = decodeId(id as string);
@@ -727,7 +728,7 @@ describe('mapDirectives', () => {
     const query = await createGraphQLAPI(TestModule, loader, true);
     const queryNode = (id: NodeId) =>
       query(/* GraphQL */ `
-        node(id: ${JSON.stringify(JSON.stringify(id))}) {
+        node(id: ${JSON.stringify(encodeId(id))}) {
           id
           ...on Entity {
             name
@@ -759,28 +760,28 @@ describe('mapDirectives', () => {
     });
     expect(componentResult).toEqual({
       node: {
-        id: '{"source":"Mock","typename":"Node","ref":"component:default/backend"}',
+        id: 'Node@Mock@component:default/backend',
         name: 'github-component',
         type: 'github',
       },
     });
     expect(employeeResult).toEqual({
       node: {
-        id: '{"source":"Mock","typename":"Node","ref":"employee:default/john"}',
+        id: 'Node@Mock@employee:default/john',
         name: 'john-user',
         jobTitle: 'Developer',
       },
     });
     expect(locationResult).toEqual({
       node: {
-        id: '{"source":"Mock","typename":"Node","ref":"location:default/home"}',
+        id: 'Node@Mock@location:default/home',
         name: 'street-location',
         address: '123 Main St',
       },
     });
     expect(systemResult).toEqual({
       node: {
-        id: '{"source":"Mock","typename":"Node","ref":"system:default/production"}',
+        id: 'Node@Mock@system:default/production',
         name: 'backend-system',
       },
     });
@@ -803,7 +804,7 @@ describe('mapDirectives', () => {
     };
     const loader = () => new DataLoader(async () => [entity]);
     const query = await createGraphQLAPI(TestModule, loader);
-    const id = JSON.stringify({
+    const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
       ref: 'test',
@@ -841,7 +842,7 @@ describe('mapDirectives', () => {
     };
     const loader = () => new DataLoader(async () => [entity]);
     const query = await createGraphQLAPI(TestModule, loader);
-    const id = JSON.stringify({
+    const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
       ref: 'test',
@@ -881,7 +882,7 @@ describe('mapDirectives', () => {
     };
     const loader = () => new DataLoader(async () => [entity]);
     const query = await createGraphQLAPI(TestModule, loader);
-    const id = JSON.stringify({
+    const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
       ref: 'test',
@@ -932,7 +933,7 @@ describe('mapDirectives', () => {
     };
     const loader = () => new DataLoader(async () => [entity]);
     const query = await createGraphQLAPI(TestModule, loader);
-    const id = JSON.stringify({
+    const id = encodeId({
       source: 'Mock',
       typename: 'Entity',
       ref: 'test',
@@ -976,7 +977,7 @@ describe('mapDirectives', () => {
     };
     const loader = () => new DataLoader(async () => [entity]);
     const query = await createGraphQLAPI(TestModule, loader);
-    const id = JSON.stringify({
+    const id = encodeId({
       source: 'Mock',
       typename: 'Resource',
       ref: 'test',

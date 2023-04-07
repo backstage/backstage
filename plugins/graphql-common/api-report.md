@@ -54,6 +54,9 @@ export const createLoader: <Context extends GraphQLContext_2>(
 ) => (context: Context) => DataLoader<string, any, string>;
 
 // @public (undocumented)
+export function decodeId(id: string): NodeId;
+
+// @public (undocumented)
 export interface DirectiveMapperAPI {
   // (undocumented)
   getDirective: (
@@ -64,6 +67,9 @@ export interface DirectiveMapperAPI {
   // (undocumented)
   typeMap: Partial<Record<string, GraphQLNamedType>>;
 }
+
+// @public (undocumented)
+export function encodeId({ source, typename, ref }: NodeId): string;
 
 // @public (undocumented)
 export type FieldDirectiveMapper = (
@@ -81,10 +87,6 @@ export type FieldDirectiveMapper = (
 export interface GraphQLContext {
   // (undocumented)
   application: Application;
-  // (undocumented)
-  decodeId: (id: string) => NodeId;
-  // (undocumented)
-  encodeId: (obj: NodeId) => string;
 }
 
 // @public (undocumented)

@@ -17,6 +17,7 @@ import { GraphQLContext } from '@backstage/plugin-graphql-common';
 import DataLoader, { Options } from 'dataloader';
 import { GraphQLError } from 'graphql';
 import { BatchLoadFn } from './types';
+import { decodeId } from './helpers';
 
 /** @public */
 export const createLoader = <Context extends GraphQLContext>(
@@ -25,7 +26,6 @@ export const createLoader = <Context extends GraphQLContext>(
 ) => {
   return (context: Context) => {
     async function fetch(ids: readonly string[]) {
-      const { decodeId } = context;
       const idsBySources = ids.map(decodeId).reduce(
         (s: Record<string, Map<number, string>>, { source, ref }, index) => ({
           ...s,

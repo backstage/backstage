@@ -18,7 +18,7 @@ import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { relationDirectiveMapper } from '../relationDirectiveMapper';
 import {
   createDirectiveMapperProvider,
-  ResolverContext,
+  encodeId,
 } from '@backstage/plugin-graphql-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { loadFiles, loadFilesSync } from '@graphql-tools/load-files';
@@ -61,7 +61,6 @@ export const CatalogSync = (
             kind,
             namespace = 'default',
           }: { name: string; kind: string; namespace: string },
-          { encodeId }: ResolverContext,
         ): { id: string } => ({
           id: encodeId({
             source: CATALOG_SOURCE,

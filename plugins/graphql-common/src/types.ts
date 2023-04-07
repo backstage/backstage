@@ -39,8 +39,6 @@ export type BatchLoadFn<Context extends GraphQLContext> = (
 /** @public */
 export interface GraphQLContext {
   application: Application;
-  encodeId: (obj: NodeId) => string;
-  decodeId: (id: string) => NodeId;
 }
 
 /** @public */
