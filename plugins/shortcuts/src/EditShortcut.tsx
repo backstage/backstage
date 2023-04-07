@@ -27,7 +27,7 @@ import { ShortcutForm } from './ShortcutForm';
 import { FormValues, Shortcut } from './types';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { ShortcutApi } from './api';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -59,8 +59,10 @@ export const EditShortcut = ({
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const open = Boolean(anchorEl);
+  const analytics = useAnalytics();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
+    analytics.captureEvent('click', `Clicked 'Save' in Edit Shortcut`);
     const newShortcut: Shortcut = {
       ...shortcut,
       url,
