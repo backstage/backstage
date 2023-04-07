@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { LinguistBackendApi } from './LinguistBackendApi';
+export { LinguistBackendClient } from './LinguistBackendClient';
+export type { LinguistBackendApi } from './LinguistBackendClient';

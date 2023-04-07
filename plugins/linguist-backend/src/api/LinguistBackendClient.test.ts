@@ -24,7 +24,7 @@ import { CatalogApi, GetEntitiesResponse } from '@backstage/catalog-client';
 import { Results } from 'linguist-js/dist/types';
 import { DateTime } from 'luxon';
 import { LinguistBackendStore } from '../db';
-import { kindOrDefault, LinguistBackendApi } from './LinguistBackendApi';
+import { kindOrDefault, LinguistBackendClient } from './LinguistBackendClient';
 import fs from 'fs-extra';
 import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
 
@@ -94,7 +94,7 @@ describe('Linguist backend API', () => {
 
   const tokenManager = ServerTokenManager.noop();
 
-  const api = new LinguistBackendApi(
+  const api = new LinguistBackendClient(
     logger,
     store,
     urlReader,
@@ -203,7 +203,7 @@ describe('Linguist backend API', () => {
   });
 
   it('should get entity overview with stale items', async () => {
-    const apiWithAge = new LinguistBackendApi(
+    const apiWithAge = new LinguistBackendClient(
       logger,
       store,
       urlReader,
@@ -326,7 +326,7 @@ describe('Linguist backend API', () => {
   });
 
   it('should generate languages for entities using defined batch size', async () => {
-    const apiWithBatchSize = new LinguistBackendApi(
+    const apiWithBatchSize = new LinguistBackendClient(
       logger,
       store,
       urlReader,

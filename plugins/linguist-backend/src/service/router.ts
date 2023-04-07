@@ -24,7 +24,7 @@ import {
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { LinguistBackendApi } from '../api';
+import { LinguistBackendApi, LinguistBackendClient } from '../api';
 import { LinguistBackendDatabase } from '../db';
 import {
   PluginTaskScheduler,
@@ -77,9 +77,9 @@ export async function createRouter(
 
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
-  const linguistBackendApi =
+  const linguistBackendClient =
     routerOptions.linguistBackendApi ||
-    new LinguistBackendApi(
+    new LinguistBackendClient(
       logger,
       linguistBackendStore,
       reader,
@@ -103,7 +103,7 @@ export async function createRouter(
       initialDelay: schedule.initialDelay,
       scope: schedule.scope,
       fn: async () => {
-        await linguistBackendApi.processEntities();
+        await linguistBackendClient.processEntities();
       },
     });
   }
@@ -125,7 +125,7 @@ export async function createRouter(
       throw new Error('No entityRef was provided');
     }
 
-    const entityLanguages = await linguistBackendApi.getEntityLanguages(
+    const entityLanguages = await linguistBackendClient.getEntityLanguages(
       entityRef as string,
     );
     res.status(200).json(entityLanguages);

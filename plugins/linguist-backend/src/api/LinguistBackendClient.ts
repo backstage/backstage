@@ -39,9 +39,16 @@ import {
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { HumanDuration } from '@backstage/types';
+import { Results } from 'linguist-js/dist/types';
 
 /** @public */
-export class LinguistBackendApi {
+export interface LinguistBackendApi {
+  getEntityLanguages(entityRef: string): Promise<Languages>;
+  processEntities(): Promise<void>;
+}
+
+/** @public */
+export class LinguistBackendClient implements LinguistBackendApi {
   private readonly logger: Logger;
   private readonly store: LinguistBackendStore;
   private readonly urlReader: UrlReader;
@@ -77,13 +84,13 @@ export class LinguistBackendApi {
     this.linguistJsOptions = linguistJsOptions;
   }
 
-  public async getEntityLanguages(entityRef: string): Promise<Languages> {
+  async getEntityLanguages(entityRef: string): Promise<Languages> {
     this.logger?.debug(`Getting languages for entity "${entityRef}"`);
 
     return this.store.getEntityResults(entityRef);
   }
 
-  public async processEntities() {
+  async processEntities(): Promise<void> {
     this.logger?.info('Updating list of entities');
 
     await this.addNewEntities();
@@ -93,7 +100,8 @@ export class LinguistBackendApi {
     await this.generateEntitiesLanguages();
   }
 
-  public async addNewEntities() {
+  /** @internal */
+  async addNewEntities(): Promise<void> {
     const annotationKey = this.useSourceLocation
       ? ANNOTATION_SOURCE_LOCATION
       : LINGUIST_ANNOTATION;
@@ -115,7 +123,8 @@ export class LinguistBackendApi {
     });
   }
 
-  public async generateEntitiesLanguages() {
+  /** @internal */
+  async generateEntitiesLanguages(): Promise<void> {
     const entitiesOverview = await this.getEntitiesOverview();
     this.logger?.info(
       `Entities overview: Entity: ${entitiesOverview.entityCount}, Processed: ${entitiesOverview.processedCount}, Pending: ${entitiesOverview.pendingCount}, Stale ${entitiesOverview.staleCount}`,
@@ -152,7 +161,8 @@ export class LinguistBackendApi {
     }
   }
 
-  public async getEntitiesOverview(): Promise<EntitiesOverview> {
+  /** @internal */
+  async getEntitiesOverview(): Promise<EntitiesOverview> {
     this.logger?.debug('Getting pending entities');
 
     const processedEntities = await this.store.getProcessedEntities();
@@ -178,7 +188,8 @@ export class LinguistBackendApi {
     return entitiesOverview;
   }
 
-  public async generateEntityLanguages(
+  /** @internal */
+  async generateEntityLanguages(
     entityRef: string,
     url: string,
   ): Promise<string> {
@@ -230,13 +241,14 @@ export class LinguistBackendApi {
     }
   }
 
-  public async getLinguistResults(dir: string) {
+  /** @internal */
+  async getLinguistResults(dir: string): Promise<Results> {
     const results = await linguist(dir, this.linguistJsOptions);
     return results;
   }
 }
 
-export function kindOrDefault(kind?: string[]) {
+export function kindOrDefault(kind?: string[]): string[] {
   if (!kind || kind.length === 0) {
     return ['API', 'Component', 'Template'];
   }

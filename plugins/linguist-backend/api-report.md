@@ -4,7 +4,6 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
-import { EntitiesOverview } from '@backstage/plugin-linguist-common';
 import { EntityResults } from '@backstage/plugin-linguist-common';
 import express from 'express';
 import { HumanDuration } from '@backstage/types';
@@ -15,7 +14,6 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ProcessedEntity } from '@backstage/plugin-linguist-common';
-import { Results } from 'linguist-js/dist/types';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -27,7 +25,15 @@ export function createRouter(
 ): Promise<express.Router>;
 
 // @public (undocumented)
-export class LinguistBackendApi {
+export interface LinguistBackendApi {
+  // (undocumented)
+  getEntityLanguages(entityRef: string): Promise<Languages>;
+  // (undocumented)
+  processEntities(): Promise<void>;
+}
+
+// @public (undocumented)
+export class LinguistBackendClient implements LinguistBackendApi {
   constructor(
     logger: Logger,
     store: LinguistBackendStore,
@@ -41,17 +47,7 @@ export class LinguistBackendApi {
     linguistJsOptions?: Record<string, unknown>,
   );
   // (undocumented)
-  addNewEntities(): Promise<void>;
-  // (undocumented)
-  generateEntitiesLanguages(): Promise<void>;
-  // (undocumented)
-  generateEntityLanguages(entityRef: string, url: string): Promise<string>;
-  // (undocumented)
-  getEntitiesOverview(): Promise<EntitiesOverview>;
-  // (undocumented)
   getEntityLanguages(entityRef: string): Promise<Languages>;
-  // (undocumented)
-  getLinguistResults(dir: string): Promise<Results>;
   // (undocumented)
   processEntities(): Promise<void>;
 }
