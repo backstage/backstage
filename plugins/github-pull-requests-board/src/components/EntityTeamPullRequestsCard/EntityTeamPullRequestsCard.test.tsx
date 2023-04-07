@@ -146,10 +146,6 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
 });
 
 describe('EntityTeamPullRequestsCard', () => {
-  it('should render', async () => {
-    await render(<EntityTeamPullRequestsCard />);
-  });
-
   describe('non-team PRs', () => {
     describe('non-draft PRs', () => {
       it('should show non-team PRs for un-archived repos when archived option is not checked', async () => {
