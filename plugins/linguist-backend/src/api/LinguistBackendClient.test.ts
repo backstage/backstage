@@ -79,6 +79,8 @@ describe('Linguist backend API', () => {
     getEntityResults: jest.fn(),
     getProcessedEntities: jest.fn(),
     getUnprocessedEntities: jest.fn(),
+    getAllEntities: jest.fn(),
+    deleteEntity: jest.fn(),
   };
 
   const urlReader: jest.Mocked<UrlReader> = {
@@ -140,7 +142,7 @@ describe('Linguist backend API', () => {
     });
   });
 
-  it('should add new entities', async () => {
+  it('should insert new entities', async () => {
     const testEntityListResponse: GetEntitiesResponse = {
       items: [
         {
@@ -170,6 +172,24 @@ describe('Linguist backend API', () => {
 
     await api.addNewEntities();
     expect(store.insertNewEntity).toHaveBeenCalledTimes(3);
+  });
+
+  it('should delete entities not in Catalog', async () => {
+    store.getAllEntities.mockResolvedValue([
+      'component:default/service-one',
+      'component:default/stale-service-two',
+    ]);
+
+    catalogApi.getEntityByRef.mockResolvedValueOnce({
+      apiVersion: 'backstage.io/v1beta1',
+      metadata: {
+        name: 'service-one',
+      },
+      kind: 'Component',
+    });
+
+    await api.cleanEntities();
+    expect(store.deleteEntity).toHaveBeenCalledTimes(1);
   });
 
   it('should get default entity overview', async () => {

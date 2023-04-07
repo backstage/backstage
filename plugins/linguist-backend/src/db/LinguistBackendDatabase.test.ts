@@ -170,14 +170,31 @@ describe('Linguist database', () => {
   });
 
   it('should insert new entities and ignore duplicates', async () => {
-    const before = testDbClient.count('entity_result');
+    const before = testDbClient.from('entity_result').count();
 
     await store.insertNewEntity('component:/default/new-entity-one');
     await store.insertNewEntity('component:/default/new-entity-two');
     await store.insertNewEntity('template:default/pull-request');
 
-    const after = testDbClient.count('entity_result');
+    const after = testDbClient.from('entity_result').count();
 
     expect(before).toEqual(after);
+  });
+
+  it('should get all entities', async () => {
+    const allEntities = await store.getAllEntities();
+
+    expect(allEntities.length).toEqual(5);
+  });
+
+  it('should delete entity by its entityRef', async () => {
+    const before = await testDbClient.from('entity_result').count();
+
+    await store.deleteEntity('template:default/create-react-app-template');
+
+    const after = await testDbClient.from('entity_result').count();
+
+    expect(before).toEqual([{ 'count(*)': 5 }]);
+    expect(after).toEqual([{ 'count(*)': 4 }]);
   });
 });

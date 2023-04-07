@@ -58,6 +58,10 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
   // (undocumented)
   static create(knex: Knex): Promise<LinguistBackendStore>;
   // (undocumented)
+  deleteEntity(entityRef: string): Promise<void>;
+  // (undocumented)
+  getAllEntities(): Promise<string[]>;
+  // (undocumented)
   getEntityResults(entityRef: string): Promise<Languages>;
   // (undocumented)
   getProcessedEntities(): Promise<ProcessedEntity[]>;
@@ -71,6 +75,10 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
 
 // @public (undocumented)
 export interface LinguistBackendStore {
+  // (undocumented)
+  deleteEntity(entityRef: string): Promise<void>;
+  // (undocumented)
+  getAllEntities(): Promise<string[]>;
   // (undocumented)
   getEntityResults(entityRef: string): Promise<Languages>;
   // (undocumented)

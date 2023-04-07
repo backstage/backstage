@@ -92,11 +92,12 @@ export class LinguistBackendClient implements LinguistBackendApi {
 
   async processEntities(): Promise<void> {
     this.logger?.info('Updating list of entities');
-
     await this.addNewEntities();
 
-    this.logger?.info('Processing applicable entities through Linguist');
+    this.logger?.info('Cleaning list of entities');
+    await this.cleanEntities();
 
+    this.logger?.info('Processing applicable entities through Linguist');
     await this.generateEntitiesLanguages();
   }
 
@@ -121,6 +122,23 @@ export class LinguistBackendClient implements LinguistBackendApi {
       const entityRef = stringifyEntityRef(entity);
       this.store.insertNewEntity(entityRef);
     });
+  }
+
+  /** @internal */
+  async cleanEntities(): Promise<void> {
+    this.logger?.info('Cleaning entities in Linguist queue');
+    const allEntities = await this.store.getAllEntities();
+
+    for (const entityRef of allEntities) {
+      const result = await this.catalogApi.getEntityByRef(entityRef);
+
+      if (!result) {
+        this.logger?.info(
+          `Entity ${entityRef} was not found in the Catalog, it will be deleted`,
+        );
+        await this.store.deleteEntity(entityRef);
+      }
+    }
   }
 
   /** @internal */

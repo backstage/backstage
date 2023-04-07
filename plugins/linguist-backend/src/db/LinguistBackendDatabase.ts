@@ -37,6 +37,8 @@ export interface LinguistBackendStore {
   getEntityResults(entityRef: string): Promise<Languages>;
   getProcessedEntities(): Promise<ProcessedEntity[]>;
   getUnprocessedEntities(): Promise<string[]>;
+  getAllEntities(): Promise<string[]>;
+  deleteEntity(entityRef: string): Promise<void>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -157,5 +159,25 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     });
 
     return unprocessedEntities;
+  }
+
+  async getAllEntities(): Promise<string[]> {
+    const rawEntities = await this.db<RawDbEntityResultRow>('entity_result');
+
+    if (!rawEntities) {
+      return [];
+    }
+
+    const allEntities = rawEntities.map(rawEntity => {
+      return rawEntity.entity_ref;
+    });
+
+    return allEntities;
+  }
+
+  async deleteEntity(entityRef: string): Promise<void> {
+    await this.db<RawDbEntityResultRow>('entity_result')
+      .where('entity_ref', entityRef)
+      .delete();
   }
 }
