@@ -26,6 +26,7 @@ import {
   isUnionType,
 } from 'graphql';
 import { DirectiveMapperAPI, NamedType, ResolverContext } from './types';
+import { decodeId } from './helpers';
 
 function isRelatedType(
   resolvedType: GraphQLObjectType,
@@ -207,7 +208,7 @@ function defineResolver(
   return async (source, context, info, _abstractType) => {
     const { schema } = info;
     const { id } = source;
-    const { loader, decodeId } = context;
+    const { loader } = context;
     const { typename: sourceTypename } = decodeId(id);
     const sourceType = schema.getType(sourceTypename);
 

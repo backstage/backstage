@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NodeId } from './types';
 
-export * from './createLoader';
-export * from './createGraphQLApp';
-export * from './core';
-export * from './helpers';
-export { transformSchema } from './transformSchema';
-export { createDirectiveMapperProvider } from './mapperProvider';
-export type {
-  GraphQLContext,
-  ResolverContext,
-  FieldDirectiveMapper,
-  DirectiveMapperAPI,
-  BatchLoadFn,
-  OmitFirst,
-  NodeId,
-} from './types';
+/** @public */
+export function encodeId({ source, typename, ref }: NodeId): string {
+  return `${typename}@${source}@${ref}`;
+}
+
+/** @public */
+export function decodeId(id: string): NodeId {
+  const [typename, source, ...ref] = id.split('@');
+  return { typename, source, ref: ref.join('@') };
+}

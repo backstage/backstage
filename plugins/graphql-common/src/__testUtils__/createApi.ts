@@ -30,10 +30,6 @@ export async function createGraphQLAPI(
   loader: (context: GraphQLContext) => DataLoader<any, any>,
   generateOpaqueTypes?: boolean,
 ) {
-  const context = {
-    encodeId: (x: unknown) => JSON.stringify(x),
-    decodeId: (x: string) => JSON.parse(x),
-  };
   const application = await createGraphQLApp({
     modules: [TestModule],
     generateOpaqueTypes,
@@ -54,7 +50,7 @@ export async function createGraphQLAPI(
     if (errors.length) {
       throw errors[0];
     }
-    const contextValue = await contextFactory(context);
+    const contextValue = await contextFactory();
 
     const result = await execute({
       schema: application.schema,

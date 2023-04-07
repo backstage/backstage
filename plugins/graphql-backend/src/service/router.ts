@@ -24,7 +24,6 @@ import {
   createGraphQLApp,
   GraphQLContext,
   BatchLoadFn,
-  NodeId,
   Core,
 } from '@backstage/plugin-graphql-common';
 import {
@@ -82,11 +81,7 @@ export async function createRouter<TContext extends Record<string, any>>({
     generateOpaqueTypes,
     schema,
   });
-  const initialContext: GraphQLContext = {
-    application,
-    encodeId: (x: NodeId) => JSON.stringify(x),
-    decodeId: (x: string): NodeId => JSON.parse(x),
-  };
+  const initialContext: GraphQLContext = { application };
   const context = async (yogaContext: Record<string, any>) => ({
     ...yogaContext,
     ...initialContext,

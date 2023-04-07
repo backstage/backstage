@@ -36,6 +36,7 @@ import {
 import {
   DirectiveMapperAPI,
   ResolverContext,
+  encodeId,
 } from '@backstage/plugin-graphql-common';
 import { CATALOG_SOURCE } from './constants';
 
@@ -210,7 +211,7 @@ export function relationDirectiveMapper(
     });
     field.args = fieldArgs;
 
-    field.resolve = async ({ id }, args, { loader, encodeId }) => {
+    field.resolve = async ({ id }, args, { loader }) => {
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
@@ -228,7 +229,7 @@ export function relationDirectiveMapper(
       };
     };
   } else {
-    field.resolve = async ({ id }, _, { loader, encodeId }) => {
+    field.resolve = async ({ id }, _, { loader }) => {
       const ids = filterEntityRefs(
         await loader.load(id),
         directive.name,
