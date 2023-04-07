@@ -7,6 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -81,6 +82,51 @@ export type BadgeSpec = {
   markdown: string;
 };
 
+// @public
+export interface BadgesStore {
+  // (undocumented)
+  countAllBadges(): Promise<number>;
+  // (undocumented)
+  createAllBadges(
+    entities: GetEntitiesResponse,
+    salt: string | undefined,
+  ): Promise<void>;
+  // (undocumented)
+  deleteObsoleteHashes(
+    entities: GetEntitiesResponse,
+    salt: string | undefined,
+  ): Promise<void>;
+  // (undocumented)
+  getAllBadges(): Promise<
+    {
+      name: string;
+      namespace: string;
+      kind: string;
+      hash: string;
+    }[]
+  >;
+  // (undocumented)
+  getBadgeFromHash(hash: string): Promise<
+    | {
+        name: string;
+        namespace: string;
+        kind: string;
+      }
+    | undefined
+  >;
+  // (undocumented)
+  getHashFromEntityMetadata(
+    name: string,
+    namespace: string,
+    kind: string,
+  ): Promise<
+    | {
+        hash: string;
+      }
+    | undefined
+  >;
+}
+
 // @public (undocumented)
 export type BadgeStyle = (typeof BADGE_STYLES)[number];
 
@@ -113,6 +159,8 @@ export interface RouterOptions {
   catalog?: CatalogApi;
   // (undocumented)
   config: Config;
+  // (undocumented)
+  db: BadgesStore;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)

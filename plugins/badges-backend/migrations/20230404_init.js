@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage backend plugin that generates README badges for your entities
- *
- * @packageDocumentation
- */
+exports.up = async function up(knex) {
+  await knex.schema.createTable('badges', table => {
+    table.string('kind').notNullable();
+    table.string('namespace').notNullable();
+    table.string('name').notNullable();
+    table
+      .string('hash')
+      .unique()
+      .comment(
+        'Hash is calculated from the SHA256 of badge kind, namespace, name, and applications salt',
+      )
+      .notNullable();
+    table.index(['hash'], 'badges_hash_index');
+    table.primary(['hash']);
+  });
+};
 
-export * from './badges';
-export * from './lib';
-export * from './service/router';
-export * from './types';
-export * from './database/badgesStore';
+exports.down = async function down(knex) {
+  await knex.schema.dropTable('badges');
+};

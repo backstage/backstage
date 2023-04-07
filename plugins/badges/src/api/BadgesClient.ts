@@ -18,30 +18,26 @@ import { generatePath } from 'react-router-dom';
 import { ResponseError } from '@backstage/errors';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { BadgesApi, BadgeSpec } from './types';
-import {
-  ConfigApi,
-  DiscoveryApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class BadgesClient implements BadgesApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
   private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
     this.configApi = options.configApi;
   }
 
   static fromConfig(options: {
+    fetchApi: FetchApi;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
     configApi: ConfigApi;
   }) {
     return new BadgesClient(options);
@@ -49,9 +45,7 @@ export class BadgesClient implements BadgesApi {
 
   public async getEntityBadgeSpecs(entity: Entity): Promise<BadgeSpec[]> {
     // Check if obfuscation is enabled in the configuration
-    const obfuscate =
-      this.configApi.getOptionalBoolean('app.badges.obfuscate') ?? false;
-    const { token } = await this.identityApi.getCredentials();
+    const obfuscate = this.configApi.getOptionalBoolean('app.badges.obfuscate');
 
     // If obfuscation is enabled, get the hash of the entity and use that to get the badge specs
     if (obfuscate) {
@@ -63,13 +57,7 @@ export class BadgesClient implements BadgesApi {
         entityHash,
       );
 
-      const response = await fetch(entityHashedBadgeSpecsUrl, {
-        headers: token
-          ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : undefined,
-      });
+      const response = await this.fetchApi.fetch(entityHashedBadgeSpecsUrl);
       if (!response.ok) {
         throw await ResponseError.fromResponse(response);
       }
@@ -79,13 +67,7 @@ export class BadgesClient implements BadgesApi {
 
     // If obfuscation is disabled, get the badge specs directly as the previous implementation
     const entityBadgeSpecsUrl = await this.getEntityBadgeSpecsUrl(entity);
-    const response = await fetch(entityBadgeSpecsUrl, {
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
-    });
+    const response = await this.fetchApi.fetch(entityBadgeSpecsUrl);
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
@@ -105,15 +87,7 @@ export class BadgesClient implements BadgesApi {
 
   // This function is used to get the hash of an entity when obfuscation is enabled. It's calling the badges backend to get the hash
   private async getEntityHash(entityHashUrl: string): Promise<any> {
-    const { token: idToken } = await this.identityApi.getCredentials();
-
-    const responseEntityHash = await fetch(entityHashUrl, {
-      headers: idToken
-        ? {
-            Authorization: `Bearer ${idToken}`,
-          }
-        : undefined,
-    });
+    const responseEntityHash = await this.fetchApi.fetch(entityHashUrl);
 
     if (!responseEntityHash.ok) {
       throw await ResponseError.fromResponse(responseEntityHash);

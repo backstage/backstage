@@ -32,12 +32,18 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  const db = await DatabaseBadgesStore.create({
+    database: env.database,
+  });
+
   return await createRouter({
     config: env.config,
     discovery: env.discovery,
     badgeFactories: createDefaultBadgeFactories(),
     tokenManager: env.tokenManager,
     logger: env.logger,
+    identity: env.identity,
+    db: db,
   });
 }
 ```
@@ -123,8 +129,10 @@ To enable the obfuscation you need to activate the `obfuscation` feature in the 
 ```yaml
 app:
   badges:
-    obfuscate: 'true'
+    obfuscate: true
 ```
+
+> Note that you cannot use env vars to set the `obfuscate` value. It must be a boolean value and env vars are always strings.
 
 Also you need to provide the [salt](<https://en.wikipedia.org/wiki/Salt_(cryptography)>) in the `app-config.yaml`:
 
@@ -132,7 +140,7 @@ Also you need to provide the [salt](<https://en.wikipedia.org/wiki/Salt_(cryptog
 custom:
   badges-backend:
     salt: <your-salt> # required
-    cacheTimeToLive: 10 # minutes (optional)
+    cacheTimeToLive: 60 # minutes (optional)
 ```
 
 Any string can be used as a salt, but it's recommended to use a long random string to increase entropy. You can generate a random string using the following command:
@@ -148,7 +156,7 @@ openssl rand -hex 32
 The badges backend api exposes two main endpoints for entity badges. The
 `/badges` prefix is arbitrary, and the default for the example backend.
 
-### If obfuscation is disabled (default or apps.badges.obfuscate: "false")
+### If obfuscation is disabled (default or apps.badges.obfuscate: false)
 
 - `/badges/entity/:namespace/:kind/:name/badge-specs` List all defined badges
   for a particular entity, in json format. See
@@ -159,7 +167,7 @@ The badges backend api exposes two main endpoints for entity badges. The
   an SVG image. If the `accept` request header prefers `application/json` the
   badge spec as JSON will be returned instead of the image.
 
-### If obfuscation is enabled (apps.badges.obfuscate: "true")
+### If obfuscation is enabled (apps.badges.obfuscate: true)
 
 - `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated entity
   hash from name, namespace, kind.

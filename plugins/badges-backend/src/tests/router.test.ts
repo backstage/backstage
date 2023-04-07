@@ -31,6 +31,7 @@ import {
   BackstageIdentityResponse,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { BadgesStore } from '../database/badgesStore';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -73,6 +74,15 @@ describe('createRouter', () => {
     markdown: '[![...](...)]',
   };
 
+  const badgeStore: jest.Mocked<BadgesStore> = {
+    createAllBadges: jest.fn(),
+    getBadgeFromHash: jest.fn(),
+    getHashFromEntityMetadata: jest.fn(),
+    deleteObsoleteHashes: jest.fn(),
+    countAllBadges: jest.fn(),
+    getAllBadges: jest.fn(),
+  };
+
   beforeAll(async () => {
     badgeBuilder = {
       getBadges: jest.fn(),
@@ -113,6 +123,7 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      db: badgeStore,
     });
     app = express().use(router);
   });
@@ -131,6 +142,7 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      db: badgeStore,
     });
     expect(router).toBeDefined();
   });

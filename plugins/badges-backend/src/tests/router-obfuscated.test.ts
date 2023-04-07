@@ -31,10 +31,16 @@ import {
   BackstageIdentityResponse,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { BadgesStore } from '../database/badgesStore';
+import crypto from 'crypto';
 
 describe('createRouter', () => {
   let app: express.Express;
-  let badgeBuilder: jest.Mocked<BadgeBuilder>;
+  const badgeBuilder: jest.Mocked<BadgeBuilder> = {
+    getBadges: jest.fn(),
+    createBadgeJson: jest.fn(),
+    createBadgeSvg: jest.fn(),
+  };
 
   const catalog = {
     addLocation: jest.fn(),
@@ -49,10 +55,46 @@ describe('createRouter', () => {
     getEntityFacets: jest.fn(),
     validateEntity: jest.fn(),
   };
-  let config: Config;
-  let discovery: PluginEndpointDiscovery;
+  const getIdentity = jest
+    .fn()
+    .mockImplementation(
+      async ({
+        request: _request,
+      }: IdentityApiGetIdentityRequest): Promise<
+        BackstageIdentityResponse | undefined
+      > => {
+        return {
+          identity: {
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: [],
+            type: 'user',
+          },
+          token: 'token',
+        };
+      },
+    );
 
-  const getIdentity = jest.fn();
+  const config: Config = new ConfigReader({
+    backend: {
+      baseUrl: 'http://127.0.0.1',
+      listen: {
+        port: 7007,
+      },
+    },
+    app: {
+      badges: {
+        obfuscate: true,
+      },
+    },
+    custom: {
+      'badges-backend': {
+        salt: 'random-string',
+        cacheTimeToLive: '60',
+      },
+    },
+  });
+
+  let discovery: PluginEndpointDiscovery;
 
   const entity: Entity = {
     apiVersion: 'v1',
@@ -83,49 +125,47 @@ describe('createRouter', () => {
     markdown: '[![...](...)]',
   };
 
+  const badgeEntity = {
+    name: 'test',
+    namespace: 'default',
+    kind: 'component',
+  };
+
+  const badgeEntities = [
+    {
+      hash: 'hash1',
+      name: 'test',
+      namespace: 'default',
+      kind: 'component',
+    },
+    {
+      hash: 'hash2',
+      name: 'test2',
+      namespace: 'default',
+      kind: 'component',
+    },
+  ];
+
+  const badgeStore: jest.Mocked<BadgesStore> = {
+    createAllBadges: jest.fn(),
+    getBadgeFromHash: jest.fn().mockImplementation(async () => {
+      return badgeEntity;
+    }),
+    getHashFromEntityMetadata: jest
+      .fn()
+      .mockImplementation(async () => 'niceHash'),
+    deleteObsoleteHashes: jest.fn(),
+    countAllBadges: jest.fn().mockImplementation(async () => 4),
+    getAllBadges: jest.fn().mockImplementation(async () => badgeEntities),
+  };
+
+  const salt = config.getString('custom.badges-backend.salt');
+  const entityHash = crypto
+    .createHash('sha256')
+    .update(`component:default:test:${salt}`)
+    .digest('hex');
+
   beforeAll(async () => {
-    getIdentity.mockImplementation(
-      async ({
-        request: _request,
-      }: IdentityApiGetIdentityRequest): Promise<
-        BackstageIdentityResponse | undefined
-      > => {
-        return {
-          identity: {
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: [],
-            type: 'user',
-          },
-          token: 'token',
-        };
-      },
-    );
-
-    badgeBuilder = {
-      getBadges: jest.fn(),
-      createBadgeJson: jest.fn(),
-      createBadgeSvg: jest.fn(),
-    };
-    config = new ConfigReader({
-      backend: {
-        baseUrl: 'http://127.0.0.1',
-        listen: {
-          port: 7007,
-        },
-      },
-      app: {
-        badges: {
-          obfuscate: true,
-        },
-      },
-      custom: {
-        'badges-backend': {
-          salt: 'random-string',
-          cacheTimeToLive: '60',
-        },
-      },
-    });
-
     discovery = SingleHostDiscovery.fromConfig(config);
     const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
@@ -136,12 +176,13 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      db: badgeStore,
     });
     app = express().use(router);
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('works', async () => {
@@ -154,6 +195,7 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      db: badgeStore,
     });
     expect(router).toBeDefined();
   });
@@ -206,9 +248,7 @@ describe('createRouter', () => {
       badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
       badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
 
-      const response = await request(app).get(
-        '/entity/3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed/badge-specs',
-      );
+      const response = await request(app).get(`/entity/hash1/badge-specs`);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([badge]);
 
@@ -228,7 +268,7 @@ describe('createRouter', () => {
         badgeInfo: { id: badge.id },
         context: {
           badgeUrl: expect.stringMatching(
-            /http:\/\/127.0.0.1\/api\/badges\/entity\/3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed\/test-badge/,
+            /http:\/\/127.0.0.1\/api\/badges\/entity\/hash1\/test-badge/,
           ),
           config,
           entity,
@@ -293,6 +333,9 @@ describe('createRouter', () => {
   describe('GET /entity/:namespace/:kind/:name/obfuscated', () => {
     catalog.getEntityByRef.mockResolvedValueOnce(entity);
     catalog.getEntities.mockResolvedValueOnce({ items: entities });
+    badgeStore.getHashFromEntityMetadata.mockResolvedValue({
+      hash: entityHash,
+    });
 
     it('returns obfuscated entity', async () => {
       const obfuscatedEntity = await request(app)
@@ -301,7 +344,7 @@ describe('createRouter', () => {
       expect(obfuscatedEntity.status).toEqual(200);
       // echo -n  "component:default:test:random-string" | openssl dgst -sha256
       expect(obfuscatedEntity.body).toEqual({
-        hash: '3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed',
+        hash: entityHash,
       });
     });
 
@@ -315,6 +358,7 @@ describe('createRouter', () => {
 
   describe('Errors', () => {
     it('returns 404 for unknown entity hash', async () => {
+      badgeStore.getBadgeFromHash.mockResolvedValue(undefined);
       catalog.getEntityByRef.mockResolvedValueOnce(entity);
       catalog.getEntities.mockResolvedValueOnce({ items: entities });
       badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);

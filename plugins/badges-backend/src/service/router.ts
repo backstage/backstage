@@ -26,11 +26,13 @@ import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
-import { isEmpty, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import crypto from 'crypto';
 import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import type { BadgesStore } from '../database/badgesStore';
+
 /** @public */
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
@@ -41,6 +43,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   logger: Logger;
   identity: IdentityApi;
+  db: BadgesStore;
 }
 
 /** @public */
@@ -54,38 +57,46 @@ export async function createRouter(
     new DefaultBadgeBuilder(options.badgeFactories || {});
   const router = Router();
 
-  const tokenManager = options.tokenManager;
-  let lookupTable: Map<
-    string,
-    {
-      name: string;
-      namespace: string;
-      kind: string;
-      creationDate: number;
-    }
-  > = new Map();
+  const { db, config, logger, tokenManager, discovery, identity } = options;
+  const baseUrl = await discovery.getExternalBaseUrl('badges');
+  const salt = config.getOptionalString('custom.badges-backend.salt');
+  const cacheTimeToLive =
+    config.getOptionalNumber('badgeDatabaseRefreshCacheTimeToLive') ?? 3600;
+
+  let lastDatabaseRefresh = 0;
 
   // Check if the users have enabled the obfuscation of the entity name
-  const obfuscate: boolean =
-    options.config.getOptionalBoolean('app.badges.obfuscate') ?? false;
+  if (config.getOptionalBoolean('app.badges.obfuscate')) {
+    logger.info('Badges obfuscation is enabled');
 
-  if (obfuscate) {
-    options.logger.info('Badges obfuscation is enabled');
+    if (isNil(salt)) {
+      throw new Error(
+        'Badges obfuscation is enabled but no salt has been provided',
+      );
+    }
 
     // Use the generated hash instead of the triplet namespace/kind/name
     router.get('/entity/:entityHash/badge-specs', async (req, res) => {
       const { entityHash } = req.params;
 
-      if (isLookupTableToRefresh(lookupTable)) {
-        lookupTable = await generateHashLookupTable();
+      // Chech if the database needs to be refreshed
+      if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
+        lastDatabaseRefresh = await refreshBadgeDatabase();
       }
-      // Try to match the queried hash with a key in the lookup table
-      const entityInfo = await getEntityInfoFromLookupTable(entityHash);
+
+      // Retrieve the badge info from the database
+      const badgeInfos = await db.getBadgeFromHash(entityHash);
+
+      if (isNil(badgeInfos)) {
+        throw new NotFoundError(
+          `No badge found for entity hash "${entityHash}"`,
+        );
+      }
 
       // If a mapping is found, map name, namespace and kind
-      const name = entityInfo.name;
-      const namespace = entityInfo.namespace;
-      const kind = entityInfo.kind;
+      const name = badgeInfos.name;
+      const namespace = badgeInfos.namespace;
+      const kind = badgeInfos.kind;
       const token = await tokenManager.getToken();
 
       // Query the catalog with the name, namespace, kind to get the entity informations
@@ -107,13 +118,8 @@ export async function createRouter(
       const specs = [];
       for (const badgeInfo of await badgeBuilder.getBadges()) {
         const context: BadgeContext = {
-          badgeUrl: await getBadgeObfuscatedUrl(
-            namespace,
-            kind,
-            name,
-            badgeInfo.id,
-          ),
-          config: options.config,
+          badgeUrl: await getBadgeObfuscatedUrl(entityHash, badgeInfo.id),
+          config: config,
           entity,
         };
 
@@ -129,19 +135,25 @@ export async function createRouter(
 
     // Use the generated hash instead of the triplet namespace/kind/name
     router.get('/entity/:entityHash/:badgeId', async (req, res) => {
-      const { entityHash, badgeId } = req.params;
-
-      if (isLookupTableToRefresh(lookupTable)) {
-        lookupTable = await generateHashLookupTable();
+      if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
+        lastDatabaseRefresh = await refreshBadgeDatabase();
       }
 
-      // Try to match the queried hash with a key in the lookup table
-      const entityInfo = await getEntityInfoFromLookupTable(entityHash);
+      const { entityHash, badgeId } = req.params;
+
+      // Retrieve the badge info from the database
+      const badgeInfo = await db.getBadgeFromHash(entityHash);
+
+      if (isNil(badgeInfo)) {
+        throw new NotFoundError(
+          `No badge found for entity hash "${entityHash}"`,
+        );
+      }
 
       // If a mapping is found, map name, namespace and kind
-      const name = entityInfo.name;
-      const namespace = entityInfo.namespace;
-      const kind = entityInfo.kind;
+      const name = badgeInfo.name;
+      const namespace = badgeInfo.namespace;
+      const kind = badgeInfo.kind;
       const token = await tokenManager.getToken();
       const entity = await catalog.getEntityByRef(
         {
@@ -168,8 +180,8 @@ export async function createRouter(
       const badgeOptions = {
         badgeInfo: { id: badgeId },
         context: {
-          badgeUrl: await getBadgeObfuscatedUrl(namespace, kind, name, badgeId),
-          config: options.config,
+          badgeUrl: await getBadgeObfuscatedUrl(entityHash, badgeId),
+          config: config,
           entity,
         },
       };
@@ -203,22 +215,42 @@ export async function createRouter(
         }
 
         try {
-          req.user = options.identity.getIdentity({ request: req });
+          req.user = identity.getIdentity({ request: req });
           next();
         } catch (error) {
-          options.tokenManager.authenticate(token.toString());
+          tokenManager.authenticate(token.toString());
           next(error);
         }
       },
       async (req, res) => {
+        if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
+          lastDatabaseRefresh = await refreshBadgeDatabase();
+        }
+
         const { namespace, kind, name } = req.params;
-        const salt = options.config.getString('custom.badges-backend.salt');
-        const hash = crypto
+        const storedEntityHash: { hash: string } | undefined =
+          await db.getHashFromEntityMetadata(name, namespace, kind);
+
+        if (isNil(storedEntityHash)) {
+          throw new NotFoundError(
+            `No hash found for entity "${namespace}/${kind}/${name}"`,
+          );
+        }
+
+        // Compare a live calculated hash with the stored one to avoid returning an obsolete entityHash (in case of a salt change)
+
+        const liveHash = crypto
           .createHash('sha256')
           .update(`${kind}:${namespace}:${name}:${salt}`)
           .digest('hex');
 
-        return res.status(200).json({ hash });
+        if (storedEntityHash.hash !== liveHash) {
+          throw new NotFoundError(
+            "Stored Hash and live Hash don't match, did you change the salt? Try to refresh the badge database table and try again",
+          );
+        }
+
+        return res.status(200).json(storedEntityHash);
       },
     );
 
@@ -248,7 +280,7 @@ export async function createRouter(
         for (const badgeInfo of await badgeBuilder.getBadges()) {
           const context: BadgeContext = {
             badgeUrl: await getBadgeUrl(namespace, kind, name, badgeInfo.id),
-            config: options.config,
+            config: config,
             entity,
           };
 
@@ -288,7 +320,7 @@ export async function createRouter(
           badgeInfo: { id: badgeId },
           context: {
             badgeUrl: await getBadgeUrl(namespace, kind, name, badgeId),
-            config: options.config,
+            config: config,
             entity,
           },
         };
@@ -314,117 +346,11 @@ export async function createRouter(
     return router;
   }
 
-  // This function generate a table that maps the hash to the namespace/kind/name triplet
-  async function generateHashLookupTable() {
-    const logger = options.logger.child({ service: 'badges-backend' });
-    const generationStartTimestamp = Date.now();
-    logger.info('Start Generating lookup table');
-    const token = await options.tokenManager.getToken();
-
-    // The salt is used to increase the hash entropy
-    const salt = options.config.getString('custom.badges-backend.salt');
-
-    // Get all the entities in the catalog of kind "Component"
-    const entitiesList = await catalog.getEntities(
-      {
-        filter: {
-          kind: 'Component',
-        },
-      },
-      token,
-    );
-    if (isEmpty(entitiesList)) {
-      throw new NotFoundError(`No entities found`);
-    }
-
-    // For each entity, generate the hash with the triplet kind:namespace:name then add the salt. Finally add it to the lookup table
-    entitiesList.items.map(async entity => {
-      const name = entity.metadata.name.toLocaleLowerCase();
-      const creationDate: number = Date.now();
-      const namespace =
-        entity.metadata.namespace?.toLocaleLowerCase() ?? 'default';
-      const kind = entity.kind.toLocaleLowerCase();
-      const hash = crypto
-        .createHash('sha256')
-        .update(`${kind}:${namespace}:${name}:${salt}`)
-        .digest('hex');
-
-      lookupTable.set(hash, { name, namespace, kind, creationDate });
-
-      return lookupTable;
-    });
-
-    // Monitor the lookup generation time and log it
-    logger.info(
-      `Finished generating lookup table in ${
-        Date.now() - generationStartTimestamp
-      } ms`,
-    );
-    // Monitor the lookup table size in byte
-    logger.info(`Lookup table size: ${lookupTable.size} entries`);
-
-    return lookupTable;
-  }
-
-  // This function check if the lookup table is empty or if it is expired (based on the cacheTimeToLive config) and need to be refreshed
-  function isLookupTableToRefresh(
-    table: Map<
-      string,
-      {
-        name: string;
-        namespace: string;
-        kind: string;
-        creationDate: number;
-      }
-    >,
-  ): boolean {
-    const lookupTableLength = table.size;
-
-    if (lookupTableLength === 0) {
-      return true;
-    }
-
-    const now = Date.now();
-    const cacheTimeToLive =
-      options.config.getOptionalNumber(
-        'custom.badges-backend.cacheTimeToLive',
-      ) ?? 10 * 60 * 1000;
-
-    const valuesArray = Array.from(table.values());
-    const lastEntry = valuesArray[valuesArray.length - 1];
-    const lastCreationDate = lastEntry.creationDate;
-
-    return lastCreationDate + cacheTimeToLive < now;
-  }
-
-  // This function return the namespace/kind/name triplet from the lookup table based on the hash
-  async function getEntityInfoFromLookupTable(
-    entityHash: string,
-  ): Promise<{ name: string; namespace: string; kind: string }> {
-    if (lookupTable.get(entityHash) === undefined) {
-      throw new NotFoundError(`No entity with hash "${entityHash}"`);
-    }
-
-    const name = lookupTable.get(entityHash)!.name;
-    const namespace = lookupTable.get(entityHash)!.namespace;
-    const kind = lookupTable.get(entityHash)!.kind;
-
-    return { name, namespace, kind };
-  }
-
   // This function return the obfuscated badge url based on the namespace/kind/name triplet
   async function getBadgeObfuscatedUrl(
-    namespace: string,
-    kind: string,
-    name: string,
+    hash: string,
     badgeId: string,
   ): Promise<string> {
-    const baseUrl = await options.discovery.getExternalBaseUrl('badges');
-    const salt = options.config.getString('custom.badges-backend.salt');
-    const hash = crypto
-      .createHash('sha256')
-      .update(`${kind}:${namespace}:${name}:${salt}`)
-      .digest('hex');
     return `${baseUrl}/entity/${hash}/${badgeId}`;
   }
 
@@ -435,7 +361,47 @@ export async function createRouter(
     name: string,
     badgeId: string,
   ): Promise<string> {
-    const baseUrl = await options.discovery.getExternalBaseUrl('badges');
     return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
+  }
+
+  async function isBadgeDatabaseRefreshNeeded(
+    lastDatabaseRefreshTimestamp: number,
+  ): Promise<boolean> {
+    if ((await db.countAllBadges()) === 0) {
+      logger.info('Badge database is empty, refreshing it');
+      return true;
+    }
+
+    if (
+      lastDatabaseRefreshTimestamp === 0 ||
+      Date.now() - lastDatabaseRefreshTimestamp > cacheTimeToLive * 1000
+    ) {
+      logger.info(
+        'Badge database refresh cache to live exceeded, refreshing it',
+      );
+      return true;
+    }
+
+    return false;
+  }
+
+  async function refreshBadgeDatabase(): Promise<number> {
+    const token = await tokenManager.getToken();
+    const entities = await catalog.getEntities(
+      {
+        filter: {
+          kind: ['Component'],
+        },
+      },
+      token,
+    );
+    logger.info(
+      `Refreshing badge database with ${entities.items.length} entities`,
+    );
+    await db.createAllBadges(entities, salt);
+    logger.info('Badge database refreshed, deleting obsolete hashes');
+    await db.deleteObsoleteHashes(entities, salt);
+
+    return Date.now();
   }
 }
