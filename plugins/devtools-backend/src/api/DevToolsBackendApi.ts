@@ -15,11 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import {
-  ConfigTarget,
-  loadConfig,
-  loadConfigSchema,
-} from '@backstage/config-loader';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   PackageDependency,
   DevToolsInfo,
@@ -28,14 +24,12 @@ import {
   ExternalDependencyStatus,
 } from '@backstage/plugin-devtools-common';
 
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
-import parseArgs from 'minimist';
 import ping from 'ping';
-import { resolve as resolvePath } from 'path';
 import os from 'os';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
@@ -149,14 +143,6 @@ export class DevToolsBackendApi {
   }
 
   public async listConfig(): Promise<JsonValue> {
-    const args = parseArgs(process.argv);
-
-    const configTargets: ConfigTarget[] = [args.config ?? []]
-      .flat()
-      .map(arg =>
-        isValidUrl(arg) ? { url: arg } : { path: resolvePath(arg) },
-      );
-
     /* eslint-disable-next-line no-restricted-syntax */
     const paths = findPaths(__dirname);
 
@@ -170,12 +156,10 @@ export class DevToolsBackendApi {
     const schemaMemo = memoize(schemaFunc);
     const schema = await schemaMemo();
 
-    const { appConfigs } = await loadConfig({
-      configRoot: paths.targetRoot,
-      configTargets: configTargets,
-    });
+    const config = { data: this.config.get() as JsonObject, context: 'inline' };
 
-    const sanitizedConfigs = schema.process(appConfigs, {
+    const sanitizedConfigs = schema.process([config], {
+      ignoreSchemaErrors: true,
       valueTransform: (value, context) =>
         context.visibility === 'secret' ? '<secret>' : value,
     });
