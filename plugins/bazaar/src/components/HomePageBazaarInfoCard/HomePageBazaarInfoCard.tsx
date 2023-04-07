@@ -203,7 +203,8 @@ export const HomePageBazaarInfoCard = ({
       icon: <Description />,
       href: bazaarProject.value?.docs,
       disabled:
-        bazaarProject.value?.docs === null || bazaarProject.value?.docs === '',
+        bazaarProject.value?.docs === undefined ||
+        bazaarProject.value?.docs === '',
     },
   ];
 
