@@ -6809,6 +6809,7 @@ __metadata:
     "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": 3.2.1
     "@graphql-codegen/graphql-modules-preset": ^3.0.0
+    "@graphql-codegen/plugin-helpers": ^4.1.0
     "@graphql-codegen/schema-ast": ^3.0.0
     "@graphql-codegen/typescript": ^3.0.0
     "@graphql-codegen/typescript-resolvers": ^3.0.0
@@ -6835,6 +6836,7 @@ __metadata:
     "@graphql-codegen/add": ^4.0.0
     "@graphql-codegen/cli": 3.2.1
     "@graphql-codegen/graphql-modules-preset": ^3.0.0
+    "@graphql-codegen/plugin-helpers": ^4.1.0
     "@graphql-codegen/schema-ast": ^3.0.0
     "@graphql-codegen/typescript": ^3.0.0
     "@graphql-codegen/typescript-resolvers": ^3.0.0

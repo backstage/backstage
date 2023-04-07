@@ -204,13 +204,13 @@ GraphQL modules resolvers, you'll need modify your `@graphql-codegen` config.
    function and pass all your GraphQL files
 
 ```ts
-import { transformSchema } from '@backstage/plugin-graphql-common';
+import { CoreSyng, transformSchema } from '@backstage/plugin-graphql-common';
 import { CatalogSync } from '@backstage/plugin-graphql-catalog';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { MyModule } from '../modules/my-module/my-module';
 
 export const schema = printSchemaWithDirectives(
-  transformSchema([CatalogSync(), MyModule]),
+  transformSchema([CoreSync(), CatalogSync(), MyModule]),
 );
 ```
 

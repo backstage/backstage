@@ -21,6 +21,7 @@ import * as graphql from 'graphql';
 import DataLoader from 'dataloader';
 import { Module } from 'graphql-modules';
 import { GraphQLContext } from '../types';
+import { CoreSync } from '../core';
 import { envelop, useEngine } from '@envelop/core';
 import { useDataLoader } from '@envelop/dataloader';
 import { useGraphQLModules } from '@envelop/graphql-modules';
@@ -31,7 +32,7 @@ export async function createGraphQLAPI(
   generateOpaqueTypes?: boolean,
 ) {
   const application = await createGraphQLApp({
-    modules: [TestModule],
+    modules: [CoreSync(), TestModule],
     generateOpaqueTypes,
   });
 

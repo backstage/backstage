@@ -1,0 +1,3352 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`graphql-catalog codegen should generate the correct code 1`] = `
+[
+  "/* eslint-disable */
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  /** The \`JSON\` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: any;
+  /** The \`JSONObject\` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
+  _DirectiveArgument_: any;
+};
+
+export type Api = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type ApiApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ApiApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type ApiConnection = Connection & {
+  __typename?: 'APIConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<ApiEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ApiEdge = Edge & {
+  __typename?: 'APIEdge';
+  cursor: Scalars['String'];
+  node: Api;
+};
+
+export type AsyncApi = Api & Entity & Node & Ownable & {
+  __typename?: 'AsyncAPI';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type AsyncApiApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type AsyncApiApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Component = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  components?: Maybe<ComponentConnection>;
+  consumesApis?: Maybe<ApiConnection>;
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  providesApis?: Maybe<ApiConnection>;
+  subComponentOf?: Maybe<Component>;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type ComponentComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ComponentConsumesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ComponentDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ComponentDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ComponentProvidesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type ComponentConnection = Connection & {
+  __typename?: 'ComponentConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<ComponentEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ComponentEdge = Edge & {
+  __typename?: 'ComponentEdge';
+  cursor: Scalars['String'];
+  node: Component;
+};
+
+export type Connection = {
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<Edge>;
+  pageInfo: PageInfo;
+};
+
+export type Database = Dependency & Entity & Node & Ownable & Resource & {
+  __typename?: 'Database';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type DatabaseDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type DatabaseDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Department = Entity & Group & Node & {
+  __typename?: 'Department';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type DepartmentChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type DepartmentMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type DepartmentOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Dependency = {
+  id: Scalars['ID'];
+};
+
+export type DependencyConnection = Connection & {
+  __typename?: 'DependencyConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<DependencyEdge>;
+  pageInfo: PageInfo;
+};
+
+export type DependencyEdge = Edge & {
+  __typename?: 'DependencyEdge';
+  cursor: Scalars['String'];
+  node: Dependency;
+};
+
+export type Domain = Entity & Node & Ownable & {
+  __typename?: 'Domain';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  systems?: Maybe<SystemConnection>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+};
+
+
+export type DomainSystemsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Edge = {
+  cursor: Scalars['String'];
+  node: Node;
+};
+
+export type Entity = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+};
+
+export type EntityLink = {
+  __typename?: 'EntityLink';
+  icon?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  url: Scalars['String'];
+};
+
+export type FileLocation = Entity & Location & Node & {
+  __typename?: 'FileLocation';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  presence?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  target?: Maybe<Scalars['String']>;
+  targets?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Grpc = Api & Entity & Node & Ownable & {
+  __typename?: 'GRPC';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type GrpcApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type GrpcApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type GraphQl = Api & Entity & Node & Ownable & {
+  __typename?: 'GraphQL';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type GraphQlApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type GraphQlApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Group = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type GroupChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type GroupMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type GroupOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type GroupConnection = Connection & {
+  __typename?: 'GroupConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<GroupEdge>;
+  pageInfo: PageInfo;
+};
+
+export type GroupEdge = Edge & {
+  __typename?: 'GroupEdge';
+  cursor: Scalars['String'];
+  node: Group;
+};
+
+export type GroupProfile = {
+  __typename?: 'GroupProfile';
+  displayName?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  picture?: Maybe<Scalars['String']>;
+};
+
+export type KeyValuePair = {
+  __typename?: 'KeyValuePair';
+  key: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type Library = Component & Dependency & Entity & Node & Ownable & {
+  __typename?: 'Library';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  components?: Maybe<ComponentConnection>;
+  consumesApis?: Maybe<ApiConnection>;
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  providesApis?: Maybe<ApiConnection>;
+  subComponentOf?: Maybe<Component>;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type LibraryComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LibraryConsumesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LibraryDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LibraryDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LibraryProvidesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Location = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  presence?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  target?: Maybe<Scalars['String']>;
+  targets?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type OpaqueApi = Api & Entity & Node & Ownable & {
+  __typename?: 'OpaqueAPI';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OpaqueApiApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueApiApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type OpaqueComponent = Component & Dependency & Entity & Node & Ownable & {
+  __typename?: 'OpaqueComponent';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  components?: Maybe<ComponentConnection>;
+  consumesApis?: Maybe<ApiConnection>;
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  providesApis?: Maybe<ApiConnection>;
+  subComponentOf?: Maybe<Component>;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OpaqueComponentComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueComponentConsumesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueComponentDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueComponentDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueComponentProvidesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type OpaqueEntity = Entity & Node & {
+  __typename?: 'OpaqueEntity';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+};
+
+export type OpaqueGroup = Entity & Group & Node & {
+  __typename?: 'OpaqueGroup';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OpaqueGroupChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueGroupMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueGroupOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type OpaqueLocation = Entity & Location & Node & {
+  __typename?: 'OpaqueLocation';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  presence?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  target?: Maybe<Scalars['String']>;
+  targets?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type OpaqueResource = Dependency & Entity & Node & Ownable & Resource & {
+  __typename?: 'OpaqueResource';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OpaqueResourceDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpaqueResourceDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type OpaqueTemplate = Entity & Node & Ownable & Template & {
+  __typename?: 'OpaqueTemplate';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner?: Maybe<Owner>;
+  parameters?: Maybe<Scalars['JSONObject']>;
+  steps: Array<Step>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+export type OpenApi = Api & Entity & Node & Ownable & {
+  __typename?: 'OpenAPI';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiConsumedBy?: Maybe<ComponentConnection>;
+  apiProvidedBy?: Maybe<ComponentConnection>;
+  apiVersion: Scalars['String'];
+  definition: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OpenApiApiConsumedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OpenApiApiProvidedByArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Organization = Entity & Group & Node & {
+  __typename?: 'Organization';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type OrganizationChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OrganizationMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type OrganizationOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Ownable = {
+  id: Scalars['ID'];
+};
+
+export type OwnableConnection = Connection & {
+  __typename?: 'OwnableConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<OwnableEdge>;
+  pageInfo: PageInfo;
+};
+
+export type OwnableEdge = Edge & {
+  __typename?: 'OwnableEdge';
+  cursor: Scalars['String'];
+  node: Ownable;
+};
+
+export type Owner = Department | OpaqueGroup | Organization | SubDepartment | Team | User;
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor?: Maybe<Scalars['String']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  entity?: Maybe<Entity>;
+  node?: Maybe<Node>;
+};
+
+
+export type QueryEntityArgs = {
+  kind: Scalars['String'];
+  name: Scalars['String'];
+  namespace?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID'];
+};
+
+export type Resource = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type ResourceDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ResourceDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type ResourceConnection = Connection & {
+  __typename?: 'ResourceConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<ResourceEdge>;
+  pageInfo: PageInfo;
+};
+
+export type ResourceEdge = Edge & {
+  __typename?: 'ResourceEdge';
+  cursor: Scalars['String'];
+  node: Resource;
+};
+
+export type Service = Component & Dependency & Entity & Node & Ownable & {
+  __typename?: 'Service';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  components?: Maybe<ComponentConnection>;
+  consumesApis?: Maybe<ApiConnection>;
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  providesApis?: Maybe<ApiConnection>;
+  subComponentOf?: Maybe<Component>;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type ServiceComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ServiceConsumesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ServiceDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ServiceDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ServiceProvidesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Step = {
+  __typename?: 'Step';
+  action: Scalars['String'];
+  id?: Maybe<Scalars['String']>;
+  if?: Maybe<Scalars['JSON']>;
+  input?: Maybe<Scalars['JSONObject']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type SubDepartment = Entity & Group & Node & {
+  __typename?: 'SubDepartment';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type SubDepartmentChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type SubDepartmentMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type SubDepartmentOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type System = Entity & Node & Ownable & {
+  __typename?: 'System';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  apis?: Maybe<ApiConnection>;
+  components?: Maybe<ComponentConnection>;
+  description?: Maybe<Scalars['String']>;
+  domain?: Maybe<Domain>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  resources?: Maybe<ResourceConnection>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+};
+
+
+export type SystemApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type SystemComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type SystemResourcesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type SystemConnection = Connection & {
+  __typename?: 'SystemConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<SystemEdge>;
+  pageInfo: PageInfo;
+};
+
+export type SystemEdge = Edge & {
+  __typename?: 'SystemEdge';
+  cursor: Scalars['String'];
+  node: System;
+};
+
+export type Team = Entity & Group & Node & {
+  __typename?: 'Team';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  children?: Maybe<GroupConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  members?: Maybe<UserConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  parent?: Maybe<Group>;
+  profile?: Maybe<GroupProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type TeamChildrenArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type TeamMembersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type TeamOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type Template = {
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner?: Maybe<Owner>;
+  parameters?: Maybe<Scalars['JSONObject']>;
+  steps: Array<Step>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+export type UrlLocation = Entity & Location & Node & {
+  __typename?: 'URLLocation';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  presence?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  target?: Maybe<Scalars['String']>;
+  targets?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type User = Entity & Node & {
+  __typename?: 'User';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  links?: Maybe<Array<EntityLink>>;
+  memberOf?: Maybe<GroupConnection>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  ownerOf?: Maybe<OwnableConnection>;
+  profile?: Maybe<UserProfile>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+};
+
+
+export type UserMemberOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type UserOwnerOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type UserConnection = Connection & {
+  __typename?: 'UserConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+};
+
+export type UserEdge = Edge & {
+  __typename?: 'UserEdge';
+  cursor: Scalars['String'];
+  node: User;
+};
+
+export type UserProfile = {
+  __typename?: 'UserProfile';
+  displayName?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  picture?: Maybe<Scalars['String']>;
+};
+
+export type Website = Component & Dependency & Entity & Node & Ownable & {
+  __typename?: 'Website';
+  annotations?: Maybe<Array<KeyValuePair>>;
+  apiVersion: Scalars['String'];
+  components?: Maybe<ComponentConnection>;
+  consumesApis?: Maybe<ApiConnection>;
+  dependencyOf?: Maybe<DependencyConnection>;
+  dependsOn?: Maybe<DependencyConnection>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  kind: Scalars['String'];
+  labels?: Maybe<Array<KeyValuePair>>;
+  lifecycle: Scalars['String'];
+  links?: Maybe<Array<EntityLink>>;
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  owner: Owner;
+  providesApis?: Maybe<ApiConnection>;
+  subComponentOf?: Maybe<Component>;
+  system?: Maybe<System>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  title?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+
+export type WebsiteComponentsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type WebsiteConsumesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type WebsiteDependencyOfArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type WebsiteDependsOnArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type WebsiteProvidesApisArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+
+export type ResolverTypeWrapper<T> = Promise<T> | T;
+
+
+export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
+
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
+
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
+  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
+}
+
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<any, TParent, TContext, TArgs>;
+  resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
+}
+
+export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+  | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
+  | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+  | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
+
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+  parent: TParent,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
+
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+
+export type NextResolverFn<T> = () => Promise<T>;
+
+export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+  next: NextResolverFn<TResult>,
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+/** Mapping of union types */
+export type ResolversUnionTypes = {
+  Owner: ( Department ) | ( OpaqueGroup ) | ( Organization ) | ( SubDepartment ) | ( Team ) | ( User );
+};
+
+/** Mapping of union parent types */
+export type ResolversUnionParentTypes = {
+  Owner: ( Department ) | ( OpaqueGroup ) | ( Organization ) | ( SubDepartment ) | ( Team ) | ( User );
+};
+
+/** Mapping between all available schema types and the resolvers types */
+export type ResolversTypes = {
+  API: ResolversTypes['AsyncAPI'] | ResolversTypes['GRPC'] | ResolversTypes['GraphQL'] | ResolversTypes['OpaqueAPI'] | ResolversTypes['OpenAPI'];
+  APIConnection: ResolverTypeWrapper<ApiConnection>;
+  APIEdge: ResolverTypeWrapper<ApiEdge>;
+  AsyncAPI: ResolverTypeWrapper<Omit<AsyncApi, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Component: ResolversTypes['Library'] | ResolversTypes['OpaqueComponent'] | ResolversTypes['Service'] | ResolversTypes['Website'];
+  ComponentConnection: ResolverTypeWrapper<ComponentConnection>;
+  ComponentEdge: ResolverTypeWrapper<ComponentEdge>;
+  Connection: ResolversTypes['APIConnection'] | ResolversTypes['ComponentConnection'] | ResolversTypes['DependencyConnection'] | ResolversTypes['GroupConnection'] | ResolversTypes['OwnableConnection'] | ResolversTypes['ResourceConnection'] | ResolversTypes['SystemConnection'] | ResolversTypes['UserConnection'];
+  Database: ResolverTypeWrapper<Omit<Database, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Department: ResolverTypeWrapper<Department>;
+  Dependency: ResolversTypes['Database'] | ResolversTypes['Library'] | ResolversTypes['OpaqueComponent'] | ResolversTypes['OpaqueResource'] | ResolversTypes['Service'] | ResolversTypes['Website'];
+  DependencyConnection: ResolverTypeWrapper<DependencyConnection>;
+  DependencyEdge: ResolverTypeWrapper<DependencyEdge>;
+  Domain: ResolverTypeWrapper<Omit<Domain, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Edge: ResolversTypes['APIEdge'] | ResolversTypes['ComponentEdge'] | ResolversTypes['DependencyEdge'] | ResolversTypes['GroupEdge'] | ResolversTypes['OwnableEdge'] | ResolversTypes['ResourceEdge'] | ResolversTypes['SystemEdge'] | ResolversTypes['UserEdge'];
+  Entity: ResolversTypes['AsyncAPI'] | ResolversTypes['Database'] | ResolversTypes['Department'] | ResolversTypes['Domain'] | ResolversTypes['FileLocation'] | ResolversTypes['GRPC'] | ResolversTypes['GraphQL'] | ResolversTypes['Library'] | ResolversTypes['OpaqueAPI'] | ResolversTypes['OpaqueComponent'] | ResolversTypes['OpaqueEntity'] | ResolversTypes['OpaqueGroup'] | ResolversTypes['OpaqueLocation'] | ResolversTypes['OpaqueResource'] | ResolversTypes['OpaqueTemplate'] | ResolversTypes['OpenAPI'] | ResolversTypes['Organization'] | ResolversTypes['Service'] | ResolversTypes['SubDepartment'] | ResolversTypes['System'] | ResolversTypes['Team'] | ResolversTypes['URLLocation'] | ResolversTypes['User'] | ResolversTypes['Website'];
+  EntityLink: ResolverTypeWrapper<EntityLink>;
+  FileLocation: ResolverTypeWrapper<FileLocation>;
+  GRPC: ResolverTypeWrapper<Omit<Grpc, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  GraphQL: ResolverTypeWrapper<Omit<GraphQl, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Group: ResolversTypes['Department'] | ResolversTypes['OpaqueGroup'] | ResolversTypes['Organization'] | ResolversTypes['SubDepartment'] | ResolversTypes['Team'];
+  GroupConnection: ResolverTypeWrapper<GroupConnection>;
+  GroupEdge: ResolverTypeWrapper<GroupEdge>;
+  GroupProfile: ResolverTypeWrapper<GroupProfile>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']>;
+  JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
+  KeyValuePair: ResolverTypeWrapper<KeyValuePair>;
+  Library: ResolverTypeWrapper<Omit<Library, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Location: ResolversTypes['FileLocation'] | ResolversTypes['OpaqueLocation'] | ResolversTypes['URLLocation'];
+  Node: ResolversTypes['AsyncAPI'] | ResolversTypes['Database'] | ResolversTypes['Department'] | ResolversTypes['Domain'] | ResolversTypes['FileLocation'] | ResolversTypes['GRPC'] | ResolversTypes['GraphQL'] | ResolversTypes['Library'] | ResolversTypes['OpaqueAPI'] | ResolversTypes['OpaqueComponent'] | ResolversTypes['OpaqueEntity'] | ResolversTypes['OpaqueGroup'] | ResolversTypes['OpaqueLocation'] | ResolversTypes['OpaqueResource'] | ResolversTypes['OpaqueTemplate'] | ResolversTypes['OpenAPI'] | ResolversTypes['Organization'] | ResolversTypes['Service'] | ResolversTypes['SubDepartment'] | ResolversTypes['System'] | ResolversTypes['Team'] | ResolversTypes['URLLocation'] | ResolversTypes['User'] | ResolversTypes['Website'];
+  OpaqueAPI: ResolverTypeWrapper<Omit<OpaqueApi, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  OpaqueComponent: ResolverTypeWrapper<Omit<OpaqueComponent, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  OpaqueEntity: ResolverTypeWrapper<OpaqueEntity>;
+  OpaqueGroup: ResolverTypeWrapper<OpaqueGroup>;
+  OpaqueLocation: ResolverTypeWrapper<OpaqueLocation>;
+  OpaqueResource: ResolverTypeWrapper<Omit<OpaqueResource, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  OpaqueTemplate: ResolverTypeWrapper<Omit<OpaqueTemplate, 'owner'> & { owner?: Maybe<ResolversTypes['Owner']> }>;
+  OpenAPI: ResolverTypeWrapper<Omit<OpenApi, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Organization: ResolverTypeWrapper<Organization>;
+  Ownable: ResolversTypes['AsyncAPI'] | ResolversTypes['Database'] | ResolversTypes['Domain'] | ResolversTypes['GRPC'] | ResolversTypes['GraphQL'] | ResolversTypes['Library'] | ResolversTypes['OpaqueAPI'] | ResolversTypes['OpaqueComponent'] | ResolversTypes['OpaqueResource'] | ResolversTypes['OpaqueTemplate'] | ResolversTypes['OpenAPI'] | ResolversTypes['Service'] | ResolversTypes['System'] | ResolversTypes['Website'];
+  OwnableConnection: ResolverTypeWrapper<OwnableConnection>;
+  OwnableEdge: ResolverTypeWrapper<OwnableEdge>;
+  Owner: ResolverTypeWrapper<ResolversUnionTypes['Owner']>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
+  Query: ResolverTypeWrapper<{}>;
+  Resource: ResolversTypes['Database'] | ResolversTypes['OpaqueResource'];
+  ResourceConnection: ResolverTypeWrapper<ResourceConnection>;
+  ResourceEdge: ResolverTypeWrapper<ResourceEdge>;
+  Service: ResolverTypeWrapper<Omit<Service, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  Step: ResolverTypeWrapper<Step>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  SubDepartment: ResolverTypeWrapper<SubDepartment>;
+  System: ResolverTypeWrapper<Omit<System, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  SystemConnection: ResolverTypeWrapper<SystemConnection>;
+  SystemEdge: ResolverTypeWrapper<SystemEdge>;
+  Team: ResolverTypeWrapper<Team>;
+  Template: ResolversTypes['OpaqueTemplate'];
+  URLLocation: ResolverTypeWrapper<UrlLocation>;
+  User: ResolverTypeWrapper<User>;
+  UserConnection: ResolverTypeWrapper<UserConnection>;
+  UserEdge: ResolverTypeWrapper<UserEdge>;
+  UserProfile: ResolverTypeWrapper<UserProfile>;
+  Website: ResolverTypeWrapper<Omit<Website, 'owner'> & { owner: ResolversTypes['Owner'] }>;
+  _DirectiveArgument_: ResolverTypeWrapper<Scalars['_DirectiveArgument_']>;
+};
+
+/** Mapping between all available schema types and the resolvers parents */
+export type ResolversParentTypes = {
+  API: ResolversParentTypes['AsyncAPI'] | ResolversParentTypes['GRPC'] | ResolversParentTypes['GraphQL'] | ResolversParentTypes['OpaqueAPI'] | ResolversParentTypes['OpenAPI'];
+  APIConnection: ApiConnection;
+  APIEdge: ApiEdge;
+  AsyncAPI: Omit<AsyncApi, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Boolean: Scalars['Boolean'];
+  Component: ResolversParentTypes['Library'] | ResolversParentTypes['OpaqueComponent'] | ResolversParentTypes['Service'] | ResolversParentTypes['Website'];
+  ComponentConnection: ComponentConnection;
+  ComponentEdge: ComponentEdge;
+  Connection: ResolversParentTypes['APIConnection'] | ResolversParentTypes['ComponentConnection'] | ResolversParentTypes['DependencyConnection'] | ResolversParentTypes['GroupConnection'] | ResolversParentTypes['OwnableConnection'] | ResolversParentTypes['ResourceConnection'] | ResolversParentTypes['SystemConnection'] | ResolversParentTypes['UserConnection'];
+  Database: Omit<Database, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Department: Department;
+  Dependency: ResolversParentTypes['Database'] | ResolversParentTypes['Library'] | ResolversParentTypes['OpaqueComponent'] | ResolversParentTypes['OpaqueResource'] | ResolversParentTypes['Service'] | ResolversParentTypes['Website'];
+  DependencyConnection: DependencyConnection;
+  DependencyEdge: DependencyEdge;
+  Domain: Omit<Domain, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Edge: ResolversParentTypes['APIEdge'] | ResolversParentTypes['ComponentEdge'] | ResolversParentTypes['DependencyEdge'] | ResolversParentTypes['GroupEdge'] | ResolversParentTypes['OwnableEdge'] | ResolversParentTypes['ResourceEdge'] | ResolversParentTypes['SystemEdge'] | ResolversParentTypes['UserEdge'];
+  Entity: ResolversParentTypes['AsyncAPI'] | ResolversParentTypes['Database'] | ResolversParentTypes['Department'] | ResolversParentTypes['Domain'] | ResolversParentTypes['FileLocation'] | ResolversParentTypes['GRPC'] | ResolversParentTypes['GraphQL'] | ResolversParentTypes['Library'] | ResolversParentTypes['OpaqueAPI'] | ResolversParentTypes['OpaqueComponent'] | ResolversParentTypes['OpaqueEntity'] | ResolversParentTypes['OpaqueGroup'] | ResolversParentTypes['OpaqueLocation'] | ResolversParentTypes['OpaqueResource'] | ResolversParentTypes['OpaqueTemplate'] | ResolversParentTypes['OpenAPI'] | ResolversParentTypes['Organization'] | ResolversParentTypes['Service'] | ResolversParentTypes['SubDepartment'] | ResolversParentTypes['System'] | ResolversParentTypes['Team'] | ResolversParentTypes['URLLocation'] | ResolversParentTypes['User'] | ResolversParentTypes['Website'];
+  EntityLink: EntityLink;
+  FileLocation: FileLocation;
+  GRPC: Omit<Grpc, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  GraphQL: Omit<GraphQl, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Group: ResolversParentTypes['Department'] | ResolversParentTypes['OpaqueGroup'] | ResolversParentTypes['Organization'] | ResolversParentTypes['SubDepartment'] | ResolversParentTypes['Team'];
+  GroupConnection: GroupConnection;
+  GroupEdge: GroupEdge;
+  GroupProfile: GroupProfile;
+  ID: Scalars['ID'];
+  Int: Scalars['Int'];
+  JSON: Scalars['JSON'];
+  JSONObject: Scalars['JSONObject'];
+  KeyValuePair: KeyValuePair;
+  Library: Omit<Library, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Location: ResolversParentTypes['FileLocation'] | ResolversParentTypes['OpaqueLocation'] | ResolversParentTypes['URLLocation'];
+  Node: ResolversParentTypes['AsyncAPI'] | ResolversParentTypes['Database'] | ResolversParentTypes['Department'] | ResolversParentTypes['Domain'] | ResolversParentTypes['FileLocation'] | ResolversParentTypes['GRPC'] | ResolversParentTypes['GraphQL'] | ResolversParentTypes['Library'] | ResolversParentTypes['OpaqueAPI'] | ResolversParentTypes['OpaqueComponent'] | ResolversParentTypes['OpaqueEntity'] | ResolversParentTypes['OpaqueGroup'] | ResolversParentTypes['OpaqueLocation'] | ResolversParentTypes['OpaqueResource'] | ResolversParentTypes['OpaqueTemplate'] | ResolversParentTypes['OpenAPI'] | ResolversParentTypes['Organization'] | ResolversParentTypes['Service'] | ResolversParentTypes['SubDepartment'] | ResolversParentTypes['System'] | ResolversParentTypes['Team'] | ResolversParentTypes['URLLocation'] | ResolversParentTypes['User'] | ResolversParentTypes['Website'];
+  OpaqueAPI: Omit<OpaqueApi, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  OpaqueComponent: Omit<OpaqueComponent, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  OpaqueEntity: OpaqueEntity;
+  OpaqueGroup: OpaqueGroup;
+  OpaqueLocation: OpaqueLocation;
+  OpaqueResource: Omit<OpaqueResource, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  OpaqueTemplate: Omit<OpaqueTemplate, 'owner'> & { owner?: Maybe<ResolversParentTypes['Owner']> };
+  OpenAPI: Omit<OpenApi, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Organization: Organization;
+  Ownable: ResolversParentTypes['AsyncAPI'] | ResolversParentTypes['Database'] | ResolversParentTypes['Domain'] | ResolversParentTypes['GRPC'] | ResolversParentTypes['GraphQL'] | ResolversParentTypes['Library'] | ResolversParentTypes['OpaqueAPI'] | ResolversParentTypes['OpaqueComponent'] | ResolversParentTypes['OpaqueResource'] | ResolversParentTypes['OpaqueTemplate'] | ResolversParentTypes['OpenAPI'] | ResolversParentTypes['Service'] | ResolversParentTypes['System'] | ResolversParentTypes['Website'];
+  OwnableConnection: OwnableConnection;
+  OwnableEdge: OwnableEdge;
+  Owner: ResolversUnionParentTypes['Owner'];
+  PageInfo: PageInfo;
+  Query: {};
+  Resource: ResolversParentTypes['Database'] | ResolversParentTypes['OpaqueResource'];
+  ResourceConnection: ResourceConnection;
+  ResourceEdge: ResourceEdge;
+  Service: Omit<Service, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  Step: Step;
+  String: Scalars['String'];
+  SubDepartment: SubDepartment;
+  System: Omit<System, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  SystemConnection: SystemConnection;
+  SystemEdge: SystemEdge;
+  Team: Team;
+  Template: ResolversParentTypes['OpaqueTemplate'];
+  URLLocation: UrlLocation;
+  User: User;
+  UserConnection: UserConnection;
+  UserEdge: UserEdge;
+  UserProfile: UserProfile;
+  Website: Omit<Website, 'owner'> & { owner: ResolversParentTypes['Owner'] };
+  _DirectiveArgument_: Scalars['_DirectiveArgument_'];
+};
+
+export type DiscriminatesDirectiveArgs = {
+  opaqueType?: Maybe<Scalars['String']>;
+  with?: Maybe<Scalars['_DirectiveArgument_']>;
+};
+
+export type DiscriminatesDirectiveResolver<Result, Parent, ContextType = any, Args = DiscriminatesDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type DiscriminationAliasDirectiveArgs = {
+  type: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type DiscriminationAliasDirectiveResolver<Result, Parent, ContextType = any, Args = DiscriminationAliasDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type FieldDirectiveArgs = {
+  at: Scalars['_DirectiveArgument_'];
+  default?: Maybe<Scalars['_DirectiveArgument_']>;
+};
+
+export type FieldDirectiveResolver<Result, Parent, ContextType = any, Args = FieldDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ImplementsDirectiveArgs = {
+  interface: Scalars['String'];
+};
+
+export type ImplementsDirectiveResolver<Result, Parent, ContextType = any, Args = ImplementsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type RelationDirectiveArgs = {
+  kind?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  nodeType?: Maybe<Scalars['String']>;
+};
+
+export type RelationDirectiveResolver<Result, Parent, ContextType = any, Args = RelationDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ApiResolvers<ContextType = any, ParentType extends ResolversParentTypes['API'] = ResolversParentTypes['API']> = {
+  __resolveType: TypeResolveFn<'AsyncAPI' | 'GRPC' | 'GraphQL' | 'OpaqueAPI' | 'OpenAPI', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<ApiApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<ApiApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ApiConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['APIConnection'] = ResolversParentTypes['APIConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['APIEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ApiEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['APIEdge'] = ResolversParentTypes['APIEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['API'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AsyncApiResolvers<ContextType = any, ParentType extends ResolversParentTypes['AsyncAPI'] = ResolversParentTypes['AsyncAPI']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<AsyncApiApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<AsyncApiApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ComponentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Component'] = ResolversParentTypes['Component']> = {
+  __resolveType: TypeResolveFn<'Library' | 'OpaqueComponent' | 'Service' | 'Website', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<ComponentComponentsArgs>>;
+  consumesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<ComponentConsumesApisArgs>>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ComponentDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ComponentDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  providesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<ComponentProvidesApisArgs>>;
+  subComponentOf?: Resolver<Maybe<ResolversTypes['Component']>, ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ComponentConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ComponentConnection'] = ResolversParentTypes['ComponentConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['ComponentEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ComponentEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ComponentEdge'] = ResolversParentTypes['ComponentEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Component'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Connection'] = ResolversParentTypes['Connection']> = {
+  __resolveType: TypeResolveFn<'APIConnection' | 'ComponentConnection' | 'DependencyConnection' | 'GroupConnection' | 'OwnableConnection' | 'ResourceConnection' | 'SystemConnection' | 'UserConnection', ParentType, ContextType>;
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['Edge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+};
+
+export type DatabaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Database'] = ResolversParentTypes['Database']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<DatabaseDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<DatabaseDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DepartmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Department'] = ResolversParentTypes['Department']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<DepartmentChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<DepartmentMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<DepartmentOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DependencyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Dependency'] = ResolversParentTypes['Dependency']> = {
+  __resolveType: TypeResolveFn<'Database' | 'Library' | 'OpaqueComponent' | 'OpaqueResource' | 'Service' | 'Website', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type DependencyConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['DependencyConnection'] = ResolversParentTypes['DependencyConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['DependencyEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DependencyEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['DependencyEdge'] = ResolversParentTypes['DependencyEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Dependency'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DomainResolvers<ContextType = any, ParentType extends ResolversParentTypes['Domain'] = ResolversParentTypes['Domain']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  systems?: Resolver<Maybe<ResolversTypes['SystemConnection']>, ParentType, ContextType, Partial<DomainSystemsArgs>>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Edge'] = ResolversParentTypes['Edge']> = {
+  __resolveType: TypeResolveFn<'APIEdge' | 'ComponentEdge' | 'DependencyEdge' | 'GroupEdge' | 'OwnableEdge' | 'ResourceEdge' | 'SystemEdge' | 'UserEdge', ParentType, ContextType>;
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Node'], ParentType, ContextType>;
+};
+
+export type EntityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Entity'] = ResolversParentTypes['Entity']> = {
+  __resolveType: TypeResolveFn<'AsyncAPI' | 'Database' | 'Department' | 'Domain' | 'FileLocation' | 'GRPC' | 'GraphQL' | 'Library' | 'OpaqueAPI' | 'OpaqueComponent' | 'OpaqueEntity' | 'OpaqueGroup' | 'OpaqueLocation' | 'OpaqueResource' | 'OpaqueTemplate' | 'OpenAPI' | 'Organization' | 'Service' | 'SubDepartment' | 'System' | 'Team' | 'URLLocation' | 'User' | 'Website', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type EntityLinkResolvers<ContextType = any, ParentType extends ResolversParentTypes['EntityLink'] = ResolversParentTypes['EntityLink']> = {
+  icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type FileLocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['FileLocation'] = ResolversParentTypes['FileLocation']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  presence?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targets?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GrpcResolvers<ContextType = any, ParentType extends ResolversParentTypes['GRPC'] = ResolversParentTypes['GRPC']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<GrpcApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<GrpcApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GraphQlResolvers<ContextType = any, ParentType extends ResolversParentTypes['GraphQL'] = ResolversParentTypes['GraphQL']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<GraphQlApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<GraphQlApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = {
+  __resolveType: TypeResolveFn<'Department' | 'OpaqueGroup' | 'Organization' | 'SubDepartment' | 'Team', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<GroupChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<GroupMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<GroupOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type GroupConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['GroupConnection'] = ResolversParentTypes['GroupConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['GroupEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GroupEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['GroupEdge'] = ResolversParentTypes['GroupEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Group'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GroupProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['GroupProfile'] = ResolversParentTypes['GroupProfile']> = {
+  displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
+
+export type KeyValuePairResolvers<ContextType = any, ParentType extends ResolversParentTypes['KeyValuePair'] = ResolversParentTypes['KeyValuePair']> = {
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LibraryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Library'] = ResolversParentTypes['Library']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<LibraryComponentsArgs>>;
+  consumesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<LibraryConsumesApisArgs>>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<LibraryDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<LibraryDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  providesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<LibraryProvidesApisArgs>>;
+  subComponentOf?: Resolver<Maybe<ResolversTypes['Component']>, ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+  __resolveType: TypeResolveFn<'FileLocation' | 'OpaqueLocation' | 'URLLocation', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  presence?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targets?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type NodeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
+  __resolveType: TypeResolveFn<'AsyncAPI' | 'Database' | 'Department' | 'Domain' | 'FileLocation' | 'GRPC' | 'GraphQL' | 'Library' | 'OpaqueAPI' | 'OpaqueComponent' | 'OpaqueEntity' | 'OpaqueGroup' | 'OpaqueLocation' | 'OpaqueResource' | 'OpaqueTemplate' | 'OpenAPI' | 'Organization' | 'Service' | 'SubDepartment' | 'System' | 'Team' | 'URLLocation' | 'User' | 'Website', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type OpaqueApiResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueAPI'] = ResolversParentTypes['OpaqueAPI']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<OpaqueApiApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<OpaqueApiApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueComponentResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueComponent'] = ResolversParentTypes['OpaqueComponent']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<OpaqueComponentComponentsArgs>>;
+  consumesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<OpaqueComponentConsumesApisArgs>>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<OpaqueComponentDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<OpaqueComponentDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  providesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<OpaqueComponentProvidesApisArgs>>;
+  subComponentOf?: Resolver<Maybe<ResolversTypes['Component']>, ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueEntityResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueEntity'] = ResolversParentTypes['OpaqueEntity']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueGroup'] = ResolversParentTypes['OpaqueGroup']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<OpaqueGroupChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<OpaqueGroupMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<OpaqueGroupOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueLocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueLocation'] = ResolversParentTypes['OpaqueLocation']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  presence?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targets?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueResourceResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueResource'] = ResolversParentTypes['OpaqueResource']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<OpaqueResourceDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<OpaqueResourceDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpaqueTemplateResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpaqueTemplate'] = ResolversParentTypes['OpaqueTemplate']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['Owner']>, ParentType, ContextType>;
+  parameters?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
+  steps?: Resolver<Array<ResolversTypes['Step']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpenApiResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpenAPI'] = ResolversParentTypes['OpenAPI']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiConsumedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<OpenApiApiConsumedByArgs>>;
+  apiProvidedBy?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<OpenApiApiProvidedByArgs>>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  definition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<OrganizationChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<OrganizationMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<OrganizationOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OwnableResolvers<ContextType = any, ParentType extends ResolversParentTypes['Ownable'] = ResolversParentTypes['Ownable']> = {
+  __resolveType: TypeResolveFn<'AsyncAPI' | 'Database' | 'Domain' | 'GRPC' | 'GraphQL' | 'Library' | 'OpaqueAPI' | 'OpaqueComponent' | 'OpaqueResource' | 'OpaqueTemplate' | 'OpenAPI' | 'Service' | 'System' | 'Website', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type OwnableConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OwnableConnection'] = ResolversParentTypes['OwnableConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['OwnableEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OwnableEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OwnableEdge'] = ResolversParentTypes['OwnableEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Ownable'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OwnerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Owner'] = ResolversParentTypes['Owner']> = {
+  __resolveType: TypeResolveFn<'Department' | 'OpaqueGroup' | 'Organization' | 'SubDepartment' | 'Team' | 'User', ParentType, ContextType>;
+};
+
+export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  startCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  entity?: Resolver<Maybe<ResolversTypes['Entity']>, ParentType, ContextType, RequireFields<QueryEntityArgs, 'kind' | 'name'>>;
+  node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+};
+
+export type ResourceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
+  __resolveType: TypeResolveFn<'Database' | 'OpaqueResource', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ResourceDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ResourceDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ResourceConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResourceConnection'] = ResolversParentTypes['ResourceConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['ResourceEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ResourceEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResourceEdge'] = ResolversParentTypes['ResourceEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ServiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<ServiceComponentsArgs>>;
+  consumesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<ServiceConsumesApisArgs>>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ServiceDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<ServiceDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  providesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<ServiceProvidesApisArgs>>;
+  subComponentOf?: Resolver<Maybe<ResolversTypes['Component']>, ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StepResolvers<ContextType = any, ParentType extends ResolversParentTypes['Step'] = ResolversParentTypes['Step']> = {
+  action?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  if?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  input?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubDepartmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['SubDepartment'] = ResolversParentTypes['SubDepartment']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<SubDepartmentChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<SubDepartmentMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<SubDepartmentOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SystemResolvers<ContextType = any, ParentType extends ResolversParentTypes['System'] = ResolversParentTypes['System']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  apis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<SystemApisArgs>>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<SystemComponentsArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  domain?: Resolver<Maybe<ResolversTypes['Domain']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  resources?: Resolver<Maybe<ResolversTypes['ResourceConnection']>, ParentType, ContextType, Partial<SystemResourcesArgs>>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SystemConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SystemConnection'] = ResolversParentTypes['SystemConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['SystemEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SystemEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SystemEdge'] = ResolversParentTypes['SystemEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['System'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  children?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<TeamChildrenArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  members?: Resolver<Maybe<ResolversTypes['UserConnection']>, ParentType, ContextType, Partial<TeamMembersArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<TeamOwnerOfArgs>>;
+  parent?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['GroupProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TemplateResolvers<ContextType = any, ParentType extends ResolversParentTypes['Template'] = ResolversParentTypes['Template']> = {
+  __resolveType: TypeResolveFn<'OpaqueTemplate', ParentType, ContextType>;
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['Owner']>, ParentType, ContextType>;
+  parameters?: Resolver<Maybe<ResolversTypes['JSONObject']>, ParentType, ContextType>;
+  steps?: Resolver<Array<ResolversTypes['Step']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type UrlLocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['URLLocation'] = ResolversParentTypes['URLLocation']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  presence?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  targets?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  memberOf?: Resolver<Maybe<ResolversTypes['GroupConnection']>, ParentType, ContextType, Partial<UserMemberOfArgs>>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownerOf?: Resolver<Maybe<ResolversTypes['OwnableConnection']>, ParentType, ContextType, Partial<UserOwnerOfArgs>>;
+  profile?: Resolver<Maybe<ResolversTypes['UserProfile']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['UserEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserEdge'] = ResolversParentTypes['UserEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserProfile'] = ResolversParentTypes['UserProfile']> = {
+  displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WebsiteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Website'] = ResolversParentTypes['Website']> = {
+  annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  apiVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  components?: Resolver<Maybe<ResolversTypes['ComponentConnection']>, ParentType, ContextType, Partial<WebsiteComponentsArgs>>;
+  consumesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<WebsiteConsumesApisArgs>>;
+  dependencyOf?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<WebsiteDependencyOfArgs>>;
+  dependsOn?: Resolver<Maybe<ResolversTypes['DependencyConnection']>, ParentType, ContextType, Partial<WebsiteDependsOnArgs>>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  labels?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
+  lifecycle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  links?: Resolver<Maybe<Array<ResolversTypes['EntityLink']>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Owner'], ParentType, ContextType>;
+  providesApis?: Resolver<Maybe<ResolversTypes['APIConnection']>, ParentType, ContextType, Partial<WebsiteProvidesApisArgs>>;
+  subComponentOf?: Resolver<Maybe<ResolversTypes['Component']>, ParentType, ContextType>;
+  system?: Resolver<Maybe<ResolversTypes['System']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface _DirectiveArgument_ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['_DirectiveArgument_'], any> {
+  name: '_DirectiveArgument_';
+}
+
+export type Resolvers<ContextType = any> = {
+  API?: ApiResolvers<ContextType>;
+  APIConnection?: ApiConnectionResolvers<ContextType>;
+  APIEdge?: ApiEdgeResolvers<ContextType>;
+  AsyncAPI?: AsyncApiResolvers<ContextType>;
+  Component?: ComponentResolvers<ContextType>;
+  ComponentConnection?: ComponentConnectionResolvers<ContextType>;
+  ComponentEdge?: ComponentEdgeResolvers<ContextType>;
+  Connection?: ConnectionResolvers<ContextType>;
+  Database?: DatabaseResolvers<ContextType>;
+  Department?: DepartmentResolvers<ContextType>;
+  Dependency?: DependencyResolvers<ContextType>;
+  DependencyConnection?: DependencyConnectionResolvers<ContextType>;
+  DependencyEdge?: DependencyEdgeResolvers<ContextType>;
+  Domain?: DomainResolvers<ContextType>;
+  Edge?: EdgeResolvers<ContextType>;
+  Entity?: EntityResolvers<ContextType>;
+  EntityLink?: EntityLinkResolvers<ContextType>;
+  FileLocation?: FileLocationResolvers<ContextType>;
+  GRPC?: GrpcResolvers<ContextType>;
+  GraphQL?: GraphQlResolvers<ContextType>;
+  Group?: GroupResolvers<ContextType>;
+  GroupConnection?: GroupConnectionResolvers<ContextType>;
+  GroupEdge?: GroupEdgeResolvers<ContextType>;
+  GroupProfile?: GroupProfileResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
+  JSONObject?: GraphQLScalarType;
+  KeyValuePair?: KeyValuePairResolvers<ContextType>;
+  Library?: LibraryResolvers<ContextType>;
+  Location?: LocationResolvers<ContextType>;
+  Node?: NodeResolvers<ContextType>;
+  OpaqueAPI?: OpaqueApiResolvers<ContextType>;
+  OpaqueComponent?: OpaqueComponentResolvers<ContextType>;
+  OpaqueEntity?: OpaqueEntityResolvers<ContextType>;
+  OpaqueGroup?: OpaqueGroupResolvers<ContextType>;
+  OpaqueLocation?: OpaqueLocationResolvers<ContextType>;
+  OpaqueResource?: OpaqueResourceResolvers<ContextType>;
+  OpaqueTemplate?: OpaqueTemplateResolvers<ContextType>;
+  OpenAPI?: OpenApiResolvers<ContextType>;
+  Organization?: OrganizationResolvers<ContextType>;
+  Ownable?: OwnableResolvers<ContextType>;
+  OwnableConnection?: OwnableConnectionResolvers<ContextType>;
+  OwnableEdge?: OwnableEdgeResolvers<ContextType>;
+  Owner?: OwnerResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  Resource?: ResourceResolvers<ContextType>;
+  ResourceConnection?: ResourceConnectionResolvers<ContextType>;
+  ResourceEdge?: ResourceEdgeResolvers<ContextType>;
+  Service?: ServiceResolvers<ContextType>;
+  Step?: StepResolvers<ContextType>;
+  SubDepartment?: SubDepartmentResolvers<ContextType>;
+  System?: SystemResolvers<ContextType>;
+  SystemConnection?: SystemConnectionResolvers<ContextType>;
+  SystemEdge?: SystemEdgeResolvers<ContextType>;
+  Team?: TeamResolvers<ContextType>;
+  Template?: TemplateResolvers<ContextType>;
+  URLLocation?: UrlLocationResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
+  UserConnection?: UserConnectionResolvers<ContextType>;
+  UserEdge?: UserEdgeResolvers<ContextType>;
+  UserProfile?: UserProfileResolvers<ContextType>;
+  Website?: WebsiteResolvers<ContextType>;
+  _DirectiveArgument_?: GraphQLScalarType;
+};
+
+export type DirectiveResolvers<ContextType = any> = {
+  discriminates?: DiscriminatesDirectiveResolver<any, any, ContextType>;
+  discriminationAlias?: DiscriminationAliasDirectiveResolver<any, any, ContextType>;
+  field?: FieldDirectiveResolver<any, any, ContextType>;
+  implements?: ImplementsDirectiveResolver<any, any, ContextType>;
+  relation?: RelationDirectiveResolver<any, any, ContextType>;
+};
+
+export type Json = Scalars["JSON"];
+export type JsonObject = Scalars["JSONObject"];
+export type _DirectiveArgument_ = Scalars["_DirectiveArgument_"];",
+  "directive @discriminates(opaqueType: String, with: _DirectiveArgument_) on INTERFACE
+
+directive @discriminationAlias(type: String!, value: String!) repeatable on INTERFACE
+
+directive @field(at: _DirectiveArgument_!, default: _DirectiveArgument_) on FIELD_DEFINITION
+
+directive @implements(interface: String!) on INTERFACE | OBJECT
+
+directive @relation(kind: String, name: String, nodeType: String) on FIELD_DEFINITION
+
+interface API implements Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type APIConnection implements Connection {
+  count: Int
+  edges: [APIEdge!]!
+  pageInfo: PageInfo!
+}
+
+type APIEdge implements Edge {
+  cursor: String!
+  node: API!
+}
+
+type AsyncAPI implements API & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Component implements Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  consumesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  providesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  subComponentOf: Component
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type ComponentConnection implements Connection {
+  count: Int
+  edges: [ComponentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ComponentEdge implements Edge {
+  cursor: String!
+  node: Component!
+}
+
+interface Connection {
+  count: Int
+  edges: [Edge!]!
+  pageInfo: PageInfo!
+}
+
+type Database implements Dependency & Entity & Node & Ownable & Resource {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type Department implements Entity & Group & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Dependency implements Node {
+  id: ID!
+}
+
+type DependencyConnection implements Connection {
+  count: Int
+  edges: [DependencyEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DependencyEdge implements Edge {
+  cursor: String!
+  node: Dependency!
+}
+
+type Domain implements Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  systems(after: String, before: String, first: Int, last: Int): SystemConnection
+  tags: [String!]
+  title: String
+}
+
+interface Edge {
+  cursor: String!
+  node: Node!
+}
+
+interface Entity implements Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  tags: [String!]
+  title: String
+}
+
+type EntityLink {
+  icon: String
+  title: String
+  type: String
+  url: String!
+}
+
+type FileLocation implements Entity & Location & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  presence: String
+  tags: [String!]
+  target: String
+  targets: [String!]
+  title: String
+  type: String
+}
+
+type GRPC implements API & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type GraphQL implements API & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Group implements Entity & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type GroupConnection implements Connection {
+  count: Int
+  edges: [GroupEdge!]!
+  pageInfo: PageInfo!
+}
+
+type GroupEdge implements Edge {
+  cursor: String!
+  node: Group!
+}
+
+type GroupProfile {
+  displayName: String
+  email: String
+  picture: String
+}
+
+"""
+The \`JSON\` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The \`JSONObject\` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type KeyValuePair {
+  key: String!
+  value: String!
+}
+
+type Library implements Component & Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  consumesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  providesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  subComponentOf: Component
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Location implements Entity & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  presence: String
+  tags: [String!]
+  target: String
+  targets: [String!]
+  title: String
+  type: String
+}
+
+interface Node {
+  id: ID!
+}
+
+type OpaqueAPI implements API & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type OpaqueComponent implements Component & Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  consumesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  providesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  subComponentOf: Component
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type OpaqueEntity implements Entity & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  tags: [String!]
+  title: String
+}
+
+type OpaqueGroup implements Entity & Group & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type OpaqueLocation implements Entity & Location & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  presence: String
+  tags: [String!]
+  target: String
+  targets: [String!]
+  title: String
+  type: String
+}
+
+type OpaqueResource implements Dependency & Entity & Node & Ownable & Resource {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type OpaqueTemplate implements Entity & Node & Ownable & Template {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner
+  parameters: JSONObject
+  steps: [Step!]!
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type OpenAPI implements API & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiConsumedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiProvidedBy(after: String, before: String, first: Int, last: Int): ComponentConnection
+  apiVersion: String!
+  definition: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type Organization implements Entity & Group & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Ownable implements Node {
+  id: ID!
+}
+
+type OwnableConnection implements Connection {
+  count: Int
+  edges: [OwnableEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OwnableEdge implements Edge {
+  cursor: String!
+  node: Ownable!
+}
+
+union Owner = Department | OpaqueGroup | Organization | SubDepartment | Team | User
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Query {
+  entity(kind: String!, name: String!, namespace: String): Entity
+  node(id: ID!): Node
+}
+
+interface Resource implements Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type ResourceConnection implements Connection {
+  count: Int
+  edges: [ResourceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ResourceEdge implements Edge {
+  cursor: String!
+  node: Resource!
+}
+
+type Service implements Component & Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  consumesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  providesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  subComponentOf: Component
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type Step {
+  action: String!
+  id: String
+  if: JSON
+  input: JSONObject
+  name: String
+}
+
+type SubDepartment implements Entity & Group & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type System implements Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  apis(after: String, before: String, first: Int, last: Int): APIConnection
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  description: String
+  domain: Domain
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  resources(after: String, before: String, first: Int, last: Int): ResourceConnection
+  tags: [String!]
+  title: String
+}
+
+type SystemConnection implements Connection {
+  count: Int
+  edges: [SystemEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SystemEdge implements Edge {
+  cursor: String!
+  node: System!
+}
+
+type Team implements Entity & Group & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  children(after: String, before: String, first: Int, last: Int): GroupConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  members(after: String, before: String, first: Int, last: Int): UserConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  parent: Group
+  profile: GroupProfile
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+interface Template implements Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner
+  parameters: JSONObject
+  steps: [Step!]!
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+type URLLocation implements Entity & Location & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  presence: String
+  tags: [String!]
+  target: String
+  targets: [String!]
+  title: String
+  type: String
+}
+
+type User implements Entity & Node {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  links: [EntityLink!]
+  memberOf(after: String, before: String, first: Int, last: Int): GroupConnection
+  name: String!
+  namespace: String!
+  ownerOf(after: String, before: String, first: Int, last: Int): OwnableConnection
+  profile: UserProfile
+  tags: [String!]
+  title: String
+}
+
+type UserConnection implements Connection {
+  count: Int
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserEdge implements Edge {
+  cursor: String!
+  node: User!
+}
+
+type UserProfile {
+  displayName: String
+  email: String
+  picture: String
+}
+
+type Website implements Component & Dependency & Entity & Node & Ownable {
+  annotations: [KeyValuePair!]
+  apiVersion: String!
+  components(after: String, before: String, first: Int, last: Int): ComponentConnection
+  consumesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  dependencyOf(after: String, before: String, first: Int, last: Int): DependencyConnection
+  dependsOn(after: String, before: String, first: Int, last: Int): DependencyConnection
+  description: String
+  id: ID!
+  kind: String!
+  labels: [KeyValuePair!]
+  lifecycle: String!
+  links: [EntityLink!]
+  name: String!
+  namespace: String!
+  owner: Owner!
+  providesApis(after: String, before: String, first: Int, last: Int): APIConnection
+  subComponentOf: Component
+  system: System
+  tags: [String!]
+  title: String
+  type: String!
+}
+
+scalar _DirectiveArgument_",
+]
+`;

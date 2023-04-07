@@ -1,0 +1,267 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`graphql-common codegen should generate the correct code 1`] = `
+[
+  "/* eslint-disable */
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  _DirectiveArgument_: any;
+};
+
+export type Connection = {
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<Edge>;
+  pageInfo: PageInfo;
+};
+
+export type Edge = {
+  cursor: Scalars['String'];
+  node: Node;
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor?: Maybe<Scalars['String']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  node?: Maybe<Node>;
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID'];
+};
+
+
+
+export type ResolverTypeWrapper<T> = Promise<T> | T;
+
+
+export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
+
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
+
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
+  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
+}
+
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<any, TParent, TContext, TArgs>;
+  resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
+}
+
+export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+  | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
+  | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+  | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
+
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+  parent: TParent,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
+
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+
+export type NextResolverFn<T> = () => Promise<T>;
+
+export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+  next: NextResolverFn<TResult>,
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+
+
+/** Mapping between all available schema types and the resolvers types */
+export type ResolversTypes = {
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Connection: never;
+  Edge: never;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Node: never;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
+  Query: ResolverTypeWrapper<{}>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  _DirectiveArgument_: ResolverTypeWrapper<Scalars['_DirectiveArgument_']>;
+};
+
+/** Mapping between all available schema types and the resolvers parents */
+export type ResolversParentTypes = {
+  Boolean: Scalars['Boolean'];
+  Connection: never;
+  Edge: never;
+  ID: Scalars['ID'];
+  Int: Scalars['Int'];
+  Node: never;
+  PageInfo: PageInfo;
+  Query: {};
+  String: Scalars['String'];
+  _DirectiveArgument_: Scalars['_DirectiveArgument_'];
+};
+
+export type DiscriminatesDirectiveArgs = {
+  opaqueType?: Maybe<Scalars['String']>;
+  with?: Maybe<Scalars['_DirectiveArgument_']>;
+};
+
+export type DiscriminatesDirectiveResolver<Result, Parent, ContextType = any, Args = DiscriminatesDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type DiscriminationAliasDirectiveArgs = {
+  type: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type DiscriminationAliasDirectiveResolver<Result, Parent, ContextType = any, Args = DiscriminationAliasDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type FieldDirectiveArgs = {
+  at: Scalars['_DirectiveArgument_'];
+  default?: Maybe<Scalars['_DirectiveArgument_']>;
+};
+
+export type FieldDirectiveResolver<Result, Parent, ContextType = any, Args = FieldDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ImplementsDirectiveArgs = {
+  interface: Scalars['String'];
+};
+
+export type ImplementsDirectiveResolver<Result, Parent, ContextType = any, Args = ImplementsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Connection'] = ResolversParentTypes['Connection']> = {
+  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  edges?: Resolver<Array<ResolversTypes['Edge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+};
+
+export type EdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Edge'] = ResolversParentTypes['Edge']> = {
+  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Node'], ParentType, ContextType>;
+};
+
+export type NodeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
+  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  startCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+};
+
+export interface _DirectiveArgument_ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['_DirectiveArgument_'], any> {
+  name: '_DirectiveArgument_';
+}
+
+export type Resolvers<ContextType = any> = {
+  Connection?: ConnectionResolvers<ContextType>;
+  Edge?: EdgeResolvers<ContextType>;
+  Node?: NodeResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  _DirectiveArgument_?: GraphQLScalarType;
+};
+
+export type DirectiveResolvers<ContextType = any> = {
+  discriminates?: DiscriminatesDirectiveResolver<any, any, ContextType>;
+  discriminationAlias?: DiscriminationAliasDirectiveResolver<any, any, ContextType>;
+  field?: FieldDirectiveResolver<any, any, ContextType>;
+  implements?: ImplementsDirectiveResolver<any, any, ContextType>;
+};
+
+export type _DirectiveArgument_ = Scalars["_DirectiveArgument_"];",
+  "directive @discriminates(opaqueType: String, with: _DirectiveArgument_) on INTERFACE
+
+directive @discriminationAlias(type: String!, value: String!) repeatable on INTERFACE
+
+directive @field(at: _DirectiveArgument_!, default: _DirectiveArgument_) on FIELD_DEFINITION
+
+directive @implements(interface: String!) on INTERFACE | OBJECT
+
+interface Connection {
+  count: Int
+  edges: [Edge!]!
+  pageInfo: PageInfo!
+}
+
+interface Edge {
+  cursor: String!
+  node: Node!
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Query {
+  node(id: ID!): Node
+}
+
+scalar _DirectiveArgument_",
+]
+`;
