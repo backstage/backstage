@@ -133,7 +133,7 @@ export const EntityBazaarInfoContent = ({
       label: 'Docs',
       icon: <Description />,
       href: bazaarProject?.docs,
-      disabled: bazaarProject?.docs === undefined || bazaarProject?.docs === '',
+      disabled: bazaarProject?.docs === null || bazaarProject?.docs === '',
     },
   ];
 
