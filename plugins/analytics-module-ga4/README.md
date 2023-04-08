@@ -9,7 +9,7 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @devx-discover/plugin-analytics-ga4`
+   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga4`
 2. Wire up the API implementation to your App:
 
 ```tsx
@@ -19,7 +19,7 @@ import {
   configApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { GoogleAnalytics4 } from '@devx-discover/plugin-analytics-ga4';
+import { GoogleAnalytics4 } from '@backstage/plugin-analytics-module-ga4';
 
 export const apis: AnyApiFactory[] = [
   // Instantiate and register the GA Analytics API Implementation.
@@ -37,7 +37,7 @@ export const apis: AnyApiFactory[] = [
 3. Configure the plugin in your `app-config.yaml`:
 
 The following is the minimum configuration required to start sending analytics
-events to GA. All that's needed is your Universal Analytics measurement ID:
+events to GA. All that's needed is your GA4 measurement ID:
 
 ```yaml
 # app-config.yaml
@@ -74,6 +74,8 @@ Additional dimensional data can be captured using custom dimensions, like this:
    context names will be prefixed by `c_`.
 4. `allowedAttributes` config accepts array of string, where each entry is an attribute that will be sent in the event.
    attribute names will be prefixed by `a_`.
+5. `allowedContexts` and `allowedAttributes` are optional, if not provided, no additional context and attributes will be sent.
+6. if `allowedContexts` or `allowedAttributes` is set to '\*', all context and attributes will be sent.
 
 ```yaml
 app:
