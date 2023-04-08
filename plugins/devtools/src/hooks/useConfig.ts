@@ -17,10 +17,10 @@
 import { devToolsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
-import { JsonValue } from '@backstage/types';
+import { ConfigInfo } from '@backstage/plugin-devtools-common';
 
 export function useConfig(): {
-  config?: JsonValue;
+  configInfo?: ConfigInfo;
   loading: boolean;
   error?: Error;
 } {
@@ -30,7 +30,7 @@ export function useConfig(): {
   }, [api]);
 
   return {
-    config: value,
+    configInfo: value,
     loading,
     error,
   };

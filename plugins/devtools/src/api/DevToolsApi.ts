@@ -16,17 +16,17 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 import {
+  ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
-import { JsonValue } from '@backstage/types';
 
 export const devToolsApiRef = createApiRef<DevToolsApi>({
   id: 'plugin.devtools.service',
 });
 
 export interface DevToolsApi {
-  getConfig(): Promise<JsonValue | undefined>;
+  getConfig(): Promise<ConfigInfo | undefined>;
   getExternalDependencies(): Promise<ExternalDependency[] | undefined>;
   getInfo(): Promise<DevToolsInfo | undefined>;
 }

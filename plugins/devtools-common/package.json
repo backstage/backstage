@@ -23,7 +23,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

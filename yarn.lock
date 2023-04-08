@@ -6115,6 +6115,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 

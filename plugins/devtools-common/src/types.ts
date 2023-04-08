@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** @public */
 export type Endpoint = {
   name: string;
@@ -49,3 +51,17 @@ export enum ExternalDependencyStatus {
   healthy = 'Healthy',
   unhealthy = 'Unhealthy',
 }
+
+/** @public */
+export type ConfigInfo = {
+  config?: JsonValue;
+  error?: ConfigError;
+};
+
+/** @public */
+export type ConfigError = {
+  name: string;
+  message: string;
+  messages?: string[];
+  stack?: string;
+};

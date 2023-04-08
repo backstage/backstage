@@ -15,8 +15,8 @@
  */
 
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
 import {
+  ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
@@ -35,11 +35,11 @@ export class DevToolsClient implements DevToolsApi {
     this.identityApi = options.identityApi;
   }
 
-  public async getConfig(): Promise<JsonValue | undefined> {
+  public async getConfig(): Promise<ConfigInfo | undefined> {
     const urlSegment = 'config';
 
-    const config = await this.get<JsonValue | undefined>(urlSegment);
-    return config;
+    const configInfo = await this.get<ConfigInfo | undefined>(urlSegment);
+    return configInfo;
   }
 
   public async getExternalDependencies(): Promise<

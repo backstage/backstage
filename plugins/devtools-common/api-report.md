@@ -4,6 +4,21 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { JsonValue } from '@backstage/types';
+
+// @public (undocumented)
+export type ConfigError = {
+  name: string;
+  message: string;
+  messages?: string[];
+  stack?: string;
+};
+
+// @public (undocumented)
+export type ConfigInfo = {
+  config?: JsonValue;
+  error?: ConfigError;
+};
 
 // @public (undocumented)
 export const devToolsAdministerPermission: BasicPermission;

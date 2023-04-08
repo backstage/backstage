@@ -4,10 +4,10 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { ConfigInfo } from '@backstage/plugin-devtools-common';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 import express from 'express';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
@@ -18,7 +18,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export class DevToolsBackendApi {
   constructor(logger: Logger, config: Config);
   // (undocumented)
-  listConfig(): Promise<JsonValue>;
+  listConfig(): Promise<ConfigInfo>;
   // (undocumented)
   listExternalDependencyDetails(): Promise<ExternalDependency[]>;
   // (undocumented)

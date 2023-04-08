@@ -22,9 +22,10 @@ import {
   ExternalDependency,
   Endpoint,
   ExternalDependencyStatus,
+  ConfigInfo,
 } from '@backstage/plugin-devtools-common';
 
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 import { findPaths } from '@backstage/cli-common';
@@ -34,6 +35,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { memoize } from 'lodash';
+import { assertError } from '@backstage/errors';
 
 /** @public */
 export class DevToolsBackendApi {
@@ -142,7 +144,7 @@ export class DevToolsBackendApi {
     return result;
   }
 
-  public async listConfig(): Promise<JsonValue> {
+  public async listConfig(): Promise<ConfigInfo> {
     /* eslint-disable-next-line no-restricted-syntax */
     const paths = findPaths(__dirname);
 
@@ -156,17 +158,47 @@ export class DevToolsBackendApi {
     const schemaMemo = memoize(schemaFunc);
     const schema = await schemaMemo();
 
-    const config = { data: this.config.get() as JsonObject, context: 'inline' };
+    const configInfo: ConfigInfo = {
+      config: undefined,
+      error: undefined,
+    };
+    try {
+      const config = {
+        data: this.config.get() as JsonObject,
+        context: 'inline',
+      };
+      const sanitizedConfigs = schema.process([config], {
+        ignoreSchemaErrors: false,
+        valueTransform: (value, context) =>
+          context.visibility === 'secret' ? '<secret>' : value,
+      });
 
-    const sanitizedConfigs = schema.process([config], {
-      ignoreSchemaErrors: true,
-      valueTransform: (value, context) =>
-        context.visibility === 'secret' ? '<secret>' : value,
-    });
+      const data = ConfigReader.fromConfigs(sanitizedConfigs).get();
+      configInfo.config = data;
+    } catch (error) {
+      assertError(error);
+      // The config is not valid for some reason but we want to be able to see it still
+      const config = {
+        data: this.config.get() as JsonObject,
+        context: 'inline',
+      };
+      const sanitizedConfigs = schema.process([config], {
+        ignoreSchemaErrors: true,
+        valueTransform: (value, context) =>
+          context.visibility === 'secret' ? '<secret>' : value,
+      });
 
-    const data = ConfigReader.fromConfigs(sanitizedConfigs).get();
+      const data = ConfigReader.fromConfigs(sanitizedConfigs).get();
+      configInfo.config = data;
+      configInfo.error = {
+        name: error.name,
+        message: error.message,
+        messages: error.messages as string[] | undefined,
+        stack: error.stack,
+      };
+    }
 
-    return data;
+    return configInfo;
   }
 
   public async listInfo(): Promise<DevToolsInfo> {
