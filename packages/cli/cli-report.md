@@ -273,6 +273,7 @@ Usage: backstage-cli package start [options]
 Options:
   --config <path>
   --role <name>
+  --dist
   --check
   --inspect
   --inspect-brk

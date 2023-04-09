@@ -18,15 +18,25 @@ import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
 import { serveBackend } from '../../lib/bundler';
 import { startBackendExperimental } from '../../lib/experimental/startBackendExperimental';
+import { startBackendDist } from '../../lib/startDist';
 
 interface StartBackendOptions {
+  dist: boolean;
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  if (process.env.EXPERIMENTAL_BACKEND_START) {
+  if (options.dist) {
+    const waitForExit = await startBackendDist({
+      targetDir: paths.targetDir,
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  } else if (process.env.EXPERIMENTAL_BACKEND_START) {
     const waitForExit = await startBackendExperimental({
       entry: 'src/index',
       checksEnabled: false, // not supported

@@ -103,6 +103,7 @@ Start a package for local development
 Options:
   --config <path>  Config files to load instead of app-config.yaml (default: [])
   --role <name>    Run the command with an explicit package role
+  --dist           Run the package from the dist/ directory, applicable to backend packages in local development only
   --check          Enable type checking and linting if available
   --inspect        Enable debugger in Node.js environments
   --inspect-brk    Enable debugger in Node.js environments, breaking before code starts

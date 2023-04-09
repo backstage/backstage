@@ -105,6 +105,10 @@ export function registerScriptCommand(program: Command) {
     .description('Start a package for local development')
     .option(...configOption)
     .option('--role <name>', 'Run the command with an explicit package role')
+    .option(
+      '--dist',
+      'Run the package from the dist/ directory, applicable to backend packages in local development only',
+    )
     .option('--check', 'Enable type checking and linting if available')
     .option('--inspect', 'Enable debugger in Node.js environments')
     .option(

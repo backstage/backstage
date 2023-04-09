@@ -24,6 +24,7 @@ export async function command(opts: OptionValues): Promise<void> {
 
   const options = {
     configPaths: opts.config as string[],
+    dist: Boolean(opts.dist) as boolean,
     checksEnabled: Boolean(opts.check),
     inspectEnabled: Boolean(opts.inspect),
     inspectBrkEnabled: Boolean(opts.inspectBrk),
