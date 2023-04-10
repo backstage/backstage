@@ -65,6 +65,7 @@ describe('PgSearchEngineIndexer', () => {
     );
     expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
     expect(tx.commit).toHaveBeenCalled();
+    expect(tx.rollback).not.toHaveBeenCalled();
   });
 
   it('should batch insert documents', async () => {
