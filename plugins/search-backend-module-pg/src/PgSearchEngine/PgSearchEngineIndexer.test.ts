@@ -23,6 +23,7 @@ describe('PgSearchEngineIndexer', () => {
   const tx = {
     rollback: jest.fn(),
     commit: jest.fn(),
+    isCompleted: jest.fn(),
   } as any;
   let database: jest.Mocked<DatabaseStore>;
   let indexer: PgSearchEngineIndexer;
@@ -37,6 +38,7 @@ describe('PgSearchEngineIndexer', () => {
       completeInsert: jest.fn(),
       prepareInsert: jest.fn(),
     };
+    tx.isCompleted.mockReturnValue(false);
     indexer = new PgSearchEngineIndexer({
       batchSize: 100,
       type: 'my-type',

@@ -113,11 +113,10 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
       return;
     }
 
-    try {
-      this.tx!.rollback(error);
-    } catch {
-      // Unlikely! It was likely rolled back earlier.
+    if (!this.tx!.isCompleted()) {
+      await this.tx!.rollback(error);
     }
+
     done(error);
   }
 }
