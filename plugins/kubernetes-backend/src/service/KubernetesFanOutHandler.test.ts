@@ -18,7 +18,6 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   ClusterDetails,
   CustomResource,
-  FetchResponseWrapper,
   ObjectFetchParams,
   KubernetesServiceLocator,
 } from '../types/types';
@@ -28,1009 +27,1073 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
-import { ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 
-const fetchObjectsForService = jest.fn();
-const fetchPodMetricsByNamespaces = jest.fn();
+describe('KubernetesFanOutHandler', () => {
+  let config: Config;
+  let kubernetesFanOutHandler: KubernetesFanOutHandler;
+  const fetchObjectsForService = jest.fn();
+  const fetchPodMetricsByNamespaces = jest.fn();
+  const getClustersByEntity = jest.fn();
 
-const getClustersByEntity = jest.fn();
-
-const POD_METRICS_FIXTURE = {
-  containers: [],
-  cpu: {
-    currentUsage: 100,
-    limitTotal: 102,
-    requestTotal: 101,
-  },
-  memory: {
-    currentUsage: '1000',
-    limitTotal: '1002',
-    requestTotal: '1001',
-  },
-  pod: {},
-};
-
-const mockFetch = (mock: jest.Mock) => {
-  mock.mockImplementation((params: ObjectFetchParams) =>
-    Promise.resolve(
-      generateMockResourcesAndErrors(
-        params.serviceId,
-        params.clusterDetails.name,
-      ),
-    ),
-  );
-};
-
-const mockMetrics = (mock: jest.Mock) => {
-  mock.mockImplementation(
-    (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
-      Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
-  );
-};
-
-const entity = {
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'Component',
-  metadata: {
-    name: 'test-component',
-    annotations: {
-      'backstage.io/kubernetes-labels-selector':
-        'backstage.io/test-label=test-component',
-    },
-  },
-  spec: {
-    type: 'service',
-    lifecycle: 'production',
-    owner: 'joe',
-  },
-};
-
-const cluster1 = {
-  name: 'test-cluster',
-  authProvider: 'serviceAccount',
-  customResources: [
-    {
-      group: 'some-other-crd.example.com',
-      apiVersion: 'v1alpha1',
-      plural: 'some-crd-only-on-this-cluster',
-    },
-  ],
-};
-
-const cluster2 = {
-  name: 'cluster-two',
-  authProvider: 'serviceAccount',
-  customResources: [
-    {
-      group: 'crd-two.example.com',
-      apiVersion: 'v1alpha1',
-      plural: 'crd-two-plural',
-    },
-  ],
-};
-
-const config = new ConfigReader({
-  kubernetes: {
-    serviceLocatorMethod: { type: 'multiTenant' },
-    clusterLocatorMethods: [{ type: 'config', clusters: [cluster1, cluster2] }],
-    customResourceProfiles: {
-      build: [
-        {
-          group: 'argoproj.io',
-          apiVersion: 'v1alpha1',
-          plural: 'rollouts',
-        },
-      ],
-      run: [
-        {
-          group: 'sample.io',
-          apiVersion: 'v1alpha1',
-          plural: 'tests',
-        },
-      ],
-    },
-  },
-});
-
-function resourcesByCluster(clusterName: string) {
-  return [
-    {
-      resources: [
-        {
-          metadata: {
-            name: `my-pods-test-component-${clusterName}`,
-            namespace: `ns-test-component-${clusterName}`,
-          },
-        },
-      ],
-      type: 'pods',
-    },
-    {
-      resources: [
-        {
-          metadata: {
-            name: `my-configmaps-test-component-${clusterName}`,
-            namespace: `ns-test-component-${clusterName}`,
-          },
-        },
-      ],
-      type: 'configmaps',
-    },
-    {
-      resources: [
-        {
-          metadata: {
-            name: `my-services-test-component-${clusterName}`,
-            namespace: `ns-test-component-${clusterName}`,
-          },
-        },
-      ],
-      type: 'services',
-    },
-  ];
-}
-
-function mockFetchAndGetKubernetesFanOutHandler(
-  customResources: CustomResource[],
-) {
-  mockFetch(fetchObjectsForService);
-  mockMetrics(fetchPodMetricsByNamespaces);
-
-  return getKubernetesFanOutHandler(customResources);
-}
-
-function getKubernetesFanOutHandler(customResources: CustomResource[]) {
-  return new KubernetesFanOutHandler({
-    logger: getVoidLogger(),
-    config: new ConfigReader({}),
-    fetcher: {
-      fetchObjectsForService,
-      fetchPodMetricsByNamespaces,
-    },
-    serviceLocator: {
-      getClustersByEntity,
-    },
-    customResources: customResources,
-    authTranslator: {
-      decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
-        return clusterDetails;
+  const entity = {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Component',
+    metadata: {
+      name: 'test-component',
+      annotations: {
+        'backstage.io/kubernetes-labels-selector':
+          'backstage.io/test-label=test-component',
       },
     },
-    config,
-  });
-}
+    spec: {
+      type: 'service',
+      lifecycle: 'production',
+      owner: 'joe',
+    },
+  };
+  const cluster1 = {
+    name: 'test-cluster',
+    authProvider: 'serviceAccount',
+    customResources: [
+      {
+        group: 'some-other-crd.example.com',
+        apiVersion: 'v1alpha1',
+        plural: 'some-crd-only-on-this-cluster',
+      },
+    ],
+  };
+  const cluster2 = {
+    name: 'cluster-two',
+    authProvider: 'serviceAccount',
+    customResources: [
+      {
+        group: 'crd-two.example.com',
+        apiVersion: 'v1alpha1',
+        plural: 'crd-two-plural',
+      },
+    ],
+  };
+  const POD_METRICS_FIXTURE = {
+    containers: [],
+    cpu: {
+      currentUsage: 100,
+      limitTotal: 102,
+      requestTotal: 101,
+    },
+    memory: {
+      currentUsage: '1000',
+      limitTotal: '1002',
+      requestTotal: '1001',
+    },
+    pod: {},
+  };
 
-function generatePodStatus(
-  _clusterName: string,
-  _namespaces: Set<string>,
-): FetchResponseWrapper {
-  return {
-    errors: [],
-    responses: Array.from(_namespaces).map(() => {
-      return {
-        type: 'podstatus',
+  const mockClusterResourceMap = {
+    'test-cluster': [
+      {
         resources: [
           {
-            Pod: {},
-            CPU: {
-              CurrentUsage: 100,
-              RequestTotal: 101,
-              LimitTotal: 102,
+            metadata: {
+              name: `my-pods-test-component-test-cluster`,
+              namespace: `ns-test-component-test-cluster`,
             },
-            Memory: {
-              CurrentUsage: BigInt('1000'),
-              RequestTotal: BigInt('1001'),
-              LimitTotal: BigInt('1002'),
+          },
+        ],
+        type: 'pods',
+      },
+      {
+        resources: [
+          {
+            metadata: {
+              name: `my-configmaps-test-component-test-cluster`,
+              namespace: `ns-test-component-test-cluster`,
             },
-            Containers: [],
+          },
+        ],
+        type: 'configmaps',
+      },
+      {
+        resources: [
+          {
+            metadata: {
+              name: `my-services-test-component-test-cluster`,
+              namespace: `ns-test-component-test-cluster`,
+            },
+          },
+        ],
+        type: 'services',
+      },
+    ],
+    'other-cluster': [
+      {
+        resources: [
+          {
+            metadata: {
+              name: `my-pods-test-component-other-cluster`,
+              namespace: `ns-test-component-other-cluster`,
+            },
+          },
+        ],
+        type: 'pods',
+      },
+      {
+        resources: [
+          {
+            metadata: {
+              name: `my-configmaps-test-component-other-cluster`,
+              namespace: `ns-test-component-other-cluster`,
+            },
+          },
+        ],
+        type: 'configmaps',
+      },
+      {
+        resources: [
+          {
+            metadata: {
+              name: `my-services-test-component-other-cluster`,
+              namespace: `ns-test-component-other-cluster`,
+            },
+          },
+        ],
+        type: 'services',
+      },
+    ],
+  };
+
+  function getKubernetesFanOutHandler(customResources: CustomResource[]) {
+    return new KubernetesFanOutHandler({
+      logger: getVoidLogger(),
+      fetcher: {
+        fetchObjectsForService,
+        fetchPodMetricsByNamespaces,
+      },
+      serviceLocator: {
+        getClustersByEntity,
+      },
+      customResources: customResources,
+      authTranslator: {
+        decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+          return clusterDetails;
+        },
+      },
+      config,
+    });
+  }
+
+  function generateMockResourcesAndErrors(
+    serviceId: string,
+    clusterName: string,
+  ) {
+    if (clusterName === 'empty-cluster') {
+      return {
+        errors: [],
+        responses: [
+          {
+            type: 'pods',
+            resources: [],
+          },
+          {
+            type: 'configmaps',
+            resources: [],
+          },
+          {
+            type: 'services',
+            resources: [],
           },
         ],
       };
-    }),
-  };
-}
+    } else if (clusterName === 'error-cluster') {
+      return {
+        errors: ['some random cluster error'],
+        responses: [
+          {
+            type: 'pods',
+            resources: [],
+          },
+          {
+            type: 'configmaps',
+            resources: [],
+          },
+          {
+            type: 'services',
+            resources: [],
+          },
+        ],
+      };
+    }
 
-function generateMockResourcesAndErrors(
-  serviceId: string,
-  clusterName: string,
-) {
-  if (clusterName === 'empty-cluster') {
     return {
       errors: [],
       responses: [
         {
           type: 'pods',
-          resources: [],
+          resources: [
+            {
+              metadata: {
+                name: `my-pods-${serviceId}-${clusterName}`,
+                namespace: `ns-${serviceId}-${clusterName}`,
+              },
+            },
+          ],
         },
         {
           type: 'configmaps',
-          resources: [],
+          resources: [
+            {
+              metadata: {
+                name: `my-configmaps-${serviceId}-${clusterName}`,
+                namespace: `ns-${serviceId}-${clusterName}`,
+              },
+            },
+          ],
         },
         {
           type: 'services',
-          resources: [],
-        },
-      ],
-    };
-  } else if (clusterName === 'error-cluster') {
-    return {
-      errors: ['some random cluster error'],
-      responses: [
-        {
-          type: 'pods',
-          resources: [],
-        },
-        {
-          type: 'configmaps',
-          resources: [],
-        },
-        {
-          type: 'services',
-          resources: [],
+          resources: [
+            {
+              metadata: {
+                name: `my-services-${serviceId}-${clusterName}`,
+                namespace: `ns-${serviceId}-${clusterName}`,
+              },
+            },
+          ],
         },
       ],
     };
   }
 
-  return {
-    errors: [],
-    responses: [
-      {
-        type: 'pods',
-        resources: [
-          {
-            metadata: {
-              name: `my-pods-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
-            },
-          },
+  beforeAll(async () => {
+    config = new ConfigReader({
+      kubernetes: {
+        serviceLocatorMethod: { type: 'multiTenant' },
+        clusterLocatorMethods: [
+          { type: 'config', clusters: [cluster1, cluster2] },
         ],
-      },
-      {
-        type: 'configmaps',
-        resources: [
-          {
-            metadata: {
-              name: `my-configmaps-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
+        customResourceProfiles: {
+          build: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
             },
-          },
-        ],
-      },
-      {
-        type: 'services',
-        resources: [
-          {
-            metadata: {
-              name: `my-services-${serviceId}-${clusterName}`,
-              namespace: `ns-${serviceId}-${clusterName}`,
+          ],
+          run: [
+            {
+              group: 'sample.io',
+              apiVersion: 'v1alpha1',
+              plural: 'tests',
             },
-          },
-        ],
+          ],
+        },
       },
-    ],
-  };
-}
+    });
+  });
 
-describe('getKubernetesObjectsByEntity', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  });
 
-  it('retrieve objects for one cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-        ],
-      }),
+    fetchObjectsForService.mockImplementation((params: ObjectFetchParams) =>
+      Promise.resolve(
+        generateMockResourcesAndErrors(
+          params.serviceId,
+          params.clusterDetails.name,
+        ),
+      ),
     );
 
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
-      new Set(['ns-test-component-test-cluster']),
-    );
-
-    expect(result).toStrictEqual({
-      items: [
-        {
-          cluster: {
-            name: 'test-cluster',
-          },
+    fetchPodMetricsByNamespaces.mockImplementation(
+      (_clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+        Promise.resolve({
           errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('test-cluster'),
-        },
-      ],
-    });
-  });
-
-  it('retrieve objects for one cluster using customResources per cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [cluster1],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls[0][0].customResources.length).toBe(
-      1,
-    );
-  });
-
-  it('retrieve objects for two cluster using customResources per cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [cluster1, cluster2],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService.mock.calls.length).toBe(2);
-    expect(
-      fetchObjectsForService.mock.calls[0][0].customResources[0].group,
-    ).toBe('some-other-crd.example.com');
-    expect(
-      fetchObjectsForService.mock.calls[1][0].customResources[0].group,
-    ).toBe('crd-two.example.com');
-  });
-
-  it('retrieve objects for two cluster using customResources globally and per cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-          cluster2,
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        objectType: 'customresources',
-        group: 'some-group',
-        apiVersion: 'v2',
-        plural: 'things',
-      },
-    ]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService.mock.calls.length).toBe(2);
-    expect(
-      fetchObjectsForService.mock.calls[0][0].customResources[0].group,
-    ).toBe('some-group');
-    expect(
-      fetchObjectsForService.mock.calls[1][0].customResources[0].group,
-    ).toBe('crd-two.example.com');
-  });
-
-  it('prioritizes returning customResources defined in cluster details before config defined profileCustomResources and globally defined customResources passed directly into the fanOutHandler', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'build',
-            customResources: [
-              {
-                group: 'priority.test.io',
-                apiVersion: 'v1alpha1',
-                plural: 'priority2',
-              },
-            ],
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        group: 'priority.test.io',
-        apiVersion: 'v1alpha1',
-        plural: 'priority4',
-        objectType: 'customresources',
-      },
-    ]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'priority.test.io',
-            apiVersion: 'v1alpha1',
-            plural: 'priority2',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-  });
-
-  it('prioritizes returning customResources defined in config defined customResourceProfiles before globally defined customResources passed directly into the fanOutHandler', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'build',
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        group: 'priority.test.io',
-        apiVersion: 'v1alpha1',
-        plural: 'priority4',
-        objectType: 'customresources',
-      },
-    ]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'argoproj.io',
-            apiVersion: 'v1alpha1',
-            plural: 'rollouts',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-  });
-
-  it('returns globally defined customResources passed directly into the fanOutHandler when none are defined in clusterDetails or config defined customResourceProfiles', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        group: 'priority.test.io',
-        apiVersion: 'v1alpha1',
-        plural: 'priority4',
-        objectType: 'customresources',
-      },
-    ]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'priority.test.io',
-            apiVersion: 'v1alpha1',
-            plural: 'priority4',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-  });
-
-  it('retrieves objects for one cluster using customResourceProfiles config definition', async () => {
-    // fanOutHandler checks for any customResources provided in the cluster details, this takes priority two in objects returned. After it checks whether a customResourceProfile is defined in the cluster details and if it is it assigns priority three to returning matching custom resources defined in the config matching that profile name.
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'build',
-          },
-        ],
-      }),
-    );
-    // fanOutHandler first checks for any customResources provided directly to the fanouthandler instance, this takes priority one in objects returned.
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'argoproj.io',
-            apiVersion: 'v1alpha1',
-            plural: 'rollouts',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-  });
-
-  it('retrieves objects for two clusters using customResourceProfiles config definition', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'build',
-          },
-          {
-            name: 'profile-cluster-2',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'run',
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'argoproj.io',
-            apiVersion: 'v1alpha1',
-            plural: 'rollouts',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customResources: [
-          {
-            group: 'sample.io',
-            apiVersion: 'v1alpha1',
-            plural: 'tests',
-            objectType: 'customresources',
-          },
-        ],
-      }),
-    );
-  });
-
-  it('dont call top for the same namespace twice', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-        ],
-      }),
-    );
-
-    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
-      Promise.resolve({
-        errors: [],
-        responses: [
-          {
-            type: 'pods',
-            resources: [
-              {
-                metadata: {
-                  name: `pod1`,
-                  namespace: `ns-a`,
+          responses: Array.from(namespaces).map(() => {
+            return {
+              type: 'podstatus',
+              resources: [
+                {
+                  Pod: {},
+                  CPU: {
+                    CurrentUsage: 100,
+                    RequestTotal: 101,
+                    LimitTotal: 102,
+                  },
+                  Memory: {
+                    CurrentUsage: BigInt('1000'),
+                    RequestTotal: BigInt('1001'),
+                    LimitTotal: BigInt('1002'),
+                  },
+                  Containers: [],
                 },
-              },
-              {
-                metadata: {
-                  name: `pod2`,
-                  namespace: `ns-a`,
-                },
-              },
-              {
-                metadata: {
-                  name: `pod3`,
-                  namespace: `ns-b`,
-                },
-              },
-            ],
-          },
-        ],
-      }),
+              ],
+            };
+          }),
+        }),
     );
+  });
 
-    mockMetrics(fetchPodMetricsByNamespaces);
-
-    const sut = getKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
-      new Set(['ns-a', 'ns-b']),
-    );
-
-    expect(result).toStrictEqual({
-      items: [
-        {
-          cluster: {
-            name: 'test-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE, POD_METRICS_FIXTURE],
-          resources: [
+  describe('getKubernetesObjectsByEntity', () => {
+    it('retrieve objects for one cluster', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
             {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+      );
+
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
+        expect.anything(),
+        new Set(['ns-test-component-test-cluster']),
+        expect.anything(),
+      );
+      expect(result).toStrictEqual({
+        items: [
+          {
+            cluster: {
+              name: 'test-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['test-cluster'],
+          },
+        ],
+      });
+    });
+
+    it('retrieve objects for one cluster using customResources per cluster', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster1],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(
+        fetchObjectsForService.mock.calls[0][0].customResources.length,
+      ).toBe(1);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'some-other-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'some-crd-only-on-this-cluster',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('retrieve objects for two cluster using customResources per cluster', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster1, cluster2],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'some-other-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'some-crd-only-on-this-cluster',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'crd-two.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'crd-two-plural',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('retrieve objects for two cluster using customResources globally and per cluster', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+            cluster2,
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'things',
+        },
+      ]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              objectType: 'customresources',
+              group: 'some-group',
+              apiVersion: 'v2',
+              plural: 'things',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'crd-two.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'crd-two-plural',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('prioritizes returning customResources defined in cluster details before config defined profileCustomResources and globally defined customResources passed directly into the fanOutHandler', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'build',
+              customResources: [
+                {
+                  group: 'priority.test.io',
+                  apiVersion: 'v1alpha1',
+                  plural: 'priority2',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([
+        {
+          group: 'priority.test.io',
+          apiVersion: 'v1alpha1',
+          plural: 'priority4',
+          objectType: 'customresources',
+        },
+      ]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'priority.test.io',
+              apiVersion: 'v1alpha1',
+              plural: 'priority2',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('prioritizes returning customResources defined in config defined customResourceProfiles before globally defined customResources passed directly into the fanOutHandler', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'build',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([
+        {
+          group: 'priority.test.io',
+          apiVersion: 'v1alpha1',
+          plural: 'priority4',
+          objectType: 'customresources',
+        },
+      ]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('returns globally defined customResources passed directly into the fanOutHandler when none are defined in clusterDetails or config defined customResourceProfiles', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([
+        {
+          group: 'priority.test.io',
+          apiVersion: 'v1alpha1',
+          plural: 'priority4',
+          objectType: 'customresources',
+        },
+      ]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'priority.test.io',
+              apiVersion: 'v1alpha1',
+              plural: 'priority4',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('retrieves objects for one cluster using customResourceProfiles config definition', async () => {
+      // fanOutHandler checks for any customResources provided in the cluster details, this takes priority two in objects returned. After it checks whether a customResourceProfile is defined in the cluster details and if it is it assigns priority three to returning matching custom resources defined in the config matching that profile name.
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'build',
+            },
+          ],
+        }),
+      );
+      // fanOutHandler checks for any customResources provided directly to the fanouthandler instance, this represents customResources defined globally in the config under the customResources key. this takes priority four in objects returned.
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('retrieves objects for two clusters using customResourceProfiles config definition', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'build',
+            },
+            {
+              name: 'profile-cluster-2',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'run',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'sample.io',
+              apiVersion: 'v1alpha1',
+              plural: 'tests',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('dont call top for the same namespace twice', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+          ],
+        }),
+      );
+
+      fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+        Promise.resolve({
+          errors: [],
+          responses: [
+            {
+              type: 'pods',
               resources: [
                 {
                   metadata: {
-                    name: 'pod1',
-                    namespace: 'ns-a',
+                    name: `pod1`,
+                    namespace: `ns-a`,
                   },
                 },
                 {
                   metadata: {
-                    name: 'pod2',
-                    namespace: 'ns-a',
+                    name: `pod2`,
+                    namespace: `ns-a`,
                   },
                 },
                 {
                   metadata: {
-                    name: 'pod3',
-                    namespace: 'ns-b',
+                    name: `pod3`,
+                    namespace: `ns-b`,
                   },
                 },
               ],
-              type: 'pods',
             },
           ],
-        },
-      ],
-    });
-  });
+        }),
+      );
 
-  it('pods api is returning garbage', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-        ],
-      }),
-    );
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
 
-    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
-      Promise.resolve({
-        errors: [],
-        responses: [
-          {
-            garbage: ['thrash', 'rubbish'],
-          },
-        ],
-      }),
-    );
-
-    mockMetrics(fetchPodMetricsByNamespaces);
-
-    const sut = getKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(0);
-
-    expect(result).toStrictEqual({
-      items: [],
-    });
-  });
-
-  it('retrieve objects for two clusters', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-            dashboardUrl: 'https://k8s.foo.coom',
-          },
-          {
-            name: 'other-cluster',
-            authProvider: 'google',
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {
-        google: 'google_token_123',
-      },
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(2);
-    expect(result).toStrictEqual({
-      items: [
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
         {
-          cluster: {
-            dashboardUrl: 'https://k8s.foo.coom',
-            name: 'test-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('test-cluster'),
+          entity,
+          auth: {},
         },
-        {
-          cluster: {
-            name: 'other-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('other-cluster'),
-        },
-      ],
-    });
-  });
-  it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-          {
-            name: 'other-cluster',
-            authProvider: 'google',
-          },
-          {
-            name: 'empty-cluster',
-            authProvider: 'google',
-          },
-        ],
-      }),
-    );
+      );
 
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
+        expect.anything(),
+        new Set(['ns-a', 'ns-b']),
+        expect.anything(),
+      );
 
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {
-        google: 'google_token_123',
-      },
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(3);
-    expect(result).toStrictEqual({
-      items: [
-        {
-          cluster: {
-            name: 'test-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('test-cluster'),
-        },
-        {
-          cluster: {
-            name: 'other-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('other-cluster'),
-        },
-      ],
-    });
-  });
-  it('retrieve objects for four clusters, two have resources and one error cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
+      expect(result).toStrictEqual({
+        items: [
           {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-          },
-          {
-            name: 'other-cluster',
-            authProvider: 'google',
-          },
-          {
-            name: 'empty-cluster',
-            authProvider: 'google',
-          },
-          {
-            name: 'error-cluster',
-            authProvider: 'google',
-          },
-        ],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {
-        google: 'google_token_123',
-      },
-    });
-
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(4);
-    expect(result).toStrictEqual({
-      items: [
-        {
-          cluster: {
-            name: 'test-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('test-cluster'),
-        },
-        {
-          cluster: {
-            name: 'other-cluster',
-          },
-          errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('other-cluster'),
-        },
-        {
-          cluster: {
-            name: 'error-cluster',
-          },
-          errors: ['some random cluster error'],
-          podMetrics: [],
-          resources: [
-            {
-              type: 'pods',
-              resources: [],
+            cluster: {
+              name: 'test-cluster',
             },
-            {
-              type: 'configmaps',
-              resources: [],
-            },
-            {
-              type: 'services',
-              resources: [],
-            },
-          ],
-        },
-      ],
-    });
-  });
-  it('retrieve objects for two clusters, one fails to fetch pod metrics', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'test-cluster',
-            authProvider: 'serviceAccount',
-            dashboardUrl: 'https://k8s.foo.coom',
-          },
-          {
-            name: 'other-cluster',
-            authProvider: 'google',
-          },
-        ],
-      }),
-    );
-
-    mockFetch(fetchObjectsForService);
-
-    // To simulate the partial failure, return a valid response for the first call,
-    // and an error for the second call.
-    fetchPodMetricsByNamespaces
-      .mockImplementationOnce(
-        (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
-          Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
-      )
-      .mockResolvedValueOnce({
-        errors: [
-          {
-            errorType: 'NOT_FOUND',
-            resourcePath: '/some/path',
-            statusCode: 404,
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE, POD_METRICS_FIXTURE],
+            resources: [
+              {
+                resources: [
+                  {
+                    metadata: {
+                      name: 'pod1',
+                      namespace: 'ns-a',
+                    },
+                  },
+                  {
+                    metadata: {
+                      name: 'pod2',
+                      namespace: 'ns-a',
+                    },
+                  },
+                  {
+                    metadata: {
+                      name: 'pod3',
+                      namespace: 'ns-b',
+                    },
+                  },
+                ],
+                type: 'pods',
+              },
+            ],
           },
         ],
-        responses: [],
       });
-
-    const sut = getKubernetesFanOutHandler([]);
-
-    const result = await sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {
-        google: 'google_token_123',
-      },
     });
 
-    expect(getClustersByEntity.mock.calls.length).toBe(1);
-    expect(fetchObjectsForService.mock.calls.length).toBe(2);
-    expect(result).toStrictEqual({
-      items: [
-        {
-          cluster: {
-            dashboardUrl: 'https://k8s.foo.coom',
-            name: 'test-cluster',
-          },
+    it('pods api is returning garbage', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+          ],
+        }),
+      );
+
+      fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+        Promise.resolve({
           errors: [],
-          podMetrics: [POD_METRICS_FIXTURE],
-          resources: resourcesByCluster('test-cluster'),
-        },
+          responses: [
+            {
+              garbage: ['thrash', 'rubbish'],
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
         {
-          cluster: {
-            name: 'other-cluster',
+          entity,
+          auth: {},
+        },
+      );
+
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(0);
+
+      expect(result).toStrictEqual({
+        items: [],
+      });
+    });
+
+    it('retrieve objects for two clusters', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+              dashboardUrl: 'https://k8s.foo.coom',
+            },
+            {
+              name: 'other-cluster',
+              authProvider: 'google',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
           },
+        },
+      );
+
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
+      expect(result).toStrictEqual({
+        items: [
+          {
+            cluster: {
+              dashboardUrl: 'https://k8s.foo.coom',
+              name: 'test-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['test-cluster'],
+          },
+          {
+            cluster: {
+              name: 'other-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['other-cluster'],
+          },
+        ],
+      });
+    });
+
+    it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+            {
+              name: 'other-cluster',
+              authProvider: 'google',
+            },
+            {
+              name: 'empty-cluster',
+              authProvider: 'google',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
+        },
+      );
+
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(3);
+      expect(result).toStrictEqual({
+        items: [
+          {
+            cluster: {
+              name: 'test-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['test-cluster'],
+          },
+          {
+            cluster: {
+              name: 'other-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['other-cluster'],
+          },
+        ],
+      });
+    });
+
+    it('retrieve objects for four clusters, two have resources and one error cluster', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+            {
+              name: 'other-cluster',
+              authProvider: 'google',
+            },
+            {
+              name: 'empty-cluster',
+              authProvider: 'google',
+            },
+            {
+              name: 'error-cluster',
+              authProvider: 'google',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
+        },
+      );
+
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(4);
+      expect(result).toStrictEqual({
+        items: [
+          {
+            cluster: {
+              name: 'test-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['test-cluster'],
+          },
+          {
+            cluster: {
+              name: 'other-cluster',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['other-cluster'],
+          },
+          {
+            cluster: {
+              name: 'error-cluster',
+            },
+            errors: ['some random cluster error'],
+            podMetrics: [],
+            resources: [
+              {
+                type: 'pods',
+                resources: [],
+              },
+              {
+                type: 'configmaps',
+                resources: [],
+              },
+              {
+                type: 'services',
+                resources: [],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('retrieve objects for two clusters, one fails to fetch pod metrics', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+              dashboardUrl: 'https://k8s.foo.coom',
+            },
+            {
+              name: 'other-cluster',
+              authProvider: 'google',
+            },
+          ],
+        }),
+      );
+
+      // To simulate the partial failure, return a valid response for the first call,
+      // and an error for the second call.
+      fetchPodMetricsByNamespaces
+        .mockImplementationOnce(
+          (_clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+            Promise.resolve({
+              errors: [],
+              responses: Array.from(namespaces).map(() => {
+                return {
+                  type: 'podstatus',
+                  resources: [
+                    {
+                      Pod: {},
+                      CPU: {
+                        CurrentUsage: 100,
+                        RequestTotal: 101,
+                        LimitTotal: 102,
+                      },
+                      Memory: {
+                        CurrentUsage: BigInt('1000'),
+                        RequestTotal: BigInt('1001'),
+                        LimitTotal: BigInt('1002'),
+                      },
+                      Containers: [],
+                    },
+                  ],
+                };
+              }),
+            }),
+        )
+        .mockResolvedValueOnce({
           errors: [
             {
               errorType: 'NOT_FOUND',
@@ -1038,265 +1101,350 @@ describe('getKubernetesObjectsByEntity', () => {
               statusCode: 404,
             },
           ],
-          podMetrics: [],
-          resources: resourcesByCluster('other-cluster'),
-        },
-      ],
-    });
-  });
-  it('fails when fetcher rejects with a non-FetchError', async () => {
-    const nonFetchError = new Error('not a fetch error');
-    getClustersByEntity.mockResolvedValue({
-      clusters: [
+          responses: [],
+        });
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      const result = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
         {
-          name: 'test-cluster',
-          authProvider: 'serviceAccount',
-          skipMetricsLookup: true,
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
         },
-      ],
-    });
-    fetchObjectsForService.mockRejectedValue(nonFetchError);
-
-    const sut = getKubernetesFanOutHandler([]);
-
-    const result = sut.getKubernetesObjectsByEntity({
-      entity,
-      auth: {},
-    });
-    await expect(result).rejects.toThrow(nonFetchError);
-  });
-  describe('with a real fetcher', () => {
-    const worker = setupServer();
-    setupRequestMockHandlers(worker);
-    it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
-      const pods = [{ metadata: { name: 'pod-name' } }];
-      const services = [{ metadata: { name: 'service-name' } }];
-      worker.use(
-        rest.get('https://works/api/v1/pods', (_, res, ctx) =>
-          res(ctx.json({ items: pods })),
-        ),
-        rest.get('https://works/api/v1/services', (_, res, ctx) =>
-          res(ctx.json({ items: services })),
-        ),
-        rest.get('https://fails/api/v1/pods', (_, res) =>
-          res.networkError('socket error'),
-        ),
-        rest.get('https://fails/api/v1/services', (_, res, ctx) =>
-          res(ctx.json({ items: services })),
-        ),
       );
-      const fleet: jest.Mocked<KubernetesServiceLocator> = {
-        getClustersByEntity: jest.fn().mockResolvedValue({
-          clusters: [
-            {
-              name: 'works',
-              url: 'https://works',
-              authProvider: 'serviceAccount',
-              serviceAccountToken: 'token',
-              skipMetricsLookup: true,
-            },
-            {
-              name: 'fails',
-              url: 'https://fails',
-              authProvider: 'serviceAccount',
-              serviceAccountToken: 'token',
-              skipMetricsLookup: true,
-            },
-          ],
-        }),
-      };
-      const logger = getVoidLogger();
-      const sut = new KubernetesFanOutHandler({
-        logger,
-        fetcher: new KubernetesClientBasedFetcher({ logger }),
-        config: new ConfigReader({}),
-        serviceLocator: fleet,
-        customResources: [],
-        objectTypesToFetch: [
-          {
-            group: '',
-            apiVersion: 'v1',
-            plural: 'pods',
-            objectType: 'pods',
-          },
-          {
-            group: '',
-            apiVersion: 'v1',
-            plural: 'services',
-            objectType: 'services',
-          },
-        ],
-        authTranslator: {
-          decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
-            return clusterDetails;
-          },
-        },
-        config,
-      });
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
-
-      const expected: ObjectsByEntityResponse = {
+      expect(getClustersByEntity).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
+      expect(result).toStrictEqual({
         items: [
           {
-            cluster: { name: 'works' },
-            resources: [
-              { type: 'pods', resources: pods },
-              { type: 'services', resources: services },
-            ],
-            podMetrics: [],
+            cluster: {
+              dashboardUrl: 'https://k8s.foo.coom',
+              name: 'test-cluster',
+            },
             errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources: mockClusterResourceMap['test-cluster'],
           },
           {
-            cluster: { name: 'fails' },
-            resources: [],
-            podMetrics: [],
+            cluster: {
+              name: 'other-cluster',
+            },
             errors: [
               {
-                errorType: 'FETCH_ERROR',
-                message:
-                  'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
+                errorType: 'NOT_FOUND',
+                resourcePath: '/some/path',
+                statusCode: 404,
               },
             ],
+            podMetrics: [],
+            resources: mockClusterResourceMap['other-cluster'],
           },
         ],
-      };
-      expect(result).toStrictEqual(expected);
-    });
-  });
-});
-
-describe('getCustomResourcesByEntity', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it('retrieve objects for one cluster using customResources per cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [cluster1],
-      }),
-    );
-
-    const sut = mockFetchAndGetKubernetesFanOutHandler([]);
-
-    await sut.getCustomResourcesByEntity({
-      entity,
-      auth: {},
-      customResources: [
-        {
-          group: 'parameter-crd.example.com',
-          apiVersion: 'v1alpha1',
-          plural: 'parameter-crd',
-        },
-      ],
+      });
     });
 
-    expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(
-      fetchObjectsForService.mock.calls[0][0].customResources[0].plural,
-    ).toBe('parameter-crd');
-  });
-
-  it('retrieve objects for two cluster using customResources globally and per cluster', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
+    it('fails when fetcher rejects with a non-FetchError', async () => {
+      const nonFetchError = new Error('not a fetch error');
+      getClustersByEntity.mockResolvedValue({
         clusters: [
           {
             name: 'test-cluster',
             authProvider: 'serviceAccount',
+            skipMetricsLookup: true,
           },
-          cluster2,
         ],
-      }),
-    );
+      });
+      fetchObjectsForService.mockRejectedValue(nonFetchError);
 
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        objectType: 'customresources',
-        group: 'some-group',
-        apiVersion: 'v2',
-        plural: 'things',
-      },
-    ]);
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
 
-    await sut.getCustomResourcesByEntity({
-      entity,
-      auth: {},
-      customResources: [
-        {
-          group: 'parameter-crd.example.com',
-          apiVersion: 'v1alpha1',
-          plural: 'parameter-crd',
-        },
-      ],
+      const result = kubernetesFanOutHandler.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+      await expect(result).rejects.toThrow(nonFetchError);
     });
 
-    expect(fetchObjectsForService.mock.calls.length).toBe(2);
-    expect(
-      fetchObjectsForService.mock.calls[0][0].customResources[0].group,
-    ).toBe('parameter-crd.example.com');
-    expect(
-      fetchObjectsForService.mock.calls[1][0].customResources[0].group,
-    ).toBe('parameter-crd.example.com');
-  });
+    describe('with a real fetcher', () => {
+      const worker = setupServer();
+      setupRequestMockHandlers(worker);
+      it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
+        const pods = [{ metadata: { name: 'pod-name' } }];
+        const services = [{ metadata: { name: 'service-name' } }];
+        worker.use(
+          rest.get('https://works/api/v1/pods', (_, res, ctx) =>
+            res(ctx.json({ items: pods })),
+          ),
+          rest.get('https://works/api/v1/services', (_, res, ctx) =>
+            res(ctx.json({ items: services })),
+          ),
+          rest.get('https://fails/api/v1/pods', (_, res) =>
+            res.networkError('socket error'),
+          ),
+          rest.get('https://fails/api/v1/services', (_, res, ctx) =>
+            res(ctx.json({ items: services })),
+          ),
+        );
 
-  it('prioritizes searches for customResources passed directly as a parameter to getCustomResourcesByEntity over CRDs defined globally, in cluster details, or in profiles', async () => {
-    getClustersByEntity.mockImplementation(() =>
-      Promise.resolve({
-        clusters: [
-          {
-            name: 'profile-cluster-1',
-            authProvider: 'serviceAccount',
-            customResourceProfile: 'build',
-            customResources: [
+        const fleet: jest.Mocked<KubernetesServiceLocator> = {
+          getClustersByEntity: jest.fn().mockResolvedValue({
+            clusters: [
               {
-                group: 'priority2.test.io',
-                apiVersion: 'v1alpha1',
-                plural: 'priority2',
-                objectType: 'customresources',
+                name: 'works',
+                url: 'https://works',
+                authProvider: 'serviceAccount',
+                serviceAccountToken: 'token',
+                skipMetricsLookup: true,
+              },
+              {
+                name: 'fails',
+                url: 'https://fails',
+                authProvider: 'serviceAccount',
+                serviceAccountToken: 'token',
+                skipMetricsLookup: true,
               },
             ],
+          }),
+        };
+        const logger = getVoidLogger();
+        const sut = new KubernetesFanOutHandler({
+          logger,
+          fetcher: new KubernetesClientBasedFetcher({ logger }),
+          serviceLocator: fleet,
+          customResources: [],
+          objectTypesToFetch: [
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'services',
+              objectType: 'services',
+            },
+          ],
+          authTranslator: {
+            decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+              return clusterDetails;
+            },
           },
-        ],
-      }),
-    );
+          config,
+        });
 
-    const sut = mockFetchAndGetKubernetesFanOutHandler([
-      {
-        group: 'priority.test.io',
-        apiVersion: 'v1alpha1',
-        plural: 'priority4',
-        objectType: 'customresources',
-      },
-    ]);
+        const result = await sut.getKubernetesObjectsByEntity({
+          entity,
+          auth: {},
+        });
 
-    await sut.getCustomResourcesByEntity({
-      entity,
-      auth: {},
-      customResources: [
-        {
-          group: 'parameter-crd.example.com',
-          apiVersion: 'v1alpha1',
-          plural: 'parameter-crd',
-        },
-      ],
+        const expected: ObjectsByEntityResponse = {
+          items: [
+            {
+              cluster: { name: 'works' },
+              resources: [
+                { type: 'pods', resources: pods },
+                { type: 'services', resources: services },
+              ],
+              podMetrics: [],
+              errors: [],
+            },
+            {
+              cluster: { name: 'fails' },
+              resources: [],
+              podMetrics: [],
+              errors: [
+                {
+                  errorType: 'FETCH_ERROR',
+                  message:
+                    'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
+                },
+              ],
+            },
+          ],
+        };
+        expect(result).toStrictEqual(expected);
+      });
     });
+  });
 
-    expect(fetchObjectsForService).toHaveBeenCalledWith(
-      expect.objectContaining({
+  describe('getCustomResourcesByEntity', () => {
+    it('prioritizes retrieving objects for one cluster using customResources defined in parameters over customResources defined in clusterDetails', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster1],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getCustomResourcesByEntity({
+        entity,
+        auth: {},
         customResources: [
           {
             group: 'parameter-crd.example.com',
             apiVersion: 'v1alpha1',
             plural: 'parameter-crd',
-            objectType: 'customresources',
           },
         ],
-      }),
-    );
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'some-other-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'some-crd-only-on-this-cluster',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('prioritizes retrieving objects for two clusters using customResources defined in parameters over customResources defined in clusterDetails or defined globally', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              authProvider: 'serviceAccount',
+            },
+            cluster2,
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'things',
+        },
+      ]);
+
+      await kubernetesFanOutHandler.getCustomResourcesByEntity({
+        entity,
+        auth: {},
+        customResources: [
+          {
+            group: 'parameter-crd.example.com',
+            apiVersion: 'v1alpha1',
+            plural: 'parameter-crd',
+          },
+        ],
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              objectType: 'customresources',
+              group: 'some-group',
+              apiVersion: 'v2',
+              plural: 'things',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'crd-two.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'crd-two-plural',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
+
+    it('prioritizes retrieving objects for customResources defined directly as a parameter over customResources defined in customResource profiles', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'profile-cluster-1',
+              authProvider: 'serviceAccount',
+              customResourceProfile: 'build',
+            },
+          ],
+        }),
+      );
+
+      kubernetesFanOutHandler = getKubernetesFanOutHandler([]);
+
+      await kubernetesFanOutHandler.getCustomResourcesByEntity({
+        entity,
+        auth: {},
+        customResources: [
+          {
+            group: 'parameter-crd.example.com',
+            apiVersion: 'v1alpha1',
+            plural: 'parameter-crd',
+          },
+        ],
+      });
+
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+      expect(fetchObjectsForService).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          customResources: [
+            {
+              group: 'argoproj.io',
+              apiVersion: 'v1alpha1',
+              plural: 'rollouts',
+              objectType: 'customresources',
+            },
+          ],
+        }),
+      );
+    });
   });
 });
