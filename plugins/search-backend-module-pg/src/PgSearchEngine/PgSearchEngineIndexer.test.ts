@@ -91,7 +91,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).not.toHaveBeenCalled();
     expect(database.completeInsert).not.toHaveBeenCalled();
-    expect(tx.rollback).toHaveBeenCalled();
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
   });
 
   it('should close out stream and bubble up error on prepare', async () => {
@@ -104,6 +104,7 @@ describe('PgSearchEngineIndexer', () => {
       },
     ];
 
+    tx.isCompleted.mockReturnValue(true);
     database.prepareInsert.mockRejectedValueOnce(expectedError);
     const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
@@ -113,6 +114,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.insertDocuments).not.toHaveBeenCalled();
     expect(database.completeInsert).not.toHaveBeenCalled();
     expect(result.error).toBe(expectedError);
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
     expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 
@@ -126,6 +128,7 @@ describe('PgSearchEngineIndexer', () => {
       },
     ];
 
+    tx.isCompleted.mockReturnValue(true);
     database.insertDocuments.mockRejectedValueOnce(expectedError);
     const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
@@ -135,6 +138,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.completeInsert).not.toHaveBeenCalled();
     expect(result.error).toBe(expectedError);
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
     expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 
@@ -148,6 +152,7 @@ describe('PgSearchEngineIndexer', () => {
       },
     ];
 
+    tx.isCompleted.mockReturnValue(true);
     database.completeInsert.mockRejectedValueOnce(expectedError);
     const result = await TestPipeline.fromIndexer(indexer)
       .withDocuments(documents)
@@ -158,6 +163,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.insertDocuments).toHaveBeenCalledTimes(1);
     expect(database.completeInsert).toHaveBeenCalledTimes(1);
     expect(result.error).toBe(expectedError);
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
     expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 
@@ -191,6 +197,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.completeInsert).not.toHaveBeenCalled();
     expect(result.error).toBe(expectedError);
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
     expect(tx.rollback).toHaveBeenCalledWith(expectedError);
   });
 });
