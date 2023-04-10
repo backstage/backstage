@@ -95,12 +95,11 @@ export function EntityAutocompletePicker<
 
   // Set selected options on query parameter updates; this happens at initial page load and from
   // external updates to the page location
-  const [prevQueryParameters, setQueryParameter] = useState(queryParameters);
-  // if the query parameter has changed, update the selected options
-  if (queryParameters !== prevQueryParameters) {
-    setSelectedOptions(queryParameters);
-    setQueryParameter(queryParameters);
-  }
+  useEffect(() => {
+    if (queryParameters.length) {
+      setSelectedOptions(queryParameters);
+    }
+  }, [queryParameters]);
 
   const availableOptions = Object.keys(availableValues ?? {});
   const shouldAddFilter = selectedOptions.length && availableOptions.length;
