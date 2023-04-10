@@ -395,10 +395,10 @@ describe('KubernetesBackendClient', () => {
             ),
         ),
       );
+      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     });
 
     it('hits the /proxy API', async () => {
-      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
       kubernetesAuthProvidersApi.getCredentials.mockResolvedValue({
         token: 'k8-token',
       });
@@ -468,7 +468,6 @@ describe('KubernetesBackendClient', () => {
     });
 
     it('/proxy API throws a 404 error', async () => {
-      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
       kubernetesAuthProvidersApi.getCredentials.mockResolvedValue({
         token: 'k8-token',
       });
@@ -490,8 +489,6 @@ describe('KubernetesBackendClient', () => {
     });
 
     it('throws a ERROR_NOT_FOUND if the cluster in the request is not found', async () => {
-      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
-
       const request = {
         clusterName: 'cluster-b',
         path: '/api/v1/namespaces',
@@ -501,8 +498,6 @@ describe('KubernetesBackendClient', () => {
     });
 
     it('responds with an 403 error when invalid k8 token is provided', async () => {
-      // when a user is signed in as a guest the result of the getCredentials() method resolves to the {} value.
-      identityApi.getCredentials.mockResolvedValue({});
       kubernetesAuthProvidersApi.getCredentials.mockResolvedValue({
         token: 'wrong-token',
       });
@@ -534,6 +529,35 @@ describe('KubernetesBackendClient', () => {
 
       const response = await backendClient.proxy(request);
       expect(response.status).toEqual(403);
+    });
+
+    it('skips authorization header when auth provider returns no creds', async () => {
+      const nsResponse = {
+        kind: 'Namespace',
+        apiVersion: 'v1',
+        metadata: {
+          name: 'new-ns',
+        },
+      };
+      worker.use(
+        rest.get(
+          'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces/new-ns',
+          (req, res, ctx) =>
+            res(
+              req.headers.get('Backstage-Kubernetes-Authorization')
+                ? ctx.status(403)
+                : ctx.json(nsResponse),
+            ),
+        ),
+      );
+      kubernetesAuthProvidersApi.getCredentials.mockResolvedValue({});
+
+      const response = await backendClient.proxy({
+        clusterName: 'cluster-a',
+        path: '/api/v1/namespaces/new-ns',
+      });
+
+      await expect(response.json()).resolves.toStrictEqual(nsResponse);
     });
   });
 });

@@ -291,7 +291,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
   getCredentials(authProvider: string): Promise<{
-    token: string;
+    token?: string;
   }>;
 }
 
@@ -306,7 +306,7 @@ export interface KubernetesAuthProvidersApi {
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
   getCredentials(authProvider: string): Promise<{
-    token: string;
+    token?: string;
   }>;
 }
 
@@ -440,9 +440,7 @@ export class ServerSideKubernetesAuthProvider
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
   // (undocumented)
-  getCredentials(): Promise<{
-    token: string;
-  }>;
+  getCredentials(): Promise<{}>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ServicesAccordionsProps" needs to be exported by the entry point index.d.ts

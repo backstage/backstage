@@ -21,7 +21,7 @@ export interface KubernetesAuthProvider {
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
-  getCredentials(): Promise<{ token: string }>;
+  getCredentials(): Promise<{ token?: string }>;
 }
 
 export const kubernetesAuthProvidersApiRef =
@@ -34,5 +34,5 @@ export interface KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
-  getCredentials(authProvider: string): Promise<{ token: string }>;
+  getCredentials(authProvider: string): Promise<{ token?: string }>;
 }
