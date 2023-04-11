@@ -55,7 +55,6 @@ import search from './plugins/search';
 import techdocs from './plugins/techdocs';
 import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
-import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
@@ -155,7 +154,6 @@ async function main() {
   const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
-  const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
@@ -190,7 +188,6 @@ async function main() {
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));

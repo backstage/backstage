@@ -35,9 +35,9 @@
   "dependencies": {
     "@apollo/server": "^4.0.0",
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/plugin-graphql-catalog": "workspace:^",
     "@backstage/plugin-graphql-common": "workspace:^",
     "@envelop/core": "^3.0.6",
@@ -45,13 +45,11 @@
     "@envelop/graphql-modules": "^4.0.4",
     "@types/express": "^4.17.6",
     "dataloader": "^2.1.0",
-    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "graphql": "^16.6.0",
     "graphql-modules": "^2.1.0",
     "graphql-yoga": "^3.3.0",
-    "helmet": "^6.0.0",
-    "winston": "^3.2.1"
+    "helmet": "^6.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
