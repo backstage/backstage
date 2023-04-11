@@ -22,7 +22,6 @@ import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
 import { NextFieldExtensionComponentProps } from '../../extensions';
 import { LayoutTemplate } from '../../../layouts';
-import { AsyncDependenciesBlock } from 'webpack';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
