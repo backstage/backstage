@@ -1,5 +1,18 @@
 # @backstage/plugin-vault
 
+## 0.1.11-next.3
+
+### Patch Changes
+
+- 7c7f8d38a51: Use `fetchApi` instead of raw `fetch` in order to pass auth header if necessary.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+
 ## 0.1.11-next.2
 
 ### Patch Changes
