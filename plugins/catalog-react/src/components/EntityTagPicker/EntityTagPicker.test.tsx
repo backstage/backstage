@@ -202,6 +202,34 @@ describe('<EntityTagPicker/>', () => {
       tags: new EntityTagFilter(['tag2']),
     });
   });
+
+  it('verify that user can select tags after query string has been set', async () => {
+    const updateFilters = jest.fn();
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { tags: ['tag1'] },
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag1']),
+      }),
+    );
+    fireEvent.click(screen.getByTestId('tags-picker-expand'));
+    fireEvent.click(screen.getByLabelText('tag2'));
+    expect(screen.getByLabelText('tag2')).toBeChecked();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      tags: new EntityTagFilter(['tag1', 'tag2']),
+    });
+  });
+
   it('removes tags from filters if there are none available', async () => {
     const updateFilters = jest.fn();
     const mockCatalogApiRefNoTags = {
