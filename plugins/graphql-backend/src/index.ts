@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './service/router';
+export * from './service/graphql';
+export * from './service/extensions';

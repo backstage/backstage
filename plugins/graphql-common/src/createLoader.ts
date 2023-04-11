@@ -20,11 +20,11 @@ import { BatchLoadFn } from './types';
 import { decodeId } from './helpers';
 
 /** @public */
-export const createLoader = <Context extends GraphQLContext>(
-  loaders: Record<string, BatchLoadFn<Context>>,
+export const createLoader = (
+  loaders: Record<string, BatchLoadFn<GraphQLContext>>,
   options?: Options<string, any>,
 ) => {
-  return (context: Context) => {
+  return (context: GraphQLContext) => {
     async function fetch(ids: readonly string[]) {
       const idsBySources = ids.map(decodeId).reduce(
         (s: Record<string, Map<number, string>>, { source, ref }, index) => ({
