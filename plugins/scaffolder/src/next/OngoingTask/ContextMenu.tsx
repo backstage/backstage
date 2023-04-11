@@ -22,6 +22,7 @@ import {
   MenuItem,
   MenuList,
   Popover,
+  useTheme,
 } from '@material-ui/core';
 import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
@@ -40,16 +41,18 @@ type ContextMenuProps = {
   taskId?: string;
 };
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles<BackstageTheme, { fontColor: string }>(() => ({
   button: {
-    color: theme.palette.common.white,
+    color: ({ fontColor }) => fontColor,
   },
 }));
 
 export const ContextMenu = (props: ContextMenuProps) => {
   const { cancelEnabled, logsVisible, onStartOver, onToggleLogs, taskId } =
     props;
-  const classes = useStyles();
+  const { getPageTheme } = useTheme<BackstageTheme>();
+  const pageTheme = getPageTheme({ themeId: 'website' });
+  const classes = useStyles({ fontColor: pageTheme.fontColor });
   const scaffolderApi = useApi(scaffolderApiRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -69,7 +72,6 @@ export const ContextMenu = (props: ContextMenuProps) => {
           setAnchorEl(event.currentTarget);
         }}
         data-testid="menu-button"
-        color="inherit"
         className={classes.button}
       >
         <MoreVert />
