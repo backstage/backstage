@@ -135,6 +135,8 @@ export const Stepper = (stepperProps: StepperProps) => {
   }: {
     formData?: Record<string, JsonValue>;
   }) => {
+    // The validation should never throw, as the validators are wrapped in a try/catch.
+    // This makes it fine to set and unset state without try/catch.
     setErrors(undefined);
     setIsValidating(true);
 
