@@ -17,14 +17,21 @@
 import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
-import { PackageRole } from '../role';
-import { listChangedFiles, readFileAtRef } from '../git';
-import { Lockfile } from '../versioning';
+import { PackageRole } from '../roles';
+import { GitUtils } from '../git';
+import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
 
-type PackageJSON = Package['packageJson'];
+/**
+ * Known fields in Backstage package.json files.
+ *
+ * @public
+ */
+export interface BackstagePackageJson {
+  name: string;
+  version: string;
+  private?: boolean;
 
-export interface ExtendedPackageJSON extends PackageJSON {
   main?: string;
   module?: string;
   types?: string;
@@ -52,20 +59,43 @@ export interface ExtendedPackageJSON extends PackageJSON {
     alphaTypes?: string;
     betaTypes?: string;
   };
+
+  dependencies?: {
+    [key: string]: string;
+  };
+  peerDependencies?: {
+    [key: string]: string;
+  };
+  devDependencies?: {
+    [key: string]: string;
+  };
+  optionalDependencies?: {
+    [key: string]: string;
+  };
 }
 
-export type ExtendedPackage = {
+/**
+ * A local Backstage monorepo package
+ *
+ * @public
+ */
+export type BackstagePackage = {
   dir: string;
-  packageJson: ExtendedPackageJSON;
+  packageJson: BackstagePackageJson;
 };
 
+/**
+ * A local package in the monorepo package graph.
+ *
+ * @public
+ */
 export type PackageGraphNode = {
   /** The name of the package */
   name: string;
   /** The directory of the package */
   dir: string;
   /** The package data of the package itself */
-  packageJson: ExtendedPackageJSON;
+  packageJson: BackstagePackageJson;
 
   /** All direct local dependencies of the package */
   allLocalDependencies: Map<string, PackageGraphNode>;
@@ -90,12 +120,23 @@ export type PackageGraphNode = {
   localOptionalDependents: Map<string, PackageGraphNode>;
 };
 
+/**
+ * Represents a local Backstage monorepo package graph.
+ *
+ * @public
+ */
 export class PackageGraph extends Map<string, PackageGraphNode> {
-  static async listTargetPackages(): Promise<ExtendedPackage[]> {
+  /**
+   * Lists all local packages in a monorepo.
+   */
+  static async listTargetPackages(): Promise<BackstagePackage[]> {
     const { packages } = await getPackages(paths.targetDir);
-    return packages as ExtendedPackage[];
+    return packages as BackstagePackage[];
   }
 
+  /**
+   * Creates a package graph from a list of local packages.
+   */
   static fromPackages(packages: Package[]): PackageGraph {
     const graph = new PackageGraph();
 
@@ -112,7 +153,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       graph.set(name, {
         name,
         dir: pkg.dir,
-        packageJson: pkg.packageJson as ExtendedPackageJSON,
+        packageJson: pkg.packageJson as BackstagePackageJson,
 
         allLocalDependencies: new Map(),
         publishedLocalDependencies: new Map(),
@@ -210,11 +251,19 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     return targets;
   }
 
+  /**
+   * Lists all packages that have changed since a given git ref.
+   *
+   * @remarks
+   *
+   * If the `analyzeLockfile` option is set to true, the change detection will
+   * also consider changes to the dependency management lockfile.
+   */
   async listChangedPackages(options: {
     ref: string;
     analyzeLockfile?: boolean;
   }) {
-    const changedFiles = await listChangedFiles(options.ref);
+    const changedFiles = await GitUtils.listChangedFiles(options.ref);
 
     const dirMap = new Map(
       Array.from(this.values()).map(pkg => [
@@ -265,7 +314,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           paths.resolveTargetRoot('yarn.lock'),
         );
         otherLockfile = Lockfile.parse(
-          await readFileAtRef('yarn.lock', options.ref),
+          await GitUtils.readFileAtRef('yarn.lock', options.ref),
         );
       } catch (error) {
         console.warn(

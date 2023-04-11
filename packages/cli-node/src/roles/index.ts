@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import { BackstagePackageJson } from '@backstage/cli-node';
-
-export enum Output {
-  esm,
-  cjs,
-  types,
-}
-
-export type BuildOptions = {
-  logPrefix?: string;
-  targetDir?: string;
-  packageJson?: BackstagePackageJson;
-  outputs: Set<Output>;
-  minify?: boolean;
-  useApiExtractor?: boolean;
-};
+export type {
+  PackageRoleInfo,
+  PackagePlatform,
+  PackageOutputType,
+  PackageRole,
+} from './types';
+export { PackageRoles } from './PackageRoles';

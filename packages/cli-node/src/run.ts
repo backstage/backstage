@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { execFile as execFileCb } from 'child_process';
+import { promisify } from 'util';
 
-export enum Output {
-  esm,
-  cjs,
-  types,
-}
-
-export type BuildOptions = {
-  logPrefix?: string;
-  targetDir?: string;
-  packageJson?: BackstagePackageJson;
-  outputs: Set<Output>;
-  minify?: boolean;
-  useApiExtractor?: boolean;
-};
+export const execFile = promisify(execFileCb);

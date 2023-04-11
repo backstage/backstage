@@ -17,8 +17,8 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
+import { PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
-import { getRoleFromPackage, detectRoleFromPackage } from '../../lib/role';
 
 export default async () => {
   const { packages } = await getPackages(paths.targetDir);
@@ -26,12 +26,12 @@ export default async () => {
   await Promise.all(
     packages.map(async ({ dir, packageJson: pkg }) => {
       const { name } = pkg;
-      const existingRole = getRoleFromPackage(pkg);
+      const existingRole = PackageRoles.getRoleFromPackage(pkg);
       if (existingRole) {
         return;
       }
 
-      const detectedRole = detectRoleFromPackage(pkg);
+      const detectedRole = PackageRoles.detectRoleFromPackage(pkg);
       if (!detectedRole) {
         console.error(`No role detected for package ${name}`);
         return;

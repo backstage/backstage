@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { runGit, listChangedFiles } from './git';
+import { runGit, GitUtils } from './GitUtils';
 
 describe('runGit', () => {
   it('runs a git command', async () => {
@@ -43,10 +43,14 @@ describe('runGit', () => {
 
 describe('listChangedFiles', () => {
   it('requires a ref', async () => {
-    await expect(listChangedFiles('')).rejects.toThrow('ref is required');
+    await expect(GitUtils.listChangedFiles('')).rejects.toThrow(
+      'ref is required',
+    );
   });
 
   it('should return something', async () => {
-    await expect(listChangedFiles('HEAD')).resolves.toEqual(expect.any(Array));
+    await expect(GitUtils.listChangedFiles('HEAD')).resolves.toEqual(
+      expect.any(Array),
+    );
   });
 });

@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import { Command } from 'commander';
-import {
-  getRoleInfo,
-  getRoleFromPackage,
-  findRoleFromCommand,
-  detectRoleFromPackage,
-} from './packageRoles';
+import { PackageRoles } from './PackageRoles';
 
 describe('getRoleInfo', () => {
   it('provides role info by role', () => {
-    expect(getRoleInfo('web-library')).toEqual({
+    expect(PackageRoles.getRoleInfo('web-library')).toEqual({
       role: 'web-library',
       platform: 'web',
       output: ['types', 'esm'],
     });
 
-    expect(getRoleInfo('frontend')).toEqual({
+    expect(PackageRoles.getRoleInfo('frontend')).toEqual({
       role: 'frontend',
       platform: 'web',
       output: ['bundle'],
     });
 
-    expect(() => getRoleInfo('invalid')).toThrow(
+    expect(() => PackageRoles.getRoleInfo('invalid')).toThrow(
       `Unknown package role 'invalid'`,
     );
   });
@@ -46,7 +39,7 @@ describe('getRoleInfo', () => {
 describe('getRoleFromPackage', () => {
   it('reads explicit package roles', () => {
     expect(
-      getRoleFromPackage({
+      PackageRoles.getRoleFromPackage({
         backstage: {
           role: 'web-library',
         },
@@ -54,7 +47,7 @@ describe('getRoleFromPackage', () => {
     ).toEqual('web-library');
 
     expect(
-      getRoleFromPackage({
+      PackageRoles.getRoleFromPackage({
         backstage: {
           role: 'frontend',
         },
@@ -62,14 +55,14 @@ describe('getRoleFromPackage', () => {
     ).toEqual('frontend');
 
     expect(() =>
-      getRoleFromPackage({
+      PackageRoles.getRoleFromPackage({
         name: 'test',
         backstage: {},
       }),
     ).toThrow('Package test must specify a role in the "backstage" field');
 
     expect(() =>
-      getRoleFromPackage({
+      PackageRoles.getRoleFromPackage({
         name: 'test',
         backstage: { role: 'invalid' },
       }),
@@ -77,48 +70,10 @@ describe('getRoleFromPackage', () => {
   });
 });
 
-describe('findRoleFromCommand', () => {
-  function mkCommand(args: string) {
-    const parsed = new Command()
-      .option('--role <role>', 'test role')
-      .parse(['node', 'entry.js', ...args.split(' ')]) as Command;
-    return parsed.opts();
-  }
-
-  beforeEach(() => {
-    mockFs({
-      'package.json': JSON.stringify({
-        name: 'test',
-        backstage: {
-          role: 'web-library',
-        },
-      }),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
-
-  it('provides role info by role', async () => {
-    await expect(findRoleFromCommand(mkCommand(''))).resolves.toEqual(
-      'web-library',
-    );
-
-    await expect(
-      findRoleFromCommand(mkCommand('--role node-library')),
-    ).resolves.toEqual('node-library');
-
-    await expect(
-      findRoleFromCommand(mkCommand('--role invalid')),
-    ).rejects.toThrow(`Unknown package role 'invalid'`);
-  });
-});
-
 describe('detectRoleFromPackage', () => {
   it('detects the role of example-app', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: 'example-app',
         private: true,
         bundled: true,
@@ -141,7 +96,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of example-backend', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: 'example-backend',
         main: 'dist/index.cjs.js',
         types: 'src/index.ts',
@@ -160,7 +115,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-catalog', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-catalog',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -185,7 +140,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-catalog-backend', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-catalog-backend',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -209,7 +164,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-catalog-react', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-catalog-react',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -232,7 +187,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-catalog-common', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-catalog-common',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -256,7 +211,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-catalog-backend-module-ldap', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-catalog-backend-module-ldap',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -279,7 +234,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-permission-node', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-permission-node',
         main: 'src/index.ts',
         types: 'src/index.ts',
@@ -303,7 +258,7 @@ describe('detectRoleFromPackage', () => {
 
   it('detects the role of @backstage/plugin-analytics-module-ga', () => {
     expect(
-      detectRoleFromPackage({
+      PackageRoles.detectRoleFromPackage({
         name: '@backstage/plugin-analytics-module-ga',
         main: 'src/index.ts',
         types: 'src/index.ts',

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export type PackageRole =
-  | 'frontend'
-  | 'backend'
-  | 'cli'
-  | 'web-library'
-  | 'node-library'
-  | 'common-library'
-  | 'frontend-plugin'
-  | 'frontend-plugin-module'
-  | 'backend-plugin'
-  | 'backend-plugin-module';
-
-export type PackagePlatform = 'node' | 'web' | 'common';
-export type PackageOutputType = 'bundle' | 'types' | 'esm' | 'cjs';
-
-export interface PackageRoleInfo {
-  role: PackageRole;
-  platform: PackagePlatform;
-  output: PackageOutputType[];
-}
+export {};
