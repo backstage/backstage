@@ -207,6 +207,11 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   ) => Promise<Array<TResource | undefined>>;
 };
 
+/**
+ * Options for creating a permission integration router
+ *
+ * @public
+ */
 export type OptionResources<TResourceType extends string, TResource> = {
   resources:
     | { permissions: Array<Permission> }
