@@ -22,6 +22,7 @@ import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
 import { NextFieldExtensionComponentProps } from '../../extensions';
 import { LayoutTemplate } from '../../../layouts';
+import { AsyncDependenciesBlock } from 'webpack';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -235,6 +236,50 @@ describe('Stepper', () => {
     );
 
     expect(getByText('im a custom field extension')).toBeInTheDocument();
+  });
+
+  it('should disable the form with progress when async validators are running', async () => {
+    const MockComponent = () => {
+      return <h1>im a custom field extension</h1>;
+    };
+
+    const manifest: TemplateParameterSchema = {
+      title: 'Custom Fields',
+      steps: [
+        {
+          title: 'Test',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+                'ui:field': 'Mock',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <Stepper
+        manifest={manifest}
+        extensions={[
+          {
+            name: 'Mock',
+            component: MockComponent,
+            validation: async () => new Promise(r => setTimeout(r, 1000)),
+          },
+        ]}
+        onCreate={jest.fn()}
+      />,
+    );
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+
+      expect(getByRole('progressbar')).toBeInTheDocument();
+      expect(getByRole('button', { name: 'Review' })).toBeDisabled();
+    });
   });
 
   it('should transform default error message', async () => {
