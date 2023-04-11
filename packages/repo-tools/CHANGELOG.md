@@ -1,5 +1,17 @@
 # @backstage/repo-tools
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- a876e69b20e: Adding two new commands to support OpenAPI spec writing, `schema:openapi:generate` to generate the Typescript file that `@backstage/backend-openapi-utils` needs for typing and `schema:openapi:verify` to verify that this file exists and matches your `src/schema/openapi.yaml` file.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
 ## 0.1.4-next.1
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/core-app-api
 
+## 1.7.0-next.3
+
+### Minor Changes
+
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
 ## 1.7.0-next.2
 
 ### Patch Changes
