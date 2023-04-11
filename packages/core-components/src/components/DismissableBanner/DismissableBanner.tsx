@@ -73,6 +73,9 @@ const useStyles = makeStyles(
         color: theme.palette.banner.link,
       },
     },
+    button: {
+      color: theme.palette.banner.closeButtonColor,
+    },
     info: {
       backgroundColor: theme.palette.banner.info,
     },
@@ -144,7 +147,7 @@ export const DismissableBanner = (props: Props) => {
           <IconButton
             key="dismiss"
             title="Permanently dismiss this message"
-            color="inherit"
+            className={classes.button}
             onClick={handleClick}
           >
             <Close className={classes.icon} />
