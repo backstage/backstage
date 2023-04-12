@@ -18,7 +18,6 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
-  isPermission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -29,11 +28,6 @@ import {
   DefaultPlaylistPermissionPolicy,
   isPlaylistPermission,
 } from '@backstage/plugin-playlist-backend';
-import {
-  createScaffolderActionConditionalDecision,
-  scaffolderActionConditions,
-} from '@backstage/plugin-scaffolder-backend/alpha';
-import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -46,21 +40,6 @@ class ExamplePermissionPolicy implements PermissionPolicy {
   ): Promise<PolicyDecision> {
     if (isPlaylistPermission(request.permission)) {
       return this.playlistPermissionPolicy.handle(request, user);
-    }
-
-    if (isPermission(request.permission, actionExecutePermission)) {
-      return createScaffolderActionConditionalDecision(request.permission, {
-        allOf: [
-          scaffolderActionConditions.hasStringProperty({
-            key: 'message',
-            value: 'Test',
-          }),
-          scaffolderActionConditions.hasStringProperty({
-            key: 'message',
-            value: 'Hello ddd',
-          }),
-        ],
-      });
     }
 
     return {
