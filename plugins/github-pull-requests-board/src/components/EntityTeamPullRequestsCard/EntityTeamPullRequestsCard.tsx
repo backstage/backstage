@@ -107,6 +107,7 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
                     latestReviews,
                     repository,
                     isDraft,
+                    labels,
                   },
                   index,
                 ) =>
@@ -128,6 +129,7 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
                       reviews={latestReviews.nodes}
                       repositoryName={repository.name}
                       isDraft={isDraft}
+                      labels={labels.nodes}
                     />
                   ),
               )}
