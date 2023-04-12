@@ -1,5 +1,22 @@
 ---
-'@backstage/plugin-permission-node': minor
+'@backstage/plugin-permission-node': patch
 ---
 
-`createPermissionIntegrationRouter` now can also take an array of `CreatePermissionIntegrationRouterResourceOptions`, accepting rules and permissions for multiple resource types.
+`createPermissionIntegrationRouter` now accepts rules and permissions for multiple resource types. Example:
+
+```typescript
+createPermissionIntegrationRouter({
+  resources: [
+    {
+      resourceType: 'resourceType-1',
+      permissions: permissionsResourceType1,
+      rules: rulesResourceType1,
+    },
+    {
+      resourceType: 'resourceType-2',
+      permissions: permissionsResourceType2,
+      rules: rulesResourceType2,
+    },
+  ],
+});
+```

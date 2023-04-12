@@ -118,75 +118,30 @@ export const createConditionTransformer: <
 
 // @public
 export function createPermissionIntegrationRouter<
-  TResourceType extends string,
-  TResource,
->(
-  options:
-    | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>
-    | {
-        resources: CreatePermissionIntegrationRouterResourceOptions<
-          TResourceType,
-          TResource
-        >;
-      },
-): express.Router;
-
-// @public
-export function createPermissionIntegrationRouter(
-  options:
-    | {
-        permissions: Array<Permission>;
-      }
-    | {
-        resources: {
-          permissions: Array<Permission>;
-        };
-      },
-): express.Router;
-
-// @public
-export function createPermissionIntegrationRouter<
-  TResourceType1 extends string,
-  TResource1,
-  TResourceType2 extends string,
-  TResource2,
->(options: {
-  resources: [
-    CreatePermissionIntegrationRouterResourceOptions<
-      TResourceType1,
-      TResource1
-    >,
-    CreatePermissionIntegrationRouterResourceOptions<
-      TResourceType2,
-      TResource2
-    >,
-  ];
-}): express.Router;
-
-// @public
-export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
   TResourceType2 extends string,
   TResource2,
   TResourceType3 extends string,
   TResource3,
->(options: {
-  resources: [
-    CreatePermissionIntegrationRouterResourceOptions<
-      TResourceType1,
-      TResource1
-    >,
-    CreatePermissionIntegrationRouterResourceOptions<
-      TResourceType2,
-      TResource2
-    >,
-    CreatePermissionIntegrationRouterResourceOptions<
-      TResourceType3,
-      TResource3
-    >,
-  ];
-}): express.Router;
+>(
+  options:
+    | {
+        permissions: Array<Permission>;
+      }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType1,
+        TResource1
+      >
+    | OptionResources<
+        TResourceType1,
+        TResource1,
+        TResourceType2,
+        TResource2,
+        TResourceType3,
+        TResource3
+      >,
+): express.Router;
 
 // @public
 export type CreatePermissionIntegrationRouterResourceOptions<
@@ -250,13 +205,46 @@ export type MetadataResponseSerializedRule = {
 };
 
 // @public
-export type OptionResources<TResourceType extends string, TResource> = {
-  resources:
-    | {
-        permissions: Array<Permission>;
-      }
-    | CreatePermissionIntegrationRouterResourceOptions<TResourceType, TResource>
-    | Array<CreatePermissionIntegrationRouterResourceOptions<string, any>>;
+export type OptionResources<
+  TResourceType1 extends string = string,
+  TResource1 = any,
+  TResourceType2 extends string = string,
+  TResource2 = any,
+  TResourceType3 extends string = string,
+  TResource3 = any,
+> = {
+  resources: Readonly<
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType3,
+          TResource3
+        >,
+      ]
+  >;
 };
 
 // @public
