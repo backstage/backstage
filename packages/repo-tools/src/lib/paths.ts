@@ -66,3 +66,39 @@ export async function findPackageDirs(selectedPaths: string[] = []) {
   }
   return packageDirs;
 }
+
+/**
+ * Retrieves the list of package names in the "workspaces" field of the `package.json` file in the current workspace root.
+ *
+ * If the file does not exist, or the "workspaces" field is not present, returns `undefined`.
+ *
+ * @returns The list of package names, or `undefined` if not found.
+ */
+export async function getWorkspacePackagePathPatterns(): Promise<
+  string[] | undefined
+> {
+  const pkgJson = await fs
+    .readJson(paths.resolveTargetRoot('package.json'))
+    .catch(error => {
+      if (error.code === 'ENOENT') {
+        return undefined;
+      }
+      throw error;
+    });
+  const workspaces = pkgJson?.workspaces?.packages;
+  return workspaces;
+}
+
+/**
+ * Given a list of paths from the user, returns the listing package directories from the
+ *  workspace. Returns all directories if no paths are given.
+ * @param cliPaths User given paths from CLI.
+ * @returns Matching package directories or all if no cli paths passed in.
+ */
+export async function getMatchingWorkspacePaths(cliPaths: string[]) {
+  const isAllPackages = !cliPaths?.length;
+  const selectedPaths = isAllPackages
+    ? await getWorkspacePackagePathPatterns()
+    : cliPaths;
+  return await findPackageDirs(selectedPaths);
+}

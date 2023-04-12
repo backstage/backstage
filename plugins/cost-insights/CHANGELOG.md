@@ -1,5 +1,18 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-cost-insights-common@0.1.1
+
 ## 0.12.6-next.2
 
 ### Patch Changes

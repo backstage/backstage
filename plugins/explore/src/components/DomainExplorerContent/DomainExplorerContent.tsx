@@ -19,7 +19,6 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { DomainCard } from '../DomainCard';
 import {
   Content,
   ContentHeader,
@@ -30,6 +29,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { EntityCard } from '../EntityCard';
 
 const Body = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -78,7 +78,7 @@ const Body = () => {
   return (
     <ItemCardGrid>
       {entities.map((entity, index) => (
-        <DomainCard key={index} entity={entity} />
+        <EntityCard key={index} entity={entity} />
       ))}
     </ItemCardGrid>
   );

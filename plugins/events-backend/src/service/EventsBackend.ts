@@ -20,7 +20,7 @@ import {
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { InMemoryEventBroker } from './InMemoryEventBroker';
+import { DefaultEventBroker } from './DefaultEventBroker';
 
 /**
  * A builder that helps wire up all component parts of the event management.
@@ -33,7 +33,7 @@ export class EventsBackend {
   private subscribers: EventSubscriber[] = [];
 
   constructor(logger: Logger) {
-    this.eventBroker = new InMemoryEventBroker(logger);
+    this.eventBroker = new DefaultEventBroker(logger);
   }
 
   setEventBroker(eventBroker: EventBroker): EventsBackend {
