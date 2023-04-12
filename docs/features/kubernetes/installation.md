@@ -175,8 +175,7 @@ export default async function createPlugin(
 
 ## Running Backstage locally
 
-Start the frontend and the backend app by
-[running Backstage locally](../../getting-started/running-backstage-locally.md).
+Start the frontend and the backend app by running `yarn dev`
 
 ## Configuration
 
