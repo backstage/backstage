@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, Chip } from '@material-ui/core';
 import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
+import { Labels } from '../../utils/types';
+import { useFormClasses } from './styles';
 
 type Props = {
   title: string;
@@ -25,9 +27,12 @@ type Props = {
   authorName: string;
   authorAvatar?: string;
   repositoryName: string;
+  labels?: Labels[];
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
+  const classes = useFormClasses();
+
   const {
     title,
     createdAt,
@@ -35,6 +40,7 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
     authorName,
     authorAvatar,
     repositoryName,
+    labels,
   } = props;
 
   return (
@@ -57,6 +63,15 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
             Last update: <strong>{getElapsedTime(updatedAt)}</strong>
           </Typography>
         )}
+      </Box>
+      <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
+        {labels?.map(data => {
+          return (
+            <li key={data.id} className={classes.labelItem}>
+              <Chip color="primary" label={data.name} size="small" />
+            </li>
+          );
+        })}
       </Box>
     </>
   );

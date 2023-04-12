@@ -19,7 +19,7 @@ import {
   getChangeRequests,
   getCommentedReviews,
 } from '../../utils/functions';
-import { Reviews, Author } from '../../utils/types';
+import { Reviews, Author, Labels } from '../../utils/types';
 import { Card } from '../Card';
 import { UserHeaderList } from '../UserHeaderList';
 
@@ -32,6 +32,7 @@ type Props = {
   reviews: Reviews;
   repositoryName: string;
   isDraft: boolean;
+  labels?: Labels[];
 };
 
 const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
@@ -44,6 +45,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
     reviews,
     repositoryName,
     isDraft,
+    labels,
   } = props;
 
   const approvedReviews = getApprovedReviews(reviews);
@@ -61,6 +63,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
       authorAvatar={author.avatarUrl}
       repositoryName={repositoryName}
       prUrl={url}
+      labels={labels}
     >
       {!!approvedReviews.length && (
         <UserHeaderList
