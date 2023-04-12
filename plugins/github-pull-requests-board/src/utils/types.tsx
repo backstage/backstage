@@ -75,6 +75,11 @@ export type Repository = {
   };
 };
 
+export type Labels = {
+  id: string;
+  name: string;
+};
+
 export type PullRequest = {
   id: string;
   repository: Repository;
@@ -83,6 +88,9 @@ export type PullRequest = {
   lastEditedAt: string;
   latestReviews: {
     nodes: Reviews;
+  };
+  labels: {
+    nodes: Labels[];
   };
   mergeable: boolean;
   state: string;
