@@ -46,6 +46,18 @@ export const scaffolderActionConditions: Conditions<{
       actionId: string;
     }
   >;
+  hasBooleanProperty: PermissionRule<
+    {
+      action: string;
+      input: JsonObject | undefined;
+    },
+    {},
+    'scaffolder-action',
+    {
+      key: string;
+      value?: boolean | undefined;
+    }
+  >;
   hasNumberProperty: PermissionRule<
     {
       action: string;
@@ -54,8 +66,8 @@ export const scaffolderActionConditions: Conditions<{
     {},
     'scaffolder-action',
     {
-      value: number;
       key: string;
+      value?: number | undefined;
     }
   >;
   hasStringProperty: PermissionRule<
@@ -66,8 +78,8 @@ export const scaffolderActionConditions: Conditions<{
     {},
     'scaffolder-action',
     {
-      value: string;
       key: string;
+      value?: string | undefined;
     }
   >;
 }>;
