@@ -79,12 +79,22 @@ const makeComponent = ({ type, name }: { type: string; name: string }) => ({
   ],
 });
 
-const serviceA = makeComponent({ type: 'service', name: 'service-a' });
-const serviceB = makeComponent({ type: 'service', name: 'service-a' });
-const websiteA = makeComponent({ type: 'website', name: 'website-a' });
+const types = [
+  'service',
+  'website',
+  'api',
+  'playlist',
+  'grpc',
+  'trpc',
+  'library',
+];
+
+const components = types.map((type, index) =>
+  makeComponent({ type, name: `${type}-${index}` }),
+);
 
 const catalogApi: Partial<CatalogApi> = {
-  getEntities: () => Promise.resolve({ items: [serviceA, serviceB, websiteA] }),
+  getEntities: () => Promise.resolve({ items: components }),
 };
 
 const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
@@ -138,3 +148,26 @@ export const Themed = () =>
       mountedRoutes: { '/catalog': catalogIndexRouteRef },
     },
   );
+
+export const WithVariableEntityList = {
+  argTypes: {
+    entityLimit: {
+      control: { type: 'number' },
+    },
+  },
+  render: ({ entityLimit }: { entityLimit: number }) =>
+    wrapInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={defaultEntity}>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <OwnershipCard entityLimit={entityLimit} />
+            </Grid>
+          </Grid>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: { '/catalog': catalogIndexRouteRef },
+      },
+    ),
+};
