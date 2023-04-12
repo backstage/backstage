@@ -26,8 +26,8 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 
 import { z } from 'zod';
-import { JsonObject, JsonPrimitive, JsonValue } from '@backstage/types';
-import { String, get } from 'lodash';
+import { JsonObject, JsonPrimitive } from '@backstage/types';
+import { get } from 'lodash';
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -70,16 +70,36 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasBooleanProperty = buildHasProperty(z.boolean());
-export const hasNullProperty = buildHasProperty(z.null());
-export const hasNumberProperty = buildHasProperty(z.number());
-export const hasStringProperty = buildHasProperty(z.string());
+export const hasProperty = buildHasProperty({
+  name: 'HAS_PROPERTY',
+  valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
+  validateProperty: false,
+});
 
-function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>(
-  valueSchema: Schema,
-) {
+export const hasBooleanProperty = buildHasProperty({
+  name: 'HAS_BOOLEAN_PROPERTY',
+  valueSchema: z.boolean(),
+});
+export const hasNumberProperty = buildHasProperty({
+  name: 'HAS_NUMBER_PROPERTY',
+  valueSchema: z.number(),
+});
+export const hasStringProperty = buildHasProperty({
+  name: 'HAS_STRING_PROPERTY',
+  valueSchema: z.string(),
+});
+
+function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
+  name,
+  valueSchema,
+  validateProperty = true,
+}: {
+  name: string;
+  valueSchema: Schema;
+  validateProperty?: boolean;
+}) {
   return createActionPermissionRule({
-    name: `HAS_STRING_PROPERTY`,
+    name,
     description: `Allow actions with the specified property`,
     resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
     paramsSchema: z.object({
@@ -87,20 +107,21 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>(
         .string()
         .describe(`Property within the action parameters to match on`),
       value: valueSchema.describe(`Value of the given property to match on`),
-    }) as unknown as z.ZodType<{ key: string; value: z.infer<Schema> }>,
+    }) as unknown as z.ZodType<{ key: string; value?: z.infer<Schema> }>,
     apply: (resource, { key, value }) => {
       const foundValue = get(resource.input, key);
 
-      if (Array.isArray(foundValue)) {
-        if (value !== undefined) {
-          return foundValue.includes(value);
+      if (validateProperty && !valueSchema.safeParse(foundValue).success) {
+        return false;
+      }
+      if (value !== undefined) {
+        if (valueSchema.safeParse(value).success) {
+          return value === foundValue;
         }
-        return foundValue.length > 0;
+        return false;
       }
-      if (value !== undefined && z.string().safeParse(value).success) {
-        return value === foundValue;
-      }
-      return !!foundValue;
+
+      return foundValue !== undefined;
     },
     toQuery: () => ({}),
   });
@@ -110,7 +131,6 @@ export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
   hasBooleanProperty,
-  hasNullProperty,
   hasNumberProperty,
   hasStringProperty,
 };
