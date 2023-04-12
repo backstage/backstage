@@ -92,7 +92,7 @@ const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptio
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
-const mockedResourceOptions = {
+const mockedOptionResources: OptionResources = {
   resources: [
     {
       resourceType: 'test-resource',
@@ -122,17 +122,6 @@ const createApp = (
       })
     : createPermissionIntegrationRouter({ permissions: [testPermission] });
 
-  return express().use(router);
-};
-
-const createAppWithResources = (
-  resourceOptions:
-    | CreatePermissionIntegrationRouterResourceOptions<string, any>
-    | OptionResources<string, any>,
-) => {
-  const router = createPermissionIntegrationRouter(
-    resourceOptions as Parameters<typeof createPermissionIntegrationRouter>[0],
-  );
   return express().use(router);
 };
 
@@ -240,7 +229,11 @@ describe('createPermissionIntegrationRouter', () => {
 
       (defaultMockedGetResources1 as jest.Mock).mockClear();
 
-      response = await request(createAppWithResources(mockedResourceOptions))
+      const app = express().use(
+        createPermissionIntegrationRouter(mockedOptionResources),
+      );
+
+      response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
           items: [
@@ -459,7 +452,11 @@ describe('createPermissionIntegrationRouter', () => {
       let response: Response;
 
       beforeEach(async () => {
-        response = await request(createAppWithResources(mockedResourceOptions))
+        const app = express().use(
+          createPermissionIntegrationRouter(mockedOptionResources),
+        );
+
+        response = await request(app)
           .post('/.well-known/backstage/permissions/apply-conditions')
           .send({
             items: [
@@ -763,11 +760,13 @@ describe('createPermissionIntegrationRouter', () => {
 
     it('returns 501 with no getResources implementation', async () => {
       const response = await request(
-        createAppWithResources({
-          resourceType: 'test-resource',
-          permissions: [testPermission],
-          rules: [testRule1, testRule2],
-        }),
+        express().use(
+          createPermissionIntegrationRouter({
+            resourceType: 'test-resource',
+            permissions: [testPermission],
+            rules: [testRule1, testRule2],
+          }),
+        ),
       )
         .post('/.well-known/backstage/permissions/apply-conditions')
         .send({
@@ -841,7 +840,7 @@ describe('createPermissionIntegrationRouter', () => {
     });
     it('returns a list of permissions and rules used by a given backend that was created with an array of resource options', async () => {
       const response = await request(
-        createAppWithResources(mockedResourceOptions),
+        express().use(createPermissionIntegrationRouter(mockedOptionResources)),
       ).get('/.well-known/backstage/permissions/metadata');
 
       expect(response.status).toEqual(200);
