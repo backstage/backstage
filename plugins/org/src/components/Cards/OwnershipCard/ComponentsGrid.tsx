@@ -110,11 +110,13 @@ export const ComponentsGrid = ({
   relationsType,
   isGroup,
   entityFilterKind,
+  entityLimit = 6,
 }: {
   entity: Entity;
   relationsType: string;
   isGroup: boolean;
   entityFilterKind?: string[];
+  entityLimit?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
   const { componentsWithCounters, loading, error } = useGetEntities(
@@ -122,6 +124,7 @@ export const ComponentsGrid = ({
     relationsType,
     isGroup,
     entityFilterKind,
+    entityLimit,
   );
 
   if (loading) {
