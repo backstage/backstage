@@ -60,7 +60,8 @@
           "local-dev/cli-commands"
         ]
       },
-      "local-dev/linking-local-packages"
+      "local-dev/linking-local-packages",
+      "local-dev/debugging"
     ],
     "Core Features": [
       {
