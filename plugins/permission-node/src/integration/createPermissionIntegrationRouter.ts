@@ -332,11 +332,12 @@ export function createPermissionIntegrationRouter<
         >
       ).rules || [],
   );
-  const allPermissions = allOptions
-    .flatMap(
-      option => (option as { permissions: Array<Permission> }).permissions,
-    )
-    .filter((p): p is Permission => !!p);
+  const allPermissions = [
+    ...((options as { permissions: Permission[] }).permissions || []),
+    ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
+      []),
+  ];
+
   const allResourceTypes = allOptions.reduce((acc, option) => {
     if (
       isCreatePermissionIntegrationRouterResourceOptions(
