@@ -251,7 +251,9 @@ export const ActionsPage = () => {
 
     return (
       <>
-        <Typography variant="h6">{name}</Typography>
+        <Typography variant="h6" component="h4">
+          {name}
+        </Typography>
         {input.map((i, index) => (
           <div key={index}>
             {renderTable(
@@ -275,13 +277,15 @@ export const ActionsPage = () => {
     );
     return (
       <Box pb={4} key={action.id}>
-        <Typography variant="h4" className={classes.code}>
+        <Typography variant="h4" component="h2" className={classes.code}>
           {action.id}
         </Typography>
         {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
-            <Typography variant="h5">Input</Typography>
+            <Typography variant="h5" component="h3">
+              Input
+            </Typography>
             {renderTable(
               formatRows(`${action.id}.input`, action?.schema?.input),
             )}
@@ -290,7 +294,9 @@ export const ActionsPage = () => {
         )}
         {action.schema?.output && (
           <Box pb={2}>
-            <Typography variant="h5">Output</Typography>
+            <Typography variant="h5" component="h3">
+              Output
+            </Typography>
             {renderTable(
               formatRows(`${action.id}.output`, action?.schema?.output),
             )}
@@ -299,7 +305,9 @@ export const ActionsPage = () => {
         {action.examples && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h5">Examples</Typography>
+              <Typography variant="h5" component="h3">
+                Examples
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Box pb={2}>

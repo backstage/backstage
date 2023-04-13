@@ -68,9 +68,12 @@ export function ScaffolderPageContextMenu(
   return (
     <>
       <IconButton
+        id="long-menu"
         aria-label="more"
         aria-controls="long-menu"
+        aria-expanded={!!anchorEl}
         aria-haspopup="true"
+        role="button"
         onClick={onOpen}
         data-testid="menu-button"
         color="inherit"
@@ -79,6 +82,7 @@ export function ScaffolderPageContextMenu(
         <MoreVert />
       </IconButton>
       <Popover
+        aria-labelledby="long-menu"
         open={Boolean(anchorEl)}
         onClose={onClose}
         anchorEl={anchorEl}
