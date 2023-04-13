@@ -26,7 +26,7 @@ import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,
   createConditionAuthorizer,
-  OptionResources,
+  PermissionIntegrationRouterOptions,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -92,7 +92,7 @@ const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptio
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
-const mockedOptionResources: OptionResources = {
+const mockedOptionResources: PermissionIntegrationRouterOptions = {
   resources: [
     {
       resourceType: 'test-resource',

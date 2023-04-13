@@ -213,7 +213,7 @@ export type CreatePermissionIntegrationRouterResourceOptions<
  *
  * @public
  */
-export type OptionResources<
+export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,
   TResourceType2 extends string = string,
@@ -310,7 +310,7 @@ export function createPermissionIntegrationRouter<
         TResourceType1,
         TResource1
       >
-    | OptionResources<
+    | PermissionIntegrationRouterOptions<
         TResourceType1,
         TResource1,
         TResourceType2,
@@ -319,7 +319,7 @@ export function createPermissionIntegrationRouter<
         TResource3
       >,
 ): express.Router {
-  const optionsWithResources = options as OptionResources;
+  const optionsWithResources = options as PermissionIntegrationRouterOptions;
   const allOptions = [
     optionsWithResources.resources ? optionsWithResources.resources : options,
   ].flat();
