@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { AdrApi, AdrListResult, AdrReadResult } from './types';
 
 /**
@@ -24,6 +24,7 @@ import { AdrApi, AdrListResult, AdrReadResult } from './types';
  */
 export interface AdrClientOptions {
   discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
 }
 
 const readEndpoint = 'file';
@@ -36,9 +37,11 @@ const listEndpoint = 'list';
  */
 export class AdrClient implements AdrApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: AdrClientOptions) {
     this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
   }
 
   private async fetchAdrApi<T>(endpoint: string, fileUrl: string): Promise<T> {
@@ -47,7 +50,7 @@ export class AdrClient implements AdrApi {
       fileUrl,
     )}`;
 
-    const result = await fetch(targetUrl);
+    const result = await this.fetchApi.fetch(targetUrl);
     const data = await result.json();
 
     if (!result.ok) {
