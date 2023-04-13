@@ -66,8 +66,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
     });
 
@@ -133,8 +133,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
     });
 
@@ -216,8 +216,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
     });
 
@@ -292,8 +292,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
     });
 
@@ -350,8 +350,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
     });
@@ -464,8 +464,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
     });
@@ -546,8 +546,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
     });
@@ -633,8 +633,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
-      orchestrator,
-      stitcher,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
     });
