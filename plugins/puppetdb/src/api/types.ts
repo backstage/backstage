@@ -93,21 +93,21 @@ export type PuppetDbReportEvent = {
   /** The title of the resource on which the event occurred. */
   resource_title: string;
   /** The property/parameter of the resource on which the event occurred. For example, on a Package resource, this field might have a value of ensure. */
-  property: string | null;
+  property?: string;
   /** The name of the resource on which the event occurred. */
-  name: string | null;
+  name?: string;
   /** The new value that Puppet was attempting to set for the specified resource property. Any rich data values will appear as readable strings. */
-  new_value: string | null;
+  new_value?: string;
   /** The previous value of the resource property, which Puppet was attempting to change. Any rich data values will appear as readable strings. */
-  old_value: string | null;
+  old_value?: string;
   /** A description (supplied by the resource provider) of what happened during the event. */
-  message: string | null;
+  message?: string;
   /** The manifest file in which the resource definition is located. */
-  file: string | null;
+  file?: string;
   /** The line (of the containing manifest file) at which the resource definition can be found. */
-  line: number | null;
+  line?: number;
   /** The Puppet class where this resource is declared. */
-  containing_class: string | null;
+  containing_class?: string;
   /** Whether the event occurred in the most recent Puppet run (per-node). */
   latest_report?: boolean;
   /** The environment associated with the reporting node. */
@@ -125,13 +125,13 @@ export type PuppetDbReportEvent = {
  */
 export type PuppetDbReportLog = {
   /** The manifest file in which the resource definition is located. */
-  file: string | null;
+  file?: string;
   /** The line (of the containing manifest file) at which the resource definition can be found. */
-  line: number | null;
+  line?: number;
   /** The timestamp (from the Puppet agent) at which the event occurred. Timestamps are always ISO-8601 compatible date/time strings. */
   time: string;
   /** A description (supplied by the resource provider) of what happened during the event. */
-  message: string | null;
+  message?: string;
   /** The log level. */
   level: string;
   /** Log source */
