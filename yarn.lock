@@ -1426,7 +1426,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/signature-v4@npm:3.310.0, @aws-sdk/signature-v4@npm:^3.299.0":
+"@aws-sdk/signature-v4@npm:3.310.0, @aws-sdk/signature-v4@npm:^3.310.0":
   version: 3.310.0
   resolution: "@aws-sdk/signature-v4@npm:3.310.0"
   dependencies:
@@ -7181,7 +7181,7 @@ __metadata:
   dependencies:
     "@aws-crypto/sha256-js": ^3.0.0
     "@aws-sdk/credential-providers": ^3.208.0
-    "@aws-sdk/signature-v4": ^3.299.0
+    "@aws-sdk/signature-v4": ^3.310.0
     "@azure/identity": ^2.0.4
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
