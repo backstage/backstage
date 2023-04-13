@@ -31,6 +31,11 @@ export interface Config {
     apiKey?: string;
 
     /**
+     * The name of the team for a Stack Overflow for Teams account
+     */
+    teamName?: string;
+
+    /**
      * The API Access Token to authenticate to Stack Overflow API
      * @visibility secret
      */
