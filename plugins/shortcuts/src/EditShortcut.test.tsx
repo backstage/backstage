@@ -19,8 +19,14 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { EditShortcut } from './EditShortcut';
 import { Shortcut } from './types';
 import { LocalStoredShortcuts } from './api';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  MockStorageApi,
+  TestApiProvider,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 describe('EditShortcut', () => {
   const shortcut: Shortcut = {
@@ -72,6 +78,37 @@ describe('EditShortcut', () => {
         url: '/some-new-url',
       });
       expect(props.onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should capture analytics event', async () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const spy = jest.spyOn(api, 'update');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+        <EditShortcut {...props} />
+      </TestApiProvider>,
+    );
+
+    const urlInput = screen.getByPlaceholderText('Enter a URL');
+    const titleInput = screen.getByPlaceholderText('Enter a display name');
+    fireEvent.change(urlInput, { target: { value: '/some-new-url' } });
+    fireEvent.change(titleInput, { target: { value: 'some new title' } });
+
+    fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => {
+      expect(spy).toHaveBeenCalledWith({
+        id: 'id',
+        title: 'some new title',
+        url: '/some-new-url',
+      });
+      expect(props.onClose).toHaveBeenCalledTimes(1);
+    });
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: `Clicked 'Save' in Edit Shortcut`,
     });
   });
 
