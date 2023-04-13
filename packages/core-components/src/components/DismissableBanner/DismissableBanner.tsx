@@ -64,17 +64,17 @@ const useStyles = makeStyles(
       width: '100%',
       maxWidth: 'inherit',
       flexWrap: 'nowrap',
+      color: theme.palette.banner.text,
     },
     message: {
       display: 'flex',
       alignItems: 'center',
-      color: theme.palette.banner.text,
       '& a': {
         color: theme.palette.banner.link,
       },
     },
     button: {
-      color: theme.palette.banner.closeButtonColor,
+      color: theme.palette.banner.closeButtonColor ?? 'inherit',
     },
     info: {
       backgroundColor: theme.palette.banner.info,
