@@ -22,6 +22,7 @@ import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
+  DbRelationsRow,
 } from '../../tables';
 import { deleteOrphanedEntities } from './deleteOrphanedEntities';
 
@@ -55,15 +56,6 @@ describe('deleteOrphanedEntities', () => {
     return result!;
   }
 
-  async function insertReference(
-    knex: Knex,
-    ...refs: DbRefreshStateReferencesRow[]
-  ) {
-    return knex<DbRefreshStateReferencesRow>('refresh_state_references').insert(
-      refs,
-    );
-  }
-
   async function insertEntity(knex: Knex, ...entityRefs: string[]) {
     for (const ref of entityRefs) {
       const entityId = uuid.v4();
@@ -83,6 +75,28 @@ describe('deleteOrphanedEntities', () => {
         stitch_ticket: '',
       });
     }
+  }
+
+  async function insertReference(
+    knex: Knex,
+    ...refs: DbRefreshStateReferencesRow[]
+  ) {
+    await knex<DbRefreshStateReferencesRow>('refresh_state_references').insert(
+      refs,
+    );
+  }
+
+  async function insertRelation(knex: Knex, fromRef: string, toRef: string) {
+    const orig = await knex
+      .select('entity_id')
+      .from('refresh_state')
+      .where('entity_ref', fromRef);
+    await knex<DbRelationsRow>('relations').insert({
+      originating_entity_id: orig[0].entity_id,
+      type: 'fake',
+      source_entity_ref: fromRef,
+      target_entity_ref: toRef,
+    });
   }
 
   async function refreshState(knex: Knex) {
@@ -109,6 +123,8 @@ describe('deleteOrphanedEntities', () => {
     'works for some mixed paths, %p',
     async databaseId => {
       /*
+          In this graph, edges represent refresh state references, not entity relations:
+
           P1 - E1 -- E2
                     /
                   E3
@@ -127,7 +143,8 @@ describe('deleteOrphanedEntities', () => {
 
                E10
 
-          Result: E3, E4, E5, E6, and E10 deleted; others remain; children of deleted orphans marked for reprocessing
+          Result: E3, E4, E5, E6, and E10 deleted; others remain
+                  Entities that had relations pointing at orphans are marked for reprocessing
        */
       const knex = await createDatabase(databaseId);
       await insertEntity(
@@ -156,18 +173,21 @@ describe('deleteOrphanedEntities', () => {
         { source_entity_ref: 'E8', target_entity_ref: 'E7' },
         { source_key: 'P3', target_entity_ref: 'E9' },
       );
+      await insertRelation(knex, 'E1', 'E2');
+      await insertRelation(knex, 'E2', 'E3');
+      await insertRelation(knex, 'E10', 'E6');
       await expect(run(knex)).resolves.toEqual(5);
       await expect(refreshState(knex)).resolves.toEqual([
         { entity_ref: 'E1', result_hash: 'original' },
-        { entity_ref: 'E2', result_hash: 'orphan-parent-deleted' },
-        { entity_ref: 'E7', result_hash: 'orphan-parent-deleted' },
+        { entity_ref: 'E2', result_hash: 'orphan-relation-deleted' },
+        { entity_ref: 'E7', result_hash: 'original' },
         { entity_ref: 'E8', result_hash: 'original' },
         { entity_ref: 'E9', result_hash: 'original' },
       ]);
       await expect(finalEntities(knex)).resolves.toEqual([
         { entity_ref: 'E1', hash: 'original' },
-        { entity_ref: 'E2', hash: 'orphan-parent-deleted' },
-        { entity_ref: 'E7', hash: 'orphan-parent-deleted' },
+        { entity_ref: 'E2', hash: 'orphan-relation-deleted' },
+        { entity_ref: 'E7', hash: 'original' },
         { entity_ref: 'E8', hash: 'original' },
         { entity_ref: 'E9', hash: 'original' },
       ]);

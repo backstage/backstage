@@ -43,18 +43,18 @@ export async function deleteOrphanedEntities(options: {
       )
       .select({
         entityId: 'orphans.entity_id',
-        relationTargetId: 'refresh_state.entity_id',
+        relationSourceId: 'refresh_state.entity_id',
       })
       .from('orphans')
       .leftOuterJoin(
-        'refresh_state_references',
-        'refresh_state_references.source_entity_ref',
+        'relations',
+        'relations.target_entity_ref',
         'orphans.entity_ref',
       )
       .leftOuterJoin(
         'refresh_state',
         'refresh_state.entity_ref',
-        'refresh_state_references.target_entity_ref',
+        'relations.source_entity_ref',
       );
 
     if (!candidates.length) {
@@ -63,7 +63,7 @@ export async function deleteOrphanedEntities(options: {
 
     const orphanIds: string[] = uniq(candidates.map(r => r.entityId));
     const orphanRelationIds: string[] = uniq(
-      candidates.map(r => r.relationTargetId).filter(Boolean),
+      candidates.map(r => r.relationSourceId).filter(Boolean),
     );
 
     total += orphanIds.length;
@@ -79,13 +79,13 @@ export async function deleteOrphanedEntities(options: {
     await tx
       .table<DbFinalEntitiesRow>('final_entities')
       .update({
-        hash: 'orphan-parent-deleted',
+        hash: 'orphan-relation-deleted',
       })
       .whereIn('entity_id', orphanRelationIds);
     await tx
       .table<DbRefreshStateRow>('refresh_state')
       .update({
-        result_hash: 'orphan-parent-deleted',
+        result_hash: 'orphan-relation-deleted',
         next_update_at: tx.fn.now(),
       })
       .whereIn('entity_id', orphanRelationIds);
