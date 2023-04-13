@@ -20,9 +20,14 @@ These are the separate project areas of Backstage, each with their own project a
 
 Team: @backstage/catalog-maintainers
 
-| Name | Organization | Team      | GitHub                       | Discord |
-| ---- | ------------ | --------- | ---------------------------- | ------- |
-| TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
+Scope: The catalog plugin and catalog model
+
+| Name           | Organization | Team      | GitHub                                   | Discord          |
+| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
+| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
+| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
+| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
+| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
 
 ### Discoverability
 
@@ -91,6 +96,7 @@ Scope: The TechDocs plugin and related tooling
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)     | `luchillo17#8777`              |
 | David Tuite                    | Roadie                    | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)     | `OrkoHunter#1520`              |
+| Irma Solakovic                 | Roadie                    | [Irma12](https://github.com/Irma12)             | `Irma#7629`                    |
 | Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047`            |
 | Jussi Hallila                  | Roadie                    | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)             | `webark#8471`                  |

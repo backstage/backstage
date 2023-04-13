@@ -1,5 +1,21 @@
 # @backstage/cli
 
+## 0.22.6-next.3
+
+### Patch Changes
+
+- 3156b0d85dc: Internal refactor to move many internal utilities to the new `@backstage/cli-node` package.
+- 9bbb00d5b49: Updated dependency `@swc/helpers` to `^0.5.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.1.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
 ## 0.22.6-next.2
 
 ### Patch Changes

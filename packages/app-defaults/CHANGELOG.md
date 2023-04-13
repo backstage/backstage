@@ -1,5 +1,16 @@
 # @backstage/app-defaults
 
+## 1.3.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.0-next.3
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+
 ## 1.3.0-next.2
 
 ### Patch Changes

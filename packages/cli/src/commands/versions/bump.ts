@@ -39,7 +39,7 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import 'global-agent/bootstrap';
-import { PackageGraph } from '../../lib/monorepo';
+import { PackageGraph } from '@backstage/cli-node';
 
 const DEP_TYPES = [
   'dependencies',
