@@ -40,30 +40,24 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
-  graphqlContextExtensionPoint,
-  GraphQLContextExtensionPoint,
-  graphqlLoaderExtensionPoint,
-  GraphQLLoaderExtensionPoint,
-  graphqlModuleExtensionPoint,
-  GraphQLModuleExtensionPoint,
-  graphqlPluginExtensionPoint,
-  GraphQLPluginExtensionPoint,
-  graphqlSchemaExtensionPoint,
-  GraphQLSchemaExtensionPoint,
-} from './extensions';
+  graphqlApplicationExtensionPoint,
+  GraphQLApplicationExtensionPoint,
+} from './graphqlApplicationExtension';
+import {
+  graphqlYogaExtension,
+  GraphQLYogaExtension,
+} from './graphqlYogaExtension';
 
-class GraphQLSchema implements GraphQLSchemaExtensionPoint {
+class GraphQLApplication implements GraphQLApplicationExtensionPoint {
   private schemas = new Set<string>();
+  private modules: Module[] = [];
+
   addSchema(schema: string): void {
     this.schemas.add(schema);
   }
   getSchemas(): string[] {
     return [...this.schemas];
   }
-}
-
-class GraphQLModule implements GraphQLModuleExtensionPoint {
-  private modules: Module[] = [];
   async addModule(
     module: (() => Module | Promise<Module>) | Module | Promise<Module>,
   ): Promise<void> {
@@ -74,22 +68,27 @@ class GraphQLModule implements GraphQLModuleExtensionPoint {
   }
 }
 
-class GraphQLPlugin implements GraphQLPluginExtensionPoint {
+class GraphQLYoga<TContext extends Record<string, any>>
+  implements GraphQLYogaExtension
+{
   private plugins: Plugin[] = [];
+  private loaders: Record<string, BatchLoadFn<TContext & GraphQLCoreContext>> =
+    {};
+  private dataloaderOptions: DataLoaderOptions<string, any> = {};
+  private context:
+    | ((
+        initialContext: GraphQLCoreContext,
+      ) => Record<string, any> | Promise<Record<string, any>>)
+    | Promise<Record<string, any>>
+    | Record<string, any>
+    | undefined;
+
   addPlugin(plugin: Plugin): void {
     this.plugins.push(plugin);
   }
   getPlugins(): Plugin[] {
     return this.plugins;
   }
-}
-
-class GraphQLLoader<TContext extends Record<string, any>>
-  implements GraphQLLoaderExtensionPoint
-{
-  private loaders: Record<string, BatchLoadFn<TContext & GraphQLCoreContext>> =
-    {};
-  private dataloaderOptions: DataLoaderOptions<string, any> = {};
   addLoader(
     name: string,
     loader: BatchLoadFn<TContext & GraphQLCoreContext>,
@@ -107,21 +106,15 @@ class GraphQLLoader<TContext extends Record<string, any>>
       this.dataloaderOptions,
     );
   }
-}
-
-class GraphQLContext implements GraphQLContextExtensionPoint {
-  private context:
-    | ((
-        initialContext: GraphQLCoreContext,
-      ) => Record<string, any> | Promise<Record<string, any>>)
-    | Promise<Record<string, any>>
-    | Record<string, any>
-    | undefined;
-  setContext<TContext extends Record<string, any>>(
+  setContext(
     context:
-      | ((initialContext: GraphQLCoreContext) => TContext | Promise<TContext>)
-      | Promise<TContext>
-      | TContext,
+      | ((
+          initialContext: GraphQLCoreContext,
+        ) =>
+          | (Record<string, any> & GraphQLCoreContext)
+          | Promise<Record<string, any> & GraphQLCoreContext>)
+      | Promise<Record<string, any>>
+      | Record<string, any>,
   ): void {
     this.context = context;
   }
@@ -147,16 +140,10 @@ export interface RouterOptions {
 export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
   pluginId: 'graphql',
   register(env) {
-    const schemas = new GraphQLSchema();
-    const modules = new GraphQLModule();
-    const plugins = new GraphQLPlugin();
-    const loader = new GraphQLLoader();
-    const context = new GraphQLContext();
-    env.registerExtensionPoint(graphqlSchemaExtensionPoint, schemas);
-    env.registerExtensionPoint(graphqlModuleExtensionPoint, modules);
-    env.registerExtensionPoint(graphqlPluginExtensionPoint, plugins);
-    env.registerExtensionPoint(graphqlLoaderExtensionPoint, loader);
-    env.registerExtensionPoint(graphqlContextExtensionPoint, context);
+    const graphqlApp = new GraphQLApplication();
+    const graphqlYoga = new GraphQLYoga();
+    env.registerExtensionPoint(graphqlApplicationExtensionPoint, graphqlApp);
+    env.registerExtensionPoint(graphqlYogaExtension, graphqlYoga);
 
     env.registerInit({
       deps: {
@@ -171,9 +158,9 @@ export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
         const discovery = SingleHostDiscovery.fromConfig(config);
         const catalog = new CatalogClient({ discoveryApi: discovery });
         const application = await createGraphQLApp({
-          modules: [await Core(), ...modules.getModules()],
+          modules: [await Core(), ...graphqlApp.getModules()],
           generateOpaqueTypes: options?.generateOpaqueTypes,
-          schema: schemas.getSchemas(),
+          schema: graphqlApp.getSchemas(),
         });
 
         router.get('/health', (_, response) => {
@@ -201,10 +188,10 @@ export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
             yoga = createYoga({
               plugins: [
                 useGraphQLModules(application),
-                useDataLoader('loader', loader.getDataLoader(catalog)),
-                ...plugins.getPlugins(),
+                useDataLoader('loader', graphqlYoga.getDataLoader(catalog)),
+                ...graphqlYoga.getPlugins(),
               ],
-              context: context.getContext({ application }),
+              context: graphqlYoga.getContext({ application }),
               logging: logger,
               graphqlEndpoint: req.baseUrl,
             });
