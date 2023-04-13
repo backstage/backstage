@@ -400,12 +400,8 @@ follows.
   // ...
   "relations": [
     {
-      "target": {
-        "kind": "group",
-        "namespace": "default",
-        "name": "dev.infra"
-      },
-      "type": "ownedBy"
+      "type": "ownedBy",
+      "targetRef": "group:default/dev.infra"
     }
   ],
   "spec": {
@@ -417,11 +413,11 @@ follows.
 
 The fields of a relation are:
 
-| Field      | Type   | Description                                                                      |
-| ---------- | ------ | -------------------------------------------------------------------------------- |
-| `target`   | Object | A complete [compound reference](references.md) to the other end of the relation. |
-| `type`     | String | The type of relation FROM a source entity TO the target entity.                  |
-| `metadata` | Object | Reserved for future use.                                                         |
+| Field       | Type   | Description                                                                |
+| ----------- | ------ | -------------------------------------------------------------------------- |
+| `targetRef` | String | A full [entity reference](references.md) to the other end of the relation. |
+| `type`      | String | The type of relation FROM a source entity TO the target entity.            |
+| `metadata`  | Object | Reserved for future use.                                                   |
 
 Entity descriptor YAML files are not supposed to contain this field. Instead,
 catalog processors analyze the entity descriptor data and its surroundings, and
