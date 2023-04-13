@@ -12,9 +12,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 
 // @public
-const isPuppetDbAvailable: (entity: Entity) => boolean;
-export { isPuppetDbAvailable as isPluginApplicableToEntity };
-export { isPuppetDbAvailable };
+export const isPuppetDbAvailable: (entity: Entity) => boolean;
 
 // @public
 export const PuppetDbPage: () => JSX.Element;

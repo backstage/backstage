@@ -20,7 +20,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { puppetDbApiRef, PuppetDbClient } from '../../api';
 import { ANNOTATION_PUPPET_CERTNAME } from '../../constants';
 import { Entity } from '@backstage/catalog-model/';
-import { isPluginApplicableToEntity } from '../../index';
+import { isPuppetDbAvailable } from '../Router';
 import { ApiProvider } from '@backstage/core-app-api';
 import { puppetDbRouteRef } from '../../routes';
 
@@ -50,16 +50,16 @@ const mockPuppetDbApi: Partial<PuppetDbClient> = {
 
 const apis = TestApiRegistry.from([puppetDbApiRef, mockPuppetDbApi]);
 
-describe('isPluginApplicableToEntity', () => {
+describe('isPuppetDbAvailable', () => {
   describe('when entity has no annotations', () => {
     it('returns false', () => {
-      expect(isPluginApplicableToEntity(entityWithoutAnnotations)).toBe(false);
+      expect(isPuppetDbAvailable(entityWithoutAnnotations)).toBe(false);
     });
   });
 
   describe('when entity has the puppet annotation', () => {
     it('returns true', () => {
-      expect(isPluginApplicableToEntity(entity)).toBe(true);
+      expect(isPuppetDbAvailable(entity)).toBe(true);
     });
   });
 });

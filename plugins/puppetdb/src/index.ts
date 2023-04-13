@@ -18,9 +18,5 @@ export {
   puppetdbPlugin as plugin,
   PuppetDbPage,
 } from './plugin';
-export {
-  Router,
-  isPuppetDbAvailable,
-  isPuppetDbAvailable as isPluginApplicableToEntity,
-} from './components/Router';
+export { Router, isPuppetDbAvailable } from './components/Router';
 export * from './routes';
