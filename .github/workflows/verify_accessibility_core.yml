@@ -18,9 +18,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-      - name: install dependencies
-        run: |
-          yarn install
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.6.3
+        with:
+          cache-prefix: ${{ runner.os }}-16.x
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.11.x
