@@ -36,6 +36,7 @@ kubernetes:
             - group: 'argoproj.io'
               apiVersion: 'v1alpha1'
               plural: 'rollouts'
+          customResourceProfile: build # matches with collection name provided in kubernetes.customResourceProfiles
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
@@ -45,6 +46,18 @@ kubernetes:
       skipTLSVerify: true
       skipMetricsLookup: true
       exposeDashboard: true
+  customResourceProfiles:
+    build:
+      - group: 'sample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'rollouts'
+      - group: 'sample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'fallouts'
+    run:
+      - group: 'othersample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'tests'
 ```
 
 ### `serviceLocatorMethod`
@@ -275,9 +288,13 @@ that the TLS certificate presented by the API server is signed by this CA. Note
 that only clusters defined in the app-config via the [`config`](#config)
 cluster locator method can be configured in this way.
 
+##### `clusters.\*.customResourceProfile` (optional)
+
+Configures which [`customResources`](#customResourceProfiles-optional) profile name to use when returning an entity's kubernetes resources belonging to the cluster. Expected value is a single string.
+
 ##### `clusters.\*.customResources` (optional)
 
-Configures which [custom resources][3] to look for when returning an entity's
+Configures which [`customResources`][3] to look for when returning an entity's
 Kubernetes resources belonging to the cluster. Same specification as [`customResources`](#customresources-optional)
 
 #### `gke`
@@ -360,6 +377,8 @@ Kubernetes resources.
 
 - The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
+- THe optional `kubernetes.customResources` property is overrode by 'customResourceProfile' at the [clusters level](#clusterscustomresourceprofile-optional)
+
 Defaults to empty array. Example:
 
 ```yaml
@@ -402,6 +421,34 @@ For more information on which API versions are supported by your cluster, please
 view the Kubernetes API docs for your Kubernetes version (e.g.
 [API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
 )
+
+### `customResourceProfiles` (optional)
+
+Defines a collection of `customResources` under a profile name that can be used at the [clusters level](#clusterscustomresourceprofile-optional)
+
+Example:
+
+```yaml
+kubernetes:
+  customResourceProfiles:
+    build:
+      - group: 'sample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'rollouts'
+      - group: 'sample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'fallouts'
+    run:
+      - group: 'othersample.io'
+        apiVersion: 'v1alpha1'
+        plural: 'tests'
+```
+
+A profile name defined as a string such as 'build' or 'run' in the example above represents a collection with the same specifications as [`customresources`](#customresources-optional)
+
+**Notes:**
+
+- This configuration overrides the optional [`kubernetes.customResources`](#customresources-optional) property
 
 ### `objectTypes` (optional)
 
