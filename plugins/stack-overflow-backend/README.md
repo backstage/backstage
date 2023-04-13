@@ -19,7 +19,7 @@ stackoverflow:
 
 If you have a private Stack Overflow instance and/or a private Stack Overflow Team you will need to supply an API key or Personal Access Token. You can read more about how to set this up by going to [Stack Overflow's Help Page](https://stackoverflow.help/en/articles/4385859-stack-overflow-for-teams-api).
 
-The existing API key approach remains the default, to support the new v2.3 API and PAT authentication model you need to pass the team name and the new PAT into the existing apiAccessToken parameter. See [15770](https://github.com/backstage/backstage/issues/15770) for more details.
+The existing API key approach remains the default, to support the new v2.3 API and PAT authentication model you need to pass the team name and the new PAT into the existing apiAccessToken parameter to the new URL. See [15770](https://github.com/backstage/backstage/issues/15770) for more details.
 
 ```yaml
 stackoverflow:
@@ -30,7 +30,7 @@ stackoverflow:
 
 ```yaml
 stackoverflow:
-  baseUrl: https://api.stackexchange.com/2.3 # alternative: your internal stack overflow instance
+  baseUrl: https://api.stackoverflowteams.com/2.3 # alternative: your internal stack overflow instance
   teamName: $STACK_OVERFLOW_TEAM_NAME
   apiAccessToken: $STACK_OVERFLOW_API_ACCESS_TOKEN
 ```
