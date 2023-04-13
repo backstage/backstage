@@ -1,6 +1,6 @@
 ---
-'@backstage/core-components': minor
-'@backstage/theme': minor
+'@backstage/core-components': patch
+'@backstage/theme': patch
 ---
 
-Allow closeButton color in DismissableBanner to be configurable (via. theme.palette.banner.closeButtonColor)
+Allow `closeButton` color in `DismissableBanner` to be configurable (via. `theme.palette.banner.closeButtonColor`)
