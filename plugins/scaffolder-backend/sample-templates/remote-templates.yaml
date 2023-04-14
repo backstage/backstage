@@ -11,3 +11,4 @@ spec:
     - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/pull-request/template.yaml
     - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
     - https://github.com/backstage/software-templates/blob/main/scaffolder-templates/springboot-grpc-template/template.yaml
+    - https://github.com/Parsifal-M/backstage-testing-grounds/blob/main/templates/template.yaml
