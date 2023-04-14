@@ -150,7 +150,7 @@ describe('DefaultWorkflowRunner', () => {
       integrations,
       workingDirectory: '/tmp',
       logger,
-      permissionApi: mockedPermissionApi,
+      permissions: mockedPermissionApi,
     });
   });
 

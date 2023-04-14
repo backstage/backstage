@@ -34,7 +34,7 @@ export type TaskWorkerOptions = {
     workflowRunner: WorkflowRunner;
   };
   concurrentTasksLimit: number;
-  permissionApi?: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -63,7 +63,7 @@ export type CreateWorkerOptions = {
    */
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi?: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -88,7 +88,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       concurrentTasksLimit = 10, // from 1 to Infinity
       additionalTemplateGlobals,
-      permissionApi,
+      permissions,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -98,14 +98,14 @@ export class TaskWorker {
       workingDirectory,
       additionalTemplateFilters,
       additionalTemplateGlobals,
-      permissionApi,
+      permissions,
     });
 
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
       concurrentTasksLimit,
-      permissionApi,
+      permissions,
     });
   }
 

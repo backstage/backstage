@@ -112,7 +112,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi?: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
   permissionRules?: TemplatePermissionRuleInput[];
   identity?: IdentityApi;
 }
@@ -208,7 +208,7 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
-    permissionApi,
+    permissions,
     permissionRules,
   } = options;
 
@@ -258,7 +258,7 @@ export async function createRouter(
       additionalTemplateFilters,
       additionalTemplateGlobals,
       concurrentTasksLimit,
-      permissionApi,
+      permissions,
     });
     workers.push(worker);
   }
@@ -284,7 +284,7 @@ export async function createRouter(
     workingDirectory,
     additionalTemplateFilters,
     additionalTemplateGlobals,
-    permissionApi,
+    permissions,
   });
 
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
@@ -616,12 +616,12 @@ export async function createRouter(
       );
     }
 
-    if (!permissionApi) {
+    if (!permissions) {
       return template;
     }
 
     const [parameterDecision, stepDecision] =
-      await permissionApi.authorizeConditional(
+      await permissions.authorizeConditional(
         [
           { permission: templateParameterReadPermission },
           { permission: templateStepReadPermission },

@@ -195,7 +195,7 @@ describe('createRouter', () => {
         catalogClient,
         reader: mockUrlReader,
         taskBroker,
-        permissionApi,
+        permissions: permissionApi,
       });
       app = express().use(router);
 
@@ -819,7 +819,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         reader: mockUrlReader,
         taskBroker,
         identity: { getIdentity },
-        permissionApi,
+        permissions: permissionApi,
       });
       app = express().use(router);
 

@@ -132,7 +132,7 @@ export const scaffolderPlugin = createBackendPlugin(
             taskWorkers,
             additionalTemplateFilters,
             additionalTemplateGlobals,
-            permissionApi: permissions,
+            permissions,
           });
           httpRouter.use(router);
         },

@@ -63,7 +63,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi?: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 };
 
 type TemplateContext = {
@@ -383,8 +383,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       };
 
       const [decision]: PolicyDecision[] =
-        this.options.permissionApi && task.spec.steps.length
-          ? await this.options.permissionApi.authorizeConditional(
+        this.options.permissions && task.spec.steps.length
+          ? await this.options.permissions.authorizeConditional(
               [{ permission: actionExecutePermission }],
               { token: task.secrets?.backstageToken },
             )
