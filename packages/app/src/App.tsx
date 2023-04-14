@@ -27,7 +27,17 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
+import {
+  AppRouter,
+  FeatureFlagged,
+  FlatRoutes,
+  AppRouteBinder,
+} from '@backstage/core-app-api';
+import {
+  BackstagePlugin,
+  AnyApiFactory,
+  AppComponents,
+} from '@backstage/core-plugin-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -41,7 +51,6 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@internal/plugin-catalog-customized';
-
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
   CatalogImportPage,
@@ -110,10 +119,50 @@ import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 
+class Registry {
+  // Saves a state of current available plugins
+  #plugins: BackstagePlugin[] = [catalogPlugin];
+
+  static create(): Registry {
+    // TODO
+    return new Registry();
+  }
+
+  // maybe components().add()/ addComponent()?
+  addCard(card: unknown): void {
+    //
+  }
+
+  bind(context: { bind: AppRouteBinder }): void {
+    //
+  }
+
+  components(): Partial<AppComponents> {
+    return {};
+  }
+
+  plugins(): BackstagePlugin[] {
+    return this.#plugins;
+  }
+
+  apis(): AnyApiFactory[] {
+    return [];
+  }
+}
+
+const registry = Registry.create();
+
 const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
+  apis: [
+    ...apis,
+    ...registry.apis(), // <---------------------------------------
+  ],
+  plugins: [
+    ...Object.values(plugins),
+    ...registry.plugins(), // <---------------------------------------
+  ],
   icons: {
+    ...registry.icons(), // ?
     // Custom icon example
     alert: AlarmIcon,
   },
@@ -135,6 +184,7 @@ const app = createApp({
         />
       );
     },
+    ...registry.components(), // <---------------------------------------
   },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
@@ -151,9 +201,33 @@ const app = createApp({
     bind(orgPlugin.externalRoutes, {
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
+
+    registry.bind({ bind }); // <---------------------------------------
   },
 });
 
+const catalogPlugin = {
+  // alternative: register(registry: Registry): void;
+  EntityCards: [],
+  pages: [],
+  components: [
+    {
+      type: 'EntityPageCard',
+      component: <></>,
+    },
+    {
+      type: 'HomepageCard',
+    },
+  ],
+};
+
+app.addPlugin(catalogPlugin);
+
+// EntityPage
+const [cards] = useEntityPageCards();
+<>{cards}</>;
+
+//
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
