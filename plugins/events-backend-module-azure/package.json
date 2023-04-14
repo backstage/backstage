@@ -37,6 +37,7 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/events": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "winston": "^3.2.1"
   },

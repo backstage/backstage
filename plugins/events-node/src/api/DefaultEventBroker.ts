@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  EventBroker,
-  EventSubscriber,
-} from '@backstage/backend-common';
+import { EventParams, EventBroker, EventSubscriber } from '@backstage/events';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**

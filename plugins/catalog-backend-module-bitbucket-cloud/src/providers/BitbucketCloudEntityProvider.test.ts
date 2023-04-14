@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  getVoidLogger,
-  TokenManager,
-} from '@backstage/backend-common';
+import { getVoidLogger, TokenManager } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -33,6 +29,7 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
+import { EventParams } from '@backstage/events';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {

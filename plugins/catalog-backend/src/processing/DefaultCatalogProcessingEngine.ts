@@ -20,8 +20,8 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { EventBroker } from '@backstage/backend-common';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
+import { EventBroker } from '@backstage/events';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';

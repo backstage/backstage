@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  EventSubscriber,
-  getVoidLogger,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { TestEventSubscriber } from '@backstage/backend-test-utils';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import { DefaultEventBroker } from './DefaultEventBroker';
 
 const logger = getVoidLogger();

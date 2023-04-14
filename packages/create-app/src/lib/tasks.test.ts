@@ -50,6 +50,7 @@ jest.mock('./versions', () => ({
     '@backstage/catalog-model': '1.0.0',
     '@backstage/catalog-client': '1.0.0',
     '@backstage/config': '1.0.0',
+    '@backstage/events': '1.0.0',
     '@backstage/plugin-app-backend': '1.0.0',
     '@backstage/plugin-auth-backend': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',

@@ -15,7 +15,6 @@
  */
 
 import type {
-  EventParams,
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
@@ -24,6 +23,7 @@ import type {
   TaskFunction,
 } from '@backstage/backend-tasks';
 import type { Config } from '@backstage/config';
+import { EventParams } from '@backstage/events';
 import type {
   DeferredEntity,
   EntityProviderConnection,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from '@backstage/backend-common';
+import { EventParams } from '@backstage/events';
 
 /**
  * Base type for all events emitted from the Backstage software catalog (catalog-backend).

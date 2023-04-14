@@ -284,33 +284,6 @@ export type ErrorHandlerOptions = {
 };
 
 // @public
-export interface EventBroker {
-  publish(params: EventParams): Promise<void>;
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
-}
-
-// @public (undocumented)
-export type EventParams<TPayload = unknown> = {
-  topic: string;
-  eventPayload: TPayload;
-  metadata?: Record<string, string | string[] | undefined>;
-};
-
-// @public
-export interface EventPublisher {
-  // (undocumented)
-  setEventBroker(eventBroker: EventBroker): Promise<void>;
-}
-
-// @public (undocumented)
-export interface EventSubscriber {
-  onEvent(params: EventParams): Promise<void>;
-  supportsEventTopics(): string[];
-}
-
-// @public
 export class FetchUrlReader implements UrlReader {
   static factory: ReaderFactory;
   // (undocumented)

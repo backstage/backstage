@@ -17,7 +17,6 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  EventBroker,
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -25,6 +24,7 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { EventBroker } from '@backstage/events';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { EventBroker } from '@backstage/backend-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
+import { EventBroker } from '@backstage/events';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';

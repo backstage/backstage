@@ -18,12 +18,12 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+} from '@backstage/events';
 import {
   eventsExtensionPoint,
   EventsExtensionPoint,

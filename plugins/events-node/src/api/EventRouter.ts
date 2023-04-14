@@ -19,7 +19,7 @@ import {
   EventParams,
   EventPublisher,
   EventSubscriber,
-} from '@backstage/backend-common';
+} from '@backstage/events';
 
 /**
  * Subscribes to a topic and - depending on a set of conditions -

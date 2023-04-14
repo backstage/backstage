@@ -18,7 +18,7 @@ import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
-} from '@backstage/backend-common';
+} from '@backstage/events';
 import { DefaultEventBroker } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 

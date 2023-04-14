@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams, EventSubscriber } from '@backstage/backend-common';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';

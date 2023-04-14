@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { EventBroker } from '@backstage/backend-common';
 import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import { EventBroker } from '@backstage/events';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
 import { Logger } from 'winston';

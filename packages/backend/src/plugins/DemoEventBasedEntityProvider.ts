@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  EventBroker,
-  EventParams,
-  EventSubscriber,
-} from '@backstage/backend-common';
+import { EventBroker, EventParams, EventSubscriber } from '@backstage/events';
 import {
   EntityProvider,
   EntityProviderConnection,

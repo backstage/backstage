@@ -19,7 +19,7 @@ import {
   IncrementalEntityProviderOptions,
   PluginEnvironment,
 } from '../types';
-import { EventParams, EventSubscriber } from '@backstage/backend-common';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import { CatalogBuilder as CoreCatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Duration } from 'luxon';
 import { Knex } from 'knex';

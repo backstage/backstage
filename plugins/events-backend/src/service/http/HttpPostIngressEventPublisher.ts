@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  EventBroker,
-  EventPublisher,
-} from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import { EventBroker, EventPublisher } from '@backstage/events';
 import {
   HttpPostIngressOptions,
   RequestValidator,

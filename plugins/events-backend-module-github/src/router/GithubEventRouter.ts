@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from '@backstage/backend-common';
+import { EventParams } from '@backstage/events';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 /**

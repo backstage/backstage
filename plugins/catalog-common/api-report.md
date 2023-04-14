@@ -4,7 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
-import { EventParams } from '@backstage/backend-common';
+import { EventParams } from '@backstage/events';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 
 // @public (undocumented)

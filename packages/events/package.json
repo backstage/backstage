@@ -1,27 +1,15 @@
 {
-  "name": "@backstage/plugin-catalog-common",
-  "description": "Common functionalities for the catalog plugin",
-  "version": "1.0.13-next.1",
+  "name": "@backstage/events",
+  "description": "Common utilities for events within Backstage",
+  "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
   "backstage": {
     "role": "common-library"
@@ -30,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-common"
+    "directory": "packages/events"
   },
   "keywords": [
     "backstage"
@@ -42,12 +30,6 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean"
-  },
-  "dependencies": {
-    "@backstage/catalog-model": "workspace:^",
-    "@backstage/events": "workspace:^",
-    "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

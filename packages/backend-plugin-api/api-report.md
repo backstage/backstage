@@ -6,7 +6,7 @@
 /// <reference types="node" />
 
 import { Config } from '@backstage/config';
-import { EventBroker } from '@backstage/backend-common';
+import { EventBroker } from '@backstage/events';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';

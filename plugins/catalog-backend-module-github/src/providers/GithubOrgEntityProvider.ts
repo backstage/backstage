@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -22,6 +21,7 @@ import {
   Entity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,

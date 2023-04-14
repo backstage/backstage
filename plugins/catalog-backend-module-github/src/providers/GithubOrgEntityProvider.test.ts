@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { EventParams, getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { EventParams } from '@backstage/events';
 import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,

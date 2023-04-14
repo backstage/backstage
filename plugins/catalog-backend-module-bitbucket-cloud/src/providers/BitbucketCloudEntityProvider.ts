@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  EventSubscriber,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import {
   BitbucketCloudIntegration,
   ScmIntegrations,

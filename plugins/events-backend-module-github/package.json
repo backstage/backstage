@@ -38,6 +38,7 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/events": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@octokit/webhooks-methods": "^3.0.0",
     "winston": "^3.2.1"

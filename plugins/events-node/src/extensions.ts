@@ -18,7 +18,7 @@ import {
   EventBroker,
   EventPublisher,
   EventSubscriber,
-} from '@backstage/backend-common';
+} from '@backstage/events';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 

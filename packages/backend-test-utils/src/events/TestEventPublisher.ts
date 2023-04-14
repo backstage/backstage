@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventBroker, EventPublisher } from '@backstage/backend-common';
+import { EventBroker, EventPublisher } from '@backstage/events';
 
 /** @public */
 export class TestEventPublisher implements EventPublisher {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { EventParams, EventSubscriber } from '@backstage/backend-common';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
+import { EventParams, EventSubscriber } from '@backstage/events';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,

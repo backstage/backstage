@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams, EventBroker } from '@backstage/backend-common';
+import { EventParams, EventBroker } from '@backstage/events';
 import { SubTopicEventRouter } from './SubTopicEventRouter';
 
 class TestSubTopicEventRouter extends SubTopicEventRouter {

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  EventBroker,
-  isDatabaseConflictError,
-} from '@backstage/backend-common';
+import { isDatabaseConflictError } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { EventBroker } from '@backstage/events';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';

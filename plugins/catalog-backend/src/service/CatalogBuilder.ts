@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  EventBroker,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -32,6 +28,7 @@ import {
   stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
+import { EventBroker } from '@backstage/events';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams, getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { EventParams } from '@backstage/events';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 
