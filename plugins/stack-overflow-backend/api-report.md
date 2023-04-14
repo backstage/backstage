@@ -44,6 +44,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   maxPage?: number;
   apiKey?: string;
   apiAccessToken?: string;
+  teamName?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };

@@ -34,6 +34,7 @@ import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import CloseIcon from '@material-ui/icons/Close';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
+import Description from '@material-ui/icons/Description';
 import { EditProjectDialog } from '../EditProjectDialog';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {
@@ -196,6 +197,13 @@ export const HomePageBazaarInfoCard = ({
       icon: <ChatIcon />,
       href: bazaarProject.value?.community,
       disabled: !bazaarProject.value?.community || !isMember,
+    },
+    {
+      label: 'Docs',
+      icon: <Description />,
+      href: bazaarProject.value?.docs,
+      disabled:
+        bazaarProject.value?.docs === null || bazaarProject.value?.docs === '',
     },
   ];
 

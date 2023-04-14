@@ -58,10 +58,16 @@ export const TemplateCategoryPicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Categories</Typography>
+      <Typography
+        variant="button"
+        component="label"
+        htmlFor="categories-picker"
+      >
+        Categories
+      </Typography>
       <Autocomplete
         multiple
-        aria-label="Categories"
+        id="categories-picker"
         options={availableTypes}
         value={selectedTypes}
         onChange={(_: object, value: string[]) => setSelectedTypes(value)}
