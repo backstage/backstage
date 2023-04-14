@@ -43,33 +43,6 @@ metadata:
       backstage:permissions:
         tags:
           - secret
-
-parameters:
-  - title: Simple information
-    properties:
-      input:
-        title: Title
-        type: string
-    backstage:permissions:
-      tags:
-        - secret
-  - title: Simple information
-    properties:
-      description:
-        title: Description
-        type: string
-    backstage:permissions:
-      tags:
-        - secret
-  steps:
-    - id: step1
-      name: Log message
-      action: debug:log
-      input:
-        message: hello
-      backstage:permissions:
-        tags:
-          - secret
 ```
 
 In this example, the `description` parameter and the `step2` step are marked with the `secret` tag.
@@ -82,7 +55,7 @@ import {
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  createScaffolderTemplateConditionalDecision,
+  createScaffolderActionConditionalDecision,
   scaffolderTemplateConditions,
 } from '@backstage/plugin-scaffolder-backend/alpha';
 
@@ -97,7 +70,12 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     ) {
       if (user?.identity.userEntityRef === 'user:default/spiderman')
         return createScaffolderTemplateConditionalDecision(request.permission, {
-          not: scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
+          not: {
+            allOf: [
+              scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
+              scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
+            ],
+          },
         });
     }
 
@@ -111,3 +89,80 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 In this example, the user `spiderman` is not authorized to read parameters or steps marked with the `secret` tag.
 
 By combining this feature with restricting the ingestion of templates in the Catalog as recommended in our threat model, you can create a solid system to restrict certain actions.
+
+### Authorizing actions
+
+Similar to parameters and steps, the scaffolder plugin exposes permissions to restrict access to certain actions. This can be useful if you want to enforce security on your templates.
+
+To restrict access to a particular action, you can modify your permission policy as follows:
+
+```ts
+import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createScaffolderActionConditionalDecision,
+  scaffolderActionConditions,
+} from '@backstage/plugin-scaffolder-backend/alpha';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, actionExecutePermission)) {
+      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+        return createScaffolderActionConditionalDecision(request.permission, {
+          not: scaffolderActionConditions.hasActionId({
+            actionId: 'debug:log',
+          }),
+        });
+      }
+    }
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+With this permission policy, spiderman won't be able to execute the debug:log action.
+
+You can also restrict the input provided to the action by combining multiple rules.
+In the example below, spiderman won't be able to execute debug:log when passing `{ "message": "not-this!" }` as action input:
+
+```ts
+import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createScaffolderActionConditionalDecision,
+  scaffolderActionConditions,
+} from '@backstage/plugin-scaffolder-backend/alpha';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, actionExecutePermission)) {
+      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+        return createScaffolderActionConditionalDecision(request.permission, {
+          not: {
+            allOf: [
+              scaffolderActionConditions.hasActionId({ actionId: 'debug:log' }),
+              scaffolderActionConditions.hasProperty({
+                key: 'message',
+                value: 'not-this!',
+              }),
+            ],
+          },
+        });
+      }
+    }
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+```
+
+Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex cases.
