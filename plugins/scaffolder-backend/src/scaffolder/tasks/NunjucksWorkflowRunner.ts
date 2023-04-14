@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { InputError } from '@backstage/errors';
+import { InputError, NotAllowedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
@@ -297,7 +297,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       if (!isActionAuthorized(decision, { action: action.id, input })) {
-        throw new InputError(
+        throw new NotAllowedError(
           `Unauthorized action: ${
             action.id
           }. The action is not allowed. Input: ${JSON.stringify(
