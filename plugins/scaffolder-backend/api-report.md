@@ -650,7 +650,7 @@ export type CreateWorkerOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissionApi?: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 };
 
 // @public
@@ -762,9 +762,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionApi?: PermissionEvaluator;
-  // (undocumented)
   permissionRules?: TemplatePermissionRuleInput[];
+  // (undocumented)
+  permissions?: PermissionEvaluator;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
