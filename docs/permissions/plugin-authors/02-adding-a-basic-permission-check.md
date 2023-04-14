@@ -37,7 +37,7 @@ export const todoListPermissions = [todoListCreatePermission];
 
 For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`).
 
-> Note: We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components and permission policies.
+> Note: We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components as well as permission policies.
 
 ## Authorizing using the new permission
 
@@ -45,7 +45,7 @@ Install the following module:
 
 ```
 $ yarn workspace @internal/plugin-todo-list-backend \
-  add @backstage/plugin-permission-common @internal/plugin-todo-list-common
+  add @backstage/plugin-permission-common @backstage/plugin-permission-node @internal/plugin-todo-list-common
 ```
 
 Edit `plugins/todo-list-backend/src/service/router.ts`:
@@ -59,6 +59,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator, AuthorizeResult } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-end */
 
@@ -76,6 +77,27 @@ export async function createRouter(
   const { logger, identity } = options;
   /* highlight-add-next-line */
   const { logger, identity, permissions } = options;
+
+  /* highlight-add-start */
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: [todoListCreatePermission],
+  });
+  /* highlight-add-end */
+
+  const router = Router();
+  router.use(express.json());
+
+  router.get('/health', (_, response) => {
+    logger.info('PONG!');
+    response.json({ status: 'ok' });
+  });
+
+  /* highlight-add-next-line */
+  router.use(permissionIntegrationRouter);
+
+  router.get('/todos', async (_req, res) => {
+    res.json(getAll());
+  });
 
   router.post('/todos', async (req, res) => {
     let author: string | undefined = undefined;
@@ -103,7 +125,9 @@ export async function createRouter(
 
     const todo = add({ title: req.body.title, author });
     res.json(todo);
-});
+  });
+
+  // ...
 ```
 
 Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
@@ -247,7 +271,7 @@ describe('createRouter', () => {
 });
 ```
 
-Then we want to update the `plugins/todo-list-backend/src/service/standaloneServer.ts`, first we need to add the `@backstage/plugin-permission-node` package to `plugins/todo-list-backend/package.json` and then we can make the following edits:
+Then we want to update the `plugins/todo-list-backend/src/service/standaloneServer.ts`:
 
 ```ts title="plugins/todo-list-backend/src/service/standaloneServer.ts"
 import {
