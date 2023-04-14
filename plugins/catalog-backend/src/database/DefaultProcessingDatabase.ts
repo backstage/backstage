@@ -57,9 +57,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
     private readonly options: {
       database: Knex;
-      eventBroker: EventBroker;
       logger: Logger;
       refreshInterval: ProcessingIntervalFunction;
+      eventBroker?: EventBroker;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -366,10 +366,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
 
     upsertedEntityRefs.inserted.forEach(entityRef =>
-      this.options.eventBroker.publish(createInsertEvent(entityRef)),
+      this.options.eventBroker?.publish(createInsertEvent(entityRef)),
     );
     upsertedEntityRefs.updated.forEach(entityRef =>
-      this.options.eventBroker.publish(createUpdateEvent(entityRef)),
+      this.options.eventBroker?.publish(createUpdateEvent(entityRef)),
     );
 
     const stateReferences = [

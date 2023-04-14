@@ -20,7 +20,6 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { CatalogProcessingEngine, EntityProvider } from './index';
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
-import { TestEventBroker } from '@backstage/backend-test-utils';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   Entity,
@@ -218,7 +217,6 @@ class TestHarness {
       },
     );
     const logger = options?.logger ?? getVoidLogger();
-    const eventBroker = new TestEventBroker();
     const db =
       options?.db ??
       (await DatabaseManager.fromConfig(config, { logger })
@@ -233,12 +231,10 @@ class TestHarness {
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: db,
-      eventBroker,
       logger,
     });
     const processingDatabase = new DefaultProcessingDatabase({
       database: db,
-      eventBroker,
       logger,
       refreshInterval: () => 0.05,
     });
@@ -276,7 +272,6 @@ class TestHarness {
       database: db,
       logger,
       stitcher,
-      eventBroker,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -289,7 +284,7 @@ class TestHarness {
       stitcher,
       () => createHash('sha1'),
       50,
-      eventBroker,
+      undefined,
       event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },

@@ -15,11 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  TestDatabaseId,
-  TestDatabases,
-  TestEventBroker,
-} from '@backstage/backend-test-utils';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid, v4 } from 'uuid';
@@ -53,7 +49,6 @@ describe('DefaultEntitiesCatalog', () => {
   });
   const stitch = jest.fn();
   const stitcher: Stitcher = { stitch } as any;
-  const eventBroker = new TestEventBroker();
 
   async function createDatabase(databaseId: TestDatabaseId) {
     knex = await databases.init(databaseId);
@@ -168,7 +163,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
@@ -202,7 +196,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
         await expect(() =>
           catalog.entityAncestry('k:default/root'),
@@ -249,7 +242,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
         const result = await catalog.entityAncestry('k:default/root');
         expect(result.rootEntityRef).toEqual('k:default/root');
@@ -309,7 +301,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const testFilter = {
@@ -347,7 +338,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const testFilter = {
@@ -399,7 +389,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const testFilter1 = {
@@ -459,7 +448,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const testFilter1 = {
@@ -506,7 +494,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const testFilter = {
@@ -553,7 +540,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const { entities } = await catalog.entities();
@@ -617,7 +603,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         function f(request: EntitiesRequest): Promise<string[]> {
@@ -707,7 +692,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const { items } = await catalog.entitiesBatch({
@@ -762,7 +746,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const { items } = await catalog.entitiesBatch({
@@ -810,7 +793,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const filter = {
@@ -956,7 +938,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const filter = {
@@ -1103,7 +1084,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const filter = {
@@ -1164,7 +1144,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const filter = {
@@ -1261,7 +1240,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const filter = {
@@ -1339,7 +1317,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const request: QueryEntitiesInitialRequest = {
@@ -1368,7 +1345,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const limit = 2;
@@ -1466,7 +1442,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         const limit = 2;
@@ -1613,7 +1588,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
         await catalog.removeEntityByUid(uid);
 
@@ -1664,7 +1638,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         await expect(catalog.facets({ facets: ['kind'] })).resolves.toEqual({
@@ -1707,7 +1680,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         await expect(
@@ -1756,7 +1728,6 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: getVoidLogger(),
           stitcher,
-          eventBroker,
         });
 
         await expect(

@@ -29,7 +29,7 @@ export function createInsertEvent(entityOrRef: Entity | string): CatalogEvent {
     topic: 'backstage.catalog',
     eventPayload: {
       originatingEntityRef: entityRef,
-      type: 'catalog.entity.insert',
+      type: 'experimental.catalog.entity.insert',
     },
   };
 }
@@ -46,7 +46,7 @@ export function createUpdateEvent(entityOrRef: Entity | string): CatalogEvent {
     topic: 'backstage.catalog',
     eventPayload: {
       originatingEntityRef: entityRef,
-      type: 'catalog.entity.update',
+      type: 'experimental.catalog.entity.update',
     },
   };
 }
@@ -63,7 +63,7 @@ export function createDeleteEvent(entityOrRef: Entity | string): CatalogEvent {
     topic: 'backstage.catalog',
     eventPayload: {
       originatingEntityRef: entityRef,
-      type: 'catalog.entity.delete',
+      type: 'experimental.catalog.entity.delete',
     },
   };
 }

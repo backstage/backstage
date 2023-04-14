@@ -192,13 +192,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: Logger;
   private readonly stitcher: Stitcher;
-  private readonly eventBroker: EventBroker;
+  private readonly eventBroker?: EventBroker;
 
   constructor(options: {
     database: Knex;
     logger: Logger;
     stitcher: Stitcher;
-    eventBroker: EventBroker;
+    eventBroker?: EventBroker;
   }) {
     this.database = options.database;
     this.logger = options.logger;
@@ -614,7 +614,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
-    this.eventBroker.publish(createDeleteEvent(uid));
+    this.eventBroker?.publish(createDeleteEvent(uid));
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

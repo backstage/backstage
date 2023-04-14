@@ -15,11 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  TestDatabaseId,
-  TestDatabases,
-  TestEventBroker,
-} from '@backstage/backend-test-utils';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
@@ -46,7 +42,6 @@ describe('DefaultProviderDatabase', () => {
       knex,
       db: new DefaultProviderDatabase({
         database: knex,
-        eventBroker: new TestEventBroker(),
         logger,
       }),
     };

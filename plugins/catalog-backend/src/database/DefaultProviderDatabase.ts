@@ -54,8 +54,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   constructor(
     private readonly options: {
       database: Knex;
-      eventBroker: EventBroker;
       logger: Logger;
+      eventBroker?: EventBroker;
     },
   ) {}
 
@@ -95,7 +95,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         sourceKey: options.sourceKey,
       });
       removedEntityRefs.forEach(ref =>
-        this.options.eventBroker.publish(createDeleteEvent(ref)),
+        this.options.eventBroker?.publish(createDeleteEvent(ref)),
       );
       this.options.logger.debug(
         `removed, ${removedEntityRefs.length} entities: ${JSON.stringify(
@@ -139,7 +139,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             BATCH_SIZE,
           );
           chunk.forEach(item =>
-            this.options.eventBroker.publish(
+            this.options.eventBroker?.publish(
               createInsertEvent(item.deferred.entity),
             ),
           );
@@ -171,7 +171,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             locationKey,
           });
           if (ok) {
-            this.options.eventBroker.publish(createUpdateEvent(entity));
+            this.options.eventBroker?.publish(createUpdateEvent(entity));
           } else {
             ok = await insertUnprocessedEntity({
               tx,
@@ -181,7 +181,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               logger: this.options.logger,
             });
             if (ok) {
-              this.options.eventBroker.publish(createInsertEvent(entity));
+              this.options.eventBroker?.publish(createInsertEvent(entity));
             }
           }
 

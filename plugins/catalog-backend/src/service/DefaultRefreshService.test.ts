@@ -15,11 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  TestDatabaseId,
-  TestDatabases,
-  TestEventBroker,
-} from '@backstage/backend-test-utils';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
@@ -45,7 +41,6 @@ describe('DefaultRefreshService', () => {
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
-  const eventBroker = new TestEventBroker();
 
   async function createDatabase(
     databaseId: TestDatabaseId,
@@ -57,7 +52,6 @@ describe('DefaultRefreshService', () => {
       knex,
       processingDb: new DefaultProcessingDatabase({
         database: knex,
-        eventBroker: new TestEventBroker(),
         logger,
         refreshInterval: () => 100,
       }),
@@ -158,7 +152,6 @@ describe('DefaultRefreshService', () => {
       new Stitcher(knex, defaultLogger),
       () => createHash('sha1'),
       50,
-      eventBroker,
     );
 
     return engine;

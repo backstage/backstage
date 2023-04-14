@@ -50,7 +50,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
-    eventBroker: EventBroker,
+    eventBroker?: EventBroker,
     private readonly onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
@@ -264,7 +264,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker(eventBroker: EventBroker) {
+function progressTracker(eventBroker?: EventBroker) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
@@ -357,11 +357,11 @@ function progressTracker(eventBroker: EventBroker) {
         const event: CatalogEvent = {
           topic: 'backstage.catalog',
           eventPayload: {
-            type: 'catalog.entity.processed',
+            type: 'experimental.catalog.entity.processed',
             originatingEntityRef: stringifyEntityRef(result.completedEntity),
           },
         };
-        eventBroker.publish(event);
+        eventBroker?.publish(event);
       }
     }
 

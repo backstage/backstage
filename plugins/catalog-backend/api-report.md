@@ -173,7 +173,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
-  eventBroker: EventBroker;
+  eventBroker?: EventBroker;
 };
 
 // @public

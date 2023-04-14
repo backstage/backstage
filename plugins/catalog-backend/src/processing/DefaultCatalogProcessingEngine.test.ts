@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestEventBroker } from '@backstage/backend-test-utils';
 import { Hash } from 'crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
@@ -43,7 +42,6 @@ describe('DefaultCatalogProcessingEngine', () => {
     update: () => hash,
     digest: jest.fn(),
   } as unknown as jest.Mocked<Hash>;
-  const eventBroker = new TestEventBroker();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -70,7 +68,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       1000,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -138,7 +135,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       1000,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -222,7 +218,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       1000,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -299,7 +294,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       1000,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -358,7 +352,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       100,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -472,7 +465,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       100,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -554,7 +546,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       100,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -641,7 +632,6 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher,
       () => hash,
       100,
-      eventBroker,
     );
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));

@@ -15,11 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  TestDatabaseId,
-  TestDatabases,
-  TestEventBroker,
-} from '@backstage/backend-test-utils';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
@@ -55,7 +51,6 @@ describe('DefaultProcessingDatabase', () => {
       knex,
       db: new DefaultProcessingDatabase({
         database: knex,
-        eventBroker: new TestEventBroker(),
         logger,
         refreshInterval: createRandomProcessingInterval({
           minSeconds: 100,
