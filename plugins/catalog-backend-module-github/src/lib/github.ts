@@ -45,7 +45,7 @@ type RepositoryOwnerResponse = {
 };
 
 export type OrganizationResponse = {
-  login: string;
+  login?: string;
   membersWithRole?: Connection<GithubUser>;
   team?: GithubTeamResponse;
   teams?: Connection<GithubTeamResponse>;
@@ -140,7 +140,6 @@ export async function getOrganizationUsers(
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
       organization(login: $org) {
-        login
         membersWithRole(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
@@ -191,7 +190,6 @@ export async function getOrganizationTeams(
   const query = `
     query teams($org: String!, $cursor: String) {
       organization(login: $org) {
-        login
         teams(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
@@ -269,7 +267,6 @@ export async function getOrganizationTeamsFromUsers(
   const query = `
    query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
   organization(login: $org) {
-    login
     teams(first: 100, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
@@ -354,7 +351,6 @@ export async function getOrganizationTeam(
   const query = `
   query teams($org: String!, $teamSlug: String!) {
       organization(login: $org) {
-        login
         team(slug:$teamSlug) {
             slug
             combinedSlug
@@ -461,7 +457,6 @@ export async function getOrganizationRepositories(
   const query = `
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
-        login
         repositories(first: 100, after: $cursor) {
           nodes {
             name
