@@ -211,25 +211,23 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const repositoriesFromGithub: RepositoryResponse[] = [];
     let organizations: string[];
 
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: `https://${host}`,
-    });
-
-    const client = graphql.defaults({
-      baseUrl: this.integration.apiBaseUrl,
-      headers,
-    });
-
     if (organization.includes('*')) {
+      const { headers } = await this.githubCredentialsProvider.getCredentials({
+        url: `https://${host}`,
+      });
+
       let { organizations: organizationsFromGithub } = await getOrganizations(
-        client,
+        graphql.defaults({
+          baseUrl: this.integration.apiBaseUrl,
+          headers,
+        }),
       );
       if (organization !== '*') {
         organizationsFromGithub = organizationsFromGithub.filter(({ login }) =>
-          login.match(escapeRegExp(organization)),
+          login?.match(escapeRegExp(organization)),
         );
       }
-      organizations = organizationsFromGithub?.map(i => i.login);
+      organizations = organizationsFromGithub?.map(i => i.login ?? '');
 
       this.logger.info(
         `Read ${organizations.length} GitHub organizations matching '${organization}' pattern)`,
@@ -239,8 +237,14 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     }
 
     for (const org of organizations) {
+      const { headers } = await this.githubCredentialsProvider.getCredentials({
+        url: `https://${host}/${org}`,
+      });
       const { repositories: repos } = await getOrganizationRepositories(
-        client,
+        graphql.defaults({
+          baseUrl: this.integration.apiBaseUrl,
+          headers,
+        }),
         org,
         catalogPath,
       );
