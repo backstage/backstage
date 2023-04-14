@@ -173,10 +173,6 @@ export default async function createPlugin(
 }
 ```
 
-## Running Backstage locally
-
-Start the frontend and the backend app by running `yarn dev`
-
 ## Configuration
 
 After installing the plugins in the code, you'll need to then

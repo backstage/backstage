@@ -284,11 +284,6 @@ Note: We recommend Python version 3.7 or higher.
 > Python packages. The order is important to make sure we get correct version of
 > some of the dependencies.
 
-## Running Backstage locally
-
-Start the frontend and the backend app by running `yarn dev`, this will launch [http://localhost:3000/](http://localhost:3000/) in your browser, from there you can navigate to [http://localhost:3000/docs/](http://localhost:3000/docs/)
-to see all your documentation sites.
-
 ## Additional reading
 
 - [Creating and publishing your docs](creating-and-publishing.md)

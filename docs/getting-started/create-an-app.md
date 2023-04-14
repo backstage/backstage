@@ -106,9 +106,8 @@ example [here](https://www.python.org/downloads/) to install it.
 
 #### Could not execute command yarn install
 
-Install yarn on your system with `npm install --global yarn` or for more details
-refer to the
-[prerequisites](https://backstage.io/docs/getting-started/#prerequisites)
+Install Yarn on your system with `npm install --global yarn` or for more details
+refer to the [prerequisites](index.md#prerequisites).
 
 ## Run the app
 
