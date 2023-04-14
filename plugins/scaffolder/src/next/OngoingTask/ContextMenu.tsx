@@ -28,6 +28,7 @@ import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
 import Retry from '@material-ui/icons/Repeat';
 import Toc from '@material-ui/icons/Toc';
+import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
@@ -36,8 +37,10 @@ import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 type ContextMenuProps = {
   cancelEnabled?: boolean;
   logsVisible?: boolean;
+  buttonBarVisible?: boolean;
   onStartOver?: () => void;
   onToggleLogs?: (state: boolean) => void;
+  onToggleButtonBar?: (state: boolean) => void;
   taskId?: string;
 };
 
@@ -48,8 +51,15 @@ const useStyles = makeStyles<BackstageTheme, { fontColor: string }>(() => ({
 }));
 
 export const ContextMenu = (props: ContextMenuProps) => {
-  const { cancelEnabled, logsVisible, onStartOver, onToggleLogs, taskId } =
-    props;
+  const {
+    cancelEnabled,
+    logsVisible,
+    buttonBarVisible,
+    onStartOver,
+    onToggleLogs,
+    onToggleButtonBar,
+    taskId,
+  } = props;
   const { getPageTheme } = useTheme<BackstageTheme>();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
@@ -89,6 +99,14 @@ export const ContextMenu = (props: ContextMenuProps) => {
               <Toc fontSize="small" />
             </ListItemIcon>
             <ListItemText primary={logsVisible ? 'Hide Logs' : 'Show Logs'} />
+          </MenuItem>
+          <MenuItem onClick={() => onToggleButtonBar?.(!buttonBarVisible)}>
+            <ListItemIcon>
+              <ControlPointIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={buttonBarVisible ? 'Hide Button Bar' : 'Show Button Bar'}
+            />
           </MenuItem>
           <MenuItem onClick={onStartOver}>
             <ListItemIcon>
