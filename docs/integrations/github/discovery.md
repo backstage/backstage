@@ -206,7 +206,7 @@ This provider supports multiple organizations via unique provider IDs.
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 - **`organization`**:
   Name of your organization account/workspace.
-  If you want to add multiple organizations, you need to add one provider config each.
+  If you want to add multiple organizations you can either you use wildcards - `*` or add one provider config each.
 - **`validateLocationsExist`** _(optional)_:
   Whether to validate locations that exist before emitting them.
   This option avoids generating locations for catalog info files that do not exist in the source repository.
