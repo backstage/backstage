@@ -172,7 +172,7 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                 aria-disabled="false"
                 tabIndex={0}
               >
-                <Typography variant="h6" component="h3">
+                <Typography variant="h6" component="h2">
                   {title}
                 </Typography>
               </StepLabel>

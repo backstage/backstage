@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.6-next.2",
+  "version": "0.22.6-next.3",
   "publishConfig": {
     "access": "public"
   },
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",

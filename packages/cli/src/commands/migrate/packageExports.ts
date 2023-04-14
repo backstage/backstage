@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { ExtendedPackageJSON, PackageGraph } from '../../lib/monorepo';
+import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 
 function trimRelative(path: string): string {
   if (path.startsWith('./')) {
@@ -94,7 +94,7 @@ export async function command() {
 
         newPackageJson = Object.fromEntries(
           newPkgEntries,
-        ) as ExtendedPackageJSON;
+        ) as BackstagePackageJson;
         changed = true;
       }
 

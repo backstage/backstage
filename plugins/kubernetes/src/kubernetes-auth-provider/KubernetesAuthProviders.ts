@@ -92,7 +92,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     );
   }
 
-  async getCredentials(authProvider: string): Promise<{ token: string }> {
+  async getCredentials(authProvider: string): Promise<{ token?: string }> {
     const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
       this.kubernetesAuthProviderMap.get(authProvider);
 

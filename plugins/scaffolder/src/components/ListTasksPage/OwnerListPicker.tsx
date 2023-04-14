@@ -99,16 +99,21 @@ export const OwnerListPicker = (props: {
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography variant="subtitle2" className={classes.title}>
+          <Typography
+            variant="subtitle2"
+            component="span"
+            className={classes.title}
+          >
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
+            <List disablePadding dense role="menu">
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
                   button
                   divider
+                  ContainerProps={{ role: 'menuitem' }}
                   onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
                   selected={item.id === filter}
                   className={classes.menuItem}

@@ -18,8 +18,8 @@ import chalk from 'chalk';
 import { ESLint } from 'eslint';
 import { OptionValues } from 'commander';
 import { join as joinPath, relative as relativePath } from 'path';
+import { PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
-import { PackageGraph } from '../../lib/monorepo';
 
 export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();

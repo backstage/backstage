@@ -39,6 +39,7 @@ export type BazaarProject = {
   startDate?: string | null;
   endDate?: string | null;
   responsible: string;
+  docs: string;
 };
 
 export type FormValues = {
@@ -50,4 +51,5 @@ export type FormValues = {
   startDate?: string | null;
   endDate?: string | null;
   responsible: string;
+  docs: string;
 };

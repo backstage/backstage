@@ -15,7 +15,7 @@
  */
 
 import { Git, getVoidLogger } from '@backstage/backend-common';
-import { commitAndPushRepo, initRepoAndPush } from './helpers';
+import { commitAndPushRepo, entityRefToName, initRepoAndPush } from './helpers';
 
 jest.mock('@backstage/backend-common', () => ({
   Git: {
@@ -299,5 +299,19 @@ describe('commitAndPushRepo', () => {
         email: 'scaffolder@example.org',
       },
     });
+  });
+});
+
+describe('entityRefToName', () => {
+  it.each([
+    'user:default/catpants',
+    'group:default/catpants',
+    'user:catpants',
+    'default/catpants',
+    'user:custom/catpants',
+    'group:custom/catpants',
+    'catpants',
+  ])('should parse: "%s"', (entityName: string) => {
+    expect(entityRefToName(entityName)).toEqual('catpants');
   });
 });

@@ -89,7 +89,7 @@ export class KubernetesBackendClient implements KubernetesApi {
 
   private async getCredentials(
     authProvider: string,
-  ): Promise<{ token: string }> {
+  ): Promise<{ token?: string }> {
     return await this.kubernetesAuthProvidersApi.getCredentials(authProvider);
   }
 
@@ -148,7 +148,9 @@ export class KubernetesBackendClient implements KubernetesApi {
     const headers = {
       ...options.init?.headers,
       [`Backstage-Kubernetes-Cluster`]: options.clusterName,
-      [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+      ...(k8sToken && {
+        [`Backstage-Kubernetes-Authorization`]: `Bearer ${k8sToken}`,
+      }),
       ...(identityResponse.token && {
         Authorization: `Bearer ${identityResponse.token}`,
       }),

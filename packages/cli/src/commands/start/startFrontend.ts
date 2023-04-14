@@ -19,10 +19,10 @@ import chalk from 'chalk';
 import uniq from 'lodash/uniq';
 import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
+import { PackageGraph } from '@backstage/cli-node';
 import { Lockfile } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
-import { PackageGraph } from '../../lib/monorepo';
+import { paths } from '../../lib/paths';
 
 interface StartAppOptions {
   verifyVersions?: boolean;

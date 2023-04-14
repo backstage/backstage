@@ -1318,11 +1318,6 @@ export type Tab = {
   >;
 };
 
-// Warning: (ae-missing-release-tag) "TabBarClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type TabBarClassKey = 'indicator' | 'flexContainer' | 'root';
-
 // Warning: (ae-forgotten-export) The symbol "Props_18" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "TabbedCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1347,14 +1342,6 @@ export namespace TabbedLayout {
     // (undocumented)
     Route: (props: SubRoute) => null;
 }
-
-// @public (undocumented)
-export type TabClassKey = 'root' | 'selected';
-
-// Warning: (ae-missing-release-tag) "TabIconClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type TabIconClassKey = 'root';
 
 // Warning: (ae-missing-release-tag) "Table" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1437,17 +1424,6 @@ export type TableState = {
 //
 // @public (undocumented)
 export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
-
-// Warning: (ae-forgotten-export) The symbol "TabsProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Tabs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function Tabs(props: TabsProps): JSX.Element;
-
-// Warning: (ae-missing-release-tag) "TabsClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type TabsClassKey = 'root' | 'styledTabs' | 'appbar';
 
 // Warning: (ae-missing-release-tag) "TrendLine" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -18,8 +18,14 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddShortcut } from './AddShortcut';
 import { LocalStoredShortcuts } from './api';
-import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  MockStorageApi,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
+import { TestApiProvider } from '@backstage/test-utils';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 describe('AddShortcut', () => {
   const api = new LocalStoredShortcuts(MockStorageApi.create());
@@ -64,6 +70,36 @@ describe('AddShortcut', () => {
         title: 'some title',
         url: '/some-url',
       });
+    });
+  });
+
+  it('should capture analytics event', async () => {
+    const analyticsSpy = new MockAnalyticsApi();
+    const spy = jest.spyOn(api, 'add');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+        <AddShortcut {...props} />
+      </TestApiProvider>,
+    );
+
+    const urlInput = screen.getByPlaceholderText('Enter a URL');
+    const titleInput = screen.getByPlaceholderText('Enter a display name');
+    fireEvent.change(urlInput, { target: { value: '/some-url' } });
+    fireEvent.change(titleInput, { target: { value: 'some title' } });
+
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => {
+      expect(spy).toHaveBeenCalledWith({
+        title: 'some title',
+        url: '/some-url',
+      });
+    });
+
+    expect(analyticsSpy.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: `Clicked 'Save' in AddShortcut`,
     });
   });
 
