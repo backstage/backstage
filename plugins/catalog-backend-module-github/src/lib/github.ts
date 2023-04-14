@@ -31,8 +31,13 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 // Graphql types
 
 export type QueryResponse = {
+  viewer?: ViewerResponse;
   organization?: OrganizationResponse;
   repositoryOwner?: RepositoryOwnerResponse;
+};
+
+export type ViewerResponse = {
+  organizations?: Connection<OrganizationResponse>;
 };
 
 type RepositoryOwnerResponse = {
@@ -40,6 +45,7 @@ type RepositoryOwnerResponse = {
 };
 
 export type OrganizationResponse = {
+  login: string;
   membersWithRole?: Connection<GithubUser>;
   team?: GithubTeamResponse;
   teams?: Connection<GithubTeamResponse>;
@@ -134,6 +140,7 @@ export async function getOrganizationUsers(
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
       organization(login: $org) {
+        login
         membersWithRole(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
@@ -184,6 +191,7 @@ export async function getOrganizationTeams(
   const query = `
     query teams($org: String!, $cursor: String) {
       organization(login: $org) {
+        login
         teams(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
@@ -261,6 +269,7 @@ export async function getOrganizationTeamsFromUsers(
   const query = `
    query teams($org: String!, $cursor: String, $userLogins: [String!] = "") {
   organization(login: $org) {
+    login
     teams(first: 100, after: $cursor, userLogins: $userLogins) {
       pageInfo {
         hasNextPage
@@ -345,6 +354,7 @@ export async function getOrganizationTeam(
   const query = `
   query teams($org: String!, $teamSlug: String!) {
       organization(login: $org) {
+        login
         team(slug:$teamSlug) {
             slug
             combinedSlug
@@ -406,6 +416,33 @@ export async function getOrganizationTeam(
   if (!group) throw new Error(`Can't transform for group ${teamSlug}`);
 
   return { group };
+}
+
+export async function getOrganizations(
+  client: typeof graphql,
+): Promise<{ organizations: OrganizationResponse[] }> {
+  const query = `
+    query organizations($cursor: String) {
+      viewer {
+        organizations (first: 100, after: $cursor) {
+          pageInfo { hasNextPage, endCursor }
+          nodes {
+            login
+          }
+        }
+      }
+    }`;
+
+  const organizations = await queryWithPaging(
+    client,
+    query,
+    '',
+    r => r.viewer?.organizations,
+    async x => x,
+    {},
+  );
+
+  return { organizations };
 }
 
 export async function getOrganizationRepositories(
