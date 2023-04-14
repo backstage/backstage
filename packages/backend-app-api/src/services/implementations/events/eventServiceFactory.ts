@@ -18,7 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { InMemoryEventBroker } from '@backstage/plugin-events-node';
+import { DefaultEventBroker } from '@backstage/plugin-events-node';
 
 /** @public */
 export const eventServiceFactory = createServiceFactory({
@@ -27,6 +27,6 @@ export const eventServiceFactory = createServiceFactory({
     logger: coreServices.logger,
   },
   async factory({ logger }) {
-    return new InMemoryEventBroker(logger);
+    return new DefaultEventBroker(logger);
   },
 });

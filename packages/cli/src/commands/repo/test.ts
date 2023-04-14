@@ -16,7 +16,7 @@
 
 import os from 'os';
 import { Command, OptionValues } from 'commander';
-import { PackageGraph } from '../../lib/monorepo';
+import { PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runCheck } from '../../lib/run';
 

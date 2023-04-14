@@ -24,7 +24,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { InMemoryEventBroker } from '@backstage/plugin-events-node';
+import { DefaultEventBroker } from '@backstage/plugin-events-node';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -62,7 +62,7 @@ export async function startStandaloneServer(
     discovery,
     tokenManager,
   });
-  const eventBroker = new InMemoryEventBroker(logger);
+  const eventBroker = new DefaultEventBroker(logger);
 
   logger.debug('Creating application...');
   await applyDatabaseMigrations(await database.getClient());

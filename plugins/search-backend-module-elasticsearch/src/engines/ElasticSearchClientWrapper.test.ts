@@ -119,7 +119,12 @@ describe('ElasticSearchClientWrapper', () => {
     it('search', async () => {
       const wrapper = ElasticSearchClientWrapper.fromClientOptions(esOptions);
 
-      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
       const result = (await wrapper.search(searchInput)) as any;
 
       // Should call the ElasticSearch client's search with expected input.
@@ -241,7 +246,12 @@ describe('ElasticSearchClientWrapper', () => {
     it('search', async () => {
       const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
 
-      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
       const result = (await wrapper.search(searchInput)) as any;
 
       // Should call the OpenSearch client's search with expected input.
@@ -350,7 +360,12 @@ describe('ElasticSearchClientWrapper', () => {
       const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
       expect(OpenSearchClient).toHaveBeenCalledWith(osOptions);
 
-      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
       const result = (await wrapper.search(searchInput)) as any;
       expect(result.client).toBe('os');
       expect(result.args).toStrictEqual(searchInput);

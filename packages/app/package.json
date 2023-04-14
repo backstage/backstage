@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.82-next.1",
+  "version": "0.2.82-next.3",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -51,6 +51,7 @@
     "@backstage/plugin-pagerduty": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-playlist": "workspace:^",
+    "@backstage/plugin-puppetdb": "workspace:^",
     "@backstage/plugin-rollbar": "workspace:^",
     "@backstage/plugin-scaffolder": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",

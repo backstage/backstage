@@ -26,13 +26,13 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/azure-devops-common                        @backstage/maintainers @marleypowell @awanlin
 /plugins/bitbucket-cloud-common                     @backstage/maintainers @pjungermann
 /plugins/bitrise                                    @backstage/maintainers @backstage/sda-se-reviewers
-/plugins/catalog                                    @backstage/maintainers @backstage/catalog-core
-/plugins/catalog-*                                  @backstage/maintainers @backstage/catalog-core
-/plugins/catalog-backend-module-aws                 @backstage/maintainers @backstage/catalog-core @pjungermann
-/plugins/catalog-backend-module-bitbucket-cloud     @backstage/maintainers @backstage/catalog-core @pjungermann
-/plugins/catalog-backend-module-msgraph             @backstage/maintainers @backstage/catalog-core @pjungermann
-/plugins/catalog-backend-module-puppetdb            @backstage/maintainers @backstage/catalog-core @tdabasinskas
-/plugins/catalog-graph                              @backstage/maintainers @backstage/catalog-core @backstage/sda-se-reviewers
+/plugins/catalog                                    @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-*                                  @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-aws                 @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud     @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-msgraph             @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-puppetdb            @backstage/maintainers @backstage/catalog-maintainers @tdabasinskas
+/plugins/catalog-graph                              @backstage/maintainers @backstage/catalog-maintainers @backstage/sda-se-reviewers
 /plugins/circleci                                   @backstage/maintainers @adamdmharvey
 /plugins/cloudbuild                                 @backstage/maintainers @trivago/ebarrios
 /plugins/code-coverage                              @backstage/maintainers @alde @nissayeva
@@ -66,6 +66,7 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/newrelic-dashboard                         @backstage/maintainers @mufaddal7
 /plugins/playlist                                   @backstage/maintainers @kuangp
 /plugins/playlist-*                                 @backstage/maintainers @kuangp
+/plugins/puppetdb                                   @backstage/maintainers @tdabasinskas
 /plugins/rollbar                                    @backstage/maintainers @andrewthauer
 /plugins/rollbar-backend                            @backstage/maintainers @andrewthauer
 /plugins/scaffolder-backend-module-rails            @backstage/maintainers @angeliski

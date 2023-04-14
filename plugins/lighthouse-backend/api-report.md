@@ -7,6 +7,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export interface CreateLighthouseSchedulerOptions {
@@ -18,6 +19,8 @@ export interface CreateLighthouseSchedulerOptions {
   logger: Logger;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // @public (undocumented)

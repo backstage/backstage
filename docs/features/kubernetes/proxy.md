@@ -14,42 +14,16 @@ Kubernetes backend plugin's proxy endpoint to allow them to make arbitrary
 requests to the [REST
 API](https://kubernetes.io/docs/reference/using-api/api-concepts/).
 
-Here is a snippet fetching namespaces from a cluster configured with the
-`google` [auth provider](https://backstage.io/docs/features/kubernetes/configuration#clustersauthprovider):
+Here is a snippet fetching namespaces using the `KubernetesBackendClient` library
 
 ```typescript
-import {
-  discoveryApiRef,
-  googleAuthApiRef,
-  useApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes';
 
 const CLUSTER_NAME = ''; // use a known cluster name
 
-// get a bearer token from Google
-const googleAuthApi = useApi(googleAuthApiRef);
-const token = await googleAuthApi.getAccessToken(
-  'https://www.googleapis.com/auth/cloud-platform',
-);
-
-// get a backstage ID token
-const identityApi = useApi(identityApiRef);
-const { token: userToken } = await identityApi.getCredentials();
-
-const discoveryApi = useApi(discoveryApiRef);
-const kubernetesBaseUrl = await discoveryApi.getBaseUrl('kubernetes');
-const kubernetesProxyEndpoint = `${kubernetesBaseUrl}/proxy`;
-
-// fetch namespaces
-await fetch(`${kubernetesProxyEndpoint}/api/v1/namespaces`, {
-  method: 'GET',
-  headers: {
-    'Backstage-Kubernetes-Cluster': CLUSTER_NAME,
-    'Backstage-Kubernetes-Authorization': `Bearer ${token}`,
-    Authorization: `Bearer ${userToken}`,
-  },
-});
+const kubernetesApi = useApi(kubernetesApiRef);
+await kubernetesApi.proxy(CLUSTER_NAME, '/api/v1/namespaces');
 ```
 
 ## How it works
@@ -69,15 +43,9 @@ Overall, the only changes to each request are:
 - the endpoint's base URL prefix is stripped.
 - the `Backstage-Kubernetes-Authorization` header becomes the `Authorization` header that is used when forwarding the request.
 
-## Authentication
+The proxy expects a `KubernetesAuthTranslator` to be provided that is used to decorate all requests with `Auth` by default. It does this by supplying a `serviceAccountToken` field into `clusterDetails` using the defined `authProvider` in `clusterDetails`.
 
-Until some security and permission decisions are made (see [this
-conversation](https://github.com/backstage/backstage/pull/13026/files#r1029376939)
-for context), contributors consuming the proxy endpoint in their plugin code are
-responsible for negotiating their own bearer token out-of-band. This requires
-knowing some auth details about the cluster being contacted -- in practice, only
-clusters with [client side auth
-providers](https://backstage.io/docs/features/kubernetes/authentication#client-side-providers) can reasonably be reached.
+## Authentication
 
 The proxy has no provisions for mTLS, so it cannot be used to connect to
 clusters using the [x509 Client

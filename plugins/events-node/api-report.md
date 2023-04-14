@@ -10,6 +10,17 @@ import { EventSubscriber } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
+export class DefaultEventBroker implements EventBroker {
+  constructor(logger: LoggerService);
+  // (undocumented)
+  publish(params: EventParams): Promise<void>;
+  // (undocumented)
+  subscribe(
+    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
+  ): void;
+}
+
+// @public
 export abstract class EventRouter implements EventPublisher, EventSubscriber {
   // (undocumented)
   protected abstract determineDestinationTopic(
@@ -29,17 +40,6 @@ export interface HttpPostIngressOptions {
   topic: string;
   // (undocumented)
   validator?: RequestValidator;
-}
-
-// @public
-export class InMemoryEventBroker implements EventBroker {
-  constructor(logger: LoggerService);
-  // (undocumented)
-  publish(params: EventParams): Promise<void>;
-  // (undocumented)
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
 }
 
 // @public (undocumented)

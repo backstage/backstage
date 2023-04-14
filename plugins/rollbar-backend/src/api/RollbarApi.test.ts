@@ -19,7 +19,6 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getVoidLogger } from '@backstage/backend-common';
-import { RollbarProject } from './types';
 
 describe('RollbarApi', () => {
   describe('getRequestHeaders', () => {
@@ -38,9 +37,15 @@ describe('RollbarApi', () => {
 
     const mockBaseUrl = 'https://api.rollbar.com/api/1';
 
-    const mockProjects: RollbarProject[] = [
-      { id: 123, name: 'abc', accountId: 1, status: 'enabled' },
-      { id: 456, name: 'xyz', accountId: 1, status: 'enabled' },
+    const mockProjects = [
+      { id: 123, name: 'abc', account_id: 1, status: 'enabled' },
+      {
+        id: 456,
+        name: 'xyz',
+        account_id: 1,
+        status: 'enabled',
+        extra_nested: { nested_value: [{ value_here: 'hello_world' }] },
+      },
     ];
 
     const setupHandlers = () => {
@@ -55,7 +60,16 @@ describe('RollbarApi', () => {
       setupHandlers();
       const api = new RollbarApi('my-access-token', getVoidLogger());
       const projects = await api.getAllProjects();
-      expect(projects).toEqual(mockProjects);
+      expect(projects).toEqual([
+        { id: 123, name: 'abc', accountId: 1, status: 'enabled' },
+        {
+          id: 456,
+          name: 'xyz',
+          accountId: 1,
+          status: 'enabled',
+          extraNested: { nestedValue: [{ valueHere: 'hello_world' }] },
+        },
+      ]);
     });
   });
 });

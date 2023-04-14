@@ -54,4 +54,16 @@ describe('<Select />', () => {
     fireEvent.click(option);
     expect(input.textContent).toBe('test 1');
   });
+
+  it('display the placeholder value when selected props updated to undefined', async () => {
+    const { getByTestId, rerender } = render(
+      <Select {...minProps} selected="test_1" />,
+    );
+
+    expect(getByTestId('select').textContent).toBe('test 1');
+
+    rerender(<Select {...minProps} selected={undefined} />);
+
+    expect(getByTestId('select').textContent).toBe('All results');
+  });
 });

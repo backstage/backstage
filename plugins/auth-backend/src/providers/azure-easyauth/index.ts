@@ -15,4 +15,4 @@
  */
 
 export { easyAuth } from './provider';
-export type { EasyAuthResponse } from './provider';
+export type { EasyAuthResult } from './provider';

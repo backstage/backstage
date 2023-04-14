@@ -22,7 +22,7 @@ import { paths } from '../paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
-import { getRoleInfo } from '../role';
+import { PackageRoles } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 
 export function formatErrorMessage(error: any) {
@@ -152,7 +152,7 @@ export const buildPackages = async (options: BuildOptions[]) => {
 export function getOutputsForRole(role: string): Set<Output> {
   const outputs = new Set<Output>();
 
-  for (const output of getRoleInfo(role).output) {
+  for (const output of PackageRoles.getRoleInfo(role).output) {
     if (output === 'cjs') {
       outputs.add(Output.cjs);
     }

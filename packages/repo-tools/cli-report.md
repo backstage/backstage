@@ -14,6 +14,8 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
+  schema:openapi:verify [paths...]
+  schema:openapi:generate [paths...]
   help [command]
 ```
 
@@ -30,6 +32,24 @@ Options:
   --allow-all-warnings
   -o, --omit-messages <messageCodes>
   --validate-release-tags
+  -h, --help
+```
+
+### `backstage-repo-tools schema:openapi:generate`
+
+```
+Usage: backstage-repo-tools schema:openapi:generate [options] [paths...]
+
+Options:
+  -h, --help
+```
+
+### `backstage-repo-tools schema:openapi:verify`
+
+```
+Usage: backstage-repo-tools schema:openapi:verify [options] [paths...]
+
+Options:
   -h, --help
 ```
 

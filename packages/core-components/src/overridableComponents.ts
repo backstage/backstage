@@ -60,10 +60,6 @@ import {
   TableToolbarClassKey,
   FiltersContainerClassKey,
   TableClassKey,
-  TabBarClassKey,
-  TabIconClassKey,
-  TabsClassKey,
-  TabClassKey,
   WarningPanelClassKey,
 } from './components';
 
@@ -141,10 +137,6 @@ type BackstageComponentsNameToClassKey = {
   BackstageTableToolbar: TableToolbarClassKey;
   BackstageTableFiltersContainer: FiltersContainerClassKey;
   BackstageTable: TableClassKey;
-  BackstageTabBar: TabBarClassKey;
-  BackstageTabIcon: TabIconClassKey;
-  BackstageTabs: TabsClassKey;
-  BackstageTab: TabClassKey;
   BackstageWarningPanel: WarningPanelClassKey;
   BackstageBottomLink: BottomLinkClassKey;
   BackstageBreadcrumbsClickableText: BreadcrumbsClickableTextClassKey;

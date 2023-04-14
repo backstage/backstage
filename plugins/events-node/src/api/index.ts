@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
+export { DefaultEventBroker } from './DefaultEventBroker';
 export { EventRouter } from './EventRouter';
 export * from './http';
-export { InMemoryEventBroker } from './InMemoryEventBroker';
 export { SubTopicEventRouter } from './SubTopicEventRouter';

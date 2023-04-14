@@ -277,15 +277,16 @@
         "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
-          "auth/bitbucket/provider",
           "auth/microsoft/provider",
+          "auth/microsoft/easy-auth",
+          "auth/bitbucket/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/google/gcp-iap-auth",
           "auth/okta/provider",
-          "auth/onelogin/provider",
-          "auth/oauth2-proxy/provider"
+          "auth/oauth2-proxy/provider",
+          "auth/onelogin/provider"
         ]
       },
       "auth/identity-resolver",
