@@ -8252,7 +8252,7 @@ __metadata:
     "@rjsf/core-v5": "npm:@rjsf/core@5.5.2"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.5.2"
-    "@rjsf/utils": 5.5.2
+    "@rjsf/utils": 5.6.0
     "@rjsf/validator-ajv8": 5.5.2
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
@@ -8316,7 +8316,7 @@ __metadata:
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
     "@rjsf/material-ui": ^3.2.1
-    "@rjsf/utils": 5.5.2
+    "@rjsf/utils": 5.6.0
     "@rjsf/validator-ajv8": 5.5.2
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
@@ -13833,9 +13833,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/utils@npm:5.5.2":
-  version: 5.5.2
-  resolution: "@rjsf/utils@npm:5.5.2"
+"@rjsf/utils@npm:5.6.0":
+  version: 5.6.0
+  resolution: "@rjsf/utils@npm:5.6.0"
   dependencies:
     json-schema-merge-allof: ^0.8.1
     jsonpointer: ^5.0.1
@@ -13844,7 +13844,7 @@ __metadata:
     react-is: ^18.2.0
   peerDependencies:
     react: ^16.14.0 || >=17
-  checksum: 25ef467be23ee42fa2791e46ed73301952e30564b2085e224ca40763578a7268c54cf20c4cb620855771e357f60d2d8329301892395f0014a5f63e7025779e11
+  checksum: f8888693318d6838e492f80d537fbb904f4a345876fc126b3c77699ca08f8dc7ae4d6a2fe855f34bf3f8ad6b79c22989b4da4754144b2f113babf0a0612c7458
   languageName: node
   linkType: hard
 

@@ -69,7 +69,7 @@
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
     "@rjsf/material-ui": "^3.2.1",
-    "@rjsf/utils": "5.5.2",
+    "@rjsf/utils": "5.6.0",
     "@rjsf/validator-ajv8": "5.5.2",
     "@types/react": "^16.13.1 || ^17.0.0",
     "@uiw/react-codemirror": "^4.9.3",
