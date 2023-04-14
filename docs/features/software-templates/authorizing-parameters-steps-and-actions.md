@@ -4,7 +4,7 @@ title: 'Authorizing parameters, steps and actions'
 description: How to authorize part of a template
 ---
 
-The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview), which allows you to control access to certain parameters and steps in your templates based on the user executing the template.
+The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control access to certain parameters and steps in your templates based on the user executing the template.
 
 ### Authorizing parameters and steps
 
@@ -47,7 +47,7 @@ metadata:
 
 In this example, the `description` parameter and the `step2` step are marked with the `secret` tag.
 
-To conditionally authorize parameters and steps based on the user executing the template, [edit your permission policy](../../permissions/writing-a-policy), by targeting `templateParameterReadPermission` and `templateStepReadPermission` permissions, which are provided by the scaffolder plugin. For example:
+To conditionally authorize parameters and steps based on the user executing the template, [edit your permission policy](../../permissions/writing-a-policy.md), by targeting `templateParameterReadPermission` and `templateStepReadPermission` permissions, which are provided by the scaffolder plugin. For example:
 
 ```ts
 import {
