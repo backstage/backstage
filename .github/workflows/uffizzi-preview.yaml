@@ -70,7 +70,7 @@ jobs:
 
       - name: Read Git Ref From Event Object
         id: ref
-        run: echo "GIT_REF=${{ fromJSON(env.EVENT_JSON).head.sha }}" >> $GITHUB_ENV
+        run: echo "GIT_REF=${{ fromJSON(env.EVENT_JSON).pull_request.head.sha }}" >> $GITHUB_ENV
 
       - name: DEBUG - Print Job Outputs
         if: ${{ runner.debug }}
