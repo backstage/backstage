@@ -328,6 +328,7 @@ Snyk
 Sonarqube
 sourcemaps
 sparklines
+spiderman
 Splunk
 Spotifiers
 spotify
