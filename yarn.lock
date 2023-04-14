@@ -14967,14 +14967,14 @@ __metadata:
   linkType: hard
 
 "@swc/jest@npm:^0.2.22":
-  version: 0.2.24
-  resolution: "@swc/jest@npm:0.2.24"
+  version: 0.2.26
+  resolution: "@swc/jest@npm:0.2.26"
   dependencies:
     "@jest/create-cache-key-function": ^27.4.2
     jsonc-parser: ^3.2.0
   peerDependencies:
     "@swc/core": "*"
-  checksum: 3558213098970cc2882b1f2d1299e78ccea2e18e1e4a4c1820bb669b969ced648eacb14eb78b0bc6fe66e4a60816a7ad7a72c5048ece8382647b8ceac82b708a
+  checksum: 771821ed08cf168ca0b6307dee7689253d0af0685acd08408ac431860a7c42ace892db2cb6bb6dcfe297edbdce0f2e22d44ed4ed72d1c621be9e841cffd408a0
   languageName: node
   linkType: hard
 
