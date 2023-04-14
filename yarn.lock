@@ -10651,11 +10651,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^4.0.0":
-  version: 4.7.1
-  resolution: "@google-cloud/container@npm:4.7.1"
+  version: 4.8.0
+  resolution: "@google-cloud/container@npm:4.8.0"
   dependencies:
-    google-gax: ^3.5.2
-  checksum: e622ddc2522fcffadd72a0cc6fa3f12e6a337b9e53ff1886a2057a8d4f3f0fc13b60b806c35946da0a1211fe52d66f65b4ab59c06b5e7cd725cd588477c0bde1
+    google-gax: ^3.5.8
+  checksum: f9c64a368d16a3fbc79a122987f99b02d15a82205d13381b30fcb7e012a6a06dc869bc3c07b1325517863df3692e07351e4b8998b774c3b72c31ecd225f2f3bc
   languageName: node
   linkType: hard
 
@@ -25335,9 +25335,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-gax@npm:^3.5.2, google-gax@npm:^3.5.7":
-  version: 3.5.7
-  resolution: "google-gax@npm:3.5.7"
+"google-gax@npm:^3.5.7, google-gax@npm:^3.5.8":
+  version: 3.6.0
+  resolution: "google-gax@npm:3.6.0"
   dependencies:
     "@grpc/grpc-js": ~1.8.0
     "@grpc/proto-loader": ^0.7.0
@@ -25351,13 +25351,13 @@ __metadata:
     node-fetch: ^2.6.1
     object-hash: ^3.0.0
     proto3-json-serializer: ^1.0.0
-    protobufjs: 7.2.2
+    protobufjs: 7.2.3
     protobufjs-cli: 1.1.1
     retry-request: ^5.0.0
   bin:
     compileProtos: build/tools/compileProtos.js
     minifyProtoJson: build/tools/minify.js
-  checksum: 1f3c647fc1ddc00a6a017be0f83b89691997358720763db13a69a94c7a74f6d31a49b0fd56f7bab18689914c784328901b118bdf150d742719995c705d0fa65d
+  checksum: 4c7b1b5a278ffda3eaa92e7f25a9e0ea2d0a76aca704aca4baee4fe9d109916e97e83062ad751006ed93ac675a7fd74028061204fa9ed92833a853e6657a71a1
   languageName: node
   linkType: hard
 
@@ -34110,9 +34110,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.2.2, protobufjs@npm:^7.0.0":
-  version: 7.2.2
-  resolution: "protobufjs@npm:7.2.2"
+"protobufjs@npm:7.2.3, protobufjs@npm:^7.0.0":
+  version: 7.2.3
+  resolution: "protobufjs@npm:7.2.3"
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -34126,7 +34126,7 @@ __metadata:
     "@protobufjs/utf8": ^1.1.0
     "@types/node": ">=13.7.0"
     long: ^5.0.0
-  checksum: 86166e8f3e46789fa4d117ae72c17356db36bf87c0e0710d224be32e543b1c378a94e66dc2b1de5af45edfc25f56acfc7e688c50c956426a3ae97bc474f4445c
+  checksum: 9afa6de5fced0139a5180c063718508fac3ea734a9f1aceb99712367b15473a83327f91193f16b63540f9112b09a40912f5f0441a9b0d3f3c6a1c7f707d78249
   languageName: node
   linkType: hard
 
