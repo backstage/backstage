@@ -63,6 +63,7 @@ export interface Config {
             host?: string;
             /**
              * (Required) Name of your organization account/workspace.
+             * You can use wildcards - `*` - to automatically search for organizations.
              */
             organization: string;
             /**
@@ -128,6 +129,7 @@ export interface Config {
               host?: string;
               /**
                * (Required) Name of your organization account/workspace.
+               * You can use wildcards - `*` - to automatically search for organizations.
                */
               organization: string;
               /**
