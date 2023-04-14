@@ -45,6 +45,12 @@ import {
   satisfiesForkFilter,
   satisfiesVisibilityFilter,
 } from '../lib/util';
+import {
+  getOrganizationRepositories,
+  getOrganizations,
+  RepositoryResponse,
+} from '../lib/github';
+import { satisfiesTopicFilter, satisfiesForkFilter } from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
@@ -202,10 +208,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const organization = this.config.organization;
     const host = this.integration.host;
     const catalogPath = this.config.catalogPath;
-    const orgUrl = `https://${host}/${organization}`;
+    const repositoriesFromGithub: RepositoryResponse[] = [];
+    let organizations: string[];
 
     const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: orgUrl,
+      url: `https://${host}`,
     });
 
     const client = graphql.defaults({
@@ -213,8 +220,33 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       headers,
     });
 
-    const { repositories: repositoriesFromGithub } =
-      await getOrganizationRepositories(client, organization, catalogPath);
+    if (organization.includes('*')) {
+      let { organizations: organizationsFromGithub } = await getOrganizations(
+        client,
+      );
+      if (organization !== '*') {
+        organizationsFromGithub = organizationsFromGithub.filter(({ login }) =>
+          login.match(escapeRegExp(organization)),
+        );
+      }
+      organizations = organizationsFromGithub?.map(i => i.login);
+
+      this.logger.info(
+        `Read ${organizations.length} GitHub organizations matching '${organization}' pattern)`,
+      );
+    } else {
+      organizations = [organization];
+    }
+
+    for (const org of organizations) {
+      const { repositories: repos } = await getOrganizationRepositories(
+        client,
+        org,
+        catalogPath,
+      );
+      repositoriesFromGithub.push(...repos);
+    }
+
     const repositories = repositoriesFromGithub.map(r => {
       return {
         url: r.url,
