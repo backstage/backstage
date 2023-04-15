@@ -67,7 +67,7 @@ class ScaffolderActionsExtensionPointImpl
  * @alpha
  */
 export const scaffolderPlugin = createBackendPlugin(
-  (options: ScaffolderPluginOptions) => ({
+  (options?: ScaffolderPluginOptions) => ({
     pluginId: 'scaffolder',
     register(env) {
       const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
@@ -101,10 +101,10 @@ export const scaffolderPlugin = createBackendPlugin(
             taskBroker,
             taskWorkers,
             additionalTemplateGlobals,
-          } = options;
+          } = options ?? {};
           const log = loggerToWinstonLogger(logger);
 
-          const actions = options.actions || [
+          const actions = options?.actions || [
             ...actionsExtensions.actions,
             ...createBuiltinActions({
               integrations: ScmIntegrations.fromConfig(config),
