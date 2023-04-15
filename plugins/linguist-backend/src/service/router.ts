@@ -24,7 +24,7 @@ import {
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { LinguistBackendApi, LinguistBackendClient } from '../api';
+import { LinguistBackendApi } from '../api';
 import { LinguistBackendDatabase } from '../db';
 import {
   PluginTaskScheduler,
@@ -32,6 +32,7 @@ import {
 } from '@backstage/backend-tasks';
 import { HumanDuration } from '@backstage/types';
 import { CatalogClient } from '@backstage/catalog-client';
+import { LinguistBackendClient } from '../api/LinguistBackendClient';
 
 /** @public */
 export interface PluginOptions {
