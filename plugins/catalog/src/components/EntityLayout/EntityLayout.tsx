@@ -36,6 +36,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
+  EntityDisplayName,
   EntityRefLinks,
   entityRouteRef,
   FavoriteEntity,
@@ -78,7 +79,11 @@ function EntityLayoutTitle(props: {
         whiteSpace="nowrap"
         overflow="hidden"
       >
-        {title}
+        {entity ? (
+          <EntityDisplayName entityRef={entity} variant="simple" />
+        ) : (
+          title
+        )}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
