@@ -65,7 +65,7 @@ describe('UserSummary Test', () => {
       'src',
       'https://example.com/staff/calum.jpeg',
     );
-    expect(screen.getByText('examplegroup')).toHaveAttribute(
+    expect(screen.getByText('examplegroup').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/group/examplegroup',
     );

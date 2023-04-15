@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-export * from './EntityPresentationApi';
-export * from './StarredEntitiesApi';
+import React, { ComponentType } from 'react';
+import { EntityDisplayName, EntityDisplayNameProps } from './EntityDisplayName';
+import { wrapInTestApp } from '@backstage/test-utils';
+
+const defaultArgs = {
+  entityRef: 'component:default/playback',
+};
+
+export default {
+  title: 'Catalog /EntityDisplayName',
+  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+};
+
+export const Default = (args: EntityDisplayNameProps) => (
+  <EntityDisplayName {...args} />
+);
+Default.args = defaultArgs;

@@ -20,7 +20,11 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 export interface CatalogTableRow {
   entity: Entity;
   resolved: {
+    // This name is here for backwards compatibility mostly; the presentation of
+    // refs in the table should in general be handled with EntityRefLink /
+    // EntityName components
     name: string;
+    entityRef: string;
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: CompoundEntityRef[];
     ownedByRelationsTitle?: string;

@@ -63,6 +63,8 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
+    "dataloader": "^2.0.0",
+    "expiry-map": "^2.0.0",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",

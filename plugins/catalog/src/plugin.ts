@@ -18,6 +18,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
+  entityPresentationApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -52,6 +53,7 @@ import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
 import { rootRouteRef } from './routes';
+import { DefaultEntityPresentationApi } from './apis/EntityPresentationApi';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -71,6 +73,12 @@ export const catalogPlugin = createPlugin({
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) =>
         new DefaultStarredEntitiesApi({ storageApi }),
+    }),
+    createApiFactory({
+      api: entityPresentationApiRef,
+      deps: { catalogApi: catalogApiRef },
+      factory: ({ catalogApi }) =>
+        DefaultEntityPresentationApi.create({ catalogApi }),
     }),
   ],
   routes: {
