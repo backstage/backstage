@@ -133,6 +133,66 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
+  it('creates tokens for an organization with multiple configured apps', async () => {
+    const multipleGithubApps = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+          allowedInstallationOwners: ['not-allowed'],
+        },
+        {
+          appId: 2,
+          privateKey: 'privateKey_2',
+          webhookSecret: '456',
+          clientId: 'CLIENT_ID_2',
+          clientSecret: 'CLIENT_SECRET_2',
+          allowedInstallationOwners: ['allowed'],
+        },
+      ],
+    });
+
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        {
+          id: 2,
+          repository_selection: 'all',
+          account: {
+            login: 'allowed',
+          },
+        },
+        {
+          id: 2,
+          repository_selection: 'all',
+          account: {
+            login: 'not-allowed',
+          },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValue({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    const { token, headers } = await multipleGithubApps.getCredentials({
+      url: 'https://github.com/allowed',
+    });
+
+    expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
+    expect(token).toEqual('secret_token');
+  });
+
   it('does not return a token where the organisation is not in the allowedInstallationsList', async () => {
     github = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',
