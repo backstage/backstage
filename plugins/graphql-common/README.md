@@ -61,26 +61,29 @@ export const myModule = createModule({
 });
 ```
 
-5. Now we can Pass your the module to `createRouter` function of GraphQL backend
-   plugin
+5. Now we can pass your GraphQL module to GraphQL Application backend
+   module
 
 ```ts
-// packages/backend/src/plugins/graphql.ts
-import { createRouter } from '@backstage/plugin-graphql-backend';
+// packages/backend/src/modules/graphqlApplication.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
 import { Catalog } from '@backstage/plugin-graphql-catalog';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
 import { MyModule } from '../modules/my-module/my-module';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    modules: [Catalog, MyModule],
-  });
-}
+export const graphqlModuleApplication = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'application',
+  register(env) {
+    env.registerInit({
+      deps: { application: graphqlApplicationExtensionPoint },
+      async init({ application }) {
+        await application.addModule(Catalog);
+        await application.addModule(MyModule);
+      },
+    });
+  },
+});
 ```
 
 ### Directives API
@@ -167,7 +170,9 @@ type Service implements Component & Entity & Node {
 #### `@discriminates`
 
 The `@discriminates` directive tells the GraphQL App that an interface
-could be discriminated by a given value to another interface or a type.
+be discriminated by a given value to another interface or a type.
+The value by path from `with` argument is used to determine to which
+type the interface should be resolved.
 
 ```graphql
 interface Entity
@@ -184,13 +189,45 @@ type Service @implements(interface: "Entity") {
 }
 ```
 
-// TODO Explain how it works
-// TODO opaqueType argument
-// TODO generateOpaqueTypes option
+There is a special case when your runtime data doesn't have a value
+that can be used to discriminate the interface or there is no type
+that matches the value. In this case, you can define `opaqueType` argument
+
+```graphql
+interface Entity
+  @implements(interface: "Node")
+  @discriminates(with: "kind", opaqueType: "OpaqueEntity") {
+    # ...
+  }
+```
+
+In this case, if the value of `kind` field doesn't match with any schema type,
+the `OpaqueEntity` type will be used. You don't need to define this type, the GraphQL
+plugin will generate it for you.
+
+There is another way to define opaque types for all interfaces by using `generateOpaqueTypes`
+option for GraphQL plugin.
 
 #### `@discriminationAlias`
 
-// TODO Explain how it works
+By default value from `with` argument is used to find a type as-is or converted to PascalCase.
+And it's fairly enough for most cases. But sometimes you need to match the value with a type
+that has a different name. In this case, you can use `@discriminationAlias` directive.
+
+```graphql
+interface API
+  @implements(interface: "Node")
+  @discriminates(with: "spec.type")
+  @discriminationAlias(from: "openapi", to: "OpenAPI") {
+    # ...
+  }
+
+type OpenAPI @implements(interface: "API") {
+  # ...
+}
+```
+
+This means, when `spec.type` equals to `openapi`, the `API` interface will be resolved to `OpenAPI` type.
 
 ## Integrations
 

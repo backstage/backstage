@@ -25,42 +25,18 @@ schema elements to access the [Backstage Catalog][backstage-catalog] via GraphQL
 
 To install the GraphQL Backend onto your server:
 
-1. Create `packages/backend/src/plugins/graphql.ts` file with the following
-   content
+1. Add GraphQL plugin and Application backend module in `packages/backend/src/index.ts`:
 
 ```ts
-import { createRouter } from '@backstage/plugin-graphql-backend';
-import { CatalogClient } from '@backstage/catalog-client';
-import { Router } from 'express';
-import { Logger } from 'winston';
+import { graphqlPlugin } from '@backstage/plugin-graphql-backend';
 
-interface PluginEnvironment {
-  logger: Logger;
-  config: Config;
-}
+const backend = createBackend();
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-  });
-}
+// GraphQL
+backend.use(graphqlPlugin());
 ```
 
-2. Register the router in `packages/backend/src/index.ts`:
-
-```ts
-const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
-
-const service = createServiceBuilder(module)
-  .loadConfig(configReader)
-  /** several different routers */
-  .addRouter('/graphql', await graphql(graphqlEnv));
-```
-
-3. Start the backend
+2. Start the backend
 
 ```bash
 yarn workspace example-backend start
@@ -77,21 +53,39 @@ bundles of schema that you can drop into place and have them extend
 your GraphQL server. The most important of these that is maintained by
 the Backstage team is the [graphql-catalog][] plugin that makes your
 Catalog accessible via GraphQL. To add this module to your GraphQL server,
-add it to the `modules` array in your backend config:
+declare GraphQL Application backend module:
 
 ```ts
+// packages/backend/src/modules/graphqlApplication.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
 import { Catalog } from '@backstage/plugin-graphql-catalog';
 
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    modules: [Catalog],
-  });
-}
+export const graphqlModuleApplication = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'application',
+  register(env) {
+    env.registerInit({
+      deps: { application: graphqlApplicationExtensionPoint },
+      async init({ application }) {
+        await application.addModule(Catalog);
+      },
+    });
+  },
+});
+```
+
+Then add module to your backend:
+
+```ts
+// packages/backend/src/index.ts
+import { graphqlModuleApplication } from './modules/graphqlApplication';
+
+const backend = createBackend();
+
+// GraphQL
+backend.use(graphqlPlugin());
+backend.use(graphqlModuleApplication());
 ```
 
 To learn more about adding your own modules, see the [graphql-common][] package.
@@ -103,23 +97,42 @@ schema and resolvers of your GraphQL server, [Envelop][] plugins are
 used to extend its GraphQL stack with tracing, error handling, context
 extensions, and other middlewares.
 
-Plugins are be added via the `plugins` option. For example, to prevent
-potentially sensitive error messages from leaking to your client in
-production, add the [`useMaskedErrors`][usemaskederrors] package.
+Plugins are be added via declaring GraphQL Yoga backend module.
+For example, to prevent potentially sensitive error messages from
+leaking to your client in production, add the [`useMaskedErrors`][usemaskederrors]
+package.
 
 ```ts
+// packages/backend/src/modules/graphqlYoga.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
 import { useMaskedErrors } from '@envelop/core';
 
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    plugins: [useMaskedErrors()],
-  });
-}
+export const graphqlModuleYoga = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'yoga',
+  register(env) {
+    env.registerInit({
+      deps: { yoga: graphqlYogaExtensionPoint },
+      async init({ yoga }) {
+        yoga.addPlugin(useMaskedErrors());
+      },
+    });
+  },
+});
+```
+
+Then add module to your backend:
+
+```ts
+// packages/backend/src/index.ts
+import { graphqlModuleYoga } from './modules/graphqlYoga';
+
+const backend = createBackend();
+
+// GraphQL
+backend.use(graphqlPlugin());
+backend.use(graphqlModuleYoga());
 ```
 
 ## GraphQL Context
@@ -128,21 +141,25 @@ The GraphQL context is an object that is passed to every resolver
 function. It is a convenient place to store data that is needed by
 multiple resolvers, such as a database connection or a logger.
 
-You can add additional data to the context by passing a `additionalContext`
+You can add additional data to the context to GraphQL Yoga backend module:
 
 ```ts
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    additionalContext: {
-      myContext: 'Hello World',
-    },
-  });
-}
+// packages/backend/src/modules/graphqlYoga.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
+
+export const graphqlModuleYoga = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'yoga',
+  register(env) {
+    env.registerInit({
+      deps: { yoga: graphqlYogaExtensionPoint },
+      async init({ yoga }) {
+        yoga.setContext({ myContext: 'Hello World' });
+      },
+    });
+  },
+});
 ```
 
 ## Custom Data Loaders (Advanced)
@@ -160,25 +177,32 @@ will need to pass batch load functions for each data source.
 > data directly from a source other than the Backstage catalog, then
 > proceed with care.
 
-Load functions are be added via the `loaders` option. Each load function
+Load functions are to GraphQL Yoga backend module. Each load function
 is stored under a unique key which is encoded inside node's id as a data
 source name
 
 ```ts
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    loaders: {
-      MyAPI: async (keys: readonly string[], context: GraphQLContext) => {
-        /* Fetch */
+// packages/backend/src/modules/graphqlYoga.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlYogaExtensionPoint } from '@backstage/plugin-graphql-backend';
+
+export const graphqlModuleYoga = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'yoga',
+  register(env) {
+    env.registerInit({
+      deps: { yoga: graphqlYogaExtensionPoint },
+      async init({ yoga }) {
+        yoga.addLoader(
+          'MyAPI',
+          async (keys: readonly string[], context: GraphQLContext) => {
+            /* Fetch */
+          },
+        );
       },
-    },
-  });
-}
+    });
+  },
+});
 ```
 
 > ⚠️Heads up! Currently

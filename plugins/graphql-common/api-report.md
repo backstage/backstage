@@ -48,10 +48,10 @@ export type createGraphQLAppOptions = {
 };
 
 // @public (undocumented)
-export const createLoader: <Context extends GraphQLContext_2>(
-  loaders: Record<string, BatchLoadFn<Context>>,
+export const createLoader: (
+  loaders: Record<string, BatchLoadFn<GraphQLContext_2>>,
   options?: Options<string, any>,
-) => (context: Context) => DataLoader<string, any, string>;
+) => (context: GraphQLContext_2) => DataLoader<string, any, string>;
 
 // @public (undocumented)
 export function decodeId(id: string): NodeId;

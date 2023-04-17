@@ -18,7 +18,8 @@ import { Plugin } from 'graphql-yoga';
 import { Options as DataLoaderOptions } from 'dataloader';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
-export interface GraphQLYogaExtension {
+/** @public */
+export interface GraphQLYogaExtensionPoint {
   addPlugin(plugin: Plugin): void;
   addLoader(name: string, loader: BatchLoadFn<GraphQLContext>): void;
   setDataloaderOptions(options: DataLoaderOptions<string, any>): void;
@@ -31,6 +32,7 @@ export interface GraphQLYogaExtension {
 }
 
 /** @public */
-export const graphqlYogaExtension = createExtensionPoint<GraphQLYogaExtension>({
-  id: 'graphql.yoga',
-});
+export const graphqlYogaExtensionPoint =
+  createExtensionPoint<GraphQLYogaExtensionPoint>({
+    id: 'graphql.yoga',
+  });
