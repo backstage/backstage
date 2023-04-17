@@ -133,7 +133,17 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const endAdornment = (
         <InputAdornment position="end">
-          <Button aria-label="Clear" size="small" onClick={handleClear}>
+          <Button
+            aria-label="Clear"
+            size="small"
+            onClick={handleClear}
+            onKeyDown={event => {
+              if (event.key === 'Enter') {
+                // write your functionality here
+                event.stopPropagation();
+              }
+            }}
+          >
             Clear
           </Button>
         </InputAdornment>

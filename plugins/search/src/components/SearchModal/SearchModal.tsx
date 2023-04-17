@@ -103,7 +103,7 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = () => {
+export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { transitions } = useTheme();
@@ -204,7 +204,9 @@ export const SearchModal = (props: SearchModalProps) => {
     >
       {open && (
         <SearchContextProvider inheritParentContextIfAvailable>
-          {(children && children({ toggleModal })) ?? <Modal />}
+          {(children && children({ toggleModal })) ?? (
+            <Modal toggleModal={toggleModal} />
+          )}
         </SearchContextProvider>
       )}
     </Dialog>
