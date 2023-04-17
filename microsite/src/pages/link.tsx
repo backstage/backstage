@@ -11,7 +11,5 @@ const fallback = '/docs';
 const target = redirects[window.location.search.slice(1)] || fallback;
 
 export default function Link() {
-  return (
-    <Redirect to={target}/>
-  );
-};
+  return <Redirect to={target} />;
+}
