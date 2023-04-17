@@ -27,23 +27,27 @@ Some key features are currently missing. These features may change the schema in
 ### Catalog module
 
 The `Catalog` module is installed just as any other [GraphQL
-Module][graphql-modules]: pass it to `modules` options of
+Module][graphql-modules]: pass it to GraphQL Application Backend Module
 [`@backstage/plugin-graphql-backend`](../graphql-backend/README.md)
-`createRouter` function.
 
 ```ts
+// packages/backend/src/modules/graphqlApplication.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
 import { Catalog } from '@backstage/plugin-graphql-catalog';
 
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    modules: [Catalog],
-  });
-}
+export const graphqlModuleApplication = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'application',
+  register(env) {
+    env.registerInit({
+      deps: { application: graphqlApplicationExtensionPoint },
+      async init({ application }) {
+        await application.addModule(Catalog);
+      },
+    });
+  },
+});
 ```
 
 ### Relation module
@@ -52,18 +56,23 @@ If you don't want to use basic Catalog types for some reason, but
 still want to use `@relation` directive, you can install `Relation` module
 
 ```ts
+// packages/backend/src/modules/graphqlApplication.ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { graphqlApplicationExtensionPoint } from '@backstage/plugin-graphql-backend';
 import { Relation } from '@backstage/plugin-graphql-catalog';
 
-// packages/backend/src/plugins/graphql.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    modules: [Relation],
-  });
-}
+export const graphqlModuleApplication = createBackendModule({
+  pluginId: 'graphql',
+  moduleId: 'application',
+  register(env) {
+    env.registerInit({
+      deps: { application: graphqlApplicationExtensionPoint },
+      async init({ application }) {
+        await application.addModule(Relation);
+      },
+    });
+  },
+});
 ```
 
 ## Directives API

@@ -13,18 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Module } from 'graphql-modules';
-
-export interface GraphQLApplicationExtensionPoint {
-  addSchema(schema: string): void;
-  addModule(
-    module: (() => Module | Promise<Module>) | Module | Promise<Module>,
-  ): void;
-}
-
-/** @public */
-export const graphqlApplicationExtensionPoint =
-  createExtensionPoint<GraphQLApplicationExtensionPoint>({
-    id: 'graphql.application',
-  });
+export * from './graphqlApplicationExtension';
+export * from './graphqlYogaExtension';

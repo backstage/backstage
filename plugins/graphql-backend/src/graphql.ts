@@ -42,11 +42,11 @@ import {
 import {
   graphqlApplicationExtensionPoint,
   GraphQLApplicationExtensionPoint,
-} from './graphqlApplicationExtension';
+} from './extensions/graphqlApplicationExtension';
 import {
-  graphqlYogaExtension,
-  GraphQLYogaExtension,
-} from './graphqlYogaExtension';
+  graphqlYogaExtensionPoint,
+  GraphQLYogaExtensionPoint,
+} from './extensions/graphqlYogaExtension';
 
 class GraphQLApplication implements GraphQLApplicationExtensionPoint {
   private schemas = new Set<string>();
@@ -69,7 +69,7 @@ class GraphQLApplication implements GraphQLApplicationExtensionPoint {
 }
 
 class GraphQLYoga<TContext extends Record<string, any>>
-  implements GraphQLYogaExtension
+  implements GraphQLYogaExtensionPoint
 {
   private plugins: Plugin[] = [];
   private loaders: Record<string, BatchLoadFn<TContext & GraphQLCoreContext>> =
@@ -143,7 +143,7 @@ export const graphqlPlugin = createBackendPlugin((options?: RouterOptions) => ({
     const graphqlApp = new GraphQLApplication();
     const graphqlYoga = new GraphQLYoga();
     env.registerExtensionPoint(graphqlApplicationExtensionPoint, graphqlApp);
-    env.registerExtensionPoint(graphqlYogaExtension, graphqlYoga);
+    env.registerExtensionPoint(graphqlYogaExtensionPoint, graphqlYoga);
 
     env.registerInit({
       deps: {
