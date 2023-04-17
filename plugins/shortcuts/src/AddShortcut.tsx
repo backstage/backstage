@@ -41,20 +41,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type Props = {
+/**
+ * AddShortcutProps
+ * Props for the {@link AddShortcut} component.
+ * @public
+ */
+export interface AddShortcutProps {
   onClose: () => void;
   anchorEl?: Element;
   api: ShortcutApi;
 
   allowExternalLinks?: boolean;
-};
+}
 
 export const AddShortcut = ({
   onClose,
   anchorEl,
   api,
   allowExternalLinks,
-}: Props) => {
+}: AddShortcutProps) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { pathname } = useLocation();

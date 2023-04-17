@@ -13,6 +13,49 @@ import { Shortcut as Shortcut_2 } from '@backstage/plugin-shortcuts';
 import { ShortcutApi as ShortcutApi_2 } from '@backstage/plugin-shortcuts';
 import type { StorageApi } from '@backstage/core-plugin-api';
 
+// @public (undocumented)
+export const AddShortcut: ({
+  onClose,
+  anchorEl,
+  api,
+  allowExternalLinks,
+}: AddShortcutProps) => JSX.Element;
+
+// @public
+export interface AddShortcutProps {
+  // (undocumented)
+  allowExternalLinks?: boolean;
+  // (undocumented)
+  anchorEl?: Element;
+  // (undocumented)
+  api: ShortcutApi;
+  // (undocumented)
+  onClose: () => void;
+}
+
+// @public (undocumented)
+export const EditShortcut: ({
+  shortcut,
+  onClose,
+  anchorEl,
+  api,
+  allowExternalLinks,
+}: EditShortcutProps) => JSX.Element;
+
+// @public
+export interface EditShortcutProps {
+  // (undocumented)
+  allowExternalLinks?: boolean;
+  // (undocumented)
+  anchorEl?: Element;
+  // (undocumented)
+  api: ShortcutApi;
+  // (undocumented)
+  onClose: () => void;
+  // (undocumented)
+  shortcut: Shortcut;
+}
+
 // @public
 export class LocalStoredShortcuts implements ShortcutApi_2 {
   constructor(storageApi: StorageApi);

@@ -20,7 +20,14 @@
  * @packageDocumentation
  */
 
-export { shortcutsPlugin, Shortcuts } from './plugin';
+export {
+  shortcutsPlugin,
+  Shortcuts,
+  AddShortcut,
+  EditShortcut,
+} from './plugin';
 export * from './api';
 export type { Shortcut } from './types';
 export type { ShortcutsProps } from './Shortcuts';
+export type { AddShortcutProps } from './AddShortcut';
+export type { EditShortcutProps } from './EditShortcut';

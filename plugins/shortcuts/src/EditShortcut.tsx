@@ -41,13 +41,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type Props = {
+/**
+ * EditShortcutProps
+ * Props for the {@link EditShortcut} component.
+ * @public
+ */
+export interface EditShortcutProps {
   shortcut: Shortcut;
   onClose: () => void;
   anchorEl?: Element;
   api: ShortcutApi;
   allowExternalLinks?: boolean;
-};
+}
 
 export const EditShortcut = ({
   shortcut,
@@ -55,7 +60,7 @@ export const EditShortcut = ({
   anchorEl,
   api,
   allowExternalLinks,
-}: Props) => {
+}: EditShortcutProps) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const open = Boolean(anchorEl);

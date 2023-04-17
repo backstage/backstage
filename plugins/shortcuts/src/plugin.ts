@@ -42,3 +42,21 @@ export const Shortcuts = shortcutsPlugin.provide(
     component: { lazy: () => import('./Shortcuts').then(m => m.Shortcuts) },
   }),
 );
+
+/** @public */
+export const AddShortcut = shortcutsPlugin.provide(
+  createComponentExtension({
+    name: 'AddShortcut',
+    component: { lazy: () => import('./AddShortcut').then(m => m.AddShortcut) },
+  }),
+);
+
+/** @public */
+export const EditShortcut = shortcutsPlugin.provide(
+  createComponentExtension({
+    name: 'EditShortcut',
+    component: {
+      lazy: () => import('./EditShortcut').then(m => m.EditShortcut),
+    },
+  }),
+);
