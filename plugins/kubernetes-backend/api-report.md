@@ -62,6 +62,7 @@ export interface ClusterDetails {
   caData?: string | undefined;
   // (undocumented)
   caFile?: string | undefined;
+  customResourceProfile?: string;
   customResources?: CustomResourceMatcher[];
   dashboardApp?: string;
   dashboardParameters?: JsonObject;

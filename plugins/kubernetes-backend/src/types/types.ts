@@ -255,7 +255,6 @@ export interface KubernetesObjectsProviderOptions {
   serviceLocator: KubernetesServiceLocator;
   customResources: CustomResource[];
   objectTypesToFetch?: ObjectToFetch[];
-  config: Config;
 }
 
 /**
