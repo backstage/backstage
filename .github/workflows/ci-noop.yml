@@ -1,0 +1,22 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: CI Void
+on:
+  pull_request:
+    paths:
+      - 'microsite/**'
+
+jobs:
+  # The verify jobs runs all the verification that doesn't require a
+  # diff towards master, since it takes some time to fetch that.
+  noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    name: Verify ${{ matrix.node-version }}
+    steps:
+      - run: echo NOOP

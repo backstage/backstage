@@ -1,0 +1,27 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: E2E Linux Void
+on:
+  pull_request:
+    paths:
+      - '.changeset/**'
+      - 'contrib/**'
+      - 'docs/**'
+      - 'microsite/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    name: E2E Linux ${{ matrix.node-version }}
+    steps:
+      - run: echo NOOP
