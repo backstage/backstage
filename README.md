@@ -12,13 +12,13 @@
 
 ## What is Backstage?
 
-[Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores orders to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
+[Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
 
 Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
 
 ![software-catalog](docs/assets/header.png)
 
-Backstage includes:
+Out of the box, Backstage includes:
 
 - [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software such as microservices, libraries, data pipelines, websites, and ML models
 - [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
@@ -29,11 +29,11 @@ Backstage was created by Spotify but is now hosted by the [Cloud Native Computin
 
 ## Project roadmap
 
-For information about a detailed project roadmap including delivered milestones, see [Roadmap](https://backstage.io/docs/overview/roadmap).
+For information about the detailed project roadmap including delivered milestones, see [the Roadmap](https://backstage.io/docs/overview/roadmap).
 
 ## Getting Started
 
-To start using Backstage, see the [Getting started documentation](https://backstage.io/docs/getting-started).
+To start using Backstage, see the [Getting Started documentation](https://backstage.io/docs/getting-started).
 
 ## Documentation
 
@@ -47,7 +47,7 @@ The documentation of Backstage includes:
 
 ## Community
 
-Following are the community resources:
+To engage with our community, you can use the following resources:
 
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
