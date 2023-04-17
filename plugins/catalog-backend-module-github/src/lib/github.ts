@@ -457,6 +457,7 @@ export async function getOrganizationRepositories(
   const query = `
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String) {
       repositoryOwner(login: $org) {
+        login
         repositories(first: 100, after: $cursor) {
           nodes {
             name
