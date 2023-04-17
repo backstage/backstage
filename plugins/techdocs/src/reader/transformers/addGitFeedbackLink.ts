@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import parseGitUrl from 'git-url-parse';
 
 // requires repo
@@ -75,7 +75,8 @@ export const addGitFeedbackLink = (
       default:
         return dom;
     }
-    ReactDOM.render(React.createElement(FeedbackOutlinedIcon), feedbackLink);
+    const root = createRoot(feedbackLink);
+    root.render(React.createElement(FeedbackOutlinedIcon));
     feedbackLink.style.paddingLeft = '5px';
     feedbackLink.title = 'Leave feedback for this page';
     feedbackLink.id = 'git-feedback-link';
