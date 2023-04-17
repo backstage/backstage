@@ -26,7 +26,7 @@ the OAuth apps and their respective scopes.
 - The created GitHub App is private by default, this is most likely what you
   want for github.com but it's recommended to make your application public for
   GitHub Enterprise in order to share application across your GHE organizations.
-- Widcards (`*`) in `organization` are not supported when using GitHub discovery with GitHub App.
+- Wildcards (`*`) in `organization` are not supported when using GitHub discovery with GitHub App.
 
 A GitHub app created with the cli will have read
 access by default. You have to manually update the GitHub App settings in GitHub
