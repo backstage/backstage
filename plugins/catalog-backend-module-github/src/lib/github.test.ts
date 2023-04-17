@@ -31,6 +31,7 @@ import {
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
+  getOrganizations,
 } from './github';
 import fetch from 'node-fetch';
 
@@ -472,6 +473,47 @@ describe('github', () => {
       );
 
       await expect(getTeamMembers(graphql, 'a', 'b')).resolves.toEqual(output);
+    });
+  });
+
+  describe('getOrganizations', () => {
+    it('read organizations', async () => {
+      const input: QueryResponse = {
+        viewer: {
+          organizations: {
+            nodes: [
+              {
+                login: 'org1',
+              },
+              {
+                login: 'org2',
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+            },
+          },
+        },
+      };
+
+      const output = {
+        organizations: [
+          {
+            login: 'org1',
+          },
+          {
+            login: 'org2',
+          },
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('organizations', (_req, res, ctx) =>
+          res(ctx.data(input)),
+        ),
+      );
+
+      await expect(getOrganizations(graphql)).resolves.toEqual(output);
     });
   });
 
