@@ -64,15 +64,17 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
           </Typography>
         )}
       </Box>
-      <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
-        {labels?.map(data => {
-          return (
-            <li key={data.id} className={classes.labelItem}>
-              <Chip color="primary" label={data.name} size="small" />
-            </li>
-          );
-        })}
-      </Box>
+      {labels && (
+        <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
+          {labels.map(data => {
+            return (
+              <li key={data.id} className={classes.labelItem}>
+                <Chip color="primary" label={data.name} size="small" />
+              </li>
+            );
+          })}
+        </Box>
+      )}
     </>
   );
 };
