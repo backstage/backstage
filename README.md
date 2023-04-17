@@ -12,30 +12,32 @@
 
 ## What is Backstage?
 
-[Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly — without compromising autonomy.
+[Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores orders to your microservices and infrastructure and enables your product teams to ship high-quality code quickly without compromising autonomy.
 
 Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
 
 ![software-catalog](docs/assets/header.png)
 
-Out of the box, Backstage includes:
+Backstage includes:
 
-- [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software (microservices, libraries, data pipelines, websites, ML models, etc.)
+- [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software such as microservices, libraries, data pipelines, websites, and ML models
 - [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
 - [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
-Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. Read the announcement [here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
+Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. For more information, see the [announcement](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
 ## Project roadmap
 
-A detailed project roadmap, including already delivered milestones, is available [here](https://backstage.io/docs/overview/roadmap).
+For information about a detailed project roadmap including delivered milestones, see [Roadmap](https://backstage.io/docs/overview/roadmap).
 
 ## Getting Started
 
-Check out [the documentation](https://backstage.io/docs/getting-started) on how to start using Backstage.
+To start using Backstage, see the [Getting started documentation](https://backstage.io/docs/getting-started).
 
 ## Documentation
+
+The documentation of Backstage includes:
 
 - [Main documentation](https://backstage.io/docs)
 - [Software Catalog](https://backstage.io/docs/features/software-catalog/)
@@ -44,6 +46,8 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 - [Storybook - UI components](https://backstage.io/storybook)
 
 ## Community
+
+Following are the community resources:
 
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
@@ -64,6 +68,6 @@ Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/L
 
 ## Security
 
-Please report sensitive security issues via Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
+Please report sensitive security issues using Spotify's [bug-bounty program](https://hackerone.com/spotify) rather than GitHub.
 
-For further details please see our complete [security release process](SECURITY.md).
+For further details, see our complete [security release process](SECURITY.md).
