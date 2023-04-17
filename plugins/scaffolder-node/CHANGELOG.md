@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.1.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.7-next.2
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+
 ## 0.1.2-next.1
 
 ### Patch Changes

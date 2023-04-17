@@ -29,6 +29,7 @@ const bazaarProject: any = {
   endDate: null,
   size: 'small',
   responsible: 'r',
+  docs: '',
 };
 
 jest.setTimeout(60_000);
@@ -75,6 +76,7 @@ describe('DatabaseHandler', () => {
         end_date: bazaarProject.endDate,
         size: bazaarProject.size,
         responsible: bazaarProject.responsible,
+        docs: bazaarProject.docs,
       });
 
       // Add a member to the project
@@ -94,6 +96,7 @@ describe('DatabaseHandler', () => {
       expect(res[0].end_date).toEqual(null);
       expect(res[0].size).toEqual('small');
       expect(res[0].responsible).toEqual('r');
+      expect(res[0].docs).toEqual('');
       expect(
         res[0].members_count === '1' || res[0].members_count === 1,
       ).toBeTruthy();

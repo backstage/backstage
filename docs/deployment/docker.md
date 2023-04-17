@@ -37,10 +37,6 @@ The required steps in the host build are to install dependencies with
 `yarn install`, generate type definitions using `yarn tsc`, and build the backend
 package with `yarn build:backend`.
 
-> NOTE: If you created your app prior to 2021-02-18, follow the
-> [migration step](https://github.com/backstage/backstage/releases/tag/release-2021-02-18)
-> to move from `backend:build` to `backend:bundle`.
-
 In a CI workflow it might look something like this:
 
 ```bash
@@ -50,7 +46,8 @@ yarn install --frozen-lockfile
 yarn tsc
 
 # Build the backend, which bundles it all up into the packages/backend/dist folder.
-yarn build:backend
+# The configuration files here should match the one you use inside the Dockerfile below.
+yarn build:backend --config app-config.yaml
 ```
 
 Once the host build is complete, we are ready to build our image. The following

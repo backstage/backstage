@@ -185,7 +185,7 @@
         },
         "name": "other-side-car",
         "ready": false,
-        "restartCount": 38,
+        "restartCount": 123,
         "started": false,
         "state": {
           "waiting": {

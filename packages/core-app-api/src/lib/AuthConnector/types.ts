@@ -25,6 +25,6 @@ export type CreateSessionOptions = {
  */
 export type AuthConnector<AuthSession> = {
   createSession(options: CreateSessionOptions): Promise<AuthSession>;
-  refreshSession(): Promise<AuthSession>;
+  refreshSession(scopes?: Set<string>): Promise<AuthSession>;
   removeSession(): Promise<void>;
 };

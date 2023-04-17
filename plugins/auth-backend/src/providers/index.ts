@@ -15,6 +15,7 @@
  */
 
 export type { AwsAlbResult } from './aws-alb';
+export type { EasyAuthResult } from './azure-easyauth';
 export type {
   BitbucketOAuthResult,
   BitbucketPassportProfile,

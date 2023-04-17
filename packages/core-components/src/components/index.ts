@@ -44,6 +44,5 @@ export * from './StructuredMetadataTable';
 export * from './SupportButton';
 export * from './TabbedLayout';
 export * from './Table';
-export * from './Tabs';
 export * from './TrendLine';
 export * from './WarningPanel';

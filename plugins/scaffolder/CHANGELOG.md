@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder
 
+## 1.13.0-next.3
+
+### Patch Changes
+
+- 7917cfccfc7: Fix some hard-coded white font colors in scaffolder
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/plugin-scaffolder-react@1.3.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-react@1.1.12-next.3
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-permission-react@0.4.12-next.1
+  - @backstage/plugin-scaffolder-common@1.2.7-next.2
+
+## 1.13.0-next.2
+
+### Minor Changes
+
+- cf18c32934a: The Installed Actions page now shows details for nested objects and arrays
+
+### Patch Changes
+
+- 90dda42cfd2: bug: Invert `templateFilter` predicate to align with `Array.filter`
+- 34dab7ee7f8: `scaffolder/next`: bump `rjsf` dependencies to `5.5.0`
+- Updated dependencies
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/plugin-scaffolder-react@1.3.0-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-react@1.1.12-next.2
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+
 ## 1.13.0-next.1
 
 ### Patch Changes

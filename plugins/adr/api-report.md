@@ -10,6 +10,7 @@ import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -37,6 +38,8 @@ export class AdrClient implements AdrApi {
 export interface AdrClientOptions {
   // (undocumented)
   discoveryApi: DiscoveryApi;
+  // (undocumented)
+  fetchApi: FetchApi;
 }
 
 // @public

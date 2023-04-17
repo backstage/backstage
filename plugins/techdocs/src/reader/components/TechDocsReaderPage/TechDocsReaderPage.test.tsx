@@ -18,7 +18,11 @@ import { act } from '@testing-library/react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
 
@@ -31,6 +35,7 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
 
 import { Page } from '@backstage/core-components';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -80,11 +85,18 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
+const configApi = new MockConfigApi({
+  app: {
+    baseUrl: 'http://localhost:3000',
+  },
+});
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
         [scmIntegrationsApiRef, {}],
+        [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
         [techdocsStorageApiRef, techdocsStorageApiMock],
       ]}

@@ -40,7 +40,7 @@ export const scaffolderConditions: Conditions<{
 
 // @alpha
 export const scaffolderPlugin: (
-  options: ScaffolderPluginOptions,
+  options?: ScaffolderPluginOptions | undefined,
 ) => BackendFeature;
 
 // @alpha

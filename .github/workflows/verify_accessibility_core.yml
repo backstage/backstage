@@ -1,0 +1,30 @@
+name: Verify Accessibility Core features
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'plugins/catalog/**'
+      - 'plugins/techdocs/**'
+      - 'plugins/scaffolder/**'
+      - 'plugins/search/**'
+
+jobs:
+  lhci:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.6.3
+        with:
+          cache-prefix: ${{ runner.os }}-16.x
+      - name: run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.11.x
+          lhci autorun
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -32,12 +32,12 @@ import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { BundlingOptions, BackendBundlingOptions } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
+import { BackstagePackage } from '@backstage/cli-node';
 import { runPlain } from '../run';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 import yn from 'yn';
-import { readEntryPoints } from '../monorepo/entryPoints';
-import { ExtendedPackage } from '../monorepo';
+import { readEntryPoints } from '../entryPoints';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -235,7 +235,7 @@ export async function createBackendConfig(
   // Find all local monorepo packages and their node_modules, and mark them as external.
   const { packages } = await getPackages(cliPaths.targetDir);
   const localPackageEntryPoints = packages.flatMap(p => {
-    const entryPoints = readEntryPoints((p as ExtendedPackage).packageJson);
+    const entryPoints = readEntryPoints((p as BackstagePackage).packageJson);
     return entryPoints.map(e => posixPath.join(p.packageJson.name, e.mount));
   });
   const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));

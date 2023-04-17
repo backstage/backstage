@@ -184,9 +184,10 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  const { identity } = options;
 
   router.post('/example', async (req, res) => {
-    const identity = await identity.getIdentity({ request: req });
+    const userIdentity = await identity.getIdentity({ request: req });
     ...
   });
 ```
