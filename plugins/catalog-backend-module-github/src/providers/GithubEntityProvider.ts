@@ -212,22 +212,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     let organizations: string[];
 
     if (organization.includes('*')) {
-      const { headers } = await this.githubCredentialsProvider.getCredentials({
-        url: `https://${host}`,
-      });
-
-      let { organizations: organizationsFromGithub } = await getOrganizations(
-        graphql.defaults({
-          baseUrl: this.integration.apiBaseUrl,
-          headers,
-        }),
-      );
-      if (organization !== '*') {
-        organizationsFromGithub = organizationsFromGithub.filter(({ login }) =>
-          login?.match(escapeRegExp(organization)),
-        );
-      }
-      organizations = organizationsFromGithub?.map(i => i.login ?? '');
+      organizations = await this.findFilteredOrganizations(organization);
 
       this.logger.info(
         `Read ${organizations.length} GitHub organizations matching '${organization}' pattern)`,
@@ -273,6 +258,27 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     }
 
     return repositories;
+  }
+
+  private async findFilteredOrganizations(filter: string): Promise<string[]> {
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
+      url: `https://${this.integration.host}`,
+    });
+
+    let { organizations: organizationsFromGithub } = await getOrganizations(
+      graphql.defaults({
+        baseUrl: this.integration.apiBaseUrl,
+        headers,
+      }),
+    );
+
+    if (filter !== '*') {
+      organizationsFromGithub = organizationsFromGithub.filter(({ login }) =>
+        login?.match(escapeRegExp(filter)),
+      );
+    }
+
+    return organizationsFromGithub?.map(i => i.login ?? '');
   }
 
   private matchesFilters(repositories: Repository[]) {
