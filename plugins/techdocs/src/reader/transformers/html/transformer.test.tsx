@@ -31,7 +31,10 @@ const configApiMock: ConfigApi = new ConfigReader({
   },
 });
 
-const wrapper: FC = ({ children }) => (
+type WrapperProps = {
+  children?: React.ReactNode;
+};
+const wrapper: FC<WrapperProps> = ({ children }) => (
   <TestApiProvider apis={[[configApiRef, configApiMock]]}>
     {children}
   </TestApiProvider>

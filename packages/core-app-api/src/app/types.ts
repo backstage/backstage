@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
@@ -327,7 +327,7 @@ export type BackstageApp = {
    * );
    * ```
    */
-  createRoot(element: JSX.Element): ComponentType<{}>;
+  createRoot(element: JSX.Element): ComponentType<PropsWithChildren>;
 
   /**
    * Provider component that should wrap the Router created with getRouter()

@@ -44,10 +44,11 @@ import {
 } from '@backstage/integration-react';
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
+import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
+import { AppRouter } from '@backstage/core-app-api';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -164,7 +165,7 @@ export class DevAppBuilder {
   /**
    * Build a DevApp component using the resources registered so far
    */
-  build(): ComponentType<{}> {
+  build(): ComponentType<PropsWithChildren> {
     const fakeRouteRef = createRouteRef({ id: 'fake' });
     const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);
@@ -195,35 +196,29 @@ export class DevAppBuilder {
       },
     });
 
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
-
-    const DevApp = () => {
-      return (
-        <AppProvider>
-          <AlertDisplay />
-          <OAuthRequestDialog />
-          {this.rootChildren}
-          <AppRouter>
-            <SidebarPage>
-              <Sidebar>
-                <SidebarSpacer />
-                {this.sidebarItems}
-                <SidebarSpace />
-                <SidebarDivider />
-                <SidebarThemeSwitcher />
-              </Sidebar>
-              <FlatRoutes>
-                {this.routes}
-                <Route path="/_external_route" element={<FakePage />} />
-              </FlatRoutes>
-            </SidebarPage>
-          </AppRouter>
-        </AppProvider>
-      );
-    };
-
-    return DevApp;
+    const devApp: React.ReactNode = (
+      <>
+        <AlertDisplay />
+        <OAuthRequestDialog />
+        {this.rootChildren}
+        <AppRouter>
+          <SidebarPage>
+            <Sidebar>
+              <SidebarSpacer />
+              {this.sidebarItems}
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarThemeSwitcher />
+            </Sidebar>
+            <FlatRoutes>
+              {this.routes}
+              <Route path="/_external_route" element={<FakePage />} />
+            </FlatRoutes>
+          </SidebarPage>
+        </AppRouter>
+      </>
+    );
+    return app.createRoot(devApp);
   }
 
   /**
@@ -240,7 +235,9 @@ export class DevAppBuilder {
       window.location.pathname = this.defaultPage;
     }
 
-    ReactDOM.render(<DevApp />, document.getElementById('root'));
+    const container = document.getElementById('root');
+    const root = createRoot(container!);
+    root.render(<DevApp />);
   }
 }
 
