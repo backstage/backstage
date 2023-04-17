@@ -9472,6 +9472,7 @@ __metadata:
     "@apidevtools/swagger-parser": ^10.1.0
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
