@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'right',
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
   formWrapper: {
     padding: theme.spacing(2),
