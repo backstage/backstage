@@ -43,7 +43,6 @@
     "@envelop/core": "^3.0.6",
     "@envelop/dataloader": "^4.0.4",
     "@envelop/graphql-modules": "^4.0.4",
-    "@types/express": "^4.17.6",
     "dataloader": "^2.1.0",
     "express-promise-router": "^4.1.0",
     "graphql": "^16.6.0",
