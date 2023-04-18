@@ -8,7 +8,10 @@ const redirects = {
   'backend-system': '/docs/plugins/new-backend-system',
 };
 const fallback = '/docs';
-const target = redirects[global.window.location.search.slice(1)] || fallback;
+let target = fallback;
+if (global.window) {
+  target = redirects[global.window.location.search.slice(1)] || fallback;
+}
 
 export default function Link() {
   return <Redirect to={target} />;
