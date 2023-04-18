@@ -16,7 +16,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: 'src/schema.ts',
+  schema: require.resolve('./src/schema.ts'),
   generates: {
     './src/modules/': {
       preset: 'graphql-modules',

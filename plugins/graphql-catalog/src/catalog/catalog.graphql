@@ -61,8 +61,10 @@ interface API
   owner: Owner! @relation(name: "ownedBy")
   definition: String! @field(at: "spec.definition")
   system: System @relation(name: "partOf")
-  apiConsumedBy: Connection @relation(name: "apiConsumedBy", nodeType: "Component")
-  apiProvidedBy: Connection @relation(name: "apiProvidedBy", nodeType: "Component")
+  apiConsumedBy: Connection
+    @relation(name: "apiConsumedBy", nodeType: "Component")
+  apiProvidedBy: Connection
+    @relation(name: "apiProvidedBy", nodeType: "Component")
 }
 
 interface Component
@@ -79,7 +81,8 @@ interface Component
   providesApis: Connection @relation(name: "providesApi", nodeType: "API")
   consumesApis: Connection @relation(name: "consumesApi", nodeType: "API")
   dependsOn: Connection @relation(name: "dependsOn", nodeType: "Dependency")
-  dependencyOf: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
+  dependencyOf: Connection
+    @relation(name: "dependencyOf", nodeType: "Dependency")
   components: Connection @relation(name: "hasPart", nodeType: "Component")
 }
 
@@ -95,7 +98,8 @@ interface Resource
   type: String! @field(at: "spec.type")
   owner: Owner! @relation(name: "ownedBy")
   dependsOn: Connection @relation(name: "dependsOn", nodeType: "Dependency")
-  dependencyOf: Connection @relation(name: "dependencyOf", nodeType: "Dependency")
+  dependencyOf: Connection
+    @relation(name: "dependencyOf", nodeType: "Dependency")
   system: System @relation(name: "partOf")
 }
 

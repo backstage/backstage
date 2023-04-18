@@ -19,7 +19,7 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 
 describe('graphql-catalog codegen', () => {
   it('should generate the correct code', async () => {
-    const files = (await generate(config)).map(
+    const files = (await generate(config, false)).map(
       (file: Types.FileOutput) => file.content,
     );
 
