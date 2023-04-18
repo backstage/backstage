@@ -22,7 +22,7 @@ import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
 import { TemplateFilter, TemplateGlobal } from '../../lib';
-
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 /**
  * TaskWorkerOptions
  *
@@ -34,6 +34,7 @@ export type TaskWorkerOptions = {
     workflowRunner: WorkflowRunner;
   };
   concurrentTasksLimit: number;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -62,6 +63,7 @@ export type CreateWorkerOptions = {
    */
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -88,6 +90,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       concurrentTasksLimit = 10, // from 1 to Infinity
       additionalTemplateGlobals,
+      permissions,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -97,12 +100,14 @@ export class TaskWorker {
       workingDirectory,
       additionalTemplateFilters,
       additionalTemplateGlobals,
+      permissions,
     });
 
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
       concurrentTasksLimit,
+      permissions,
     });
   }
 

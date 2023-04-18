@@ -31,6 +31,11 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { z } from 'zod';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 
 // The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
 void winston.transports.Stream;
@@ -50,6 +55,10 @@ describe('DefaultWorkflowRunner', () => {
   let actionRegistry = new TemplateActionRegistry();
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
+
+  const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
+    authorizeConditional: jest.fn(),
+  } as unknown as jest.Mocked<PermissionEvaluator>;
 
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -132,11 +141,16 @@ describe('DefaultWorkflowRunner', () => {
       },
     });
 
+    mockedPermissionApi.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
       workingDirectory: '/tmp',
       logger,
+      permissions: mockedPermissionApi,
     });
   });
 
@@ -807,6 +821,85 @@ describe('DefaultWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+    });
+  });
+
+  describe('permissions', () => {
+    it('should throw an error if an actions is not authorized', async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Unauthorized action: jest-validated-action. The action is not allowed/,
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it(`shouldn't execute actions who aren't authorized`, async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions: {
+            anyOf: [
+              {
+                resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                rule: 'HAS_NUMBER_PROPERTY',
+                params: {
+                  key: 'foo',
+                  value: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test1',
+            name: 'valid action',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+          {
+            id: 'test2',
+            name: 'invalid action',
+            action: 'jest-validated-action',
+            input: { foo: 2 },
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        `Unauthorized action: jest-validated-action. The action is not allowed. Input: ${JSON.stringify(
+          { foo: 2 },
+          null,
+          2,
+        )}`,
+      );
+      expect(fakeActionHandler).toHaveBeenCalled();
+      expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
     });
   });
 });
