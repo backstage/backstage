@@ -45,6 +45,7 @@ export function compileConfigSchemas(
   const ajv = new Ajv({
     allErrors: true,
     allowUnionTypes: true,
+    coerceTypes: true,
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
