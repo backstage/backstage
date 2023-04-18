@@ -42,6 +42,7 @@ module.exports = {
         preset: 'desktop',
       },
       startServerCommand: 'yarn dev',
+      startServerReadyPattern: 'webpack compiled successfully',
       startServerReadyTimeout: 600000,
       numberOfRuns: 1,
       puppeteerScript: './.lighthouseci/scripts/guest-auth.js',
