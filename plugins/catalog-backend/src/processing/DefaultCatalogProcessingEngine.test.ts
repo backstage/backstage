@@ -22,6 +22,7 @@ import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/Stitcher';
+import { ConfigReader } from '@backstage/config';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -61,13 +62,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       state: {},
       refreshKeys: [],
     });
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -127,13 +129,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       state: {},
       refreshKeys: [],
     });
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -209,13 +212,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       refreshKeys: [],
     });
 
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -284,13 +288,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       errors: [],
     });
 
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -341,14 +346,15 @@ describe('DefaultCatalogProcessingEngine', () => {
   });
 
   it('should stitch both the previous and new sources when relations change', async () => {
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-      100,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -454,14 +460,15 @@ describe('DefaultCatalogProcessingEngine', () => {
   });
 
   it('should not stitch sources entities when relations are the same', async () => {
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-      100,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -535,14 +542,15 @@ describe('DefaultCatalogProcessingEngine', () => {
   });
 
   it('should stitch sources entities when new relation of different type added', async () => {
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-      100,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -621,14 +629,15 @@ describe('DefaultCatalogProcessingEngine', () => {
   });
 
   it('should stitch sources entities when relation is removed', async () => {
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-      100,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
