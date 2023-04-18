@@ -32,9 +32,11 @@ export function getProjectIdAnnotationFromEntity(entity: Entity): string {
   return annotation;
 }
 
-export function getSpaceIdAnnotationFromEntity(entity: Entity): string | null {
+export function getSpaceIdAnnotationFromEntity(
+  entity: Entity,
+): string | undefined {
   const annotation =
     entity.metadata.annotations?.[OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION];
 
-  return annotation || null;
+  return annotation || undefined;
 }

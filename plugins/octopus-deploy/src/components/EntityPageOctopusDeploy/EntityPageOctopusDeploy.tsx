@@ -28,11 +28,11 @@ export const EntityPageOctopusDeploy = (props: { defaultLimit?: number }) => {
   const projectId = getProjectIdAnnotationFromEntity(entity);
   const spaceId = getSpaceIdAnnotationFromEntity(entity);
 
-  const { environments, releases, loading, error } = useReleases(
+  const { environments, releases, loading, error } = useReleases({
     projectId,
     spaceId,
-    props.defaultLimit ?? 3,
-  );
+    releaseHistoryCount: props.defaultLimit ?? 3,
+  });
 
   return (
     <ReleaseTable
