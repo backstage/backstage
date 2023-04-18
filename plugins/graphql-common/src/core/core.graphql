@@ -10,9 +10,7 @@ directive @discriminationAlias(
   value: String!
   type: String!
 ) repeatable on INTERFACE
-directive @implements(
-  interface: String!
-) on OBJECT | INTERFACE
+directive @implements(interface: String!) on OBJECT | INTERFACE
 
 scalar _DirectiveArgument_
 
