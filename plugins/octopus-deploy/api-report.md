@@ -28,11 +28,11 @@ export const OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION = 'octopus.com/space-id';
 // @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
-  getReleaseProgression(
-    projectId: string,
-    spaceId: string | null,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression>;
+  getReleaseProgression(opts: {
+    projectId: string;
+    spaceId?: string;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression>;
 }
 
 // @public (undocumented)
@@ -46,11 +46,11 @@ export class OctopusDeployClient implements OctopusDeployApi {
     proxyPathBase?: string;
   });
   // (undocumented)
-  getReleaseProgression(
-    projectId: string,
-    spaceId: string | null,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression>;
+  getReleaseProgression(opts: {
+    projectId: string;
+    spaceId?: string;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression>;
 }
 
 // @public (undocumented)
