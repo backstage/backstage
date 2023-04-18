@@ -21,11 +21,11 @@ import {
   OctopusReleaseProgression,
 } from '../api';
 
-export function useReleases(opts: {
-  projectId: string;
-  spaceId?: string;
-  releaseHistoryCount: number;
-}): {
+export function useReleases(
+  projectId: string,
+  releaseHistoryCount: number,
+  spaceId?: string,
+): {
   environments?: OctopusEnvironment[];
   releases?: OctopusReleaseProgression[];
   loading: boolean;
@@ -34,8 +34,12 @@ export function useReleases(opts: {
   const api = useApi(octopusDeployApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    return api.getReleaseProgression(opts);
-  }, [api, opts]);
+    return api.getReleaseProgression({
+      projectId,
+      spaceId,
+      releaseHistoryCount,
+    });
+  }, [api, projectId, spaceId, releaseHistoryCount]);
 
   return {
     environments: value?.Environments,
