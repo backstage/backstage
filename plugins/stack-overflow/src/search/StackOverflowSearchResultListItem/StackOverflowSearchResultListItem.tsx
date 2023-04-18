@@ -29,6 +29,11 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
+/**
+ * Props for {@link StackOverflowSearchResultListItem}
+ *
+ * @public
+ */
 export type StackOverflowSearchResultListItemProps = {
   result?: any; // TODO(emmaindal): type to StackOverflowDocument.
   icon?: React.ReactNode;
