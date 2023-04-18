@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getMatchingWorkspacePaths } from '../../lib/paths';
+import { resolvePackagePaths } from '../../lib/paths';
 import pLimit from 'p-limit';
 import { relative as relativePath } from 'path';
 import { paths as cliPaths } from '../../lib/paths';
@@ -23,7 +23,7 @@ export async function runner(
   paths: string[],
   command: (dir: string) => Promise<void>,
 ) {
-  const packages = await getMatchingWorkspacePaths(paths);
+  const packages = await resolvePackagePaths({ paths });
   const limit = pLimit(5);
 
   const resultsList = await Promise.all(

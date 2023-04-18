@@ -1161,7 +1161,7 @@ export async function buildDocs({
   documenter.generateFiles();
 }
 
-export async function categorizePackageDirs(packageDirs: any[]) {
+export async function categorizePackageDirs(packageDirs: string[]) {
   const dirs = packageDirs.slice();
   const tsPackageDirs = new Array<string>();
   const cliPackageDirs = new Array<string>();
