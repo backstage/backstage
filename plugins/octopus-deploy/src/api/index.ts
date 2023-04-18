@@ -57,11 +57,11 @@ const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 
 /** @public */
 export interface OctopusDeployApi {
-  getReleaseProgression(
-    projectId: string,
-    spaceId: string | null,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression>;
+  getReleaseProgression(opts: {
+    projectId: string;
+    spaceId?: string;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression>;
 }
 
 /** @public */
@@ -80,12 +80,12 @@ export class OctopusDeployClient implements OctopusDeployApi {
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
   }
 
-  async getReleaseProgression(
-    projectId: string,
-    spaceId: string | null,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression> {
-    const url = await this.getApiUrl(projectId, spaceId, releaseHistoryCount);
+  async getReleaseProgression(opts: {
+    projectId: string;
+    spaceId?: string;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression> {
+    const url = await this.getApiUrl(opts);
 
     const response = await this.fetchApi.fetch(url);
 
@@ -108,23 +108,25 @@ export class OctopusDeployClient implements OctopusDeployApi {
     return responseJson;
   }
 
-  private async getApiUrl(
-    projectId: string,
-    spaceId: string | null,
-    releaseHistoryCount: number,
-  ) {
+  private async getApiUrl(opts: {
+    projectId: string;
+    spaceId?: string;
+    releaseHistoryCount: number;
+  }) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     const queryParameters = new URLSearchParams({
-      releaseHistoryCount: releaseHistoryCount.toString(),
+      releaseHistoryCount: opts.releaseHistoryCount.toString(),
     });
-    if (spaceId !== null)
+    if (opts.spaceId !== undefined) {
       return `${proxyUrl}${this.proxyPathBase}/${encodeURIComponent(
-        spaceId,
+        opts.spaceId,
       )}/projects/${encodeURIComponent(
-        projectId,
+        opts.projectId,
       )}/progression?${queryParameters}`;
+    }
+
     return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
-      projectId,
+      opts.projectId,
     )}/progression?${queryParameters}`;
   }
 }
