@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog
 
+## 1.10.0
+
+### Minor Changes
+
+- 4dbf3d3e4da: Added a new EntitySwitch isResourceType to allow different views depending on Resource type
+- fc6cab4eb48: Added `isEntityWith` condition helper for `EntitySwitch` case statements.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/plugin-search-react@1.5.2
+  - @backstage/integration-react@1.1.12
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-search-common@1.2.3
+
 ## 1.10.0-next.3
 
 ### Patch Changes

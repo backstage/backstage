@@ -1,5 +1,15 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.34
+
+### Patch Changes
+
+- e47e69eadf0: Updated dependency `@apollo/server` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-catalog-graphql@0.3.20
+  - @backstage/config@1.0.7
+
 ## 0.1.34-next.3
 
 ### Patch Changes
