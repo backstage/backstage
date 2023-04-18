@@ -420,7 +420,9 @@ export interface KubernetesProxyApi {
     namespace: string;
     clusterName: string;
     containerName: string;
-  }): Promise<string>;
+  }): Promise<{
+    text: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesProxyApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -428,9 +430,7 @@ export interface KubernetesProxyApi {
 // @public (undocumented)
 export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
 
-// Warning: (ae-missing-release-tag) "KubernetesProxyClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class KubernetesProxyClient {
   constructor(options: { kubernetesApi: KubernetesApi });
   // (undocumented)
@@ -444,7 +444,9 @@ export class KubernetesProxyClient {
     namespace: string;
     clusterName: string;
     containerName: string;
-  }): Promise<string>;
+  }): Promise<{
+    text: string;
+  }>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerable" needs to be exported by the entry point index.d.ts

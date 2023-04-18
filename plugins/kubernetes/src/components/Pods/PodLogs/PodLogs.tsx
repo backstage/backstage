@@ -53,7 +53,7 @@ export const PodLogs: React.FC<PodLogsProps> = ({
         style={{ height: '100%', width: '100%', minHeight: '30rem' }}
       >
         {loading && <Skeleton variant="rect" width="100%" height="100%" />}
-        {!loading && value !== undefined && <LogViewer text={value} />}
+        {!loading && value !== undefined && <LogViewer text={value.text} />}
       </Paper>
     </>
   );

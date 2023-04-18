@@ -23,3 +23,11 @@ export const kubernetesPlugin = createPlugin({
         }),
     }),
 ```
+
+**BREAKING**: `KubernetesDrawer` is now called `KubernetesStructuredMetadataTableDrawer` so that we can do more than just show `StructuredMetadataTable`
+
+`import { KubernetesDrawer } from "@backstage/plugin-kubernetes"`
+
+should now be:
+
+`import { KubernetesStructuredMetadataTableDrawer } from "@backstage/plugin-kubernetes"`

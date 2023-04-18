@@ -15,6 +15,11 @@
  */
 import { KubernetesApi } from './types';
 
+/**
+ * A client for common requests through the proxy endpoint of the kubernetes backend plugin.
+ *
+ * @public
+ */
 export class KubernetesProxyClient {
   private readonly kubernetesApi: KubernetesApi;
 
@@ -46,7 +51,7 @@ export class KubernetesProxyClient {
     namespace: string;
     clusterName: string;
     containerName: string;
-  }): Promise<string> {
+  }): Promise<{ text: string }> {
     const params = new URLSearchParams({
       container: containerName,
     });
@@ -58,6 +63,7 @@ export class KubernetesProxyClient {
           method: 'GET',
         },
       })
-      .then(response => this.handleText(response));
+      .then(response => this.handleText(response))
+      .then(text => ({ text }));
   }
 }
