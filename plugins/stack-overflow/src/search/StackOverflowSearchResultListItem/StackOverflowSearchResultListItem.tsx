@@ -29,8 +29,8 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-type StackOverflowSearchResultListItemProps = {
-  result: any; // TODO(emmaindal): type to StackOverflowDocument.
+export type StackOverflowSearchResultListItemProps = {
+  result?: any; // TODO(emmaindal): type to StackOverflowDocument.
   icon?: React.ReactNode;
   rank?: number;
   highlight?: ResultHighlight;
@@ -39,16 +39,19 @@ type StackOverflowSearchResultListItemProps = {
 export const StackOverflowSearchResultListItem = (
   props: StackOverflowSearchResultListItemProps,
 ) => {
-  const { location, title, text, answers, tags } = props.result;
-  const { highlight } = props;
+  const { result, highlight } = props;
   const analytics = useAnalytics();
 
   const handleClick = () => {
-    analytics.captureEvent('discover', title, {
-      attributes: { to: location },
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
       value: props.rank,
     });
   };
+
+  if (!result) {
+    return null;
+  }
 
   return (
     <>
@@ -58,7 +61,7 @@ export const StackOverflowSearchResultListItem = (
           <ListItemText
             primaryTypographyProps={{ variant: 'h6' }}
             primary={
-              <Link to={location} noTrack onClick={handleClick}>
+              <Link to={result.location} noTrack onClick={handleClick}>
                 {highlight?.fields?.title ? (
                   <HighlightedSearchResultText
                     text={highlight.fields.title}
@@ -66,7 +69,7 @@ export const StackOverflowSearchResultListItem = (
                     postTag={highlight.postTag}
                   />
                 ) : (
-                  _unescape(title)
+                  _unescape(result.title)
                 )}
               </Link>
             }
@@ -81,13 +84,13 @@ export const StackOverflowSearchResultListItem = (
                   />
                 </>
               ) : (
-                `Author: ${text}`
+                `Author: ${result.text}`
               )
             }
           />
-          <Chip label={`Answer(s): ${answers}`} size="small" />
-          {tags &&
-            tags.map((tag: string) => (
+          <Chip label={`Answer(s): ${result.answers}`} size="small" />
+          {result.tags &&
+            result.tags.map((tag: string) => (
               <Chip key={tag} label={`Tag: ${tag}`} size="small" />
             ))}
         </Box>
