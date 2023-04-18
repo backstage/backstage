@@ -60,5 +60,5 @@ export interface KubernetesProxyApi {
     namespace: string;
     clusterName: string;
     containerName: string;
-  }): Promise<string>;
+  }): Promise<{ text: string }>;
 }
