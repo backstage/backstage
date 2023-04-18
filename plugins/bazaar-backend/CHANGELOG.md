@@ -1,5 +1,17 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.2.7
+
+### Patch Changes
+
+- fbd6f36611a: Added the `docs` parameter (optional) to link the project documentation
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.2.7-next.2
 
 ### Patch Changes

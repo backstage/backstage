@@ -1,5 +1,18 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.30
+
+### Patch Changes
+
+- 55a969fe574: Bumped `recharts` dependency to `^2.5.0`.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/integration@1.4.4
+
 ## 0.3.30-next.3
 
 ### Patch Changes

@@ -1,5 +1,28 @@
 # @backstage/plugin-adr
 
+## 0.5.0
+
+### Minor Changes
+
+- a2218363301: Use `fetchApi` instead of raw `fetch` in order to pass auth header if necessary.
+
+### Patch Changes
+
+- 77aa3a4d47e: use path attribute to fetch files instead of name and update the UI to navigate over subdirectories
+- 7d75f6d9b8f: chore: Improve API Reference documentation
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/plugin-search-react@1.5.2
+  - @backstage/plugin-adr-common@0.2.8
+  - @backstage/integration-react@1.1.12
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-search-common@1.2.3
+
 ## 0.4.2-next.3
 
 ### Patch Changes

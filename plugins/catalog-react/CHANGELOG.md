@@ -1,5 +1,46 @@
 # @backstage/plugin-catalog-react
 
+## 1.5.0
+
+### Minor Changes
+
+- a49fb39df5a: Attempt to load entity owner names in the EntityOwnerPicker through the `by-refs` endpoint. If `spec.profile.displayName` or `metadata.title` are populated, we now attempt to show those before showing the `humanizeEntityRef`'d version.
+
+  **BREAKING**: `EntityOwnerFilter` now uses the full entity ref instead of the `humanizeEntityRef`. If you rely on `EntityOwnerFilter.values` or the `queryParameters.owners` of `useEntityList`, you will need to adjust your code like the following.
+
+  ```tsx
+  const { queryParameters: { owners } } = useEntityList();
+  // or
+  const { filter: { owners } } = useEntityList();
+
+  // Instead of,
+  if (owners.some(ref => ref === humanizeEntityRef(myEntity))) ...
+
+  // You'll need to use,
+  if (owners.some(ref => ref === stringifyEntityRef(myEntity))) ...
+  ```
+
+### Patch Changes
+
+- 81bee24c5de: Fixed bug in catalog filters where you could not click on the text to select a value.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- d1f5324dff7: Reverted the check if the selected options list is different than the query parameters list before invoking `setSelectedOptions` method. This was preventing updating list items when a query string was already present in the URL when loading the page.
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/version-bridge@1.0.4
+  - @backstage/integration@1.4.4
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
 ## 1.5.0-next.3
 
 ### Minor Changes

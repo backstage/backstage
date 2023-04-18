@@ -1,5 +1,24 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- 7a89555e73d: Lighthouse backend plugin can now use an authenticated catalog backend API.
+
+  - Breaking \* You must now pass the `tokenManager` to the lighthouse `createScheduler`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-lighthouse-common@0.1.1
+
 ## 0.2.0-next.3
 
 ### Minor Changes
