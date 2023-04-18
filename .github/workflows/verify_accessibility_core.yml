@@ -3,6 +3,8 @@ on:
   pull_request:
     branches: [master]
     paths:
+      - 'lighthouserc.js'
+      - '.github/workflows/verify_accessibility_core.yml'
       - 'plugins/catalog/**'
       - 'plugins/techdocs/**'
       - 'plugins/scaffolder/**'
@@ -21,10 +23,9 @@ jobs:
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.6.3
         with:
-          cache-prefix: ${{ runner.os }}-16.x
+          cache-prefix: ${{ runner.os }}-v16.x
       - name: run Lighthouse CI
         run: |
-          npm install -g @lhci/cli@0.11.x
-          lhci autorun
+          yarn dlx @lhci/cli@0.11.x autorun
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
