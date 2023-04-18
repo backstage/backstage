@@ -25,6 +25,8 @@ type Props = {
   authorName: string;
   authorAvatar?: string;
   repositoryName: string;
+  isDraft: boolean;
+  repositoryIsArchived: boolean;
 };
 
 const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
@@ -36,6 +38,8 @@ const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
     authorName,
     authorAvatar,
     repositoryName,
+    isDraft,
+    repositoryIsArchived,
     children,
   } = props;
 
@@ -51,6 +55,8 @@ const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
               authorName={authorName}
               authorAvatar={authorAvatar}
               repositoryName={repositoryName}
+              isDraft={isDraft}
+              repositoryIsArchived={repositoryIsArchived}
             />
             {children}
           </Box>
