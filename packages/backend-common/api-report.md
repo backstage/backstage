@@ -534,7 +534,7 @@ export const legacyPlugin: (
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
-  additionalConfig?: AppConfig;
+  additionalConfigs?: AppConfig[];
   argv: string[];
 }): Promise<Config>;
 
