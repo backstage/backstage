@@ -58,7 +58,7 @@ describe('compileConfigSchemas', () => {
     });
   });
 
-  it('should discover visibilities', () => {
+  it('should discover visibility', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',
