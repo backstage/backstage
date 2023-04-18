@@ -27,7 +27,7 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
 });
 
 export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
-  id: 'plugin.kubernetesproxy.service',
+  id: 'plugin.kubernetes.proxy-service',
 });
 
 export interface KubernetesApi {
