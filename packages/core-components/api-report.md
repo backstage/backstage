@@ -66,14 +66,6 @@ export type AlertDisplayProps = {
 };
 
 // @public
-enum Alignment {
-  DOWN_LEFT = 'DL',
-  DOWN_RIGHT = 'DR',
-  UP_LEFT = 'UL',
-  UP_RIGHT = 'UR',
-}
-
-// @public
 export function Avatar(props: AvatarProps): JSX.Element;
 
 // @public (undocumented)
@@ -215,13 +207,6 @@ export type CustomProviderClassKey = 'form' | 'button';
 export function DashboardIcon(props: IconComponentProps): JSX.Element;
 
 // @public
-type DependencyEdge<T = {}> = T & {
-  from: string;
-  to: string;
-  label?: string;
-};
-
-// @public
 export function DependencyGraph<NodeData, EdgeData>(
   props: DependencyGraphProps<NodeData, EdgeData>,
 ): JSX.Element;
@@ -242,59 +227,75 @@ export type DependencyGraphNodeClassKey = 'node';
 export interface DependencyGraphProps<NodeData, EdgeData>
   extends React_2.SVGProps<SVGSVGElement> {
   acyclicer?: 'greedy';
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  align?: Alignment;
+  align?: DependencyGraphTypes.Alignment;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: SVGDefsElement | SVGDefsElement[];
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  direction?: Direction;
+  direction?: DependencyGraphTypes.Direction;
   edgeMargin?: number;
   edgeRanks?: number;
-  edges: DependencyEdge<EdgeData>[];
+  edges: DependencyGraphTypes.DependencyEdge<EdgeData>[];
   edgeWeight?: number;
   fit?: 'grow' | 'contain';
   labelOffset?: number;
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  labelPosition?: LabelPosition;
+  labelPosition?: DependencyGraphTypes.LabelPosition;
   nodeMargin?: number;
-  nodes: DependencyNode<NodeData>[];
+  nodes: DependencyGraphTypes.DependencyNode<NodeData>[];
   paddingX?: number;
   paddingY?: number;
-  // Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-  ranker?: Ranker;
+  ranker?: DependencyGraphTypes.Ranker;
   rankMargin?: number;
-  renderLabel?: RenderLabelFunction<EdgeData>;
-  renderNode?: RenderNodeFunction<NodeData>;
+  renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }
 
-declare namespace DependencyGraphTypes {
-  export {
-    DependencyEdge,
-    RenderLabelProps,
-    RenderLabelFunction,
-    DependencyNode,
-    RenderNodeProps,
-    RenderNodeFunction,
-    Direction,
-    Alignment,
-    Ranker,
-    LabelPosition,
+// @public
+export namespace DependencyGraphTypes {
+  export enum Alignment {
+    DOWN_LEFT = 'DL',
+    DOWN_RIGHT = 'DR',
+    UP_LEFT = 'UL',
+    UP_RIGHT = 'UR',
+  }
+  export type DependencyEdge<T = {}> = T & {
+    from: string;
+    to: string;
+    label?: string;
   };
-}
-export { DependencyGraphTypes };
-
-// @public
-type DependencyNode<T = {}> = T & {
-  id: string;
-};
-
-// @public
-enum Direction {
-  BOTTOM_TOP = 'BT',
-  LEFT_RIGHT = 'LR',
-  RIGHT_LEFT = 'RL',
-  TOP_BOTTOM = 'TB',
+  export type DependencyNode<T = {}> = T & {
+    id: string;
+  };
+  export enum Direction {
+    BOTTOM_TOP = 'BT',
+    LEFT_RIGHT = 'LR',
+    RIGHT_LEFT = 'RL',
+    TOP_BOTTOM = 'TB',
+  }
+  export enum LabelPosition {
+    // (undocumented)
+    CENTER = 'c',
+    // (undocumented)
+    LEFT = 'l',
+    // (undocumented)
+    RIGHT = 'r',
+  }
+  export enum Ranker {
+    LONGEST_PATH = 'longest-path',
+    NETWORK_SIMPLEX = 'network-simplex',
+    TIGHT_TREE = 'tight-tree',
+  }
+  export type RenderLabelFunction<T = {}> = (
+    props: RenderLabelProps<T>,
+  ) => React_2.ReactNode;
+  export type RenderLabelProps<T = unknown> = {
+    edge: DependencyEdge<T>;
+  };
+  export type RenderNodeFunction<T = {}> = (
+    props: RenderNodeProps<T>,
+  ) => React_2.ReactNode;
+  export type RenderNodeProps<T = unknown> = {
+    node: DependencyNode<T>;
+  };
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
@@ -598,16 +599,6 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
   children?: React_2.ReactNode;
 };
 
-// @public
-enum LabelPosition {
-  // (undocumented)
-  CENTER = 'c',
-  // (undocumented)
-  LEFT = 'l',
-  // (undocumented)
-  RIGHT = 'r',
-}
-
 // Warning: (ae-forgotten-export) The symbol "Props_7" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Lifecycle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -816,48 +807,6 @@ export const ProxiedSignInPage: (
 export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
   headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
-};
-
-// Warning: (ae-missing-release-tag) "Ranker" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-enum Ranker {
-  LONGEST_PATH = 'longest-path',
-  NETWORK_SIMPLEX = 'network-simplex',
-  TIGHT_TREE = 'tight-tree',
-}
-
-// Warning: (ae-missing-release-tag) "RenderLabelFunction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-type RenderLabelFunction<T = {}> = (
-  props: RenderLabelProps<T>,
-) => React_2.ReactNode;
-
-// Warning: (ae-missing-release-tag) "RenderLabelProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-//
-// @public
-type RenderLabelProps<T = unknown> = {
-  edge: DependencyEdge<T>;
-};
-
-// Warning: (ae-missing-release-tag) "RenderNodeFunction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-//
-// @public
-type RenderNodeFunction<T = {}> = (
-  props: RenderNodeProps<T>,
-) => React_2.ReactNode;
-
-// Warning: (ae-missing-release-tag) "RenderNodeProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
-//
-// @public
-type RenderNodeProps<T = unknown> = {
-  node: DependencyNode<T>;
 };
 
 // Warning: (ae-missing-release-tag) "ResponseErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1517,8 +1466,8 @@ export type WarningPanelClassKey =
 
 // Warnings were encountered during analysis:
 //
-// src/components/DependencyGraph/types.d.ts:16:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/DependencyGraph/types.d.ts:20:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
+// src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
+// src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
