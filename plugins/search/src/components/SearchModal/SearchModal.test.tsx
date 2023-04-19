@@ -166,6 +166,6 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(screen.getByLabelText('Search')).toHaveFocus();
+    expect(screen.getByLabelText('Search in Mock app')).toHaveFocus();
   });
 });

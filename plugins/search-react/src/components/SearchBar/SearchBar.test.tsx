@@ -133,7 +133,9 @@ describe('SearchBar', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: 'Search' })).toHaveValue(term);
+      expect(
+        screen.getByRole('textbox', { name: 'Search in Mock title' }),
+      ).toHaveValue(term);
     });
   });
 
@@ -154,7 +156,9 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = screen.getByRole('textbox', { name: 'Search' });
+    const textbox = screen.getByRole('textbox', {
+      name: 'Search in Mock title',
+    });
 
     const value = 'value';
 
@@ -191,7 +195,9 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = screen.getByRole('textbox', { name: 'Search' });
+    const textbox = screen.getByRole('textbox', {
+      name: 'Search in Mock title',
+    });
 
     await waitFor(() => {
       expect(textbox).toHaveValue(term);
@@ -249,7 +255,9 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', { name: 'Search' });
+    const textbox = await screen.findByRole('textbox', {
+      name: 'Search in Mock title',
+    });
 
     const value = 'value';
 
@@ -293,7 +301,9 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', { name: 'Search' });
+    const textbox = await screen.findByRole('textbox', {
+      name: 'Search in Mock title',
+    });
 
     const value = 'value';
 
@@ -343,7 +353,9 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', { name: 'Search' });
+    const textbox = await screen.findByRole('textbox', {
+      name: 'Search in Mock title',
+    });
 
     let value = 'value';
 
