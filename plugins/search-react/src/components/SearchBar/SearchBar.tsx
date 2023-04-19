@@ -78,9 +78,10 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         clearButton = true,
         fullWidth = true,
         value: defaultValue,
-        label: defaultLabel,
+        label,
+        placeholder,
         inputProps: defaultInputProps = {},
-        endAdornment: defaultEndAdornment,
+        endAdornment,
         ...rest
       } = props;
 
@@ -119,8 +120,10 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         }
       }, [onChange, onClear]);
 
-      const label =
-        defaultLabel ??
+      const ariaLabel: string | undefined = label ? undefined : 'Search';
+
+      const inputPlaceholder =
+        placeholder ??
         `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
 
       const startAdornment = (
@@ -131,7 +134,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         </InputAdornment>
       );
 
-      const endAdornment = (
+      const clearButtonEndAdornment = (
         <InputAdornment position="end">
           <Button
             aria-label="Clear"
@@ -159,11 +162,15 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
             inputRef={ref}
             value={value}
             label={label}
+            placeholder={inputPlaceholder}
             InputProps={{
               startAdornment,
-              endAdornment: clearButton ? endAdornment : defaultEndAdornment,
+              endAdornment: clearButton
+                ? clearButtonEndAdornment
+                : endAdornment,
             }}
             inputProps={{
+              'aria-label': ariaLabel,
               ...defaultInputProps,
             }}
             fullWidth={fullWidth}

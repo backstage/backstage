@@ -70,7 +70,7 @@ describe('SearchBar', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Search in Mock title')).toBeInTheDocument();
+      expect(screen.getByLabelText('Search')).toBeInTheDocument();
     });
   });
 
@@ -133,9 +133,7 @@ describe('SearchBar', () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('textbox', { name: 'Search in Mock title' }),
-      ).toHaveValue(term);
+      expect(screen.getByRole('textbox', { name: 'Search' })).toHaveValue(term);
     });
   });
 
@@ -156,9 +154,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = screen.getByRole('textbox', {
-      name: 'Search in Mock title',
-    });
+    const textbox = screen.getByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
@@ -195,9 +191,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = screen.getByRole('textbox', {
-      name: 'Search in Mock title',
-    });
+    const textbox = screen.getByRole('textbox', { name: 'Search' });
 
     await waitFor(() => {
       expect(textbox).toHaveValue(term);
@@ -255,9 +249,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', {
-      name: 'Search in Mock title',
-    });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
@@ -301,9 +293,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', {
-      name: 'Search in Mock title',
-    });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
     const value = 'value';
 
@@ -353,9 +343,7 @@ describe('SearchBar', () => {
       </TestApiProvider>,
     );
 
-    const textbox = await screen.findByRole('textbox', {
-      name: 'Search in Mock title',
-    });
+    const textbox = await screen.findByRole('textbox', { name: 'Search' });
 
     let value = 'value';
 
