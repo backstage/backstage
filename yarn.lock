@@ -6868,6 +6868,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@rjsf/core": ^3.2.1
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/utils": 5.6.0
     "@testing-library/dom": ^8.0.0
