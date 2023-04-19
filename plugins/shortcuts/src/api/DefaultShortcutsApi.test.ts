@@ -17,12 +17,12 @@
 import { MockStorageApi } from '@backstage/test-utils';
 import { pageTheme } from '@backstage/theme';
 import { Shortcut } from '../types';
-import { LocalStoredShortcuts } from './LocalStoredShortcuts';
+import { DefaultShortcutsApi } from './DefaultShortcutsApi';
 import { ShortcutApi } from './ShortcutApi';
 
-describe('LocalStoredShortcuts', () => {
+describe('DefaultShortcutsApi', () => {
   it('should observe shortcuts', async () => {
-    const shortcutApi: ShortcutApi = new LocalStoredShortcuts(
+    const shortcutApi: ShortcutApi = new DefaultShortcutsApi(
       MockStorageApi.create(),
     );
     const shortcut: Shortcut = { id: 'id', title: 'title', url: '/url' };
@@ -48,7 +48,7 @@ describe('LocalStoredShortcuts', () => {
 
   it('should add shortcuts with ids', async () => {
     const storageApi = MockStorageApi.create();
-    const shortcutApi: ShortcutApi = new LocalStoredShortcuts(storageApi);
+    const shortcutApi: ShortcutApi = new DefaultShortcutsApi(storageApi);
     const shortcut: Omit<Shortcut, 'id'> = { title: 'title', url: '/url' };
     const spy = jest.spyOn(storageApi, 'set');
 
@@ -61,7 +61,7 @@ describe('LocalStoredShortcuts', () => {
 
   it('should update shortcuts', async () => {
     const storageApi = MockStorageApi.create();
-    const shortcutApi: ShortcutApi = new LocalStoredShortcuts(storageApi);
+    const shortcutApi: ShortcutApi = new DefaultShortcutsApi(storageApi);
     const shortcut: Shortcut = { id: 'someid', title: 'title', url: '/url' };
     const spy = jest.spyOn(storageApi, 'set');
 
@@ -74,7 +74,7 @@ describe('LocalStoredShortcuts', () => {
 
   it('should remove shortcuts', async () => {
     const storageApi = MockStorageApi.create();
-    const shortcutApi: ShortcutApi = new LocalStoredShortcuts(storageApi);
+    const shortcutApi: ShortcutApi = new DefaultShortcutsApi(storageApi);
     const shortcut: Shortcut = { id: 'someid', title: 'title', url: '/url' };
     const spy = jest.spyOn(storageApi, 'set');
 
@@ -84,7 +84,7 @@ describe('LocalStoredShortcuts', () => {
 
   it('should get a color', () => {
     const storageApi = MockStorageApi.create();
-    const shortcutApi: ShortcutApi = new LocalStoredShortcuts(storageApi);
+    const shortcutApi: ShortcutApi = new DefaultShortcutsApi(storageApi);
 
     expect(shortcutApi.getColor('/catalog')).toEqual(pageTheme.home.colors[0]);
   });

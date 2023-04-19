@@ -14,7 +14,7 @@ import { ShortcutApi as ShortcutApi_2 } from '@backstage/plugin-shortcuts';
 import type { StorageApi } from '@backstage/core-plugin-api';
 
 // @public
-export class LocalStoredShortcuts implements ShortcutApi_2 {
+export class DefaultShortcutsApi implements ShortcutApi_2 {
   constructor(storageApi: StorageApi);
   // (undocumented)
   add(shortcut: Omit<Shortcut_2, 'id'>): Promise<void>;
@@ -29,6 +29,9 @@ export class LocalStoredShortcuts implements ShortcutApi_2 {
   // (undocumented)
   update(shortcut: Shortcut_2): Promise<void>;
 }
+
+// @public @deprecated (undocumented)
+export const LocalStoredShortcuts: typeof DefaultShortcutsApi;
 
 // @public (undocumented)
 export type Shortcut = {
