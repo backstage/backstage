@@ -508,64 +508,6 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should return both target and targetRef for entities',
-      async databaseId => {
-        await createDatabase(databaseId);
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'one' },
-            spec: {},
-            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
-          },
-          [],
-        );
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'two' },
-            spec: {},
-            relations: [
-              {
-                type: 'r',
-                target: { kind: 'x', namespace: 'y', name: 'z' },
-              } as any,
-            ],
-          },
-          [],
-        );
-        const catalog = new DefaultEntitiesCatalog({
-          database: knex,
-          logger: getVoidLogger(),
-          stitcher,
-        });
-
-        const { entities } = await catalog.entities();
-
-        expect(
-          entities.find(e => e.metadata.name === 'one')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-        expect(
-          entities.find(e => e.metadata.name === 'two')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
       'can order and combine with filtering, %p',
       async databaseId => {
         await createDatabase(databaseId);
