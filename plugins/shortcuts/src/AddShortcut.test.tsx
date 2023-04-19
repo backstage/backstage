@@ -17,7 +17,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddShortcut } from './AddShortcut';
-import { LocalStoredShortcuts } from './api';
+import { DefaultShortcutsApi } from './api';
 import {
   MockAnalyticsApi,
   MockStorageApi,
@@ -28,7 +28,7 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 describe('AddShortcut', () => {
-  const api = new LocalStoredShortcuts(MockStorageApi.create());
+  const api = new DefaultShortcutsApi(MockStorageApi.create());
 
   const props = {
     onClose: jest.fn(),

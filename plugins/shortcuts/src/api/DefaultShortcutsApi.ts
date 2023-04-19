@@ -22,11 +22,18 @@ import type { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 
 /**
- * Implementation of the ShortcutApi that uses the StorageApi to store shortcuts.
+ * Default implementation of the {@link ShortcutApi} that uses the
+ * {@link @backstage/core-plugin-api#StorageApi} to store shortcuts.
+ *
+ * @remarks
+ *
+ * Note that the storage API given is used directly, as in, this implementation
+ * does not itself dive into a sub-bucket. So you may want to provide a bucket
+ * that is scoped to the plugin (default: 'shortcuts').
  *
  * @public
  */
-export class LocalStoredShortcuts implements ShortcutApi {
+export class DefaultShortcutsApi implements ShortcutApi {
   private shortcuts: Shortcut[];
   private readonly subscribers = new Set<
     ZenObservable.SubscriptionObserver<Shortcut[]>
