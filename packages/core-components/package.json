@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.12.6-next.1",
+  "version": "0.13.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -54,6 +54,8 @@
     "dagre": "^0.8.5",
     "history": "^5.0.0",
     "immer": "^9.0.1",
+    "linkify-react": "4.1.1",
+    "linkifyjs": "4.1.1",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",

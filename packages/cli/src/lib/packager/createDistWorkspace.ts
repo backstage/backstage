@@ -30,7 +30,6 @@ import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
 } from '../../../package.json';
-import { PackageGraph, PackageGraphNode } from '../monorepo';
 import {
   BuildOptions,
   buildPackages,
@@ -38,7 +37,11 @@ import {
   Output,
 } from '../builder';
 import { productionPack } from './productionPack';
-import { getRoleInfo } from '../role';
+import {
+  PackageRoles,
+  PackageGraph,
+  PackageGraphNode,
+} from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
@@ -59,6 +62,11 @@ type Options = {
    * Target directory for the dist workspace, defaults to a temporary directory
    */
   targetDir?: string;
+
+  /**
+   * Configuration files to load during packaging.
+   */
+  configPaths?: string[];
 
   /**
    * Files to copy into the target workspace.
@@ -127,13 +135,18 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
+    const configPaths = options.configPaths ?? [];
 
     const toBuild = new Set(
       targets.map(_ => _.name).filter(name => !exclude.includes(name)),
     );
 
     const standardBuilds = new Array<BuildOptions>();
-    const customBuild = new Array<{ dir: string; name: string }>();
+    const customBuild = new Array<{
+      dir: string;
+      name: string;
+      args?: string[];
+    }>();
 
     for (const pkg of packages) {
       if (!toBuild.has(pkg.packageJson.name)) {
@@ -162,11 +175,14 @@ export async function createDistWorkspace(
         continue;
       }
 
-      if (getRoleInfo(role).output.includes('bundle')) {
+      if (PackageRoles.getRoleInfo(role).output.includes('bundle')) {
         console.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
-        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
+        const args = buildScript.includes('--config')
+          ? []
+          : configPaths.map(p => ['--config', p]).flat();
+        customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name, args });
         continue;
       }
 
@@ -193,8 +209,8 @@ export async function createDistWorkspace(
     if (customBuild.length > 0) {
       await runParallelWorkers({
         items: customBuild,
-        worker: async ({ name, dir }) => {
-          await run('yarn', ['run', 'build'], {
+        worker: async ({ name, dir, args }) => {
+          await run('yarn', ['run', 'build', ...(args || [])], {
             cwd: dir,
             stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
             stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),

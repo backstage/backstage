@@ -17,6 +17,7 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
 import {
+  MockFetchApi,
   setupRequestMockHandlers,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -33,6 +34,8 @@ describe('EntityVaultTable', () => {
   let apis: TestApiRegistry;
   const mockBaseUrl = 'https://api-vault.com/api/vault';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
+  const fetchApi = new MockFetchApi();
+
   const entity = (secretPath: string) => {
     return {
       apiVersion: 'backstage.io/v1alpha1',
@@ -90,7 +93,7 @@ describe('EntityVaultTable', () => {
   beforeEach(() => {
     apis = TestApiRegistry.from([
       vaultApiRef,
-      new VaultClient({ discoveryApi }),
+      new VaultClient({ discoveryApi, fetchApi }),
     ]);
   });
 

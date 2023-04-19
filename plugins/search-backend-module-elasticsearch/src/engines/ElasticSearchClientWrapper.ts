@@ -91,12 +91,23 @@ export class ElasticSearchClientWrapper {
   }
 
   search(options: { index: string | string[]; body: Object }) {
+    const searchOptions = {
+      ignore_unavailable: true,
+      allow_no_indices: true,
+    };
+
     if (this.openSearchClient) {
-      return this.openSearchClient.search(options);
+      return this.openSearchClient.search({
+        ...options,
+        ...searchOptions,
+      });
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.search(options);
+      return this.elasticSearchClient.search({
+        ...options,
+        ...searchOptions,
+      });
     }
 
     throw new Error('No client defined');

@@ -81,7 +81,6 @@ export interface Config {
      * be used in combination with static locations to only serve operator
      * provided locations. Effectively this removes the ability to register new
      * components to a running backstage instance.
-     *
      */
     readonly?: boolean;
 
@@ -136,5 +135,12 @@ export interface Config {
         allow: Array<string>;
       }>;
     }>;
+
+    /**
+     * The strategy to use for entities that are orphaned, i.e. no longer have
+     * any other entities or providers referencing them. The default value is
+     * "keep".
+     */
+    orphanStrategy?: 'keep' | 'delete';
   };
 }

@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { InputError } from '@backstage/errors';
+import { InputError, NotAllowedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
@@ -42,10 +42,19 @@ import {
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { createDefaultFilters } from '../../lib/templating/filters';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import { scaffolderActionRules } from '../../service/rules';
+import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -54,6 +63,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
 };
 
 type TemplateContext = {
@@ -101,6 +111,10 @@ const createStepLogger = ({
 
   return { taskLogger, streamLogger };
 };
+
+const isActionAuthorized = createConditionAuthorizer(
+  Object.values(scaffolderActionRules),
+);
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
@@ -198,6 +212,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     renderTemplate: (template: string, values: unknown) => string,
     taskTrack: TaskTrackType,
     workspacePath: string,
+    decision: PolicyDecision,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
 
@@ -281,6 +296,18 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
+      if (!isActionAuthorized(decision, { action: action.id, input })) {
+        throw new NotAllowedError(
+          `Unauthorized action: ${
+            action.id
+          }. The action is not allowed. Input: ${JSON.stringify(
+            input,
+            null,
+            2,
+          )}`,
+        );
+      }
+
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
 
@@ -355,6 +382,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         user: task.spec.user,
       };
 
+      const [decision]: PolicyDecision[] =
+        this.options.permissions && task.spec.steps.length
+          ? await this.options.permissions.authorizeConditional(
+              [{ permission: actionExecutePermission }],
+              { token: task.secrets?.backstageToken },
+            )
+          : [{ result: AuthorizeResult.ALLOW }];
+
       for (const step of task.spec.steps) {
         await this.executeStep(
           task,
@@ -363,6 +398,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           renderTemplate,
           taskTrack,
           workspacePath,
+          decision,
         );
       }
 

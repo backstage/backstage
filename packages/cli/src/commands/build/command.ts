@@ -16,29 +16,39 @@
 
 import { OptionValues } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
-import { findRoleFromCommand, getRoleInfo } from '../../lib/role';
+import { findRoleFromCommand } from '../../lib/role';
+import { PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { buildFrontend } from './buildFrontend';
 import { buildBackend } from './buildBackend';
+import { isValidUrl } from '../../lib/urls';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
 
-  if (role === 'frontend') {
-    return buildFrontend({
-      targetDir: paths.targetDir,
-      configPaths: opts.config as string[],
-      writeStats: Boolean(opts.stats),
+  if (role === 'frontend' || role === 'backend') {
+    const configPaths = (opts.config as string[]).map(arg => {
+      if (isValidUrl(arg)) {
+        return arg;
+      }
+      return paths.resolveTarget(arg);
     });
-  }
-  if (role === 'backend') {
+
+    if (role === 'frontend') {
+      return buildFrontend({
+        targetDir: paths.targetDir,
+        configPaths,
+        writeStats: Boolean(opts.stats),
+      });
+    }
     return buildBackend({
       targetDir: paths.targetDir,
+      configPaths,
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
     });
   }
 
-  const roleInfo = getRoleInfo(role);
+  const roleInfo = PackageRoles.getRoleInfo(role);
 
   const outputs = new Set<Output>();
 

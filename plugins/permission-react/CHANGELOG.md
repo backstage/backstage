@@ -1,5 +1,24 @@
 # @backstage/plugin-permission-react
 
+## 0.4.12
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 0.4.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
 ## 0.4.12-next.0
 
 ### Patch Changes

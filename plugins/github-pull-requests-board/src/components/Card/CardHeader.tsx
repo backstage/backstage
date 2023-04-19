@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, Tooltip } from '@material-ui/core';
 import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
+import { DraftPrIcon } from '../icons/DraftPr';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 
 type Props = {
   title: string;
@@ -25,6 +27,8 @@ type Props = {
   authorName: string;
   authorAvatar?: string;
   repositoryName: string;
+  isDraft: boolean;
+  repositoryIsArchived: boolean;
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
@@ -35,6 +39,8 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
     authorName,
     authorAvatar,
     repositoryName,
+    isDraft,
+    repositoryIsArchived,
   } = props;
 
   return (
@@ -44,6 +50,22 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
           {repositoryName}
         </Typography>
         <UserHeader name={authorName} avatar={authorAvatar} />
+      </Box>
+      <Box display="flex" justifyContent="left">
+        {isDraft && (
+          <Tooltip title="Draft PR">
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <DraftPrIcon />
+            </Box>
+          </Tooltip>
+        )}
+        {repositoryIsArchived && (
+          <Tooltip title="Repository is archived">
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <UnarchiveIcon />
+            </Box>
+          </Tooltip>
+        )}
       </Box>
       <Typography component="h3">
         <b>{title}</b>

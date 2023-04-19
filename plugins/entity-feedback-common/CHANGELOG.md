@@ -1,5 +1,11 @@
 # @backstage/plugin-entity-feedback-common
 
+## 0.1.1
+
+### Patch Changes
+
+- 7eba760e6f6: Added an endpoint to fetch anonymous aggregated results from an entity
+
 ## 0.1.1-next.0
 
 ### Patch Changes

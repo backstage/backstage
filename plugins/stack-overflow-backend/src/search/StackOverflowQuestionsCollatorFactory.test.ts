@@ -139,5 +139,49 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
       expect(documents).toHaveLength(mockOverrideQuestion.items.length);
     });
+
+    it('uses API key when provided', async () => {
+      worker.use(
+        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
+          req.url.searchParams.get('key') === 'abcdefg'
+            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+            : res(ctx.status(401), ctx.json({})),
+        ),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.override',
+        apiKey: 'abcdefg',
+        requestParams: defaultOptions.requestParams,
+      });
+      const collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents).toHaveLength(mockOverrideQuestion.items.length);
+    });
+
+    it('uses teamName when provided', async () => {
+      worker.use(
+        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
+          req.url.searchParams.get('team') === 'abcdefg'
+            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+            : res(ctx.status(401), ctx.json({})),
+        ),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.override',
+        teamName: 'abcdefg',
+        requestParams: defaultOptions.requestParams,
+      });
+      const collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      expect(documents).toHaveLength(mockOverrideQuestion.items.length);
+    });
   });
 });

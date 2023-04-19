@@ -103,7 +103,7 @@ describe('loadConfigSchema', () => {
       },
     ]);
     expect(() =>
-      schema2.process([...configs, { data: { key1: 3 }, context: 'test2' }]),
+      schema2.process([...configs, { data: { key1: [3] }, context: 'test2' }]),
     ).toThrow(
       'Config validation failed, Config must be string { type=string } at /key1',
     );
@@ -202,11 +202,11 @@ describe('loadConfigSchema', () => {
           context: 'test',
         },
       ]);
-      expect(() => schema.process(mkConfig({ y: 1 }))).toThrow(
+      expect(() => schema.process(mkConfig({ y: [1] }))).toThrow(
         'Config validation failed, Config must be string { type=string } at /nested/0/y',
       );
       expect(() =>
-        schema.process(mkConfig({ y: 1 }), { visibility: ['frontend'] }),
+        schema.process(mkConfig({ y: [1] }), { visibility: ['frontend'] }),
       ).toThrow(
         'Config validation failed, Config must be string { type=string } at /nested/0/y',
       );

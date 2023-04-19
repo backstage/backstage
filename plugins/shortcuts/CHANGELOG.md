@@ -1,5 +1,39 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.9
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 328ec5f96c6: Added the Analytics event in the save handler of AddShortcut and EditShortcut
+- 99df676e324: Allow external links to be added as shortcuts
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+
 ## 0.3.9-next.1
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- 51ff6f9edff: Adding support for v2.3 API and PAT authentication
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3-next.0
+
 ## 0.1.13-next.1
 
 ### Patch Changes

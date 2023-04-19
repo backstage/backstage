@@ -18,11 +18,11 @@ import React from 'react';
 import dagre from 'dagre';
 import { render } from '@testing-library/react';
 import { Node } from './Node';
-import { RenderNodeProps } from './types';
+import { DependencyGraphTypes as Types } from './types';
 
 const node = { id: 'abc', x: 0, y: 0, width: 0, height: 0 };
 const setNode = jest.fn(() => new dagre.graphlib.Graph());
-const renderElement = jest.fn((props: RenderNodeProps) => (
+const renderElement = jest.fn((props: Types.RenderNodeProps) => (
   <div>{props.node.id}</div>
 ));
 

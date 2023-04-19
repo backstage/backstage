@@ -1,5 +1,55 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.12
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-techdocs@1.6.1
+  - @backstage/plugin-catalog@1.10.0
+  - @backstage/core-app-api@1.7.0
+  - @backstage/test-utils@1.3.0
+  - @backstage/plugin-search-react@1.5.2
+  - @backstage/plugin-techdocs-react@1.1.5
+  - @backstage/integration-react@1.1.12
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.0.12-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.0-next.3
+  - @backstage/plugin-techdocs@1.6.1-next.3
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/integration-react@1.1.12-next.3
+  - @backstage/test-utils@1.3.0-next.3
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-catalog@1.10.0-next.3
+  - @backstage/plugin-search-react@1.5.2-next.3
+  - @backstage/plugin-techdocs-react@1.1.5-next.3
+
+## 1.0.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/plugin-techdocs@1.6.1-next.2
+  - @backstage/core-app-api@1.7.0-next.2
+  - @backstage/integration-react@1.1.12-next.2
+  - @backstage/test-utils@1.3.0-next.2
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-catalog@1.10.0-next.2
+  - @backstage/plugin-search-react@1.5.2-next.2
+  - @backstage/plugin-techdocs-react@1.1.5-next.2
+
 ## 1.0.12-next.1
 
 ### Patch Changes

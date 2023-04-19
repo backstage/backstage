@@ -18,7 +18,7 @@ export * from './AwsIamKubernetesAuthTranslator';
 export * from './AzureIdentityKubernetesAuthTranslator';
 export * from './GoogleKubernetesAuthTranslator';
 export * from './GoogleServiceAccountAuthProvider';
-export * from './KubernetesAuthTranslatorGenerator';
+export * from './DispatchingKubernetesAuthTranslator';
 export * from './NoopKubernetesAuthTranslator';
 export * from './OidcKubernetesAuthTranslator';
 export * from './types';

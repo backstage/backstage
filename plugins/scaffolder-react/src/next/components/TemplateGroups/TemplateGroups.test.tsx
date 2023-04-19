@@ -214,7 +214,7 @@ describe('TemplateGroups', () => {
 
     expect(TemplateGroup).toHaveBeenCalledWith(
       expect.objectContaining({
-        templates: [expect.objectContaining({ template: mockEntities[1] })],
+        templates: [expect.objectContaining({ template: mockEntities[0] })],
       }),
       {},
     );

@@ -1,5 +1,39 @@
 # @techdocs/cli
 
+## 1.4.1
+
+### Patch Changes
+
+- b348420a804: Adding global-agent to enable the ability to publish through a proxy
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-techdocs-node@1.7.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.3
+
+## 1.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.2
+
 ## 1.4.1-next.1
 
 ### Patch Changes

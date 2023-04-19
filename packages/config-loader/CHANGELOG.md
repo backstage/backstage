@@ -1,5 +1,21 @@
 # @backstage/config-loader
 
+## 1.2.0
+
+### Minor Changes
+
+- c791fcd96b9: Configuration validation is now more permissive when it comes to config whose values are `string` but whose schemas declare them to be `boolean` or `number`.
+
+  For example, configuration was previously marked invalid when a string `'true'` was set on a property expecting type `boolean` or a string `'146'` was set on a property expecting type `number` (as when providing configuration via variable substitution sourced from environment variables). Now, such configurations will be considered valid and their values will be coerced to the right type at read-time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 1.1.9
 
 ### Patch Changes

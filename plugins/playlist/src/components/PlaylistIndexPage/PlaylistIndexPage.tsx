@@ -23,7 +23,7 @@ import {
 } from '@backstage/core-components';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 
-import { PlaylistListProvider } from '../../hooks';
+import { PlaylistListProvider, useTitle } from '../../hooks';
 import { CreatePlaylistButton } from '../CreatePlaylistButton';
 import { PersonalListPicker } from '../PersonalListPicker';
 import { PlaylistList } from '../PlaylistList';
@@ -31,26 +31,33 @@ import { PlaylistOwnerPicker } from '../PlaylistOwnerPicker';
 import { PlaylistSearchBar } from '../PlaylistSearchBar';
 import { PlaylistSortPicker } from '../PlaylistSortPicker';
 
-export const PlaylistIndexPage = () => (
-  <PageWithHeader themeId="home" title="Playlists">
-    <PlaylistListProvider>
-      <Content>
-        <ContentHeader title="">
-          <PlaylistSortPicker />
-          <CreatePlaylistButton />
-          <SupportButton />
-        </ContentHeader>
-        <CatalogFilterLayout>
-          <CatalogFilterLayout.Filters>
-            <PlaylistSearchBar />
-            <PersonalListPicker />
-            <PlaylistOwnerPicker />
-          </CatalogFilterLayout.Filters>
-          <CatalogFilterLayout.Content>
-            <PlaylistList />
-          </CatalogFilterLayout.Content>
-        </CatalogFilterLayout>
-      </Content>
-    </PlaylistListProvider>
-  </PageWithHeader>
-);
+export const PlaylistIndexPage = () => {
+  const pluralTitle = useTitle({
+    pluralize: true,
+    lowerCase: false,
+  });
+
+  return (
+    <PageWithHeader themeId="home" title={pluralTitle}>
+      <PlaylistListProvider>
+        <Content>
+          <ContentHeader title="">
+            <PlaylistSortPicker />
+            <CreatePlaylistButton />
+            <SupportButton />
+          </ContentHeader>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
+              <PlaylistSearchBar />
+              <PersonalListPicker />
+              <PlaylistOwnerPicker />
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <PlaylistList />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </Content>
+      </PlaylistListProvider>
+    </PageWithHeader>
+  );
+};

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import * as DependencyGraphTypes from './types';
-
 export { DependencyGraph } from './DependencyGraph';
 export type { DependencyGraphProps } from './DependencyGraph';
-export { DependencyGraphTypes };
+export { DependencyGraphTypes } from './types';
 
 export type { DependencyGraphDefaultLabelClassKey } from './DefaultLabel';
 export type { DependencyGraphDefaultNodeClassKey } from './DefaultNode';

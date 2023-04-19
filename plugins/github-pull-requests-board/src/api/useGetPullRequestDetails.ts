@@ -36,6 +36,7 @@ export const useGetPullRequestDetails = () => {
                   owner {
                     login
                   }
+                  isArchived
                 }
                 title
                 url

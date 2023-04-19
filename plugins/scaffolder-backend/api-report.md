@@ -559,6 +559,7 @@ export const createPublishGithubPullRequestAction: (
     token?: string | undefined;
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
+    commitMessage?: string | undefined;
   },
   JsonObject
 >;
@@ -650,6 +651,7 @@ export type CreateWorkerOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
 };
 
 // @public
@@ -761,9 +763,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionApi?: PermissionEvaluator;
-  // (undocumented)
   permissionRules?: TemplatePermissionRuleInput[];
+  // (undocumented)
+  permissions?: PermissionEvaluator;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)

@@ -1,5 +1,55 @@
 # @backstage/plugin-bazaar
 
+## 0.2.7
+
+### Patch Changes
+
+- fbd6f36611a: Added the `docs` parameter (optional) to link the project documentation
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 656914bb0ad: Added the `fullWidth` and `fullHeight` optional properties to the `BazaarPage`,
+  to replicate the styling options available on the `BazaarOverviewCard`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/cli@0.22.6
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/plugin-catalog@1.10.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+
+## 0.2.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.22.6-next.3
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-catalog@1.10.0-next.3
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.22.6-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-catalog@1.10.0-next.2
+
 ## 0.2.7-next.1
 
 ### Patch Changes

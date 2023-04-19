@@ -1,5 +1,25 @@
 # @backstage/plugin-adr-common
 
+## 0.2.8
+
+### Patch Changes
+
+- 77aa3a4d47e: use path attribute to fetch files instead of name and update the UI to navigate over subdirectories
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- 77aa3a4d47e: use path attribute to fetch files instead of name and update the UI to navigate over subdirectories
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
 ## 0.2.8-next.0
 
 ### Patch Changes

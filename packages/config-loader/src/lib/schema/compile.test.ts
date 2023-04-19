@@ -28,7 +28,7 @@ describe('compileConfigSchemas', () => {
         value: { type: 'object', properties: { b: { type: 'number' } } },
       },
     ]);
-    expect(validate([{ data: { a: 1 }, context: 'test' }])).toEqual({
+    expect(validate([{ data: { a: [1] }, context: 'test' }])).toEqual({
       errors: [
         {
           keyword: 'type',
@@ -58,7 +58,7 @@ describe('compileConfigSchemas', () => {
     });
   });
 
-  it('should discover visibilities', () => {
+  it('should discover visibility', () => {
     const validate = compileConfigSchemas([
       {
         path: 'a1',

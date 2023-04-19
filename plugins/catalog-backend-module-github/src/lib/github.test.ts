@@ -493,6 +493,7 @@ describe('github', () => {
                   name: 'main',
                 },
                 catalogInfoFile: null,
+                visibility: 'public',
               },
               {
                 name: 'demo',
@@ -508,6 +509,7 @@ describe('github', () => {
                   id: 'acb123',
                   text: 'some yaml',
                 },
+                visibility: 'private',
               },
             ],
             pageInfo: {
@@ -531,6 +533,7 @@ describe('github', () => {
               name: 'main',
             },
             catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'demo',
@@ -546,6 +549,7 @@ describe('github', () => {
               id: 'acb123',
               text: 'some yaml',
             },
+            visibility: 'private',
           },
         ],
       };

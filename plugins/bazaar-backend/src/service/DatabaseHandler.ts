@@ -61,6 +61,7 @@ export class DatabaseHandler {
     'metadata.start_date',
     'metadata.end_date',
     'metadata.responsible',
+    'metadata.docs',
   ];
 
   async getMembers(id: string) {
@@ -120,6 +121,7 @@ export class DatabaseHandler {
       entityRef,
       community,
       description,
+      docs,
       status,
       size,
       startDate,
@@ -133,6 +135,7 @@ export class DatabaseHandler {
         entity_ref: entityRef,
         community,
         description,
+        docs,
         status,
         updated_at: new Date().toISOString(),
         size,
@@ -150,6 +153,7 @@ export class DatabaseHandler {
       entityRef,
       community,
       description,
+      docs,
       status,
       size,
       startDate,
@@ -162,6 +166,7 @@ export class DatabaseHandler {
       entity_ref: entityRef,
       description,
       community,
+      docs,
       status,
       updated_at: new Date().toISOString(),
       size,

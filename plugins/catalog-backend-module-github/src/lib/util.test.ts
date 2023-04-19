@@ -19,6 +19,7 @@ import {
   parseGithubOrgUrl,
   satisfiesTopicFilter,
   satisfiesForkFilter,
+  satisfiesVisibilityFilter,
 } from './util';
 
 describe('parseGithubOrgUrl', () => {
@@ -107,5 +108,16 @@ describe('satisfiesForkFilter', () => {
 
   it('handles cases where forks are allowed and a fork is not evaluated', () => {
     expect(satisfiesForkFilter(true, false)).toEqual(true);
+  });
+});
+
+describe('satisfiesVisibilityFilter', () => {
+  it('satisfies if no visibilities are given', () => {
+    expect(satisfiesVisibilityFilter([], 'public')).toEqual(true);
+  });
+
+  it('handles visibility presence into the visibilities filter', () => {
+    expect(satisfiesVisibilityFilter(['public'], 'public')).toEqual(true);
+    expect(satisfiesVisibilityFilter(['private'], 'public')).toEqual(false);
   });
 });

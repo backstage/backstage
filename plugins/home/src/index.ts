@@ -33,7 +33,7 @@ export {
   WelcomeTitle,
   HeaderWorldClock,
 } from './plugin';
-export { SettingsModal } from './components';
+export * from './components';
 export * from './assets';
 export * from './homePageComponents';
 export { createCardExtension } from './extensions';
@@ -42,4 +42,6 @@ export type {
   ComponentParts,
   ComponentRenderer,
   RendererProps,
+  CardLayout,
+  CardSettings,
 } from './extensions';

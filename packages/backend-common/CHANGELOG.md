@@ -1,5 +1,51 @@
 # @backstage/backend-common
 
+## 0.18.4
+
+### Patch Changes
+
+- a1002df2dc2: Support commit hashes at `GithubUrlReader.readTree/search` additionally to branch names.
+
+  Additionally, this will reduce the number of API calls from 2 to 1 for retrieving the "repo details"
+  for all cases besides when the default branch has to be resolved and used
+  (e.g., repo URL without any branch or commit hash).
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- 2b15cb4aa0a: The dependency isomorphic-git is now on version 1.23.0
+- 34167270b31: Renamed the `loadBackendConfig` option `additionalConfig` to `additionalConfigs` as an array, and ensured that they get passed on properly.
+
+  This is technically breaking, but the [original addition](https://github.com/backstage/backstage/pull/16643) hasn't been released in mainline yet so we are taking this step now as a `patch` change.
+
+- 420164593cf: Improve GitlabUrlReader to only load requested sub-path
+- Updated dependencies
+  - @backstage/config-loader@1.2.0
+  - @backstage/backend-app-api@0.4.2
+  - @backstage/integration@1.4.4
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
 ## 0.18.4-next.1
 
 ### Patch Changes

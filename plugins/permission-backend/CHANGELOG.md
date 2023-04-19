@@ -1,5 +1,34 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.19
+
+### Patch Changes
+
+- 84946a580c4: Introduced alpha export of the `permissionPlugin` for use in the new backend system, along with a `permissionModuleAllowAllPolicy` that can be used to allow all requests.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.5.19-next.2
+
+### Patch Changes
+
+- 84946a580c4: Introduced alpha export of the `permissionPlugin` for use in the new backend system, along with a `permissionModuleAllowAllPolicy` that can be used to allow all requests.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
 ## 0.5.19-next.1
 
 ### Patch Changes

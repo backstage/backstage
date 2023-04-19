@@ -1,5 +1,77 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.2
+
+### Patch Changes
+
+- d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 475abd1dc3f: The `microsoft` (i.e. Azure) auth provider now supports negotiating tokens for
+  Azure resources besides Microsoft Graph (e.g. AKS, Virtual Machines, Machine
+  Learning Services, etc.). When the `/frame/handler` endpoint is called with an
+  authorization code for a non-Microsoft Graph scope, the user profile will not be
+  fetched. Similarly no user profile or photo data will be fetched by the backend
+  if the `/refresh` endpoint is called with the `scope` query parameter strictly
+  containing scopes for resources besides Microsoft Graph.
+
+  Furthermore, the `offline_access` scope will be requested by default, even when
+  it is not mentioned in the argument to `getAccessToken`. This means that any
+  Azure access token can be automatically refreshed, even if the user has not
+  signed in via Azure.
+
+- 6a900951336: Add common identify resolvers for `oidc` auth provider.
+- a0ef1ec7349: Export Azure Easy Auth provider so it can actually be used.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.18.2-next.3
+
+### Patch Changes
+
+- 475abd1dc3f: The `microsoft` (i.e. Azure) auth provider now supports negotiating tokens for
+  Azure resources besides Microsoft Graph (e.g. AKS, Virtual Machines, Machine
+  Learning Services, etc.). When the `/frame/handler` endpoint is called with an
+  authorization code for a non-Microsoft Graph scope, the user profile will not be
+  fetched. Similarly no user profile or photo data will be fetched by the backend
+  if the `/refresh` endpoint is called with the `scope` query parameter strictly
+  containing scopes for resources besides Microsoft Graph.
+
+  Furthermore, the `offline_access` scope will be requested by default, even when
+  it is not mentioned in the argument to `getAccessToken`. This means that any
+  Azure access token can be automatically refreshed, even if the user has not
+  signed in via Azure.
+
+- 6a900951336: Add common identify resolvers for `oidc` auth provider.
+- a0ef1ec7349: Export Azure Easy Auth provider so it can actually be used.
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+
 ## 0.18.2-next.1
 
 ### Patch Changes

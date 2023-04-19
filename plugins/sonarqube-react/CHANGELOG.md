@@ -1,5 +1,30 @@
 # @backstage/plugin-sonarqube-react
 
+## 0.1.5
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-plugin-api@1.5.1-next.1
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes
