@@ -2,10 +2,7 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-- Finished TODO to remove code snippet that was supposed to be removed in April 2022
-- Removed test for the TODO code snippet
-- Refactored `parsePagination()`, `stringifyPagination()`, and `addCondition()` to be more readable
-- In `parseFilter()`, the `isNegationEntityFilter` check is earlier for faster recursion
+- Internal refactoring for performance in the service handlers
 
 ```diff
 diff --git a/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts b/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.ts
@@ -152,105 +149,4 @@ index ba165f96af..2023c19e13 100644
    return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
      if (isOrEntityFilter(filter)) {
        for (const subFilter of filter.anyOf ?? []) {
-@@ -274,28 +271,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
-       entities = entities.map(e => request.fields!(e));
-     }
-
--    // TODO(freben): This is added as a compatibility guarantee, until we can be
--    // sure that all adopters have re-stitched their entities so that the new
--    // targetRef field is present on them, and that they have stopped consuming
--    // the now-removed old field
--    // TODO(jhaals): Remove this in April 2022
--    for (const entity of entities) {
--      if (entity.relations) {
--        for (const relation of entity.relations as any) {
--          if (!relation.targetRef && relation.target) {
--            // This is the case where an old-form entity, not yet stitched with
--            // the updated code, was in the database
--            relation.targetRef = stringifyEntityRef(relation.target);
--          } else if (!relation.target && relation.targetRef) {
--            // This is the case where a new-form entity, stitched with the
--            // updated code, was in the database but we still want to produce
--            // the old data shape as well for compatibility reasons
--            relation.target = parseEntityRef(relation.targetRef);
--          }
--        }
--      }
--    }
--
-     return {
-       entities,
-       pageInfo,
-```
-
-```diff
-diff --git a/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts b/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
-index 08ae295834..31d4d06971 100644
---- a/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
-+++ b/plugins/catalog-backend/src/service/DefaultEntitiesCatalog.test.ts
-@@ -507,64 +507,6 @@ describe('DefaultEntitiesCatalog', () => {
-       },
-     );
-
--    it.each(databases.eachSupportedId())(
--      'should return both target and targetRef for entities',
--      async databaseId => {
--        await createDatabase(databaseId);
--        await addEntity(
--          {
--            apiVersion: 'a',
--            kind: 'k',
--            metadata: { name: 'one' },
--            spec: {},
--            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
--          },
--          [],
--        );
--        await addEntity(
--          {
--            apiVersion: 'a',
--            kind: 'k',
--            metadata: { name: 'two' },
--            spec: {},
--            relations: [
--              {
--                type: 'r',
--                target: { kind: 'x', namespace: 'y', name: 'z' },
--              } as any,
--            ],
--          },
--          [],
--        );
--        const catalog = new DefaultEntitiesCatalog({
--          database: knex,
--          logger: getVoidLogger(),
--          stitcher,
--        });
--
--        const { entities } = await catalog.entities();
--
--        expect(
--          entities.find(e => e.metadata.name === 'one')!.relations,
--        ).toEqual([
--          {
--            type: 'r',
--            targetRef: 'x:y/z',
--            target: { kind: 'x', namespace: 'y', name: 'z' },
--          },
--        ]);
--        expect(
--          entities.find(e => e.metadata.name === 'two')!.relations,
--        ).toEqual([
--          {
--            type: 'r',
--            targetRef: 'x:y/z',
--            target: { kind: 'x', namespace: 'y', name: 'z' },
--          },
--        ]);
--      },
--    );
--
-     it.each(databases.eachSupportedId())(
-       'can order and combine with filtering, %p',
-       async databaseId => {
 ```
