@@ -8,8 +8,9 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CardExtensionProps } from '@backstage/plugin-home';
-import { ReactNode } from 'react';
+import { default as React_2 } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 
 // @public
 export const HomePageStackOverflowQuestions: (
@@ -53,10 +54,15 @@ export type StackOverflowQuestionsRequestParams = {
 };
 
 // @public
-export const StackOverflowSearchResultListItem: (props: {
-  result: any;
-  icon?: ReactNode;
-  rank?: number | undefined;
-  highlight?: ResultHighlight | undefined;
-}) => JSX.Element;
+export const StackOverflowSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<StackOverflowSearchResultListItemProps>,
+) => JSX.Element | null;
+
+// @public
+export type StackOverflowSearchResultListItemProps = {
+  result?: any;
+  icon?: React_2.ReactNode;
+  rank?: number;
+  highlight?: ResultHighlight;
+};
 ```
