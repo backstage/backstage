@@ -164,7 +164,6 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
               endAdornment: clearButton ? endAdornment : defaultEndAdornment,
             }}
             inputProps={{
-              'aria-label': 'Search',
               ...defaultInputProps,
             }}
             fullWidth={fullWidth}

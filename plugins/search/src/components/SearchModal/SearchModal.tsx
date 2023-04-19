@@ -89,11 +89,6 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(1),
     },
   },
-  container: {
-    borderRadius: 30,
-    display: 'flex',
-    height: '2.4em',
-  },
   input: {
     flex: 1,
   },
