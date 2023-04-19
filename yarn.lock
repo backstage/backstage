@@ -8102,7 +8102,7 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0"
+    "@rjsf/core-v5": "npm:@rjsf/core@5.6.2"
     "@rjsf/material-ui": ^3.2.1
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.6.0"
     "@rjsf/utils": 5.6.0
@@ -13598,19 +13598,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core-v5@npm:@rjsf/core@5.6.0":
-  version: 5.6.0
-  resolution: "@rjsf/core@npm:5.6.0"
+"@rjsf/core-v5@npm:@rjsf/core@5.6.2":
+  version: 5.6.2
+  resolution: "@rjsf/core@npm:5.6.2"
   dependencies:
-    lodash: ^4.17.15
-    lodash-es: ^4.17.15
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
     markdown-to-jsx: ^7.2.0
-    nanoid: ^3.3.4
-    prop-types: ^15.7.2
+    nanoid: ^3.3.6
+    prop-types: ^15.8.1
   peerDependencies:
-    "@rjsf/utils": ^5.0.0
+    "@rjsf/utils": 5.6.x
     react: ^16.14.0 || >=17
-  checksum: c42c540dff24b961d3ecec992251041c9642b7f9f604335396b7f44dbf33387517ef93ca39522c2ccdb94600b4fa7eb13685260eb91c0855f1e353c68cb41c47
+  checksum: 8cc9c1a439fcb232be66464aa1bc370b49dc0f872ae09cca296adf07ea993cb8dbec366c26414ff2ea92490f89fafd39ca5fb2369b424ff0035cbf045de44927
   languageName: node
   linkType: hard
 
@@ -31147,12 +31147,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.23, nanoid@npm:^3.3.4":
-  version: 3.3.4
-  resolution: "nanoid@npm:3.3.4"
+"nanoid@npm:^3.1.23, nanoid@npm:^3.3.4, nanoid@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "nanoid@npm:3.3.6"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 2fddd6dee994b7676f008d3ffa4ab16035a754f4bb586c61df5a22cf8c8c94017aadd360368f47d653829e0569a92b129979152ff97af23a558331e47e37cd9c
+  checksum: 7d0eda657002738aa5206107bd0580aead6c95c460ef1bdd0b1a87a9c7ae6277ac2e9b945306aaa5b32c6dcb7feaf462d0f552e7f8b5718abfc6ead5c94a71b3
   languageName: node
   linkType: hard
 

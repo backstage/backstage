@@ -60,7 +60,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^20.0.0",
     "@rjsf/core": "^3.2.1",
-    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0",
+    "@rjsf/core-v5": "npm:@rjsf/core@5.6.2",
     "@rjsf/material-ui": "^3.2.1",
     "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.6.0",
     "@rjsf/utils": "5.6.0",
