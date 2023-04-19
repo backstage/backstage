@@ -270,7 +270,7 @@ export class DatabaseManager {
 
     if (client === 'pg') {
       (
-        connection as Knex.PgConnectionConfig
+        baseConnection as Knex.PgConnectionConfig
       ).application_name ||= `backstage_plugin_${pluginId}`;
     }
 
