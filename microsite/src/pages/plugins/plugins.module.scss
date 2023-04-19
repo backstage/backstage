@@ -15,7 +15,7 @@
     align-items: center;
     grid-template-columns: auto 1fr;
 
-    > * {
+    >* {
       margin: 0;
     }
 
@@ -28,10 +28,25 @@
   :global(.pluginsContainer) {
     gap: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
   }
 
   :global(.fit-content) {
     width: fit-content;
   }
+
+  :global(.filterContainer) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  :global(.filterChip) {
+    margin: 0.25rem;
+  }
+
+  :global(.filterHeader) {
+    margin: 0;
+    margin-bottom: 1rem;
+  }
+
 }
