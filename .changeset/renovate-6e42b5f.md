@@ -1,0 +1,7 @@
+---
+'@backstage/plugin-home': patch
+'@backstage/plugin-scaffolder-react': patch
+'@backstage/plugin-scaffolder': patch
+---
+
+Updated dependency `@rjsf/utils` to `5.6.2`.
