@@ -22,7 +22,7 @@ import {
 } from '@backstage/test-utils';
 import { screen, waitFor } from '@testing-library/react';
 import { Shortcuts } from './Shortcuts';
-import { LocalStoredShortcuts, shortcutsApiRef } from './api';
+import { DefaultShortcutsApi, shortcutsApiRef } from './api';
 
 import { SidebarOpenStateProvider } from '@backstage/core-components';
 
@@ -32,10 +32,7 @@ describe('Shortcuts', () => {
       <SidebarOpenStateProvider value={{ isOpen: true, setOpen: _open => {} }}>
         <TestApiProvider
           apis={[
-            [
-              shortcutsApiRef,
-              new LocalStoredShortcuts(MockStorageApi.create()),
-            ],
+            [shortcutsApiRef, new DefaultShortcutsApi(MockStorageApi.create())],
           ]}
         >
           <Shortcuts />
