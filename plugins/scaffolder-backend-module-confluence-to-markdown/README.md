@@ -79,11 +79,11 @@ confluence:
   isCloud: true
 ```
 
-##### baseUrl
+##### Base URL
 
 The `baseUrl` for Confluence Cloud should include the product name which is `wiki` by default but can be something else if your Org has changed it. An example `baseUrl` for Confluence Cloud would look like this: `https://example.atlassian.net/wiki`
 
-##### token
+##### Token
 
 The `token` for Confluence Cloud needs to be base-64 encoded with your Atlassian account email address. Here's how to do that:
 
