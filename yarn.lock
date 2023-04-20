@@ -3529,6 +3529,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     cross-fetch: ^4.0.0
     msw: ^1.0.0
+    uri-template: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -3663,6 +3664,7 @@ __metadata:
     eslint-plugin-jsx-a11y: ^6.5.1
     eslint-plugin-react: ^7.28.0
     eslint-plugin-react-hooks: ^4.3.0
+    eslint-plugin-unused-imports: ^3.0.0
     eslint-webpack-plugin: ^3.1.1
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^7.0.0-alpha.8
@@ -9917,6 +9919,7 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     "@microsoft/api-documenter": ^7.22.33
     "@microsoft/api-extractor": ^7.36.4
+    "@openapitools/openapi-generator-cli": ^2.7.0
     "@stoplight/spectral-core": ^1.18.0
     "@stoplight/spectral-formatters": ^1.1.0
     "@stoplight/spectral-functions": ^1.7.2
@@ -14098,7 +14101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openapitools/openapi-generator-cli@npm:^2.4.26":
+"@openapitools/openapi-generator-cli@npm:^2.4.26, @openapitools/openapi-generator-cli@npm:^2.7.0":
   version: 2.7.0
   resolution: "@openapitools/openapi-generator-cli@npm:2.7.0"
   dependencies:
@@ -26074,6 +26077,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-unused-imports@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "eslint-plugin-unused-imports@npm:3.0.0"
+  dependencies:
+    eslint-rule-composer: ^0.3.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^6.0.0
+    eslint: ^8.0.0
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+  checksum: 51666f62cc8dccba2895ced83f3c1e0b78b68c357e17360e156c4db548bfdeda34cbd8725192fb4903f22d5069400fb22ded6039631df01ee82fd618dc307247
+  languageName: node
+  linkType: hard
+
+"eslint-rule-composer@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "eslint-rule-composer@npm:0.3.0"
+  checksum: c2f57cded8d1c8f82483e0ce28861214347e24fd79fd4144667974cd334d718f4ba05080aaef2399e3bbe36f7d6632865110227e6b176ed6daa2d676df9281b1
+  languageName: node
+  linkType: hard
+
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -36626,6 +36651,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pct-encode@npm:~1.0.0":
+  version: 1.0.2
+  resolution: "pct-encode@npm:1.0.2"
+  checksum: 11edce15c8a9012cf5fdee006a05f10e3668a755a15aa25b6afbb8cc20d67f600702eb83e5eaca7a98ee78f9b362fb7d9ada9745428dceb6cdc44e0143851509
+  languageName: node
+  linkType: hard
+
 "peek-readable@npm:^4.0.1":
   version: 4.0.1
   resolution: "peek-readable@npm:4.0.1"
@@ -43457,6 +43489,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uri-template@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "uri-template@npm:2.0.0"
+  dependencies:
+    pct-encode: ~1.0.0
+  checksum: 6eb3254368ca11330502525c6c0ab42af3cb646bfc96a4021666d6ac6653ede1ac0df7fde84a2e35e7f03f42d91b41251963122cfb3de9b54b84bc0ef3583ffc
+  languageName: node
+  linkType: hard
+
 "urijs@npm:^1.19.10, urijs@npm:^1.19.11":
   version: 1.19.11
   resolution: "urijs@npm:1.19.11"
@@ -44366,9 +44407,9 @@ __metadata:
   linkType: hard
 
 "whatwg-fetch@npm:>=0.10.0":
-  version: 3.6.2
-  resolution: "whatwg-fetch@npm:3.6.2"
-  checksum: ee976b7249e7791edb0d0a62cd806b29006ad7ec3a3d89145921ad8c00a3a67e4be8f3fb3ec6bc7b58498724fd568d11aeeeea1f7827e7e1e5eae6c8a275afed
+  version: 3.6.19
+  resolution: "whatwg-fetch@npm:3.6.19"
+  checksum: 2896bc9ca867ea514392c73e2a272f65d5c4916248fe0837a9df5b1b92f247047bc76cf7c29c28a01ac6c5fb4314021d2718958c8a08292a96d56f72b2f56806
   languageName: node
   linkType: hard
 

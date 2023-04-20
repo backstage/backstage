@@ -54,10 +54,20 @@ export type ErrorResponseBody = {
  * @param response - The response of a failed request
  */
 export async function parseErrorResponseBody(
-  response: ConsumedResponse & { text(): Promise<string> },
+  response: ConsumedResponse & { bodyUsed: true },
+  rawBody: string,
+): Promise<ErrorResponseBody>;
+export async function parseErrorResponseBody(
+  response: ConsumedResponse & { text(): Promise<string>; bodyUsed: false },
+): Promise<ErrorResponseBody>;
+export async function parseErrorResponseBody(
+  response:
+    | (ConsumedResponse & { bodyUsed: true })
+    | (ConsumedResponse & { text(): Promise<string>; bodyUsed: false }),
+  rawBody?: string,
 ): Promise<ErrorResponseBody> {
   try {
-    const text = await response.text();
+    const text = !response.bodyUsed ? await response.text() : rawBody;
     if (text) {
       if (
         response.headers.get('content-type')?.startsWith('application/json')

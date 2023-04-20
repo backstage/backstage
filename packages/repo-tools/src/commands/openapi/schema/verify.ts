@@ -21,9 +21,9 @@ import { join } from 'path';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'path';
 import Parser from '@apidevtools/swagger-parser';
-import { runner } from './runner';
-import { paths as cliPaths } from '../../lib/paths';
-import { TS_MODULE, TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from './constants';
+import { runner } from '../runner';
+import { paths as cliPaths } from '../../../lib/paths';
+import { TS_MODULE, TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from '../constants';
 
 async function verify(directoryPath: string) {
   const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
