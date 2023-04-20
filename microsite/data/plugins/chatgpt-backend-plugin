@@ -1,0 +1,10 @@
+---
+title: 'ChatGPT Backend Plugin'
+author: Enfuse
+authorUrl: https://enfuse.io/
+category: Development
+description: Backend service for chatgpt-plugin.
+documentation: https://github.com/enfuse/backstage-chatgpt-backend/blob/master/README.md
+iconUrl: /img/enfuse.png
+npmPackageName: '@enfuse/plugin-chatgpt-backend'
+addedDate: '2023-04-21'
