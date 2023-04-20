@@ -86,7 +86,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
+          expect(decodeURIComponent(req.url.search)).toBe(
             '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
           );
           return res(ctx.json([]));
@@ -120,7 +120,9 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D,c');
+          expect(decodeURIComponent(req.url.search)).toBe(
+            '?filter=a=1,b=2,b=3,%C3%B6=%3D,c',
+          );
           return res(ctx.json([]));
         }),
       );
@@ -145,7 +147,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          expect(decodeURIComponent(req.url.search)).toBe('?fields=a.b,%C3%B6');
           return res(ctx.json([]));
         }),
       );
@@ -185,7 +187,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          expect(req.url.search).toBe('?limit=2&offset=1&after=%3D');
           return res(ctx.json([]));
         }),
       );
@@ -203,7 +205,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
+          expect(decodeURIComponent(req.url.search)).toBe(
             '?order=asc:kind&order=desc:metadata.name',
           );
           return res(ctx.json([]));
@@ -326,9 +328,9 @@ describe('CatalogClient', () => {
 
       expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
-      );
+      expect(
+        decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
+      ).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c');
     });
 
     it('should send query params correctly on initial request', async () => {
@@ -351,8 +353,10 @@ describe('CatalogClient', () => {
           { field: 'metadata.uid', order: 'desc' },
         ],
       });
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?limit=100&orderField=metadata.name,asc&orderField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
+      expect(
+        decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
+      ).toBe(
+        '?fields=a,b&limit=100&orderField=metadata.name%2Casc&orderField=metadata.uid%2Cdesc&fullTextFilterTerm=query',
       );
     });
 
@@ -375,7 +379,7 @@ describe('CatalogClient', () => {
         cursor: 'cursor',
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?cursor=cursor&limit=100&fields=a,b',
+        '?fields=a,b&limit=100&cursor=cursor',
       );
     });
 

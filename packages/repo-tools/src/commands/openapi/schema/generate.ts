@@ -18,9 +18,9 @@ import fs from 'fs-extra';
 import YAML from 'js-yaml';
 import chalk from 'chalk';
 import { resolve } from 'path';
-import { paths as cliPaths } from '../../lib/paths';
-import { runner } from './runner';
-import { TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from './constants';
+import { paths as cliPaths } from '../../../lib/paths';
+import { runner } from '../runner';
+import { TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from '../constants';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 

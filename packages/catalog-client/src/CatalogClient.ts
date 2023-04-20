@@ -22,7 +22,6 @@ import {
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
-import crossFetch from 'cross-fetch';
 import {
   CATALOG_FILTER_EXISTS,
   AddLocationRequest,
@@ -43,9 +42,21 @@ import {
   QueryEntitiesResponse,
   EntityFilterQuery,
 } from './types/api';
-import { DiscoveryApi } from './types/discovery';
-import { FetchApi } from './types/fetch';
+import { DefaultApiClient } from './generated/apis/DefaultApi.client';
 import { isQueryEntitiesInitialRequest } from './utils';
+import { ValidateEntity400Response } from './generated/models/ValidateEntity400Response.model';
+
+const isResponseError = (e: Error): e is ResponseError => {
+  return (e as any).response;
+};
+
+const ignore404 = (responseError: Error) => {
+  if (!isResponseError(responseError)) throw responseError;
+  if (responseError.response.status === 404) {
+    return undefined;
+  }
+  throw responseError;
+};
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -54,15 +65,13 @@ import { isQueryEntitiesInitialRequest } from './utils';
  * @public
  */
 export class CatalogClient implements CatalogApi {
-  private readonly discoveryApi: DiscoveryApi;
-  private readonly fetchApi: FetchApi;
+  private readonly apiClient: DefaultApiClient;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
   }) {
-    this.discoveryApi = options.discoveryApi;
-    this.fetchApi = options.fetchApi || { fetch: crossFetch };
+    this.apiClient = new DefaultApiClient(options);
   }
 
   /**
@@ -73,13 +82,9 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityAncestorsResponse> {
     const { kind, namespace, name } = parseEntityRef(request.entityRef);
-    return await this.requestRequired(
-      'GET',
-      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
-        namespace,
-      )}/${encodeURIComponent(name)}/ancestry`,
-      options,
-    );
+    return await this.apiClient
+      .getEntityAncestryByName({ path: { kind, namespace, name } }, options)
+      .then(r => r.json());
   }
 
   /**
@@ -89,11 +94,13 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.requestOptional(
-      'GET',
-      `/locations/${encodeURIComponent(id)}`,
-      options,
-    );
+    try {
+      return await this.apiClient
+        .getLocation({ path: { id } }, options)
+        .then(r => r.json());
+    } catch (e) {
+      return ignore404(e);
+    }
   }
 
   /**
@@ -111,17 +118,12 @@ export class CatalogClient implements CatalogApi {
       limit,
       after,
     } = request ?? {};
-    const params = this.getParams(filter);
-
-    if (fields.length) {
-      params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
-    }
-
+    const encodedOrder = [];
     if (order) {
       for (const directive of [order].flat()) {
         if (directive) {
-          params.push(
-            `order=${encodeURIComponent(directive.order)}:${encodeURIComponent(
+          encodedOrder.push(
+            `${encodeURIComponent(directive.order)}:${encodeURIComponent(
               directive.field,
             )}`,
           );
@@ -129,22 +131,21 @@ export class CatalogClient implements CatalogApi {
       }
     }
 
-    if (offset !== undefined) {
-      params.push(`offset=${offset}`);
-    }
-    if (limit !== undefined) {
-      params.push(`limit=${limit}`);
-    }
-    if (after !== undefined) {
-      params.push(`after=${encodeURIComponent(after)}`);
-    }
-
-    const query = params.length ? `?${params.join('&')}` : '';
-    const entities: Entity[] = await this.requestRequired(
-      'GET',
-      `/entities${query}`,
-      options,
-    );
+    const entities: Entity[] = await this.apiClient
+      .getEntities(
+        {
+          query: {
+            fields: fields.map(encodeURIComponent),
+            limit,
+            filter: this.getFilterValue(filter),
+            offset,
+            after,
+            order: order ? encodedOrder : undefined,
+          },
+        },
+        options,
+      )
+      .then(r => r.json());
 
     const refCompare = (a: Entity, b: Entity) => {
       // in case field filtering is used, these fields might not be part of the response
@@ -178,30 +179,9 @@ export class CatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesByRefsResponse> {
-    const body: any = { entityRefs: request.entityRefs };
-    if (request.fields?.length) {
-      body.fields = request.fields;
-    }
-
-    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
-    const url = `${baseUrl}/entities/by-refs`;
-
-    const response = await this.fetchApi.fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const { items } = (await response.json()) as {
-      items: Array<Entity | null>;
-    };
+    const { items } = await this.apiClient
+      .getEntitiesByRefs({ body: request }, options)
+      .then(r => r.json());
 
     return { items: items.map(i => i ?? undefined) };
   }
@@ -212,8 +192,10 @@ export class CatalogClient implements CatalogApi {
   async queryEntities(
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
-  ) {
-    const params: string[] = [];
+  ): Promise<QueryEntitiesResponse> {
+    const params: Partial<
+      Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
+    > = {};
 
     if (isQueryEntitiesInitialRequest(request)) {
       const {
@@ -223,45 +205,42 @@ export class CatalogClient implements CatalogApi {
         orderFields,
         fullTextFilter,
       } = request;
-      params.push(...this.getParams(filter));
+      params.filter = this.getFilterValue(filter);
 
       if (limit !== undefined) {
-        params.push(`limit=${limit}`);
+        params.limit = limit;
       }
       if (orderFields !== undefined) {
-        (Array.isArray(orderFields) ? orderFields : [orderFields]).forEach(
-          ({ field, order }) => params.push(`orderField=${field},${order}`),
-        );
+        params.orderField = (
+          Array.isArray(orderFields) ? orderFields : [orderFields]
+        ).map(({ field, order }) => encodeURIComponent(`${field},${order}`));
       }
       if (fields.length) {
-        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+        params.fields = fields.map(encodeURIComponent);
       }
 
       const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
       if (normalizedFullTextFilterTerm) {
-        params.push(`fullTextFilterTerm=${normalizedFullTextFilterTerm}`);
+        params.fullTextFilterTerm = normalizedFullTextFilterTerm;
       }
       if (fullTextFilter?.fields?.length) {
-        params.push(`fullTextFilterFields=${fullTextFilter.fields.join(',')}`);
+        params.fullTextFilterFields = fullTextFilter.fields;
       }
     } else {
       const { fields = [], limit, cursor } = request;
 
-      params.push(`cursor=${cursor}`);
+      params.cursor = cursor;
       if (limit !== undefined) {
-        params.push(`limit=${limit}`);
+        params.limit = limit;
       }
       if (fields.length) {
-        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+        params.fields = fields.map(encodeURIComponent);
       }
     }
 
-    const query = params.length ? `?${params.join('&')}` : '';
-    return this.requestRequired<QueryEntitiesResponse>(
-      'GET',
-      `/entities/by-query${query}`,
-      options,
-    );
+    return await this.apiClient
+      .getEntitiesByQuery({ query: params }, options)
+      .then(r => r.json());
   }
 
   /**
@@ -271,14 +250,13 @@ export class CatalogClient implements CatalogApi {
     entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
-    const { kind, namespace, name } = parseEntityRef(entityRef);
-    return this.requestOptional(
-      'GET',
-      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
-        namespace,
-      )}/${encodeURIComponent(name)}`,
-      options,
-    );
+    try {
+      return await this.apiClient
+        .getEntityByName({ path: { ...parseEntityRef(entityRef) } }, options)
+        .then(r => r.json());
+    } catch (e) {
+      return ignore404(e);
+    }
   }
 
   // NOTE(freben): When we deprecate getEntityByName from the interface, we may
@@ -293,34 +271,36 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
-    return this.requestOptional(
-      'GET',
-      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
-        namespace,
-      )}/${encodeURIComponent(name)}`,
-      options,
-    );
+    try {
+      return await this.apiClient
+        .getEntityByName(
+          {
+            path: {
+              kind,
+              namespace,
+              name,
+            },
+          },
+          options,
+        )
+        .then(r => r.json());
+    } catch (e) {
+      return ignore404(e);
+    }
   }
 
   /**
    * {@inheritdoc CatalogApi.refreshEntity}
    */
   async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
-    const response = await this.fetchApi.fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/refresh`,
+    await this.apiClient.refreshEntity(
       {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        body: {
+          entityRef,
         },
-        method: 'POST',
-        body: JSON.stringify({ entityRef }),
       },
+      options,
     );
-
-    if (response.status !== 200) {
-      throw new Error(await response.text());
-    }
   }
 
   /**
@@ -331,14 +311,22 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse> {
     const { filter = [], facets } = request;
-    const params = this.getParams(filter);
 
-    for (const facet of facets) {
-      params.push(`facet=${encodeURIComponent(facet)}`);
+    try {
+      return await this.apiClient
+        .getEntityFacets(
+          {
+            query: {
+              facet: facets,
+              filter: this.getFilterValue(filter),
+            },
+          },
+          options,
+        )
+        .then(r => r.json());
+    } catch (e) {
+      return ignore404(e) as any;
     }
-
-    const query = params.length ? `?${params.join('&')}` : '';
-    return await this.requestOptional('GET', `/entity-facets${query}`, options);
   }
 
   /**
@@ -350,25 +338,18 @@ export class CatalogClient implements CatalogApi {
   ): Promise<AddLocationResponse> {
     const { type = 'url', target, dryRun } = request;
 
-    const response = await this.fetchApi.fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
-        dryRun ? '?dryRun=true' : ''
-      }`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+    const { location, entities, exists } = await this.apiClient
+      .createLocation(
+        {
+          body: {
+            type,
+            target,
+          },
+          query: { dryRun: dryRun ? 'true' : undefined },
         },
-        method: 'POST',
-        body: JSON.stringify({ type, target }),
-      },
-    );
-
-    if (response.status !== 201) {
-      throw new Error(await response.text());
-    }
-
-    const { location, entities, exists } = await response.json();
+        options,
+      )
+      .then(r => r.json());
 
     if (!location) {
       throw new Error(`Location wasn't added: ${target}`);
@@ -388,11 +369,9 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const all: { data: Location }[] = await this.requestRequired(
-      'GET',
-      '/locations',
-      options,
-    );
+    const all: { data: Location }[] = await this.apiClient
+      .getLocations({}, options)
+      .then(r => r.json());
     return all
       .map(r => r.data)
       .find(l => locationRef === stringifyLocationRef(l));
@@ -405,11 +384,11 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void> {
-    await this.requestIgnored(
-      'DELETE',
-      `/locations/${encodeURIComponent(id)}`,
-      options,
-    );
+    try {
+      await this.apiClient.deleteLocation({ path: { id } }, options);
+    } catch (e) {
+      ignore404(e);
+    }
   }
 
   /**
@@ -419,11 +398,11 @@ export class CatalogClient implements CatalogApi {
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void> {
-    await this.requestIgnored(
-      'DELETE',
-      `/entities/by-uid/${encodeURIComponent(uid)}`,
-      options,
-    );
+    try {
+      await this.apiClient.deleteEntityByUid({ path: { uid } }, options);
+    } catch (e) {
+      ignore404(e);
+    }
   }
 
   /**
@@ -434,101 +413,38 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse> {
-    const response = await this.fetchApi.fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/validate-entity`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+    try {
+      await this.apiClient.validateEntity(
+        {
+          body: {
+            entity,
+            location: locationRef,
+          },
         },
-        method: 'POST',
-        body: JSON.stringify({ entity, location: locationRef }),
-      },
-    );
+        options,
+      );
 
-    if (response.ok) {
       return {
         valid: true,
       };
-    }
-
-    if (response.status !== 400) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const { errors = [] } = await response.json();
-
-    return {
-      valid: false,
-      errors,
-    };
-  }
-
-  //
-  // Private methods
-  //
-
-  private async requestIgnored(
-    method: string,
-    path: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void> {
-    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
-    const response = await this.fetchApi.fetch(url, { method, headers });
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-  }
-
-  private async requestRequired<T = any>(
-    method: string,
-    path: string,
-    options?: CatalogRequestOptions,
-  ): Promise<T> {
-    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
-    const response = await this.fetchApi.fetch(url, { method, headers });
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    return response.json();
-  }
-
-  private async requestOptional(
-    method: string,
-    path: string,
-    options?: CatalogRequestOptions,
-  ): Promise<any | undefined> {
-    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
-    const response = await this.fetchApi.fetch(url, { method, headers });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return undefined;
+    } catch (e) {
+      if (!isResponseError(e)) throw e;
+      const { response, rawBody } = e;
+      if (response.status !== 400) {
+        throw e;
       }
-      throw await ResponseError.fromResponse(response);
-    }
+      // TODO: This needs to be fixed as is, this won't actually do anything.
+      const { errors = [] } = JSON.parse(rawBody) as ValidateEntity400Response;
 
-    return await response.json();
+      return {
+        valid: false,
+        errors,
+      };
+    }
   }
 
-  private getParams(filter: EntityFilterQuery = []) {
-    const params: string[] = [];
-    // filter param can occur multiple times, for example
-    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
-    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
-    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+  private getFilterValue(filter: EntityFilterQuery = []) {
+    const values: string[] = [];
     for (const filterItem of [filter].flat()) {
       const filterParts: string[] = [];
       for (const [key, value] of Object.entries(filterItem)) {
@@ -544,9 +460,9 @@ export class CatalogClient implements CatalogApi {
       }
 
       if (filterParts.length) {
-        params.push(`filter=${filterParts.join(',')}`);
+        values.push(filterParts.join(','));
       }
     }
-    return params;
+    return values;
   }
 }
