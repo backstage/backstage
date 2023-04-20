@@ -2,7 +2,6 @@ import { Box, Chip, styled } from '@mui/material';
 import { ChipCategory } from '@site/src/util/types';
 import React from 'react';
 
-
 type Props = {
   categories: ChipCategory[];
   handleChipClick: (name: string) => void;
@@ -25,7 +24,7 @@ const PluginsChipsFilter = ({ categories, handleChipClick }: Props) => {
       }}
       component="ul"
     >
-      {categories.map((chip) => {
+      {categories.map(chip => {
         return (
           <ListItem key={chip.name}>
             <Chip
