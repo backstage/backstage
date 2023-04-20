@@ -37,6 +37,20 @@ const wrapper: FC = ({ children }) => (
   </TestApiProvider>
 );
 
+const configDisableOutsideFonts: ConfigApi = new ConfigReader({
+  techdocs: {
+    sanitizer: {
+      disableOutsideFonts: true,
+    },
+  },
+});
+
+const disableOutsideWapper: FC = ({ children }) => (
+  <TestApiProvider apis={[[configApiRef, configDisableOutsideFonts]]}>
+    {children}
+  </TestApiProvider>
+);
+
 describe('Transformers > Html', () => {
   it('should return a function that removes unsafe links from a given dom element', async () => {
     const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
@@ -80,5 +94,29 @@ describe('Transformers > Html', () => {
 
     expect(iframes).toHaveLength(1);
     expect(iframes[0].src).toMatch('docs.google.com');
+  });
+
+  it('should return a function that removes outside fonts from a given dom element', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), {
+      wrapper: disableOutsideWapper,
+    });
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+        <head>
+          <link src="http://unsafe-host.com"/>
+          <link rel="stylesheet" href="assets/stylesheets/main.50e68009.min.css">
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        </head>
+      `;
+    const clearDom = await result.current(dirtyDom);
+
+    const links = Array.from(
+      clearDom.querySelectorAll<HTMLLinkElement>('head > link'),
+    );
+
+    expect(links).toHaveLength(1);
+    expect(links[0].href).toMatch('assets/stylesheets/main.50e68009.min.css');
   });
 });

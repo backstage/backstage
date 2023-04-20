@@ -54,6 +54,7 @@ export const addBaseUrl = ({
       for (const elem of list) {
         if (elem.hasAttribute(attributeName)) {
           const elemAttribute = elem.getAttribute(attributeName);
+
           if (!elemAttribute) return;
 
           // Special handling for SVG images.

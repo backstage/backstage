@@ -42,6 +42,12 @@ export interface Config {
        * @visibility frontend
        */
       allowedIframeHosts?: string[];
+
+      /**
+       * Disable outside font links
+       * @visibility frontend
+       */
+      disableOutsideFonts?: boolean;
     };
   };
 }

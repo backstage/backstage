@@ -528,6 +528,16 @@ techdocs:
 This way, all iframes where the host of src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
 
+It's possible to disable outside font links when your network env is not support to getting those font links. To do this, set the `techdocs.sanitizer.disableOutsideFonts` to be `true` in configuration of your `app-config.yaml`
+
+E.g.
+
+```yaml
+techdocs:
+  sanitizer:
+    disableOutsideFonts: true
+```
+
 ## How to add Mermaid support in TechDocs
 
 To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)

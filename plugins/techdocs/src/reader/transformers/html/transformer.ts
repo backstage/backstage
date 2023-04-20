@@ -42,8 +42,14 @@ export const useSanitizerTransformer = (): Transformer => {
   return useCallback(
     async (dom: Element) => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
+      const disableOutsideFonts = config?.getOptionalBoolean(
+        'disableOutsideFonts',
+      );
 
-      DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
+      DOMPurify.addHook(
+        'beforeSanitizeElements',
+        removeUnsafeLinks(disableOutsideFonts),
+      );
       const tags = ['link'];
 
       if (hosts) {

@@ -17,6 +17,7 @@
 const MKDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css$/;
 const GOOGLE_FONTS = /^https:\/\/fonts\.googleapis\.com/;
 const GSTATIC_FONTS = /^https:\/\/fonts\.gstatic\.com/;
+const OUTSIDE_FONTS = /^https:\/\/fonts\./;
 
 /**
  * Checks whether a node is link or not.
@@ -39,13 +40,29 @@ const isSafe = (node: Element) => {
 };
 
 /**
- * Function that removes unsafe link nodes.
- * @param node - can be any element.
- * @param hosts - list of allowed hosts.
+ * Checks whether a font link is outside or not.
+ * @param node - is an link element.
+ * @returns true when link is google fonts or gstatic fonts.
  */
-export const removeUnsafeLinks = (node: Element) => {
-  if (isLink(node) && !isSafe(node)) {
-    node.remove();
-  }
-  return node;
+const isOutside = (node: Element) => {
+  const href = node?.getAttribute('href') || '';
+  return href.match(OUTSIDE_FONTS);
 };
+
+/**
+ * Function that removes link nodes which (1 or 2)
+ * 1. disableOutsideFonts is set true and link is outside that match OUTSIDE_FONTS
+ * 2. is unsafe links
+ * @param disableOutsideFonts - if disable outside fonts.
+ * @param node - can be any element.
+ */
+export const removeUnsafeLinks =
+  (disableOutsideFonts?: boolean) => (node: Element) => {
+    if (
+      isLink(node) &&
+      ((disableOutsideFonts && isOutside(node)) || !isSafe(node))
+    ) {
+      node.remove();
+    }
+    return node;
+  };
