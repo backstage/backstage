@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Common types and permissions for the DevTools frontend and backend plugins.
+ *
+ * @packageDocumentation
+ */
+
 export * from './types';
 export * from './permissions';

@@ -54,6 +54,4 @@ export type SubRoute = {
     }
   >;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

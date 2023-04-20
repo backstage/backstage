@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Backstage DevTools backend plugin that contains the API for retrieving package dependencies and current configuration which is used by the Backstage DevTools frontend plugin.
+ *
+ * @packageDocumentation
+ */
+
 export { DevToolsBackendApi } from './api';
 export * from './service/router';

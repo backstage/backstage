@@ -69,6 +69,4 @@ export type PackageDependency = {
   name: string;
   versions: string;
 };
-
-// (No @packageDocumentation comment for this package)
 ```

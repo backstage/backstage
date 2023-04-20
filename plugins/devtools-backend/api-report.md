@@ -36,6 +36,4 @@ export interface RouterOptions {
   // (undocumented)
   permissions: PermissionEvaluator;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

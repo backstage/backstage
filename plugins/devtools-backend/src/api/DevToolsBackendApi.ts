@@ -90,7 +90,7 @@ export class DevToolsBackendApi {
           res.status === 200
             ? ExternalDependencyStatus.healthy
             : ExternalDependencyStatus.unhealthy;
-        this.logger.info(
+        this.logger.debug(
           `Fetch for ${endpoint.name} resulted in status code "${res.status}"`,
         );
       })
@@ -129,7 +129,9 @@ export class DevToolsBackendApi {
           : pingResult.output;
     }
 
-    this.logger.info(`Ping results for ${endpoint.name}: ${pingResult.output}`);
+    this.logger.debug(
+      `Ping results for ${endpoint.name}: ${pingResult.output}`,
+    );
 
     const result: ExternalDependency = {
       name: endpoint.name,

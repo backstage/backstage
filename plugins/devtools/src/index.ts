@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Backstage DevTools frontend plugin with a tab that shows package dependencies and another tab that shows your current configuration.
+ *
+ * @packageDocumentation
+ */
+
 export { devToolsPlugin, DevToolsPage } from './plugin';
 export * from './components';
