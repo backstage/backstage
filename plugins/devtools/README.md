@@ -1,6 +1,6 @@
 # DevTools
 
-Welcome to the DevTools plugin!
+Welcome to the DevTools plugin! This plugin helps elevate useful information about a Backstage instance through the frontend, which can be helpful for an integrator for troubleshooting, reviewing, and understanding their installation.
 
 ## Features
 
@@ -24,7 +24,7 @@ The DevTools plugin can be setup with other tabs with additional helpful feature
 
 ### External Dependencies
 
-Lists the status of configured External Dependencies based on your current running Backstage instance's ability to reach them
+Lists the status of configured External Dependencies based on your current running Backstage instance's ability to reach them.
 
 ![Example of external dependencies tab](./docs/devtools-external-dependencies.png)
 
