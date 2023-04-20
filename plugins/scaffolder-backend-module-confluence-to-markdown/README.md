@@ -4,16 +4,18 @@ Welcome to the `confluence:transform:markdown` action for the `scaffolder-backen
 
 ## Getting started
 
-You need to configure the action in your backend:
+The following sections will help you getting started
 
-## From your Backstage root directory
+### Configure Action in Backend
+
+From your Backstage root directory run:
 
 ```bash
 # From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 ```
 
-Configure the action:
+Then configure the action:
 (you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
 
 ```typescript
@@ -56,6 +58,8 @@ export default async function createPlugin(
 }
 ```
 
+### Configuration
+
 You will also need an access token for authorization with `Read` permissions. You can create a Personal Access Token (PAT) in confluence and add the PAT to your `app-config.yaml`
 
 ```yaml
@@ -64,7 +68,34 @@ confluence:
   token: ${CONFLUENCE_TOKEN}
 ```
 
-After that you can use the action in your template:
+#### Confluence Cloud
+
+For those using Confluence Cloud you will need to have the following configuration:
+
+```yaml
+confluence:
+  baseUrl: ${CONFLUENCE_BASE_URL}
+  token: ${CONFLUENCE_TOKEN}
+  isCloud: true
+```
+
+##### baseUrl
+
+The `baseUrl` for Confluence Cloud should include the product name which is `wiki` by default but can be something else if your Org has changed it. An example `baseUrl` for Confluence Cloud would look like this: `https://example.atlassian.net/wiki`
+
+##### token
+
+The `token` for Confluence Cloud needs to be base-64 encoded with your Atlassian account email address. Here's how to do that:
+
+1. First get your token from: `https://<company-name>.atlassian.com/manage-profile/security/api-tokens`
+2. Next we need to setup a string in this format: `<your-atlassian-account-mail>:<your-jira-token>`
+3. For this example we'll use this: `confluence@backstage.io:wDzAzoXWRGLtvbgHvT0W`
+4. Now we can run `echo -n "confluence@backstage.io:wDzAzoXWRGLtvbgHvT0W" | base64`
+5. This gives us: `Y29uZmx1ZW5jZUBiYWNrc3RhZ2UuaW86d0R6QXpvWFdSR0x0dmJnSHZUMFc=` which we can now use as the value for the `token` in the configuration
+
+### Template Usage
+
+Here's an example of how you can use the action in your template:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -84,7 +115,7 @@ spec:
       properties:
         confluenceUrls:
           type: array
-          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>
+          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE> or <CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE> for Confluence cloud
           items:
             type: string
             default: confluence url

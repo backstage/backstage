@@ -51,10 +51,13 @@ export const readFileAsString = async (fileDir: string) => {
 export const fetchConfluence = async (relativeUrl: string, config: Config) => {
   const baseUrl = config.getString('confluence.baseUrl');
   const token = config.getString('confluence.token');
-  const response: Response = await fetch(`${baseUrl}${relativeUrl}`, {
+  const isCloud = config.getOptionalBoolean('confluence.isCloud') || false;
+  const authToken = isCloud ? `Basic ${token}` : `Bearer ${token}`;
+  const url = `${baseUrl}${relativeUrl}`;
+  const response: Response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: authToken,
     },
   });
   if (!response.ok) {
@@ -73,6 +76,8 @@ export const getAndWriteAttachments = async (
   const productArr: string[][] = [];
   const baseUrl = config.getString('confluence.baseUrl');
   const token = config.getString('confluence.token');
+  const isCloud = config.getOptionalBoolean('confluence.isCloud') || false;
+  const authToken = isCloud ? `Basic ${token}` : `Bearer ${token}`;
   await Promise.all(
     await arr.results.map(async (result: Result) => {
       const downloadLink = result._links.download;
@@ -80,11 +85,11 @@ export const getAndWriteAttachments = async (
       if (result.metadata.mediaType !== 'application/gliffy+json') {
         productArr.push([result.title.replace(/ /g, '%20'), downloadTitle]);
       }
-
-      const res = await fetch(`${baseUrl}${downloadLink}`, {
+      const url = `${baseUrl}${downloadLink}`;
+      const res = await fetch(url, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: authToken,
         },
       });
       if (!res.ok) {
@@ -117,12 +122,19 @@ export const createConfluenceVariables = async (url: string) => {
   let titleWithSpaces: string | undefined = '';
   const params = new URL(url);
   if (params.pathname.split('/')[1] === 'display') {
+    // https://confluence.example.com/display/SPACEKEY/Page+Title
     spacekey = params.pathname.split('/')[2];
     title = params.pathname.split('/')[3];
     titleWithSpaces = title?.replace(/\+/g, ' ');
     return { spacekey, title, titleWithSpaces };
+  } else if (params.pathname.split('/')[2] === 'spaces') {
+    // https://example.atlassian.net/wiki/spaces/SPACEKEY/pages/1234567/Page+Title
+    spacekey = params.pathname.split('/')[3];
+    title = params.pathname.split('/')[6];
+    titleWithSpaces = title?.replace(/\+/g, ' ');
+    return { spacekey, title, titleWithSpaces };
   }
   throw new InputError(
-    'The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>`',
+    'The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>` or `<CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE>` for Confluence cloud',
   );
 };

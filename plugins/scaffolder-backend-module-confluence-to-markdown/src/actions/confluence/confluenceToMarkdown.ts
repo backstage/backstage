@@ -57,7 +57,7 @@ export const createConfluenceToMarkdownAction = (options: {
             type: 'array',
             title: 'Confluence URL',
             description:
-              'Paste your confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title}',
+              'Paste your confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or  https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
             items: {
               type: 'string',
               default: 'Confluence URL',
@@ -98,6 +98,7 @@ export const createConfluenceToMarkdownAction = (options: {
         const { spacekey, title, titleWithSpaces } =
           await createConfluenceVariables(url);
         // This calls confluence to get the page html and page id
+        ctx.logger.info(`Fetching the Confluence content for ${url}`);
         const getConfluenceDoc = await fetchConfluence(
           `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
           config,
