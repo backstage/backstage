@@ -268,6 +268,12 @@ export class DatabaseManager {
       client,
     );
 
+    if (client === 'pg') {
+      (
+        baseConnection as Knex.PgConnectionConfig
+      ).application_name ||= `backstage_plugin_${pluginId}`;
+    }
+
     return {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
