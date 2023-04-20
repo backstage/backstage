@@ -2,11 +2,33 @@ import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { PluginCard } from './_pluginCard';
+import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
-import { plugins } from './plugins';
 import PluginsChipsFilter from '@site/src/components/pluginsChipsFilter/pluginsChipsFilter';
 import { ChipCategory } from '@site/src/util/types';
+import { truncateDescription } from '@site/src/util/truncateDescription';
+
+const pluginsContext = require.context(
+  '../../../data/plugins',
+  false,
+  /\.ya?ml/,
+);
+
+const plugins = pluginsContext.keys().reduce(
+  (acum, id) => {
+    const pluginData: IPluginData = pluginsContext(id).default;
+
+    acum[
+      pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins'
+    ].push(truncateDescription(pluginData));
+
+    return acum;
+  },
+  { corePlugins: [] as IPluginData[], otherPlugins: [] as IPluginData[] },
+);
+
+plugins.corePlugins.sort((a, b) => a.order - b.order);
+plugins.otherPlugins.sort((a, b) => a.order - b.order);
 
 const Plugins = () => {
   const allCategories: ChipCategory[] = [];
