@@ -156,3 +156,7 @@ tsconfig.tmp.json
 # Lighthouse CI Reports
 **/.lighthouseci/*
 !**/.lighthouseci/scripts
+
+# VS Code backing up svg files
+*svg.bkp
+*svg.dtmp
