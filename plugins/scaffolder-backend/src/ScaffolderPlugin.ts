@@ -40,7 +40,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction<any, any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
@@ -50,7 +50,7 @@ export type ScaffolderPluginOptions = {
 class ScaffolderActionsExtensionPointImpl
   implements ScaffolderActionsExtensionPoint
 {
-  #actions = new Array<TemplateAction<any>>();
+  #actions = new Array<TemplateAction<any, any>>();
 
   addActions(...actions: TemplateAction<any>[]): void {
     this.#actions.push(...actions);

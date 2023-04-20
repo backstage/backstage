@@ -746,7 +746,7 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
 // @public
 export interface RouterOptions {
   // (undocumented)
-  actions?: TemplateAction_2<any>[];
+  actions?: TemplateAction_2<any, any>[];
   // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
