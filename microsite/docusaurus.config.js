@@ -125,6 +125,10 @@ module.exports = {
             from: '/docs/features/search/search-overview',
             to: '/docs/features/search/',
           },
+          {
+            from: '/docs/getting-started/running-backstage-locally',
+            to: '/docs/getting-started/',
+          },
         ],
       },
     ],
