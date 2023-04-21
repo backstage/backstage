@@ -8,7 +8,7 @@ The scaffolder plugin integrates with the Backstage [permission framework](../..
 
 ### Authorizing parameters and steps
 
-To mark specific parameters or steps as requiring permission, add the backstage:permissions property to the parameter or step with one or more tags. For example:
+To mark specific parameters or steps as requiring permission, add the `backstage:permissions` property to the parameter or step with one or more tags. For example:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -92,7 +92,7 @@ By combining this feature with restricting the ingestion of templates in the Cat
 
 ### Authorizing actions
 
-Similar to parameters and steps, the scaffolder plugin exposes permissions to restrict access to certain actions. This can be useful if you want to enforce security on your templates.
+Similar to parameters and steps, the scaffolder plugin exposes permissions to restrict access to certain actions. This can be useful if you want to secure your templates.
 
 To restrict access to a particular action, you can modify your permission policy as follows:
 
@@ -125,7 +125,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 }
 ```
 
-With this permission policy, spiderman won't be able to execute the debug:log action.
+With this permission policy, the user `spiderman` won't be able to execute the debug:log action.
 
 You can also restrict the input provided to the action by combining multiple rules.
 In the example below, spiderman won't be able to execute debug:log when passing `{ "message": "not-this!" }` as action input:
