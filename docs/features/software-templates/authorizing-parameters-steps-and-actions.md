@@ -70,12 +70,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     ) {
       if (user?.identity.userEntityRef === 'user:default/spiderman')
         return createScaffolderTemplateConditionalDecision(request.permission, {
-          not: {
-            allOf: [
-              scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
-              scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
-            ],
-          },
+          not: scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
         });
     }
 
