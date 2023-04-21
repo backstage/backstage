@@ -32,10 +32,6 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const db = await DatabaseBadgesStore.create({
-    database: env.database,
-  });
-
   return await createRouter({
     config: env.config,
     discovery: env.discovery,
@@ -43,7 +39,6 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     logger: env.logger,
     identity: env.identity,
-    db: db,
   });
 }
 ```
@@ -134,23 +129,6 @@ app:
 
 > Note that you cannot use env vars to set the `obfuscate` value. It must be a boolean value and env vars are always strings.
 
-Also you need to provide the [salt](<https://en.wikipedia.org/wiki/Salt_(cryptography)>) in the `app-config.yaml`:
-
-```yaml
-custom:
-  badges-backend:
-    salt: <your-salt> # required
-    cacheTimeToLive: 60 # minutes (optional)
-```
-
-Any string can be used as a salt, but it's recommended to use a long random string to increase entropy. You can generate a random string using the following command:
-
-```bash
-openssl rand -hex 32
-```
-
-> Note: The salt is used to obfuscate the entity names, so if you change the salt, the entity names will be obfuscated differently and the already established badges (in Github repositories for examples) will need to be updated.
-
 ## API
 
 The badges backend api exposes two main endpoints for entity badges. The
@@ -169,16 +147,15 @@ The badges backend api exposes two main endpoints for entity badges. The
 
 ### If obfuscation is enabled (apps.badges.obfuscate: true)
 
-- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated entity
-  hash from name, namespace, kind.
+- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated entity url.
 
-> Note that endpoint have a embedded authMiddleware to authenticate the user requesting this endpoint. It meant to be called from the frontend plugin.
+> Note that endpoint have a embedded authMiddleware to authenticate the user requesting this endpoint. _It meant to be called from the frontend plugin._
 
-- `/badges/entity/:entityHash/:badgeId` Get the entity badge as an SVG image. If
+- `/badges/entity/:entityUuid/:badgeId` Get the entity badge as an SVG image. If
   the `accept` request header prefers `application/json` the badge spec as JSON
   will be returned instead of the image.
 
-- `/badge/entity/:entityHash/badge-specs` List all defined badges for a
+- `/badge/entity/:entityUuid/badge-specs` List all defined badges for a
   particular entity, in json format. See
   [BadgeSpec](https://github.com/backstage/backstage/tree/master/plugins/badges/src/api/types.ts)
   from the frontend plugin for a type declaration.

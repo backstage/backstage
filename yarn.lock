@@ -4953,6 +4953,7 @@ __metadata:
     knex: ^2.4.2
     lodash: ^4.17.21
     supertest: ^6.3.3
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown

@@ -18,59 +18,14 @@ import { DatabaseBadgesStore } from '../database/badgesStore';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { Entity } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
-import crypto from 'crypto';
 
 describe('DatabaseBadgesStore', () => {
-  const config = new ConfigReader({
-    backend: {
-      baseUrl: 'http://127.0.0.1',
-      listen: {
-        port: 7007,
-      },
-    },
-    app: {
-      badges: {
-        obfuscate: true,
-      },
-    },
-    custom: {
-      'badges-backend': {
-        salt: 'random-string',
-        cacheTimeToLive: '60',
-      },
-    },
-  });
-
   const entity: Entity = {
     apiVersion: 'v1',
     kind: 'Component',
     metadata: {
       name: 'test',
     },
-  };
-
-  const entities: Entity[] = [
-    entity,
-    {
-      apiVersion: 'v1',
-      kind: 'Component',
-      metadata: {
-        name: 'test-2',
-      },
-    },
-    {
-      apiVersion: 'v1',
-      kind: 'Component',
-      metadata: {
-        name: 'test-3',
-      },
-    },
-  ];
-
-  const defaultEntityListResponse: GetEntitiesResponse = {
-    items: entities,
   };
 
   const databases = TestDatabases.create();
@@ -93,53 +48,33 @@ describe('DatabaseBadgesStore', () => {
       ({ knex, badgeStore } = await createDatabaseBadgesStore(databaseId));
     });
 
-    it('createAllBadges', async () => {
-      await badgeStore.createAllBadges(
-        defaultEntityListResponse,
-        config.getString('custom.badges-backend.salt'),
+    it('createABadge', async () => {
+      const uuid = await badgeStore.addBadge(
+        entity.metadata.name,
+        entity.metadata.namespace || 'default',
+        entity.kind,
       );
 
-      const storedBadges = await badgeStore.getAllBadges();
-      const testedEntities: {
-        name: string;
-        namespace: string;
-        kind: string;
-        hash: string;
-      }[] = [];
-
-      entities.forEach(entityInLoop => {
-        const kind = entityInLoop.kind.toLowerCase();
-        const namespace = entityInLoop.metadata.namespace || 'default';
-        const name = entityInLoop.metadata.name.toLocaleLowerCase();
-        const salt = config.getString('custom.badges-backend.salt');
-        const entityHash = crypto
-          .createHash('sha256')
-          .update(`${kind}:${namespace}:${name}:${salt}`)
-          .digest('hex');
-
-        testedEntities.push({
-          hash: entityHash,
-          name: name,
-          namespace: namespace,
-          kind: kind,
-        });
-        expect(storedBadges).toEqual(expect.arrayContaining(testedEntities));
-        expect(storedBadges.length).toEqual(3);
-      });
+      const storedBadge = await badgeStore.getBadgeFromUuid(uuid.uuid);
+      expect(storedBadge?.kind).toEqual(entity.kind);
+      expect(storedBadge?.name).toEqual(entity.metadata.name);
+      expect(storedBadge?.namespace).toEqual(
+        entity.metadata.namespace || 'default',
+      );
     });
 
-    it('getBadgeFromHash', async () => {
+    it('getBadgeFromUuid', async () => {
       await knex('badges').truncate();
       await knex('badges').insert([
         {
-          hash: 'hash1',
+          uuid: 'uuid1',
           name: 'test',
           namespace: 'default',
           kind: 'component',
         },
       ]);
 
-      const storedEntity = await badgeStore.getBadgeFromHash('hash1');
+      const storedEntity = await badgeStore.getBadgeFromUuid('uuid1');
 
       expect(storedEntity).toEqual({
         name: 'test',
@@ -148,147 +83,26 @@ describe('DatabaseBadgesStore', () => {
       });
     });
 
-    it('getHashFromEntityMetadata', async () => {
+    it('getUuidFromEntityMetadata', async () => {
       await knex('badges').truncate();
       await knex('badges').insert([
         {
-          hash: 'hash1',
+          uuid: 'uuid1',
           name: 'test',
           namespace: 'default',
           kind: 'component',
         },
       ]);
 
-      const storedHash = await badgeStore.getHashFromEntityMetadata(
+      const storedUuid = await badgeStore.getUuidFromEntityMetadata(
         'test',
         'default',
         'component',
       );
 
-      expect(storedHash).toEqual({
-        hash: 'hash1',
+      expect(storedUuid).toEqual({
+        uuid: 'uuid1',
       });
-    });
-
-    it('deleteObsoleteHashes', async () => {
-      const entityHash = crypto
-        .createHash('sha256')
-        .update(
-          `component:default:test:${config.getString(
-            'custom.badges-backend.salt',
-          )}`,
-        )
-        .digest('hex');
-
-      await knex('badges').insert([
-        {
-          hash: 'obsoleteHash',
-          name: 'obsoleteEntity',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: entityHash,
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-      ]);
-
-      await badgeStore.deleteObsoleteHashes(
-        defaultEntityListResponse,
-        config.getString('custom.badges-backend.salt'),
-      );
-
-      const storedBadges = await badgeStore.getAllBadges();
-
-      expect(storedBadges).toEqual(
-        expect.not.arrayContaining([
-          {
-            hash: 'obsoleteHash',
-            name: 'obsoleteEntity',
-            namespace: 'default',
-            kind: 'component',
-          },
-        ]),
-      );
-      expect(storedBadges.length).toEqual(1);
-      expect(storedBadges).toEqual(
-        expect.arrayContaining([
-          {
-            hash: entityHash,
-            name: 'test',
-            namespace: 'default',
-            kind: 'component',
-          },
-        ]),
-      );
-    });
-
-    it('countAllBadges', async () => {
-      await knex('badges').truncate();
-      await knex('badges').insert([
-        {
-          hash: 'hash1',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash2',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash3',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash4',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-      ]);
-
-      const storedBadgesCount = await badgeStore.countAllBadges();
-      expect(storedBadgesCount).toEqual(4);
-    });
-
-    it('getAllBadges', async () => {
-      await knex('badges').truncate();
-      await knex('badges').insert([
-        {
-          hash: 'hash1',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash2',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash3',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-        {
-          hash: 'hash4',
-          name: 'test',
-          namespace: 'default',
-          kind: 'component',
-        },
-      ]);
-
-      const storedBadgesCount = await badgeStore.countAllBadges();
-      expect(storedBadgesCount).toEqual(4);
     });
   });
 });

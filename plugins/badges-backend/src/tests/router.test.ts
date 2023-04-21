@@ -75,12 +75,9 @@ describe('createRouter', () => {
   };
 
   const badgeStore: jest.Mocked<BadgesStore> = {
-    createAllBadges: jest.fn(),
-    getBadgeFromHash: jest.fn(),
-    getHashFromEntityMetadata: jest.fn(),
-    deleteObsoleteHashes: jest.fn(),
-    countAllBadges: jest.fn(),
-    getAllBadges: jest.fn(),
+    getBadgeFromUuid: jest.fn(),
+    getUuidFromEntityMetadata: jest.fn(),
+    addBadge: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -93,6 +90,10 @@ describe('createRouter', () => {
       backend: {
         baseUrl: 'http://127.0.0.1',
         listen: { port: 7007 },
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
       },
     });
 
@@ -123,7 +124,6 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
-      db: badgeStore,
     });
     app = express().use(router);
   });
@@ -132,7 +132,7 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  it('works', async () => {
+  it('works with badgeStore', async () => {
     const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
       badgeBuilder,
@@ -142,7 +142,7 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
-      db: badgeStore,
+      badgeStore: badgeStore,
     });
     expect(router).toBeDefined();
   });
@@ -261,7 +261,7 @@ describe('createRouter', () => {
       });
     });
 
-    it('returns 404 for hashed entities', async () => {
+    it('returns 404 for uuid entities', async () => {
       catalog.getEntityByRef.mockResolvedValue(undefined);
       async function testUrl(url: string) {
         const response = await request(app).get(url);

@@ -19,15 +19,9 @@ exports.up = async function up(knex) {
     table.string('kind').notNullable();
     table.string('namespace').notNullable();
     table.string('name').notNullable();
-    table
-      .string('hash')
-      .unique()
-      .comment(
-        'Hash is calculated from the SHA256 of badge kind, namespace, name, and applications salt',
-      )
-      .notNullable();
-    table.index(['hash'], 'badges_hash_index');
-    table.primary(['hash']);
+    table.string('uuid').unique().notNullable();
+    table.index(['uuid'], 'badges_uuid_index');
+    table.primary(['kind', 'namespace', 'name']);
   });
 };
 

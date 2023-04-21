@@ -32,7 +32,6 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { BadgesStore } from '../database/badgesStore';
-import crypto from 'crypto';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -80,16 +79,14 @@ describe('createRouter', () => {
       listen: {
         port: 7007,
       },
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
     },
     app: {
       badges: {
         obfuscate: true,
-      },
-    },
-    custom: {
-      'badges-backend': {
-        salt: 'random-string',
-        cacheTimeToLive: '60',
       },
     },
   });
@@ -131,39 +128,17 @@ describe('createRouter', () => {
     kind: 'component',
   };
 
-  const badgeEntities = [
-    {
-      hash: 'hash1',
-      name: 'test',
-      namespace: 'default',
-      kind: 'component',
-    },
-    {
-      hash: 'hash2',
-      name: 'test2',
-      namespace: 'default',
-      kind: 'component',
-    },
-  ];
-
   const badgeStore: jest.Mocked<BadgesStore> = {
-    createAllBadges: jest.fn(),
-    getBadgeFromHash: jest.fn().mockImplementation(async () => {
+    addBadge: jest.fn().mockImplementation(async () => {
+      return { uuid: 'uuid1' };
+    }),
+    getBadgeFromUuid: jest.fn().mockImplementation(async () => {
       return badgeEntity;
     }),
-    getHashFromEntityMetadata: jest
+    getUuidFromEntityMetadata: jest
       .fn()
-      .mockImplementation(async () => 'niceHash'),
-    deleteObsoleteHashes: jest.fn(),
-    countAllBadges: jest.fn().mockImplementation(async () => 4),
-    getAllBadges: jest.fn().mockImplementation(async () => badgeEntities),
+      .mockImplementation(async () => 'uuid1'),
   };
-
-  const salt = config.getString('custom.badges-backend.salt');
-  const entityHash = crypto
-    .createHash('sha256')
-    .update(`component:default:test:${salt}`)
-    .digest('hex');
 
   beforeAll(async () => {
     discovery = SingleHostDiscovery.fromConfig(config);
@@ -176,7 +151,6 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
-      db: badgeStore,
     });
     app = express().use(router);
   });
@@ -185,7 +159,7 @@ describe('createRouter', () => {
     jest.clearAllMocks();
   });
 
-  it('works', async () => {
+  it('works with provided badgeStore', async () => {
     const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
       badgeBuilder,
@@ -195,7 +169,7 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
-      db: badgeStore,
+      badgeStore: badgeStore,
     });
     expect(router).toBeDefined();
   });
@@ -240,113 +214,9 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /entity/:entityHash/badge-specs', () => {
-    it('returns all badge specs for entity', async () => {
-      catalog.getEntities.mockResolvedValueOnce({ items: entities });
-      catalog.getEntityByRef.mockResolvedValueOnce(entity);
-
-      badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
-      badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
-
-      const response = await request(app).get(`/entity/hash1/badge-specs`);
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual([badge]);
-
-      expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
-        {
-          namespace: 'default',
-          kind: 'component',
-          name: 'test',
-        },
-        { token: '' },
-      );
-
-      expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadgeJson).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadgeJson).toHaveBeenCalledWith({
-        badgeInfo: { id: badge.id },
-        context: {
-          badgeUrl: expect.stringMatching(
-            /http:\/\/127.0.0.1\/api\/badges\/entity\/hash1\/test-badge/,
-          ),
-          config,
-          entity,
-        },
-      });
-    });
-  });
-
-  describe('GET /entity/:entityHash/test-badge', () => {
-    it('returns badge for entity', async () => {
-      catalog.getEntityByRef.mockResolvedValueOnce(entity);
-      catalog.getEntities.mockResolvedValueOnce({ items: entities });
-
-      const image = '<svg>...</svg>';
-      badgeBuilder.createBadgeSvg.mockResolvedValueOnce(image);
-
-      const response = await request(app).get(
-        '/entity/3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed/test-badge',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(Buffer.from(image));
-
-      expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
-        {
-          namespace: 'default',
-          kind: 'component',
-          name: 'test',
-        },
-        { token: '' },
-      );
-
-      expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(0);
-      expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledWith({
-        badgeInfo: { id: badge.id },
-        context: {
-          badgeUrl: expect.stringMatching(
-            /http:\/\/127.0.0.1\/api\/badges\/entity\/3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed\/test-badge/,
-          ),
-          config,
-          entity,
-        },
-      });
-    });
-
-    it('returns badge spec for entity', async () => {
-      catalog.getEntityByRef.mockResolvedValueOnce(entity);
-      catalog.getEntities.mockResolvedValueOnce({ items: entities });
-      badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
-
-      const url =
-        '/entity/3a5f91c1e66519be5394c37a8ba69c3087b7c322c600e7497dc9d517353e5bed/test-badge?format=json';
-      const response = await request(app).get(url);
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(badge);
-    });
-  });
-
   describe('GET /entity/:namespace/:kind/:name/obfuscated', () => {
     catalog.getEntityByRef.mockResolvedValueOnce(entity);
     catalog.getEntities.mockResolvedValueOnce({ items: entities });
-    badgeStore.getHashFromEntityMetadata.mockResolvedValue({
-      hash: entityHash,
-    });
-
-    it('returns obfuscated entity', async () => {
-      const obfuscatedEntity = await request(app)
-        .get('/entity/default/component/test/obfuscated')
-        .set('Authorization', 'Bearer fakeToken');
-      expect(obfuscatedEntity.status).toEqual(200);
-      // echo -n  "component:default:test:random-string" | openssl dgst -sha256
-      expect(obfuscatedEntity.body).toEqual({
-        hash: entityHash,
-      });
-    });
 
     it('returns obfuscated 401 if no auth', async () => {
       const obfuscatedEntity = await request(app).get(
@@ -354,39 +224,82 @@ describe('createRouter', () => {
       );
       expect(obfuscatedEntity.status).toEqual(401);
     });
-  });
 
-  describe('Errors', () => {
-    it('returns 404 for unknown entity hash', async () => {
-      badgeStore.getBadgeFromHash.mockResolvedValue(undefined);
+    it('returns obfuscated entity and badges', async () => {
+      const obfuscatedEntity = await request(app)
+        .get('/entity/default/component/test/obfuscated')
+        .set('Authorization', 'Bearer fakeToken');
+      expect(obfuscatedEntity.status).toEqual(200);
+      expect(obfuscatedEntity.body.uuid).toMatch(
+        new RegExp(
+          '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+        ),
+      );
+
+      const uuid = obfuscatedEntity.body.uuid;
+      const url = `/entity/${uuid}/test-badge?format=json`;
+      let response = await request(app).get(url);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(badge);
+
       catalog.getEntityByRef.mockResolvedValueOnce(entity);
       catalog.getEntities.mockResolvedValueOnce({ items: entities });
+
+      const image = '<svg>...</svg>';
+      badgeBuilder.createBadgeSvg.mockResolvedValueOnce(image);
+
+      response = await request(app).get(`/entity/${uuid}/test-badge`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(Buffer.from(image));
+
+      catalog.getEntities.mockResolvedValueOnce({ items: entities });
+      catalog.getEntityByRef.mockResolvedValueOnce(entity);
+
       badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
       badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
 
-      async function testUrl(url: string) {
-        const response = await request(app).get(url);
-        expect(response.status).toEqual(404);
-        expect(response.body).toEqual({
-          error: {
-            message: expect.any(String),
-            name: 'NotFoundError',
-          },
-          request: {
-            method: 'GET',
-            url,
-          },
-          response: {
-            statusCode: 404,
-          },
-        });
-      }
-      await testUrl(
-        '/entity/3a5f91c1e66519be5394c37a8ba69cfsf3087b7c322c600e7497dc9d517353e5bed/badge-specs',
-      );
-      await testUrl(
-        '/entity/3a5f91c1e66519be5394c37a8ba69c3087b7csfsf322c600e7497dc9d517353e5bed/test-badge',
-      );
+      response = await request(app).get(`/entity/${uuid}/badge-specs`);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([badge]);
+
+      expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
+      expect(badgeBuilder.createBadgeJson).toHaveBeenCalledTimes(2);
+    });
+
+    describe('Errors', () => {
+      it('returns 404 for unknown entity uuid', async () => {
+        badgeStore.getBadgeFromUuid.mockResolvedValue(undefined);
+        catalog.getEntityByRef.mockResolvedValueOnce(entity);
+        catalog.getEntities.mockResolvedValueOnce({ items: entities });
+        badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
+        badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
+
+        async function testUrl(url: string) {
+          const response = await request(app).get(url);
+          expect(response.status).toEqual(404);
+          expect(response.body).toEqual({
+            error: {
+              message: expect.any(String),
+              name: 'NotFoundError',
+            },
+            request: {
+              method: 'GET',
+              url,
+            },
+            response: {
+              statusCode: 404,
+            },
+          });
+        }
+        await testUrl(
+          '/entity/3a5f91c1e66519be5394c37a8ba69cfsf3087b7c322c600e7497dc9d517353e5bed/badge-specs',
+        );
+        await testUrl(
+          '/entity/3a5f91c1e66519be5394c37a8ba69c3087b7csfsf322c600e7497dc9d517353e5bed/test-badge',
+        );
+      });
     });
   });
 });

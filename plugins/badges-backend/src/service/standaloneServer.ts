@@ -70,7 +70,7 @@ export async function startStandaloneServer(
     tokenManager,
     logger,
     identity,
-    db: await DatabaseBadgesStore.create({
+    badgeStore: await DatabaseBadgesStore.create({
       database: { getClient: async () => database },
     }),
   });

@@ -20,15 +20,10 @@ import {
 } from '@backstage/plugin-badges-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { DatabaseBadgesStore } from '@backstage/plugin-badges-backend';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const db = await DatabaseBadgesStore.create({
-    database: env.database,
-  });
-
   return await createRouter({
     config: env.config,
     discovery: env.discovery,
@@ -36,6 +31,5 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     logger: env.logger,
     identity: env.identity,
-    db: db,
   });
 }

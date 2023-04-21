@@ -17,6 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import {
+  DatabaseManager,
   errorHandler,
   PluginEndpointDiscovery,
   TokenManager,
@@ -27,11 +28,10 @@ import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
-import crypto from 'crypto';
 import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
-import type { BadgesStore } from '../database/badgesStore';
+import { BadgesStore, DatabaseBadgesStore } from '../database/badgesStore';
 
 /** @public */
 export interface RouterOptions {
@@ -43,7 +43,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   logger: Logger;
   identity: IdentityApi;
-  db: BadgesStore;
+  badgeStore?: BadgesStore;
 }
 
 /** @public */
@@ -57,39 +57,29 @@ export async function createRouter(
     new DefaultBadgeBuilder(options.badgeFactories || {});
   const router = Router();
 
-  const { db, config, logger, tokenManager, discovery, identity } = options;
+  const { config, logger, tokenManager, discovery, identity } = options;
   const baseUrl = await discovery.getExternalBaseUrl('badges');
-  const salt = config.getOptionalString('custom.badges-backend.salt');
-  const cacheTimeToLive =
-    config.getOptionalNumber('badgeDatabaseRefreshCacheTimeToLive') ?? 3600;
 
-  let lastDatabaseRefresh = 0;
-
-  // Check if the users have enabled the obfuscation of the entity name
   if (config.getOptionalBoolean('app.badges.obfuscate')) {
     logger.info('Badges obfuscation is enabled');
 
-    if (isNil(salt)) {
-      throw new Error(
-        'Badges obfuscation is enabled but no salt has been provided',
-      );
-    }
+    const store = options.badgeStore
+      ? options.badgeStore
+      : await DatabaseBadgesStore.create({
+          database: await DatabaseManager.fromConfig(config).forPlugin(
+            'badges',
+          ),
+        });
 
-    // Use the generated hash instead of the triplet namespace/kind/name
-    router.get('/entity/:entityHash/badge-specs', async (req, res) => {
-      const { entityHash } = req.params;
-
-      // Chech if the database needs to be refreshed
-      if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
-        lastDatabaseRefresh = await refreshBadgeDatabase();
-      }
+    router.get('/entity/:entityUuid/badge-specs', async (req, res) => {
+      const { entityUuid } = req.params;
 
       // Retrieve the badge info from the database
-      const badgeInfos = await db.getBadgeFromHash(entityHash);
+      const badgeInfos = await store.getBadgeFromUuid(entityUuid);
 
       if (isNil(badgeInfos)) {
         throw new NotFoundError(
-          `No badge found for entity hash "${entityHash}"`,
+          `No badge found for entity uuid "${entityUuid}"`,
         );
       }
 
@@ -118,7 +108,7 @@ export async function createRouter(
       const specs = [];
       for (const badgeInfo of await badgeBuilder.getBadges()) {
         const context: BadgeContext = {
-          badgeUrl: await getBadgeObfuscatedUrl(entityHash, badgeInfo.id),
+          badgeUrl: await getBadgeObfuscatedUrl(entityUuid, badgeInfo.id),
           config: config,
           entity,
         };
@@ -133,20 +123,15 @@ export async function createRouter(
       res.status(200).json(specs);
     });
 
-    // Use the generated hash instead of the triplet namespace/kind/name
-    router.get('/entity/:entityHash/:badgeId', async (req, res) => {
-      if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
-        lastDatabaseRefresh = await refreshBadgeDatabase();
-      }
-
-      const { entityHash, badgeId } = req.params;
+    router.get('/entity/:entityUuid/:badgeId', async (req, res) => {
+      const { entityUuid, badgeId } = req.params;
 
       // Retrieve the badge info from the database
-      const badgeInfo = await db.getBadgeFromHash(entityHash);
+      const badgeInfo = await store.getBadgeFromUuid(entityUuid);
 
       if (isNil(badgeInfo)) {
         throw new NotFoundError(
-          `No badge found for entity hash "${entityHash}"`,
+          `No badge found for entity uuid "${entityUuid}"`,
         );
       }
 
@@ -180,7 +165,7 @@ export async function createRouter(
       const badgeOptions = {
         badgeInfo: { id: badgeId },
         context: {
-          badgeUrl: await getBadgeObfuscatedUrl(entityHash, badgeId),
+          badgeUrl: await getBadgeObfuscatedUrl(entityUuid, badgeId),
           config: config,
           entity,
         },
@@ -201,7 +186,6 @@ export async function createRouter(
       res.status(200).send(data);
     });
 
-    // Generate the hash for queried the namespace/kind/name triplet
     router.get(
       '/entity/:namespace/:kind/:name/obfuscated',
       function authenticate(req, res, next) {
@@ -223,34 +207,21 @@ export async function createRouter(
         }
       },
       async (req, res) => {
-        if (await isBadgeDatabaseRefreshNeeded(lastDatabaseRefresh)) {
-          lastDatabaseRefresh = await refreshBadgeDatabase();
-        }
-
         const { namespace, kind, name } = req.params;
-        const storedEntityHash: { hash: string } | undefined =
-          await db.getHashFromEntityMetadata(name, namespace, kind);
+        let storedEntityUuid: { uuid: string } | undefined =
+          await store.getUuidFromEntityMetadata(name, namespace, kind);
 
-        if (isNil(storedEntityHash)) {
-          throw new NotFoundError(
-            `No hash found for entity "${namespace}/${kind}/${name}"`,
-          );
+        if (isNil(storedEntityUuid)) {
+          storedEntityUuid = await store.addBadge(name, namespace, kind);
+
+          if (isNil(storedEntityUuid)) {
+            throw new NotFoundError(
+              `No uuid found for entity "${namespace}/${kind}/${name}"`,
+            );
+          }
         }
 
-        // Compare a live calculated hash with the stored one to avoid returning an obsolete entityHash (in case of a salt change)
-
-        const liveHash = crypto
-          .createHash('sha256')
-          .update(`${kind}:${namespace}:${name}:${salt}`)
-          .digest('hex');
-
-        if (storedEntityHash.hash !== liveHash) {
-          throw new NotFoundError(
-            "Stored Hash and live Hash don't match, did you change the salt? Try to refresh the badge database table and try again",
-          );
-        }
-
-        return res.status(200).json(storedEntityHash);
+        return res.status(200).json(storedEntityUuid);
       },
     );
 
@@ -348,10 +319,10 @@ export async function createRouter(
 
   // This function return the obfuscated badge url based on the namespace/kind/name triplet
   async function getBadgeObfuscatedUrl(
-    hash: string,
+    uuid: string,
     badgeId: string,
   ): Promise<string> {
-    return `${baseUrl}/entity/${hash}/${badgeId}`;
+    return `${baseUrl}/entity/${uuid}/${badgeId}`;
   }
 
   // This function return the badge url based on the namespace/kind/name triplet
@@ -362,46 +333,5 @@ export async function createRouter(
     badgeId: string,
   ): Promise<string> {
     return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
-  }
-
-  async function isBadgeDatabaseRefreshNeeded(
-    lastDatabaseRefreshTimestamp: number,
-  ): Promise<boolean> {
-    if ((await db.countAllBadges()) === 0) {
-      logger.info('Badge database is empty, refreshing it');
-      return true;
-    }
-
-    if (
-      lastDatabaseRefreshTimestamp === 0 ||
-      Date.now() - lastDatabaseRefreshTimestamp > cacheTimeToLive * 1000
-    ) {
-      logger.info(
-        'Badge database refresh cache to live exceeded, refreshing it',
-      );
-      return true;
-    }
-
-    return false;
-  }
-
-  async function refreshBadgeDatabase(): Promise<number> {
-    const token = await tokenManager.getToken();
-    const entities = await catalog.getEntities(
-      {
-        filter: {
-          kind: ['Component'],
-        },
-      },
-      token,
-    );
-    logger.info(
-      `Refreshing badge database with ${entities.items.length} entities`,
-    );
-    await db.createAllBadges(entities, salt);
-    logger.info('Badge database refreshed, deleting obsolete hashes');
-    await db.deleteObsoleteHashes(entities, salt);
-
-    return Date.now();
   }
 }

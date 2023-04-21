@@ -19,39 +19,28 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import crypto from 'crypto';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * internal
  * @public
  */
 export interface BadgesStore {
-  createAllBadges(
-    entities: GetEntitiesResponse,
-    salt: string | undefined,
-  ): Promise<void>;
-
-  getBadgeFromHash(
-    hash: string,
-  ): Promise<{ name: string; namespace: string; kind: string } | undefined>;
-
-  getHashFromEntityMetadata(
+  addBadge(
     name: string,
     namespace: string,
     kind: string,
-  ): Promise<{ hash: string } | undefined>;
+  ): Promise<{ uuid: string }>;
 
-  deleteObsoleteHashes(
-    entities: GetEntitiesResponse,
-    salt: string | undefined,
-  ): Promise<void>;
+  getBadgeFromUuid(
+    uuid: string,
+  ): Promise<{ name: string; namespace: string; kind: string } | undefined>;
 
-  countAllBadges(): Promise<number>;
-
-  getAllBadges(): Promise<
-    { name: string; namespace: string; kind: string; hash: string }[]
-  >;
+  getUuidFromEntityMetadata(
+    name: string,
+    namespace: string,
+    kind: string,
+  ): Promise<{ uuid: string } | undefined>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -84,99 +73,47 @@ export class DatabaseBadgesStore implements BadgesStore {
     return new DatabaseBadgesStore(client);
   }
 
-  async createAllBadges(
-    entities: GetEntitiesResponse,
-    salt: string,
-  ): Promise<void> {
-    for (const entity of entities.items) {
-      const name = entity.metadata.name.toLocaleLowerCase();
-      const namespace =
-        entity.metadata.namespace?.toLocaleLowerCase() ?? 'default';
-      const kind = entity.kind.toLocaleLowerCase();
-      const entityHash = crypto
-        .createHash('sha256')
-        .update(`${kind}:${namespace}:${name}:${salt}`)
-        .digest('hex');
-
-      await this.db('badges')
-        .insert({
-          hash: entityHash,
-          namespace: namespace,
-          name: name,
-          kind: kind,
-        })
-        .onConflict()
-        .ignore();
-    }
-  }
-
-  async getAllBadges(): Promise<
-    { name: string; namespace: string; kind: string; hash: string }[]
-  > {
-    const result = await this.db('badges').select('*').orderBy('name', 'asc');
-    return result;
-  }
-
-  async getBadgeFromHash(
-    hash: string,
+  async getBadgeFromUuid(
+    uuid: string,
   ): Promise<{ name: string; namespace: string; kind: string } | undefined> {
     const result = await this.db('badges')
       .select('namespace', 'name', 'kind')
-      .where({ hash: hash })
+      .where({ uuid: uuid })
       .first();
 
     return result;
   }
 
-  async getHashFromEntityMetadata(
+  async getUuidFromEntityMetadata(
     name: string,
     namespace: string,
     kind: string,
-  ): Promise<{ hash: string } | undefined> {
+  ): Promise<{ uuid: string } | undefined> {
     const result = await this.db('badges')
-      .select('hash')
+      .select('uuid')
       .where({ name: name, namespace: namespace, kind: kind })
       .first();
 
     return result;
   }
 
-  async deleteObsoleteHashes(
-    entities: GetEntitiesResponse,
-    salt: string,
-  ): Promise<void> {
-    const entityInCatalog: string[] = [];
-    const entityInBadgeDatabase: string[] = [];
-    let entityToDelete: string[] = [];
+  async addBadge(
+    name: string,
+    namespace: string,
+    kind: string,
+  ): Promise<{ uuid: string }> {
+    const uuid = uuidv4();
 
-    for (const entity of entities.items) {
-      const name = entity.metadata.name.toLowerCase();
-      const namespace = entity.metadata.namespace?.toLowerCase() ?? 'default';
-      const kind = entity.kind.toLowerCase();
-      const entityHash = crypto
-        .createHash('sha256')
-        .update(`${kind}:${namespace}:${name}:${salt}`)
-        .digest('hex');
+    await this.db('badges')
+      .insert({
+        uuid: uuid,
+        name: name,
+        namespace: namespace,
+        kind: kind,
+      })
+      .onConflict(['name', 'namespace', 'kind'])
+      .ignore();
 
-      entityInCatalog.push(entityHash);
-    }
-
-    for (const entity of await this.getAllBadges()) {
-      entityInBadgeDatabase.push(entity.hash);
-    }
-
-    entityToDelete = entityInBadgeDatabase.filter(
-      entity => !entityInCatalog.includes(entity),
-    );
-
-    for (const entity of entityToDelete) {
-      await this.db('badges').where({ hash: entity }).del();
-    }
-  }
-
-  async countAllBadges(): Promise<number> {
-    const result = await this.db('badges').countDistinct('hash as count');
-    const count: number = +result[0].count;
-    return count;
+    return { uuid };
   }
 }
