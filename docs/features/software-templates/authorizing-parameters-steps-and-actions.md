@@ -49,7 +49,8 @@ In this example, the `description` parameter and the `step2` step are marked wit
 
 To conditionally authorize parameters and steps based on the user executing the template, [edit your permission policy](../../permissions/writing-a-policy.md), by targeting `templateParameterReadPermission` and `templateStepReadPermission` permissions, which are provided by the scaffolder plugin. For example:
 
-```ts
+```ts title="packages/backend/src/plugins/permission.ts"
+/* highlight-add-start */
 import {
   templateParameterReadPermission,
   templateStepReadPermission,
@@ -58,12 +59,14 @@ import {
   createScaffolderActionConditionalDecision,
   scaffolderTemplateConditions,
 } from '@backstage/plugin-scaffolder-backend/alpha';
+/* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
+    /* highlight-add-start */
     if (
       isPermission(request.permission, templateParameterReadPermission) ||
       isPermission(request.permission, templateStepReadPermission)
@@ -73,6 +76,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
           not: scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
         });
     }
+    /* highlight-add-end */
 
     return {
       result: AuthorizeResult.ALLOW,
@@ -91,18 +95,21 @@ Similar to parameters and steps, the scaffolder plugin exposes permissions to re
 
 To restrict access to a particular action, you can modify your permission policy as follows:
 
-```ts
+```ts title="packages/backend/src/plugins/permission.ts"
+/* highlight-add-start */
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
 } from '@backstage/plugin-scaffolder-backend/alpha';
+/* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
+    /* highlight-add-start */
     if (isPermission(request.permission, actionExecutePermission)) {
       if (user?.identity.userEntityRef === 'user:default/spiderman') {
         return createScaffolderActionConditionalDecision(request.permission, {
@@ -112,6 +119,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
         });
       }
     }
+    /* highlight-add-end */
 
     return {
       result: AuthorizeResult.ALLOW,
@@ -125,18 +133,21 @@ With this permission policy, the user `spiderman` won't be able to execute the d
 You can also restrict the input provided to the action by combining multiple rules.
 In the example below, `spiderman` won't be able to execute debug:log when passing `{ "message": "not-this!" }` as action input:
 
-```ts
+```ts title="packages/backend/src/plugins/permission.ts"
+/* highlight-add-start */
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   createScaffolderActionConditionalDecision,
   scaffolderActionConditions,
 } from '@backstage/plugin-scaffolder-backend/alpha';
+/* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
+    /* highlight-add-start */
     if (isPermission(request.permission, actionExecutePermission)) {
       if (user?.identity.userEntityRef === 'user:default/spiderman') {
         return createScaffolderActionConditionalDecision(request.permission, {
@@ -152,6 +163,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
         });
       }
     }
+    /* highlight-add-end */
 
     return {
       result: AuthorizeResult.ALLOW,
