@@ -60,8 +60,8 @@ const getExtensionContext = (
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
-      if (value) {
-        acc[`routeParams_${key}`] = value;
+      if (value !== undefined) {
+        acc[key] = value;
       }
       return acc;
     }, {});
