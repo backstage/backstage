@@ -16,5 +16,3 @@
 
 export * from './service/router';
 export type { LinguistBackendApi } from './api';
-export { LinguistBackendDatabase } from './db';
-export type { LinguistBackendStore } from './db';
