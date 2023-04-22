@@ -24,7 +24,7 @@ app:
   #   env: 'staging'
 ```
 
-If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml#L5) file does not have this configuration, you may have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/master/packages/app/public/index.html#L64) to include the Datadog RUM `init()` section manually.
+If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/app-config.yaml#L5) file does not have this configuration, you may have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/packages/app/public/index.html#L69) to include the Datadog RUM `init()` section manually.
 
 The `clientToken` and `applicationId` are generated from the Datadog RUM page
 following
