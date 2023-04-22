@@ -75,7 +75,7 @@ try {
 
 We can use the data provided by the Cost Explorer API to implement CostInsightsApi methods such as `getGroupDailyCost`, `getProjectDailyCost`, and `getProductInsights`. You'll still need to provide external data for methods such as `getUserGroups` and `getAlerts`.
 
-### 1. [getGroupDailyCost](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts#L93)
+### 1. [getGroupDailyCost](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/cost-insights/src/api/CostInsightsApi.ts#L119)
 
 The `getGroupDailyCost` method is expected to return daily cost aggregations for a given group and interval time frame as a [`Cost`](https://github.com/backstage/backstage/blob/master/plugins/cost-insights-common/src/types/Cost.ts).
 
@@ -206,13 +206,13 @@ Sample `groupedCosts` based on the response:
 }
 ```
 
-### 2. [getProjectDailyCost](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts#L111)
+### 2. [getProjectDailyCost](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/cost-insights/src/api/CostInsightsApi.ts#L137)
 
 The `getProjectDailyCost` method is expected to return daily cost aggregations for a given billing entity and interval time frame as a [`Cost`](https://github.com/backstage/backstage/blob/master/plugins/cost-insights-common/src/types/Cost.ts).
 
 This should be similar to the `getGroupDailyCost` method implementation, but with an updated `LINKED_ACCOUNT` filter to get narrower cost data for a lower-level linked account.
 
-### 3. [getProductInsights](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts#L111)
+### 3. [getProductInsights](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/cost-insights/src/api/CostInsightsApi.ts#L165)
 
 The `getProductInsights` method is expected to return cost aggregations for a particular cloud product and interval time frame as an [`Entity`](https://github.com/backstage/backstage/blob/master/plugins/cost-insights-common/src/types/Entity.ts).
 
