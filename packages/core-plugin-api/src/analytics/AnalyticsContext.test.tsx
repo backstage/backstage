@@ -17,9 +17,13 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { AnalyticsContext, useAnalyticsContext } from './AnalyticsContext';
+import {
+  AnalyticsContext,
+  useAnalyticsContext,
+  withAnalyticsContext,
+} from './AnalyticsContext';
 
-const AnalyticsSpy = () => {
+const AnalyticsSpy = ({ prop = '' }: { prop?: string }) => {
   const context = useAnalyticsContext();
   return (
     <>
@@ -27,6 +31,7 @@ const AnalyticsSpy = () => {
       <div data-testid="plugin-id">{context.pluginId}</div>
       <div data-testid="extension">{context.extension}</div>
       <div data-testid="custom">{context.custom}</div>
+      <div data-testid="prop">{prop}</div>
     </>
   );
 };
@@ -80,6 +85,38 @@ describe('AnalyticsContext', () => {
       expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
+    });
+  });
+
+  describe('withAnalyticsContext', () => {
+    it('uses the default analytics context', () => {
+      const Composed = withAnalyticsContext(AnalyticsSpy, {});
+      const result = render(<Composed />);
+
+      expect(result.getByTestId('extension')).toHaveTextContent('App');
+      expect(result.getByTestId('plugin-id')).toHaveTextContent('root');
+      expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
+    });
+
+    it('uses provided analytics context', () => {
+      const Composed = withAnalyticsContext(AnalyticsSpy, {
+        pluginId: 'custom',
+      });
+      const result = render(<Composed prop="some-prop" />);
+
+      expect(result.getByTestId('extension')).toHaveTextContent('App');
+      expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
+      expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
+      expect(result.getByTestId('prop')).toHaveTextContent('some-prop');
+    });
+
+    it('is able to render inlined components without explicit types', () => {
+      const Composed = withAnalyticsContext(
+        ({ prop }) => <div data-testid="prop">{prop}</div>,
+        { extension: 'test' },
+      );
+      const result = render(<Composed prop="some-prop" />);
+      expect(result.getByTestId('prop')).toHaveTextContent('some-prop');
     });
   });
 });

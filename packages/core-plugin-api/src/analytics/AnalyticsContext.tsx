@@ -89,11 +89,11 @@ export const AnalyticsContext = (options: {
  *
  * @param Component - Component to be wrapped with analytics context attributes
  * @param values - Analytics context key/value pairs.
- * @internal
+ * @public
  */
-export function withAnalyticsContext<TProps extends {}>(
+export function withAnalyticsContext<TProps extends {} = any>(
   Component: React.ComponentType<TProps>,
-  values: AnalyticsContextValue,
+  values: Partial<AnalyticsContextValue>,
 ) {
   const ComponentWithAnalyticsContext = (props: TProps) => {
     return (

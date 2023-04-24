@@ -769,6 +769,15 @@ export function useRouteRefParams<Params extends AnyParams>(
 ): Params;
 
 // @public
+export function withAnalyticsContext<TProps extends {} = any>(
+  Component: React_2.ComponentType<TProps>,
+  attributes: Partial<AnalyticsContextValue>,
+): {
+  (props: TProps): JSX.Element;
+  displayName: string;
+};
+
+// @public
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(
