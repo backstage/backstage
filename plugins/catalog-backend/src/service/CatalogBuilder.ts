@@ -442,7 +442,6 @@ export class CatalogBuilder {
 
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
-      eventBroker: this.env.eventBroker,
       logger,
       refreshInterval: this.processingInterval,
     });
@@ -466,7 +465,7 @@ export class CatalogBuilder {
       policy,
       legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
-    const stitcher = new Stitcher(dbClient, logger);
+    const stitcher = new Stitcher(dbClient, logger, this.env.eventBroker);
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
@@ -533,7 +532,6 @@ export class CatalogBuilder {
       stitcher,
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 1000,
-      eventBroker: this.env.eventBroker,
       onProcessingError: event => {
         this.onProcessingError?.(event);
       },

@@ -92,6 +92,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         entityRefs: toRemove,
         sourceKey: options.sourceKey,
       });
+      // TODO(timbonicus): Include entity uids
       removedEntityRefs.forEach(ref =>
         this.options.eventBroker?.publish(createDeleteEvent(ref)),
       );
@@ -135,11 +136,6 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               target_entity_ref: stringifyEntityRef(item.deferred.entity),
             })),
             BATCH_SIZE,
-          );
-          chunk.forEach(item =>
-            this.options.eventBroker?.publish(
-              createInsertEvent(item.deferred.entity),
-            ),
           );
         } catch (error) {
           if (!isDatabaseConflictError(error)) {

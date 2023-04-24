@@ -33,5 +33,6 @@ export type CatalogEvent<
  */
 export type CatalogEventPayload = {
   type: string;
+  originatingEntityUid?: string;
   originatingEntityRef?: string;
 };

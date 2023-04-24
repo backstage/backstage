@@ -19,15 +19,22 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export function createInsertEvent(entity: Entity): CatalogEvent;
 export function createInsertEvent(entityRef: string): CatalogEvent;
-export function createInsertEvent(entityOrRef: Entity | string): CatalogEvent {
+export function createInsertEvent(entityRef: string, uid: string): CatalogEvent;
+export function createInsertEvent(
+  entityOrRef: Entity | string,
+  uid?: string,
+): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
+  const entityUid =
+    typeof entityOrRef === 'string' ? uid : entityOrRef.metadata.uid;
 
   return {
     topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityUid: entityUid,
       originatingEntityRef: entityRef,
       type: 'experimental.catalog.entity.insert',
     },
@@ -36,15 +43,22 @@ export function createInsertEvent(entityOrRef: Entity | string): CatalogEvent {
 
 export function createUpdateEvent(entity: Entity): CatalogEvent;
 export function createUpdateEvent(entityRef: string): CatalogEvent;
-export function createUpdateEvent(entityOrRef: Entity | string): CatalogEvent {
+export function createUpdateEvent(entityRef: string, uid: string): CatalogEvent;
+export function createUpdateEvent(
+  entityOrRef: Entity | string,
+  uid?: string,
+): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
+  const entityUid =
+    typeof entityOrRef === 'string' ? uid : entityOrRef.metadata.uid;
 
   return {
     topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityUid: entityUid,
       originatingEntityRef: entityRef,
       type: 'experimental.catalog.entity.update',
     },
@@ -53,15 +67,22 @@ export function createUpdateEvent(entityOrRef: Entity | string): CatalogEvent {
 
 export function createDeleteEvent(entity: Entity): CatalogEvent;
 export function createDeleteEvent(entityRef: string): CatalogEvent;
-export function createDeleteEvent(entityOrRef: Entity | string): CatalogEvent {
+export function createDeleteEvent(entityRef: string, uid: string): CatalogEvent;
+export function createDeleteEvent(
+  entityOrRef: Entity | string,
+  uid?: string,
+): CatalogEvent {
   const entityRef =
     typeof entityOrRef === 'string'
       ? entityOrRef
       : stringifyEntityRef(entityOrRef);
+  const entityUid =
+    typeof entityOrRef === 'string' ? uid : entityOrRef.metadata.uid;
 
   return {
     topic: 'backstage.catalog',
     eventPayload: {
+      originatingEntityUid: entityUid,
       originatingEntityRef: entityRef,
       type: 'experimental.catalog.entity.delete',
     },

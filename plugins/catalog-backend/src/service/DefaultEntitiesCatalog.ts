@@ -609,12 +609,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .select({ ref: 'relations.source_entity_ref' }),
       );
 
+    const row = await this.database<DbRefreshStateRow>('refresh_state')
+      .where('entity_id', uid)
+      .select('entity_ref')
+      .first();
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
-    this.eventBroker?.publish(createDeleteEvent(uid));
+    if (row) {
+      this.eventBroker?.publish(createDeleteEvent(row.entity_ref, uid));
+    }
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

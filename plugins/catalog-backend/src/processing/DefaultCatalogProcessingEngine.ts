@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { CatalogEvent } from '@backstage/plugin-catalog-common';
 import {
   ANNOTATION_LOCATION,
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
-import { EventBroker } from '@backstage/events';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
@@ -75,7 +73,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
-    eventBroker?: EventBroker;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -87,7 +84,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
-    this.tracker = options.tracker ?? progressTracker(options.eventBroker);
+    this.tracker = options.tracker ?? progressTracker();
 
     this.stopFunc = undefined;
   }
@@ -348,7 +345,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker(eventBroker?: EventBroker) {
+function progressTracker() {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
@@ -433,18 +430,6 @@ function progressTracker(eventBroker?: EventBroker) {
       processorsDuration.record(endTime(), {
         result: result.ok ? 'ok' : 'failed',
       });
-
-      if (result.ok) {
-        // TODO(timbonicus): do we need this event? should it only fire if there are changes?
-        const event: CatalogEvent = {
-          topic: 'backstage.catalog',
-          eventPayload: {
-            type: 'experimental.catalog.entity.processed',
-            originatingEntityRef: stringifyEntityRef(result.completedEntity),
-          },
-        };
-        eventBroker?.publish(event);
-      }
     }
 
     function markSuccessfulWithNoChanges() {

@@ -22,6 +22,7 @@ import {
   EntityRelation,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
+import { EventBroker } from '@backstage/events';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
@@ -32,6 +33,7 @@ import {
 } from '../database/tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { BATCH_SIZE, generateStableHash } from './util';
+import { createInsertEvent, createUpdateEvent } from '../processing/events';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -47,6 +49,7 @@ export class Stitcher {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,
+    private readonly eventBroker?: EventBroker,
   ) {}
 
   async stitch(entityRefs: Set<string>) {
@@ -70,6 +73,16 @@ export class Stitcher {
       // Entity does no exist in refresh state table, no stitching required.
       return;
     }
+
+    // Check if the entity exists in final_entities already; used later to
+    // determine which event to emit.
+    const existingRecord = await this.database<DbFinalEntitiesRow>(
+      'final_entities',
+    )
+      .where({
+        entity_id: entityResult[0].entity_id,
+      })
+      .first('entity_id');
 
     // Insert stitching ticket that will be compared before inserting the final entity.
     const ticket = uuid();
@@ -234,6 +247,12 @@ export class Stitcher {
       );
       return;
     }
+
+    this.eventBroker?.publish(
+      existingRecord
+        ? createUpdateEvent(entityRef, entityId)
+        : createInsertEvent(entityRef, entityId),
+    );
 
     // TODO(freben): Search will probably need a similar safeguard against
     // race conditions like the final_entities ticket handling above.
