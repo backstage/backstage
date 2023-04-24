@@ -22,7 +22,7 @@ import {
   runCliExtraction,
   buildDocs,
 } from './api-extractor';
-import { getMatchingWorkspacePaths, paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
 
 type Options = {
@@ -48,7 +48,11 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const omitMessages = parseArrayOption(opts.omitMessages);
 
   const isAllPackages = !paths?.length;
-  const selectedPackageDirs = await getMatchingWorkspacePaths(paths);
+  const selectedPackageDirs = await resolvePackagePaths({
+    paths,
+    include: opts.include,
+    exclude: opts.exclude,
+  });
 
   if (isAllPackages && !isCiBuild && !isDocsBuild) {
     console.log('');

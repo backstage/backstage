@@ -1,5 +1,25 @@
 # @backstage/plugin-playlist-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 9a98a96f9e8: Exposes the announcements plugin's permissions in a metadata endpoint.
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-playlist-common@0.1.6
+
 ## 0.2.7-next.3
 
 ### Patch Changes

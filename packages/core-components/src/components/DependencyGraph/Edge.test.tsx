@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Edge } from './Edge';
-import { RenderLabelProps } from './types';
+import { DependencyGraphTypes as Types } from './types';
 
 const fromNode = 'node';
 const toNode = 'other-node';
@@ -38,7 +38,7 @@ const id = {
 };
 
 const setEdge = jest.fn();
-const renderElement = jest.fn((props: RenderLabelProps) => (
+const renderElement = jest.fn((props: Types.RenderLabelProps) => (
   <div>{props.edge.label}</div>
 ));
 

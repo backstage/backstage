@@ -29,6 +29,7 @@ import { PRCardFormating } from '../../utils/types';
 import { shouldDisplayCard } from '../../utils/functions';
 import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositoriesAndTeam } from '../../hooks/useUserRepositoriesAndTeam';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 
 /** @public */
 export interface EntityTeamPullRequestsCardProps {
@@ -70,6 +71,11 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
             icon: <DraftPrIcon />,
             value: 'draft',
             ariaLabel: 'Show draft PRs',
+          },
+          {
+            icon: <UnarchiveIcon />,
+            value: 'archivedRepo',
+            ariaLabel: 'Show archived repos',
           },
           {
             icon: <FullscreenIcon />,
@@ -127,6 +133,7 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
                       url={url}
                       reviews={latestReviews.nodes}
                       repositoryName={repository.name}
+                      repositoryIsArchived={repository.isArchived}
                       isDraft={isDraft}
                     />
                   ),

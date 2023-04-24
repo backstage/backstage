@@ -5,7 +5,6 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Credentials } from 'aws-sdk';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
@@ -34,25 +33,11 @@ export interface AWSClusterDetails extends ClusterDetails {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  // (undocumented)
-  awsGetCredentials: () => Promise<Credentials>;
+  constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: AWSClusterDetails,
   ): Promise<AWSClusterDetails>;
-  // (undocumented)
-  getBearerToken(
-    clusterName: string,
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<string>;
-  // (undocumented)
-  getCredentials(
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<SigningCreds>;
-  // (undocumented)
-  validCredentials(creds: SigningCreds): boolean;
 }
 
 // @public (undocumented)
@@ -338,6 +323,8 @@ export interface KubernetesObjectsProvider {
 
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
+  // (undocumented)
+  config: Config;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)

@@ -17,6 +17,7 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
 import { EventBroker } from '@backstage/events';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
@@ -40,11 +41,10 @@ import {
   UpdateEntityCacheOptions,
   UpdateProcessedEntityOptions,
 } from './types';
-
-import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
+import { deleteOrphanedEntities } from './operations/util/deleteOrphanedEntities';
 import { generateStableHash } from './util';
 
 // The number of items that are sent per batch to the database layer, when
@@ -270,6 +270,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
 
     return { entityRefs };
+  }
+
+  async deleteOrphanedEntities(txOpaque: Transaction): Promise<number> {
+    const tx = txOpaque as Knex.Transaction;
+    return await deleteOrphanedEntities({ tx });
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {

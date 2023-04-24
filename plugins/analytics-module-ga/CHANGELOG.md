@@ -1,5 +1,18 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.28
+
+### Patch Changes
+
+- 7d75f6d9b8f: chore: Improve API Reference documentation
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
 ## 0.1.28-next.3
 
 ### Patch Changes

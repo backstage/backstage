@@ -40,12 +40,6 @@ describe('resolveUrlToRelative', () => {
     const baseUrl = 'http://localhost:3000/instance';
     expect(resolveUrlToRelative(url, baseUrl)).toBe('/test');
   });
-
-  it('removes trailing slashes on the URL when present', () => {
-    const url = 'http://localhost:3000/test//';
-    const baseUrl = 'http://localhost:3000';
-    expect(resolveUrlToRelative(url, baseUrl)).toBe('/test');
-  });
 });
 
 const Component = ({ to }: { to: string }) => {

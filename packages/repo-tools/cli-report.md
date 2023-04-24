@@ -28,6 +28,8 @@ Options:
   --ci
   --tsc
   --docs
+  --include <pattern>
+  --exclude <pattern>
   -a, --allow-warnings <allowWarningsPaths>
   --allow-all-warnings
   -o, --omit-messages <messageCodes>

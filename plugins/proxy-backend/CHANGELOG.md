@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+
 ## 0.2.38-next.2
 
 ### Patch Changes

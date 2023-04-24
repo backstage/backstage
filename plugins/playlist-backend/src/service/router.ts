@@ -112,6 +112,7 @@ export async function createRouter(
   };
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: Object.values(permissions),
     getResources: resourceRefs =>
       Promise.all(resourceRefs.map(ref => dbHandler.getPlaylist(ref))),
     resourceType: PLAYLIST_LIST_RESOURCE_TYPE,

@@ -73,6 +73,7 @@ export type Repository = {
   owner: {
     login: string;
   };
+  isArchived: boolean;
 };
 
 export type PullRequest = {
@@ -99,7 +100,12 @@ export type PullRequestsColumn = {
   content: PullRequests;
 };
 
-export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft' | 'team';
+export type PRCardFormating =
+  | 'compacted'
+  | 'fullscreen'
+  | 'draft'
+  | 'team'
+  | 'archivedRepo';
 
 export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED';
 

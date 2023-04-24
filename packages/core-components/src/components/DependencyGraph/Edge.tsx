@@ -19,12 +19,7 @@ import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
-import {
-  RenderLabelProps,
-  RenderLabelFunction,
-  DependencyEdge,
-  LabelPosition,
-} from './types';
+import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
 import dagre from 'dagre';
@@ -35,11 +30,13 @@ export type EdgeProperties = {
   width?: number;
   height?: number;
   labeloffset?: number;
-  labelpos?: LabelPosition;
+  labelpos?: Types.LabelPosition;
   minlen?: number;
   weight?: number;
 };
-export type GraphEdge<T> = DependencyEdge<T> & dagre.GraphEdge & EdgeProperties;
+export type GraphEdge<T> = Types.DependencyEdge<T> &
+  dagre.GraphEdge &
+  EdgeProperties;
 
 /** @public */
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
@@ -65,15 +62,15 @@ type EdgePoint = dagre.GraphEdge['points'][0];
 export type EdgeComponentProps<T = unknown> = {
   id: dagre.Edge;
   edge: GraphEdge<T>;
-  render?: RenderLabelFunction<T>;
+  render?: Types.RenderLabelFunction<T>;
   setEdge: (
     id: dagre.Edge,
-    edge: DependencyEdge<T>,
+    edge: Types.DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
   curve: 'curveStepBefore' | 'curveMonotoneX';
 };
 
-const renderDefault = (props: RenderLabelProps<unknown>) => (
+const renderDefault = (props: Types.RenderLabelProps<unknown>) => (
   <DefaultLabel {...props} />
 );
 
@@ -85,7 +82,7 @@ export function Edge<EdgeData>({
   curve,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
-  const labelProps: DependencyEdge<EdgeData> = edge;
+  const labelProps: Types.DependencyEdge<EdgeData> = edge;
   const classes = useStyles();
 
   const labelRef = React.useRef<SVGGElement>(null);

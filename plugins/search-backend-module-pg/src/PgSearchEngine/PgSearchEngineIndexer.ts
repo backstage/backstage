@@ -92,4 +92,31 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
       throw e;
     }
   }
+
+  /**
+   * Custom handler covering the case where an error occurred somewhere else in
+   * the indexing pipeline (e.g. a collator or decorator). In such cases, the
+   * finalize method is not called, which leaves a dangling transaction and
+   * therefore an open connection to PG. This handler ensures we close the
+   * transaction and associated connection.
+   *
+   * todo(@backstage/discoverability-maintainers): Consider introducing a more
+   * formal mechanism for handling such errors in BatchSearchEngineIndexer and
+   * replacing this method with it. See: #17291
+   *
+   * @internal
+   */
+  async _destroy(error: Error | null, done: (error?: Error | null) => void) {
+    // Ignore situations where there was no error.
+    if (!error) {
+      done();
+      return;
+    }
+
+    if (!this.tx!.isCompleted()) {
+      await this.tx!.rollback(error);
+    }
+
+    done(error);
+  }
 }

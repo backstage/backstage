@@ -25,6 +25,16 @@ export function registerCommands(program: Command) {
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
     .option(
+      '--include <pattern>',
+      'Only include packages matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
+    .option(
+      '--exclude <pattern>',
+      'Exclude package matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
+    .option(
       '-a, --allow-warnings <allowWarningsPaths>',
       'continue processing packages after getting errors on selected packages Allows glob patterns and comma separated values (i.e. packages/core,plugins/core-*)',
     )

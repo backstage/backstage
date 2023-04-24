@@ -1,5 +1,20 @@
 # @backstage/plugin-search-react
 
+## 1.5.2
+
+### Patch Changes
+
+- b2e182cdfa4: Fixes a UI bug in search result item which rendered the item text with incorrect font size and color
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/version-bridge@1.0.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.3
+
 ## 1.5.2-next.3
 
 ### Patch Changes

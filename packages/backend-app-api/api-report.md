@@ -27,6 +27,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -55,7 +56,7 @@ export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 // @public (undocumented)
 export interface ConfigFactoryOptions {
   argv?: string[];
-  remote?: LoadConfigOptionsRemote;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
 }
 
 // @public (undocumented)

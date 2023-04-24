@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.4.4
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 1.4.4-next.0
 
 ### Patch Changes

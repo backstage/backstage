@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.13.0",
       "releases/v1.12.0",
       "releases/v1.11.0",
       "releases/v1.10.0",
@@ -34,7 +35,6 @@
       "getting-started/index",
       "getting-started/configuration",
       "getting-started/create-an-app",
-      "getting-started/running-backstage-locally",
       {
         "type": "category",
         "label": "App configuration",
@@ -60,7 +60,8 @@
           "local-dev/cli-commands"
         ]
       },
-      "local-dev/linking-local-packages"
+      "local-dev/linking-local-packages",
+      "local-dev/debugging"
     ],
     "Core Features": [
       {

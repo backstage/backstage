@@ -111,7 +111,6 @@ export class Git {
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
-
     return git.commit({ fs, dir, message, author, committer });
   }
 

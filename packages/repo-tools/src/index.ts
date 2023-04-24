@@ -24,9 +24,10 @@ import { program } from 'commander';
 import chalk from 'chalk';
 import { exitWithError } from './lib/errors';
 import { registerCommands } from './commands';
+import { version } from '../package.json';
 
 const main = (argv: string[]) => {
-  program.name('backstage-repo-tools').version('1.0');
+  program.name('backstage-repo-tools').version(version);
 
   registerCommands(program);
 

@@ -59,7 +59,7 @@ working directory. This is almost always the first step in most CI workflows.
 
 On GitHub Actions, you can add a step
 
-[`- uses: actions@checkout@v2`](https://github.com/actions/checkout).
+[`- uses: actions@checkout@v3`](https://github.com/actions/checkout).
 
 On CircleCI, you can add a special
 [`checkout`](https://circleci.com/docs/2.0/configuration-reference/#checkout)

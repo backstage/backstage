@@ -277,19 +277,19 @@ class TestHarness {
       new NoopProgressTracker(),
     );
 
-    const engine = new DefaultCatalogProcessingEngine(
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
       logger,
       processingDatabase,
       orchestrator,
       stitcher,
-      () => createHash('sha1'),
-      50,
-      undefined,
-      event => {
+      createHash: () => createHash('sha1'),
+      pollingIntervalMs: 50,
+      onProcessingError: event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
-      proxyProgressTracker,
-    );
+      tracker: proxyProgressTracker,
+    });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
 

@@ -1,5 +1,18 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.1.2
+
+### Patch Changes
+
+- 7eba760e6f6: Added an endpoint to fetch anonymous aggregated results from an entity
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/config@1.0.7
+
 ## 0.1.2-next.3
 
 ### Patch Changes

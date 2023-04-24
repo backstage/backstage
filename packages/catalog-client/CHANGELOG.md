@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.4.1
+
+### Patch Changes
+
+- c1c4e080b79: Fixed bug in `queryEntities` of `CatalogClient` where the `sortField` is supposed to be changed to `orderField`.
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+
 ## 1.4.1-next.1
 
 ### Patch Changes

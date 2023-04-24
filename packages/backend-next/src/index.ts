@@ -23,6 +23,7 @@ import {
   permissionModuleAllowAllPolicy,
   permissionPlugin,
 } from '@backstage/plugin-permission-backend/alpha';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend/alpha';
 import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
 import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
 import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
@@ -44,6 +45,8 @@ backend.add(techdocsPlugin());
 // Catalog
 backend.add(catalogPlugin());
 backend.add(catalogModuleTemplateKind());
+
+backend.add(scaffolderPlugin());
 
 // Search
 backend.add(searchPlugin());

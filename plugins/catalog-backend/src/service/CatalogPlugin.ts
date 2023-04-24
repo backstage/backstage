@@ -76,6 +76,7 @@ export const catalogPlugin = createBackendPlugin({
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
+        scheduler: coreServices.scheduler,
         events: coreServices.events,
       },
       async init({
@@ -86,6 +87,7 @@ export const catalogPlugin = createBackendPlugin({
         permissions,
         httpRouter,
         lifecycle,
+        scheduler,
         events,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
@@ -94,6 +96,7 @@ export const catalogPlugin = createBackendPlugin({
           reader,
           permissions,
           database,
+          scheduler,
           logger: winstonLogger,
           eventBroker: events,
         });

@@ -133,6 +133,42 @@ export type GithubMultiOrgConfig = Array<{
 }>;
 
 // @public
+export class GithubMultiOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    gitHubConfig: GithubIntegrationConfig;
+    githubCredentialsProvider: GithubCredentialsProvider;
+    githubUrl: string;
+    logger: Logger;
+    orgs?: string[];
+    userTransformer?: UserTransformer;
+    teamTransformer?: TeamTransformer;
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: GithubMultiOrgEntityProviderOptions,
+  ): GithubMultiOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  read(options?: { logger?: Logger }): Promise<void>;
+}
+
+// @public
+export interface GithubMultiOrgEntityProviderOptions {
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  githubUrl: string;
+  id: string;
+  logger: Logger;
+  orgs?: string[];
+  schedule?: 'manual' | TaskRunner;
+  teamTransformer?: TeamTransformer;
+  userTransformer?: UserTransformer;
+}
+
+// @public
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;

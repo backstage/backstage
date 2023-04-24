@@ -35,35 +35,86 @@ import {
 } from './types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Config } from '@backstage/config';
 
 const CACHE_TTL = 5;
 
 export type ProgressTracker = ReturnType<typeof progressTracker>;
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
+  private readonly config: Config;
+  private readonly scheduler?: PluginTaskScheduler;
+  private readonly logger: Logger;
+  private readonly processingDatabase: ProcessingDatabase;
+  private readonly orchestrator: CatalogProcessingOrchestrator;
+  private readonly stitcher: Stitcher;
+  private readonly createHash: () => Hash;
+  private readonly pollingIntervalMs: number;
+  private readonly orphanCleanupIntervalMs: number;
+  private readonly onProcessingError?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
+  private readonly tracker: ProgressTracker;
+
   private stopFunc?: () => void;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly processingDatabase: ProcessingDatabase,
-    private readonly orchestrator: CatalogProcessingOrchestrator,
-    private readonly stitcher: Stitcher,
-    private readonly createHash: () => Hash,
-    private readonly pollingIntervalMs: number = 1000,
-    eventBroker?: EventBroker,
-    private readonly onProcessingError?: (event: {
+  constructor(options: {
+    config: Config;
+    scheduler?: PluginTaskScheduler;
+    logger: Logger;
+    processingDatabase: ProcessingDatabase;
+    orchestrator: CatalogProcessingOrchestrator;
+    stitcher: Stitcher;
+    createHash: () => Hash;
+    pollingIntervalMs?: number;
+    orphanCleanupIntervalMs?: number;
+    onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
-    }) => Promise<void> | void,
-    private readonly tracker: ProgressTracker = progressTracker(eventBroker),
-  ) {}
+    }) => Promise<void> | void;
+    tracker?: ProgressTracker;
+    eventBroker?: EventBroker;
+  }) {
+    this.config = options.config;
+    this.scheduler = options.scheduler;
+    this.logger = options.logger;
+    this.processingDatabase = options.processingDatabase;
+    this.orchestrator = options.orchestrator;
+    this.stitcher = options.stitcher;
+    this.createHash = options.createHash;
+    this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
+    this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
+    this.onProcessingError = options.onProcessingError;
+    this.tracker = options.tracker ?? progressTracker(options.eventBroker);
+
+    this.stopFunc = undefined;
+  }
 
   async start() {
     if (this.stopFunc) {
       throw new Error('Processing engine is already started');
     }
 
-    this.stopFunc = startTaskPipeline<RefreshStateItem>({
+    const stopPipeline = this.startPipeline();
+    const stopCleanup = this.startOrphanCleanup();
+
+    this.stopFunc = () => {
+      stopPipeline();
+      stopCleanup();
+    };
+  }
+
+  async stop() {
+    if (this.stopFunc) {
+      this.stopFunc();
+      this.stopFunc = undefined;
+    }
+  }
+
+  private startPipeline(): () => void {
+    return startTaskPipeline<RefreshStateItem>({
       lowWatermark: 5,
       highWatermark: 10,
       pollingIntervalMs: this.pollingIntervalMs,
@@ -255,11 +306,44 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     });
   }
 
-  async stop() {
-    if (this.stopFunc) {
-      this.stopFunc();
-      this.stopFunc = undefined;
+  private startOrphanCleanup(): () => void {
+    const strategy =
+      this.config.getOptionalString('catalog.orphanStrategy') ?? 'keep';
+    if (strategy !== 'delete') {
+      return () => {};
     }
+
+    const runOnce = async () => {
+      try {
+        await this.processingDatabase.transaction(async tx => {
+          const n = await this.processingDatabase.deleteOrphanedEntities(tx);
+          this.logger.info(`Deleted ${n} orphaned entities`);
+        });
+      } catch (error) {
+        this.logger.warn(`Failed to delete orphaned entities`, error);
+      }
+    };
+
+    if (this.scheduler) {
+      const abortController = new AbortController();
+
+      this.scheduler.scheduleTask({
+        id: 'catalog_orphan_cleanup',
+        frequency: { milliseconds: this.orphanCleanupIntervalMs },
+        timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
+        fn: runOnce,
+        signal: abortController.signal,
+      });
+
+      return () => {
+        abortController.abort();
+      };
+    }
+
+    const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
+    return () => {
+      clearInterval(intervalKey);
+    };
   }
 }
 
@@ -293,9 +377,7 @@ function progressTracker(eventBroker?: EventBroker) {
   const meter = metrics.getMeter('default');
   const stitchedEntities = meter.createCounter(
     'catalog.stitched.entities.count',
-    {
-      description: 'Amount of entities stitched',
-    },
+    { description: 'Amount of entities stitched' },
   );
 
   const processedEntities = meter.createCounter(
