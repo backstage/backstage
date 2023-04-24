@@ -18,7 +18,7 @@ import {
   ConfigService,
   coreServices,
   createServiceFactory,
-  EventService,
+  EventsService,
   IdentityService,
   LoggerService,
   ServiceFactory,
@@ -109,7 +109,7 @@ export namespace mockServices {
     export const factory = simpleFactory(coreServices.identity, identity);
   }
 
-  export function events(): EventService {
+  export function events(): EventsService {
     return new TestEventBroker();
   }
 

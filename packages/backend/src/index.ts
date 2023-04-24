@@ -101,7 +101,7 @@ function makeCreateEnv(config: Config) {
       database,
       config,
       reader,
-      eventBroker,
+      events: eventBroker,
       discovery,
       tokenManager,
       permissions,

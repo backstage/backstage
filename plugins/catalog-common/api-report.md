@@ -69,6 +69,7 @@ export type CatalogEvent<
 // @public
 export type CatalogEventPayload = {
   type: string;
+  originatingEntityUid?: string;
   originatingEntityRef?: string;
 };
 

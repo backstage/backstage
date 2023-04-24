@@ -103,7 +103,7 @@ export namespace coreServices {
   const config: ServiceRef<ConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
-  const events: ServiceRef<EventService, 'plugin'>;
+  const events: ServiceRef<EventsService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;
@@ -248,7 +248,7 @@ export interface DiscoveryService {
 }
 
 // @public (undocumented)
-export interface EventService extends EventBroker {}
+export interface EventsService extends EventBroker {}
 
 // @public
 export type ExtensionPoint<T> = {

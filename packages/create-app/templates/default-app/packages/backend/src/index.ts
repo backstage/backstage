@@ -69,7 +69,7 @@ function makeCreateEnv(config: Config) {
       scheduler,
       permissions,
       identity,
-      eventBroker,
+      events: eventBroker,
     };
   };
 }

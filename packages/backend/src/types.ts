@@ -39,5 +39,5 @@ export type PluginEnvironment = {
   permissions: PermissionEvaluator;
   scheduler: PluginTaskScheduler;
   identity: IdentityApi;
-  eventBroker: EventBroker;
+  events: EventBroker;
 };

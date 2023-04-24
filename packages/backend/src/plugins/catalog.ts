@@ -29,7 +29,7 @@ export default async function createPlugin(
   const demoProvider = new DemoEventBasedEntityProvider({
     logger: env.logger,
     topics: ['example'],
-    eventBroker: env.eventBroker,
+    eventBroker: env.events,
   });
   builder.addEntityProvider(demoProvider);
 

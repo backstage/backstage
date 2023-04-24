@@ -98,7 +98,7 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger: winstonLogger,
-          eventBroker: events,
+          events,
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);

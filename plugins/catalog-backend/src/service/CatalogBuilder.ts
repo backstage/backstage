@@ -118,7 +118,7 @@ export type CatalogEnvironment = {
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
-  eventBroker?: EventBroker;
+  events?: EventBroker;
 };
 
 /**
@@ -447,7 +447,7 @@ export class CatalogBuilder {
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
-      eventBroker: this.env.eventBroker,
+      events: this.env.events,
       logger,
     });
     const catalogDatabase = new DefaultCatalogDatabase({
@@ -465,12 +465,12 @@ export class CatalogBuilder {
       policy,
       legacySingleProcessorValidation: this.legacySingleProcessorValidation,
     });
-    const stitcher = new Stitcher(dbClient, logger, this.env.eventBroker);
+    const stitcher = new Stitcher(dbClient, logger, this.env.events);
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
       stitcher,
-      eventBroker: this.env.eventBroker,
+      events: this.env.events,
     });
 
     let permissionEvaluator: PermissionEvaluator;

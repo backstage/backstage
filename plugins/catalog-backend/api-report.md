@@ -175,7 +175,7 @@ export type CatalogEnvironment = {
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
-  eventBroker?: EventBroker;
+  events?: EventBroker;
 };
 
 // @public

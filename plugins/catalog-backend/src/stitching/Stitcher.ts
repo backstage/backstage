@@ -49,7 +49,7 @@ export class Stitcher {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,
-    private readonly eventBroker?: EventBroker,
+    private readonly events?: EventBroker,
   ) {}
 
   async stitch(entityRefs: Set<string>) {
@@ -248,7 +248,7 @@ export class Stitcher {
       return;
     }
 
-    this.eventBroker?.publish(
+    this.events?.publish(
       existingRecord
         ? createUpdateEvent(entityRef, entityId)
         : createInsertEvent(entityRef, entityId),

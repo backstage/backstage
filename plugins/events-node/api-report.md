@@ -7,11 +7,11 @@ import { EventBroker } from '@backstage/events';
 import { EventParams } from '@backstage/events';
 import { EventPublisher } from '@backstage/events';
 import { EventSubscriber } from '@backstage/events';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { Logger } from 'winston';
 
 // @public
 export class DefaultEventBroker implements EventBroker {
-  constructor(logger: LoggerService);
+  constructor(logger: Logger);
   // (undocumented)
   publish(params: EventParams): Promise<void>;
   // (undocumented)

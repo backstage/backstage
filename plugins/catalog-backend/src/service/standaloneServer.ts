@@ -72,7 +72,7 @@ export async function startStandaloneServer(
     config,
     reader,
     permissions,
-    eventBroker,
+    events: eventBroker,
   });
   const catalog = await builder.build();
 
