@@ -136,6 +136,7 @@ export class KubernetesBuilder {
     const objectsProvider = this.getObjectsProvider({
       logger,
       fetcher,
+      config,
       serviceLocator,
       customResources,
       objectTypesToFetch: this.getObjectTypesToFetch(),
@@ -354,7 +355,7 @@ export class KubernetesBuilder {
   protected buildAuthTranslatorMap() {
     this.authTranslatorMap = {
       google: new GoogleKubernetesAuthTranslator(),
-      aws: new AwsIamKubernetesAuthTranslator(),
+      aws: new AwsIamKubernetesAuthTranslator({ config: this.env.config }),
       azure: new AzureIdentityKubernetesAuthTranslator(this.env.logger),
       serviceAccount: new NoopKubernetesAuthTranslator(),
       googleServiceAccount: new GoogleServiceAccountAuthTranslator(),
