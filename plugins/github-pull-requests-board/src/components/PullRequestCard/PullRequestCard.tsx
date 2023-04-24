@@ -19,7 +19,7 @@ import {
   getChangeRequests,
   getCommentedReviews,
 } from '../../utils/functions';
-import { Reviews, Author, Labels } from '../../utils/types';
+import { Reviews, Author, Label } from '../../utils/types';
 import { Card } from '../Card';
 import { UserHeaderList } from '../UserHeaderList';
 
@@ -33,7 +33,7 @@ type Props = {
   repositoryName: string;
   repositoryIsArchived: boolean;
   isDraft: boolean;
-  labels?: Labels[];
+  labels?: Label[];
 };
 
 const PullRequestCard: FunctionComponent<Props> = (props: Props) => {

@@ -19,7 +19,7 @@ import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
 import { DraftPrIcon } from '../icons/DraftPr';
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
-import { Labels } from '../../utils/types';
+import { Label } from '../../utils/types';
 import { useFormClasses } from './styles';
 
 type Props = {
@@ -31,7 +31,7 @@ type Props = {
   repositoryName: string;
   isDraft: boolean;
   repositoryIsArchived: boolean;
-  labels?: Labels[];
+  labels?: Label[];
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
