@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,12 @@ import {
   createStyles,
   Grid,
   makeStyles,
+  Switch,
   Theme,
   Typography,
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import React from 'react';
+import React, { useState } from 'react';
 import { generatePath } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 
@@ -47,6 +48,10 @@ import {
   OverflowTooltip,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import {
+  getAllDesendantMembersForGroupEntity,
+  removeDuplicateEntitiesFrom,
+} from '../../../../helpers/helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -98,6 +103,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
           >
             <Typography variant="h6">
               <Link
+                data-testid="user-link"
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(props.member),
@@ -144,10 +150,17 @@ export const MembersListCard = (props: {
     setPage(pageIndex);
   };
 
+  const [showAggregateUsers, setShowAggregateUsers] = useState(false);
+
+  const { value: descendantMembers } = useAsync(
+    async () =>
+      await getAllDesendantMembersForGroupEntity(groupEntity, catalogApi),
+    [catalogApi, groupEntity],
+  );
   const {
     loading,
     error,
-    value: members,
+    value: directMembers,
   } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: {
@@ -164,6 +177,18 @@ export const MembersListCard = (props: {
 
     return membersList.items as UserEntity[];
   }, [catalogApi, groupEntity]);
+
+  const members = removeDuplicateEntitiesFrom(
+    [
+      ...(directMembers ?? []),
+      ...(descendantMembers && showAggregateUsers ? descendantMembers : []),
+    ].sort((a, b) => {
+      const nameToCompareInA = a.spec.profile?.displayName ?? a.metadata.name;
+      const nameToCompareInB = b.spec.profile?.displayName ?? b.metadata.name;
+
+      return nameToCompareInA.localeCompare(nameToCompareInB);
+    }),
+  ) as UserEntity[];
 
   if (loading) {
     return <Progress />;
@@ -193,6 +218,16 @@ export const MembersListCard = (props: {
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
+        Direct Members
+        <Switch
+          color="primary"
+          checked={showAggregateUsers}
+          onChange={() => {
+            setShowAggregateUsers(!showAggregateUsers);
+          }}
+          inputProps={{ 'aria-label': 'Users Type Switch' }}
+        />
+        Aggregated Members
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
             members

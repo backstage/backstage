@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,33 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  StarredEntitiesApi,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  renderInTestApp,
   renderWithEffects,
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
 import React from 'react';
 import { MembersListCard } from './MembersListCard';
+import {
+  groupA,
+  mockedCatalogApiSupportingGroups,
+  mockedGetEntityRelations,
+} from '../../../../test-helpers/catalogMocks';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { EntityLayout } from '@backstage/plugin-catalog';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Observable } from '@backstage/types';
+
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  ...jest.requireActual('@backstage/plugin-catalog-react'),
+  getEntityRelations: (entity: Entity | undefined, relationType: string) =>
+    mockedGetEntityRelations(entity, relationType),
+}));
 
 // Mock needed because jsdom doesn't correctly implement box-sizing
 // https://github.com/ShinyChang/React-Text-Truncate/issues/70
@@ -40,6 +59,20 @@ jest.mock('react-text-truncate', () => {
     )),
   };
 });
+
+const mockedStarredEntitiesApi: Partial<StarredEntitiesApi> = {
+  starredEntitie$: () => {
+    return {
+      subscribe: () => {
+        return {
+          unsubscribe() {
+            // This is intentional
+          },
+        };
+      },
+    } as Observable<Set<string>>;
+  },
+};
 
 describe('MemberTab Test', () => {
   const groupEntity: GroupEntity = {
@@ -130,5 +163,89 @@ describe('MemberTab Test', () => {
     );
 
     expect(rendered.getByText('Testers (1)')).toBeInTheDocument();
+  });
+
+  describe('Aggregate members toggle', () => {
+    it('Shows only direct members if the aggregate users switch is turned off', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockedCatalogApiSupportingGroups],
+            [starredEntitiesApiRef, mockedStarredEntitiesApi],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <EntityProvider entity={groupA}>
+            <EntityLayout>
+              <EntityLayout.Route path="/" title="Title">
+                <MembersListCard />
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </TestApiProvider>,
+      );
+
+      const displayedMemberNames = screen.queryAllByTestId('user-link');
+      const duplicatedUserText = screen.getByText('Duplicated User');
+      const groupAUserOneText = screen.getByText('Group A User One');
+
+      expect(displayedMemberNames).toHaveLength(2);
+      expect(duplicatedUserText).toBeInTheDocument();
+      expect(groupAUserOneText).toBeInTheDocument();
+      expect(
+        duplicatedUserText.compareDocumentPosition(groupAUserOneText),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it('Shows all descendant members of the group when the aggregate users switch is turned on, showing duplicated members only once', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockedCatalogApiSupportingGroups],
+            [starredEntitiesApiRef, mockedStarredEntitiesApi],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <EntityProvider entity={groupA}>
+            <EntityLayout>
+              <EntityLayout.Route path="/" title="Title">
+                <MembersListCard />
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </TestApiProvider>,
+      );
+
+      // Click the toggle switch
+      await userEvent.click(screen.getByRole('checkbox'));
+
+      const displayedMemberNames = screen.queryAllByTestId('user-link');
+      const duplicatedUserText = screen.getByText('Duplicated User');
+      const groupAUserOneText = screen.getByText('Group A User One');
+      const groupBUserOneText = screen.getByText('Group B User One');
+      const groupDUserOneText = screen.getByText('Group D User One');
+      const groupEUserOneText = screen.getByText('Group E User One');
+
+      expect(displayedMemberNames).toHaveLength(5);
+
+      expect(duplicatedUserText).toBeInTheDocument();
+      expect(groupAUserOneText).toBeInTheDocument();
+      expect(groupBUserOneText).toBeInTheDocument();
+      expect(groupDUserOneText).toBeInTheDocument();
+      expect(groupEUserOneText).toBeInTheDocument();
+
+      expect(
+        duplicatedUserText.compareDocumentPosition(groupAUserOneText),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(groupAUserOneText.compareDocumentPosition(groupBUserOneText)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      expect(groupBUserOneText.compareDocumentPosition(groupDUserOneText)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      expect(groupDUserOneText.compareDocumentPosition(groupEUserOneText)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
   });
 });
