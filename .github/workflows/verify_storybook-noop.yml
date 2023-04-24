@@ -1,0 +1,31 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Storybook Void
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/verify_storybook.yml'
+      - 'storybook/**'
+      - 'packages/config/src/**'
+      - 'packages/theme/src/**'
+      - 'packages/types/src/**'
+      - 'packages/errors/src/**'
+      - 'packages/version-bridge/src/**'
+      - 'packages/test-utils/src/**'
+      - 'packages/core-app-api/src/**'
+      - 'packages/core-plugin-api/src/**'
+      - 'packages/core-components/src/**'
+      - '**/*.stories.tsx'
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    name: Storybook
+    steps:
+      - run: echo NOOP

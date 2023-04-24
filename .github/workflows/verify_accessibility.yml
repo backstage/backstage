@@ -1,5 +1,6 @@
-name: Verify Accessibility Core features
+name: Accessibility
 on:
+  # NOTE: If you change these you must update verify_accessibility_core-noop.yml as well
   pull_request:
     branches: [master]
     paths:
@@ -12,7 +13,7 @@ on:
 
 jobs:
   lhci:
-    name: Lighthouse
+    name: Accessibility
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

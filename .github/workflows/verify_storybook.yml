@@ -1,5 +1,6 @@
-name: Verify Storybook
+name: Storybook
 on:
+  # NOTE: If you change these you must update verify_storybook-noop.yml as well
   pull_request:
     paths:
       - '.github/workflows/verify_storybook.yml'
@@ -24,6 +25,7 @@ jobs:
         os: [ubuntu-latest]
         node-version: [16.x]
 
+    name: Storybook
     steps:
       - uses: actions/checkout@v3
         with:

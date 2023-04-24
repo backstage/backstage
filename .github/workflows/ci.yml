@@ -1,5 +1,6 @@
 name: CI
 on:
+  # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
     paths-ignore:
       - 'microsite/**'
@@ -23,6 +24,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Verify ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
