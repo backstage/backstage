@@ -14,7 +14,32 @@
  * limitations under the License.
  */
 
-import { readEnvConfig } from './env';
+import { EnvConfigSource, readEnvConfig } from './EnvConfigSource';
+import { ConfigSource, ConfigSourceData } from './types';
+
+async function readAll(source: ConfigSource) {
+  const entries = new Array<{ configs: ConfigSourceData[] }>();
+  for await (const item of source.readConfigData()) {
+    entries.push(item);
+  }
+  return entries;
+}
+
+describe('EnvConfigSource', () => {
+  it('should return empty config for empty env', async () => {
+    const source = EnvConfigSource.create({ env: {} });
+
+    await expect(readAll(source)).resolves.toEqual([{ configs: [] }]);
+  });
+
+  it('should forward config values', async () => {
+    const source = EnvConfigSource.create({ env: { APP_CONFIG_foo: 'bar' } });
+
+    await expect(readAll(source)).resolves.toEqual([
+      { configs: [{ context: 'env', data: { foo: 'bar' } }] },
+    ]);
+  });
+});
 
 describe('readEnvConfig', () => {
   it('should return empty config for empty env', () => {

@@ -29,52 +29,60 @@ const substituteTransform = createSubstitutionTransform(env);
 
 describe('substituteTransform', () => {
   it('should not transform unknown values', async () => {
-    await expect(substituteTransform(false, '/')).resolves.toEqual({
+    await expect(substituteTransform(false, { dir: '/' })).resolves.toEqual({
       applied: false,
     });
-    await expect(substituteTransform([1], '/')).resolves.toEqual({
+    await expect(substituteTransform([1], { dir: '/' })).resolves.toEqual({
       applied: false,
     });
-    await expect(substituteTransform(1, '/')).resolves.toEqual({
+    await expect(substituteTransform(1, { dir: '/' })).resolves.toEqual({
       applied: false,
     });
-    await expect(substituteTransform({ x: 'y' }, '/')).resolves.toEqual({
+    await expect(
+      substituteTransform({ x: 'y' }, { dir: '/' }),
+    ).resolves.toEqual({
       applied: false,
     });
-    await expect(substituteTransform(null, '/')).resolves.toEqual({
+    await expect(substituteTransform(null, { dir: '/' })).resolves.toEqual({
       applied: false,
     });
   });
 
   it('should substitute env var', async () => {
-    await expect(substituteTransform('hello ${SECRET}', '/')).resolves.toEqual({
+    await expect(
+      substituteTransform('hello ${SECRET}', { dir: '/' }),
+    ).resolves.toEqual({
       applied: true,
       value: 'hello my-secret',
     });
     await expect(
-      substituteTransform('${SECRET      } $${} ${TOKEN }', '/'),
+      substituteTransform('${SECRET      } $${} ${TOKEN }', { dir: '/' }),
     ).resolves.toEqual({ applied: true, value: 'my-secret ${} my-token' });
-    await expect(substituteTransform('foo ${MISSING}', '/')).resolves.toEqual({
-      applied: true,
-      value: undefined,
-    });
     await expect(
-      substituteTransform('empty substitute ${}', '/'),
+      substituteTransform('foo ${MISSING}', { dir: '/' }),
     ).resolves.toEqual({
       applied: true,
       value: undefined,
     });
     await expect(
-      substituteTransform('foo ${MISSING} ${SECRET}', '/'),
+      substituteTransform('empty substitute ${}', { dir: '/' }),
+    ).resolves.toEqual({
+      applied: true,
+      value: undefined,
+    });
+    await expect(
+      substituteTransform('foo ${MISSING} ${SECRET}', { dir: '/' }),
     ).resolves.toEqual({ applied: true, value: undefined });
     await expect(
-      substituteTransform('foo ${SECRET} ${SECRET}', '/'),
+      substituteTransform('foo ${SECRET} ${SECRET}', { dir: '/' }),
     ).resolves.toEqual({ applied: true, value: 'foo my-secret my-secret' });
     await expect(
-      substituteTransform('foo ${SECRET} $$${ESCAPE_ME}', '/'),
+      substituteTransform('foo ${SECRET} $$${ESCAPE_ME}', { dir: '/' }),
     ).resolves.toEqual({ applied: true, value: 'foo my-secret $${ESCAPE_ME}' });
     await expect(
-      substituteTransform('foo $${ESCAPE_ME} $$${ESCAPE_ME_TOO} $${}', '/'),
+      substituteTransform('foo $${ESCAPE_ME} $$${ESCAPE_ME_TOO} $${}', {
+        dir: '/',
+      }),
     ).resolves.toEqual({
       applied: true,
       value: 'foo ${ESCAPE_ME} $${ESCAPE_ME_TOO} ${}',

@@ -18,7 +18,8 @@ import yaml from 'yaml';
 import { extname, dirname, resolve as resolvePath } from 'path';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { isObject } from './utils';
-import { TransformFunc, EnvFunc, ReadFileFunc } from './types';
+import { TransformFunc, ReadFileFunc } from './types';
+import { SubstitutionFunc } from '../types';
 
 // Parsers for each type of included file
 const includeFileParser: {
@@ -33,11 +34,15 @@ const includeFileParser: {
  * Transforms a include description into the actual included value.
  */
 export function createIncludeTransform(
-  env: EnvFunc,
+  env: SubstitutionFunc,
   readFile: ReadFileFunc,
   substitute: TransformFunc,
 ): TransformFunc {
-  return async (input: JsonValue, baseDir: string) => {
+  return async (input, context) => {
+    const { dir } = context;
+    if (!dir) {
+      throw new Error('Include transform requires a base directory');
+    }
     if (!isObject(input)) {
       return { applied: false };
     }
@@ -59,7 +64,7 @@ export function createIncludeTransform(
       throw new Error(`${includeKey} include value is not a string`);
     }
 
-    const substituteResults = await substitute(rawIncludedValue, baseDir);
+    const substituteResults = await substitute(rawIncludedValue, { dir });
     const includeValue = substituteResults.applied
       ? substituteResults.value
       : rawIncludedValue;
@@ -72,7 +77,7 @@ export function createIncludeTransform(
     switch (includeKey) {
       case '$file':
         try {
-          const value = await readFile(resolvePath(baseDir, includeValue));
+          const value = await readFile(resolvePath(dir, includeValue));
           return { applied: true, value: value.trimEnd() };
         } catch (error) {
           throw new Error(`failed to read file ${includeValue}, ${error}`);
@@ -95,9 +100,9 @@ export function createIncludeTransform(
           );
         }
 
-        const path = resolvePath(baseDir, filePath);
+        const path = resolvePath(dir, filePath);
         const content = await readFile(path);
-        const newBaseDir = dirname(path);
+        const newDir = dirname(path);
 
         const parts = dataPath ? dataPath.split('.') : [];
 
@@ -121,10 +126,17 @@ export function createIncludeTransform(
           value = value[part];
         }
 
+        if (typeof value === 'string') {
+          const substituted = await substitute(value, { dir: newDir });
+          if (substituted.applied) {
+            value = substituted.value;
+          }
+        }
+
         return {
           applied: true,
           value,
-          newBaseDir: newBaseDir !== baseDir ? newBaseDir : undefined,
+          newDir: newDir !== dir ? newDir : undefined,
         };
       }
 

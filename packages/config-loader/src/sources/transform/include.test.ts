@@ -69,34 +69,34 @@ const includeTransform = createIncludeTransform(env, readFile, substitute);
 
 describe('includeTransform', () => {
   it('should not transform unknown values', async () => {
-    await expect(includeTransform('foo', root)).resolves.toEqual({
+    await expect(includeTransform('foo', { dir: root })).resolves.toEqual({
       applied: false,
     });
-    await expect(includeTransform([1], root)).resolves.toEqual({
+    await expect(includeTransform([1], { dir: root })).resolves.toEqual({
       applied: false,
     });
-    await expect(includeTransform(1, root)).resolves.toEqual({
+    await expect(includeTransform(1, { dir: root })).resolves.toEqual({
       applied: false,
     });
-    await expect(includeTransform({ x: 'y' }, root)).resolves.toEqual({
+    await expect(includeTransform({ x: 'y' }, { dir: root })).resolves.toEqual({
       applied: false,
     });
-    await expect(includeTransform(null, root)).resolves.toEqual({
+    await expect(includeTransform(null, { dir: root })).resolves.toEqual({
       applied: false,
     });
   });
 
   it('should include text files', async () => {
     await expect(
-      includeTransform({ $file: 'my-secret' }, root),
+      includeTransform({ $file: 'my-secret' }, { dir: root }),
     ).resolves.toEqual({ applied: true, value: 'secret' });
     await expect(
-      includeTransform({ $file: 'no-secret' }, root),
+      includeTransform({ $file: 'no-secret' }, { dir: root }),
     ).rejects.toThrow('File not found!');
   });
   it('should trim newlines from end of file', async () => {
     await expect(
-      includeTransform({ $file: 'with-newline-at-the-end' }, root),
+      includeTransform({ $file: 'with-newline-at-the-end' }, { dir: root }),
     ).resolves.toEqual({
       applied: true,
       value: 'value without newline at the end',
@@ -104,12 +104,14 @@ describe('includeTransform', () => {
   });
 
   it('should include env vars', async () => {
-    await expect(includeTransform({ $env: 'SECRET' }, root)).resolves.toEqual({
+    await expect(
+      includeTransform({ $env: 'SECRET' }, { dir: root }),
+    ).resolves.toEqual({
       applied: true,
       value: 'my-secret',
     });
     await expect(
-      includeTransform({ $env: 'NO_SECRET' }, root),
+      includeTransform({ $env: 'NO_SECRET' }, { dir: root }),
     ).resolves.toEqual({
       applied: true,
       value: undefined,
@@ -119,16 +121,19 @@ describe('includeTransform', () => {
   it('should include config files', async () => {
     // New format with path in fragment
     await expect(
-      includeTransform({ $include: 'my-data.json#a.b.c' }, root),
+      includeTransform({ $include: 'my-data.json#a.b.c' }, { dir: root }),
     ).resolves.toEqual({ applied: true, value: 42 });
     await expect(
-      includeTransform({ $include: 'my-data.json#a.b' }, root),
+      includeTransform({ $include: 'my-data.json#a.b' }, { dir: root }),
     ).resolves.toEqual({ applied: true, value: { c: 42 } });
     await expect(
-      includeTransform({ $include: 'my-data.yaml#some.yaml.key' }, root),
+      includeTransform(
+        { $include: 'my-data.yaml#some.yaml.key' },
+        { dir: root },
+      ),
     ).resolves.toEqual({ applied: true, value: 7 });
     await expect(
-      includeTransform({ $include: 'my-data.yaml' }, root),
+      includeTransform({ $include: 'my-data.yaml' }, { dir: root }),
     ).resolves.toEqual({
       applied: true,
       value: {
@@ -136,7 +141,7 @@ describe('includeTransform', () => {
       },
     });
     await expect(
-      includeTransform({ $include: 'my-data.yaml#' }, root),
+      includeTransform({ $include: 'my-data.yaml#' }, { dir: root }),
     ).resolves.toEqual({
       applied: true,
       value: {
@@ -144,26 +149,32 @@ describe('includeTransform', () => {
       },
     });
     await expect(
-      includeTransform({ $include: 'my-data.yml#different.key' }, root),
+      includeTransform(
+        { $include: 'my-data.yml#different.key' },
+        { dir: root },
+      ),
     ).resolves.toEqual({ applied: true, value: 'hello' });
   });
 
   it('should reject invalid includes', async () => {
     await expect(
-      includeTransform({ $include: 'no-parser.js' }, root),
+      includeTransform({ $include: 'no-parser.js' }, { dir: root }),
     ).rejects.toThrow(
       'no configuration parser available for included file no-parser.js',
     );
     await expect(
-      includeTransform({ $include: 'no-data.yml#different.key' }, root),
+      includeTransform(
+        { $include: 'no-data.yml#different.key' },
+        { dir: root },
+      ),
     ).rejects.toThrow('File not found!');
     await expect(
-      includeTransform({ $include: 'my-data.yml#missing.key' }, root),
+      includeTransform({ $include: 'my-data.yml#missing.key' }, { dir: root }),
     ).rejects.toThrow(
       "value at 'missing' in included file my-data.yml is not an object",
     );
     await expect(
-      includeTransform({ $include: 'invalid.yaml' }, root),
+      includeTransform({ $include: 'invalid.yaml' }, { dir: root }),
     ).rejects.toThrow(
       /failed to parse included file invalid.yaml, YAMLParseError: Flow sequence in block collection must be sufficiently indented and end with a \] at line 1, column 7:\s+foo: \[\}/,
     );
@@ -171,11 +182,14 @@ describe('includeTransform', () => {
 
   it('should call substitute prior to handling includes directive', async () => {
     await expect(
-      includeTransform({ $include: `${substituteMe}/my-data.json` }, root),
+      includeTransform(
+        { $include: `${substituteMe}/my-data.json` },
+        { dir: root },
+      ),
     ).resolves.toEqual({
       applied: true,
       value: { foo: 'bar' },
-      newBaseDir: resolvePath(root, mySubstitution),
+      newDir: resolvePath(root, mySubstitution),
     });
   });
 });

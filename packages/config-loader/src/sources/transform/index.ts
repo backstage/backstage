@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
-
-export type EnvFunc = (name: string) => Promise<string | undefined>;
-
-export type ReadFileFunc = (path: string) => Promise<string>;
-
-export type TransformFunc = (
-  value: JsonValue,
-  baseDir: string,
-) => Promise<
-  | {
-      applied: false;
-    }
-  | {
-      applied: true;
-      value: JsonValue | undefined;
-      newBaseDir?: string | undefined;
-    }
->;
+export { createConfigTransformer } from './apply';
+export type { ConfigTransformer } from './apply';
+export type { ReadFileFunc, TransformContext, TransformFunc } from './types';

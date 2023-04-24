@@ -19,7 +19,6 @@ import { applyConfigTransforms } from './apply';
 describe('applyConfigTransforms', () => {
   it('should apply not transforms to input', async () => {
     const data = applyConfigTransforms(
-      '',
       {
         app: {
           title: 'Test',
@@ -28,6 +27,7 @@ describe('applyConfigTransforms', () => {
           z: null,
         },
       },
+      {},
       [],
     );
 
@@ -41,14 +41,13 @@ describe('applyConfigTransforms', () => {
   });
 
   it('should throw if  input is not an object', async () => {
-    const config = applyConfigTransforms('', 'not-config', []);
+    const config = applyConfigTransforms('not-config', {}, []);
 
     await expect(config).rejects.toThrow('expected object at config root');
   });
 
   it('should apply transforms', async () => {
     const config = applyConfigTransforms(
-      '',
       {
         app: {
           title: 'Test',
@@ -57,6 +56,7 @@ describe('applyConfigTransforms', () => {
           z: null,
         },
       },
+      {},
       [
         async value => {
           if (typeof value === 'number') {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,26 @@
  */
 
 import { AppConfig } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
-
-const ENV_PREFIX = 'APP_CONFIG_';
-
-// Update the same pattern in config package if this is changed
-const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
+import { JsonObject } from '@backstage/types';
+import { AsyncConfigSourceIterator, ConfigSource } from './types';
 
 /**
- * Read runtime configuration from the environment.
+ * Options for {@link EnvConfigSource.create}.
+ *
+ * @public
+ */
+export interface EnvConfigSourceOptions {
+  /**
+   * The environment variables to use, defaults to `process.env`.
+   */
+  env?: Record<string, string | undefined>;
+}
+
+/**
+ * A config source that reads configuration from the environment.
+ *
+ * @remarks
  *
  * Only environment variables prefixed with APP_CONFIG_ will be considered.
  *
@@ -42,6 +52,63 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
  * APP_CONFIG_app_title='"My Title"'
  *
  * @public
+ */
+export class EnvConfigSource implements ConfigSource {
+  /**
+   * Creates a new config source that reads from the environment.
+   *
+   * @param options - Options for the config source.
+   * @returns A new config source that reads from the environment.
+   */
+  static create(options: EnvConfigSourceOptions): ConfigSource {
+    return new EnvConfigSource(options?.env ?? process.env);
+  }
+
+  private constructor(
+    private readonly env: { [name: string]: string | undefined },
+  ) {}
+
+  async *readConfigData(): AsyncConfigSourceIterator {
+    const configs = readEnvConfig(this.env);
+    yield { configs };
+    return;
+  }
+
+  toString() {
+    const keys = Object.keys(this.env).filter(key =>
+      key.startsWith('APP_CONFIG_'),
+    );
+    return `EnvConfigSource{count=${keys.length}}`;
+  }
+}
+
+const ENV_PREFIX = 'APP_CONFIG_';
+
+// Update the same pattern in config package if this is changed
+const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
+
+/**
+ * Read runtime configuration from the environment.
+ *
+ * @remarks
+ *
+ * Only environment variables prefixed with APP_CONFIG_ will be considered.
+ *
+ * For each variable, the prefix will be removed, and rest of the key will
+ * be split by '_'. Each part will then be used as keys to build up a nested
+ * config object structure. The treatment of the entire environment variable
+ * is case-sensitive.
+ *
+ * The value of the variable should be JSON serialized, as it will be parsed
+ * and the type will be kept intact. For example "true" and true are treated
+ * differently, as well as "42" and 42.
+ *
+ * For example, to set the config app.title to "My Title", use the following:
+ *
+ * APP_CONFIG_app_title='"My Title"'
+ *
+ * @public
+ * @deprecated Use {@link EnvConfigSource} instead
  */
 export function readEnvConfig(env: {
   [name: string]: string | undefined;

@@ -15,14 +15,17 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { TransformFunc, EnvFunc } from './types';
+import { TransformFunc } from './types';
+import { SubstitutionFunc } from '../types';
 
 /**
  * A environment variable substitution transform that transforms e.g. 'token ${MY_TOKEN}'
  * to 'token abc' if MY_TOKEN is 'abc'. If any of the substituted variables are undefined,
  * the entire expression ends up undefined.
  */
-export function createSubstitutionTransform(env: EnvFunc): TransformFunc {
+export function createSubstitutionTransform(
+  env: SubstitutionFunc,
+): TransformFunc {
   return async (input: JsonValue) => {
     if (typeof input !== 'string') {
       return { applied: false };

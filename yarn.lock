@@ -3923,6 +3923,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/config-loader@workspace:packages/config-loader"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -3939,12 +3940,15 @@ __metadata:
     json-schema: ^0.4.0
     json-schema-merge-allof: ^0.8.1
     json-schema-traverse: ^1.0.0
+    lodash: ^4.17.21
+    minimist: ^1.2.5
     mock-fs: ^5.1.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     typescript-json-schema: ^0.55.0
     yaml: ^2.0.0
     yup: ^0.32.9
+    zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
 

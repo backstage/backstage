@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
-export { applyConfigTransforms } from './apply';
-export { createIncludeTransform } from './include';
-export { createSubstitutionTransform } from './substitution';
+import { JsonValue } from '@backstage/types';
+
+export type ReadFileFunc = (path: string) => Promise<string>;
+
+export interface TransformContext {
+  dir?: string;
+}
+
+export type TransformFunc = (
+  value: JsonValue,
+  context: TransformContext,
+) => Promise<
+  | {
+      applied: false;
+    }
+  | {
+      applied: true;
+      value: JsonValue | undefined;
+      newDir?: string | undefined;
+    }
+>;
