@@ -22,7 +22,7 @@ import {
 import { DefaultEventBroker } from '@backstage/plugin-events-node';
 
 /** @public */
-export const eventServiceFactory = createServiceFactory({
+export const eventsServiceFactory = createServiceFactory({
   service: coreServices.events,
   deps: {
     logger: coreServices.logger,

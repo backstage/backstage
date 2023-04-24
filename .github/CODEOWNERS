@@ -14,6 +14,7 @@ yarn.lock                                           @backstage/maintainers @back
 /docs/features/techdocs                             @backstage/techdocs-maintainers
 /docs/plugins/integrating-search-into-plugins.md    @backstage/discoverability-maintainers
 /packages/cli/src/commands/onboard                  @backstage/sharks
+/packages/events                                    @backstage/maintainers @pjungermann
 /packages/techdocs-cli                              @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app                 @backstage/techdocs-maintainers
 /plugins/adr                                        @backstage/maintainers @kuangp

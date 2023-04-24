@@ -17,4 +17,4 @@
 import { EventBroker } from '@backstage/events';
 
 /** @public */
-export interface EventService extends EventBroker {}
+export interface EventsService extends EventBroker {}

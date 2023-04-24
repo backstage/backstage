@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { eventServiceFactory } from './eventServiceFactory';
+export { eventsServiceFactory } from './eventsServiceFactory';
