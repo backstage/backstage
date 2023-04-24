@@ -83,6 +83,8 @@ export type ReadTreeResponseFactoryOptions = {
   etag: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string, info?: { size: number }) => boolean;
+  // First directory of a tar archive is stripped when set to true
+  tarStripFirstDirectory?: boolean;
 };
 
 /**

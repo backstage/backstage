@@ -629,6 +629,7 @@ export type ReadTreeResponseFactoryOptions = {
       size: number;
     },
   ) => boolean;
+  tarStripFirstDirectory?: boolean;
 };
 
 export { ReadTreeResponseFile };
