@@ -132,15 +132,15 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       // That created an issue where GitLab workspace can be nested like groupA/subgroupB
       // when we encodeURi separately and then join, the URL will be malformed and
       // resulting in 400 request error from GitLab API
-      const url = encodeURIComponent(
-        [state.host, workspace, state.repoName].join(),
+      const [encodedHost, encodedRepoName] = [state.host, state.repoName].map(
+        encodeURIComponent,
       );
 
       // user has requested that we use the users credentials
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url,
+        url: `https://${encodedHost}/${workspace}/${encodedRepoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
