@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION,
-  OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION,
-} from '../constants';
+import { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from '../constants';
 
 import { Entity } from '@backstage/catalog-model';
 
-export function getProjectIdAnnotationFromEntity(entity: Entity): string {
+export type ProjectReference = { projectId: string; spaceId?: string };
+
+export function getProjectReferenceAnnotationFromEntity(
+  entity: Entity,
+): ProjectReference {
   const annotation =
     entity.metadata.annotations?.[OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION];
   if (!annotation) {
@@ -29,14 +30,9 @@ export function getProjectIdAnnotationFromEntity(entity: Entity): string {
     );
   }
 
-  return annotation;
-}
-
-export function getSpaceIdAnnotationFromEntity(
-  entity: Entity,
-): string | undefined {
-  const annotation =
-    entity.metadata.annotations?.[OCTOPUS_DEPLOY_SPACE_ID_ANNOTATION];
-
-  return annotation || undefined;
+  const referencedProject = annotation.split('/', 2);
+  if (referencedProject.length === 2) {
+    return { projectId: referencedProject[1], spaceId: referencedProject[0] };
+  }
+  return { projectId: referencedProject[0] };
 }
