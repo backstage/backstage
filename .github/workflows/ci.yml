@@ -24,7 +24,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
-    name: Verify ${{ matrix.node-version }}
+    name: Install ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -55,6 +55,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Verify ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -131,6 +132,7 @@ jobs:
       matrix:
         node-version: [16.x, 18.x]
 
+    name: Test ${{ matrix.node-version }}
     services:
       postgres13:
         image: postgres:13
