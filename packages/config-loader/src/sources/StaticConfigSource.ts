@@ -60,11 +60,17 @@ class StaticObservableConfigSource implements ConfigSource {
       },
     });
 
-    options?.signal?.addEventListener('abort', () => {
-      sub.unsubscribe();
-      queue.length = 0;
-      deferred.resolve();
-    });
+    const signal = options?.signal;
+    if (signal) {
+      const onAbort = () => {
+        sub.unsubscribe();
+        queue.length = 0;
+        deferred.resolve();
+        signal.removeEventListener('abort', onAbort);
+      };
+
+      signal.addEventListener('abort', onAbort);
+    }
 
     for (;;) {
       await deferred.promise;
@@ -109,11 +115,8 @@ export class StaticConfigSource implements ConfigSource {
       };
     }
 
-    if (isObservable(data)) {
-      return new StaticObservableConfigSource(
-        data as Observable<JsonObject>,
-        context,
-      );
+    if (isObservable<JsonObject>(data)) {
+      return new StaticObservableConfigSource(data, context);
     }
 
     if (isAsyncIterable(data)) {

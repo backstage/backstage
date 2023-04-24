@@ -62,9 +62,9 @@ export interface RemoteConfigSourceOptions {
   url: string;
 
   /**
-   * The interval in seconds to reload the config from the remote URL.
+   * How often to reload the config from the remote URL, defaults to 1 minute.
    *
-   * Set to Infinity to disable reloading.
+   * Set to Infinity to disable reloading, for example `{ days: Infinity }`.
    */
   reloadInterval?: HumanDuration;
 
