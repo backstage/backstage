@@ -32,8 +32,7 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
 
   const relativeUrl = url
     .replace(appUrlPath, '')
-    // Remove any leading and trailing slashes.
-    .replace(/\/+$/, '')
+    // Remove any leading slashes.
     .replace(/^\/+/, '');
   const parsedUrl = new URL(`http://localhost/${relativeUrl}`);
   return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
