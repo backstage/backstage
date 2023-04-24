@@ -915,7 +915,7 @@ describe('getKubernetesObjectsByEntity', () => {
               {
                 errorType: 'FETCH_ERROR',
                 message:
-                  'request to https://fails/api/v1/pods?labelSelector=backstage.io/kubernetes-id=test-component failed, reason: socket error',
+                  'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
               },
             ],
           },

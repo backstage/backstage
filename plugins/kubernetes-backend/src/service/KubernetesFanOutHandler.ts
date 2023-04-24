@@ -283,7 +283,9 @@ export class KubernetesFanOutHandler {
             })),
             namespace,
           })
-          .then(result => this.getMetricsForPods(clusterDetailsItem, result))
+          .then(result =>
+            this.getMetricsForPods(clusterDetailsItem, labelSelector, result),
+          )
           .catch(
             (e): Promise<responseWithMetrics> =>
               e.name === 'FetchError'
@@ -365,6 +367,7 @@ export class KubernetesFanOutHandler {
 
   async getMetricsForPods(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
     result: FetchResponseWrapper,
   ): Promise<responseWithMetrics> {
     if (clusterDetails.skipMetricsLookup) {
@@ -385,6 +388,7 @@ export class KubernetesFanOutHandler {
     const podMetrics = await this.fetcher.fetchPodMetricsByNamespaces(
       clusterDetails,
       namespaces,
+      labelSelector,
     );
 
     result.errors.push(...podMetrics.errors);
