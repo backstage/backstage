@@ -107,6 +107,7 @@ export const getAllDesendantMembersForGroupEntity = async (
 
 export const removeDuplicateEntitiesFrom = (entityArray: Entity[]) => {
   const seenEntities = new Map<string, boolean>();
+
   return entityArray.filter(entity => {
     const stringifiedEntity = stringifyEntityRef(entity);
     const isDuplicate = seenEntities.has(stringifiedEntity);
