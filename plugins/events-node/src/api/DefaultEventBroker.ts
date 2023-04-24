@@ -15,7 +15,7 @@
  */
 
 import { EventParams, EventBroker, EventSubscriber } from '@backstage/events';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { Logger } from 'winston';
 
 /**
  * In process event broker which will pass the event to all registered subscribers
@@ -26,7 +26,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
 export class DefaultEventBroker implements EventBroker {
-  constructor(private readonly logger: LoggerService) {}
+  constructor(private readonly logger: Logger) {}
 
   private readonly subscribers: {
     [topic: string]: EventSubscriber[];

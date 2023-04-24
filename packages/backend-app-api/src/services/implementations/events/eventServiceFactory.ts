@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -27,6 +28,6 @@ export const eventServiceFactory = createServiceFactory({
     logger: coreServices.logger,
   },
   async factory({ logger }) {
-    return new DefaultEventBroker(logger);
+    return new DefaultEventBroker(loggerToWinstonLogger(logger));
   },
 });
