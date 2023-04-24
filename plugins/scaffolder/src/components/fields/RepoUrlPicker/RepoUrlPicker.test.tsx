@@ -196,7 +196,7 @@ describe('RepoUrlPicker', () => {
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getAllByRole, getByTestId } = await renderInTestApp(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
