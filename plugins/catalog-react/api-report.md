@@ -80,6 +80,9 @@ export type CatalogReactComponentsNameToClassKey = {
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
 // @public (undocumented)
+export type CatalogReactEntityNamespacePickerClassKey = 'input';
+
+// @public (undocumented)
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
 // @public (undocumented)
@@ -131,6 +134,7 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
+  namespace?: EntityNamespaceFilter;
 };
 
 // @public
@@ -227,6 +231,20 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
   error?: Error;
   refresh?: VoidFunction;
 };
+
+// @public
+export class EntityNamespaceFilter implements EntityFilter {
+  constructor(values: string[]);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  toQueryValue(): string[];
+  // (undocumented)
+  readonly values: string[];
+}
+
+// @public (undocumented)
+export const EntityNamespacePicker: () => JSX.Element;
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {

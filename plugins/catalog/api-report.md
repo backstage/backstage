@@ -160,6 +160,7 @@ export const CatalogTable: {
           }
         | undefined,
     ): TableColumn<CatalogTableRow>;
+    createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
 };
 
