@@ -22,7 +22,6 @@ import {
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import lodash from 'lodash';
-import { humanizeEntityRef } from './components/EntityRefLink';
 import { DefaultEntityFilters } from './hooks';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
