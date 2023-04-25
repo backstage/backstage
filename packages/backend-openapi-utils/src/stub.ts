@@ -27,6 +27,8 @@ import {
 } from 'express';
 import { InputError } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
+import { OPENAPI_SPEC_ROUTE } from './constants';
+import { isErrorResult, merge } from 'openapi-merge';
 
 type PropertyOverrideRequest = Request & {
   [key: symbol]: string;
@@ -46,6 +48,16 @@ export function getDefaultRouterMiddleware() {
 }
 
 /**
+ * Given a base url for a plugin, find the given OpenAPI spec for that plugin.
+ * @param baseUrl - Plugin base url.
+ * @returns OpenAPI spec route for the base url.
+ * @public
+ */
+export function getOpenApiSpecRoute(baseUrl: string) {
+  return `${baseUrl}${OPENAPI_SPEC_ROUTE}`;
+}
+
+/**
  * Create a new OpenAPI router with some default middleware.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
@@ -59,7 +71,7 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
     middleware?: RequestHandler[];
   },
 ) {
-  const router = PromiseRouter() as ApiRouter<typeof spec>;
+  const router = PromiseRouter();
   router.use(options?.middleware || getDefaultRouterMiddleware());
 
   /**
@@ -116,5 +128,30 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   // Any errors from the middleware get through here.
   router.use(validatorErrorTransformer());
 
-  return router;
+  router.get(OPENAPI_SPEC_ROUTE, async (req, res) => {
+    const mergeOutput = merge([
+      {
+        oas: spec as any,
+        pathModification: {
+          /**
+           * Get the route that this OpenAPI spec is hosted on. The other
+           *  approach of using the discovery API increases the router constructor
+           *  significantly and since we're just looking for path and not full URL,
+           *  this works.
+           *
+           * If we wanted to add a list of servers, there may be a case for adding
+           *  discovery API to get an exhaustive list of upstream servers, but that's
+           *  also not currently supported.
+           */
+          prepend: req.originalUrl.replace(OPENAPI_SPEC_ROUTE, ''),
+        },
+      },
+    ]);
+    if (isErrorResult(mergeOutput)) {
+      throw new InputError('Invalid spec defined');
+    }
+    res.json(mergeOutput.output);
+  });
+
+  return router as ApiRouter<typeof spec>;
 }

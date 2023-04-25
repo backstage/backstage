@@ -248,6 +248,9 @@ type FullMap<
   },
 > = RequiredMap<T> & OptionalMap<T>;
 
+// @public
+export function getOpenApiSpecRoute(baseUrl: string): string;
+
 // @public (undocumented)
 interface HeaderObject extends ParameterObject {
   // (undocumented)
@@ -441,6 +444,9 @@ type ObjectWithContentSchema<
 > = Object['content'] extends ImmutableContentObject
   ? SchemaRef<Doc, Object['content']['application/json']['schema']>
   : never;
+
+// @public
+export const OPENAPI_SPEC_ROUTE = '/openapi.json';
 
 // @public (undocumented)
 type OptionalMap<

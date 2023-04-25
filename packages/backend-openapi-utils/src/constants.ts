@@ -15,21 +15,7 @@
  */
 
 /**
- * Common functionalities for the openapi-router plugin.
- *
- * @packageDocumentation
+ * The route that all OpenAPI specs should be served from.
+ * @public
  */
-import * as internal from './types';
-
-export { internal };
-export type {
-  Request,
-  Response,
-  QueryParameters,
-  HeaderParameters,
-  CookieParameters,
-  PathParameters,
-} from './utility';
-export type { ApiRouter } from './router';
-export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
-export * from './constants';
+export const OPENAPI_SPEC_ROUTE = '/openapi.json';
