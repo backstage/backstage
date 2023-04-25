@@ -51,4 +51,31 @@ describe('<DomainCard />', () => {
       '/catalog/default/domain/artists',
     );
   });
+
+  it('renders a domain card with custom title', async () => {
+    const entity: DomainEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'artists',
+      },
+      spec: {
+        owner: 'guest',
+      },
+    };
+    const { getByText } = await renderInTestApp(
+      <DomainCard entity={entity} title="my Custom Title" />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('Explore').parentElement).toHaveAttribute(
+      'href',
+      '/catalog/default/domain/artists',
+    );
+    expect(getByText('my Custom Title')).toBeInTheDocument();
+  });
 });

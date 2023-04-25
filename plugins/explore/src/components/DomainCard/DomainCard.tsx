@@ -35,7 +35,7 @@ import { LinkButton, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
-export const DomainCard = (props: { entity: DomainEntity }) => {
+export const DomainCard = (props: { entity: DomainEntity; title?: string }) => {
   const { entity } = props;
 
   const catalogEntityRoute = useRouteRef(entityRouteRef);
@@ -53,7 +53,10 @@ export const DomainCard = (props: { entity: DomainEntity }) => {
   return (
     <Card>
       <CardMedia>
-        <ItemCardHeader title={entity.metadata.name} subtitle={owner} />
+        <ItemCardHeader
+          title={props.title ?? entity.metadata.name}
+          subtitle={owner}
+        />
       </CardMedia>
       <CardContent>
         {entity.metadata.tags?.length ? (
