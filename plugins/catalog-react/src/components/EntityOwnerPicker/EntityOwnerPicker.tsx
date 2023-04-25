@@ -119,6 +119,14 @@ export const EntityOwnerPicker = () => {
     });
   }, [selectedOwners, updateFilters]);
 
+  if (
+    ['user', 'group'].includes(
+      filters.kind?.value.toLocaleLowerCase('en-US') || '',
+    )
+  ) {
+    return null;
+  }
+
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
