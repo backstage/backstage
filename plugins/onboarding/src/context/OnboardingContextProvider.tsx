@@ -43,11 +43,9 @@ export const OnboardingContextProvider: React.FC<{
     const userInfo = await onboardingApi.getUserInfo(
       userIdentity?.userEntityRef?.split('/')[1] || '',
     );
-    const user = await userInfo.json();
 
-    const userGroups = user?.spec?.memberOf?.join(',') || '';
-    const userRoles = user?.spec?.profile?.roles?.join(',') || '';
-
+    const userGroups = userInfo?.spec?.memberOf?.join(',') || '';
+    const userRoles = userInfo?.spec?.profile?.roles?.join(',') || '';
     const response = await onboardingApi.getChecklist(userGroups, userRoles);
     const result = await response.json();
     return { ...result };

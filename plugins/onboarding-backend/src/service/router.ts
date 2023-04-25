@@ -80,7 +80,7 @@ export async function createRouter(
   /**
    * @public
    */
-  router.get('/getChecklists', async (req, res) => {
+  router.get('/checklists', async (req, res) => {
     try {
       const user =
         (identity && (await identity.getIdentity({ request: req }))) ||
@@ -97,7 +97,7 @@ export async function createRouter(
         roles.split(',').forEach((val: string) => {
           roleQuery += `${
             roleQuery.length ? ' or' : ''
-          } “forRoles” Ilike '%${val}%'`;
+          } "forRoles" Ilike '%${val}%'`;
         });
       }
       let newChecklist: any = {};
@@ -141,7 +141,7 @@ export async function createRouter(
   /**
    * @public
    */
-  router.put('/updateStatus', async (req, res) => {
+  router.put('/update-status', async (req, res) => {
     try {
       const {
         checklistHash,
@@ -188,7 +188,7 @@ export async function createRouter(
    * @public
    * Syncing data from github repository
    */
-  router.get('/syncYaml', async (_req, res) => {
+  router.post('/syncYaml', async (_req, res) => {
     try {
       const GitService = new GithubService({ baseRepo: baseRepo || '' });
       const data: any[] = await GitService.GetUserAndChecklistBlob();
@@ -228,10 +228,6 @@ export async function createRouter(
     } catch (error) {
       res.status(500).send('Internal server error!');
     }
-  });
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
   });
   router.use(errorHandler());
   return router;

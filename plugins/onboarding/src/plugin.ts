@@ -21,6 +21,7 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { onboardingApiRef, OnboardingClient } from './api';
 
 import { rootRouteRef } from './routes';
@@ -40,9 +41,15 @@ export const onboardingPlugin = createPlugin({
         identityApi: identityApiRef,
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
+        catalogApi: catalogApiRef,
       },
-      factory: ({ identityApi, discoveryApi, fetchApi }) =>
-        new OnboardingClient({ identityApi, discoveryApi, fetchApi }),
+      factory: ({ identityApi, discoveryApi, fetchApi, catalogApi }) =>
+        new OnboardingClient({
+          identityApi,
+          discoveryApi,
+          fetchApi,
+          catalogApi,
+        }),
     }),
   ],
 });

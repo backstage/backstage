@@ -64,10 +64,10 @@ import playlist from './plugins/playlist';
 import adr from './plugins/adr';
 import lighthouse from './plugins/lighthouse';
 import linguist from './plugins/linguist';
+import onboarding from './plugins/onboarding';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import onboarding from './plugins/onboarding';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 function makeCreateEnv(config: Config) {

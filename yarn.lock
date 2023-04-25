@@ -7471,6 +7471,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-onboarding@workspace:plugins/onboarding"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"

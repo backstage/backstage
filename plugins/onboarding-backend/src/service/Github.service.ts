@@ -36,7 +36,7 @@ export class GithubService {
       }
       return [];
     } catch (error) {
-      return [];
+      throw new Error(error.message);
     }
   }
   async GetUserAndChecklistBlob() {
@@ -112,7 +112,7 @@ export class GithubService {
       }
       return finalResponse;
     } catch (error) {
-      return [];
+      throw new Error(error);
     }
   }
 }

@@ -20,6 +20,7 @@ import {
   FetchApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export const onboardingApiRef = createApiRef<OnboardingApi>({
   id: 'onboarding',
@@ -34,27 +35,30 @@ export interface OnboardingApi {
 export class OnboardingClient implements OnboardingApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
+  private readonly catalogApi: CatalogApi;
   constructor(options: {
     identityApi: IdentityApi;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    catalogApi: CatalogApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
+    this.catalogApi = options.catalogApi;
   }
 
   async getUserInfo(ref: string): Promise<any> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
-    return await this.fetchApi.fetch(
-      `${baseUrl}/entities/by-name/user/default/${ref}`,
-      { method: 'GET' },
-    );
+    return await this.catalogApi.getEntityByRef({
+      kind: 'user',
+      namespace: 'default',
+      name: ref,
+    });
   }
 
   async getChecklist(groups: string, roles: string): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('onboarding');
     return await this.fetchApi.fetch(
-      `${baseUrl}/getChecklists?groups=${groups}&roles=${roles}`,
+      `${baseUrl}/checklists?groups=${groups}&roles=${roles}`,
       {
         method: 'GET',
         headers: {
@@ -66,7 +70,7 @@ export class OnboardingClient implements OnboardingApi {
   }
   async updateChecklistStatus(body: any): Promise<any> {
     const baseUrl = await this.discoveryApi.getBaseUrl('onboarding');
-    return await this.fetchApi.fetch(`${baseUrl}/updateStatus`, {
+    return await this.fetchApi.fetch(`${baseUrl}/update-status`, {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
