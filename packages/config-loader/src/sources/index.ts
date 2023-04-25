@@ -38,4 +38,5 @@ export type {
   ConfigSourceData,
   ReadConfigDataOptions,
   AsyncConfigSourceIterator,
+  ConfigSourceIteratorItem,
 } from './types';

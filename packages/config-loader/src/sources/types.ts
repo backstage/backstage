@@ -43,12 +43,17 @@ export interface ReadConfigDataOptions {
  * @public
  */
 export interface AsyncConfigSourceIterator
-  extends AsyncIterator<{ configs: ConfigSourceData[] }, void, void> {
-  [Symbol.asyncIterator](): AsyncIterator<
-    { configs: ConfigSourceData[] },
-    void,
-    void
-  >;
+  extends AsyncIterator<ConfigSourceIteratorItem, void, void> {
+  [Symbol.asyncIterator](): AsyncIterator<ConfigSourceIteratorItem, void, void>;
+}
+
+/**
+ * An item returned by {@link AsyncConfigSourceIterator}.
+ *
+ * @public
+ */
+export interface ConfigSourceIteratorItem {
+  configs: ConfigSourceData[];
 }
 
 /**
