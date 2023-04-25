@@ -222,7 +222,16 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         />
       </div>
       <div className={classes.content}>
-        {isYaml && <CodeSnippet language="yaml" text={jsYaml.dump(object)} />}
+        {isYaml && (
+          <CodeSnippet
+            language="yaml"
+            text={jsYaml.dump(object, {
+              replacer: (key: string, value: string): any => {
+                return key === 'managedFields' ? undefined : value;
+              },
+            })}
+          />
+        )}
         {!isYaml && (
           <StructuredMetadataTable
             metadata={renderObject(replaceNullsWithUndefined(object))}
