@@ -215,9 +215,12 @@ describe('humanizeEntityRef', () => {
 describe('humanizeEntity', () => {
   it('gives a readable name when one is provided at metadata.title', () => {
     expect(
-      humanizeEntity({
-        metadata: { name: 'my-entity', title: 'My Title' },
-      } as Entity),
+      humanizeEntity(
+        {
+          metadata: { name: 'my-entity', title: 'My Title' },
+        } as Entity,
+        'default',
+      ),
     ).toBe('My Title');
   });
 
@@ -257,13 +260,16 @@ describe('humanizeEntity', () => {
   ])(
     'gives a readable name for kind %s when one is provided at spec.profile.displayName',
     (_, entity: Entity, expected) => {
-      expect(humanizeEntity(entity)).toBe(expected);
+      expect(humanizeEntity(entity, 'default')).toBe(expected);
     },
   );
 
   it('should pass through to humanizeEntityRef when nothing matches', () => {
     expect(
-      humanizeEntity({ kind: 'Group', metadata: { name: 'test' } } as Entity),
-    ).toBe('group:test');
+      humanizeEntity(
+        { kind: 'Group', metadata: { name: 'test' } } as Entity,
+        'default',
+      ),
+    ).toBe('default');
   });
 });
