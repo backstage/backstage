@@ -13,23 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Common functionalities for the openapi-router plugin.
- *
- * @packageDocumentation
- */
-import * as internal from './types';
-
-export { internal };
-export type {
-  Request,
-  Response,
-  QueryParameters,
-  HeaderParameters,
-  CookieParameters,
-  PathParameters,
-} from './utility';
-export type { ApiRouter } from './router';
-export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
-export * from './constants';
+export {};

@@ -34,6 +34,8 @@
     "@backstage/plugin-azure-devops-backend": "workspace:^",
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-openapi-spec": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-devtools-backend": "workspace:^",
