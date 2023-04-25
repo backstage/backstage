@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- ad1a1429de4: Improvements to the `scaffolder/next` buttons UX:
+
+  - Added padding around the "Create" button in the `Stepper` component
+  - Added a button bar that includes the "Cancel" and "Start Over" buttons to the `OngoingTask` component. The state of these buttons match their existing counter parts in the Context Menu
+  - Added a "Show Button Bar"/"Hide Button Bar" item to the `ContextMenu` component
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-scaffolder-common@1.2.7
+
 ## 1.3.0
 
 ### Minor Changes

@@ -38,18 +38,15 @@ export interface ReadConfigDataOptions {
 }
 
 /**
- * The type of the iterator returned by {@link ConfigSource.readConfigData}.
+ * The the generator returned by {@link ConfigSource.readConfigData}.
  *
  * @public
  */
-export interface AsyncConfigSourceIterator
-  extends AsyncIterator<{ configs: ConfigSourceData[] }, void, void> {
-  [Symbol.asyncIterator](): AsyncIterator<
-    { configs: ConfigSourceData[] },
-    void,
-    void
-  >;
-}
+export type AsyncConfigSourceGenerator = AsyncGenerator<
+  { configs: ConfigSourceData[] },
+  void,
+  void
+>;
 
 /**
  * A source of configuration data.
@@ -76,7 +73,7 @@ export interface AsyncConfigSourceIterator
  * @public
  */
 export interface ConfigSource {
-  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceGenerator;
 }
 
 /**

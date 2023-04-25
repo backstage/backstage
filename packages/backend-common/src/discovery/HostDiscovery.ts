@@ -18,9 +18,11 @@ import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from './types';
 import { readHttpServerOptions } from '@backstage/backend-app-api';
 
+type Target = string | { internal: string; external: string };
+
 /**
- * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
- * that assumes that all plugins are hosted in a single deployment.
+ * HostDiscovery is a basic PluginEndpointDiscovery implementation
+ * that can handle plugins that are hosted in a single or multiple deployments.
  *
  * The deployment may be scaled horizontally, as long as the external URL
  * is the same for all instances. However, internal URLs will always be
@@ -28,12 +30,27 @@ import { readHttpServerOptions } from '@backstage/backend-app-api';
  *
  * @public
  */
-export class SingleHostDiscovery implements PluginEndpointDiscovery {
+export class HostDiscovery implements PluginEndpointDiscovery {
   /**
-   * Creates a new SingleHostDiscovery discovery instance by reading
+   * Creates a new HostDiscovery discovery instance by reading
    * from the `backend` config section, specifically the `.baseUrl` for
    * discovering the external URL, and the `.listen` and `.https` config
    * for the internal one.
+   *
+   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoints`.
+   * eg.
+   * ```yaml
+   * discovery:
+   *  endpoints:
+   *    - target: https://internal.example.com/internal-catalog
+   *      plugins: [catalog]
+   *    - target: https://internal.example.com/secure/api/{{pluginId}}
+   *      plugins: [auth, permissions]
+   *    - target:
+   *        internal: https://internal.example.com/search
+   *        external: https://example.com/search
+   *      plugins: [search]
+   * ```
    *
    * The basePath defaults to `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
@@ -63,22 +80,64 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
 
     const internalBaseUrl = `${protocol}://${host}:${listenPort}`;
 
-    return new SingleHostDiscovery(
+    return new HostDiscovery(
       internalBaseUrl + basePath,
       externalBaseUrl + basePath,
+      config.getOptionalConfig('discovery'),
     );
   }
 
   private constructor(
     private readonly internalBaseUrl: string,
     private readonly externalBaseUrl: string,
+    private readonly discoveryConfig: Config | undefined,
   ) {}
 
+  private getTargetFromConfig(pluginId: string, type: 'internal' | 'external') {
+    const endpoints = this.discoveryConfig?.getOptionalConfigArray('endpoints');
+
+    const target = endpoints
+      ?.find(endpoint => endpoint.getStringArray('plugins').includes(pluginId))
+      ?.get<Target>('target');
+
+    if (!target) {
+      const baseUrl =
+        type === 'external' ? this.externalBaseUrl : this.internalBaseUrl;
+
+      return `${baseUrl}/${encodeURIComponent(pluginId)}`;
+    }
+
+    if (typeof target === 'string') {
+      return target.replace(
+        /\{\{\s*pluginId\s*\}\}/g,
+        encodeURIComponent(pluginId),
+      );
+    }
+
+    return target[type].replace(
+      /\{\{\s*pluginId\s*\}\}/g,
+      encodeURIComponent(pluginId),
+    );
+  }
+
   async getBaseUrl(pluginId: string): Promise<string> {
-    return `${this.internalBaseUrl}/${pluginId}`;
+    return this.getTargetFromConfig(pluginId, 'internal');
   }
 
   async getExternalBaseUrl(pluginId: string): Promise<string> {
-    return `${this.externalBaseUrl}/${pluginId}`;
+    return this.getTargetFromConfig(pluginId, 'external');
   }
 }
+
+/**
+ * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
+ * that assumes that all plugins are hosted in a single deployment.
+ *
+ * The deployment may be scaled horizontally, as long as the external URL
+ * is the same for all instances. However, internal URLs will always be
+ * resolved to the same host, so there won't be any balancing of internal traffic.
+ *
+ * @public
+ * @deprecated Use {@link HostDiscovery} instead
+ */
+export const SingleHostDiscovery = HostDiscovery;

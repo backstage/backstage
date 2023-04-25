@@ -181,6 +181,8 @@ export interface TestBackendOptions<
 // @public
 export type TestDatabaseId =
   | 'POSTGRES_13'
+  | 'POSTGRES_12'
+  | 'POSTGRES_11'
   | 'POSTGRES_9'
   | 'MYSQL_8'
   | 'SQLITE_3';

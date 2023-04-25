@@ -219,7 +219,32 @@
     "@backstage/plugin-user-settings-backend": "0.1.8",
     "@backstage/plugin-vault": "0.1.11",
     "@backstage/plugin-vault-backend": "0.3.0",
-    "@backstage/plugin-xcmetrics": "0.2.37"
+    "@backstage/plugin-xcmetrics": "0.2.37",
+    "@backstage/plugin-analytics-module-ga4": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "backend-like-a-tattoo",
+    "brown-eyes-yell",
+    "create-app-1682437922",
+    "curvy-months-appear",
+    "eighty-olives-live",
+    "five-tigers-whisper",
+    "funny-trains-sniff",
+    "good-lions-approve",
+    "lazy-keys-work",
+    "mighty-bears-glow",
+    "mighty-cows-greet",
+    "modern-pumpkins-join",
+    "moody-lizards-beam",
+    "olive-turkeys-switch",
+    "pretty-gifts-greet",
+    "quick-flies-guess",
+    "rotten-chefs-jog",
+    "six-mails-shout",
+    "slimy-turkeys-return",
+    "soft-readers-exist",
+    "swift-fishes-run",
+    "tough-moles-whisper",
+    "warm-lamps-tease"
+  ]
 }
