@@ -21,7 +21,7 @@ import fetch from 'node-fetch';
 import yaml from 'yaml';
 import { ConfigTransformer, createConfigTransformer } from './transform';
 import {
-  AsyncConfigSourceIterator,
+  AsyncConfigSourceGenerator,
   ConfigSource,
   SubstitutionFunc,
   ReadConfigDataOptions,
@@ -114,7 +114,7 @@ export class RemoteConfigSource implements ConfigSource {
 
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
-  ): AsyncConfigSourceIterator {
+  ): AsyncConfigSourceGenerator {
     let data = await this.#load();
 
     yield { configs: [{ data, context: this.#url }] };
