@@ -15,4 +15,4 @@
  */
 
 export { UrlPatternDiscovery } from './UrlPatternDiscovery';
-export { HostDiscovery } from './HostDiscovery';
+export { FrontendHostDiscovery } from './FrontendHostDiscovery';

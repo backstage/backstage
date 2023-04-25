@@ -411,6 +411,18 @@ export type FlatRoutesProps = {
 };
 
 // @public
+export class FrontendHostDiscovery implements DiscoveryApi {
+  static fromConfig(
+    config: Config,
+    options?: {
+      pathPattern?: string;
+    },
+  ): FrontendHostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
 export class GithubAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;
@@ -426,18 +438,6 @@ export class GitlabAuth {
 export class GoogleAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T;
-}
-
-// @public
-export class HostDiscovery implements DiscoveryApi {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
-  // (undocumented)
-  getBaseUrl(pluginId: string): Promise<string>;
 }
 
 // @public

@@ -15,11 +15,11 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { HostDiscovery } from './HostDiscovery';
+import { FrontendHostDiscovery } from './FrontendHostDiscovery';
 
-describe('HostDiscovery', () => {
+describe('FrontendHostDiscovery', () => {
   it('is created from config', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
@@ -33,13 +33,13 @@ describe('HostDiscovery', () => {
   });
 
   it('can configure the base path', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
         },
       }),
-      { basePath: '/service' },
+      { pathPattern: '/service/{{pluginId}}' },
     );
 
     await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
@@ -48,7 +48,7 @@ describe('HostDiscovery', () => {
   });
 
   it('uses plugin specific targets from config if provided', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
@@ -73,7 +73,7 @@ describe('HostDiscovery', () => {
   });
 
   it('uses a single target for internal and external for a plugin', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
@@ -95,7 +95,7 @@ describe('HostDiscovery', () => {
   });
 
   it('defaults to the backend baseUrl when there is not an endpoint for a plugin', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
@@ -117,7 +117,7 @@ describe('HostDiscovery', () => {
   });
 
   it('replaces {{pluginId}} or {{ pluginId }} in the target', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
@@ -152,7 +152,7 @@ describe('HostDiscovery', () => {
   });
 
   it('encodes the pluginId', async () => {
-    const discovery = HostDiscovery.fromConfig(
+    const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({
         backend: {
           baseUrl: 'http://localhost:40',
