@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { Typography, Box, Tooltip } from '@material-ui/core';
+import { Typography, Box, Tooltip, Chip } from '@material-ui/core';
 import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
 import { DraftPrIcon } from '../icons/DraftPr';
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
+import { Label } from '../../utils/types';
+import { useFormClasses } from './styles';
 
 type Props = {
   title: string;
@@ -29,9 +31,12 @@ type Props = {
   repositoryName: string;
   isDraft: boolean;
   repositoryIsArchived: boolean;
+  labels?: Label[];
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
+  const classes = useFormClasses();
+
   const {
     title,
     createdAt,
@@ -41,6 +46,7 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
     repositoryName,
     isDraft,
     repositoryIsArchived,
+    labels,
   } = props;
 
   return (
@@ -80,6 +86,17 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
           </Typography>
         )}
       </Box>
+      {labels && (
+        <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
+          {labels.map(data => {
+            return (
+              <li key={data.id} className={classes.labelItem}>
+                <Chip color="primary" label={data.name} size="small" />
+              </li>
+            );
+          })}
+        </Box>
+      )}
     </>
   );
 };

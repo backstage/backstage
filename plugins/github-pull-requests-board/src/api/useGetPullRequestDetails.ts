@@ -60,6 +60,12 @@ export const useGetPullRequestDetails = () => {
                 mergeable
                 state
                 reviewDecision
+                labels(first: 10) {
+                  nodes {
+                    id
+                    name
+                  }
+                }
                 isDraft
                 createdAt
                 author {

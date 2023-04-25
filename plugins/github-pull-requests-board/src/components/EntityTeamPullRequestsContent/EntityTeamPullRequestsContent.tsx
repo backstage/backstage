@@ -105,6 +105,7 @@ const EntityTeamPullRequestsContent = (
                     latestReviews,
                     repository,
                     isDraft,
+                    labels,
                   },
                   index,
                 ) =>
@@ -127,6 +128,7 @@ const EntityTeamPullRequestsContent = (
                       repositoryName={repository.name}
                       repositoryIsArchived={repository.isArchived}
                       isDraft={isDraft}
+                      labels={labels.nodes}
                     />
                   ),
               )}

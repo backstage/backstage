@@ -76,6 +76,11 @@ export type Repository = {
   isArchived: boolean;
 };
 
+export type Label = {
+  id: string;
+  name: string;
+};
+
 export type PullRequest = {
   id: string;
   repository: Repository;
@@ -89,6 +94,9 @@ export type PullRequest = {
   state: string;
   reviewDecision: ReviewDecision | null;
   isDraft: boolean;
+  labels: {
+    nodes: Label[];
+  };
   createdAt: string;
   author: Author;
 };

@@ -59,6 +59,9 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
         },
         isArchived: isArchived,
       },
+      labels: {
+        nodes: [],
+      },
       isDraft: isDraft,
       author: {
         login: authorLogin,
