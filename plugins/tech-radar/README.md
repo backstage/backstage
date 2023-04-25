@@ -69,48 +69,48 @@ When defining the radar entries you can see the available properties on the file
 
 ## Tech radar data model
 
-| Name      | Type                    | Description                                                          | Required? |
-| --------- | ----------------------- | -------------------------------------------------------------------- | --------- |
-| title     | string                  | The title of the radar                                               | Yes       |
-| quadrants | [quadrant[]](#quadrant) | The 4 quadrants of the radar, clockwise starting at the bottom right | Yes       |
-| rings     | [ring[]](#ring)         | The radar rings, starting from the inside                            | Yes       |
-| entries   | [entry[]](#entry)       | The radar entries                                                    | Yes       |
+| Name        | Type                    | Description                                                          | Required? |
+| ----------- | ----------------------- | -------------------------------------------------------------------- | --------- |
+| `title`     | string                  | The title of the radar                                               | Yes       |
+| `quadrants` | [quadrant[]](#quadrant) | The 4 quadrants of the radar, clockwise starting at the bottom right | Yes       |
+| `rings`     | [ring[]](#ring)         | The radar rings, starting from the inside                            | Yes       |
+| `entries`   | [entry[]](#entry)       | The radar entries                                                    | Yes       |
 
 ### quadrant
 
-| Name | Type   | Description              | Required? |
-| ---- | ------ | ------------------------ | --------- |
-| id   | string | The id of the quadrant   | Yes       |
-| name | string | The name of the quadrant | Yes       |
+| Name   | Type   | Description              | Required? |
+| ------ | ------ | ------------------------ | --------- |
+| `id`   | string | The id of the quadrant   | Yes       |
+| `name` | string | The name of the quadrant | Yes       |
 
 ### ring
 
-| Name  | Type   | Description                                       | Required? |
-| ----- | ------ | ------------------------------------------------- | --------- |
-| id    | string | The id of the ring                                | Yes       |
-| name  | string | The name of the ring                              | Yes       |
-| color | string | The color of the ring and entries inside the ring | Yes       |
+| Name    | Type   | Description                                       | Required? |
+| ------- | ------ | ------------------------------------------------- | --------- |
+| `id`    | string | The id of the ring                                | Yes       |
+| `name`  | string | The name of the ring                              | Yes       |
+| `color` | string | The color of the ring and entries inside the ring | Yes       |
 
 ### entry
 
-| Name        | Type                    | Description                                     | Required? |
-| ----------- | ----------------------- | ----------------------------------------------- | --------- |
-| id          | string                  | The unique id from the entry                    | Yes       |
-| title       | string                  | The title that is shown in the radar            | Yes       |
-| description | string                  | The full description of the entry               | No        |
-| key         | string                  | The entry key                                   | Yes       |
-| url         | string                  | The url to the entry internal or external page  | No        |
-| quadrant    | string                  | The name of the quadrant connected to the entry | Yes       |
-| timeline    | [timeline[]](#timeline) | Requires minimal one timeline entry             | Yes       |
+| Name          | Type                    | Description                                     | Required? |
+| ------------- | ----------------------- | ----------------------------------------------- | --------- |
+| `id`          | string                  | The unique id from the entry                    | Yes       |
+| `title`       | string                  | The title that is shown in the radar            | Yes       |
+| `description` | string                  | The full description of the entry               | No        |
+| key           | string                  | The entry key                                   | Yes       |
+| `url`         | string                  | The URL to the entry internal or external page  | No        |
+| `quadrant`    | string                  | The name of the quadrant connected to the entry | Yes       |
+| `timeline`    | [timeline[]](#timeline) | Requires minimal one timeline entry             | Yes       |
 
 ### timeline
 
-| Name        | Type   | Description                                                   | Required? |
-| ----------- | ------ | ------------------------------------------------------------- | --------- |
-| moved       | number | Possible values are: -1 (moved out), 0 (stayed), 1 (moved in) | Yes       |
-| ringId      | string | The ring id                                                   | Yes       |
-| date        | string | Date in format (YYYY-MM-dd)                                   | Yes       |
-| description | string | A long description                                            | Yes       |
+| Name          | Type   | Description                                                   | Required? |
+| ------------- | ------ | ------------------------------------------------------------- | --------- |
+| `moved`       | number | Possible values are: -1 (moved out), 0 (stayed), 1 (moved in) | Yes       |
+| `ringId`      | string | The ring id                                                   | Yes       |
+| `date`        | string | Date in format (YYYY-MM-dd)                                   | Yes       |
+| `description` | string | A long description                                            | Yes       |
 
 ### Sample
 
