@@ -17,6 +17,7 @@
 import { DomainEntity } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { DomainCard } from './DomainCard';
 
@@ -58,13 +59,14 @@ describe('<DomainCard />', () => {
       kind: 'Domain',
       metadata: {
         name: 'artists',
+        title: 'my Custom Title',
       },
       spec: {
         owner: 'guest',
       },
     };
     const { getByText } = await renderInTestApp(
-      <DomainCard entity={entity} title="my Custom Title" />,
+      <DomainCard entity={entity} />,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
@@ -77,5 +79,6 @@ describe('<DomainCard />', () => {
       '/catalog/default/domain/artists',
     );
     expect(getByText('my Custom Title')).toBeInTheDocument();
+    expect(screen.queryByText('artists')).not.toBeInTheDocument();
   });
 });
