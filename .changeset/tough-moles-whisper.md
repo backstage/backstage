@@ -2,4 +2,4 @@
 '@backstage/plugin-tech-radar': patch
 ---
 
-Radar entry timeline added to the entry detail page
+Added the ability to display a timeline to each entry in the details box
