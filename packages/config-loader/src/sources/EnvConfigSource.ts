@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { AsyncConfigSourceIterator, ConfigSource } from './types';
+import { AsyncConfigSourceGenerator, ConfigSource } from './types';
 
 /**
  * Options for {@link EnvConfigSource.create}.
@@ -68,7 +68,7 @@ export class EnvConfigSource implements ConfigSource {
     private readonly env: { [name: string]: string | undefined },
   ) {}
 
-  async *readConfigData(): AsyncConfigSourceIterator {
+  async *readConfigData(): AsyncConfigSourceGenerator {
     const configs = readEnvConfig(this.env);
     yield { configs };
     return;

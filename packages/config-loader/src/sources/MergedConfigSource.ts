@@ -15,7 +15,7 @@
  */
 
 import {
-  AsyncConfigSourceIterator,
+  AsyncConfigSourceGenerator,
   ConfigSource,
   ConfigSourceData,
   ReadConfigDataOptions,
@@ -54,7 +54,7 @@ export class MergedConfigSource implements ConfigSource {
 
   async *readConfigData(
     options?: ReadConfigDataOptions,
-  ): AsyncConfigSourceIterator {
+  ): AsyncConfigSourceGenerator {
     const its = this.sources.map(source => source.readConfigData(options));
     const initialResults = await Promise.all(its.map(it => it.next()));
     const configs = initialResults.map((result, i) => {

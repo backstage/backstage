@@ -37,6 +37,5 @@ export type {
   ConfigSource,
   ConfigSourceData,
   ReadConfigDataOptions,
-  AsyncConfigSourceIterator,
-  ConfigSourceIteratorItem,
+  AsyncConfigSourceGenerator,
 } from './types';

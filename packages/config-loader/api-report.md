@@ -11,11 +11,13 @@ import { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
 
 // @public
-export interface AsyncConfigSourceIterator
-  extends AsyncIterator<ConfigSourceIteratorItem, void, void> {
-  // (undocumented)
-  [Symbol.asyncIterator](): AsyncIterator<ConfigSourceIteratorItem, void, void>;
-}
+export type AsyncConfigSourceGenerator = AsyncGenerator<
+  {
+    configs: ConfigSourceData[];
+  },
+  void,
+  void
+>;
 
 // @public
 export interface BaseConfigSourcesOptions {
@@ -53,18 +55,12 @@ export type ConfigSchemaProcessingOptions = {
 // @public
 export interface ConfigSource {
   // (undocumented)
-  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceGenerator;
 }
 
 // @public
 export interface ConfigSourceData extends AppConfig {
   path?: string;
-}
-
-// @public
-export interface ConfigSourceIteratorItem {
-  // (undocumented)
-  configs: ConfigSourceData[];
 }
 
 // @public
@@ -120,7 +116,7 @@ export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 export class EnvConfigSource implements ConfigSource {
   static create(options: EnvConfigSourceOptions): ConfigSource;
   // (undocumented)
-  readConfigData(): AsyncConfigSourceIterator;
+  readConfigData(): AsyncConfigSourceGenerator;
   // (undocumented)
   toString(): string;
 }
@@ -137,7 +133,7 @@ export type EnvFunc = (name: string) => Promise<string | undefined>;
 export class FileConfigSource implements ConfigSource {
   static create(options: FileConfigSourceOptions): ConfigSource;
   // (undocumented)
-  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceGenerator;
   // (undocumented)
   toString(): string;
 }
@@ -203,7 +199,7 @@ export class MutableConfigSource implements ConfigSource {
   // (undocumented)
   readConfigData(
     options?: ReadConfigDataOptions | undefined,
-  ): AsyncConfigSourceIterator;
+  ): AsyncConfigSourceGenerator;
   setData(data: JsonObject): void;
   // (undocumented)
   toString(): string;
@@ -234,7 +230,7 @@ export class RemoteConfigSource implements ConfigSource {
   // (undocumented)
   readConfigData(
     options?: ReadConfigDataOptions | undefined,
-  ): AsyncConfigSourceIterator;
+  ): AsyncConfigSourceGenerator;
   // (undocumented)
   toString(): string;
 }
@@ -250,7 +246,7 @@ export interface RemoteConfigSourceOptions {
 export class StaticConfigSource implements ConfigSource {
   static create(options: StaticConfigSourceOptions): ConfigSource;
   // (undocumented)
-  readConfigData(): AsyncConfigSourceIterator;
+  readConfigData(): AsyncConfigSourceGenerator;
   // (undocumented)
   toString(): string;
 }

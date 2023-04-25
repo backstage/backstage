@@ -16,7 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 import {
-  AsyncConfigSourceIterator,
+  AsyncConfigSourceGenerator,
   ConfigSource,
   ReadConfigDataOptions,
 } from './types';
@@ -64,7 +64,7 @@ export class MutableConfigSource implements ConfigSource {
 
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
-  ): AsyncConfigSourceIterator {
+  ): AsyncConfigSourceGenerator {
     let deferredPromise = this.#deferred.promise;
 
     if (this.#currentData !== undefined) {
