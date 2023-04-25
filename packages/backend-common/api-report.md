@@ -472,6 +472,20 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
+// @public
+export class HostDiscovery implements PluginEndpointDiscovery {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+}
+
 export { isChildPath };
 
 // @public
@@ -728,19 +742,8 @@ export type ServiceBuilder = {
 // @public
 export function setRootLogger(newLogger: winston.Logger): void;
 
-// @public
-export class SingleHostDiscovery implements PluginEndpointDiscovery {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): SingleHostDiscovery;
-  // (undocumented)
-  getBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-}
+// @public @deprecated
+export const SingleHostDiscovery: typeof HostDiscovery;
 
 // @public
 export type StatusCheck = () => Promise<any>;
