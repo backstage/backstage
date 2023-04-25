@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Added the ability to display a timeline to each entry in the details box
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/theme@0.2.19
+
 ## 0.6.3
 
 ### Patch Changes
