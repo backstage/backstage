@@ -17,7 +17,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import { Props, RadarDescription } from './RadarDescription';
+import { Props, RadarTimeline } from './RadarTimeline';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Ring } from '../../utils/types';
 
@@ -28,24 +28,16 @@ const ring: Ring = {
 };
 
 const minProps: Props = {
-  open: true,
-  title: 'example-title',
-  description: 'example-description',
   timeline: [
     { date: new Date(), ring: ring, description: 'test timeline 1' },
     { date: new Date(), ring: ring, description: 'test timeline 2' },
   ],
-  links: [{ url: 'https://example.com/docs', title: 'example-link' }],
-  onClose: () => {},
 };
 
 describe('RadarDescription', () => {
   it('should render', async () => {
-    await renderInTestApp(<RadarDescription {...minProps} />);
-
-    const radarDescription = screen.getByTestId('radar-description');
-    expect(radarDescription).toBeInTheDocument();
-    expect(screen.getByText(String(minProps.description))).toBeInTheDocument();
-    expect(screen.getByText(String('example-link'))).toBeInTheDocument();
+    await renderInTestApp(<RadarTimeline {...minProps} />);
+    expect(screen.getByText(String('test timeline 1'))).toBeInTheDocument();
+    expect(screen.getByText(String('test timeline 2'))).toBeInTheDocument();
   });
 });

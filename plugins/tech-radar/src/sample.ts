@@ -177,6 +177,11 @@ entries.push({
       date: new Date('2020-08-06'),
       description: 'long description',
     },
+    {
+      ringId: 'trial',
+      date: new Date('2020-07-05'),
+      description: 'long description',
+    },
   ],
   links: [
     {
