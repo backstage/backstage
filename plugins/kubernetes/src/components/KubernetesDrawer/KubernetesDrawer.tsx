@@ -25,6 +25,7 @@ import {
   Drawer,
   Switch,
   FormControlLabel,
+  FormGroup,
   Grid,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
@@ -150,6 +151,11 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
 }: KubernetesDrawerContentProps<T>) => {
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
+  // Toggle whether the Kubernetes resource managed fields should be shown in
+  // the YAML display. This toggle is only available when the YAML is being
+  // shown because managed fields are never visible in the structured display.
+  const [managedFields, setManagedFields] = useState<boolean>(false);
+
   const classes = useDrawerContentStyles();
   const cluster = useContext(ClusterContext);
   const { clusterLink, errorMessage } = tryFormatClusterLink({
@@ -208,18 +214,34 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
             </BackstageButton>
           )}
         </div>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isYaml}
-              onChange={event => {
-                setIsYaml(event.target.checked);
-              }}
-              name="YAML"
-            />
-          }
-          label="YAML"
-        />
+        <FormGroup className={classes.options}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isYaml}
+                onChange={event => {
+                  setIsYaml(event.target.checked);
+                }}
+                name="YAML"
+              />
+            }
+            label="YAML"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isYaml && managedFields}
+                onChange={event => {
+                  if (isYaml) {
+                    setManagedFields(event.target.checked);
+                  }
+                }}
+                name="Managed Fields"
+              />
+            }
+            label="Managed Fields"
+          />
+        </FormGroup>
       </div>
       <div className={classes.content}>
         {isYaml && (
@@ -227,7 +249,10 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
             language="yaml"
             text={jsYaml.dump(object, {
               replacer: (key: string, value: string): any => {
-                return key === 'managedFields' ? undefined : value;
+                if (!managedFields) {
+                  return key === 'managedFields' ? undefined : value;
+                }
+                return value;
               },
             })}
           />
