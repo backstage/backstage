@@ -49,11 +49,11 @@ const useStyles = makeStyles(theme => ({
   backButton: {
     marginRight: theme.spacing(1),
   },
-
   footer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'right',
+    marginTop: theme.spacing(2),
   },
   formWrapper: {
     padding: theme.spacing(2),
@@ -216,6 +216,7 @@ export const Stepper = (stepperProps: StepperProps) => {
               </Button>
               <Button
                 variant="contained"
+                color="primary"
                 onClick={() => {
                   props.onCreate(formState);
                   const name =
