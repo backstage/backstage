@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.13.1
+
+### Patch Changes
+
+- 5b742747d10: Bump minimum required version of `vm2` to be 3.9.17
+
 ## 1.13.0
 
 ### Minor Changes
