@@ -1,0 +1,62 @@
+{
+  "name": "@backstage/deploy",
+  "description": "CLI for Backstage deployment tooling",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "backstage": {
+    "role": "cli"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/deploy"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "start": "nodemon --"
+  },
+  "bin": {
+    "backstage-deploy": "bin/backstage-deploy"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@pulumi/aws": "^5.30.0",
+    "@pulumi/awsx": "^1.0.2",
+    "@pulumi/pulumi": "^3.55.0",
+    "chalk": "^5.2.0",
+    "commander": "^10.0.1",
+    "fs-extra": "^11.1.1",
+    "handlebars": "^4.7.7",
+    "inquirer": "^9.2.0",
+    "minimatch": "^9.0.0",
+    "ora": "^6.3.0",
+    "recursive-readdir": "^2.2.3"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/types": "workspace:^"
+  },
+  "files": [
+    "bin",
+    "dist/**/*.js",
+    "templates"
+  ],
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/backstage-deploy",
+    "ext": "ts"
+  }
+}
