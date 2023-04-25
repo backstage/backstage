@@ -454,3 +454,74 @@ stackstorm:
 
 permission:
   enabled: true
+
+
+
+app2:
+  enabledFeatures:
+    - package: '@backstage/plugin-catalog'
+      options:
+        - ...
+
+  bindExternalRoutes:
+    catalog.blah: /import
+
+  elements:
+    - import: '@backstage/core-components#AlertDisplay'
+    - import: '@backstage/sidebar#MobileSidebar'
+      role: sidebar
+      children:
+        - asd
+
+  pages:
+    - '@backstage/plugin-scaffolder#TemplatePage'
+    - '@backstage/plugin-search#SearchPage'
+    - import: '@backstage/plugin-todo@1.3.4#TodoPage'
+      path: my-todos
+      options:
+        title: 'My TODOs'
+    - '@backstage/plugin-catalog#CatalogIndexPage'
+    - import: '@backstage/plugin-catalog#EntityPage'
+      children:
+        - '@backstage/plugin-catalog#OverviewPage'
+    - children:
+        - '@backstage/plugin-catalog#OverviewPage'
+    - name: Catalog
+      subnav:
+        - 
+
+  plugins:
+    catalog:
+      tabs:
+        - name: Overview
+          if: {{ entity.type === website}}
+          if2:
+            a: kind
+            op: equal
+            b: Component
+          if3: kind == Component
+          if4:
+            isKind: Components
+        - name: PagerDuty
+          id: pages.pagerduty.overview
+          package: plugin-pd#PagerdutyTab
+
+      entityPage:
+        - name: AboutCard
+          id: AboutCard
+          options:
+            fields:
+              - name
+              - description
+              - annotations
+        - name: PagerDuty
+          id: pagerduty.onCall
+          options:
+            something: 1
+    scaffolder:
+      fieldExtensions:
+        - MaPackage.FieldExtension
+
+    myHomeGrownPlugin:
+      something: 1
+      somethingElse: 2

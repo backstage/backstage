@@ -50,6 +50,19 @@ import { CatalogSearchResultListItemProps } from './components/CatalogSearchResu
 import { rootRouteRef } from './routes';
 import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
 
+const CatalogIndexPageExtension = createRoutableExtension({
+  name: 'CatalogIndexPage',
+  component: () => import('./components/CatalogPage').then(m => m.CatalogPage),
+  mountPoint: rootRouteRef,
+});
+
+const EntityAboutCardExtension = createComponentExtension({
+  name: 'EntityAboutCard',
+  component: {
+    lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
+  },
+});
+
 /** @public */
 export const catalogPlugin = createPlugin({
   id: 'catalog',
@@ -78,26 +91,32 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
+  extensions: {
+    CatalogIndexPage: CatalogIndexPageExtension,
+  },
   __experimentalConfigure(
     options?: CatalogInputPluginOptions,
   ): CatalogPluginOptions {
     const defaultOptions = {
       createButtonTitle: 'Create',
     };
+
+    catalogExtensionPoint.cards.provideExtension(EntityAboutCardExtension);
     return { ...defaultOptions, ...options };
   },
 });
 
+// consumption
+
+const [components] = useExtensionPOint(catalogEntityPageFilterExtensionPoint);
+const [components] = useApi(catalogEntityPageFilterExtensionPoint);
+
+const toRender = compoments.filter(config.filters.include(component.name));
+
+//
 /** @public */
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element =
-  catalogPlugin.provide(
-    createRoutableExtension({
-      name: 'CatalogIndexPage',
-      component: () =>
-        import('./components/CatalogPage').then(m => m.CatalogPage),
-      mountPoint: rootRouteRef,
-    }),
-  );
+  catalogPlugin.provide(CatalogIndexPageExtension);
 
 /** @public */
 export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(

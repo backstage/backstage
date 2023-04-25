@@ -35,6 +35,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogImportApiRef, CatalogImportClient } from './api';
 import { ImportInfoCard } from './components/ImportInfoCard';
 import { ImportPage } from './components/ImportPage';
+import { Sidebar } from '@backstage/core-components';
 
 export const rootRouteRef = createRouteRef({
   id: 'catalog-import',
@@ -240,7 +241,7 @@ export type PluginManifest = {
   id: string;
   pages?: [() => JSX.Element];
   apis?: AnyApiFactory[];
-  components?: PluginComponent;
+  components?: PluginComponent[];
   externalRouteBindings?: {
     createComponent: { bindByRouteRefId: 'scaffolder' };
   };
@@ -250,7 +251,7 @@ export type PluginManifestConfig = {
   id: string;
   pages?: [() => JSX.Element];
   apis?: AnyApiFactory[];
-  components?: PluginComponent;
+  components?: PluginComponent[];
   externalRouteBindings?: {
     createComponent: { bindByRouteRefId: 'scaffolder' };
   };
@@ -265,3 +266,82 @@ export function createPluginManifest(
 }
 
 export default manifest;
+
+// I register a component for the entityPage.
+
+// Take one
+export const manifest = createPluginManifest({
+  id: 'catalog-import',
+  pages: [CatalogImportPage],
+  apis: [catalogImportClient],
+  components: [
+    createPluginComponent({
+      name: 'foo',
+      scope: 'EntityPage',
+      component: ImportPage,
+    }),
+  ],
+});
+
+// CreateFrontendModule
+
+export const catalogImportPlugin = createFrontendPlugin({
+  pluginId: 'catalog-import',
+  routes: {
+    catalogIndex: rootRouteRef,
+    catalogEntity: entityRouteRef,
+  },
+  externalRoutes: {
+    createComponent: createComponentRouteRef,
+    viewTechDoc: viewTechDocRouteRef,
+  },
+  register(env) {
+    // Can these be regular ApiRefs?
+    const myExtension = new MyExtensionDot();
+    env.registerExtensionDot(myExtensionRef, myExtension);
+
+    env.registerApi(catalogImportClientFactory);
+
+    // Register a dependency on this reference. Fulfill it later by config.
+    env.registerExternalRouteRef('create', createComponentRouteRef);
+
+    env.registerInit({
+      deps: {
+        apiHolder: core.apiHolder,
+        entityPageCards: catalog.entityPageCards,
+        sidebar: sidebar,
+        router: coreThings.router,
+      },
+      async init({ entityPageCards, sidebar, router }) {
+        router.addRoute('/catalog-import', <ImportPage />);
+        sidebar.registerPage(<ImportPage />);
+        entityPageCards.addCard(<>This is a cool component</>);
+      },
+    });
+  },
+});
+
+// NO
+import { catalogImportPlugin } from '@backstage/plugin-catalog';
+
+// YES
+import { XYZ } from '@backstage/plugin-catalog-react';
+
+export const customizations = createFrontendModule({
+  moduleId: 'custom',
+  pluginId: 'catalog-import',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsExtensionPoint,
+      },
+      async init({ events }) {
+        catalogImportPlugin.externalRoutes;
+        const eventRouter = new GitlabEventRouter();
+
+        events.addPublishers(eventRouter);
+        events.addSubscribers(eventRouter);
+      },
+    });
+  },
+});

@@ -186,6 +186,11 @@ const app = createApp({
     },
     ...registry.components(), // <---------------------------------------
   },
+  /*
+  bind:
+    - from: catalog.create
+      to: /create
+  */
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
@@ -221,6 +226,19 @@ const catalogPlugin = {
   ],
 };
 
+/**
+ * ```yaml
+ *
+ * com.spotify.DefaultSidebar:  # :)
+ *   layoutJson: "{\"...}"
+ *
+ * horfddorp
+ * ```
+ */
+
+const app = createApp({
+  plugins: import('@backstage/plugin-scanner'),
+});
 app.addPlugin(catalogPlugin);
 
 // EntityPage
