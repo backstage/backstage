@@ -12,21 +12,9 @@ import { Observable } from '@backstage/types';
 
 // @public
 export interface AsyncConfigSourceIterator
-  extends AsyncIterator<
-    {
-      configs: ConfigSourceData[];
-    },
-    void,
-    void
-  > {
+  extends AsyncIterator<ConfigSourceIteratorItem, void, void> {
   // (undocumented)
-  [Symbol.asyncIterator](): AsyncIterator<
-    {
-      configs: ConfigSourceData[];
-    },
-    void,
-    void
-  >;
+  [Symbol.asyncIterator](): AsyncIterator<ConfigSourceIteratorItem, void, void>;
 }
 
 // @public
@@ -71,6 +59,12 @@ export interface ConfigSource {
 // @public
 export interface ConfigSourceData extends AppConfig {
   path?: string;
+}
+
+// @public
+export interface ConfigSourceIteratorItem {
+  // (undocumented)
+  configs: ConfigSourceData[];
 }
 
 // @public
