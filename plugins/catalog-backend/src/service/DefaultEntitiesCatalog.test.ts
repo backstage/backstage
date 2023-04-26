@@ -1419,6 +1419,87 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should exclude filtered entities when paginating, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await Promise.all([
+          addEntityToSearch(entityFrom('AA', { uid: '1' })),
+          addEntityToSearch(
+            entityFrom('AA', {
+              namespace: 'namespace2',
+              kind: 'included',
+              uid: '2',
+            }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', {
+              namespace: 'ns',
+              kind: 'excluded',
+              uid: '3',
+            }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', {
+              namespace: 'namespace3',
+              uid: '4',
+              kind: 'included',
+            }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', {
+              namespace: 'namespace4',
+              uid: '5',
+              kind: 'included',
+            }),
+          ),
+          addEntityToSearch(entityFrom('CC', { uid: '6', kind: 'included' })),
+          addEntityToSearch(entityFrom('DD', { uid: '7', kind: 'included' })),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const limit = 2;
+
+        // initial request
+        const request1: QueryEntitiesInitialRequest = {
+          limit,
+          filter: {
+            key: 'kind',
+            values: ['included'],
+          },
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        };
+        const response1 = await catalog.queryEntities(request1);
+        expect(response1.items).toMatchObject([
+          entityFrom('AA', { uid: '1' }),
+          entityFrom('AA', { uid: '2' }),
+        ]);
+        expect(response1.pageInfo.nextCursor).toBeDefined();
+        expect(response1.pageInfo.prevCursor).toBeUndefined();
+        expect(response1.totalItems).toBe(6);
+
+        // second request (forward)
+        const request2: QueryEntitiesCursorRequest = {
+          cursor: response1.pageInfo.nextCursor!,
+          limit,
+        };
+        const response2 = await catalog.queryEntities(request2);
+        expect(response2.items).toMatchObject([
+          entityFrom('AA', { uid: '4' }),
+          entityFrom('AA', { uid: '5' }),
+        ]);
+        expect(response2.pageInfo.nextCursor).toBeDefined();
+        expect(response2.pageInfo.prevCursor).toBeDefined();
+        expect(response2.totalItems).toBe(6);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should paginate results without sort fields, %p',
       async databaseId => {
         await createDatabase(databaseId);
@@ -1754,11 +1835,12 @@ function entityFrom(
     uid,
     namespace,
     title,
-  }: { uid?: string; namespace?: string; title?: string } = {},
+    kind = 'k',
+  }: { uid?: string; namespace?: string; title?: string; kind?: string } = {},
 ) {
   return {
     apiVersion: 'a',
-    kind: 'k',
+    kind,
     metadata: {
       name,
       ...(!!namespace && { namespace }),
