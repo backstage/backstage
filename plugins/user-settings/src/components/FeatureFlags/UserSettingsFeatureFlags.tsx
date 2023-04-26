@@ -25,7 +25,6 @@ import {
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 import {
-  FeatureFlag,
   featureFlagsApiRef,
   FeatureFlagState,
   useApi,
