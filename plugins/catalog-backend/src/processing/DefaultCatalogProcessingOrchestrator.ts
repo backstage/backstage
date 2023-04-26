@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import {
   Entity,
   EntityPolicy,
@@ -55,6 +56,9 @@ import {
 } from './util';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
+import { addEntityAttributes, TRACER_ID } from '../util/opentelemetry';
+
+const tracer = trace.getTracer(TRACER_ID);
 
 type Context = {
   entityRef: string;
@@ -63,6 +67,18 @@ type Context = {
   collector: ProcessorOutputCollector;
   cache: ProcessorCacheManager;
 };
+
+function addProcessorAttributes(
+  span: Span,
+  stage: string,
+  processor: CatalogProcessor,
+) {
+  span.setAttribute('backstage.catalog.processor.stage', stage);
+  span.setAttribute(
+    'backstage.catalog.processor.name',
+    processor.getProcessorName(),
+  );
+}
 
 /** @public */
 export class DefaultCatalogProcessingOrchestrator
@@ -183,20 +199,30 @@ export class DefaultCatalogProcessingOrchestrator
 
     for (const processor of this.options.processors) {
       if (processor.preProcessEntity) {
-        try {
-          res = await processor.preProcessEntity(
-            res,
-            context.location,
-            context.collector.forProcessor(processor),
-            context.originLocation,
-            context.cache.forProcessor(processor),
-          );
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while preprocessing`,
-            e,
-          );
-        }
+        let innerRes = res;
+        res = await tracer.startActiveSpan('ProcessingStep', async span => {
+          addEntityAttributes(span, context.entityRef);
+          addProcessorAttributes(span, 'preProcessEntity', processor);
+          try {
+            innerRes = await processor.preProcessEntity!(
+              innerRes,
+              context.location,
+              context.collector.forProcessor(processor),
+              context.originLocation,
+              context.cache.forProcessor(processor),
+            );
+          } catch (e) {
+            span.recordException(e);
+            span.setStatus({ code: SpanStatusCode.ERROR });
+            span.end();
+            throw new InputError(
+              `Processor ${processor.constructor.name} threw an error while preprocessing`,
+              e,
+            );
+          }
+          span.end();
+          return innerRes;
+        });
       }
     }
 
@@ -361,19 +387,29 @@ export class DefaultCatalogProcessingOrchestrator
 
     for (const processor of this.options.processors) {
       if (processor.postProcessEntity) {
-        try {
-          res = await processor.postProcessEntity(
-            res,
-            context.location,
-            context.collector.forProcessor(processor),
-            context.cache.forProcessor(processor),
-          );
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while postprocessing`,
-            e,
-          );
-        }
+        let innerRes = res;
+        res = await tracer.startActiveSpan('ProcessingStep', async span => {
+          addEntityAttributes(span, context.entityRef);
+          addProcessorAttributes(span, 'postProcessEntity', processor);
+          try {
+            innerRes = await processor.postProcessEntity!(
+              innerRes,
+              context.location,
+              context.collector.forProcessor(processor),
+              context.cache.forProcessor(processor),
+            );
+          } catch (e) {
+            span.recordException(e);
+            span.setStatus({ code: SpanStatusCode.ERROR });
+            span.end();
+            throw new InputError(
+              `Processor ${processor.constructor.name} threw an error while postprocessing`,
+              e,
+            );
+          }
+          span.end();
+          return innerRes;
+        });
       }
     }
 
