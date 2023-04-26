@@ -29,9 +29,8 @@ import React from 'react';
 import { Widget } from './types';
 import { withTheme } from '@rjsf/core-v5';
 import validator from '@rjsf/validator-ajv8';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
 
-const Form = withTheme(MuiTheme);
+const Form = withTheme(require('@rjsf/material-ui').Theme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
