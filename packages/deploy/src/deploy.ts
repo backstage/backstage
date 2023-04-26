@@ -20,9 +20,12 @@ import inquirer from 'inquirer';
 
 import { OptionValues } from 'commander';
 import { AWSProgram } from './programs/aws';
-import { paths } from './lib/paths';
+import { findPaths } from '@backstage/cli-common';
 import { Task } from './lib/tasks';
 import { basename, resolve } from 'path';
+
+// eslint-disable-next-line no-restricted-syntax
+const paths = findPaths(__dirname);
 
 const createFile = async (fileName: string) => {
   const BASE_PATH_OF_DEV_FILES = 'templates/pulumi';
