@@ -29,6 +29,7 @@ const featureFlagsApi: jest.Mocked<FeatureFlagsApi> = {
   save: jest.fn(),
   getRegisteredFlags: jest.fn(),
   registerFlag: jest.fn(),
+  getSortedFlags: jest.fn(),
 };
 
 describe('<ExploreLayout />', () => {

@@ -218,4 +218,51 @@ describe('FeatureFlags', () => {
       ).toThrow(/only contain lowercase letters, numbers and hyphens/i);
     });
   });
+
+  describe('getSortedRegisteredFlags', () => {
+    let featureFlags: FeatureFlagsApi;
+
+    beforeEach(() => {
+      featureFlags = new LocalStorageFeatureFlags();
+    });
+
+    it('should return empty list', () => {
+      expect(featureFlags.getSortedFlags()).toEqual([]);
+    });
+
+    it('loads active flags first in registered order', () => {
+      featureFlags.registerFlag({
+        name: 'registered-flag-1',
+        pluginId: 'plugin-one',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-2',
+        pluginId: 'plugin-two',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-3',
+        pluginId: 'plugin-three',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-4',
+        pluginId: 'plugin-four',
+      });
+
+      featureFlags.save({
+        states: {
+          'registered-flag-1': FeatureFlagState.None,
+          'registered-flag-2': FeatureFlagState.Active,
+          'registered-flag-3': FeatureFlagState.None,
+          'registered-flag-4': FeatureFlagState.Active,
+        },
+      });
+
+      expect(featureFlags.getSortedFlags()).toEqual([
+        { name: 'registered-flag-2', pluginId: 'plugin-two' },
+        { name: 'registered-flag-4', pluginId: 'plugin-four' },
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-three' },
+      ]);
+    });
+  });
 });
