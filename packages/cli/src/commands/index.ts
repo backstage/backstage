@@ -16,7 +16,6 @@
 
 import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
-import { resolve } from 'path';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
@@ -225,38 +224,6 @@ export function registerMigrateCommand(program: Command) {
     );
 }
 
-export function registerDeployCommand(program: Command) {
-  const command = program
-    .command('deploy [command]', { hidden: true })
-    .description(
-      'Deploy your Backstage instance on a specified cloud provider [EXPERIMENTAL]',
-    );
-
-  command
-    .command('aws')
-    .description('Deploys Backstage on AWS Lightsail')
-    .option(
-      '--dockerfile <path>',
-      'path of dockerfile',
-      resolve('./Dockerfile'),
-    )
-    .option(
-      '--create-dockerfile',
-      'creates a Dockerfile in the root of the project',
-      false,
-    )
-    .option('--stack <name>', 'name of the stack', 'backstage')
-    .option('--destroy', 'name of the stack to destroy', false)
-    .option('--region <region>', 'region of your aws console', 'us-east-1')
-    .option(
-      '--env <name>=<value>',
-      'Pass in environment variables to use at run time',
-      (env, arr: string[]) => [...arr, env],
-      [],
-    )
-    .action(lazy(() => import('./deploy/aws').then(m => m.default)));
-}
-
 export function registerCommands(program: Command) {
   program
     .command('new')
@@ -401,7 +368,6 @@ export function registerCommands(program: Command) {
   registerScriptCommand(program);
   registerMigrateCommand(program);
   registerOnboardCommand(program);
-  registerDeployCommand(program);
 
   program
     .command('versions:bump')

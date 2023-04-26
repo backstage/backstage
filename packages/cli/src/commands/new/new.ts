@@ -23,7 +23,23 @@ import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
-import { parseOptions } from '../../lib/parseOptions';
+
+function parseOptions(optionStrings: string[]): Record<string, string> {
+  const options: Record<string, string> = {};
+
+  for (const str of optionStrings) {
+    const [key] = str.split('=', 1);
+    const value = str.slice(key.length + 1);
+    if (!key || str[key.length] !== '=') {
+      throw new Error(
+        `Invalid option '${str}', must be of the format <key>=<value>`,
+      );
+    }
+    options[key] = value;
+  }
+
+  return options;
+}
 
 export default async (opts: OptionValues) => {
   const factory = await FactoryRegistry.interactiveSelect(opts.select);
