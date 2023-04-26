@@ -53,6 +53,8 @@ export function useAnalytics(): AnalyticsTracker {
   }
 
   const tracker = getTracker();
+  // this is not ideal, but it allows to memoize the tracker
+  // without explicitly set the context as dependency.
   tracker.setContext(context);
 
   return tracker;
