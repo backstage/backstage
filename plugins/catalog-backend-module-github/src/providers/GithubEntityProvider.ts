@@ -39,18 +39,16 @@ import {
   readProviderConfigs,
   GithubEntityProviderConfig,
 } from './GithubEntityProviderConfig';
-import { getOrganizationRepositories } from '../lib/github';
-import {
-  satisfiesTopicFilter,
-  satisfiesForkFilter,
-  satisfiesVisibilityFilter,
-} from '../lib/util';
 import {
   getOrganizationRepositories,
   getOrganizations,
   RepositoryResponse,
 } from '../lib/github';
-import { satisfiesTopicFilter, satisfiesForkFilter } from '../lib/util';
+import {
+  satisfiesTopicFilter,
+  satisfiesForkFilter,
+  satisfiesVisibilityFilter,
+} from '../lib/util';
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
