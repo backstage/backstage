@@ -45,7 +45,7 @@ const createFile = async (fileName: string) => {
   });
 };
 
-async function buildApp() {
+const buildApp = async () => {
   process.chdir(paths.targetRoot);
 
   const runCmd = async (cmd: string) => {
@@ -60,12 +60,9 @@ async function buildApp() {
 
   await runCmd('yarn tsc');
   await runCmd('yarn build:backend');
-}
+};
 
 export default async (opts: OptionValues) => {
-  // run yarn tsc & yarn build for Dockerfile
-  buildApp();
-
   if (!fs.existsSync(resolve('./Pulumi.yaml'))) {
     const pulumiFileName = 'Pulumi.yaml';
     Task.section(`Preparing ${pulumiFileName}`);
@@ -90,6 +87,9 @@ export default async (opts: OptionValues) => {
       `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one or use --dockerfile to pass in the path of your Dockerfile.`,
     );
   }
+
+  // run yarn tsc & yarn build for Dockerfile
+  await buildApp();
 
   const args = {
     stackName: opts.stack,
