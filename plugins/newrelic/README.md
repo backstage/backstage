@@ -12,16 +12,29 @@ APIs.
 
 1.  Add the following to your `app-config.yaml` to enable this configuration:
 
+    For US region accounts
+
     ```yaml
     proxy:
       '/newrelic/apm/api':
         target: https://api.newrelic.com/v2
         headers:
-          X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+          Api-Key: ${NEW_RELIC_API_KEY}
     ```
 
-    There is some types of api key on new relic, to this use must be `User` type of key, In your production deployment of Backstage, you would also need to ensure that
-    you've set the `NEW_RELIC_REST_API_KEY` environment variable before starting
+    For EU region accounts
+
+    ```yaml
+    proxy:
+      '/newrelic/apm/api':
+        target: https://api.eu.newrelic.com/v2
+        headers:
+          Api-Key: ${NEW_RELIC_API_KEY}
+    ```
+
+    There are multiple types of API keys in New Relic. For this plugin, the API key must be of the "User" type.
+    In your production deployment of Backstage, you would also need to ensure that
+    you've set the `NEW_RELIC_API_KEY` environment variable before starting
     the backend.
 
     While working locally, you may wish to hard-code your API key in your
@@ -32,11 +45,11 @@ APIs.
     proxy:
       '/newrelic/apm/api':
         headers:
-          X-Api-Key: NRRA-YourActualApiKey
+          Api-Key: NRRA-YourActualApiKey
     ```
 
     Read more about how to find or generate this key in
-    [New Relic's Documentation](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys#rest-api-key).
+    [New Relic's Documentation](https://docs.newrelic.com/docs/apis/intro-apis/new-relic-api-keys/).
 
     See if it's working by visiting the New Relic Plugin Path:
     [/newrelic](http://localhost:3000/newrelic)
@@ -93,6 +106,7 @@ APIs.
 ## Limitations
 
 - Currently only supports New Relic APM data
+- Currently does not support pagination of results from the New Relic API.
 
 ---
 
