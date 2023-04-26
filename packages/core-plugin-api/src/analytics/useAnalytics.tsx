@@ -20,9 +20,9 @@ import {
   AnalyticsTracker,
   AnalyticsApi,
   useApi,
-  AnalyticsEventAttributes,
 } from '../apis';
-import { useMemo } from 'react';
+import { useRef } from 'react';
+import { Tracker } from './Tracker';
 
 function useAnalyticsApi(): AnalyticsApi {
   try {
@@ -38,32 +38,22 @@ function useAnalyticsApi(): AnalyticsApi {
  * @public
  */
 export function useAnalytics(): AnalyticsTracker {
+  const trackerRef = useRef<Tracker | null>(null);
   const context = useAnalyticsContext();
+  // Our goal is to make this API truly optional for any/all consuming code
+  // (including tests). This hook runs last to ensure hook order is, as much as
+  // possible, maintained.
   const analyticsApi = useAnalyticsApi();
 
-  return useMemo(() => {
-    return {
-      captureEvent(
-        action: string,
-        subject: string,
-        {
-          value,
-          attributes,
-        }: { value?: number; attributes?: AnalyticsEventAttributes } = {},
-      ) {
-        try {
-          analyticsApi.captureEvent({
-            action,
-            subject,
-            value,
-            attributes,
-            context,
-          });
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn('Error during analytics event capture. %o', e);
-        }
-      },
-    };
-  }, [analyticsApi, context]);
+  function getTracker(): Tracker {
+    if (trackerRef.current === null) {
+      trackerRef.current = new Tracker(analyticsApi);
+    }
+    return trackerRef.current;
+  }
+
+  const tracker = getTracker();
+  tracker.setContext(context);
+
+  return tracker;
 }
