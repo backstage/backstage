@@ -69,15 +69,11 @@ export const GraphiQLBrowser = (props: GraphiQLBrowserProps) => {
           classes={{ root: classes.tabs }}
           value={tabIndex}
           onChange={(_, value) => setTabIndex(value)}
+          indicatorColor="secondary"
           textColor="inherit"
         >
           {endpoints.map(({ title }, index) => (
-            <Tab
-              key={index}
-              label={title}
-              value={index}
-              sx={{ color: 'inherit' }}
-            />
+            <Tab key={index} label={title} sx={{ color: 'inherit' }} />
           ))}
         </Tabs>
         <Divider />
