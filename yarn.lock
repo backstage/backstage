@@ -6868,7 +6868,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@rjsf/core": 5.6.0
+    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0"
     "@rjsf/material-ui": 5.6.0
     "@rjsf/utils": 5.6.0
     "@rjsf/validator-ajv8": 5.6.0
@@ -13600,7 +13600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core-v5@npm:@rjsf/core@5.6.0, @rjsf/core@npm:5.6.0":
+"@rjsf/core-v5@npm:@rjsf/core@5.6.0":
   version: 5.6.0
   resolution: "@rjsf/core@npm:5.6.0"
   dependencies:
