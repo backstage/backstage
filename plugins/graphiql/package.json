@@ -37,7 +37,7 @@
     "@backstage/theme": "workspace:^",
     "@mui/icons-material": "^5.11.0",
     "@mui/lab": "5.0.0-alpha.114",
-    "@mui/material": "^5.11.2",
+    "@mui/material": "^5.12.2",
     "@mui/styles": "^5.11.2",
     "graphiql": "^1.5.12",
     "graphql": "^16.0.0",
