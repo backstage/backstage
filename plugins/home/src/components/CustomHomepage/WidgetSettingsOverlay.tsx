@@ -27,7 +27,9 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { Widget } from './types';
-import Form from '@rjsf/material-ui';
+import { withTheme } from '@rjsf/core';
+
+const Form = withTheme(require('@rjsf/material-ui').Theme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
