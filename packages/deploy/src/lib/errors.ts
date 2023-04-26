@@ -26,11 +26,11 @@ export class ExitCodeError extends CustomError {
   readonly code: number;
 
   constructor(code: number, command?: string) {
-    super(
-      command
-        ? `Command '${command}' exited with code ${code}`
-        : `Child exited with code ${code}`,
-    );
+    if (command) {
+      super(`Command '${command}' exited with code ${code}`);
+    } else {
+      super(`Child exited with code ${code}`);
+    }
     this.code = code;
   }
 }
@@ -44,5 +44,3 @@ export function exitWithError(error: Error): never {
     process.exit(1);
   }
 }
-
-export class NotFoundError extends CustomError {}

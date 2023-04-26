@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import * as pulumi from '@pulumi/pulumi';
 import inquirer from 'inquirer';
@@ -23,9 +24,12 @@ import { AWSProgram } from './programs/aws';
 import { findPaths } from '@backstage/cli-common';
 import { Task } from './lib/tasks';
 import { basename, resolve } from 'path';
+import { exec as execCb } from 'child_process';
+import { promisify } from 'util';
 
 // eslint-disable-next-line no-restricted-syntax
 const paths = findPaths(__dirname);
+const exec = promisify(execCb);
 
 const createFile = async (fileName: string) => {
   const BASE_PATH_OF_DEV_FILES = 'templates/pulumi';
@@ -41,7 +45,27 @@ const createFile = async (fileName: string) => {
   });
 };
 
+async function buildApp() {
+  process.chdir(paths.targetRoot);
+
+  const runCmd = async (cmd: string) => {
+    await Task.forItem('executing', cmd, async () => {
+      await exec(cmd).catch(error => {
+        process.stdout.write(error.stderr);
+        process.stdout.write(error.stdout);
+        throw new Error(`Could not execute command ${chalk.cyan(cmd)}`);
+      });
+    });
+  };
+
+  await runCmd('yarn tsc');
+  await runCmd('yarn build:backend');
+}
+
 export default async (opts: OptionValues) => {
+  // run yarn tsc & yarn build for Dockerfile
+  buildApp();
+
   if (!fs.existsSync(resolve('./Pulumi.yaml'))) {
     const pulumiFileName = 'Pulumi.yaml';
     Task.section(`Preparing ${pulumiFileName}`);
