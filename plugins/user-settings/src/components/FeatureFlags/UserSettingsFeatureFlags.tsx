@@ -33,26 +33,10 @@ import {
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
 
-let registered = false;
-const f1: FeatureFlag = { name: 'f111', pluginId: 'f111' };
-const f2: FeatureFlag = { name: 'f222', pluginId: 'f222' };
-const f3: FeatureFlag = { name: 'f333', pluginId: 'f333' };
-const f4: FeatureFlag = { name: 'f444', pluginId: 'f444' };
-const f5: FeatureFlag = { name: 'f555', pluginId: 'f555' };
 /** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
 
-  if (!registered) {
-    featureFlagsApi.registerFlag(f1);
-    featureFlagsApi.registerFlag(f2);
-    featureFlagsApi.registerFlag(f3);
-    featureFlagsApi.registerFlag(f4);
-    featureFlagsApi.registerFlag(f5);
-    registered = true;
-  }
-
-  // featureFlagsApi.sortFlags();
   const featureFlags = featureFlagsApi.getSortedFlags();
   const initialFlagState = Object.fromEntries(
     featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
