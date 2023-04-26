@@ -2,4 +2,4 @@
 '@backstage/core-app-api': minor
 ---
 
-RouteTracker now forwards the route parameters as attributes of the navigate event
+The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
