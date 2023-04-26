@@ -27,6 +27,7 @@ import {
   AppThemeSelector,
   ConfigReader,
   LocalStorageFeatureFlags,
+  AppTranslation,
 } from '../apis';
 import {
   AnyApiFactory,
@@ -41,6 +42,8 @@ import {
   identityApiRef,
   BackstagePlugin,
   FeatureFlag,
+  appTranslationApiRef,
+  AppTranslationApi,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -198,6 +201,7 @@ class AppContextImpl implements AppContext {
 export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
+  private translationApi: AppTranslationApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
@@ -224,6 +228,9 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
+    this.translationApi = AppTranslation.createWithStorage(
+      options.localeConfig,
+    );
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -290,6 +297,9 @@ export class AppManager implements BackstageApp {
         //               collection and then make sure we initialize things afterwards.
         result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
         this.verifyPlugins(this.plugins);
+
+        // Initialize translates in plugins
+        this.registryPluginsTranslation(this.plugins);
 
         // Initialize APIs once all plugins are available
         this.getApiHolder();
@@ -431,6 +441,11 @@ export class AppManager implements BackstageApp {
       factory: () => AppThemeSelector.createWithStorage(this.themes),
     });
     this.apiFactoryRegistry.register('static', {
+      api: appTranslationApiRef,
+      deps: {},
+      factory: () => this.translationApi,
+    });
+    this.apiFactoryRegistry.register('static', {
       api: configApiRef,
       deps: {},
       factory: () => {
@@ -497,6 +512,24 @@ export class AppManager implements BackstageApp {
         throw new Error(`Duplicate plugin found '${id}'`);
       }
       pluginIds.add(id);
+    }
+  }
+
+  private registryPluginsTranslation(plugins: Iterable<CompatiblePlugin>) {
+    const translationIds = new Set<string>();
+
+    for (const plugin of plugins) {
+      const translationRef = plugin.getTranslationRef();
+      if (translationRef?.id) {
+        // id is the namespace in i18next resource
+        const id = translationRef.id;
+        if (translationIds.has(id)) {
+          throw new Error(`Duplicate translation id found '${id}'`);
+        }
+        translationIds.add(id);
+
+        this.translationApi.addResources(translationRef.resources, id);
+      }
     }
   }
 }

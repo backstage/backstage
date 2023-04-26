@@ -111,6 +111,11 @@ import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 
 const app = createApp({
+  localeConfig: {
+    lng: 'zh',
+    languageOptions: ['en', 'zh'],
+    lazyResources: () => import('./i18nRemoteLocales').then(m => m.locales),
+  },
   apis,
   plugins: Object.values(plugins),
   icons: {

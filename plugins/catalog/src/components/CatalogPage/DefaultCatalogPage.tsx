@@ -23,7 +23,12 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  usePluginTranslation,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
   EntityLifecyclePicker,
@@ -41,6 +46,7 @@ import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { useCatalogPluginOptions } from '../../options';
+import { catalogTranslationRef } from '../../translation';
 
 /**
  * Props for root catalog pages.
@@ -70,9 +76,13 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
   const { createButtonTitle } = useCatalogPluginOptions();
+  const { t } = usePluginTranslation(catalogTranslationRef);
 
   return (
-    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
+    <PageWithHeader
+      title={`${orgName} ${t('catalog', 'Catalog')}`}
+      themeId="home"
+    >
       <Content>
         <ContentHeader title="">
           <CreateButton

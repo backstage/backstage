@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
-export * from './auth';
-
-export * from './AlertApi';
-export * from './AnalyticsApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './DiscoveryApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './FetchApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
-export * from './AppTranslationApi';
+// todo: add test

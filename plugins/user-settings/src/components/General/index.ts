@@ -22,3 +22,4 @@ export { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 export { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 export { UserSettingsPinToggle } from './UserSettingsPinToggle';
 export { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
+export { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
