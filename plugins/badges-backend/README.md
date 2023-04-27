@@ -127,6 +127,8 @@ app:
     obfuscate: true
 ```
 
+:warning: **Warning**: The only endpoint to be publicly available is the `/entity/:entityUuid/:badgeId` endpoint. The other endpoints are meant to be called from the frontend plugin.
+
 > Note that you cannot use env vars to set the `obfuscate` value. It must be a boolean value and env vars are always strings.
 
 ## API
