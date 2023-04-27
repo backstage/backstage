@@ -22,7 +22,10 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { ExternalDependency } from '@backstage/plugin-devtools-common';
+import {
+  ExternalDependency,
+  ExternalDependencyStatus,
+} from '@backstage/plugin-devtools-common';
 import {
   Box,
   createStyles,
@@ -48,13 +51,13 @@ export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
 ) => {
   switch (result?.status) {
-    case 'Healthy':
+    case ExternalDependencyStatus.healthy:
       return (
         <Typography component="span">
           <StatusOK /> {result.status}
         </Typography>
       );
-    case 'Unhealthy':
+    case ExternalDependencyStatus.unhealthy:
       return (
         <Typography component="span">
           <StatusError /> {`${result.status}`}
