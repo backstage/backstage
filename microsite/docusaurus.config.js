@@ -70,6 +70,7 @@ module.exports = {
   ],
   markdown: {
     preprocessor({ fileContent }) {
+      // Remove HTML comments from markdown files as they're not supported by MDX2
       return fileContent.replace(/<!--.*?-->/gs, '');
     }
   },
