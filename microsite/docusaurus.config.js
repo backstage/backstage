@@ -68,6 +68,11 @@ module.exports = {
       },
     ],
   ],
+  markdown: {
+    preprocessor({ fileContent }) {
+      return fileContent.replace(/<!--.*?-->/gs, '');
+    }
+  },
   webpack: {
     jsLoader: isServer => ({
       loader: require.resolve('swc-loader'),
