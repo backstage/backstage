@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
-import PluginsChipsFilter from '@site/src/components/pluginsChipsFilter/pluginsChipsFilter';
+import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
 import { ChipCategory } from '@site/src/util/types';
 import { truncateDescription } from '@site/src/util/truncateDescription';
 
@@ -49,7 +49,8 @@ const Plugins = () => {
   const [showCoreFeaturesHeader, setShowCoreFeaturesHeader] = useState(true);
   const [showOtherPluginsHeader, setShowOtherPluginsHeader] = useState(true);
 
-  const handleChipClick = categoryName => {
+  const handleChipClick = (categoryName: string) => {
+    console.log(categoryName);
     const category = categories.find(
       category => category.name === categoryName,
     );
@@ -122,7 +123,7 @@ const Plugins = () => {
 
         <div className="bulletLine margin-bottom--lg"></div>
 
-        <PluginsChipsFilter
+        <PluginsFilter
           categories={categories}
           handleChipClick={handleChipClick}
         />

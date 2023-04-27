@@ -48,4 +48,37 @@
     margin: 0;
     margin-bottom: 1rem;
   }
+
+  :global(.dropdown) {
+    float: right;
+  }
+
+  :global(.button--info) {
+    background-color: transparent;
+    border-color: var(--ifm-color-primary);
+    color: var(--ifm-color-primary);
+    min-width: 250px;
+  }
+
+  :global(label.dropdown__item) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 5px;
+
+    &:hover {
+      background-color: var(--ifm-color-primary);
+      color: black;
+    }
+  }
+
+  :global(.dropdown__label) {
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  :global(.dropdown__checkbox) {
+    margin-right: 10px;
+    cursor: pointer;
+  }
 }
