@@ -1,5 +1,13 @@
 # example-app
 
+## 0.2.83
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home@0.5.1
+  - @backstage/plugin-stack-overflow@0.1.14
+
 ## 0.2.82
 
 ### Patch Changes

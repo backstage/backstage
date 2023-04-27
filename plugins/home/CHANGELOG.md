@@ -1,5 +1,11 @@
 # @backstage/plugin-home
 
+## 0.5.1
+
+### Patch Changes
+
+- eda23a0ed02: Bump to using the later v5 versions of `@rjsf/*`
+
 ## 0.5.0
 
 ### Minor Changes
