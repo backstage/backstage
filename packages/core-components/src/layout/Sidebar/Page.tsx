@@ -33,23 +33,23 @@ import { SidebarPinStateProvider } from './SidebarPinStateContext';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = makeStyles<
-  BackstageTheme,
-  { sidebarConfig: SidebarConfig; isPinned: boolean }
->(
+type PageStyleProps = { sidebarConfig: SidebarConfig; isPinned: boolean };
+
+const useStyles = makeStyles<BackstageTheme, PageStyleProps>(
   theme => ({
     root: {
       width: '100%',
       transition: 'padding-left 0.1s ease-out',
       isolation: 'isolate',
       [theme.breakpoints.up('sm')]: {
-        paddingLeft: props =>
+        paddingLeft: (props: PageStyleProps) =>
           props.isPinned
             ? props.sidebarConfig.drawerWidthOpen
             : props.sidebarConfig.drawerWidthClosed,
       },
       [theme.breakpoints.down('xs')]: {
-        paddingBottom: props => props.sidebarConfig.mobileSidebarHeight,
+        paddingBottom: (props: PageStyleProps) =>
+          props.sidebarConfig.mobileSidebarHeight,
       },
     },
     content: {
