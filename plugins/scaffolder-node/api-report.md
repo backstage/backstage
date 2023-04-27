@@ -79,6 +79,7 @@ export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsEx
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+  cookies?: Record<string, string>;
 };
 
 // @public (undocumented)

@@ -21,4 +21,5 @@
  */
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+  cookies?: Record<string, string>;
 };

@@ -306,6 +306,7 @@ describe('createRouter', () => {
             createdBy: 'user:default/guest',
             secrets: {
               backstageToken: mockToken,
+              cookies: {},
             },
 
             spec: {
@@ -364,6 +365,7 @@ describe('createRouter', () => {
             createdBy: undefined,
             secrets: {
               backstageToken: undefined,
+              cookies: {},
             },
 
             spec: {
@@ -466,6 +468,36 @@ describe('createRouter', () => {
         expect(loggerSpy).toHaveBeenCalledTimes(1);
         expect(loggerSpy).toHaveBeenCalledWith(
           'Scaffolding task for template:default/create-react-app-template created by user:default/guest',
+        );
+      });
+
+      it('should add request cookies as secrets', async () => {
+        const broker =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+        await request(app)
+          .post('/v2/tasks')
+          .set('Cookie', ['firstCookie=1234', 'secondCookie=foo'])
+          .send({
+            templateRef: stringifyEntityRef({
+              kind: 'template',
+              name: 'create-react-app-template',
+            }),
+          });
+
+        expect(broker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            createdBy: undefined,
+            spec: expect.objectContaining({
+              user: { entity: undefined, ref: undefined },
+            }),
+            secrets: {
+              cookies: {
+                firstCookie: '1234',
+                secondCookie: 'foo',
+              },
+            },
+          }),
         );
       });
     });
@@ -1032,6 +1064,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/guest',
             secrets: {
               backstageToken: 'token',
+              cookies: {},
             },
 
             spec: {
@@ -1101,6 +1134,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/guest',
             secrets: {
               backstageToken: 'token',
+              cookies: {},
             },
 
             spec: {
@@ -1189,6 +1223,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/guest',
             secrets: {
               backstageToken: 'token',
+              cookies: {},
             },
 
             spec: {

@@ -72,6 +72,7 @@ import {
   PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderTemplateRules } from './rules';
+import cookieParser from 'cookie-parser';
 
 /**
  *
@@ -408,6 +409,7 @@ export async function createRouter(
         secrets: {
           ...req.body.secrets,
           backstageToken: token,
+          cookies: req.cookies,
         },
       });
 
@@ -596,6 +598,7 @@ export async function createRouter(
 
   const app = express();
   app.set('logger', logger);
+  app.use(cookieParser());
   app.use('/', router);
 
   async function authorizeTemplate(
