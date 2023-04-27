@@ -24,6 +24,8 @@ import { Knex } from 'knex';
  */
 export type TestDatabaseId =
   | 'POSTGRES_13'
+  | 'POSTGRES_12'
+  | 'POSTGRES_11'
   | 'POSTGRES_9'
   | 'MYSQL_8'
   | 'SQLITE_3';
@@ -49,6 +51,20 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
       dockerImageName: 'postgres:13',
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING',
+    },
+    POSTGRES_12: {
+      name: 'Postgres 12.x',
+      driver: 'pg',
+      dockerImageName: 'postgres:12',
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING',
+    },
+    POSTGRES_11: {
+      name: 'Postgres 11.x',
+      driver: 'pg',
+      dockerImageName: 'postgres:11',
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES11_CONNECTION_STRING',
     },
     POSTGRES_9: {
       name: 'Postgres 9.x',

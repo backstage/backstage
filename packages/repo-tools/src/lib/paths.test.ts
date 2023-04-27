@@ -14,105 +14,76 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import { resolve as resolvePath, join as joinPath, normalize } from 'path';
-import { resolvePackagePath, paths, findPackageDirs } from './paths';
+import { resolve as resolvePath } from 'path';
+import { resolvePackagePaths } from './paths';
 
-describe('paths', () => {
-  jest.spyOn(paths, 'targetRoot', 'get').mockReturnValue(normalize('/root'));
-  jest.spyOn(paths, 'resolveTargetRoot').mockImplementation((...path) => {
-    return resolvePath(normalize('/root'), ...path);
+describe('resolvePackages', () => {
+  it('should return all packages', async () => {
+    const paths = await resolvePackagePaths();
+    expect(paths.length).toBeGreaterThan(10);
+    expect(paths).toContain('packages/cli');
+    expect(paths).toContain('packages/repo-tools');
   });
 
-  beforeEach(() => {
-    mockFs({
-      [paths.targetRoot]: {
-        'package.json': JSON.stringify({ name: 'test' }),
-        packages: {
-          'package-a': {
-            'package.json': '{}',
-          },
-          'package-b': {
-            'package.json': '{}',
-          },
-          'package-c': {},
-          'README.md': 'Hello World',
-        },
-        plugins: {
-          'plugin-a': {
-            'package.json': '{}',
-          },
-          'plugin-b': {
-            'package.json': '{}',
-          },
-        },
-      },
-    });
+  it('should filter by path', async () => {
+    await expect(
+      resolvePackagePaths({ paths: ['packages/repo-tools'] }),
+    ).resolves.toEqual(['packages/repo-tools']);
+
+    await expect(
+      resolvePackagePaths({ paths: [resolvePath('packages/repo-tools')] }),
+    ).resolves.toEqual(['packages/repo-tools']);
+
+    await expect(
+      resolvePackagePaths({
+        paths: [resolvePath('packages/repo-tools/package.json')],
+      }),
+    ).resolves.toEqual(['packages/repo-tools']);
+    await expect(
+      resolvePackagePaths({
+        paths: ['packages/repo-tools/src/some/made/up/file.ts'],
+      }),
+    ).resolves.toEqual(['packages/repo-tools']);
+    await expect(
+      resolvePackagePaths({
+        paths: ['packages/repo-tools/src/some/made/up/file.ts', 'packages/cli'],
+      }),
+    ).resolves.toEqual(['packages/cli', 'packages/repo-tools']);
   });
 
-  afterEach(() => {
-    mockFs.restore();
+  it('should filter with include', async () => {
+    const allPackages = await resolvePackagePaths();
+    const pluginPackages = await resolvePackagePaths({
+      include: ['plugins/*'],
+    });
+
+    expect(allPackages.length).toBeGreaterThan(10);
+    expect(pluginPackages.length).toBeGreaterThan(10);
+    expect(allPackages.length).toBeGreaterThan(pluginPackages.length);
+
+    expect(pluginPackages).toContain('plugins/catalog');
+
+    await expect(
+      resolvePackagePaths({ include: ['packages/repo-t??ls'] }),
+    ).resolves.toEqual(['packages/repo-tools']);
   });
 
-  describe('resolvePackagePath', () => {
-    it('should return undefined if the package does not exist or does not contain a package.json', async () => {
-      expect(await resolvePackagePath('packages/package-d')).toBeUndefined();
-      expect(await resolvePackagePath('packages/package-c')).toBeUndefined();
+  it('should filter with exclude', async () => {
+    const nonPluginPackages = await resolvePackagePaths({
+      exclude: ['plugins/*'],
     });
-    it('should return the path to the package if it exists and has a package.json', async () => {
-      expect(await resolvePackagePath('packages/package-a')).toBe(
-        joinPath('packages', 'package-a'),
-      );
-      expect(await resolvePackagePath('packages/package-b')).toBe(
-        joinPath('packages', 'package-b'),
-      );
-    });
-    it('should work with absolute paths', async () => {
-      expect(await resolvePackagePath('/root/packages/package-a')).toBe(
-        joinPath('packages', 'package-a'),
-      );
-    });
-    it('should return undefined if the pat is not a directory', async () => {
-      expect(await resolvePackagePath('packages/README.md')).toBeUndefined();
-    });
+
+    expect(nonPluginPackages).toContain('packages/app');
+    expect(nonPluginPackages).not.toContain('plugins/catalog');
   });
-  describe('findPackageDirs', () => {
-    it('should return only the given packages', async () => {
-      expect(await findPackageDirs(['packages/package-a'])).toEqual([
-        joinPath('packages', 'package-a'),
-      ]);
-    });
-    it('should return only the given packages when using glob patterns', async () => {
-      expect(await findPackageDirs(['packages/*'])).toEqual([
-        joinPath('packages', 'package-a'),
-        joinPath('packages', 'package-b'),
-      ]);
-      expect(await findPackageDirs(['packages/*', 'plugins/*'])).toEqual([
-        joinPath('packages', 'package-a'),
-        joinPath('packages', 'package-b'),
-        joinPath('plugins', 'plugin-a'),
-        joinPath('plugins', 'plugin-b'),
-      ]);
-    });
-    it('should return only the given packages when using absolute paths', async () => {
-      expect(
-        await findPackageDirs([
-          '/root/packages/package-a',
-          '/root/plugins/plugin-b',
-        ]),
-      ).toEqual([
-        joinPath('packages', 'package-a'),
-        joinPath('plugins', 'plugin-b'),
-      ]);
-    });
-    it('should return only the given packages when using absolute paths with glob patterns', async () => {
-      expect(
-        await findPackageDirs(['/root/packages/*', '/root/plugins/*-a']),
-      ).toEqual([
-        joinPath('packages', 'package-a'),
-        joinPath('packages', 'package-b'),
-        joinPath('plugins', 'plugin-a'),
-      ]);
-    });
+
+  it('should combine all options', async () => {
+    await expect(
+      resolvePackagePaths({
+        paths: ['packages/cli', 'packages/backend', 'packages/app'],
+        include: ['packages/app'],
+        exclude: ['packages/back*'],
+      }),
+    ).resolves.toEqual(['packages/app']);
   });
 });

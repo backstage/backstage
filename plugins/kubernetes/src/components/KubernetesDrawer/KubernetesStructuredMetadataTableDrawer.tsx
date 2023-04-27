@@ -31,10 +31,8 @@ import Close from '@material-ui/icons/Close';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
-import jsYaml from 'js-yaml';
 import {
   LinkButton as BackstageButton,
-  CodeSnippet,
   StructuredMetadataTable,
   WarningPanel,
 } from '@backstage/core-components';
@@ -42,6 +40,7 @@ import { ClusterContext } from '../../hooks';
 import { formatClusterLink } from '../../utils/clusterLinks';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { FormatClusterLinkOptions } from '../../utils/clusterLinks/formatClusterLink';
+import { ManifestYaml } from './ManifestYaml';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -108,12 +107,12 @@ export const LinkErrorPanel = ({ cluster, errorMessage }: ErrorPanelProps) => (
   </WarningPanel>
 );
 
-interface KubernetesStructuredMetadataTableDrawerable {
+interface KubernetesDrawerable {
   metadata?: V1ObjectMeta;
 }
 
 interface KubernetesStructuredMetadataTableDrawerContentProps<
-  T extends KubernetesStructuredMetadataTableDrawerable,
+  T extends KubernetesDrawerable,
 > {
   toggleDrawer: (e: ChangeEvent<{}>, isOpen: boolean) => void;
   object: T;
@@ -145,7 +144,7 @@ function tryFormatClusterLink(options: FormatClusterLinkOptions) {
 }
 
 const KubernetesStructuredMetadataTableDrawerContent = <
-  T extends KubernetesStructuredMetadataTableDrawerable,
+  T extends KubernetesDrawerable,
 >({
   toggleDrawer,
   object,
@@ -167,31 +166,42 @@ const KubernetesStructuredMetadataTableDrawerContent = <
   return (
     <>
       <div className={classes.header}>
-        <Grid
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="flex-start"
-        >
-          <Grid item>
+        <Grid container justifyContent="flex-start" alignItems="flex-start">
+          <Grid item xs={11}>
             <Typography variant="h5">
               {object.metadata?.name ?? 'unknown name'}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid item xs={1}>
+            <IconButton
+              key="dismiss"
+              title="Close the drawer"
+              onClick={e => toggleDrawer(e, false)}
+              color="inherit"
+            >
+              <Close className={classes.icon} />
+            </IconButton>
+          </Grid>
+          <Grid item xs={11}>
             <Typography color="textSecondary" variant="body1">
               {kind}
             </Typography>
           </Grid>
+          <Grid item xs={11}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isYaml}
+                  onChange={event => {
+                    setIsYaml(event.target.checked);
+                  }}
+                  name="YAML"
+                />
+              }
+              label="YAML"
+            />
+          </Grid>
         </Grid>
-        <IconButton
-          key="dismiss"
-          title="Close the drawer"
-          onClick={e => toggleDrawer(e, false)}
-          color="inherit"
-        >
-          <Close className={classes.icon} />
-        </IconButton>
       </div>
       {errorMessage && (
         <div className={classes.errorMessage}>
@@ -212,21 +222,9 @@ const KubernetesStructuredMetadataTableDrawerContent = <
             </BackstageButton>
           )}
         </div>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isYaml}
-              onChange={event => {
-                setIsYaml(event.target.checked);
-              }}
-              name="YAML"
-            />
-          }
-          label="YAML"
-        />
       </div>
       <div className={classes.content}>
-        {isYaml && <CodeSnippet language="yaml" text={jsYaml.dump(object)} />}
+        {isYaml && <ManifestYaml object={object} />}
         {!isYaml && (
           <StructuredMetadataTable
             metadata={renderObject(replaceNullsWithUndefined(object))}
@@ -237,7 +235,7 @@ const KubernetesStructuredMetadataTableDrawerContent = <
   );
 };
 interface KubernetesStructuredMetadataTableDrawerProps<
-  T extends KubernetesStructuredMetadataTableDrawerable,
+  T extends KubernetesDrawerable,
 > {
   object: T;
   renderObject: (obj: T) => object;
@@ -248,7 +246,7 @@ interface KubernetesStructuredMetadataTableDrawerProps<
 }
 
 export const KubernetesStructuredMetadataTableDrawer = <
-  T extends KubernetesStructuredMetadataTableDrawerable,
+  T extends KubernetesDrawerable,
 >({
   object,
   renderObject,

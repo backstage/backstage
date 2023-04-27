@@ -1,5 +1,82 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- ad1a1429de4: Improvements to the `scaffolder/next` buttons UX:
+
+  - Added padding around the "Create" button in the `Stepper` component
+  - Added a button bar that includes the "Cancel" and "Start Over" buttons to the `OngoingTask` component. The state of these buttons match their existing counter parts in the Context Menu
+  - Added a "Show Button Bar"/"Hide Button Bar" item to the `ContextMenu` component
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-scaffolder-common@1.2.7
+
+## 1.3.0
+
+### Minor Changes
+
+- 259d3407b9b: Move `CategoryPicker` from `scaffolder` into `scaffolder-react`
+  Move `ContextMenu` into `scaffolder-react` and rename it to `ScaffolderPageContextMenu`
+- 2cfd03d7376: To offer better customization options, `ScaffolderPageContextMenu` takes callbacks as props instead of booleans
+- 48da4c46e45: `scaffolder/next`: Export the `TemplateGroupFilter` and `TemplateGroups` and make an extensible component
+
+### Patch Changes
+
+- 7e1d900413a: `scaffolder/next`: Bump `@rjsf/*` dependencies to 5.5.2
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- 0435174b06f: Accessibility issues identified using lighthouse fixed.
+- 7a6b16cc506: `scaffolder/next`: Bump `@rjsf/*` deps to 5.3.1
+- 90dda42cfd2: bug: Invert `templateFilter` predicate to align with `Array.filter`
+- d2488f5e54c: Add an indication that the validators are running when clicking `next` on each step of the form.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 8c40997df44: Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.5.2`.
+- f84fc7fd040: Updated dependency `@rjsf/validator-ajv8` to `5.3.0`.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 34dab7ee7f8: `scaffolder/next`: bump `rjsf` dependencies to `5.5.0`
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- e0c6e8b9c3c: Update peer dependencies
+- cf71c3744a5: scaffolder/next: Bump `@rjsf/*` dependencies to 5.6.0
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.3.0-next.3
+
+### Patch Changes
+
+- d2488f5e54c: Add indication that the validators are running
+- 8c40997df44: Updated dependency `@rjsf/core-v5` to `npm:@rjsf/core@5.5.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.2
+
 ## 1.3.0-next.2
 
 ### Patch Changes

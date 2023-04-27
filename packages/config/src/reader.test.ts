@@ -59,6 +59,8 @@ function expectValidValues(config: ConfigReader) {
   expect(config.has('nested.null')).toBe(true);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
+  expect(config.getNumber('zeroString')).toBe(0);
+  expect(config.getNumber('oneString')).toBe(1);
   expect(config.getOptional('true')).toBe(true);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);

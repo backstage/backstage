@@ -34,7 +34,7 @@ export async function loadBackendConfig(options: {
   logger: LoggerService;
   // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
-  additionalConfig?: AppConfig;
+  additionalConfigs?: AppConfig[];
   argv: string[];
 }): Promise<Config> {
   const secretEnumerator = await createConfigSecretEnumerator({

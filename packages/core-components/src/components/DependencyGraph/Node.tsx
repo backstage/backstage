@@ -17,7 +17,7 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
-import { RenderNodeFunction, RenderNodeProps, DependencyNode } from './types';
+import { DependencyGraphTypes as Types } from './types';
 import { NODE_TEST_ID } from './constants';
 import dagre from 'dagre';
 
@@ -33,15 +33,17 @@ const useStyles = makeStyles(
   { name: 'BackstageDependencyGraphNode' },
 );
 
-export type GraphNode<T> = dagre.Node<DependencyNode<T>>;
+export type GraphNode<T> = dagre.Node<Types.DependencyNode<T>>;
 
 export type NodeComponentProps<T> = {
   node: GraphNode<T>;
-  render?: RenderNodeFunction<T>;
+  render?: Types.RenderNodeFunction<T>;
   setNode: dagre.graphlib.Graph['setNode'];
 };
 
-const renderDefault = (props: RenderNodeProps) => <DefaultNode {...props} />;
+const renderDefault = (props: Types.RenderNodeProps) => (
+  <DefaultNode {...props} />
+);
 
 export function Node<T>({
   render = renderDefault,
@@ -49,7 +51,7 @@ export function Node<T>({
   node,
 }: NodeComponentProps<T>) {
   const { width, height, x = 0, y = 0 } = node;
-  const nodeProps: DependencyNode<T> = node;
+  const nodeProps: Types.DependencyNode<T> = node;
   const classes = useStyles();
   const nodeRef = React.useRef<SVGGElement | null>(null);
 

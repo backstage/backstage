@@ -18,7 +18,7 @@ import { OptionValues } from 'commander';
 import { Lockfile } from '../../lib/versioning';
 import { paths } from '../../lib/paths';
 import partition from 'lodash/partition';
-import { PackageGraph } from '../../lib/monorepo';
+import { PackageGraph } from '@backstage/cli-node';
 
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];

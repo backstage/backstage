@@ -204,4 +204,24 @@ export interface Config {
      */
     csp?: { [policyId: string]: string[] | false };
   };
+
+  /** Discovery options. */
+  discovery?: {
+    /**
+     * Endpoints
+     *
+     * A list of target baseUrls and the associated plugins.
+     */
+    endpoints: {
+      /**
+       * The target baseUrl to use for the plugin
+       *
+       * Can be either a string or an object with internal and external keys.
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the url will be replaced with the pluginId.
+       */
+      target: string | { internal: string; external: string };
+      /** Array of plugins which use the target baseUrl. */
+      plugins: string[];
+    }[];
+  };
 }

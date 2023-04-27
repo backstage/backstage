@@ -256,6 +256,7 @@ export function createReactExtension<
       };
 
       attachComponentData(Result, 'core.plugin', plugin);
+      attachComponentData(Result, 'core.extensionName', name);
       for (const [key, value] of Object.entries(data)) {
         attachComponentData(Result, key, value);
       }

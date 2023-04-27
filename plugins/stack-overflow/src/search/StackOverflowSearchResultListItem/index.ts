@@ -15,3 +15,4 @@
  */
 
 export { StackOverflowSearchResultListItem } from './StackOverflowSearchResultListItem';
+export type { StackOverflowSearchResultListItemProps } from './StackOverflowSearchResultListItem';

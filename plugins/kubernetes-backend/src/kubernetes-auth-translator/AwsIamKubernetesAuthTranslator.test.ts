@@ -13,148 +13,127 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import AWS from 'aws-sdk';
-import AWSMock from 'aws-sdk-mock';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
+import { ConfigReader } from '@backstage/config';
 
-const awsError: AWS.AWSError = {
-  code: '123',
-  message: 'no way',
-  name: 'nope',
-  time: new Date(),
+let presign = jest.fn(async () => ({
+  hostname: 'https://example.com',
+  query: {},
+  path: '/asdf',
+}));
+
+const credsManager = {
+  getCredentialProvider: async () => ({
+    sdkCredentialProvider: {
+      AccessKeyId: 'asdf',
+    },
+  }),
 };
 
+jest.mock('@backstage/integration-aws-node', () => ({
+  DefaultAwsCredentialsManager: {
+    fromConfig: () => credsManager,
+  },
+}));
+
+const config = new ConfigReader({});
+
+jest.mock('@aws-sdk/signature-v4', () => ({
+  SignatureV4: jest.fn().mockImplementation(() => ({
+    presign,
+  })),
+}));
+
+const fromTemporaryCredentials = jest.fn();
+jest.mock('@aws-sdk/credential-providers', () => ({
+  fromTemporaryCredentials: (opts: any) => {
+    return fromTemporaryCredentials(opts);
+  },
+}));
+
 describe('AwsIamKubernetesAuthTranslator tests', () => {
-  let role: any = undefined;
-  const credentials: any = {
-    accessKeyId: 'bloop',
-    secretAccessKey: 'omg-so-secret',
-    sessionToken: 'token',
-  };
+  beforeEach(() => {});
+  it('returns a signed url for AWS credentials without assume role', async () => {
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
 
-  let assumeResponse: any = {
-    Credentials: {
-      AccessKeyId: credentials.accessKeyId,
-      SecretAccessKey: credentials.secretAccessKey,
-      SessionToken: credentials.sessionToken,
-    },
-  };
-
-  let mockedCredentials: any = undefined;
-
-  AWS.config.credentials = new AWS.Credentials(credentials);
-
-  AWSMock.setSDKInstance(AWS);
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
-
-  function executeTranslation() {
-    AWSMock.mock('STS', 'assumeRole', (_params: any, callback: Function) => {
-      callback(null, assumeResponse);
-    });
-
-    const authTranslator = new AwsIamKubernetesAuthTranslator();
-
-    if (mockedCredentials) {
-      jest
-        .spyOn(authTranslator, 'awsGetCredentials')
-        .mockImplementation(async () => mockedCredentials);
-    }
-
-    const response = authTranslator.decorateClusterDetailsWithAuth({
-      assumeRole: role,
+    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
     });
-
-    mockedCredentials = undefined;
-
-    return response;
-  }
-
-  it('returns a signed url for AWS credentials', async () => {
-    // These credentials are not real.
-    // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
-    AWS.config.credentials = new AWS.Credentials(
-      'AKIAIOSFODNN7EXAMPLE',
-      'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    expect((await authPromise).serviceAccountToken).toEqual(
+      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
     );
+  });
 
-    const response = await executeTranslation();
-    expect(response.serviceAccountToken).toBeDefined();
+  it('returns a signed url for AWS credentials with assume role', async () => {
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+
+    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+      assumeRole: 'SomeRole',
+      name: 'test-cluster',
+      url: '',
+      authProvider: 'aws',
+    });
+    expect((await authPromise).serviceAccountToken).toEqual(
+      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    );
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: {
+        region: 'us-east-1',
+      },
+      masterCredentials: {
+        AccessKeyId: 'asdf',
+      },
+      params: {
+        ExternalId: undefined,
+        RoleArn: 'SomeRole',
+      },
+    });
+  });
+
+  it('returns a signed url for AWS credentials and passes the external id', async () => {
+    const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
+
+    const authPromise = authTranslator.decorateClusterDetailsWithAuth({
+      assumeRole: 'SomeRole',
+      externalId: 'external-id',
+      name: 'test-cluster',
+      url: '',
+      authProvider: 'aws',
+    });
+    expect((await authPromise).serviceAccountToken).toEqual(
+      'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    );
+    expect(fromTemporaryCredentials).toHaveBeenCalledWith({
+      clientConfig: {
+        region: 'us-east-1',
+      },
+      masterCredentials: {
+        AccessKeyId: 'asdf',
+      },
+      params: {
+        ExternalId: 'external-id',
+        RoleArn: 'SomeRole',
+      },
+    });
   });
 
   describe('When the credentials is failing', () => {
     beforeEach(() => {
-      jest.spyOn(AWS.config, 'getCredentials').mockImplementation(cb => {
-        cb(awsError, null);
+      presign = jest.fn(async () => {
+        throw new Error('no way');
       });
     });
     it('throws the right error', async () => {
-      const authTranslator = new AwsIamKubernetesAuthTranslator();
+      const authTranslator = new AwsIamKubernetesAuthTranslator({ config });
       await expect(
         authTranslator.decorateClusterDetailsWithAuth({
-          assumeRole: role,
           name: 'test-cluster',
           url: '',
           authProvider: 'aws',
         }),
-      ).rejects.toEqual(awsError);
-    });
-  });
-
-  describe('When the role is assumed', () => {
-    // These credentials are not real.
-    // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
-    AWS.config.credentials = new AWS.Credentials(
-      'AKIAIOSFODNN7EXAMPLE',
-      'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-    );
-    role = 'SomeRole';
-
-    describe('When the role is valid', () => {
-      it('returns a signed url for AWS credentials', async () => {
-        const response = await executeTranslation();
-        expect(response.serviceAccountToken).toBeDefined();
-      });
-    });
-
-    describe('When the role is invalid', () => {
-      it('returns the original AWS credentials', async () => {
-        assumeResponse = undefined;
-        await expect(executeTranslation()).rejects.toThrow(
-          /Unable to assume role:/,
-        );
-      });
-    });
-  });
-
-  describe('When no AWS creds are available', () => {
-    it('throws unable to get AWS credentials', async () => {
-      mockedCredentials = new Error();
-      await expect(executeTranslation()).rejects.toThrow(
-        'No AWS credentials found.',
-      );
-    });
-  });
-
-  describe('When invalid AWS creds are available', () => {
-    it('throws credentials are invalid to get AWS credentials', async () => {
-      const undefinedSecret: any = undefined;
-      AWS.config.credentials = new AWS.Credentials(
-        'AKIAIOSFODNN7EXAMPLE',
-        undefinedSecret,
-      );
-      await expect(executeTranslation()).rejects.toThrow(
-        'Invalid AWS credentials found.',
-      );
+      ).rejects.toThrow('no way');
     });
   });
 });

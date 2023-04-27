@@ -211,7 +211,9 @@ const generatedColumns: TableColumn[] = [
           run {relativeTimeTo(row?.startTime)}
         </Typography>
         <Typography variant="body2">
-          took {durationHumanized(row?.startTime, row?.stopTime)}
+          {row?.stopTime
+            ? `took ${durationHumanized(row?.startTime, row?.stopTime)}`
+            : ''}
         </Typography>
       </>
     ),

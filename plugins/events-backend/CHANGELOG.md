@@ -1,5 +1,43 @@
 # @backstage/plugin-events-backend
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.6-next.0
+
+## 0.2.5
+
+### Patch Changes
+
+- 3538d9ad2c4: Export `DefaultEventBroker` to allow decoupling of the catalog and events backends in the `example-backend`.
+
+  Please look at `plugins/events-backend/README.md` for the currently advised way to set up the event backend and catalog providers.
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.5
+
+## 0.2.5-next.3
+
+### Patch Changes
+
+- 3538d9ad2c4: Export `DefaultEventBroker` to allow decoupling of the catalog and events backends in the `example-backend`.
+
+  Please look at `plugins/events-backend/README.md` for the currently advised way to set up the event backend and catalog providers.
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.5-next.2
+
 ## 0.2.5-next.2
 
 ### Patch Changes

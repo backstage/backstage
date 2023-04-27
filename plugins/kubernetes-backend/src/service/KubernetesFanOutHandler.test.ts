@@ -28,6 +28,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { ConfigReader } from '@backstage/config';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespaces = jest.fn();
@@ -158,6 +159,7 @@ function mockFetchAndGetKubernetesFanOutHandler(
 function getKubernetesFanOutHandler(customResources: CustomResource[]) {
   return new KubernetesFanOutHandler({
     logger: getVoidLogger(),
+    config: new ConfigReader({}),
     fetcher: {
       fetchObjectsForService,
       fetchPodMetricsByNamespaces,
@@ -868,6 +870,7 @@ describe('getKubernetesObjectsByEntity', () => {
       const sut = new KubernetesFanOutHandler({
         logger,
         fetcher: new KubernetesClientBasedFetcher({ logger }),
+        config: new ConfigReader({}),
         serviceLocator: fleet,
         customResources: [],
         objectTypesToFetch: [
@@ -915,7 +918,7 @@ describe('getKubernetesObjectsByEntity', () => {
               {
                 errorType: 'FETCH_ERROR',
                 message:
-                  'request to https://fails/api/v1/pods?labelSelector=backstage.io/kubernetes-id=test-component failed, reason: socket error',
+                  'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
               },
             ],
           },

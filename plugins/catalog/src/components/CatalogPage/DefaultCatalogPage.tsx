@@ -35,6 +35,7 @@ import {
   UserListFilterKind,
   UserListPicker,
   EntityKindPicker,
+  EntityNamespacePicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -90,6 +91,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityLifecyclePicker />
               <EntityTagPicker />
               <EntityProcessingStatusPicker />
+              <EntityNamespacePicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <CatalogTable

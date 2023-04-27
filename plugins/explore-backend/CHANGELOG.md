@@ -1,5 +1,28 @@
 # @backstage/plugin-explore-backend
 
+## 0.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-search-backend-module-explore@0.1.1-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.0.6
+
+### Patch Changes
+
+- 01ae205352e: Collator factories instantiated in new backend system modules and now marked as deprecated. Will be continued to be exported publicly until the new backend system is fully rolled out.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-search-backend-module-explore@0.1.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-search-common@1.2.3
+
 ## 0.0.6-next.2
 
 ### Patch Changes

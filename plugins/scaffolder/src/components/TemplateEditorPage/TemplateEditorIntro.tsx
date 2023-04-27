@@ -59,7 +59,8 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
       >
         <CardContent>
           <Typography
-            variant="h5"
+            variant="h4"
+            component="h3"
             gutterBottom
             color={supportsLoad ? undefined : 'textSecondary'}
             style={{ display: 'flex', flexFlow: 'row nowrap' }}
@@ -92,7 +93,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     <Card className={classes.card} elevation={4}>
       <CardActionArea onClick={() => props.onSelect?.('form')}>
         <CardContent>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h4" component="h3" gutterBottom>
             Edit Template Form
           </Typography>
           <Typography variant="body1">
@@ -108,7 +109,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     <Card className={classes.card} elevation={4}>
       <CardActionArea onClick={() => props.onSelect?.('field-explorer')}>
         <CardContent>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h4" component="h3" gutterBottom>
             Custom Field Explorer
           </Typography>
           <Typography variant="body1">
@@ -122,7 +123,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
 
   return (
     <div style={props.style}>
-      <Typography variant="h6" className={classes.introText}>
+      <Typography variant="h4" component="h2" className={classes.introText}>
         Get started by choosing one of the options below
       </Typography>
       <div

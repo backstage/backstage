@@ -18,7 +18,7 @@ import { OngoingTask } from './OngoingTask';
 import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor, within } from '@testing-library/react';
 import { rootRouteRef } from '../../routes';
 
 jest.mock('react-router-dom', () => ({
@@ -61,7 +61,7 @@ describe('OngoingTask', () => {
       </TestApiProvider>,
       { mountedRoutes: { '/': rootRouteRef } },
     );
-    const { getByText, getByTestId } = rendered;
+    const { getByTestId } = rendered;
 
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
@@ -69,7 +69,8 @@ describe('OngoingTask', () => {
     expect(getByTestId('cancel-task')).not.toHaveClass('Mui-disabled');
 
     await act(async () => {
-      fireEvent.click(getByText(cancelOptionLabel));
+      const element = getByTestId('cancel-task');
+      fireEvent.click(within(element).getByText(cancelOptionLabel));
     });
 
     expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
@@ -79,6 +80,36 @@ describe('OngoingTask', () => {
 
     await waitFor(() => {
       expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+    });
+  });
+
+  it('should trigger cancel api on "Cancel" button click', async () => {
+    const cancelOptionLabel = 'Cancel';
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <OngoingTask />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': rootRouteRef } },
+    );
+    const { getByTestId } = rendered;
+
+    await act(async () => {
+      fireEvent.click(getByTestId('menu-button'));
+    });
+    expect(getByTestId('cancel-button')).not.toHaveClass('Mui-disabled');
+
+    await act(async () => {
+      const element = getByTestId('cancel-button');
+      fireEvent.click(within(element).getByText(cancelOptionLabel));
+    });
+
+    expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
+    await act(async () => {
+      fireEvent.click(getByTestId('menu-button'));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
     });
   });
 });

@@ -15,7 +15,6 @@
  */
 import React, { ChangeEvent, useState } from 'react';
 
-import { CodeSnippet } from '@backstage/core-components';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import {
   createStyles,
@@ -31,7 +30,7 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import jsYaml from 'js-yaml';
+import { ManifestYaml } from './ManifestYaml';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -73,19 +72,26 @@ export const KubernetesDrawerContent = ({
   return (
     <>
       <div className={classes.header}>
-        <Grid
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="flex-start"
-        >
-          <Grid item>
+        <Grid container justifyContent="flex-start" alignItems="flex-start">
+          <Grid item xs={11}>
             <Typography variant="h5">
               {kubernetesObject.metadata?.name}
             </Typography>
           </Grid>
-          <Grid item>{header}</Grid>
-          <Grid item>
+          <Grid item xs={1}>
+            <IconButton
+              key="dismiss"
+              title="Close the drawer"
+              onClick={() => close()}
+              color="inherit"
+            >
+              <CloseIcon className={classes.icon} />
+            </IconButton>
+          </Grid>
+          <Grid item xs={12}>
+            {header}
+          </Grid>
+          <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Switch
@@ -100,19 +106,9 @@ export const KubernetesDrawerContent = ({
             />
           </Grid>
         </Grid>
-        <IconButton
-          key="dismiss"
-          title="Close the drawer"
-          onClick={() => close()}
-          color="inherit"
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>
       </div>
       <div className={classes.content}>
-        {isYaml && (
-          <CodeSnippet language="yaml" text={jsYaml.dump(kubernetesObject)} />
-        )}
+        {isYaml && <ManifestYaml object={kubernetesObject} />}
         {!isYaml && children}
       </div>
     </>

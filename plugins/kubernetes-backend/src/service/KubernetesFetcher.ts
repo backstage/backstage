@@ -119,6 +119,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     namespaces: Set<string>,
+    labelSelector?: string,
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(namespaces).map(async ns => {
       const [podMetrics, podList] = await Promise.all([
@@ -128,8 +129,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           'v1beta1',
           'pods',
           ns,
+          labelSelector,
         ),
-        this.fetchResource(clusterDetails, '', 'v1', 'pods', ns),
+        this.fetchResource(clusterDetails, '', 'v1', 'pods', ns, labelSelector),
       ]);
       if (podMetrics.ok && podList.ok) {
         return topPods(
@@ -213,7 +215,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
 
     if (labelSelector) {
-      url.search = `labelSelector=${labelSelector}`;
+      url.search = `labelSelector=${encode(labelSelector)}`;
     }
 
     return fetch(url, requestInit);

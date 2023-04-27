@@ -19,7 +19,16 @@ jest.mock('azure-devops-node-api', () => ({
   getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),
 }));
 
-jest.mock('../helpers');
+jest.mock('../helpers', () => {
+  return {
+    initRepoAndPush: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+    commitAndPushRepo: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+  };
+});
 
 import { createPublishAzureAction } from './azure';
 import { ScmIntegrations } from '@backstage/integration';

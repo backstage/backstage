@@ -127,6 +127,7 @@ The other fields are:
 
 - project - link Bazaar project to existing entity in the catalog
 - community link - link to where the project members can communicate, e.g. Teams or Discord link
+- docs link - link to visit the documentation of the project
 - start date
 - end date
 
