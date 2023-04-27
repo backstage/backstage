@@ -86,6 +86,16 @@ spec:
 8. Click the component in the catalog. You should now see Jenkins builds, and a
    last build result for your master build.
 
+## Customize Action
+
+You can customize the action in the CI/CD table to link to the Jenkins page instead of rebuild the job.
+
+```yaml
+jenkinsPlugin.__experimentalReconfigure({
+  tableAction: 'view',
+});
+```
+
 ## Features
 
 - View all runs inside a folder
