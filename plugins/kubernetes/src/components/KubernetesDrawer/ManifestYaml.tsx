@@ -44,6 +44,9 @@ export const ManifestYaml = ({ object }: ManifestYamlProps) => {
       <CodeSnippet
         language="yaml"
         text={jsyaml.dump(object, {
+          // NOTE: this will remove any field called `managedFields`
+          // not just the metadata one
+          // TODO: @mclarke make this only remove the `metadata.managedFields`
           replacer: (key: string, value: string): any => {
             if (!managedFields) {
               return key === 'managedFields' ? undefined : value;
