@@ -30,7 +30,7 @@ async function main() {
   if (!existsSync(referencesDir)) {
     mkdirSync(referencesDir);
     writeFileSync(path.join(referencesDir, 'index.md'), PLACEHOLDER);
-  } 
+  }
 }
 
 main().catch(error => {
