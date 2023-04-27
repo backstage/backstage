@@ -32,6 +32,8 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         height: '100%',
         fontFamily: theme.typography.fontFamily,
         overscrollBehaviorY: 'none',
+        fontSize: '0.875rem',
+        lineHeight: 1.43,
       },
       a: {
         color: 'inherit',

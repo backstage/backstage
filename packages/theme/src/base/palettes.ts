@@ -25,7 +25,7 @@ export const palettes = {
     mode: 'light' as const,
     background: {
       default: '#F8F8F8',
-      paper: '#FAFAFA',
+      paper: '#FFFFFF',
     },
     status: {
       ok: '#1DB954',
