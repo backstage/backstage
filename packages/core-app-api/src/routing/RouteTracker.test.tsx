@@ -16,7 +16,7 @@
 import { TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { BackstageRouteObject } from './types';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
