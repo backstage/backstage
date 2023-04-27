@@ -23,14 +23,12 @@ import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
 
 interface PodLogsProps {
-  logContext: ContainerScope;
+  podScope: ContainerScope;
 }
 
-export const PodLogs: React.FC<PodLogsProps> = ({
-  logContext,
-}: PodLogsProps) => {
+export const PodLogs: React.FC<PodLogsProps> = ({ podScope }: PodLogsProps) => {
   const { value, error, loading } = usePodLogs({
-    logContext: logContext,
+    podScope: podScope,
   });
 
   return (

@@ -84,13 +84,13 @@ const ContainerDatetime = ({ prefix, dateTime }: ContainerDatetimeProps) => {
 };
 
 export interface ContainerCardProps {
-  logContext: PodScope;
+  podScope: PodScope;
   containerSpec?: IContainer;
   containerStatus: IContainerStatus;
 }
 
 export const ContainerCard: React.FC<ContainerCardProps> = ({
-  logContext,
+  podScope,
   containerSpec,
   containerStatus,
 }: ContainerCardProps) => {
@@ -162,9 +162,9 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
       </CardContent>
       <CardActions disableSpacing>
         <PodLogsDialog
-          logContext={{
+          podScope={{
             containerName: containerStatus.name,
-            ...logContext,
+            ...podScope,
           }}
         />
       </CardActions>

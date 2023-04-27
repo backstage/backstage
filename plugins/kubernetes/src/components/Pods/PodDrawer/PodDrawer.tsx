@@ -102,7 +102,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                     return (
                       <ContainerCard
                         key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
-                        logContext={{
+                        podScope={{
                           podName: podAndErrors.pod.metadata?.name ?? 'unknown',
                           podNamespace:
                             podAndErrors.pod.metadata?.namespace ?? 'unknown',

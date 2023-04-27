@@ -32,7 +32,7 @@ describe('ContainerCard', () => {
       wrapInTestApp(
         <ContainerCard
           {...({
-            logContext: {
+            podScope: {
               name: 'some-name',
               namespace: 'some-namespace',
               clusterName: 'some-cluster',
@@ -68,7 +68,7 @@ describe('ContainerCard', () => {
       wrapInTestApp(
         <ContainerCard
           {...({
-            logContext: {
+            podScope: {
               podName: 'some-name',
               podNamespace: 'some-namespace',
               clusterName: 'some-cluster',
@@ -98,7 +98,7 @@ describe('ContainerCard', () => {
       wrapInTestApp(
         <ContainerCard
           {...({
-            logContext: {
+            podScope: {
               podName: 'some-name',
               podNamespace: 'some-namespace',
               clusterName: 'some-cluster',

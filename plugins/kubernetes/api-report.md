@@ -449,13 +449,13 @@ export class KubernetesProxyClient {
   }>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerable" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesStructuredMetadataTableDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const KubernetesStructuredMetadataTableDrawer: <
-  T extends KubernetesStructuredMetadataTableDrawerable,
+  T extends KubernetesDrawerable,
 >({
   object,
   renderObject,

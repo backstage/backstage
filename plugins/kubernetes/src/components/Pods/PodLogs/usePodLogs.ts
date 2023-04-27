@@ -20,17 +20,17 @@ import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
 
 interface PodLogsOptions {
-  logContext: ContainerScope;
+  podScope: ContainerScope;
 }
 
-export const usePodLogs = ({ logContext }: PodLogsOptions) => {
+export const usePodLogs = ({ podScope }: PodLogsOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {
     return await kubernetesProxyApi.getPodLogs({
-      podName: logContext.podName,
-      namespace: logContext.podNamespace,
-      containerName: logContext.containerName,
-      clusterName: logContext.clusterName,
+      podName: podScope.podName,
+      namespace: podScope.podNamespace,
+      containerName: podScope.containerName,
+      clusterName: podScope.clusterName,
     });
-  }, [JSON.stringify(logContext)]);
+  }, [JSON.stringify(podScope)]);
 };
