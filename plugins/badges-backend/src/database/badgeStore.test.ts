@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatabaseBadgesStore } from '../database/badgesStore';
+import { DatabaseBadgesStore } from './badgesStore';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { Entity } from '@backstage/catalog-model';
