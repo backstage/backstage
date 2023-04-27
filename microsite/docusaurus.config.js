@@ -70,11 +70,8 @@ module.exports = {
   ],
   markdown: {
     preprocessor({ filePath, fileContent }) {
-      // Replace HTML comments with empty strings in files that are not in the blog folder,
-      // as the <!-- truncate --> syntax is backwards compatible with MDX2 in Docusarus.
-      if (!filePath.startsWith(`${__dirname}/blog`)) {
-        return fileContent.replace(/<!--.*?-->/gs, '');
-      }
+      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+      return fileContent.replace(/<!--.*?-->/gs, '');
     },
   },
   webpack: {

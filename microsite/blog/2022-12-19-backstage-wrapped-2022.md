@@ -12,7 +12,8 @@ Our community is full of people from across the globe who bring incredible engag
 
 But before anticipating too much, let’s share some stats of this amazing 2022.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## We grew … a lot!
 

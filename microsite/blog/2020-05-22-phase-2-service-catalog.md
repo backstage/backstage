@@ -12,7 +12,8 @@ We released the open source version of Backstage a little less than two months a
 
 ![img](assets/20-05-20/Service_Catalog_MVP.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Progress so far
 

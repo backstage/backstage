@@ -15,7 +15,8 @@ In 2021 we’ve seen the project and community grow in every dimension, reaching
 
 Now let’s hear from the maintainers and look at the stats!
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## The community grew…and grew
 

@@ -9,7 +9,8 @@ authorImageURL: https://avatars.githubusercontent.com/u/3496491?v=4
 
 **TLDR:** Another beta has landed! We continue to focus on improving the stability and scalability of Backstage while enhancing its functionality. Thanks to focused efforts from the TechDocs core team and community, we're happy to say that TechDocs — [our docs-like-code solution](https://backstage.io/blog/2020/09/08/announcing-tech-docs) for all the software in your catalog — is now, after [Software Templates](https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta), the second core feature to graduate to beta.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 In addition to new features and improvements, we made numerous compatibility updates ahead of this feature release. You'll find support for a variety of CI systems, cloud storage solutions, and source control systems — so that TechDocs works for most orgs, right out of box. But there's much more to explore in this beta, thanks to contributions from the community.
 

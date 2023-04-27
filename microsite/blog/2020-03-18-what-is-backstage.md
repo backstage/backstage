@@ -9,7 +9,8 @@ authorImageURL: https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaac
 
 Two days ago, we released the open source version of [Backstage](https://backstage.io/), our homegrown developer portal. And we learned a thing or two via the feedback we received. So, I wanted to take this opportunity to further explain what we’re trying to do with Backstage — and more importantly, what we want to give to the greater engineering community beyond Spotify.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## What’s the big infrastructure problem?
 

@@ -11,7 +11,8 @@ For the past year, the Backstage maintainer team has been spending time to give 
 
 We’re happy to announce that the [v1.11](https://backstage.io/docs/releases/v1.11.0) release includes the public alpha of the [new Backstage backend system](https://backstage.io/docs/backend-system/)! The system has already been available to use for some time, as some of you have already found, but this alpha release marks the point where we are finally ready to encourage widespread adoption by plugin builders. We still don’t recommend that you use this new system in your production setups just yet, more on that later.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## History of the Backstage backend system
 
