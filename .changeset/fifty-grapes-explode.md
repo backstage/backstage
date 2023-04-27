@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Fix a bug in an SQL query where the AND and OR logic is incorrect.
+Fixed a bug in the `queryEntities` endpoint that was causing filtered entities to be included in cursor requests.
