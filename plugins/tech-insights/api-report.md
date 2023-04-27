@@ -35,6 +35,7 @@ export type Check = {
 export type CheckResultRenderer = {
   type: string;
   component: (check: CheckResult) => React_2.ReactElement;
+  description?: (check: CheckResult) => string | React_2.ReactElement;
 };
 
 // @public (undocumented)
