@@ -33,19 +33,12 @@ import { MembersListCard } from './MembersListCard';
 import {
   groupA,
   mockedCatalogApiSupportingGroups,
-  mockedGetEntityRelations,
 } from '../../../../test-helpers/catalogMocks';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
-
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  ...jest.requireActual('@backstage/plugin-catalog-react'),
-  getEntityRelations: (entity: Entity | undefined, relationType: string) =>
-    mockedGetEntityRelations(entity, relationType),
-}));
 
 // Mock needed because jsdom doesn't correctly implement box-sizing
 // https://github.com/ShinyChang/React-Text-Truncate/issues/70
@@ -166,7 +159,52 @@ describe('MemberTab Test', () => {
   });
 
   describe('Aggregate members toggle', () => {
-    it('Shows only direct members if the aggregate users switch is turned off', async () => {
+    it('Does not show the aggregate members toggle if the showAggregateMembersToggle prop is undefined', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockedCatalogApiSupportingGroups],
+            [starredEntitiesApiRef, mockedStarredEntitiesApi],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <EntityProvider entity={groupA}>
+            <EntityLayout>
+              <EntityLayout.Route path="/" title="Title">
+                <MembersListCard />
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </TestApiProvider>,
+      );
+
+      const toggleSwitch = screen.queryByRole('checkbox');
+      expect(toggleSwitch).toBeNull();
+    });
+
+    it('Shows the aggregate members toggle if the showAggregateMembersToggle prop is true', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockedCatalogApiSupportingGroups],
+            [starredEntitiesApiRef, mockedStarredEntitiesApi],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <EntityProvider entity={groupA}>
+            <EntityLayout>
+              <EntityLayout.Route path="/" title="Title">
+                <MembersListCard showAggregateMembersToggle />
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </TestApiProvider>,
+      );
+
+      expect(screen.queryByRole('checkbox')).toBeInTheDocument();
+    });
+
+    it('Shows only direct members if the showAggregateMembersToggle prop is undefined', async () => {
       await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -197,6 +235,37 @@ describe('MemberTab Test', () => {
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
+    it('Shows only direct members if the aggregate members switch is turned off', async () => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockedCatalogApiSupportingGroups],
+            [starredEntitiesApiRef, mockedStarredEntitiesApi],
+            [permissionApiRef, {}],
+          ]}
+        >
+          <EntityProvider entity={groupA}>
+            <EntityLayout>
+              <EntityLayout.Route path="/" title="Title">
+                <MembersListCard showAggregateMembersToggle />
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </TestApiProvider>,
+      );
+
+      const displayedMemberNames = screen.queryAllByTestId('user-link');
+      const duplicatedUserText = screen.getByText('Duplicated User');
+      const groupAUserOneText = screen.getByText('Group A User One');
+
+      expect(displayedMemberNames).toHaveLength(2);
+      expect(duplicatedUserText).toBeInTheDocument();
+      expect(groupAUserOneText).toBeInTheDocument();
+      expect(
+        duplicatedUserText.compareDocumentPosition(groupAUserOneText),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
     it('Shows all descendant members of the group when the aggregate users switch is turned on, showing duplicated members only once', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -209,7 +278,7 @@ describe('MemberTab Test', () => {
           <EntityProvider entity={groupA}>
             <EntityLayout>
               <EntityLayout.Route path="/" title="Title">
-                <MembersListCard />
+                <MembersListCard showAggregateMembersToggle />
               </EntityLayout.Route>
             </EntityLayout>
           </EntityProvider>

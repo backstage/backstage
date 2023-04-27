@@ -38,6 +38,16 @@ export const groupA: GroupEntity = {
     type: 'testing-group',
     children: [],
   },
+  relations: [
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-b',
+    },
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-c',
+    },
+  ],
 };
 
 export const groupAWithALeader: GroupEntity = {
@@ -57,11 +67,19 @@ export const groupAWithALeader: GroupEntity = {
       type: 'teamLeadBy',
       targetRef: 'user:default/group-a-user-one',
     },
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-b',
+    },
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-c',
+    },
   ],
 };
 
 export const groupARef: CompoundEntityRef = {
-  kind: 'Group',
+  kind: 'group',
   name: 'group-a',
   namespace: 'default',
 };
@@ -78,10 +96,20 @@ export const groupB: GroupEntity = {
     type: 'testing-group',
     children: [],
   },
+  relations: [
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-a',
+    },
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-d',
+    },
+  ],
 };
 
 export const groupBRef: CompoundEntityRef = {
-  kind: 'Group',
+  kind: 'group',
   name: 'group-b',
   namespace: 'default',
 };
@@ -101,7 +129,7 @@ export const groupC: GroupEntity = {
 };
 
 export const groupCRef: CompoundEntityRef = {
-  kind: 'Group',
+  kind: 'group',
   name: 'group-c',
   namespace: 'default',
 };
@@ -118,10 +146,20 @@ export const groupD: GroupEntity = {
     type: 'testing-group',
     children: [],
   },
+  relations: [
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-c',
+    },
+    {
+      type: 'parentOf',
+      targetRef: 'group:default/group-e',
+    },
+  ],
 };
 
 export const groupDRef: CompoundEntityRef = {
-  kind: 'Group',
+  kind: 'group',
   name: 'group-d',
   namespace: 'default',
 };
@@ -141,7 +179,7 @@ export const groupE: GroupEntity = {
 };
 
 export const groupERef: CompoundEntityRef = {
-  kind: 'Group',
+  kind: 'group',
   name: 'group-e',
   namespace: 'default',
 };
@@ -159,12 +197,6 @@ export const groupF: GroupEntity = {
     children: [],
   },
 };
-
-interface MockedRelationsType {
-  [index: string]: CompoundEntityRef[];
-  ownedBy: CompoundEntityRef[];
-  parentOf: CompoundEntityRef[];
-}
 
 export const groupAUserOne: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -262,44 +294,6 @@ export const duplicatedUser: Entity = {
   },
 };
 
-const mockedRelationsCatalog = new Map<string, MockedRelationsType>([
-  [
-    'group-a',
-    {
-      ownedBy: [],
-      parentOf: [groupBRef, groupCRef],
-    },
-  ],
-  [
-    'group-b',
-    {
-      ownedBy: [],
-      parentOf: [groupARef, groupDRef],
-    },
-  ],
-  [
-    'group-c',
-    {
-      ownedBy: [],
-      parentOf: [],
-    },
-  ],
-  [
-    'group-d',
-    {
-      ownedBy: [],
-      parentOf: [groupCRef, groupERef],
-    },
-  ],
-  [
-    'group-e',
-    {
-      ownedBy: [],
-      parentOf: [],
-    },
-  ],
-]);
-
 const mockedRefsToRelationsMap = new Map<string, GroupEntity>([
   ['group:default/group-a', groupA],
   ['group:default/group-b', groupB],
@@ -319,10 +313,6 @@ const mockedMembersMapping = new Map<string, Entity[]>([
 ]);
 
 type Nullable<T> = T | undefined;
-const nullMockedRelationsType: MockedRelationsType = {
-  ownedBy: [],
-  parentOf: [],
-};
 
 export const mockedCatalogApiSupportingGroups: Partial<CatalogApi> = {
   getEntities: async (request?: GetEntitiesRequest) => {
@@ -348,10 +338,3 @@ export const mockedCatalogApiSupportingGroups: Partial<CatalogApi> = {
     return { items };
   },
 };
-
-export const mockedGetEntityRelations = (
-  entity: Nullable<Entity>,
-  relationType: string,
-) =>
-  (mockedRelationsCatalog.get(entity?.metadata.name ?? 'NULL') ??
-    nullMockedRelationsType)[relationType];

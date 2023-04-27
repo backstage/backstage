@@ -131,8 +131,13 @@ const MemberComponent = (props: { member: UserEntity }) => {
 export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
+  showAggregateMembersToggle?: boolean;
 }) => {
-  const { memberDisplayTitle = 'Members', pageSize = 50 } = props;
+  const {
+    memberDisplayTitle = 'Members',
+    pageSize = 50,
+    showAggregateMembersToggle,
+  } = props;
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
@@ -150,7 +155,7 @@ export const MembersListCard = (props: {
     setPage(pageIndex);
   };
 
-  const [showAggregateUsers, setShowAggregateUsers] = useState(false);
+  const [showAggregateMembers, setShowAggregateMembers] = useState(false);
 
   const { value: descendantMembers } = useAsync(
     async () =>
@@ -181,7 +186,7 @@ export const MembersListCard = (props: {
   const members = removeDuplicateEntitiesFrom(
     [
       ...(directMembers ?? []),
-      ...(descendantMembers && showAggregateUsers ? descendantMembers : []),
+      ...(descendantMembers && showAggregateMembers ? descendantMembers : []),
     ].sort((a, b) => {
       const nameToCompareInA = a.spec.profile?.displayName ?? a.metadata.name;
       const nameToCompareInB = b.spec.profile?.displayName ?? b.metadata.name;
@@ -218,16 +223,20 @@ export const MembersListCard = (props: {
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
-        Direct Members
-        <Switch
-          color="primary"
-          checked={showAggregateUsers}
-          onChange={() => {
-            setShowAggregateUsers(!showAggregateUsers);
-          }}
-          inputProps={{ 'aria-label': 'Users Type Switch' }}
-        />
-        Aggregated Members
+        {showAggregateMembersToggle && (
+          <>
+            Direct Members
+            <Switch
+              color="primary"
+              checked={showAggregateMembers}
+              onChange={() => {
+                setShowAggregateMembers(!showAggregateMembers);
+              }}
+              inputProps={{ 'aria-label': 'Users Type Switch' }}
+            />
+            Aggregated Members
+          </>
+        )}
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
             members

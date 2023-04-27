@@ -15,7 +15,6 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
 import {
   getAllDesendantMembersForGroupEntity,
   getMembersFromGroups,
@@ -39,14 +38,7 @@ import {
   groupEUserOne,
   duplicatedUser,
   mockedCatalogApiSupportingGroups,
-  mockedGetEntityRelations,
 } from '../test-helpers/catalogMocks';
-
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  ...jest.requireActual('@backstage/plugin-catalog-react'),
-  getEntityRelations: (entity: Entity | undefined, relationType: string) =>
-    mockedGetEntityRelations(entity, relationType),
-}));
 
 describe('Helper functions', () => {
   it('getAllDesendantMembersForGroupEntity correctly recursively returns all descendant members', async () => {
