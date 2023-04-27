@@ -20,13 +20,13 @@ import {
   BackstageThemeAdditions,
 } from '../base/types';
 
-declare module '@mui/material/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette extends BackstagePaletteAdditions {}
 
   interface PaletteOptions extends BackstagePaletteAdditions {}
 }
 
-declare module '@mui/material/styles/createTheme' {
+declare module '@mui/material/styles' {
   interface Theme extends BackstageThemeAdditions {}
 
   interface ThemeOptions extends BackstageThemeAdditions {}
@@ -34,15 +34,4 @@ declare module '@mui/material/styles/createTheme' {
 
 declare module '@mui/private-theming/defaultTheme' {
   interface DefaultTheme extends Theme {}
-}
-
-// This is a workaround for missing methods in React 17 that MUI v5 depends on
-// See https://github.com/mui/material-ui/issues/35287
-declare global {
-  namespace React {
-    interface DOMAttributes<T> {
-      onResize?: (event: Event) => void;
-      onResizeCapture?: (event: Event) => void;
-    }
-  }
 }
