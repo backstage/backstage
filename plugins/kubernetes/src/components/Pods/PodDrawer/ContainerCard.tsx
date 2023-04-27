@@ -27,7 +27,7 @@ import {
 
 import { DateTime } from 'luxon';
 
-import { PodLogContext, PodLogsDialog } from '../PodLogs';
+import { PodScope, PodLogsDialog } from '../PodLogs';
 import { StructuredMetadataTable } from '@backstage/core-components';
 
 const getContainerHealthChecks = (
@@ -84,7 +84,7 @@ const ContainerDatetime = ({ prefix, dateTime }: ContainerDatetimeProps) => {
 };
 
 export interface ContainerCardProps {
-  logContext: PodLogContext;
+  logContext: PodScope;
   containerSpec?: IContainer;
   containerStatus: IContainerStatus;
 }

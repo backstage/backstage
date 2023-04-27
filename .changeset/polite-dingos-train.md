@@ -4,7 +4,7 @@
 
 Added Pod logs components for Kubernetes plugin
 
-**BREAKING**: `kubernetesProxyApi` must be defined as an apis in the plugin to use k8s proxy features
+**BREAKING**: `kubernetesProxyApi` for custom plugins built with components from the Kubernetes plugin apis, `kubernetesProxyApi` should be added to the plugin's API list.
 
 ```
 ...

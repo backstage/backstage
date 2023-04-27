@@ -43,8 +43,7 @@ describe('KubernetesProxyClient', () => {
 
     const response = await proxy.getPodLogs(request);
     await expect(response).toStrictEqual({ text: 'Hello World' });
-    expect(callProxyMock).toHaveBeenCalledTimes(1);
-    expect(callProxyMock.mock.calls[0][0]).toStrictEqual({
+    expect(callProxyMock).toHaveBeenCalledWith({
       clusterName: 'some-cluster',
       init: {
         method: 'GET',

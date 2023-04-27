@@ -30,7 +30,7 @@ import SubjectIcon from '@material-ui/icons/Subject';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { PodLogs } from './PodLogs';
-import { ContainerLogContext } from './types';
+import { ContainerScope } from './types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,11 +44,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface PodLogsDialogProps {
-  logContext: ContainerLogContext;
-  previous?: boolean;
+  logContext: ContainerScope;
 }
 
-export const PodLogsDialog = ({ logContext, previous }: PodLogsDialogProps) => {
+export const PodLogsDialog = ({ logContext }: PodLogsDialogProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -74,7 +73,7 @@ export const PodLogsDialog = ({ logContext, previous }: PodLogsDialogProps) => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <PodLogs previous={previous} logContext={logContext} />
+          <PodLogs logContext={logContext} />
         </DialogContent>
       </Dialog>
       <Button

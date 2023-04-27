@@ -16,15 +16,14 @@
 import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
-import { ContainerLogContext } from './types';
+import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
 
 interface PodLogsOptions {
-  logContext: ContainerLogContext;
-  previous?: boolean;
+  logContext: ContainerScope;
 }
 
-export const usePodLogs = ({ logContext, previous }: PodLogsOptions) => {
+export const usePodLogs = ({ logContext }: PodLogsOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {
     return await kubernetesProxyApi.getPodLogs({
@@ -33,5 +32,5 @@ export const usePodLogs = ({ logContext, previous }: PodLogsOptions) => {
       containerName: logContext.containerName,
       clusterName: logContext.clusterName,
     });
-  }, [JSON.stringify(logContext), previous]);
+  }, [JSON.stringify(logContext)]);
 };

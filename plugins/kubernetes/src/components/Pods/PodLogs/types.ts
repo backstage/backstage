@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export interface PodLogContext {
+export interface PodScope {
   podName: string;
   podNamespace: string;
   clusterName: string;
 }
 
-export interface ContainerLogContext extends PodLogContext {
+export interface ContainerScope extends PodScope {
   containerName: string;
 }

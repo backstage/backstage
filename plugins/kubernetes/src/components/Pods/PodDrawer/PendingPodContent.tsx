@@ -80,7 +80,7 @@ export const PendingPodContent = ({ pod }: PendingPodContentProps) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="h5">Pod startup conditions</Typography>
+        <Typography variant="h5">Pod is Pending. Conditions:</Typography>
         <List>
           {startupConditions.map(c => (
             <ListItem key={c.type}>

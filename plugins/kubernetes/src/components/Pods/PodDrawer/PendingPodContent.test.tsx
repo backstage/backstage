@@ -75,7 +75,7 @@ describe('PendingPodContent', () => {
         />,
       ),
     );
-    expect(getByText('Pod startup conditions')).toBeInTheDocument();
+    expect(getByText('Pod is Pending. Conditions:')).toBeInTheDocument();
 
     expect(getByText('Initialized - (1 day ago)')).toBeInTheDocument();
     expect(getByText('PodScheduled - (1 day ago)')).toBeInTheDocument();
@@ -126,7 +126,7 @@ describe('PendingPodContent', () => {
         />,
       ),
     );
-    expect(getByText('Pod startup conditions')).toBeInTheDocument();
+    expect(getByText('Pod is Pending. Conditions:')).toBeInTheDocument();
 
     expect(
       getByText(
@@ -172,7 +172,7 @@ describe('PendingPodContent', () => {
         />,
       ),
     );
-    expect(getByText('Pod startup conditions')).toBeInTheDocument();
+    expect(getByText('Pod is Pending. Conditions:')).toBeInTheDocument();
 
     expect(
       getByText('Initialized - (1 hour ago) dont know what is happening'),

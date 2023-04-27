@@ -19,21 +19,18 @@ import { DismissableBanner, LogViewer } from '@backstage/core-components';
 import { Paper } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import { ContainerLogContext } from './types';
+import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
 
 interface PodLogsProps {
-  previous?: boolean;
-  logContext: ContainerLogContext;
+  logContext: ContainerScope;
 }
 
 export const PodLogs: React.FC<PodLogsProps> = ({
-  previous,
   logContext,
 }: PodLogsProps) => {
   const { value, error, loading } = usePodLogs({
     logContext: logContext,
-    previous,
   });
 
   return (
