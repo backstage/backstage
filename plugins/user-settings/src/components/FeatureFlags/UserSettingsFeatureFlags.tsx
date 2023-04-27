@@ -132,5 +132,3 @@ export const UserSettingsFeatureFlags = () => {
     </InfoCard>
   );
 };
-
-export default React.memo(UserSettingsFeatureFlags);
