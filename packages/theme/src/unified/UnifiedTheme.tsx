@@ -20,7 +20,7 @@ import {
   createTheme,
 } from '@material-ui/core/styles';
 import type { PaletteOptions as PaletteOptionsV4 } from '@material-ui/core/styles/createPalette';
-import { PaletteOptions as PaletteOptionsV5 } from '@mui/material/styles/createPalette';
+import { PaletteOptions as PaletteOptionsV5 } from '@mui/material/styles';
 import {
   adaptV4Theme,
   Theme as Mui5Theme,

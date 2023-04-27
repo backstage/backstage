@@ -9497,7 +9497,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@emotion/react": ^11.10.5
     "@emotion/styled": ^11.10.5
-    "@mui/material": ^5.11.2
+    "@mui/material": ^5.12.2
     "@mui/styles": ^5.11.2
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
@@ -12848,7 +12848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.11.2, @mui/material@npm:^5.12.2":
+"@mui/material@npm:^5.12.2":
   version: 5.12.2
   resolution: "@mui/material@npm:5.12.2"
   dependencies:
