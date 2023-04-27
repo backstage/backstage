@@ -254,6 +254,9 @@ export type QueryEntitiesCursorRequest = {
   fields?: string[];
   limit?: number;
   cursor: string;
+  filter?: never;
+  orderFields?: never;
+  fullTextFilter?: never;
 };
 
 // @public

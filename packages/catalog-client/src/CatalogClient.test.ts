@@ -346,6 +346,7 @@ describe('CatalogClient', () => {
         fullTextFilter: {
           term: 'query',
         },
+
         orderFields: [
           { field: 'metadata.name', order: 'asc' },
           { field: 'metadata.uid', order: 'desc' },
@@ -368,10 +369,14 @@ describe('CatalogClient', () => {
       await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
+        // @ts-expect-error
         fullTextFilter: {
           term: 'query',
         },
+        // @ts-expect-error
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        // @ts-expect-error
+        filter: { a: '1' },
         cursor: 'cursor',
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
