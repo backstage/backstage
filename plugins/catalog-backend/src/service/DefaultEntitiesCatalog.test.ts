@@ -1424,7 +1424,7 @@ describe('DefaultEntitiesCatalog', () => {
         await createDatabase(databaseId);
 
         await Promise.all([
-          addEntityToSearch(entityFrom('AA', { uid: '1' })),
+          addEntityToSearch(entityFrom('AA', { uid: '1', kind: 'included' })),
           addEntityToSearch(
             entityFrom('AA', {
               namespace: 'namespace2',
@@ -1476,8 +1476,8 @@ describe('DefaultEntitiesCatalog', () => {
         };
         const response1 = await catalog.queryEntities(request1);
         expect(response1.items).toMatchObject([
-          entityFrom('AA', { uid: '1' }),
-          entityFrom('AA', { uid: '2' }),
+          entityFrom('AA', { uid: '1', kind: 'included' }),
+          entityFrom('AA', { uid: '2', kind: 'included' }),
         ]);
         expect(response1.pageInfo.nextCursor).toBeDefined();
         expect(response1.pageInfo.prevCursor).toBeUndefined();
@@ -1490,8 +1490,8 @@ describe('DefaultEntitiesCatalog', () => {
         };
         const response2 = await catalog.queryEntities(request2);
         expect(response2.items).toMatchObject([
-          entityFrom('AA', { uid: '4' }),
-          entityFrom('AA', { uid: '5' }),
+          entityFrom('AA', { uid: '4', kind: 'included' }),
+          entityFrom('AA', { uid: '5', kind: 'included' }),
         ]);
         expect(response2.pageInfo.nextCursor).toBeDefined();
         expect(response2.pageInfo.prevCursor).toBeDefined();
