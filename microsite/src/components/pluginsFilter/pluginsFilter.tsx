@@ -8,7 +8,7 @@ type Props = {
 
 const PluginsFilter = ({ categories, handleChipClick }: Props) => {
   return (
-    <div className="dropdown dropdown--hoverable PluginFilter">
+    <div className="dropdown dropdown--hoverable">
       <button className="button button--info dropdown__toggle">
         Categories Filter
       </button>
@@ -16,7 +16,7 @@ const PluginsFilter = ({ categories, handleChipClick }: Props) => {
         {categories.map(chip => {
           return (
             <li key={chip.name}>
-              <label className="dropdown__item">
+              <div className="dropdown__item">
                 <input
                   type="checkbox"
                   className="dropdown__checkbox"
@@ -24,7 +24,7 @@ const PluginsFilter = ({ categories, handleChipClick }: Props) => {
                   onChange={() => handleChipClick(chip.name)}
                 />
                 <span className="dropdown__label">{chip.name}</span>
-              </label>
+              </div>
             </li>
           );
         })}
