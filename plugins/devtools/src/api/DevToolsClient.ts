@@ -36,27 +36,21 @@ export class DevToolsClient implements DevToolsApi {
   }
 
   public async getConfig(): Promise<ConfigInfo | undefined> {
-    const urlSegment = 'config';
-
-    const configInfo = await this.get<ConfigInfo | undefined>(urlSegment);
+    const configInfo = await this.get<ConfigInfo | undefined>('config');
     return configInfo;
   }
 
   public async getExternalDependencies(): Promise<
     ExternalDependency[] | undefined
   > {
-    const urlSegment = 'external-dependencies';
-
     const externalDependencies = await this.get<
       ExternalDependency[] | undefined
-    >(urlSegment);
+    >('external-dependencies');
     return externalDependencies;
   }
 
   public async getInfo(): Promise<DevToolsInfo | undefined> {
-    const urlSegment = 'info';
-
-    const info = await this.get<DevToolsInfo | undefined>(urlSegment);
+    const info = await this.get<DevToolsInfo | undefined>('info');
     return info;
   }
 
