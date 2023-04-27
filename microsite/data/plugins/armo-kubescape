@@ -1,0 +1,12 @@
+title: Armo Kubescape Plugin
+author: Armo
+authorUrl: https://github.com/armosec
+category: Monitoring
+description: open-source Kubernetes Security platform, made for DevOps.
+  Our patented technology and open-source solutions fit natively within the CI/CD pipeline and existing development tools, assuring DevOps, DevSecOps, and developers that every Kubernetes cluster, container, and microservice is born and remains secure, from development to production and from configuration to run-time, every time
+documentation: https://github.com/kubescape/helm-charts#readme
+iconUrl: https://cloud.armosec.io/assets/images/kubescape-logo.svg
+# You can provide an external url or add your logo under static/img and provide a path
+# relative to static/ e.g. img/my-logo.png
+npmPackageName: '@backstage/armo-kubescape-plugin'
+addedDate: '2023-04-27' 
