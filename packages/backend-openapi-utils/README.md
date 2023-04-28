@@ -8,18 +8,18 @@ This package is meant to provide a typed Express router for an OpenAPI spec. Bas
 
 ### Configuration
 
-1. Run `yarn --cwd <package-dir> backstage-cli package schema:openapi:generate` to translate your `src/schema/openapi.yaml` to a new Typescript file in `src/schema/openapi.ts`. In the case of projects that require linting + a license header, you will need to do this manually.
+1. Run `yarn --cwd <package-dir> backstage-cli package schema:openapi:generate` to translate your `src/schema/openapi.yaml` to a new Typescript file in `src/schema/openapi.generated.ts`. The command will try to execute both a lint and prettier step on the generated file, where applicable.
 
 2. In your plugin's `src/service/createRouter.ts`,
 
 ```ts
-import {ApiRouter} from `@backstage/backend-openapi-utils`;
-import spec from '../schema/openapi'
-...
-
-export function createRouter(){
+import { ApiRouter } from `@backstage/backend-openapi-utils`;
+import spec from '../schema/openapi.generated';
+// ...
+export function createRouter() {
     const router = Router() as ApiRouter<typeof spec>;
-    ...
+    // ...
+    return router;
 }
 ```
 

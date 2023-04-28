@@ -51,7 +51,7 @@ import {
   validateRequestBody,
 } from './util';
 import type { ApiRouter } from '@backstage/backend-openapi-utils';
-import spec from '../schema/openapi';
+import spec from '../schema/openapi.generated';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 /**
