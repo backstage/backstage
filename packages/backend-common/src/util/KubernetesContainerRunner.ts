@@ -30,7 +30,6 @@ import {
   Watch,
 } from '@kubernetes/client-node';
 import { v4 as uuid } from 'uuid';
-import { Request } from 'request';
 
 /**
  * An existing Kubernetes volume that will be used as base for mounts.
@@ -228,7 +227,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     taskId: string,
     callback: (pod: V1Pod) => void,
     errorCallback: (reason: any) => void,
-  ): Promise<Request> {
+  ): Promise<{ abort: () => void }> {
     const watch = new Watch(this.kubeConfig);
     const labelSelector = `task=${taskId}`;
     return watch.watch(
@@ -251,8 +250,8 @@ export class KubernetesContainerRunner implements ContainerRunner {
     taskId: string,
     logStream: Writable,
   ): { promise: Promise<void>; close: () => Promise<void> } {
-    let log: Promise<Request>;
-    let req: Promise<Request>;
+    let log: Promise<{ abort: () => void }>;
+    let req: Promise<{ abort: () => void }>;
     const watchPromise = new Promise<void>((_, reject) => {
       req = this.watchPod(
         taskId,
@@ -299,7 +298,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
     promise: Promise<void>;
     close: () => Promise<void>;
   } {
-    let req: Promise<Request>;
+    let req: Promise<{ abort: () => void }>;
     const promise = new Promise<void>(async (resolve, reject) => {
       req = this.watchPod(
         taskId,
