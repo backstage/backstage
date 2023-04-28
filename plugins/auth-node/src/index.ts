@@ -21,6 +21,7 @@
  */
 
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
+export { createRequireAuthenticationMiddleware } from './createRequireAuthenticationMiddleware';
 export { DefaultIdentityClient } from './DefaultIdentityClient';
 export { IdentityClient } from './IdentityClient';
 export type { IdentityApi } from './IdentityApi';

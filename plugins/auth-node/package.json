@@ -23,10 +23,12 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
+    "express-unless": "^2.1.3",
     "jose": "^4.6.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"

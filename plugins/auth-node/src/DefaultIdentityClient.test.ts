@@ -14,71 +14,14 @@
  * limitations under the License.
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import {
-  decodeProtectedHeader,
-  exportJWK,
-  generateKeyPair,
-  SignJWT,
-} from 'jose';
 import { cloneDeep } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { v4 as uuid } from 'uuid';
 
 import { DefaultIdentityClient } from './DefaultIdentityClient';
 import { IdentityApiGetIdentityRequest } from './types';
-
-interface AnyJWK extends Record<string, string> {
-  use: 'sig';
-  alg: string;
-  kid: string;
-  kty: string;
-}
-
-// Simplified copy of TokenFactory in @backstage/plugin-auth-backend
-class FakeTokenFactory {
-  private readonly keys = new Array<AnyJWK>();
-
-  constructor(
-    private readonly options: {
-      issuer: string;
-      keyDurationSeconds: number;
-    },
-  ) {}
-
-  async issueToken(params: {
-    claims: {
-      sub: string;
-      ent?: string[];
-    };
-  }): Promise<string> {
-    const pair = await generateKeyPair('ES256');
-    const publicKey = await exportJWK(pair.publicKey);
-    const kid = uuid();
-    publicKey.kid = kid;
-    this.keys.push(publicKey as AnyJWK);
-
-    const iss = this.options.issuer;
-    const sub = params.claims.sub;
-    const ent = params.claims.ent;
-    const aud = 'backstage';
-    const iat = Math.floor(Date.now() / 1000);
-    const exp = iat + this.options.keyDurationSeconds;
-
-    return new SignJWT({ iss, sub, aud, iat, exp, ent, kid })
-      .setProtectedHeader({ alg: 'ES256', ent: ent, kid: kid })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
-      .sign(pair.privateKey);
-  }
-
-  async listPublicKeys(): Promise<{ keys: AnyJWK[] }> {
-    return { keys: this.keys };
-  }
-}
+import { FakeTokenFactory } from './setupTests';
+import { decodeProtectedHeader } from 'jose';
 
 function jwtKid(jwt: string): string {
   const header = decodeProtectedHeader(jwt);

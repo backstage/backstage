@@ -60,11 +60,11 @@ the local `auth.environment` setting will be selected.
 ## Sign-In Configuration
 
 > NOTE: Identity management and the `SignInPage` in Backstage is NOT a method
-> for blocking access for unauthorized users, that either requires additional
-> backend implementation or a separate service like Google's Identity-Aware
-> Proxy. The identity system only serves to provide a personalized experience
-> and access to a Backstage Identity Token, which can be passed to backend
-> plugins.
+> for blocking access for unauthorized users, that either requires
+> [additional backend implementation](./backend-auth.md) or a separate service
+> like Google's Identity-AwareProxy. The identity system only serves to provide
+> a personalized experience and access to a Backstage Identity Token, which can
+> be passed to backend plugins.
 
 Using an authentication provider for sign-in is something you need to configure
 both in the frontend app, as well as the `auth` backend plugin. For information

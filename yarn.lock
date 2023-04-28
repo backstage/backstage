@@ -4783,12 +4783,14 @@ __metadata:
   resolution: "@backstage/plugin-auth-node@workspace:plugins/auth-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/express": "*"
     express: ^4.17.1
+    express-unless: ^2.1.3
     jose: ^4.6.0
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -23942,6 +23944,13 @@ __metadata:
     safe-buffer: 5.2.1
     uid-safe: ~2.1.5
   checksum: 1021a793433cbc6a1b32c803fcb2daa1e03a8f50dd907e8745ae57994370315a5cfde5b6ef7b062d9a9a0754ff268844bda211c08240b3a0e01014dcf1073ec5
+  languageName: node
+  linkType: hard
+
+"express-unless@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "express-unless@npm:2.1.3"
+  checksum: 14bec87e84266180bd8ad71f43a8d1d70d1c3905be7ca89944a86ae0d31f07a3f98418b619673aa8dd417333bbc7bb0a24172ff806a2e0ef1ee9b6221a4bf056
   languageName: node
   linkType: hard
 

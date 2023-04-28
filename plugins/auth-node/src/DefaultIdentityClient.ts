@@ -123,6 +123,7 @@ export class DefaultIdentityClient implements IdentityApi {
       audience: 'backstage',
       issuer: this.issuer,
     });
+
     // Verified, return the matching user as BackstageIdentity
     // TODO: Settle internal user format/properties
     if (!decoded.payload.sub) {
