@@ -88,13 +88,21 @@ spec:
 
 ## Customize Action
 
-You can customize the action in the CI/CD table to link to the Jenkins page instead of rebuild the job.
+You can customize the action in the CI/CD table.
+
+| tableAction       | description             |
+| ----------------- | ----------------------- |
+| rebuild (default) | Run new build with API  |
+| view              | link to view build page |
+| replay            | link to start replay    |
 
 ```yaml
 jenkinsPlugin.__experimentalReconfigure({
   tableAction: 'view',
 });
 ```
+
+<img src="./src/assets/customize_action_view.png"  alt="Customized action - view"/>
 
 ## Features
 
