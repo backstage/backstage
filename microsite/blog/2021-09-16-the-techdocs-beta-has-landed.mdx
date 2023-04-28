@@ -9,7 +9,6 @@ authorImageURL: https://avatars.githubusercontent.com/u/3496491?v=4
 
 **TLDR:** Another beta has landed! We continue to focus on improving the stability and scalability of Backstage while enhancing its functionality. Thanks to focused efforts from the TechDocs core team and community, we're happy to say that TechDocs — [our docs-like-code solution](https://backstage.io/blog/2020/09/08/announcing-tech-docs) for all the software in your catalog — is now, after [Software Templates](https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta), the second core feature to graduate to beta.
 
-
 {/* truncate */}
 
 In addition to new features and improvements, we made numerous compatibility updates ahead of this feature release. You'll find support for a variety of CI systems, cloud storage solutions, and source control systems — so that TechDocs works for most orgs, right out of box. But there's much more to explore in this beta, thanks to contributions from the community.
@@ -22,7 +21,10 @@ When we set out to define what beta looked like, we combed through GitHub issues
 
 TechDocs can be transformational once fully up and running (update your code and your docs with the same pull request!). But for first-time users and especially those unfamiliar with the MkDocs ecosystem upon which TechDocs is built, there are often many small, obtuse hurdles that can get in the way of success. Leading up to the beta release, we worked to surface and improve relevant errors and other details during the documentation generation process. Better still, all of this detail is now provided to users _in real-time_, as docs are generated and refreshed.
 
-<p>🙌 Shout out to <a href="https://github.com/dhenneke">Dominik Henneke</a> for implementing the interactive experience.</p>
+<p>
+  🙌 Shout out to <a href="https://github.com/dhenneke">Dominik Henneke</a> for
+  implementing the interactive experience.
+</p>
 
 ## Custom homepages: Make TechDocs yours
 
@@ -30,7 +32,10 @@ TechDocs can be transformational once fully up and running (update your code and
 
 We strive to make it so that you can mold Backstage into the shape that best fits your organization. With this beta release, just as you can with the Catalog entities and [Search](https://backstage.io/blog/2021/06/24/announcing-backstage-search-platform#composable-search-page-experiences), you can now customize and compose your own TechDocs homepage. Use it to level up the front page of your Backstage documentation by highlighting golden documentation at your company, or use the new and improved (and Catalog-inspired) experience. Read more about [how to customize the TechDocs homepage](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-customize-the-techdocs-home-page).
 
-<p>🙏 Thanks to <a href="https://github.com/kuangp">Phil Kuang</a> for the improved default TechDocs home experience.</p>
+<p>
+  🙏 Thanks to <a href="https://github.com/kuangp">Phil Kuang</a> for the
+  improved default TechDocs home experience.
+</p>
 
 ## Simpler YAML annotations: What's in a ref?
 
@@ -40,7 +45,9 @@ We often forget that in order to enable TechDocs on a Catalog entity, documentat
 
 In the beta, we've simplified this annotation dramatically for documentation authors, aligning its value with TechDocs' docs-like-code philosophy itself. In the vast majority of cases, its value will simply be `dir:.` — which means this catalog entity contains documentation and the mkdocs.yml file describing this documentation lives in the current directory. We continue to support edge cases for [other techdocs-ref annotation values](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-understand-techdocs-ref-annotation-values), as well.
 
-<p>👏 Another round of applause for Dominik for driving this improvement through.</p>
+<p>
+  👏 Another round of applause for Dominik for driving this improvement through.
+</p>
 
 ## Everything neat and tidy
 

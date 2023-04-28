@@ -11,7 +11,6 @@ For the past year, the Backstage maintainer team has been spending time to give 
 
 We’re happy to announce that the [v1.11](https://backstage.io/docs/releases/v1.11.0) release includes the public alpha of the [new Backstage backend system](https://backstage.io/docs/backend-system/)! The system has already been available to use for some time, as some of you have already found, but this alpha release marks the point where we are finally ready to encourage widespread adoption by plugin builders. We still don’t recommend that you use this new system in your production setups just yet, more on that later.
 
-
 {/* truncate */}
 
 ## History of the Backstage backend system
@@ -38,9 +37,16 @@ A few months later as the RFC settled, we resumed work and followed up with an i
 
 We wrapped up this work just before KubeCon NA 2022, with the full system implemented. The state of the system at this point was presented in our talk on the topic, which you can see just below. Except for a few API tweaks, this is what the system still looks like today.
 
-<iframe width="780" height="440" src="https://www.youtube.com/embed/ZXF7uxrEBVY" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+<iframe
+  width="780"
+  height="440"
+  src="https://www.youtube.com/embed/ZXF7uxrEBVY"
+  frameBorder="0"
+  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
 
-<br/>
+<br />
 
 The final stage was all about polish, which we picked up at the beginning of this year. By leaving a bit of space between the main implementation, or phase two, and the polish phase, phase three, it was much easier to properly scrutinize our past solutions. We forget a lot of the low level reasoning for changes, and it is easier to step back and reconsider parts of the system. For example, we found that our initial design of the `createServiceFactory` function was unnecessarily complex, and could be made much simpler for most usages. In addition to reviewing all the APIs, we also wrote more documentation to help users, ensured that the local development and testing experience was solid, and double checked that there was a smooth migration path from the old system.
 
