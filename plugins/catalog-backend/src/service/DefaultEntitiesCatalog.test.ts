@@ -1648,6 +1648,126 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response5.totalItems).toBe(6);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should paginate results with multiple sort fields, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await Promise.all([
+          addEntityToSearch(
+            entityFrom('AA', { uid: 'id1', namespace: 'default' }),
+          ),
+          addEntityToSearch(
+            entityFrom('CC', { uid: 'id2', namespace: 'default' }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace2', uid: 'id4' }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace3', uid: 'id5' }),
+          ),
+          addEntityToSearch(
+            entityFrom('AA', { namespace: 'namespace4', uid: 'id6' }),
+          ),
+          addEntityToSearch(
+            entityFrom('DD', { uid: 'id3', namespace: 'default' }),
+          ),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const limit = 2;
+
+        // initial request
+        const request1: QueryEntitiesInitialRequest = {
+          limit,
+          orderFields: [
+            {
+              field: 'metadata.namespace',
+              order: 'asc',
+            },
+            {
+              field: 'metadata.uid',
+              order: 'desc',
+            },
+          ],
+          credentials: mockCredentials.none(),
+        };
+        const response1 = await catalog.queryEntities(request1);
+        expect(response1.items).toMatchObject([
+          entityFrom('DD'),
+          entityFrom('CC'),
+        ]);
+        expect(response1.pageInfo.nextCursor).toBeDefined();
+        expect(response1.pageInfo.prevCursor).toBeUndefined();
+        expect(response1.totalItems).toBe(6);
+
+        // second request (forward)
+        const request2: QueryEntitiesCursorRequest = {
+          cursor: response1.pageInfo.nextCursor!,
+          limit,
+          credentials: mockCredentials.none(),
+        };
+        const response2 = await catalog.queryEntities(request2);
+        expect(response2.items).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA', { namespace: 'namespace2' }),
+        ]);
+        expect(response2.pageInfo.nextCursor).toBeDefined();
+        expect(response2.pageInfo.prevCursor).toBeDefined();
+        expect(response2.totalItems).toBe(6);
+
+        // third request (forward)
+        const request3: QueryEntitiesCursorRequest = {
+          cursor: response2.pageInfo.nextCursor!,
+          limit,
+          credentials: mockCredentials.none(),
+        };
+        const response3 = await catalog.queryEntities(request3);
+        expect(response3.items).toMatchObject([
+          entityFrom('AA', { namespace: 'namespace3' }),
+          entityFrom('AA', { namespace: 'namespace4' }),
+        ]);
+        expect(response3.pageInfo.nextCursor).toBeUndefined();
+        expect(response3.pageInfo.prevCursor).toBeDefined();
+        expect(response3.totalItems).toBe(6);
+
+        // fourth request (backward)
+        const request4: QueryEntitiesCursorRequest = {
+          cursor: response3.pageInfo.prevCursor!,
+          limit,
+          credentials: mockCredentials.none(),
+        };
+        const response4 = await catalog.queryEntities(request4);
+        expect(response4.items).toMatchObject([
+          entityFrom('AA'),
+          entityFrom('AA', { namespace: 'namespace2' }),
+        ]);
+        expect(response4.pageInfo.nextCursor).toBeDefined();
+        expect(response4.pageInfo.prevCursor).toBeDefined();
+        expect(response4.totalItems).toBe(6);
+
+        // fifth request (backward)
+        const request5: QueryEntitiesCursorRequest = {
+          cursor: response4.pageInfo.prevCursor!,
+          limit,
+          credentials: mockCredentials.none(),
+        };
+        const response5 = await catalog.queryEntities(request5);
+        expect(response5.items).toMatchObject([
+          entityFrom('DD'),
+          entityFrom('CC'),
+        ]);
+        expect(response5.pageInfo.nextCursor).toBeDefined();
+        expect(response5.pageInfo.prevCursor).toBeUndefined();
+        expect(response5.totalItems).toBe(6);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {

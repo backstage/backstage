@@ -22,7 +22,6 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
-import { Logger } from 'winston';
 import { z } from 'zod';
 import {
   EntitiesBatchRequest,
@@ -57,6 +56,7 @@ import {
   EntitiesSearchFilter,
   EntityFilter,
 } from '@backstage/plugin-catalog-node';
+import { Logger } from 'winston';
 
 const defaultSortField: EntityOrder = {
   field: 'metadata.uid',
@@ -188,14 +188,64 @@ function parseFilter(
   });
 }
 
+/**
+ * Add the required cursor filter properties based on the orderby field that we're looking at.
+ */
+function addCursorByOrderBy(
+  numberOfOrders: number,
+  query: Knex.QueryBuilder,
+  reverse: (index: number) => boolean,
+  getColumn: (index: number) => string,
+  getFieldValue: (index: number) => string,
+  index = 0,
+): Knex.QueryBuilder {
+  // Stop recursion when we get to the end of number of orders.
+  if (numberOfOrders === index) return query;
+
+  query
+    // Get all values either greater than the current value.
+    .andWhere(
+      `${getColumn(index)}.value`,
+      reverse(index) ? '<' : '>',
+      getFieldValue(index),
+    )
+    // OR that match the current value but may not match further order by columns.
+    .orWhere(function test() {
+      this.where(
+        `${getColumn(index)}.value`,
+        '=',
+        getFieldValue(index),
+      ).andWhere(subquery => {
+        // Special logic to add in the entity_id check for values with the same everything else.
+        //  ensures a consistent sort.
+        if (index === numberOfOrders - 1) {
+          subquery.andWhere(
+            `${getColumn(index)}.entity_id`,
+            reverse(index) ? '<' : '>',
+            getFieldValue(numberOfOrders),
+          );
+        } else {
+          addCursorByOrderBy(
+            numberOfOrders,
+            subquery,
+            reverse,
+            getColumn,
+            getFieldValue,
+            index + 1,
+          );
+        }
+      });
+    });
+
+  return query;
+}
+
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
-  private readonly logger: Logger;
   private readonly stitcher: Stitcher;
 
   constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
     this.database = options.database;
-    this.logger = options.logger;
     this.stitcher = options.stitcher;
   }
 
@@ -363,17 +413,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isFetchingBackwards = cursor.isPrevious;
 
-    if (cursor.orderFields.length > 1) {
-      this.logger.warn(`Only one sort field is supported, ignoring the rest`);
-    }
-
     const sortField: EntityOrder = {
       ...defaultSortField,
       ...cursor.orderFields[0],
     };
-
-    const [prevItemOrderFieldValue, prevItemUid] =
-      cursor.orderFieldValues || [];
 
     const dbQuery = db('search')
       .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
@@ -393,7 +436,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         // If there is one item, apply the like query to the top level query which is already
         //   filtered based on the singular sortField.
         dbQuery.andWhereRaw(
-          'value like ?',
+          'search.value like ?',
           `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
         );
       } else {
@@ -409,46 +452,106 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         dbQuery.andWhere('search.entity_id', 'in', matchQuery);
       }
     }
-
+    /**
+     * Pull out the count query before we start adding order_by columns and select columns to
+     *  optimize size of query. All filtering for the entire query needs to happen above this line.
+     *  Filtering for pages happens below.
+     */
     const countQuery = dbQuery.clone();
+    countQuery.count('search.entity_id', { as: 'count' });
 
-    const isOrderingDescending = sortField.order === 'desc';
+    dbQuery
+      /**
+       * Similar to below, just grab the columns we need, being explicit helps with the issue of
+       *  grabbing columns with the same name from joins and having collisions.
+       */
+      .columns([
+        'search.entity_id',
+        'search.key',
+        'search.value',
+        'final_entities.final_entity',
+      ]);
 
-    if (prevItemOrderFieldValue) {
+    cursor.orderFields.forEach(({ field }, index) => {
+      // Skip the first field as it is always `search.value`.
+      if (index === 0) return;
+      const alias = `order_${index}`;
+      dbQuery
+        .leftJoin({ [alias]: 'search' }, function search(inner) {
+          inner
+            .on(`${alias}.entity_id`, 'search.entity_id')
+            // Pulled from `entities`, may not need the raw here.
+            .andOn(`${alias}.key`, db.raw('?', [field]));
+        })
+        /**
+         * We have to name both the value and the key as knex + SQL can't easily decipher the values
+         *  as xxx belongs to table x and xxx belongs to table y. Leads to overwriting either table x
+         *  or table y, which ever was specified later in the query (I think), either way it gets
+         *  overridden.
+         */
+        .columns([
+          `${alias}.value as ${alias}.value`,
+          `${alias}.key as ${alias}.key`,
+        ]);
+    });
+    const orderFieldValues = cursor.orderFieldValues || [];
+
+    // The last order field value will always be entity id. This just grabs the first few real values.
+    const prevItemOrderFieldValues = orderFieldValues.slice(
+      0,
+      orderFieldValues.length - 1,
+    );
+    const reverse = (index: number) => {
+      const reverseFinalOuput = isFetchingBackwards;
+      const reverseOnIndex =
+        (cursor.orderFields?.[index].order ?? 'asc') === 'desc';
+      return reverseFinalOuput ? !reverseOnIndex : reverseOnIndex;
+    };
+    if (prevItemOrderFieldValues.length) {
       dbQuery.andWhere(function nested() {
-        this.where(
-          'value',
-          isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-          prevItemOrderFieldValue,
-        )
-          .orWhere('value', '=', prevItemOrderFieldValue)
-          .andWhere(
-            'search.entity_id',
-            isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-            prevItemUid,
-          );
+        addCursorByOrderBy(
+          cursor.orderFields.length,
+          this,
+          reverse,
+          (index: number) => (index === 0 ? 'search' : `order_${index}`),
+          (index: number) => orderFieldValues[index]!,
+        );
       });
     }
 
+    cursor.orderFields.forEach(({ order }, index) => {
+      // Pulled from `entities`, adds the required logic to sort by a set of fields in the `search` table.
+      const column = index === 0 ? 'search.value' : `order_${index}.value`;
+      if (db.client.config.client === 'pg') {
+        // pg correctly orders by the column value and handling nulls in one go
+        dbQuery.orderBy([
+          {
+            column,
+            order: isFetchingBackwards ? invertOrder(order) : order,
+            nulls: isFetchingBackwards ? 'first' : 'last',
+          },
+        ]);
+      } else {
+        // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
+        // no matter what the order is, for some reason, so we have to manually add back the statement
+        // that translates to "order by value <order>" while avoiding to give an order
+        dbQuery.orderBy([
+          {
+            column,
+            order: undefined,
+            nulls: isFetchingBackwards ? 'first' : 'last',
+          },
+          {
+            column,
+            order: isFetchingBackwards ? invertOrder(order) : order,
+          },
+        ]);
+      }
+    });
     dbQuery
-      .orderBy([
-        {
-          column: 'value',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
-        },
-        {
-          column: 'search.entity_id',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
-        },
-      ])
+      .orderBy('search.entity_id', isFetchingBackwards ? 'desc' : 'asc')
       // fetch an extra item to check if there are more items.
-      .limit(isFetchingBackwards ? limit : limit + 1);
-
-    countQuery.count('search.entity_id', { as: 'count' });
+      .limit(isFetchingBackwards ? limit : limit + 1); // stable sort
 
     const [rows, [{ count }]] = await Promise.all([
       limit > 0 ? dbQuery : [],
@@ -479,15 +582,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const firstRow = rows[0];
     const lastRow = rows[rows.length - 1];
 
-    const firstSortFieldValues = cursor.firstSortFieldValues || [
-      firstRow?.value,
-      firstRow?.entity_id,
-    ];
+    const firstSortFieldValues =
+      cursor.firstSortFieldValues ||
+      (firstRow ? sortFieldsFromRow(firstRow, cursor.orderFields) : []);
 
     const nextCursor: Cursor | undefined = hasMoreResults
       ? {
           ...cursor,
-          orderFieldValues: sortFieldsFromRow(lastRow),
+          orderFieldValues: sortFieldsFromRow(lastRow, cursor.orderFields),
           firstSortFieldValues,
           isPrevious: false,
           totalItems,
@@ -497,10 +599,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const prevCursor: Cursor | undefined =
       !isInitialRequest &&
       rows.length > 0 &&
-      !isEqual(sortFieldsFromRow(firstRow), cursor.firstSortFieldValues)
+      !isEqual(
+        sortFieldsFromRow(firstRow, cursor.orderFields),
+        cursor.firstSortFieldValues,
+      )
         ? {
             ...cursor,
-            orderFieldValues: sortFieldsFromRow(firstRow),
+            orderFieldValues: sortFieldsFromRow(firstRow, cursor.orderFields),
             firstSortFieldValues: cursor.firstSortFieldValues,
             isPrevious: true,
             totalItems,
@@ -747,6 +852,18 @@ function invertOrder(order: EntityOrder['order']) {
   return order === 'asc' ? 'desc' : 'asc';
 }
 
-function sortFieldsFromRow(row: DbSearchRow) {
-  return [row.value, row.entity_id];
+type DbSearchRowJoinedWithOrderSearchColumns = DbSearchRow & {
+  [key: string]: string;
+};
+
+function sortFieldsFromRow(
+  row: DbSearchRowJoinedWithOrderSearchColumns,
+  orderFields: Cursor['orderFields'],
+) {
+  const orderFieldValues = orderFields.map((_, index) => {
+    if (index === 0) return row.value;
+    const alias = `order_${index}`;
+    return row[`${alias}.value`] ?? '';
+  });
+  return [...orderFieldValues, row.entity_id];
 }
