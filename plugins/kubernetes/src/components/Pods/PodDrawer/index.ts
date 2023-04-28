@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './Cluster';
-export * from './CronJobsAccordions';
-export * from './CustomResources';
-export * from './ErrorPanel';
-export * from './ErrorReporting';
-export * from './HorizontalPodAutoscalers';
-export * from './IngressesAccordions';
-export * from './JobsAccordions';
-export * from './KubernetesDrawer';
-export * from './Pods';
-export * from './ServicesAccordions';
-export * from './KubernetesContent';
+export { PodDrawer } from './PodDrawer';
