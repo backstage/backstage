@@ -18,7 +18,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { BuildListFilter } from './BuildListFilter';
 import { BuildFilters, xcmetricsApiRef } from '../../api';
-import { RenderResult } from '@testing-library/react';
+import { RenderResult, within } from '@testing-library/react';
 
 jest.mock('../../api/XcmetricsClient');
 const client = require('../../api/XcmetricsClient');
@@ -50,13 +50,13 @@ const renderWithFiltersVisible = async (
 
 const setStatusFilter = async (rendered: RenderResult, option: string) => {
   const statusSelect = rendered.getAllByTestId('select')[0];
-  await userEvent.click(statusSelect);
+  await userEvent.click(within(statusSelect).getByRole('button'));
   await userEvent.click((await rendered.findAllByText(option))[0]);
 };
 
 const setProjectFilter = async (rendered: RenderResult, option: string) => {
   const statusSelect = rendered.getAllByTestId('select')[1];
-  await userEvent.click(statusSelect);
+  await userEvent.click(within(statusSelect).getByRole('button'));
   const options = await rendered.findAllByText(option);
   await userEvent.click(options[options.length - 1]);
 };
