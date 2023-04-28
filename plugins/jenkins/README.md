@@ -90,7 +90,7 @@ spec:
 
 You can customize the action in the CI/CD table.
 
-| tableAction       | description             |
+| Action            | Description             |
 | ----------------- | ----------------------- |
 | rebuild (default) | Run new build with API  |
 | view              | link to view build page |
