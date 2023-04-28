@@ -33,6 +33,12 @@ export const catalogEntityRouteRef: ExternalRouteRef<
 >;
 
 // @public (undocumented)
+export const CatalogKindExploreContent: (props: {
+  title?: string;
+  kind: string;
+}) => JSX.Element;
+
+// @public (undocumented)
 export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
 
 // @public (undocumented)

@@ -99,6 +99,7 @@ export type RepositoryResponse = {
     id: string;
     text: string;
   } | null;
+  visibility: string;
 };
 
 type RepositoryTopics = {
@@ -437,6 +438,7 @@ export async function getOrganizationRepositories(
             url
             isArchived
             isFork
+            visibility
             repositoryTopics(first: 100) {
               nodes {
                 ... on RepositoryTopic {
@@ -543,6 +545,7 @@ export async function queryWithPaging<
   variables: Variables,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
   let cursor: string | undefined = undefined;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
@@ -571,6 +574,7 @@ export async function queryWithPaging<
     if (!conn.pageInfo.hasNextPage) {
       break;
     } else {
+      await sleep(1000);
       cursor = conn.pageInfo.endCursor;
     }
   }

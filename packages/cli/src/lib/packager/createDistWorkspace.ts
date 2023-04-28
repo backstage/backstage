@@ -30,7 +30,6 @@ import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
 } from '../../../package.json';
-import { PackageGraph, PackageGraphNode } from '../monorepo';
 import {
   BuildOptions,
   buildPackages,
@@ -38,7 +37,11 @@ import {
   Output,
 } from '../builder';
 import { productionPack } from './productionPack';
-import { getRoleInfo } from '../role';
+import {
+  PackageRoles,
+  PackageGraph,
+  PackageGraphNode,
+} from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
@@ -172,7 +175,7 @@ export async function createDistWorkspace(
         continue;
       }
 
-      if (getRoleInfo(role).output.includes('bundle')) {
+      if (PackageRoles.getRoleInfo(role).output.includes('bundle')) {
         console.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );

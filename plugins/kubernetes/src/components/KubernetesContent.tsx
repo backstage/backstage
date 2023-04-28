@@ -114,9 +114,8 @@ export const KubernetesContent = ({
                   const podsWithErrors = new Set<string>(
                     detectedErrors
                       .get(item.cluster.name)
-                      ?.filter(de => de.kind === 'Pod')
-                      .map(de => de.names)
-                      .flat() ?? [],
+                      ?.filter(de => de.sourceRef.kind === 'Pod')
+                      .map(de => de.sourceRef.name),
                   );
 
                   return (

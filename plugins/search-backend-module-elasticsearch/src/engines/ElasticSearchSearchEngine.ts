@@ -285,6 +285,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     });
 
     // Attempt cleanup upon failure.
+    // todo(@backstage/discoverability-maintainers): Consider introducing a more
+    // formal mechanism for handling such errors in BatchSearchEngineIndexer and
+    // replacing this handler with it. See: #17291
     indexer.on('error', async e => {
       indexerLogger.error(`Failed to index documents for type ${type}`, e);
       let cleanupError: Error | undefined;

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { LocalStoredShortcuts } from './LocalStoredShortcuts';
+export { DefaultShortcutsApi } from './DefaultShortcutsApi';
 export { shortcutsApiRef } from './ShortcutApi';
 export type { ShortcutApi } from './ShortcutApi';

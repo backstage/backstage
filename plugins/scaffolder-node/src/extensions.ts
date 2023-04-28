@@ -23,7 +23,7 @@ import { TemplateAction } from './actions';
  * @alpha
  */
 export interface ScaffolderActionsExtensionPoint {
-  addActions(...actions: TemplateAction<any>[]): void;
+  addActions(...actions: TemplateAction<any, any>[]): void;
 }
 
 /**

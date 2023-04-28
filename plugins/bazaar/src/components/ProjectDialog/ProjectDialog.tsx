@@ -144,6 +144,18 @@ export const ProjectDialog = ({
             placeholder="Community link to e.g. Teams or Discord"
           />
 
+          <InputField
+            error={errors.docs}
+            control={control}
+            rules={{
+              required: false,
+              pattern: RegExp('^(https?)://'),
+            }}
+            inputType="docs"
+            helperText="Please enter a link starting with http/https"
+            placeholder="Project docs link"
+          />
+
           <DoubleDateSelector setValue={setValue} control={control} />
         </DialogContent>
 

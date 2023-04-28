@@ -32,6 +32,12 @@ const permission = createPermission({
   attributes: { action: 'read' },
 });
 
+const resourcePermission = createPermission({
+  name: 'access.something',
+  attributes: { action: 'read' },
+  resourceType: 'test-resource',
+});
+
 describe('RequirePermission', () => {
   it('Does not render when loading', async () => {
     mockUsePermission.mockReturnValue({ loading: true, allowed: false });
@@ -84,5 +90,19 @@ describe('RequirePermission', () => {
     );
 
     expect(getByText('Custom Error')).toBeTruthy();
+  });
+
+  it('Can authorize with a resource permission', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+
+    const { getByText } = await renderInTestApp(
+      <RequirePermission
+        permission={resourcePermission}
+        resourceRef="my-test-resource"
+        children={<div>content</div>}
+      />,
+    );
+
+    expect(getByText('content')).toBeTruthy();
   });
 });

@@ -16,7 +16,8 @@
 
 import { OptionValues } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
-import { findRoleFromCommand, getRoleInfo } from '../../lib/role';
+import { findRoleFromCommand } from '../../lib/role';
+import { PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { buildFrontend } from './buildFrontend';
 import { buildBackend } from './buildBackend';
@@ -47,7 +48,7 @@ export async function command(opts: OptionValues): Promise<void> {
     });
   }
 
-  const roleInfo = getRoleInfo(role);
+  const roleInfo = PackageRoles.getRoleInfo(role);
 
   const outputs = new Set<Output>();
 

@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { KeyboardEvent, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useContent } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import {
+  SearchBar,
+  SearchContextProvider,
+  SearchResult,
+  SearchResultPager,
+  useSearch,
+} from '@backstage/plugin-search-react';
 import {
   Dialog,
   DialogActions,
@@ -23,21 +29,17 @@ import {
   DialogTitle,
   Divider,
   Grid,
-  Paper,
   useTheme,
 } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import LaunchIcon from '@material-ui/icons/Launch';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-  SearchContextProvider,
-  SearchBar,
-  SearchResult,
-  SearchResultPager,
-  useSearch,
-} from '@backstage/plugin-search-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link, useContent } from '@backstage/core-components';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import CloseIcon from '@material-ui/icons/Close';
+import React, { KeyboardEvent, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { rootRouteRef } from '../../plugin';
 
 /**
@@ -78,10 +80,14 @@ export interface SearchModalProps {
 }
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    borderRadius: 30,
-    display: 'flex',
-    height: '2.4em',
+  dialogTitle: {
+    gap: theme.spacing(1),
+    display: 'grid',
+    alignItems: 'center',
+    gridTemplateColumns: '1fr auto',
+    '&> button': {
+      marginTop: theme.spacing(1),
+    },
   },
   input: {
     flex: 1,
@@ -92,7 +98,7 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = () => {
+export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { transitions } = useTheme();
@@ -111,7 +117,7 @@ export const Modal = () => {
   }, [focusContent, transitions]);
 
   const handleSearchBarKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (e: KeyboardEvent<HTMLDivElement | HTMLTextAreaElement>) => {
       if (e.key === 'Enter') {
         navigate(searchPagePath);
         handleSearchResultClick();
@@ -123,13 +129,17 @@ export const Modal = () => {
   return (
     <>
       <DialogTitle>
-        <Paper className={classes.container}>
+        <Box className={classes.dialogTitle}>
           <SearchBar
             className={classes.input}
             inputProps={{ ref: searchBarRef }}
             onKeyDown={handleSearchBarKeyDown}
           />
-        </Paper>
+
+          <IconButton aria-label="close" onClick={toggleModal}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
       <DialogContent>
         <Grid
@@ -139,12 +149,15 @@ export const Modal = () => {
           alignItems="center"
         >
           <Grid item>
-            <Link to={searchPagePath} onClick={handleSearchResultClick}>
-              <Typography component="span" className={classes.viewResultsLink}>
-                View Full Results
-              </Typography>
-              <LaunchIcon color="primary" />
-            </Link>
+            <Button
+              to={searchPagePath}
+              onClick={handleSearchResultClick}
+              endIcon={<ArrowForwardIcon />}
+              component={Link}
+              color="primary"
+            >
+              View Full Results
+            </Button>
           </Grid>
         </Grid>
         <Divider />
@@ -186,7 +199,9 @@ export const SearchModal = (props: SearchModalProps) => {
     >
       {open && (
         <SearchContextProvider inheritParentContextIfAvailable>
-          {(children && children({ toggleModal })) ?? <Modal />}
+          {(children && children({ toggleModal })) ?? (
+            <Modal toggleModal={toggleModal} />
+          )}
         </SearchContextProvider>
       )}
     </Dialog>

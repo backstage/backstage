@@ -232,13 +232,15 @@ export class GithubAppCredentialsMux {
       ),
     );
 
-    const result = results.find(resultItem => resultItem.credentials);
+    const result = results.find(
+      resultItem => resultItem.credentials?.accessToken,
+    );
     if (result) {
       return result.credentials!.accessToken;
     }
 
     const errors = results.map(r => r.error);
-    const notNotFoundError = errors.find(err => err.name !== 'NotFoundError');
+    const notNotFoundError = errors.find(err => err?.name !== 'NotFoundError');
     if (notNotFoundError) {
       throw notNotFoundError;
     }

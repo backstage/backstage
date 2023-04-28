@@ -27,7 +27,7 @@ import {
 import { ShortcutForm } from './ShortcutForm';
 import { FormValues, Shortcut } from './types';
 import { ShortcutApi } from './api';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -60,8 +60,10 @@ export const AddShortcut = ({
   const { pathname } = useLocation();
   const [formValues, setFormValues] = useState<FormValues>();
   const open = Boolean(anchorEl);
+  const analytics = useAnalytics();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
+    analytics.captureEvent('click', `Clicked 'Save' in AddShortcut`);
     const shortcut: Omit<Shortcut, 'id'> = { url, title };
 
     try {

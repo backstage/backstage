@@ -107,6 +107,7 @@ export function createGithubRepoPushAction(options: {
         properties: {
           remoteUrl: outputProps.remoteUrl,
           repoContentsUrl: outputProps.repoContentsUrl,
+          commitHash: outputProps.commitHash,
         },
       },
     },
@@ -151,7 +152,7 @@ export function createGithubRepoPushAction(options: {
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
-      await initRepoPushAndProtect(
+      const { commitHash } = await initRepoPushAndProtect(
         remoteUrl,
         octokitOptions.auth,
         ctx.workspacePath,
@@ -180,6 +181,7 @@ export function createGithubRepoPushAction(options: {
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('commitHash', commitHash);
     },
   });
 }

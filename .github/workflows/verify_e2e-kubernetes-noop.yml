@@ -1,0 +1,22 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: E2E Kubernetes Void
+on:
+  pull_request:
+    paths-ignore:
+      - 'yarn.lock'
+      - '.github/workflows/verify_kubernetes.yml'
+      - 'packages/backend-common/src/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    name: Kubernetes ${{ matrix.node-version }}
+    steps:
+      - run: echo NOOP

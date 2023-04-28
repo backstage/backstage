@@ -43,4 +43,9 @@ export interface KubernetesApi {
   getCustomObjectsByEntity(
     request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }

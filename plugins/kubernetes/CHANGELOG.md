@@ -1,5 +1,65 @@
 # @backstage/plugin-kubernetes
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/plugin-kubernetes-common@0.6.2
+
+## 0.8.0
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.8.0-next.3
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.2
+
 ## 0.7.10-next.2
 
 ### Patch Changes

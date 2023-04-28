@@ -15,54 +15,69 @@
  */
 
 import { findPaths } from '@backstage/cli-common';
-import { relative as relativePath, join } from 'path';
-import fs from 'fs-extra';
-
-import g from 'glob';
-import isGlob from 'is-glob';
-
-import { promisify } from 'util';
-
-const glob = promisify(g);
+import { PackageGraph } from '@backstage/cli-node';
+import { Minimatch } from 'minimatch';
+import { isAbsolute, relative as relativePath } from 'path';
 
 /* eslint-disable-next-line no-restricted-syntax */
 export const paths = findPaths(__dirname);
 
-export async function resolvePackagePath(
-  packagePath: string,
-): Promise<string | undefined> {
-  const fullPackageDir = paths.resolveTargetRoot(packagePath);
-
-  try {
-    const stat = await fs.stat(fullPackageDir);
-    if (!stat.isDirectory()) {
-      return undefined;
-    }
-
-    const packageJsonPath = join(fullPackageDir, 'package.json');
-
-    await fs.access(packageJsonPath);
-  } catch (e) {
-    console.log(`folder omitted: ${fullPackageDir}, cause: ${e}`);
-    return undefined;
-  }
-  return relativePath(paths.targetRoot, fullPackageDir);
+/** @internal */
+export interface ResolvePackagesOptions {
+  paths?: string[];
+  include?: string[];
+  exclude?: string[];
 }
 
-export async function findPackageDirs(selectedPaths: string[] = []) {
-  const packageDirs = new Array<string>();
-  for (const packageRoot of selectedPaths) {
-    // if the path contain any glob notation we resolve all the paths to process one by one
-    const dirs = isGlob(packageRoot)
-      ? await glob(packageRoot, { cwd: paths.targetRoot })
-      : [packageRoot];
-    for (const dir of dirs) {
-      const packageDir = await resolvePackagePath(dir);
-      if (!packageDir) {
-        continue;
-      }
-      packageDirs.push(packageDir);
-    }
+/** @internal */
+export async function resolvePackagePaths(
+  options: ResolvePackagesOptions = {},
+): Promise<string[]> {
+  const { paths: providedPaths, include, exclude } = options;
+  let packages = await PackageGraph.listTargetPackages();
+
+  if (providedPaths && providedPaths.length > 0) {
+    packages = packages.filter(({ dir }) =>
+      providedPaths.some(
+        path =>
+          new Minimatch(path).match(relativePath(paths.targetRoot, dir)) ||
+          isChildPath(dir, path),
+      ),
+    );
   }
-  return packageDirs;
+
+  if (include) {
+    packages = packages.filter(pkg =>
+      include.some(pattern =>
+        new Minimatch(pattern).match(relativePath(paths.targetRoot, pkg.dir)),
+      ),
+    );
+  }
+
+  if (exclude) {
+    packages = packages.filter(pkg =>
+      exclude.some(
+        pattern =>
+          !new Minimatch(pattern).match(
+            relativePath(paths.targetRoot, pkg.dir),
+          ),
+      ),
+    );
+  }
+
+  return packages.map(pkg => relativePath(paths.targetRoot, pkg.dir));
+}
+
+/** @internal */
+export function isChildPath(base: string, path: string): boolean {
+  const relative = relativePath(base, path);
+  if (relative === '') {
+    // The same directory
+    return true;
+  }
+
+  const outsideBase = relative.startsWith('..'); // not outside base
+  const differentDrive = isAbsolute(relative); // on Windows, this means dir is on a different drive from base.
+
+  return !outsideBase && !differentDrive;
 }

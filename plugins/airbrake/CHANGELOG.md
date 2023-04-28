@@ -1,5 +1,47 @@
 # @backstage/plugin-airbrake
 
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/dev-utils@1.0.15-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/test-utils@1.3.1-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/theme@0.2.19
+
+## 0.3.17
+
+### Patch Changes
+
+- 7d75f6d9b8f: chore: Improve API Reference documentation
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/test-utils@1.3.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/dev-utils@1.0.14
+
+## 0.3.17-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/dev-utils@1.0.14-next.3
+  - @backstage/test-utils@1.3.0-next.3
+  - @backstage/theme@0.2.19-next.0
+
 ## 0.3.17-next.2
 
 ### Patch Changes

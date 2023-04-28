@@ -1,5 +1,46 @@
 # @backstage/plugin-github-issues
 
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+
+## 0.2.6
+
+### Patch Changes
+
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/errors@1.1.5
+
+## 0.2.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/theme@0.2.19-next.0
+
 ## 0.2.6-next.2
 
 ### Patch Changes

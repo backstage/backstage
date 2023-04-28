@@ -14,10 +14,8 @@ This guide assumes a basic understanding of working on a Linux based operating
 system using tools like apt-get, npm, yarn, curl. Docker knowledge is also
 helpful for making the best use of your Backstage installation.
 
-If you are planning to contribute plugins or the project in general, we advise
-you to use the
-[Getting Started for Contributors](https://backstage.io/docs/getting-started/running-backstage-locally)
-guide to do a repository-based installation.
+If you are planning to contribute plugins or to the project in general, we advise
+you to use the [Contributors](contributors.md) guide to do a repository-based installation.
 
 ### Prerequisites
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { humanizeEntityRef } from './humanize';
+import { Entity } from '@backstage/catalog-model';
+import { humanizeEntity, humanizeEntityRef } from './humanize';
 
 describe('humanizeEntityRef', () => {
   it('formats entity in default namespace', () => {
@@ -208,5 +209,61 @@ describe('humanizeEntityRef', () => {
       defaultNamespace: false,
     });
     expect(title).toEqual('component:default/software');
+  });
+});
+
+describe('humanizeEntity', () => {
+  it('gives a readable name when one is provided at metadata.title', () => {
+    expect(
+      humanizeEntity({
+        metadata: { name: 'my-entity', title: 'My Title' },
+      } as Entity),
+    ).toBe('My Title');
+  });
+
+  it.each([
+    [
+      'User',
+      {
+        apiVersion: '1',
+        kind: 'User',
+        metadata: {
+          name: 'user-name',
+        },
+        spec: {
+          profile: {
+            displayName: 'User Name',
+          },
+        },
+      },
+      'User Name',
+    ],
+    [
+      'Group',
+      {
+        apiVersion: '1',
+        kind: 'User',
+        metadata: {
+          name: 'team-name',
+        },
+        spec: {
+          profile: {
+            displayName: 'Team Name',
+          },
+        },
+      },
+      'Team Name',
+    ],
+  ])(
+    'gives a readable name for kind %s when one is provided at spec.profile.displayName',
+    (_, entity: Entity, expected) => {
+      expect(humanizeEntity(entity)).toBe(expected);
+    },
+  );
+
+  it('should pass through to humanizeEntityRef when nothing matches', () => {
+    expect(
+      humanizeEntity({ kind: 'Group', metadata: { name: 'test' } } as Entity),
+    ).toBe('group:test');
   });
 });
