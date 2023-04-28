@@ -89,6 +89,7 @@ export default async (opts: OptionValues) => {
   }
 
   // run yarn tsc & yarn build for Dockerfile
+  Task.section(`Building app`);
   await buildApp();
 
   const args = {

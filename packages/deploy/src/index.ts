@@ -27,15 +27,9 @@ import { resolve } from 'path';
 import deploy from './deploy';
 
 const main = (argv: string[]) => {
-  const command = program
-    .command('deploy [command]')
-    .version(version)
-    .description(
-      'Deploy your Backstage instance on a specified cloud provider [EXPERIMENTAL]',
-    );
-
-  command
+  program
     .command('aws')
+    .version(version)
     .description('Deploys Backstage on AWS Lightsail')
     .option(
       '--dockerfile <path>',
