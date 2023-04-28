@@ -26,5 +26,8 @@ exports.up = async function up(knex) {
 };
 
 exports.down = async function down(knex) {
+  await knex.schema.alterTable('badges', table => {
+    table.dropIndex('', 'badges_uuid_index');
+  });
   await knex.schema.dropTable('badges');
 };

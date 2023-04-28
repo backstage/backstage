@@ -34,7 +34,9 @@ Please note that if you have already set badges in your repositories and you act
 
 Please note that the backend part needs to be configured to support obfuscation. See the [backend plugin documentation](../badges-backend/README.md) for more details.
 
-Also, you need to allow your frontend to access the configuration :
+Also, you need to allow your frontend to access the configuration see <https://backstage.io/docs/conf/defining/#visibility> :
+
+Example implementation would be in : `packages/app/src/config.d.ts`
 
 ```typescript
 export interface Config {
@@ -49,6 +51,16 @@ export interface Config {
     };
   };
 }
+```
+
+then include in the `packages/app/package.json` :
+
+```json
+"files": [
+    "dist",
+    "config.d.ts"
+  ],
+"configSchema": "config.d.ts",
 ```
 
 ## Sample Badges

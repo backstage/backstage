@@ -25,7 +25,7 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
-import { createRouter } from '../service/router';
+import { createRouter } from './router';
 import { BadgeBuilder } from '../lib';
 import {
   BackstageIdentityResponse,
