@@ -49,6 +49,7 @@
   },
   "version": "1.14.0-next.0",
   "dependencies": {
+    "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3"
   },
