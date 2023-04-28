@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-
-import { MemoryKeyStore } from './MemoryKeyStore';
+import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStores } from './KeyStores';
+import { MemoryKeyStore } from './MemoryKeyStore';
 
 describe('KeyStores', () => {
   const defaultConfigOptions = {
@@ -46,18 +45,9 @@ describe('KeyStores', () => {
   });
 
   it('can handle without auth config', async () => {
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
+    const keyStore = await KeyStores.fromConfig(new ConfigReader({}), {
+      database: AuthDatabase.forTesting(),
     });
-    const database =
-      DatabaseManager.fromConfig(config).forPlugin('auth-backend');
-    const keyStore = await KeyStores.fromConfig(config, { database });
-
     expect(keyStore).toBeInstanceOf(DatabaseKeyStore);
   });
 

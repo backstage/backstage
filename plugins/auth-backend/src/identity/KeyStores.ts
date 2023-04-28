@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { pickBy } from 'lodash';
+import { Logger } from 'winston';
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 
+import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
-import { MemoryKeyStore } from './MemoryKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
+import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
 
 type Options = {
   logger?: Logger;
-  database?: PluginDatabaseManager;
+  database: AuthDatabase;
 };
 
 export class KeyStores {
@@ -52,8 +52,7 @@ export class KeyStores {
       if (!database) {
         throw new Error('This KeyStore provider requires a database');
       }
-
-      return await DatabaseKeyStore.create({ database });
+      return new DatabaseKeyStore(await database.get());
     }
 
     if (provider === 'memory') {
