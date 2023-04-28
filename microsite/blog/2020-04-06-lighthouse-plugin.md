@@ -9,7 +9,8 @@ authorImageURL: https://pbs.twimg.com/profile_images/1224058798958088192/JPxS8uz
 
 We’re proud to announce that our first internal plugin at Spotify has been open-sourced as part of Backstage. This plugin works with the newly open-sourced [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service) to run and track Lighthouse audits for your websites.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## What is Lighthouse?
 

@@ -8,7 +8,8 @@ authorURL: https://twitter.com/stalund
 
 ![cncf](assets/cncf-sandbox/cncf.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 Backstage garnered quite a bit of interest from developers and organizations when it was first announced, and community interest continues to grow as plugins and new features are added with the open source community. We released the open source version of Backstage ‘early’. That was intentional. Because even though we’ve been using Backstage internally for years, we wanted the open source version to be developed with input and contributions from the community. And that’s exactly the product that’s going into the [CNCF Sandbox](https://www.cncf.io/sandbox-projects/) today.
 

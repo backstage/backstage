@@ -11,7 +11,8 @@ _This blog post is co-authored by Emma Indal ([@emmaindal](https://github.com/em
 
 _TLDR;_ We’re excited to announce the arrival of homepage templates for Backstage. It can be intimidating to build up your own instance of Backstage, so we decided to make your life a bit easier by giving you an out-of-the-box homepage to hit the ground running. This template can be found in our [Backstage Storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template), as well as future templates that we build.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Why homepage templates?
 

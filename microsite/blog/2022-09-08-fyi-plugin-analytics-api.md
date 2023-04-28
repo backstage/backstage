@@ -10,7 +10,8 @@ authorImageURL: https://avatars.githubusercontent.com/u/3496491?v=4
 
 ![The Plugin Analytics API](assets/22-09-08/analytics-api-fyi.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## What is the plugin analytics API?
 

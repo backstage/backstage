@@ -13,7 +13,8 @@ So, you don’t just get an improved out-of-the-box experience for searching wha
 
 With one query, your teams can find exactly what they’re looking for: anything and everything.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Search and explore
 

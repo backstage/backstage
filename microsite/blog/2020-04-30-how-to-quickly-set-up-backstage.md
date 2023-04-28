@@ -11,7 +11,8 @@ We want users to be able to create their own version of Backstage quickly and ea
 
 In this blog post we’ll look at what a Backstage app is and how to create one using our [CLI](https://www.npmjs.com/package/@backstage/cli).
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## What is a Backstage app?
 

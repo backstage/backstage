@@ -9,7 +9,8 @@ authorImageURL: https://avatars1.githubusercontent.com/u/1236238?s=460&v=4
 
 **TLDR:** Backstage has turned two. Of course, this is software, so we expect things to move fast. But when you have a passionate, worldwide community building together, we’ve now seen firsthand just how fast that can be. We’re marking our second year as a community by becoming a CNCF incubating project, reaching 100 public adopters, releasing version 1.0 of the core app, and other very nice birthday gifts. Rather than a toddler finding their feet, Backstage today is beginning to look awfully grown-up for a two-year-old.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Out of the Sandbox and into Incubation
 

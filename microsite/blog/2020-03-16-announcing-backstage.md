@@ -13,7 +13,8 @@ It’s the first open source infrastructure platform by Spotify that allows you 
 
 ![img](assets/blog_1.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## As simple as writing a plugin.
 

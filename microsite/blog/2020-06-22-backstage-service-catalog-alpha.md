@@ -9,7 +9,8 @@ image: https://backstage.io/blog/assets/6/header.png
 
 ![img](assets/6/header.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## You asked, we listened
 

@@ -10,7 +10,8 @@ authorURL: https://github.com/Rugvip
 
 ![Animation cycling between stability index scores](assets/2020-12-22/stability-index-hero.gif)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 Backstage has a great and growing community of users and contributors. With so much valuable feedback, this inevitably means that sometimes we will go back and revise design decisions that introduce breaking changes. Furthermore, as we continue to ship new features and systems, we’ll continue this cycle of iterating, gathering feedback, and iterating again before reaching a stable API.
 

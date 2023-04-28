@@ -11,7 +11,8 @@ We’re excited to celebrate an important milestone for the Backstage community:
 
 Before digging into why we believe this is so important, we want to send a huge “thank you” to all the Backstage adopters and contributors who have helped grow the Backstage community. First, to the publicly listed adopters as your visible support for the project excites others to learn more about Backstage. Second, to those non-listed adopters, many of whom still engage in the community via issues, comments, or code contributions. Thank you!
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Why we care about public adopters
 
