@@ -25,6 +25,7 @@ import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import { resolve } from 'path';
 import deploy from './deploy';
+import findProcess from 'find-process';
 
 const main = (argv: string[]) => {
   program
@@ -44,6 +45,7 @@ const main = (argv: string[]) => {
     .option('--stack <name>', 'name of the stack', 'backstage')
     .option('--destroy', 'name of the stack to destroy', false)
     .option('--region <region>', 'region of your aws console', 'us-east-1')
+    .option('--skip-build', 'option to skip the tsc and build process', false)
     .option(
       '--env <name>=<value>',
       'Pass in environment variables to use at run time',
@@ -55,7 +57,17 @@ const main = (argv: string[]) => {
   program.parse(argv);
 };
 
-process.on('unhandledRejection', rejection => {
+async function waitForPulumiToBeFinished() {
+  let pulumiIsFinished = false;
+  while (!pulumiIsFinished) {
+    const proc = await findProcess('name', 'pulumi', true);
+    if (proc.length === 0) {
+      pulumiIsFinished = true;
+    }
+  }
+}
+process.on('unhandledRejection', async rejection => {
+  await waitForPulumiToBeFinished();
   if (rejection instanceof Error) {
     exitWithError(rejection);
   } else {

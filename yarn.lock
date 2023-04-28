@@ -4466,6 +4466,7 @@ __metadata:
     "@pulumi/pulumi": ^3.55.0
     chalk: ^4.0.0
     commander: ^10.0.1
+    find-process: ^1.4.7
     fs-extra: ^11.1.1
     handlebars: ^4.7.7
     inquirer: ^8.2.0
@@ -25132,7 +25133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-process@npm:^1.4.5":
+"find-process@npm:^1.4.5, find-process@npm:^1.4.7":
   version: 1.4.7
   resolution: "find-process@npm:1.4.7"
   dependencies:

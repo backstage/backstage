@@ -68,9 +68,11 @@ export default async (opts: OptionValues) => {
     );
   }
 
-  // run yarn tsc & yarn build for Dockerfile
-  Task.section(`Building app`);
-  await buildApp();
+  if (!opts.skipBuild) {
+    // run yarn tsc & yarn build for Dockerfile
+    Task.section(`Building app`);
+    await buildApp();
+  }
 
   const args = {
     stackName: opts.stack,

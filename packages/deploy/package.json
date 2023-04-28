@@ -38,6 +38,7 @@
     "@pulumi/pulumi": "^3.55.0",
     "chalk": "^4.0.0",
     "commander": "^10.0.1",
+    "find-process": "^1.4.7",
     "fs-extra": "^11.1.1",
     "handlebars": "^4.7.7",
     "inquirer": "^8.2.0",
