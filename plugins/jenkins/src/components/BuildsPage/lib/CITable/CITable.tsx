@@ -208,8 +208,14 @@ const generatedColumns: TableColumn[] = [
 
         if (tableAction === 'view') {
           return row.lastBuild?.url ? (
-            <IconButton href={row.lastBuild.url}>
+            <IconButton href={row.lastBuild.url} target="_blank">
               <VisibilityIcon />
+            </IconButton>
+          ) : null;
+        } else if (tableAction === 'replay') {
+          return row.lastBuild?.url ? (
+            <IconButton href={`${row.lastBuild.url}replay`} target="_blank">
+              <RetryIcon />
             </IconButton>
           ) : null;
         }
