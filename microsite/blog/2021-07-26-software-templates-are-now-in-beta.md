@@ -9,7 +9,8 @@ authorImageURL: https://avatars.githubusercontent.com/u/3645856?v=4
 
 **TLDR**; At a high level, Backstage performs three main jobs: [Create, Manage, and Explore](https://backstage.io/blog/2021/05/20/adopting-backstage#three-jobs-create-manage-explore). Throughout the year, we’ve been focussed on improving the stability and scalability of these areas while enhancing the feature sets based upon requests from the community. Software Templates — which enable push-button deployments with all your standards and best practices built-in — is our first feature-complete release candidate to graduate to beta. Read on to learn how this release improves template customization and flexibility, as well as performance.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 Let’s rewind a little bit, around a year in fact. Backstage had been open sourced, and we released our first version of Software Templates and our Scaffolder plugin.
 

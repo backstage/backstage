@@ -8,7 +8,8 @@ authorURL: http://twitter.com/katherinemzhou
 
 We are excited to launch the Backstage Design System, which includes a [Figma UI kit](https://www.figma.com/community/file/850673348101741100), a rich set of [reusable code components](http://backstage.io/storybook) on Storybook, and [Guidelines](https://backstage.io/docs/dls/design) for designers and developers as they build plugins for Backstage.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Not just the way it looks
 

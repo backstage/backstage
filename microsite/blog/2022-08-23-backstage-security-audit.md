@@ -11,7 +11,8 @@ authorURL: https://github.com/Rugvip
 
 As an [Incubating project](https://www.cncf.io/blog/2022/03/15/backstage-project-joins-the-cncf-incubator/) within the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/), Backstage was fortunate enough to take advantage of a sponsored security audit. The [Open Source Technology Improvement Fund (OSTIF)](https://ostif.org/) sponsored the audit as part of its ongoing efforts to secure the open source software ecosystem, and the audit itself was performed by [X41 D-Sec](https://x41-dsec.de/). Our goal with the audit was to evaluate and improve Backstage’s security posture, focusing on the core Backstage framework and plugins.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Report Findings and Fixes
 

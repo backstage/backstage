@@ -10,7 +10,8 @@ authorURL: https://twitter.com/stalund
   <source src="/blog/assets/2020-08-05/feature.mp4" type="video/mp4" />
 </video>
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Balancing autonomy and standardization
 

@@ -68,6 +68,12 @@ module.exports = {
       },
     ],
   ],
+  markdown: {
+    preprocessor({ filePath, fileContent }) {
+      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+      return fileContent.replace(/<!--.*?-->/gs, '');
+    },
+  },
   webpack: {
     jsLoader: isServer => ({
       loader: require.resolve('swc-loader'),

@@ -9,7 +9,8 @@ authorImageURL: https://avatars0.githubusercontent.com/bih
 
 Just a few weeks ago, we released our internal plugin for [Lighthouse website audits] as our first open source plugin, so the whole community could use it. Today, we’re excited to add a new plugin to that list — say hello to the [Tech Radar plugin]!
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## What is Tech Radar?
 

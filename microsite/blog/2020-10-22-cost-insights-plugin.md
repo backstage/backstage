@@ -11,7 +11,8 @@ How did Spotify save millions on cloud costs within a matter of months?? We made
 
 Are we turning engineers into accountants? Nope, we’re just letting engineers do what they do best, in the place that feels natural to them: inside Backstage.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Why put a cost management tool in the hands of engineers?
 

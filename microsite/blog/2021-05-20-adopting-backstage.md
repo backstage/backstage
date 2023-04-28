@@ -8,7 +8,8 @@ authorURL: https://www.linkedin.com/in/austinlamon
 
 One of the greatest strengths of Backstage also presents a never-ending challenge: Backstage is highly customizable and allows you to easily build a unique developer portal suited to your organization’s needs. The downside of this flexibility is that it can be hard to know where to start. Backstage can do so many things — integrating every part of your tech infrastructure and developer experience — but if you set off building a developer portal without a plan, it’s easy to get overwhelmed by all the possibilities. To help you form your plan, this post will detail how Spotify came to design our internal portal and recommend potential models for you to use when designing and building your own.
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 ## Infrastructure as tech culture
 

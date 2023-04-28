@@ -12,7 +12,8 @@ Now you may be thinking, “Yeah, sure, that sounds nice and all, but how does B
 
 ![plugins](https://backstage.io/img/cards-plugins.png)
 
-<!--truncate-->
+<!-- prettier-ignore -->
+{/* truncate */}
 
 Think of plugins as a mini version of an infrastructure tool or service — just the parts you need, made quick and easy. The advantage of using a Backstage plugin instead of a tool’s dedicated UI is that all your infrastructure is packaged into a “single pane of glass” instead of being spread out like independently built “islands”. Once you grow your infrastructure portfolio, the complexity really starts to add up. The Backstage plugin model allows you to add more tools without increasing the cognitive load for your users.
 
