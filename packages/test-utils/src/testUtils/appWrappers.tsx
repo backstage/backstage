@@ -18,7 +18,6 @@ import React, { ComponentType, ReactNode, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
-import { CssBaseline } from '@material-ui/core';
 import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
@@ -142,7 +141,7 @@ export function createTestAppWrapper(
         variant: 'light',
         Provider: ({ children }) => (
           <UnifiedThemeProvider theme={themes.light}>
-            <CssBaseline>{children}</CssBaseline>
+            {children}
           </UnifiedThemeProvider>
         ),
       },
