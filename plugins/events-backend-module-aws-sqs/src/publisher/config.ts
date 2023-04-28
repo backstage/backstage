@@ -31,6 +31,7 @@ export interface AwsSqsEventSourceConfig {
   topic: string;
   visibilityTimeout?: Duration;
   waitTimeAfterEmptyReceive: Duration;
+  endpoint?: string;
 }
 
 // TODO(pjungermann): validation could be improved similar to `convertToHumanDuration` at @backstage/backend-tasks
