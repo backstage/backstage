@@ -7246,6 +7246,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@kubernetes-models/apimachinery": ^1.1.0
+    "@kubernetes-models/base": ^4.0.1
     "@kubernetes/client-node": 0.18.1
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -12051,25 +12052,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/base@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@kubernetes-models/base@npm:4.0.0"
+"@kubernetes-models/base@npm:^4.0.0, @kubernetes-models/base@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@kubernetes-models/base@npm:4.0.1"
   dependencies:
-    "@kubernetes-models/validate": ^3.0.0
+    "@kubernetes-models/validate": ^3.0.1
     is-plain-object: ^5.0.0
     tslib: ^2.4.0
-  checksum: 3c44f2220e119c24b874d6d674f38f9796f0ab682ba0cff1516d39549a6536055348bcee6c3c5257ebb8d4d6c8d1865d84e519d8f8948e6dd29eb1d72f3830cb
+  checksum: c2e91b749b39c068631bf5df1f992f890b20106b7a361e3f12a8c6851719170328a83ac7452b62522aabe1d1c0cc465e1dc06bd20ab749b2315c540da52c1369
   languageName: node
   linkType: hard
 
-"@kubernetes-models/validate@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@kubernetes-models/validate@npm:3.0.0"
+"@kubernetes-models/validate@npm:^3.0.0, @kubernetes-models/validate@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@kubernetes-models/validate@npm:3.0.1"
   dependencies:
     ajv: ^8.11.0
     ajv-formats: ^2.1.1
     tslib: ^2.4.0
-  checksum: b53b7181ddaad7e8faf6ceac228cb23df239ef5da3784887f3378dd3a7f89e1936b7b1884ab123255a905627311bab4302a06668fba35d26152e69fbf208a855
+  checksum: 14b2517c0a6244184df6e00927ec682953c36a623975e862c00a12fa1cbe6c0909dc716b41187b37d572d8dc763a8339e8178df19a33fac26161d12fd861896e
   languageName: node
   linkType: hard
 
