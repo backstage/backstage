@@ -26,7 +26,6 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
-import Grid from '@material-ui/core/Grid';
 import { Onboarding } from '@backstage/plugin-onboarding';
 import React from 'react';
 
