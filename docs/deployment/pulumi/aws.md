@@ -72,8 +72,26 @@ backend:
 
 The environment variable `BACKSTAGE_HOST` will be set to the endpoint that AWS Lightsail creates.
 
+In addition, you should create a `app-config.local.yaml`:
+
 ```bash
-$ yarn backstage-cli deploy aws --stack backstage-poc --create-dockerfile
+$ touch app-config.local.yaml
+```
+
+And then update the file with the following yaml:
+
+```yaml
+app:
+  baseUrl: http://localhost:3000
+
+backend:
+  baseUrl: http://localhost:7007
+```
+
+Now we can deploy our instance!
+
+```bash
+$ npx @backstage/deploy aws --stack backstage-poc --create-dockerfile
 ```
 
 In the first part of the command, we are specifying that we want to deploy our instance on AWS. With the [`--stack`](https://www.pulumi.com/docs/reference/cli/pulumi_stack/) option, we are supplying Pulumi a reference to our container deployment. Furthermore, with the `--create-dockerfile` option, there will be a `Dockerfile` and `.dockerignore` created in the root of the project.
@@ -92,7 +110,7 @@ If it's the first time building the Docker image, it might take a while for ever
 Cleaning up the resources is also done with the deploy command.
 
 ```bash
-$ yarn backstage-cli deploy --stack backstage-poc --destroy
+$ npx @backstage/deploy --stack backstage-poc --destroy
 ```
 
 This will delete everything that was originally created by the `deploy` command.

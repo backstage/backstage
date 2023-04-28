@@ -57,6 +57,9 @@ const main = (argv: string[]) => {
   program.parse(argv);
 };
 
+// currently have an issue where the node process exits
+// before the Pulumi process is finished
+// which keeps the state file locked
 async function waitForPulumiToBeFinished() {
   let pulumiIsFinished = false;
   while (!pulumiIsFinished) {
@@ -66,6 +69,7 @@ async function waitForPulumiToBeFinished() {
     }
   }
 }
+
 process.on('unhandledRejection', async rejection => {
   await waitForPulumiToBeFinished();
   if (rejection instanceof Error) {
