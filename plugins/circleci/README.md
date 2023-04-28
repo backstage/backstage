@@ -74,4 +74,4 @@ spec:
 ## Limitations
 
 - CircleCI has pretty strict rate limits per token, be careful with opened tabs
-- CircleCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356)
+- CircleCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (reference [feature request](https://ideas.circleci.com/api-feature-requests/p/allow-circleci-api-calls-using-github-auth) and [discussion topic](https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356))

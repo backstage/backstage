@@ -1,0 +1,22 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Microsite Void
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/verify_microsite-next.yml'
+      - 'microsite/**'
+      - 'docs/**'
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    name: Microsite
+    steps:
+      - run: echo NOOP

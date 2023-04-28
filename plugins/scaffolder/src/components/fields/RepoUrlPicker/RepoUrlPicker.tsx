@@ -120,31 +120,34 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
     async () => {
       const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
 
+      const workspace = state.owner ? state.owner : state.project;
       if (
         !requestUserCredentials ||
-        !(state.host && state.owner && state.repoName)
+        !(state.host && workspace && state.repoName)
       ) {
         return;
       }
 
-      const [encodedHost, encodedOwner, encodedRepoName] = [
-        state.host,
-        state.owner,
-        state.repoName,
-      ].map(encodeURIComponent);
+      // previously, we were encodeURI for state.host, workspace and state.repoName separately.
+      // That created an issue where GitLab workspace can be nested like groupA/subgroupB
+      // when we encodeURi separately and then join, the URL will be malformed and
+      // resulting in 400 request error from GitLab API
+      const [encodedHost, encodedRepoName] = [state.host, state.repoName].map(
+        encodeURIComponent,
+      );
 
       // user has requested that we use the users credentials
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${encodedHost}/${encodedOwner}/${encodedRepoName}`,
+        url: `https://${encodedHost}/${workspace}/${encodedRepoName}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
         },
       });
 
-      // set the secret using the key provided in the the ui:options for use
+      // set the secret using the key provided in the ui:options for use
       // in the templating the manifest with ${{ secrets[secretsKey] }}
       setSecrets({ [requestUserCredentials.secretsKey]: token });
     },

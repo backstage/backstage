@@ -1,5 +1,103 @@
 # @backstage/create-app
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.0
+
+### Minor Changes
+
+- 10744537bf5: Renamed `permissionApi` to `permissions` when passed as dependency of the scaffolder-backend plugin
+
+### Patch Changes
+
+- 5af2c4f412f: Bumped create-app version.
+- ab75a16da7a: Bumped create-app version.
+- 71fd0966d10: Add `permissionApi` as dependency of the scaffolder-backend plugin
+- 2945923b133: Upgraded the TypeScript version to 5.0
+
+  To apply this change in your own project, switch the TypeScript version in your root `package.json`:
+
+  ```diff
+  -    "typescript": "~4.6.4",
+  +    "typescript": "~5.0.0",
+  ```
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.2
+
+### Patch Changes
+
+- 2945923b133: Upgraded the TypeScript version to 5.0
+
+  To apply this change in your own project, switch the TypeScript version in your root `package.json`:
+
+  ```diff
+  -    "typescript": "~4.6.4",
+  +    "typescript": "~5.0.0",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.1
+
+### Patch Changes
+
+- 71fd0966d10: Add `permissionApi` as dependency of the scaffolder-backend plugin
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.39-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38
+
+### Patch Changes
+
+- b4627f23b28: Bumped create-app version.
+- 0eceadb9502: Bumped create-app version.
+- 482dae5de1c: Updated link to docs.
+- 6ace2dd2c58: Added to the template `packages/app/.eslintignore` file to packages to ignore the contents of `packages/app/public`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.4.38-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.4.38-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12-next.0
+
 ## 0.4.38-next.0
 
 ### Patch Changes

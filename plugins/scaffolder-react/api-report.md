@@ -71,7 +71,7 @@ export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 // @public
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions extends {} = {},
+  TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
   // (undocumented)
   uiSchema: FieldProps['uiSchema'] & {
@@ -113,7 +113,7 @@ export type ListActionsResponse = Array<Action>;
 
 // @public
 export type LogEvent = {
-  type: 'log' | 'completion';
+  type: 'log' | 'completion' | 'cancelled';
   body: {
     message: string;
     stepId?: string;
@@ -126,6 +126,7 @@ export type LogEvent = {
 
 // @public
 export interface ScaffolderApi {
+  cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
   // (undocumented)
@@ -233,6 +234,14 @@ export interface ScaffolderScaffoldResponse {
 }
 
 // @public
+export type ScaffolderStep = {
+  id: string;
+  status: ScaffolderTaskStatus;
+  endedAt?: string;
+  startedAt?: string;
+};
+
+// @public
 export interface ScaffolderStreamLogsOptions {
   // (undocumented)
   after?: number;
@@ -258,10 +267,11 @@ export type ScaffolderTaskOutput = {
 
 // @public
 export type ScaffolderTaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
   | 'open'
   | 'processing'
-  | 'failed'
-  | 'completed'
   | 'skipped';
 
 // @public
@@ -273,9 +283,25 @@ export interface ScaffolderUseTemplateSecrets {
 }
 
 // @public
-export const SecretsContextProvider: ({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
+export const SecretsContextProvider: (
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
+
+// @public
+export type TaskStream = {
+  cancelled: boolean;
+  loading: boolean;
+  error?: Error;
+  stepLogs: {
+    [stepId in string]: string[];
+  };
+  completed: boolean;
+  task?: ScaffolderTask;
+  steps: {
+    [stepId in string]: ScaffolderStep;
+  };
+  output?: ScaffolderTaskOutput;
+};
 
 // @public
 export type TemplateParameterSchema = {
@@ -290,7 +316,7 @@ export type TemplateParameterSchema = {
 
 // @public
 export const useCustomFieldExtensions: <
-  TComponentDataType = FieldExtensionOptions<unknown, unknown>,
+  TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
@@ -299,6 +325,9 @@ export const useCustomFieldExtensions: <
 export const useCustomLayouts: <TComponentDataType = LayoutOptions<any>>(
   outlet: React.ReactNode,
 ) => TComponentDataType[];
+
+// @public
+export const useTaskEventStream: (taskId: string) => TaskStream;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;

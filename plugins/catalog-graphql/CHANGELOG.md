@@ -1,5 +1,73 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.20
+
+### Patch Changes
+
+- e47e69eadf0: Updated dependency `@apollo/server` to `^4.0.0`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.3.20-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.3.20-next.0
+
+### Patch Changes
+
+- e47e69eadf0: Updated dependency `@apollo/server` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 0.3.19
+
+### Patch Changes
+
+- b990021ddeb: Updated dependency `@graphql-codegen/cli` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/graphql-modules-preset` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/typescript` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/typescript-resolvers` to `^3.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- b990021ddeb: Updated dependency `@graphql-codegen/cli` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/graphql-modules-preset` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/typescript` to `^3.0.0`.
+  Updated dependency `@graphql-codegen/typescript-resolvers` to `^3.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+
 ## 0.3.19-next.0
 
 ### Patch Changes

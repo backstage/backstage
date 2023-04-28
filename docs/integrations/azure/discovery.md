@@ -32,8 +32,7 @@ Setup [Azure integration](locations.md) with `host` and `token`. Host must be `d
 
 At your configuration, you add one or more provider configs:
 
-```yaml
-# app-config.yaml
+```yaml title="app-config.yaml"
 catalog:
   providers:
     azureDevOps:
@@ -61,15 +60,17 @@ catalog:
         host: selfhostedazure.yourcompany.com
         organization: myorg
         project: myproject
+        branch: development
 ```
 
 The parameters available are:
 
 - **`host:`** _(optional)_ Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
 - **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
-- **`project:`** _(optional)_ Your project slug. Wildcards are supported as show on the examples above. If not set, all projects will be searched.
+- **`project:`** _(required)_ Your project slug. Wildcards are supported as shown on the examples above. Using '\*' will search all projects. For a project name containing spaces, use both single and double quotes as in `project: '"My Project Name"'`.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
+- **`branch:`** _(optional)_ The branch name to use.
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
@@ -80,9 +81,17 @@ The parameters available are:
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
 
-_Note:_ the path parameter follows the same rules as the search on Azure DevOps
-web interface. For more details visit the
-[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+_Note:_
+
+- The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+- To use branch parameters, it is necessary that the desired branch be added to the "Searchable branches" list within Azure DevOps Repositories. To do this, follow the instructions below:
+
+1. Access your Azure DevOps and open the repository in which you want to add the branch.
+2. Click on "Settings" in the lower-left corner of the screen.
+3. Select the "Options" option in the left navigation bar.
+4. In the "Searchable branches" section, click on the "Add" button to add a new branch.
+5. In the window that appears, enter the name of the branch you want to add and click "Add".
+6. The added branch will now appear in the "Searchable branches" list.
 
 As this provider is not one of the default providers, you will first need to install
 the Azure catalog plugin:
@@ -94,39 +103,49 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-azure
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-/* packages/backend/src/plugins/catalog.ts */
-+import { AzureDevOpsEntityProvider } from '@backstage/plugin-catalog-backend-module-azure';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsEntityProvider } from '@backstage/plugin-catalog-backend-module-azure';
 
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
-+builder.addEntityProvider(
-+  AzureDevOpsEntityProvider.fromConfig(env.config, {
-+    logger: env.logger,
-+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+    schedule: env.scheduler.createScheduledTaskRunner({
-+      frequency: { minutes: 30 },
-+      timeout: { minutes: 3 },
-+    }),
-+    // optional: alternatively, use schedule
-+    scheduler: env.scheduler,
-+  }),
-+);
+/* highlight-add-start */
+builder.addEntityProvider(
+  AzureDevOpsEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
+  }),
+);
+/* highlight-add-end */
 ```
 
 ## Alternative Processor
 
 As an alternative to the entity provider `AzureDevOpsEntityProvider`, you can still use the `AzureDevopsDiscoveryProcessor`.
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  builder.addProcessor(AzureDevOpsDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }));
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(
+    AzureDevOpsDiscoveryProcessor.fromConfig(env.config, {
+      logger: env.logger,
+    }),
+  );
+
+  // ..
+}
 ```
 
 ```yaml

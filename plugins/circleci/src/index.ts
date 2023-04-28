@@ -15,7 +15,7 @@
  */
 
 /**
- * A Backstage plugin that integrates towards Circle CI
+ * A Backstage plugin that integrates towards CircleCI.
  *
  * @packageDocumentation
  */

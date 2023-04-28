@@ -20,6 +20,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
 import { rootRouteRef } from './routes';
@@ -36,9 +37,10 @@ export const adrPlugin = createPlugin({
       api: adrApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory({ discoveryApi }) {
-        return new AdrClient({ discoveryApi });
+      factory({ discoveryApi, fetchApi }) {
+        return new AdrClient({ discoveryApi, fetchApi });
       },
     }),
   ],

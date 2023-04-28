@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import type { AppConfig } from '@backstage/config';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
@@ -25,6 +26,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -53,7 +55,7 @@ export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 // @public (undocumented)
 export interface ConfigFactoryOptions {
   argv?: string[];
-  remote?: LoadConfigOptionsRemote;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
 }
 
 // @public (undocumented)
@@ -178,6 +180,7 @@ export const lifecycleServiceFactory: () => ServiceFactory<
 export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
+  additionalConfigs?: AppConfig[];
 }): Promise<{
   config: Config;
 }>;

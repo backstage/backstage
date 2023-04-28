@@ -132,6 +132,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config.yaml',
         },
       ],
     });
@@ -186,6 +187,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config.yaml',
         },
         {
           context: 'app-config2.yaml',
@@ -196,6 +198,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config2.yaml',
         },
       ],
     });
@@ -218,6 +221,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config.yaml',
         },
       ],
     });
@@ -243,6 +247,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config.yaml',
         },
         {
           context: 'app-config.development.yaml',
@@ -259,6 +264,7 @@ describe('loadConfig', () => {
               secret: 'abc123',
             },
           },
+          path: '/root/app-config.development.yaml',
         },
       ],
     });
@@ -282,6 +288,7 @@ describe('loadConfig', () => {
               noSubstitute: 'notSubstituted',
             },
           },
+          path: '/root/app-config.substitute.yaml',
         },
       ],
     });
@@ -311,6 +318,7 @@ describe('loadConfig', () => {
               escaped: '${Escaped}',
             },
           },
+          path: '/root/app-config.yaml',
         },
       ],
     });
@@ -328,6 +336,7 @@ describe('loadConfig', () => {
             title: 'New Title',
           },
         },
+        path: '/root/app-config.yaml',
       },
     ]);
 
@@ -364,6 +373,7 @@ describe('loadConfig', () => {
               secret: 'abc123',
             },
           },
+          path: '/root/app-config.development.yaml',
         },
       ],
     });
@@ -388,6 +398,7 @@ describe('loadConfig', () => {
             secret: 'abc234',
           },
         },
+        path: '/root/app-config.development.yaml',
       },
     ]);
 

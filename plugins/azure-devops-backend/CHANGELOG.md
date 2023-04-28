@@ -1,5 +1,78 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.22
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-devops-common@0.3.0
+
+## 0.3.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.3.22-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-azure-devops-common@0.3.0
+
 ## 0.3.22-next.0
 
 ### Patch Changes

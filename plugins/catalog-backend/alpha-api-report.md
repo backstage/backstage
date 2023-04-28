@@ -20,8 +20,8 @@ export const catalogConditions: Conditions<{
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       annotation: string;
+      value?: string | undefined;
     }
   >;
   hasLabel: PermissionRule<
@@ -37,8 +37,8 @@ export const catalogConditions: Conditions<{
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       key: string;
+      value?: string | undefined;
     }
   >;
   hasSpec: PermissionRule<
@@ -46,8 +46,8 @@ export const catalogConditions: Conditions<{
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       key: string;
+      value?: string | undefined;
     }
   >;
   isEntityKind: PermissionRule<
@@ -79,9 +79,7 @@ export const catalogPlugin: () => BackendFeature;
 // @alpha
 export const createCatalogConditionalDecision: (
   permission: ResourcePermission<'catalog-entity'>,
-  conditions: PermissionCriteria<
-    PermissionCondition<'catalog-entity', PermissionRuleParams>
-  >,
+  conditions: PermissionCriteria<PermissionCondition<'catalog-entity'>>,
 ) => ConditionalPolicyDecision;
 
 // @alpha
@@ -104,8 +102,8 @@ export const permissionRules: {
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       annotation: string;
+      value?: string | undefined;
     }
   >;
   hasLabel: PermissionRule<
@@ -121,8 +119,8 @@ export const permissionRules: {
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       key: string;
+      value?: string | undefined;
     }
   >;
   hasSpec: PermissionRule<
@@ -130,8 +128,8 @@ export const permissionRules: {
     EntitiesSearchFilter,
     'catalog-entity',
     {
-      value?: string | undefined;
       key: string;
+      value?: string | undefined;
     }
   >;
   isEntityKind: PermissionRule<

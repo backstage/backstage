@@ -40,6 +40,7 @@ export const EntityAutocompletePickerOption = memo((props: Props) => {
     <FormControlLabel
       control={<OptionCheckbox selected={selected} />}
       label={label}
+      onClick={event => event.preventDefault()}
     />
   );
 });

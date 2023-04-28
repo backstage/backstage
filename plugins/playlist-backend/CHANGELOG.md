@@ -1,5 +1,143 @@
 # @backstage/plugin-playlist-backend
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-playlist-common@0.1.6
+
+## 0.3.0
+
+### Minor Changes
+
+- 9a98a96f9e8: Exposes the announcements plugin's permissions in a metadata endpoint.
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-playlist-common@0.1.6
+
+## 0.2.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/plugin-playlist-common@0.1.6-next.0
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-playlist-common@0.1.6-next.0
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.1
+  - @backstage/plugin-playlist-common@0.1.6-next.0
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/plugin-permission-node@0.7.7-next.0
+  - @backstage/plugin-playlist-common@0.1.5
+
+## 0.2.6
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/plugin-playlist-common@0.1.5
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-playlist-common@0.1.5-next.0
+
 ## 0.2.6-next.0
 
 ### Patch Changes

@@ -69,7 +69,12 @@ describe('SecureTemplater', () => {
       owner: 'my-owner',
       host: 'my-host.com',
     }));
-    const renderWith = await SecureTemplater.loadRenderer({ parseRepoUrl });
+
+    const projectSlug = jest.fn(() => 'my-owner/my-repo');
+
+    const renderWith = await SecureTemplater.loadRenderer({
+      templateFilters: { parseRepoUrl, projectSlug },
+    });
     const renderWithout = await SecureTemplater.loadRenderer();
 
     const ctx = {
@@ -95,7 +100,6 @@ describe('SecureTemplater', () => {
 
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],
-      ['https://my-host.com/my-owner/my-repo'],
     ]);
   });
 
@@ -104,7 +108,7 @@ describe('SecureTemplater', () => {
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
     const renderWith = await SecureTemplater.loadRenderer({
-      additionalTemplateFilters: { mockFilter1, mockFilter2, mockFilter3 },
+      templateFilters: { mockFilter1, mockFilter2, mockFilter3 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 
@@ -149,7 +153,7 @@ describe('SecureTemplater', () => {
     const mockGlobal2 = 'foo';
     const mockGlobal3 = 123456;
     const renderWith = await SecureTemplater.loadRenderer({
-      additionalTemplateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3 },
+      templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 
@@ -168,11 +172,13 @@ describe('SecureTemplater', () => {
 
   it('should not allow helpers to be rewritten', async () => {
     const render = await SecureTemplater.loadRenderer({
-      parseRepoUrl: () => ({
-        repo: 'my-repo',
-        owner: 'my-owner',
-        host: 'my-host.com',
-      }),
+      templateFilters: {
+        parseRepoUrl: () => ({
+          repo: 'my-repo',
+          owner: 'my-owner',
+          host: 'my-host.com',
+        }),
+      },
     });
 
     const ctx = {

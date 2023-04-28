@@ -1,5 +1,114 @@
 # @techdocs/cli
 
+## 1.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-techdocs-node@1.7.1-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.1
+
+### Patch Changes
+
+- b348420a804: Adding global-agent to enable the ability to publish through a proxy
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-techdocs-node@1.7.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.3
+
+## 1.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.2
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- b348420a804: Adding global-agent to enable the ability to publish through a proxy
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/plugin-techdocs-node@1.6.1-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- 8e465ce52e2: Running `@techdocs/cli generate` with the `--verbose` flag will now print the mkdocs output.
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.0-next.1
+
+### Minor Changes
+
+- 8e465ce52e2: Running `@techdocs/cli generate` with the `--verbose` flag will now print the mkdocs output.
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0-next.1
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+
 ## 1.3.3-next.0
 
 ### Patch Changes

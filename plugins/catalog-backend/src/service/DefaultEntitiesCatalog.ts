@@ -309,17 +309,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     for (const chunk of lodashChunk(request.entityRefs, 200)) {
       let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .innerJoin<DbRefreshStateRow>('refresh_state', {
-          'refresh_state.entity_id': 'final_entities.entity_id',
-        })
+        .innerJoin<DbRefreshStateRow>(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
         .select({
           entityRef: 'refresh_state.entity_ref',
           entity: 'final_entities.final_entity',
         })
         .whereIn('refresh_state.entity_ref', chunk);
+
       if (request?.filter) {
-        query = parseFilter(request.filter, query, this.database);
+        query = parseFilter(
+          request.filter,
+          query,
+          this.database,
+          false,
+          'refresh_state.entity_id',
+        );
       }
+
       for (const row of await query) {
         lookup.set(row.entityRef, row.entity ? JSON.parse(row.entity) : null);
       }
@@ -372,11 +382,30 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
+    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
     if (normalizedFullTextFilterTerm) {
-      dbQuery.andWhereRaw(
-        'value like ?',
-        `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-      );
+      if (
+        textFilterFields.length === 1 &&
+        textFilterFields[0] === sortField.field
+      ) {
+        // If there is one item, apply the like query to the top level query which is already
+        //   filtered based on the singular sortField.
+        dbQuery.andWhereRaw(
+          'value like ?',
+          `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+        );
+      } else {
+        const matchQuery = db<DbSearchRow>('search')
+          .select('search.entity_id')
+          .whereIn('key', textFilterFields)
+          .andWhere(function keyFilter() {
+            this.andWhereRaw(
+              'value like ?',
+              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            );
+          });
+        dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+      }
     }
 
     const countQuery = dbQuery.clone();

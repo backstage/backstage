@@ -1,5 +1,95 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-tech-insights-node@0.4.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-tech-insights-common@0.2.10
+
+## 0.1.28
+
+### Patch Changes
+
+- 9cb1db6546a: When multiple fact retrievers are used for a check, allow for cases where only one returns a given fact
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-tech-insights-node@0.4.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-tech-insights-common@0.2.10
+
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 9cb1db6546a: When multiple fact retrievers are used for a check, allow for cases where only one returns a given fact
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.2-next.2
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.2-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.2-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.1
+
+## 0.1.27-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/plugin-tech-insights-node@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-tech-insights-common@0.2.10
+  - @backstage/plugin-tech-insights-node@0.4.1-next.1
+
 ## 0.1.27-next.0
 
 ### Patch Changes

@@ -1,5 +1,94 @@
 # @backstage/config-loader
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 201206132da: Introduced a new config source system to replace `loadConfig`. There is a new `ConfigSource` interface along with utilities provided by `ConfigSources`, as well as a number of built-in configuration source implementations. The new system is more flexible and makes it easier to create new and reusable sources of configuration, such as loading configuration from secret providers.
+
+  The following is an example of how to load configuration using the default behavior:
+
+  ```ts
+  const source = ConfigSources.default({
+    argv: options?.argv,
+    remote: options?.remote,
+  });
+  const config = await ConfigSources.toConfig(source);
+  ```
+
+  The `ConfigSource` interface looks like this:
+
+  ```ts
+  export interface ConfigSource {
+    readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  }
+  ```
+
+  It is best implemented using an async iterator:
+
+  ```ts
+  class MyConfigSource implements ConfigSource {
+    async *readConfigData() {
+      yield {
+        config: [
+          {
+            context: 'example',
+            data: { backend: { baseUrl: 'http://localhost' } },
+          },
+        ],
+      };
+    }
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- c791fcd96b9: Configuration validation is now more permissive when it comes to config whose values are `string` but whose schemas declare them to be `boolean` or `number`.
+
+  For example, configuration was previously marked invalid when a string `'true'` was set on a property expecting type `boolean` or a string `'146'` was set on a property expecting type `number` (as when providing configuration via variable substitution sourced from environment variables). Now, such configurations will be considered valid and their values will be coerced to the right type at read-time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.1.9
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.1.9-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 1.1.8
 
 ### Patch Changes

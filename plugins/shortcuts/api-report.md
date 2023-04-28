@@ -9,25 +9,29 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { default as Observable_2 } from 'zen-observable';
-import { StorageApi } from '@backstage/core-plugin-api';
+import { Shortcut as Shortcut_2 } from '@backstage/plugin-shortcuts';
+import { ShortcutApi as ShortcutApi_2 } from '@backstage/plugin-shortcuts';
+import type { StorageApi } from '@backstage/core-plugin-api';
 
 // @public
-export class LocalStoredShortcuts implements ShortcutApi {
+export class DefaultShortcutsApi implements ShortcutApi_2 {
   constructor(storageApi: StorageApi);
   // (undocumented)
-  add(shortcut: Omit<Shortcut, 'id'>): Promise<void>;
+  add(shortcut: Omit<Shortcut_2, 'id'>): Promise<void>;
   // (undocumented)
-  get(): Shortcut[];
+  get(): Shortcut_2[];
   // (undocumented)
   getColor(url: string): string;
   // (undocumented)
   remove(id: string): Promise<void>;
   // (undocumented)
-  shortcut$(): Observable_2<Shortcut[]>;
+  shortcut$(): Observable<Shortcut_2[]>;
   // (undocumented)
-  update(shortcut: Shortcut): Promise<void>;
+  update(shortcut: Shortcut_2): Promise<void>;
 }
+
+// @public @deprecated (undocumented)
+export const LocalStoredShortcuts: typeof DefaultShortcutsApi;
 
 // @public (undocumented)
 export type Shortcut = {
@@ -57,6 +61,8 @@ export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
 
 // @public
 export interface ShortcutsProps {
+  // (undocumented)
+  allowExternalLinks?: boolean;
   // (undocumented)
   icon?: IconComponent;
 }

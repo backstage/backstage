@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog",
   "description": "The Backstage plugin for browsing the Backstage catalog",
-  "version": "1.9.0-next.0",
+  "version": "1.11.0-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -46,7 +46,8 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
@@ -55,8 +56,8 @@
     "zen-observable": "^0.10.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
@@ -65,6 +66,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",

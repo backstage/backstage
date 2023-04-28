@@ -55,13 +55,11 @@ const allEntitiesGroup: DocsGroupConfig = {
   filterPredicate: () => true,
 };
 
-const EntityListDocsGridGroup = ({
-  entities,
-  group,
-}: {
+const EntityListDocsGridGroup = (props: {
   group: DocsGroupConfig;
   entities: Entity[];
 }) => {
+  const { entities, group } = props;
   const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
 
   const shownEntities = entities.filter(entity => {
@@ -103,7 +101,7 @@ const EntityListDocsGridGroup = ({
  *
  * @public
  */
-export const EntityListDocsGrid = ({ groups }: EntityListDocsGridPageProps) => {
+export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   const { loading, error, entities } = useEntityList();
 
   if (error) {
@@ -143,7 +141,7 @@ export const EntityListDocsGrid = ({ groups }: EntityListDocsGridPageProps) => {
 
   return (
     <Content>
-      {(groups || [allEntitiesGroup]).map((group, index: number) => (
+      {(props.groups || [allEntitiesGroup]).map((group, index: number) => (
         <EntityListDocsGridGroup
           entities={entities}
           group={group}

@@ -40,7 +40,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction<any, any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
@@ -50,7 +50,7 @@ export type ScaffolderPluginOptions = {
 class ScaffolderActionsExtensionPointImpl
   implements ScaffolderActionsExtensionPoint
 {
-  #actions = new Array<TemplateAction<any>>();
+  #actions = new Array<TemplateAction<any, any>>();
 
   addActions(...actions: TemplateAction<any>[]): void {
     this.#actions.push(...actions);
@@ -67,7 +67,7 @@ class ScaffolderActionsExtensionPointImpl
  * @alpha
  */
 export const scaffolderPlugin = createBackendPlugin(
-  (options: ScaffolderPluginOptions) => ({
+  (options?: ScaffolderPluginOptions) => ({
     pluginId: 'scaffolder',
     register(env) {
       const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
@@ -94,16 +94,17 @@ export const scaffolderPlugin = createBackendPlugin(
           database,
           httpRouter,
           catalogClient,
+          permissions,
         }) {
           const {
             additionalTemplateFilters,
             taskBroker,
             taskWorkers,
             additionalTemplateGlobals,
-          } = options;
+          } = options ?? {};
           const log = loggerToWinstonLogger(logger);
 
-          const actions = options.actions || [
+          const actions = options?.actions || [
             ...actionsExtensions.actions,
             ...createBuiltinActions({
               integrations: ScmIntegrations.fromConfig(config),
@@ -131,6 +132,7 @@ export const scaffolderPlugin = createBackendPlugin(
             taskWorkers,
             additionalTemplateFilters,
             additionalTemplateGlobals,
+            permissions,
           });
           httpRouter.use(router);
         },

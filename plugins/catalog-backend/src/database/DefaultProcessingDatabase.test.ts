@@ -33,6 +33,8 @@ import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 
+jest.setTimeout(60_000);
+
 describe('DefaultProcessingDatabase', () => {
   const defaultLogger = getVoidLogger();
   const databases = TestDatabases.create({
@@ -106,7 +108,6 @@ describe('DefaultProcessingDatabase', () => {
           );
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -153,7 +154,6 @@ describe('DefaultProcessingDatabase', () => {
           ),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -193,7 +193,6 @@ describe('DefaultProcessingDatabase', () => {
         expect(entities[0].errors).toEqual("['something broke']");
         expect(entities[0].location_key).toEqual('key');
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -279,7 +278,6 @@ describe('DefaultProcessingDatabase', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -328,7 +326,6 @@ describe('DefaultProcessingDatabase', () => {
 
         expect(refreshStateEntries).toHaveLength(1);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -478,7 +475,6 @@ describe('DefaultProcessingDatabase', () => {
           }
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -583,7 +579,6 @@ describe('DefaultProcessingDatabase', () => {
         expect(entities2.length).toBe(1);
         expect(entities2[0].cache).toEqual('{}');
       },
-      60_000,
     );
   });
 
@@ -636,7 +631,6 @@ describe('DefaultProcessingDatabase', () => {
           ).resolves.toEqual({ items: [] });
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -672,7 +666,6 @@ describe('DefaultProcessingDatabase', () => {
         const nextUpdateDiff = nextUpdate.diff(now, 'seconds');
         expect(nextUpdateDiff.seconds).toBeGreaterThanOrEqual(90);
       },
-      60_000,
     );
   });
 

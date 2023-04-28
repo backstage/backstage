@@ -249,7 +249,7 @@ describe('CatalogClient', () => {
         { token },
       );
 
-      expect(response).toEqual({ items: [entity, null] });
+      expect(response).toEqual({ items: [entity, undefined] });
     });
   });
 
@@ -352,7 +352,7 @@ describe('CatalogClient', () => {
         ],
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?limit=100&sortField=metadata.name,asc&sortField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
+        '?limit=100&orderField=metadata.name,asc&orderField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
       );
     });
 

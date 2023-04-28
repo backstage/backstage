@@ -15,12 +15,26 @@
  */
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
 
 import { getCombinedClusterSupplier } from '../cluster-locator';
+import {
+  KubernetesAuthTranslator,
+  DispatchingKubernetesAuthTranslator,
+  GoogleKubernetesAuthTranslator,
+  NoopKubernetesAuthTranslator,
+  AwsIamKubernetesAuthTranslator,
+  GoogleServiceAccountAuthTranslator,
+  AzureIdentityKubernetesAuthTranslator,
+  OidcKubernetesAuthTranslator,
+} from '../kubernetes-auth-translator';
+
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
@@ -49,6 +63,7 @@ export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
+  permissions: PermissionEvaluator;
 }
 
 /**
@@ -64,6 +79,7 @@ export type KubernetesBuilderReturn = Promise<{
   proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
+  authTranslatorMap: { [key: string]: KubernetesAuthTranslator };
 }>;
 
 /**
@@ -79,6 +95,7 @@ export class KubernetesBuilder {
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
   private proxy?: KubernetesProxy;
+  private authTranslatorMap?: { [key: string]: KubernetesAuthTranslator };
 
   static createBuilder(env: KubernetesEnvironment) {
     return new KubernetesBuilder(env);
@@ -89,6 +106,7 @@ export class KubernetesBuilder {
   public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
     const config = this.env.config;
+    const permissions = this.env.permissions;
 
     logger.info('Initializing Kubernetes backend');
 
@@ -109,6 +127,8 @@ export class KubernetesBuilder {
 
     const clusterSupplier = this.getClusterSupplier();
 
+    const authTranslatorMap = this.getAuthTranslatorMap();
+
     const proxy = this.getProxy(logger, clusterSupplier);
 
     const serviceLocator = this.getServiceLocator();
@@ -116,6 +136,7 @@ export class KubernetesBuilder {
     const objectsProvider = this.getObjectsProvider({
       logger,
       fetcher,
+      config,
       serviceLocator,
       customResources,
       objectTypesToFetch: this.getObjectTypesToFetch(),
@@ -126,6 +147,7 @@ export class KubernetesBuilder {
       clusterSupplier,
       this.env.catalogApi,
       proxy,
+      permissions,
     );
 
     return {
@@ -136,6 +158,7 @@ export class KubernetesBuilder {
       objectsProvider,
       router,
       serviceLocator,
+      authTranslatorMap,
     };
   }
 
@@ -167,6 +190,12 @@ export class KubernetesBuilder {
   public setProxy(proxy?: KubernetesProxy) {
     this.proxy = proxy;
     return this;
+  }
+
+  public setAuthTranslatorMap(authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  }) {
+    this.authTranslatorMap = authTranslatorMap;
   }
 
   protected buildCustomResources() {
@@ -204,7 +233,14 @@ export class KubernetesBuilder {
   protected buildObjectsProvider(
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider {
-    this.objectsProvider = new KubernetesFanOutHandler(options);
+    const authTranslatorMap = this.getAuthTranslatorMap();
+    this.objectsProvider = new KubernetesFanOutHandler({
+      ...options,
+      authTranslator: new DispatchingKubernetesAuthTranslator({
+        authTranslatorMap,
+      }),
+    });
+
     return this.objectsProvider;
   }
 
@@ -253,7 +289,15 @@ export class KubernetesBuilder {
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesProxy {
-    this.proxy = new KubernetesProxy(logger, clusterSupplier);
+    const authTranslatorMap = this.getAuthTranslatorMap();
+    const authTranslator = new DispatchingKubernetesAuthTranslator({
+      authTranslatorMap,
+    });
+    this.proxy = new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authTranslator,
+    });
     return this.proxy;
   }
 
@@ -262,12 +306,17 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler());
+    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-
+    router.use(
+      createPermissionIntegrationRouter({
+        permissions: kubernetesPermissions,
+      }),
+    );
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
@@ -301,6 +350,19 @@ export class KubernetesBuilder {
     addResourceRoutesToRouter(router, catalogApi, objectsProvider);
 
     return router;
+  }
+
+  protected buildAuthTranslatorMap() {
+    this.authTranslatorMap = {
+      google: new GoogleKubernetesAuthTranslator(),
+      aws: new AwsIamKubernetesAuthTranslator({ config: this.env.config }),
+      azure: new AzureIdentityKubernetesAuthTranslator(this.env.logger),
+      serviceAccount: new NoopKubernetesAuthTranslator(),
+      googleServiceAccount: new GoogleServiceAccountAuthTranslator(),
+      oidc: new OidcKubernetesAuthTranslator(),
+      localKubectlProxy: new NoopKubernetesAuthTranslator(),
+    };
+    return this.authTranslatorMap;
   }
 
   protected async fetchClusterDetails(
@@ -381,5 +443,9 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ) {
     return this.proxy ?? this.buildProxy(logger, clusterSupplier);
+  }
+
+  protected getAuthTranslatorMap() {
+    return this.authTranslatorMap ?? this.buildAuthTranslatorMap();
   }
 }

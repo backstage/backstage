@@ -18,10 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Models } from '@backstage/plugin-bitbucket-cloud-common';
-import {
-  LocationSpec,
-  processingResult,
-} from '@backstage/plugin-catalog-backend';
+import { LocationSpec, processingResult } from '@backstage/plugin-catalog-node';
 import { RequestHandler, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';

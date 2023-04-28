@@ -73,6 +73,12 @@ export type Repository = {
   owner: {
     login: string;
   };
+  isArchived: boolean;
+};
+
+export type Label = {
+  id: string;
+  name: string;
 };
 
 export type PullRequest = {
@@ -88,6 +94,9 @@ export type PullRequest = {
   state: string;
   reviewDecision: ReviewDecision | null;
   isDraft: boolean;
+  labels: {
+    nodes: Label[];
+  };
   createdAt: string;
   author: Author;
 };
@@ -99,7 +108,12 @@ export type PullRequestsColumn = {
   content: PullRequests;
 };
 
-export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft' | 'team';
+export type PRCardFormating =
+  | 'compacted'
+  | 'fullscreen'
+  | 'draft'
+  | 'team'
+  | 'archivedRepo';
 
 export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED';
 

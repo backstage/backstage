@@ -1,5 +1,73 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/config@1.0.7
+
+## 0.1.41
+
+### Patch Changes
+
+- 66b6cfc5716: Replace `camelcase-keys` dependency with one with better compatibility.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/config@1.0.7
+
+## 0.1.41-next.2
+
+### Patch Changes
+
+- 66b6cfc5716: Replace `camelcase-keys` dependency with one with better compatibility.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+
+## 0.1.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+
+## 0.1.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+
+## 0.1.40
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+
+## 0.1.40-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.40-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+
 ## 0.1.40-next.0
 
 ### Patch Changes

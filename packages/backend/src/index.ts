@@ -43,7 +43,6 @@ import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import azureSites from './plugins/azure-sites';
 import catalog from './plugins/catalog';
-import catalogEventBasedProviders from './plugins/catalogEventBasedProviders';
 import codeCoverage from './plugins/codecoverage';
 import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
@@ -69,6 +68,7 @@ import linguist from './plugins/linguist';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -86,6 +86,8 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
+  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
+
   root.info(`Created UrlReader ${reader}`);
 
   return (plugin: string): PluginEnvironment => {
@@ -100,6 +102,7 @@ function makeCreateEnv(config: Config) {
       database,
       config,
       reader,
+      eventBroker,
       discovery,
       tokenManager,
       permissions,
@@ -158,18 +161,12 @@ async function main() {
   const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
 
-  const eventBasedEntityProviders = await catalogEventBasedProviders(
-    catalogEnv,
-  );
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
 
   const apiRouter = Router();
-  apiRouter.use(
-    '/catalog',
-    await catalog(catalogEnv, eventBasedEntityProviders),
-  );
+  apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
-  apiRouter.use('/events', await events(eventsEnv, eventBasedEntityProviders));
+  apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));

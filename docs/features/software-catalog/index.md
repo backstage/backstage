@@ -14,7 +14,7 @@ websites, libraries, data pipelines, etc). The catalog is built around the
 concept of [metadata YAML files](descriptor-format.md) stored together with the
 code, which are then harvested and visualized in Backstage.
 
-![software-catalog](https://backstage.io/blog/assets/6/header.png)
+![software-catalog](../../assets/header.png)
 
 ## How it works
 

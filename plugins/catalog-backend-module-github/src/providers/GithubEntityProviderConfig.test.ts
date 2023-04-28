@@ -84,6 +84,12 @@ describe('readProviderConfigs', () => {
                 allowForks: false,
               },
             },
+            providerWithVisibilityFilter: {
+              organization: 'test-org6',
+              filters: {
+                visibility: ['public', 'internal'],
+              },
+            },
             providerWithHost: {
               organization: 'test-org1',
               host: 'ghe.internal.com',
@@ -103,7 +109,7 @@ describe('readProviderConfigs', () => {
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(8);
+    expect(providerConfigs).toHaveLength(9);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -117,6 +123,7 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
@@ -134,6 +141,7 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
@@ -151,6 +159,7 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
@@ -168,6 +177,7 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
@@ -185,6 +195,7 @@ describe('readProviderConfigs', () => {
           include: ['backstage-include'],
           exclude: ['backstage-exclude'],
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
@@ -202,11 +213,30 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: undefined,
       validateLocationsExist: false,
     });
     expect(providerConfigs[6]).toEqual({
+      id: 'providerWithVisibilityFilter',
+      organization: 'test-org6',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: ['public', 'internal'],
+      },
+      schedule: undefined,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[7]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -219,11 +249,12 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       validateLocationsExist: false,
       schedule: undefined,
     });
-    expect(providerConfigs[7]).toEqual({
+    expect(providerConfigs[8]).toEqual({
       id: 'providerWithSchedule',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -236,6 +267,7 @@ describe('readProviderConfigs', () => {
           include: undefined,
           exclude: undefined,
         },
+        visibility: undefined,
       },
       schedule: {
         frequency: Duration.fromISO('PT30M'),

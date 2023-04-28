@@ -13,27 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Page, Header, Content, ErrorPanel } from '@backstage/core-components';
-import { useTaskEventStream } from '../../components/hooks/useEventStream';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, makeStyles, Paper } from '@material-ui/core';
-import { TaskSteps } from './TaskSteps';
-import { TaskBorder } from './TaskBorder';
-import { TaskLogStream } from './TaskLogStream';
-import { nextSelectedTemplateRouteRef } from '../routes';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { Box, Button, makeStyles, Paper } from '@material-ui/core';
+import {
+  ScaffolderTaskOutput,
+  scaffolderApiRef,
+  useTaskEventStream,
+} from '@backstage/plugin-scaffolder-react';
+import { selectedTemplateRouteRef } from '../../routes';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
-import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
-import { DefaultTemplateOutputs } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  DefaultTemplateOutputs,
+  TaskLogStream,
+  TaskSteps,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { useAsync } from '@react-hookz/web';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: 'flex',
     flexDirection: 'column',
   },
-});
+  buttonBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'right',
+  },
+  cancelButton: {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 export const OngoingTask = (props: {
   TemplateOutputsComponent?: React.ComponentType<{
@@ -42,8 +55,9 @@ export const OngoingTask = (props: {
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
   const { taskId } = useParams();
-  const templateRouteRef = useRouteRef(nextSelectedTemplateRouteRef);
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
   const steps = useMemo(
@@ -56,12 +70,19 @@ export const OngoingTask = (props: {
   );
 
   const [logsVisible, setLogVisibleState] = useState(false);
+  const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
   useEffect(() => {
     if (taskStream.error) {
       setLogVisibleState(true);
     }
   }, [taskStream.error]);
+
+  useEffect(() => {
+    if (taskStream.completed && !taskStream.error) {
+      setButtonBarVisibleState(false);
+    }
+  }, [taskStream.error, taskStream.completed]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -97,10 +118,20 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
+  const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
+    async () => {
+      if (taskId) {
+        await scaffolderApi.cancelTask(taskId);
+      }
+    },
+  );
+
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const templateName =
     taskStream.task?.spec.templateInfo?.entity?.metadata.name;
+
+  const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
   return (
     <Page themeId="website">
@@ -114,9 +145,13 @@ export const OngoingTask = (props: {
         subtitle={`Task ${taskId}`}
       >
         <ContextMenu
-          onToggleLogs={setLogVisibleState}
-          onStartOver={startOver}
+          cancelEnabled={cancelEnabled}
           logsVisible={logsVisible}
+          buttonBarVisible={buttonBarVisible}
+          onStartOver={startOver}
+          onToggleLogs={setLogVisibleState}
+          onToggleButtonBar={setButtonBarVisibleState}
+          taskId={taskId}
         />
       </Header>
       <Content className={classes.contentWrapper}>
@@ -130,18 +165,42 @@ export const OngoingTask = (props: {
         ) : null}
 
         <Box paddingBottom={2}>
-          <Paper style={{ position: 'relative', overflow: 'hidden' }}>
-            <TaskBorder
-              isComplete={taskStream.completed}
-              isError={Boolean(taskStream.error)}
-            />
-            <Box padding={2}>
-              <TaskSteps steps={steps} activeStep={activeStep} />
-            </Box>
-          </Paper>
+          <TaskSteps
+            steps={steps}
+            activeStep={activeStep}
+            isComplete={taskStream.completed}
+            isError={Boolean(taskStream.error)}
+          />
         </Box>
 
         <Outputs output={taskStream.output} />
+
+        {buttonBarVisible ? (
+          <Box paddingBottom={2}>
+            <Paper>
+              <Box padding={2}>
+                <div className={classes.buttonBar}>
+                  <Button
+                    className={classes.cancelButton}
+                    disabled={!cancelEnabled || cancelStatus !== 'not-executed'}
+                    onClick={triggerCancel}
+                    data-testid="cancel-button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={cancelEnabled}
+                    onClick={startOver}
+                  >
+                    Start Over
+                  </Button>
+                </div>
+              </Box>
+            </Paper>
+          </Box>
+        ) : null}
 
         {logsVisible ? (
           <Box paddingBottom={2} height="100%">

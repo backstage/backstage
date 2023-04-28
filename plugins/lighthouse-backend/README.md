@@ -8,13 +8,12 @@ Lighthouse Backend allows you to run scheduled lighthouse Tests for each Website
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/lighthouse-backend
+yarn add --cwd packages/backend @backstage/plugin-lighthouse-backend
 ```
 
 2. Create a `lighthouse.ts` file inside `packages/backend/src/plugins/`:
 
 ```typescript
-import { Router } from 'express';
 import { createScheduler } from '@backstage/plugin-lighthouse-backend';
 import { PluginEnvironment } from '../types';
 import { CatalogClient } from '@backstage/catalog-client';

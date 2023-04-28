@@ -1,5 +1,109 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.10-next.0
+
+### Patch Changes
+
+- 8a7174e297c: Marked `LocalStoredShortcuts` as deprecated, replacing it with `DefaultShortcutsApi` whose naming more clearly suggests that the shortcuts aren't necessarily stored locally (it depends on the storage implementation).
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+
+## 0.3.9
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 328ec5f96c6: Added the Analytics event in the save handler of AddShortcut and EditShortcut
+- 99df676e324: Allow external links to be added as shortcuts
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 99df676e324: Allow external links to be added as shortcuts
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+
+## 0.3.8
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 7c38e565d1f: Fixed bug in LocalStoredShortcuts client where adding new Shortcut results in replacing entire shortcut list.
+
+  Refactored LocalStoredShortcuts client to listen to `storageApi` updates to ensure that local state is always up to date.
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+
+## 0.3.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/types@1.0.2
+
 ## 0.3.8-next.0
 
 ### Patch Changes

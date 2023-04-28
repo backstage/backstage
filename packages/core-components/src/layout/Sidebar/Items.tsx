@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
+import {
+  IconComponent,
+  useAnalytics,
+  useElementFilter,
+} from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
@@ -38,6 +42,7 @@ import React, {
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -103,6 +108,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         padding: 0,
         textAlign: 'inherit',
         font: 'inherit',
+        textTransform: 'none',
       },
       closed: {
         width: sidebarConfig.drawerWidthClosed,
@@ -263,6 +269,8 @@ type SidebarItemBaseProps = {
   hasSubmenu?: boolean;
   disableHighlight?: boolean;
   className?: string;
+  noTrack?: boolean;
+  onClick?: (ev: React.MouseEvent) => void;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
@@ -361,6 +369,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     hasSubmenu = false,
     disableHighlight = false,
     onClick,
+    noTrack,
     children,
     className,
     ...navLinkProps
@@ -423,9 +432,33 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     ),
   };
 
+  const analyticsApi = useAnalytics();
+  const { pathname: to } = useResolvedPath(
+    !isButtonItem(props) && props.to ? props.to : '',
+  );
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+      if (!noTrack) {
+        const action = 'click';
+        const subject = text ?? 'Sidebar Item';
+        const options = to ? { attributes: { to } } : undefined;
+        analyticsApi.captureEvent(action, subject, options);
+      }
+      onClick?.(event);
+    },
+    [analyticsApi, text, to, noTrack, onClick],
+  );
+
   if (isButtonItem(props)) {
     return (
-      <Button role="button" aria-label={text} {...childProps} ref={ref}>
+      <Button
+        role="button"
+        aria-label={text}
+        {...childProps}
+        ref={ref}
+        onClick={handleClick}
+      >
         {content}
       </Button>
     );
@@ -439,6 +472,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
+      onClick={handleClick}
     >
       {content}
     </WorkaroundNavLink>

@@ -28,15 +28,12 @@ export class SonarQubeClient implements SonarQubeApi {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
 
-  constructor({
-    discoveryApi,
-    identityApi,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
   }) {
-    this.discoveryApi = discoveryApi;
-    this.identityApi = identityApi;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   private async callApi<T>(
@@ -130,9 +127,9 @@ export class SonarQubeClient implements SonarQubeApi {
           'en-US',
         )}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
-        `${baseUrl}project/security_hotspots?id=${encodeURIComponent(
-          componentKey,
-        )}`,
+        `${baseUrl}${
+          baseUrl === 'https://sonarcloud.io/' ? 'project/' : ''
+        }security_hotspots?id=${encodeURIComponent(componentKey)}`,
     };
   }
 }

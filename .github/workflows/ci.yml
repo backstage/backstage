@@ -1,5 +1,6 @@
 name: CI
 on:
+  # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
     paths-ignore:
       - 'microsite/**'
@@ -23,6 +24,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Install ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -33,7 +35,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.2
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -53,6 +55,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Verify ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -63,7 +66,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.2
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -91,6 +94,9 @@ jobs:
 
       - name: verify api reference
         run: node scripts/verify-api-reference.js
+
+      - name: verify openapi yaml file matches generated ts file
+        run: yarn backstage-repo-tools schema:openapi:verify
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -126,6 +132,7 @@ jobs:
       matrix:
         node-version: [16.x, 18.x]
 
+    name: Test ${{ matrix.node-version }}
     services:
       postgres13:
         image: postgres:13
@@ -181,7 +188,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.2
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

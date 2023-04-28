@@ -16,11 +16,10 @@
 
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { graphql } from '@octokit/graphql';
+import { graphql as graphqlOctokit } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
-
 import {
   getOrganizationTeams,
   getOrganizationUsers,
@@ -35,11 +34,9 @@ import {
 } from './github';
 import fetch from 'node-fetch';
 
-// Workaround for Node.js 18, where native fetch is available, but not yet picked up by msw
-// TODO(Rugvip): remove once https://github.com/mswjs/msw/issues/1388 is resolved
-(global as any).fetch = fetch;
-
 describe('github', () => {
+  const graphql = graphqlOctokit.defaults({ request: { fetch } });
+
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -496,6 +493,7 @@ describe('github', () => {
                   name: 'main',
                 },
                 catalogInfoFile: null,
+                visibility: 'public',
               },
               {
                 name: 'demo',
@@ -511,6 +509,7 @@ describe('github', () => {
                   id: 'acb123',
                   text: 'some yaml',
                 },
+                visibility: 'private',
               },
             ],
             pageInfo: {
@@ -534,6 +533,7 @@ describe('github', () => {
               name: 'main',
             },
             catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'demo',
@@ -549,6 +549,7 @@ describe('github', () => {
               id: 'acb123',
               text: 'some yaml',
             },
+            visibility: 'private',
           },
         ],
       };

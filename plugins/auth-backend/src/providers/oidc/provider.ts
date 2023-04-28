@@ -44,6 +44,10 @@ import {
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -254,5 +258,15 @@ export const oidc = createAuthProviderIntegration({
           callbackUrl,
         });
       });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
   },
 });

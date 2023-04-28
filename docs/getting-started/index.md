@@ -14,10 +14,8 @@ This guide assumes a basic understanding of working on a Linux based operating
 system using tools like apt-get, npm, yarn, curl. Docker knowledge is also
 helpful for making the best use of your Backstage installation.
 
-If you are planning to contribute plugins or the project in general, we advise
-you to use the
-[Getting Started for Contributors](https://backstage.io/docs/getting-started/running-backstage-locally)
-guide to do a repository-based installation.
+If you are planning to contribute plugins or to the project in general, we advise
+you to use the [Contributors](contributors.md) guide to do a repository-based installation.
 
 ### Prerequisites
 
@@ -83,7 +81,7 @@ database, configure authentication, and add your first integration. Continue
 with [getting started: Configuring Backstage](configuration.md).
 
 Share your experiences, comments, or suggestions with us:
-[on discord](https://discord.gg/EBHEGzX), file issues for any
+[on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
 [plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),

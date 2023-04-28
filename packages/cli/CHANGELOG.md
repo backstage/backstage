@@ -1,5 +1,152 @@
 # @backstage/cli
 
+## 0.22.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.3.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6
+
+### Patch Changes
+
+- 24432ae52fb: Fix the build for packages with multiple entry points to avoid duplicated modules.
+- 8075b67e64c: When building a backend package with dependencies any `--config <path>` options will now be forwarded to any dependent app package builds, unless the build script in the app package already contains a `--config` option.
+- 79e91d4c30a: Support importing `.md` files in build loader
+- 3156b0d85dc: Internal refactor to move many internal utilities to the new `@backstage/cli-node` package.
+- b9839d7135c: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- 9bbb00d5b49: Updated dependency `@swc/helpers` to `^0.5.0`.
+- b588ab73972: Ensure that the `package prepack` command and backend bundling uses posix paths in `package.json` on all OSes.
+- c07c3b7364b: Add `onboard` command. While still in development, this command aims to guide users in setting up their Backstage App.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-node@0.1.0
+  - @backstage/config-loader@1.2.0
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.3
+
+### Patch Changes
+
+- 3156b0d85dc: Internal refactor to move many internal utilities to the new `@backstage/cli-node` package.
+- 9bbb00d5b49: Updated dependency `@swc/helpers` to `^0.5.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.1.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.2
+
+### Patch Changes
+
+- 8075b67e64c: When building a backend package with dependencies any `--config <path>` options will now be forwarded to any dependent app package builds, unless the build script in the app package already contains a `--config` option.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.1
+
+### Patch Changes
+
+- 24432ae52fb: Fix the build for packages with multiple entry points to avoid duplicated modules.
+- 79e91d4c30a: Support importing `.md` files in build loader
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 29ba8267d69: Updated dependency `@material-ui/lab` to `4.0.0-alpha.61`.
+- b588ab73972: Ensure that the `package prepack` command and backend bundling uses posix paths in `package.json` on all OSes.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.0.2
+
+## 0.22.6-next.0
+
+### Patch Changes
+
+- b9839d7135c: Fixed backend start command on Windows by removing the use of platform dependent path joins.
+- c07c3b7364b: Add `onboard` command. While still in development, this command aims to guide users in setting up their Backstage App.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.22.4
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 2011b86052c: Added templates for new plugin Web and Node.js libraries.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- b4cd145b574: Added a new `migrate package-exports` command that synchronizes package exports fields in all `package.json`s.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 8bf24946c66: Adjust express dependencies to be the same as the rest of the project
+- 17271841de8: Updated frontend plugin template to use some more recent features
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.2
+  - @backstage/errors@1.1.5
+  - @backstage/config-loader@1.1.9
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.22.4-next.1
+
+### Patch Changes
+
+- 1ad8d885d30: Fixed a bug where additional backend package entry points where not properly marked as internal during local development.
+- 867f4752ca1: Updated the ESLint plugin configuration that is enabled through `yarn start --check` to only pick up valid source files.
+- 9bf50a36674: Bumped the `msw` version in templates to 1.0.0
+- 4b4998466b4: Updated dependency `del` to `^7.0.0`.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- a11b9a23f5a: Keep custom exports entry points in package.json
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/release-manifests@0.0.9-next.0
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/eslint-plugin@0.1.2-next.0
+  - @backstage/types@1.0.2
+
 ## 0.22.4-next.0
 
 ### Patch Changes

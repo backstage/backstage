@@ -1,5 +1,30 @@
 # @backstage/theme
 
+## 0.2.19
+
+### Patch Changes
+
+- 303c2c3ce51: Allow `closeButton` color in `DismissableBanner` to be configurable (via. `theme.palette.banner.closeButtonColor`)
+- e0c6e8b9c3c: Update peer dependencies
+
+## 0.2.19-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
+## 0.2.18
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
 ## 0.2.17
 
 ### Patch Changes

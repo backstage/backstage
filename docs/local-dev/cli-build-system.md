@@ -505,6 +505,7 @@ of all supported file extensions:
 | `.jpg`      | URL Path        | Image                                                                         |
 | `.png`      | URL Path        | Image                                                                         |
 | `.svg`      | URL Path        | Image                                                                         |
+| `.md`       | URL Path        | Markdown File                                                                 |
 | `.icon.svg` | React Component | SVG converted into a [MUI SvgIcon](https://mui.com/components/icons/#svgicon) |
 
 ## Jest Configuration
@@ -671,7 +672,7 @@ TypeScript support is currently handled though the `typesVersions` field, as the
 To add subpath exports to an existing package, simply add the desired `"exports"` fields and then run the following command:
 
 ```bash
-yarn backstage-cli package migrate package-exports
+yarn backstage-cli migrate package-exports
 ```
 
 ## Experimental Type Build

@@ -56,6 +56,8 @@ export class LinguistBackendApi {
   private readonly age?: HumanDuration;
   private readonly batchSize?: number;
   private readonly useSourceLocation?: boolean;
+  private readonly kind: string[];
+  private readonly linguistJsOptions?: Record<string, unknown>;
   public constructor(
     logger: Logger,
     store: LinguistBackendStore,
@@ -65,6 +67,8 @@ export class LinguistBackendApi {
     age?: HumanDuration,
     batchSize?: number,
     useSourceLocation?: boolean,
+    kind?: string[],
+    linguistJsOptions?: Record<string, unknown>,
   ) {
     this.logger = logger;
     this.store = store;
@@ -75,6 +79,8 @@ export class LinguistBackendApi {
     this.batchSize = batchSize;
     this.age = age;
     this.useSourceLocation = useSourceLocation;
+    this.kind = kindOrDefault(kind);
+    this.linguistJsOptions = linguistJsOptions;
   }
 
   public async getEntityLanguages(entityRef: string): Promise<Languages> {
@@ -99,7 +105,7 @@ export class LinguistBackendApi {
       : LINGUIST_ANNOTATION;
     const request: GetEntitiesRequest = {
       filter: {
-        kind: ['API', 'Component', 'Template'],
+        kind: this.kind,
         [`metadata.annotations.${annotationKey}`]: CATALOG_FILTER_EXISTS,
       },
       fields: ['kind', 'metadata'],
@@ -187,7 +193,7 @@ export class LinguistBackendApi {
     const readTreeResponse = await this.urlReader.readTree(url);
     const dir = await readTreeResponse.dir();
 
-    const results = await linguist(dir);
+    const results = await linguist(dir, this.linguistJsOptions);
 
     try {
       const totalBytes = results.languages.bytes;
@@ -227,4 +233,11 @@ export class LinguistBackendApi {
       await fs.remove(dir);
     }
   }
+}
+
+export function kindOrDefault(kind?: string[]) {
+  if (!kind || kind.length === 0) {
+    return ['API', 'Component', 'Template'];
+  }
+  return kind;
 }

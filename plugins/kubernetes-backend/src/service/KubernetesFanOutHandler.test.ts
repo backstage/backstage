@@ -28,6 +28,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { ConfigReader } from '@backstage/config';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespaces = jest.fn();
@@ -158,6 +159,7 @@ function mockFetchAndGetKubernetesFanOutHandler(
 function getKubernetesFanOutHandler(customResources: CustomResource[]) {
   return new KubernetesFanOutHandler({
     logger: getVoidLogger(),
+    config: new ConfigReader({}),
     fetcher: {
       fetchObjectsForService,
       fetchPodMetricsByNamespaces,
@@ -166,6 +168,11 @@ function getKubernetesFanOutHandler(customResources: CustomResource[]) {
       getClustersByEntity,
     },
     customResources: customResources,
+    authTranslator: {
+      decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+        return clusterDetails;
+      },
+    },
   });
 }
 
@@ -502,6 +509,47 @@ describe('getKubernetesObjectsByEntity', () => {
     });
   });
 
+  it('pods api is returning garbage', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
+    );
+
+    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+      Promise.resolve({
+        errors: [],
+        responses: [
+          {
+            garbage: ['thrash', 'rubbish'],
+          },
+        ],
+      }),
+    );
+
+    mockMetrics(fetchPodMetricsByNamespaces);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(0);
+
+    expect(result).toStrictEqual({
+      items: [],
+    });
+  });
+
   it('retrieve objects for two clusters', async () => {
     getClustersByEntity.mockImplementation(() =>
       Promise.resolve({
@@ -822,6 +870,7 @@ describe('getKubernetesObjectsByEntity', () => {
       const sut = new KubernetesFanOutHandler({
         logger,
         fetcher: new KubernetesClientBasedFetcher({ logger }),
+        config: new ConfigReader({}),
         serviceLocator: fleet,
         customResources: [],
         objectTypesToFetch: [
@@ -838,6 +887,11 @@ describe('getKubernetesObjectsByEntity', () => {
             objectType: 'services',
           },
         ],
+        authTranslator: {
+          decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+            return clusterDetails;
+          },
+        },
       });
 
       const result = await sut.getKubernetesObjectsByEntity({
@@ -864,7 +918,7 @@ describe('getKubernetesObjectsByEntity', () => {
               {
                 errorType: 'FETCH_ERROR',
                 message:
-                  'request to https://fails/api/v1/pods?labelSelector=backstage.io/kubernetes-id=test-component failed, reason: socket error',
+                  'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
               },
             ],
           },

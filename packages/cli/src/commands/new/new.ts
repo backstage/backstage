@@ -19,10 +19,10 @@ import fs from 'fs-extra';
 import { join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
+import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
-import { isMonoRepo } from '../../lib/monorepo/isMonoRepo';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};

@@ -64,7 +64,7 @@ export type FieldExtensionOptions<
  */
 export interface FieldExtensionComponentProps<
   TFieldReturnValue,
-  TUiOptions extends {} = {},
+  TUiOptions = unknown,
 > extends FieldProps<TFieldReturnValue> {
   uiSchema: FieldProps['uiSchema'] & {
     'ui:options'?: TUiOptions;

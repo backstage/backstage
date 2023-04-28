@@ -37,8 +37,11 @@ app:
 
 We can access the `baseUrl` using `config.getString('app.baseUrl')`. Because of
 this syntax, configuration keys are not allowed to contain dots. In fact,
-configuration keys are validated using the following RegEx:
-`/^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i`.
+configuration keys are validated using the following regular expression:
+`/^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i`. This basically means that keys
+must only contain the letters `a` through `z` and digits, in groups separated by
+dashes or underscores. Additionally, the very first character of each such group
+must be a letter, not a digit.
 
 Another option of accessing the `baseUrl` value is to create a sub-view of the
 configuration, `config.getConfig('app').getString('baseUrl')`. When reading out
@@ -62,8 +65,9 @@ each sub-view to be handled individually.
 
 ```ts
 for (const itemKey of config.keys('my-plugin.items')) {
-  const itemConfig = config.getConfig(`my-plugin.items`).getConfig(key);
-  const item = createItemFromConfig(itemConfig);
+  const itemConfig = config.getConfig(`my-plugin.items`).getConfig(itemKey);
+  const title = itemConfig.getString('title');
+  // ...
 }
 ```
 
@@ -76,7 +80,8 @@ much more detailed and relevant error messages. For example, if
 `itemConfig.getString('title')` fails in the above example because a boolean was
 supplied, the user will receive an error message with the full path, e.g.
 `my-plugin.items.b.title`, as well as the name of the config file with the bad
-value.
+value. Conversely, if you try to access missing fields in raw JSON, you tend to
+end up with very technical and hard-to-understand type errors from javascript.
 
 Note that no matter what method is used for reading out nested config, the same
 merging rules apply. You will always get the same value for any way of accessing

@@ -18,6 +18,7 @@ import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
+  CompoundEntityRef,
   Entity,
   parseEntityRef,
   stringifyEntityRef,
@@ -31,7 +32,15 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  TemplateParametersV1beta3,
+  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  scaffolderPermissions,
+  templateParameterReadPermission,
+  templateStepReadPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -53,6 +62,29 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  PermissionEvaluator,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
+import {
+  createConditionAuthorizer,
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
+import { scaffolderTemplateRules } from './rules';
+
+/**
+ *
+ * @public
+ */
+export type TemplatePermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  TParams
+>;
 
 /**
  * RouterOptions
@@ -66,8 +98,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
-
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1
@@ -81,6 +112,8 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
+  permissionRules?: TemplatePermissionRuleInput[];
   identity?: IdentityApi;
 }
 
@@ -95,14 +128,11 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
  * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
  * are using the IdentityApi, we can remove this function.
  */
-function buildDefaultIdentityClient({
-  logger,
-}: {
-  logger: Logger;
-}): IdentityApi {
+function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
   return {
     getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
       const header = request.headers.authorization;
+      const { logger } = options;
 
       if (!header) {
         return undefined;
@@ -130,6 +160,10 @@ function buildDefaultIdentityClient({
         const sub = payload.sub;
         if (typeof sub !== 'string') {
           throw new TypeError('Expected string sub claim');
+        }
+
+        if (sub === 'backstage-server') {
+          return undefined;
         }
 
         // Check that it's a valid ref, otherwise this will throw.
@@ -174,13 +208,14 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    permissions,
+    permissionRules,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
   const identity: IdentityApi =
-    options.identity || buildDefaultIdentityClient({ logger });
-
+    options.identity || buildDefaultIdentityClient(options);
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
 
@@ -223,6 +258,7 @@ export async function createRouter(
       additionalTemplateFilters,
       additionalTemplateGlobals,
       concurrentTasksLimit,
+      permissions,
     });
     workers.push(worker);
   }
@@ -248,43 +284,49 @@ export async function createRouter(
     workingDirectory,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    permissions,
   });
+
+  const templateRules: TemplatePermissionRuleInput[] = Object.values(
+    scaffolderTemplateRules,
+  );
+
+  if (permissionRules) {
+    templateRules.push(...permissionRules);
+  }
+
+  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
+
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+    permissions: scaffolderPermissions,
+    rules: templateRules,
+  });
+
+  router.use(permissionIntegrationRouter);
 
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
-        const { namespace, kind, name } = req.params;
-
         const userIdentity = await identity.getIdentity({
           request: req,
         });
         const token = userIdentity?.token;
 
-        const template = await findTemplate({
-          catalogApi: catalogClient,
-          entityRef: { kind, namespace, name },
-          token,
+        const template = await authorizeTemplate(req.params, token);
+
+        const parameters = [template.spec.parameters ?? []].flat();
+        res.json({
+          title: template.metadata.title ?? template.metadata.name,
+          description: template.metadata.description,
+          'ui:options': template.metadata['ui:options'],
+          steps: parameters.map(schema => ({
+            title: schema.title ?? 'Please enter the following information',
+            description: schema.description,
+            schema,
+          })),
         });
-        if (isSupportedTemplate(template)) {
-          const parameters = [template.spec.parameters ?? []].flat();
-          res.json({
-            title: template.metadata.title ?? template.metadata.name,
-            description: template.metadata.description,
-            'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
-              title: schema.title ?? 'Please enter the following information',
-              description: schema.description,
-              schema,
-            })),
-          });
-        } else {
-          throw new InputError(
-            `Unsupported apiVersion field in schema entity, ${
-              (template as Entity).apiVersion
-            }`,
-          );
-        }
       },
     )
     .get('/v2/actions', async (_req, res) => {
@@ -322,22 +364,14 @@ export async function createRouter(
 
       const values = req.body.values;
 
-      const template = await findTemplate({
-        catalogApi: catalogClient,
-        entityRef: { kind, namespace, name },
+      const template = await authorizeTemplate(
+        { kind, namespace, name },
         token,
-      });
-
-      if (!isSupportedTemplate(template)) {
-        throw new InputError(
-          `Unsupported apiVersion field in schema entity, ${
-            (template as Entity).apiVersion
-          }`,
-        );
-      }
+      );
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(values, parameters);
+
         if (!result.valid) {
           res.status(400).json({ errors: result.errors });
           return;
@@ -360,11 +394,7 @@ export async function createRouter(
           ref: userEntityRef,
         },
         templateInfo: {
-          entityRef: stringifyEntityRef({
-            kind,
-            namespace,
-            name: template.metadata?.name,
-          }),
+          entityRef: stringifyEntityRef({ kind, name, namespace }),
           baseUrl,
           entity: {
             metadata: template.metadata,
@@ -414,6 +444,11 @@ export async function createRouter(
       // Do not disclose secrets
       delete task.secrets;
       res.status(200).json(task);
+    })
+    .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const { taskId } = req.params;
+      await taskBroker.cancel?.(taskId);
+      res.status(200).json({ status: 'cancelled' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
@@ -562,6 +597,57 @@ export async function createRouter(
   const app = express();
   app.set('logger', logger);
   app.use('/', router);
+
+  async function authorizeTemplate(
+    entityRef: CompoundEntityRef,
+    token: string | undefined,
+  ) {
+    const template = await findTemplate({
+      catalogApi: catalogClient,
+      entityRef,
+      token,
+    });
+
+    if (!isSupportedTemplate(template)) {
+      throw new InputError(
+        `Unsupported apiVersion field in schema entity, ${
+          (template as Entity).apiVersion
+        }`,
+      );
+    }
+
+    if (!permissions) {
+      return template;
+    }
+
+    const [parameterDecision, stepDecision] =
+      await permissions.authorizeConditional(
+        [
+          { permission: templateParameterReadPermission },
+          { permission: templateStepReadPermission },
+        ],
+        { token },
+      );
+
+    // Authorize parameters
+    if (Array.isArray(template.spec.parameters)) {
+      template.spec.parameters = template.spec.parameters.filter(step =>
+        isAuthorized(parameterDecision, step),
+      );
+    } else if (
+      template.spec.parameters &&
+      !isAuthorized(parameterDecision, template.spec.parameters)
+    ) {
+      template.spec.parameters = undefined;
+    }
+
+    // Authorize steps
+    template.spec.steps = template.spec.steps.filter(step =>
+      isAuthorized(stepDecision, step),
+    );
+
+    return template;
+  }
 
   return app;
 }

@@ -1,5 +1,6 @@
-name: E2E Test Linux
+name: E2E Linux
 on:
+  # NOTE: If you change these you must update verify_e2e-linux-noop.yml as well
   pull_request:
     paths-ignore:
       - '.changeset/**'
@@ -13,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     services:
       postgres:
@@ -30,14 +31,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         node-version: [16.x, 18.x]
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
-    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    name: E2E Linux ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -52,7 +52,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.2
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

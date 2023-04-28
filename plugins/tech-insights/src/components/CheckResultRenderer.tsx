@@ -26,6 +26,7 @@ import { BooleanCheck } from './BooleanCheck';
 export type CheckResultRenderer = {
   type: string;
   component: (check: CheckResult) => React.ReactElement;
+  description?: (check: CheckResult) => string | React.ReactElement;
 };
 
 /**

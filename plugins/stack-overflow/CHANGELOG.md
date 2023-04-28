@@ -1,5 +1,126 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.14-next.0
+
+### Patch Changes
+
+- c1ff65f315a: StackOverflowSearchResultListItem can now accept an empty result prop so that it can be rendered in the suggested SearchResultListItem pattern.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.0-next.0
+  - @backstage/plugin-home@0.5.1-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.1.13
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-search-react@1.5.2
+  - @backstage/plugin-home@0.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.1.13-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-home@0.4.33-next.3
+  - @backstage/plugin-search-common@1.2.3-next.0
+  - @backstage/plugin-search-react@1.5.2-next.3
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-home@0.4.33-next.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+  - @backstage/plugin-search-react@1.5.2-next.2
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-search-react@1.5.2-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-home@0.4.33-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-home@0.4.33-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.1.12
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 3ef5fb09ca5: Export api ref and StackOverflowApi type
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-home@0.4.32
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-home@0.4.32-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.1.12-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/plugin-home@0.4.32-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
 ## 0.1.12-next.0
 
 ### Patch Changes

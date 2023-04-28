@@ -38,7 +38,7 @@ import {
   Direction,
   EntityNode,
   EntityRelationsGraph,
-  RelationPairs,
+  EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
 import { CurveFilter } from './CurveFilter';
 import { DirectionFilter } from './DirectionFilter';
@@ -103,20 +103,21 @@ const useStyles = makeStyles(
   { name: 'PluginCatalogGraphCatalogGraphPage' },
 );
 
-export const CatalogGraphPage = (props: {
-  relationPairs?: RelationPairs;
-  initialState?: {
-    selectedRelations?: string[];
-    selectedKinds?: string[];
-    rootEntityRefs?: string[];
-    maxDepth?: number;
-    unidirectional?: boolean;
-    mergeRelations?: boolean;
-    direction?: Direction;
-    showFilters?: boolean;
-    curve?: 'curveStepBefore' | 'curveMonotoneX';
-  };
-}) => {
+export const CatalogGraphPage = (
+  props: {
+    initialState?: {
+      selectedRelations?: string[];
+      selectedKinds?: string[];
+      rootEntityRefs?: string[];
+      maxDepth?: number;
+      unidirectional?: boolean;
+      mergeRelations?: boolean;
+      direction?: Direction;
+      showFilters?: boolean;
+      curve?: 'curveStepBefore' | 'curveMonotoneX';
+    };
+  } & Partial<EntityRelationsGraphProps>,
+) => {
   const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
 
   const navigate = useNavigate();
@@ -234,6 +235,7 @@ export const CatalogGraphPage = (props: {
                 navigate to entity.
               </Typography>
               <EntityRelationsGraph
+                {...props}
                 rootEntityNames={rootEntityNames}
                 maxDepth={maxDepth}
                 kinds={

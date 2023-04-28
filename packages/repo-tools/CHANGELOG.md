@@ -1,5 +1,70 @@
 # @backstage/repo-tools
 
+## 0.2.0
+
+### Minor Changes
+
+- a876e69b20e: Adding two new commands to support OpenAPI spec writing, `schema:openapi:generate` to generate the Typescript file that `@backstage/backend-openapi-utils` needs for typing and `schema:openapi:verify` to verify that this file exists and matches your `src/schema/openapi.yaml` file.
+
+### Patch Changes
+
+- f59041a3c07: Package paths provided to `api-reports` and OpenAPI commands will now match any path within the target package.
+- f59041a3c07: Added `--include <patterns>` and `--exclude <patterns>` options for `api-reports` command that work based on package names.
+- 9129ca8cabb: Log API report instructions when api-report is missing.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-node@0.1.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
+## 0.2.0-next.2
+
+### Minor Changes
+
+- a876e69b20e: Adding two new commands to support OpenAPI spec writing, `schema:openapi:generate` to generate the Typescript file that `@backstage/backend-openapi-utils` needs for typing and `schema:openapi:verify` to verify that this file exists and matches your `src/schema/openapi.yaml` file.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 9129ca8cabb: Log API report instructions when api-report is missing.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+
+## 0.1.3
+
+### Patch Changes
+
+- 32a4a05838c: Tweaked type dependency check to trim wildcard type imports.
+- 6ba8faf22ac: The API report generation process is now able to detect and generate reports for additional entry points declared in the package `"exports"` field.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/cli-common@0.1.12
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/cli-common@0.1.12-next.0
+
 ## 0.1.3-next.0
 
 ### Patch Changes

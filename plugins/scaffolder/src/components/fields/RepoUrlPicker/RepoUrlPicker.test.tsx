@@ -38,6 +38,16 @@ describe('RepoUrlPicker', () => {
       integrations: [
         { host: 'github.com', type: 'github', title: 'github.com' },
         { host: 'dev.azure.com', type: 'azure', title: 'dev.azure.com' },
+        {
+          host: 'server.bitbucket.org',
+          type: 'bitbucketServer',
+          title: 'server.bitbucket.org',
+        },
+        {
+          host: 'gitlab.example.com',
+          type: 'gitlab',
+          title: 'gitlab.example.com',
+        },
       ],
     }),
   };
@@ -168,6 +178,118 @@ describe('RepoUrlPicker', () => {
           customScopes: {
             github: ['workflow'],
           },
+        },
+      });
+
+      const currentSecrets = JSON.parse(
+        getByTestId('current-secrets').textContent!,
+      );
+
+      expect(currentSecrets).toEqual({
+        secrets: { testKey: 'abc123' },
+      });
+    });
+    it('should call the scmAuthApi with the correct params if workspace is nested', async () => {
+      const SecretsComponent = () => {
+        const { secrets } = useTemplateSecrets();
+        return (
+          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
+        );
+      };
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  allowedHosts: ['gitlab.example.com'],
+                  requestUserCredentials: {
+                    secretsKey: 'testKey',
+                  },
+                },
+              }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
+            />
+            <SecretsComponent />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [projectInput, repoInput] = getAllByRole('textbox');
+
+      await act(async () => {
+        fireEvent.change(projectInput, {
+          target: { value: 'backstage/mysubgroup' },
+        });
+        fireEvent.change(repoInput, { target: { value: 'repo123' } });
+
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: 'https://gitlab.example.com/backstage/mysubgroup/repo123',
+        additionalScope: {
+          repoWrite: true,
+        },
+      });
+    });
+    it('should call the scmAuthApi with the correct params if only a project is set', async () => {
+      const SecretsComponent = () => {
+        const { secrets } = useTemplateSecrets();
+        return (
+          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
+        );
+      };
+      const { getAllByRole, getByTestId } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  allowedHosts: ['server.bitbucket.org'],
+                  requestUserCredentials: {
+                    secretsKey: 'testKey',
+                  },
+                },
+              }}
+              fields={{ RepoUrlPicker: RepoUrlPicker }}
+            />
+            <SecretsComponent />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [projectInput, repoInput] = getAllByRole('textbox');
+
+      await act(async () => {
+        fireEvent.change(projectInput, { target: { value: 'backstage' } });
+        fireEvent.change(repoInput, { target: { value: 'repo123' } });
+
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: 'https://server.bitbucket.org/backstage/repo123',
+        additionalScope: {
+          repoWrite: true,
         },
       });
 

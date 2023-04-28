@@ -1,5 +1,93 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.1-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.5.5
+
+### Patch Changes
+
+- 1469daa409e: Search backend modules migrated to the new backend system. For documentation on how to migrate, check out the [how to migrate to the new backend system guide](https://backstage.io/docs/features/search/how-to-guides/#how-to-migrate-your-backend-installation-to-use-search-together-with-the-new-backend-system).
+- 87ca22ce9c9: Fixed a bug that could cause orphaned PG connections to accumulate (eventually
+  exhausting available connections) when errors were encountered earlier in the
+  search indexing process.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-search-backend-node@1.2.0
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.2.0-next.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- 1469daa409e: Search backend modules migrated to the new backend system. For documentation on how to migrate, check out the [how to migrate to the new backend system guide](https://backstage.io/docs/features/search/how-to-guides/#how-to-migrate-your-backend-installation-to-use-search-together-with-the-new-backend-system).
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.0-next.1
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.5-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.4
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/plugin-search-backend-node@1.1.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-search-backend-node@1.1.4-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 0.5.4-next.0
 
 ### Patch Changes

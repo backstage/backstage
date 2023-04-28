@@ -25,6 +25,16 @@ export function registerCommands(program: Command) {
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
     .option(
+      '--include <pattern>',
+      'Only include packages matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
+    .option(
+      '--exclude <pattern>',
+      'Exclude package matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
+    .option(
       '-a, --allow-warnings <allowWarningsPaths>',
       'continue processing packages after getting errors on selected packages Allows glob patterns and comma separated values (i.e. packages/core,plugins/core-*)',
     )
@@ -52,6 +62,20 @@ export function registerCommands(program: Command) {
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
+
+  program
+    .command('schema:openapi:verify [paths...]')
+    .description(
+      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
+    )
+    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
+
+  program
+    .command('schema:openapi:generate [paths...]')
+    .description(
+      'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
+    )
+    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
 }
 
 // Wraps an action function so that it always exits and handles errors

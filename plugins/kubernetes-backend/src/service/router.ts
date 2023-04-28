@@ -21,6 +21,7 @@ import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /**
  *
@@ -32,6 +33,7 @@ export interface RouterOptions {
   catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
   discovery: PluginEndpointDiscovery;
+  permissions: PermissionEvaluator;
 }
 
 /**

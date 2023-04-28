@@ -16,7 +16,7 @@
 
 # Support
 
-If you need help with this plugin, please reach out on the [Backstage Discord server](https://discord.gg/MUpMjP2).
+If you need help with this plugin, please reach out on the [Backstage Discord server](https://discord.gg/backstage-687207715902193673).
 
 # Integration Walk-through
 

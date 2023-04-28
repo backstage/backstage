@@ -18,22 +18,23 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const ALL_RELATION_PAIRS: RelationPairs;
 
 // @public
-export const CatalogGraphPage: (props: {
-  relationPairs?: RelationPairs | undefined;
-  initialState?:
-    | {
-        selectedRelations?: string[] | undefined;
-        selectedKinds?: string[] | undefined;
-        rootEntityRefs?: string[] | undefined;
-        maxDepth?: number | undefined;
-        unidirectional?: boolean | undefined;
-        mergeRelations?: boolean | undefined;
-        direction?: Direction | undefined;
-        showFilters?: boolean | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-      }
-    | undefined;
-}) => JSX.Element;
+export const CatalogGraphPage: (
+  props: {
+    initialState?:
+      | {
+          selectedRelations?: string[] | undefined;
+          selectedKinds?: string[] | undefined;
+          rootEntityRefs?: string[] | undefined;
+          maxDepth?: number | undefined;
+          unidirectional?: boolean | undefined;
+          mergeRelations?: boolean | undefined;
+          direction?: Direction | undefined;
+          showFilters?: boolean | undefined;
+          curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        }
+      | undefined;
+  } & Partial<EntityRelationsGraphProps>,
+) => JSX.Element;
 
 // @public
 export const catalogGraphPlugin: BackstagePlugin<

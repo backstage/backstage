@@ -39,6 +39,8 @@ const routes = (
 
 ```
 
+`BazaarPage` can be given the optional properties `fullHeight` and `fullWidth` which are used to adjust the cards styling to fit more or less on the page as required (both default to `true`).
+
 Add a **Bazaar icon** to the Sidebar to easily access the Bazaar. In `packages/app/src/components/Root.tsx` add:
 
 ```diff
@@ -125,6 +127,7 @@ The other fields are:
 
 - project - link Bazaar project to existing entity in the catalog
 - community link - link to where the project members can communicate, e.g. Teams or Discord link
+- docs link - link to visit the documentation of the project
 - start date
 - end date
 

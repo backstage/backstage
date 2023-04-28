@@ -22,5 +22,6 @@
 
 export { shortcutsPlugin, Shortcuts } from './plugin';
 export * from './api';
+export * from './deprecated';
 export type { Shortcut } from './types';
 export type { ShortcutsProps } from './Shortcuts';

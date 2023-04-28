@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { KubernetesDrawer } from '../../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../../KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
 export const RolloutDrawer = ({
@@ -26,7 +26,7 @@ export const RolloutDrawer = ({
   expanded?: boolean;
 }) => {
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={rollout}
       expanded={expanded}
       kind="Rollout"
@@ -50,6 +50,6 @@ export const RolloutDrawer = ({
           </Typography>
         </Grid>
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

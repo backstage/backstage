@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
 import {
   AnyApiRef,
   configApiRef,
@@ -29,6 +28,7 @@ import {
 } from '@backstage/plugin-permission-react';
 import { rest } from 'msw';
 import {
+  renderInTestApp,
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -88,7 +88,7 @@ describe('AzureSitesOverviewWidget', () => {
   });
 
   it('should display an overview table with the data from the requests', async () => {
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <AzureSitesOverviewTable data={[siteMock]} loading={false} />
       </TestApiProvider>,

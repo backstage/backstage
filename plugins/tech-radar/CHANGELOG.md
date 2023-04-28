@@ -1,5 +1,96 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Added the ability to display a timeline to each entry in the details box
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/theme@0.2.19
+
+## 0.6.3
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.6.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+
+## 0.6.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/theme@0.2.19-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
+## 0.6.2
+
+### Patch Changes
+
+- e14dcfa4994: Update colors to match Zalando's tech radar, also add coloring on title and legend to match ring color.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- e14dcfa4994: Update colors to match Zalando's tech radar, also add coloring on title and legend to match ring color.
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+
 ## 0.6.2-next.0
 
 ### Patch Changes

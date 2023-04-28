@@ -1,5 +1,184 @@
 # @backstage/backend-common
 
+## 0.18.5-next.0
+
+### Patch Changes
+
+- 284db225083: Updated the `DatabaseManager` to include the plugin id in the Postgres application name of the database connections created for each plugin.
+- 42d817e76ab: Added `HostDiscovery` to supersede deprecated `SingleHostDiscovery` (deprecated due to name)
+- Updated dependencies
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/backend-app-api@0.4.3-next.0
+  - @backstage/config-loader@1.3.0-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.18.4
+
+### Patch Changes
+
+- a1002df2dc2: Support commit hashes at `GithubUrlReader.readTree/search` additionally to branch names.
+
+  Additionally, this will reduce the number of API calls from 2 to 1 for retrieving the "repo details"
+  for all cases besides when the default branch has to be resolved and used
+  (e.g., repo URL without any branch or commit hash).
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- 2b15cb4aa0a: The dependency isomorphic-git is now on version 1.23.0
+- 34167270b31: Renamed the `loadBackendConfig` option `additionalConfig` to `additionalConfigs` as an array, and ensured that they get passed on properly.
+
+  This is technically breaking, but the [original addition](https://github.com/backstage/backstage/pull/16643) hasn't been released in mainline yet so we are taking this step now as a `patch` change.
+
+- 420164593cf: Improve GitlabUrlReader to only load requested sub-path
+- Updated dependencies
+  - @backstage/config-loader@1.2.0
+  - @backstage/backend-app-api@0.4.2
+  - @backstage/integration@1.4.4
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-app-api@0.4.2-next.1
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.4-next.0
+
+### Patch Changes
+
+- 420164593cf: Improve GitlabUrlReader to only load requested sub-path
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.18.3
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- c1ee073a82b: Added `lastModifiedAt` field on `UrlReaderService` responses and a `lastModifiedAfter` option to `UrlReaderService.readUrl`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/backend-app-api@0.4.1
+  - @backstage/config-loader@1.1.9
+  - @backstage/integration@1.4.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/types@1.0.2
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- f75097868a7: Adds config option `backend.database.role` to set ownership for newly created schemas and tables in Postgres
+
+  The example config below connects to the database as user `v-backstage-123` but sets the ownership of
+  the create schemas and tables to `backstage`
+
+  ```yaml
+  backend:
+    database:
+      client: pg
+      pluginDivisionMode: schema
+      role: backstage
+      connection:
+        user: v-backstage-123
+        ...
+  ```
+
+- 87f0bbec175: AwsS3UrlReader upgraded to use aws-sdk v3
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-dev-utils@0.1.1-next.0
+  - @backstage/backend-app-api@0.4.1-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.18.3-next.0
 
 ### Patch Changes

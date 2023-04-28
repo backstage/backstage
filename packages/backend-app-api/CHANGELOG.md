@@ -1,5 +1,139 @@
 # @backstage/backend-app-api
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- cf13b482f9e: Switch `configServiceFactory` to use `ConfigSources` from `@backstage/config-loader` to load config.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/config-loader@1.3.0-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.4.2
+
+### Patch Changes
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- 8cce2205a39: Register unhandled rejection and uncaught exception handlers to avoid backend crashes.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/config-loader@1.2.0
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- 5c7ce585824: Allow an additionalConfig to be provided to loadBackendConfig that fetches config values during runtime.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/backend-tasks@0.5.1-next.1
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 8cce2205a39: Register unhandled rejection and uncaught exception handlers to avoid backend crashes.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.1.9
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 482dae5de1c: Updated link to docs.
+- 915e46622cf: Add support for `NotImplementedError`, properly returning 501 as status code.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/config-loader@1.1.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.6-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- 915e46622cf: Add support for `NotImplementedError`, properly returning 501 as status code.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.6-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/config-loader@1.1.9-next.0
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
 ## 0.4.1-next.0
 
 ### Patch Changes

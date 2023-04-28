@@ -19,7 +19,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { GithubEntityProvider } from './providers/GithubEntityProvider';
 import {

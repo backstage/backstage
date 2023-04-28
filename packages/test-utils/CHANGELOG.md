@@ -1,5 +1,134 @@
 # @backstage/test-utils
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.3.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-app-api@1.7.0
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.3.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-app-api@1.7.0-next.2
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+
+## 1.3.0-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/core-app-api@1.7.0-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.0-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.4
+
+## 1.2.6
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/core-app-api@1.6.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11
+
+## 1.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-permission-react@0.4.11-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.2.6-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/core-app-api@1.5.1-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-react@0.4.11-next.1
+
 ## 1.2.6-next.0
 
 ### Patch Changes

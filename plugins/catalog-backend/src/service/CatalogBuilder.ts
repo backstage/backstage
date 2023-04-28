@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -115,6 +116,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  scheduler?: PluginTaskScheduler;
 };
 
 /**
@@ -424,7 +426,7 @@ export class CatalogBuilder {
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
-    const { config, database, logger, permissions } = this.env;
+    const { config, database, logger, permissions, scheduler } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -517,17 +519,19 @@ export class CatalogBuilder {
       provider => provider.getProviderName(),
     );
 
-    const processingEngine = new DefaultCatalogProcessingEngine(
+    const processingEngine = new DefaultCatalogProcessingEngine({
+      config,
+      scheduler,
       logger,
       processingDatabase,
       orchestrator,
       stitcher,
-      () => createHash('sha1'),
-      1000,
-      event => {
+      createHash: () => createHash('sha1'),
+      pollingIntervalMs: 1000,
+      onProcessingError: event => {
         this.onProcessingError?.(event);
       },
-    );
+    });
 
     const locationAnalyzer =
       this.locationAnalyzer ??
@@ -599,15 +603,27 @@ export class CatalogBuilder {
       ...this.placeholderResolvers,
     };
 
-    // These are always there no matter what
+    // The placeholder is always there no matter what
     const processors: CatalogProcessor[] = [
       new PlaceholderProcessor({
         resolvers: placeholderResolvers,
         reader,
         integrations,
       }),
-      new BuiltinKindsEntityProcessor(),
     ];
+
+    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
+    // If the user adds a processor named 'BuiltinKindsEntityProcessor',
+    //   skip inclusion of the catalog-backend version.
+    if (
+      !this.processors.some(
+        processor =>
+          processor.getProcessorName() ===
+          builtinKindsEntityProcessor.getProcessorName(),
+      )
+    ) {
+      processors.push(builtinKindsEntityProcessor);
+    }
 
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {

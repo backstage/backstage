@@ -7,21 +7,27 @@
 
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { Schema } from 'jsonschema';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
+import { z } from 'zod';
 
 // @public
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<
+  TActionInput extends JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
-  output(name: string, value: JsonValue): void;
+  input: TActionInput;
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
+  ): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
@@ -29,17 +35,42 @@ export type ActionContext<TInput extends JsonObject> = {
     entity?: UserEntity;
     ref?: string;
   };
+  signal?: AbortSignal;
 };
 
 // @public
-export const createTemplateAction: <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-) => TemplateAction<TInput>;
+export const createTemplateAction: <
+  TInputParams extends JsonObject = JsonObject,
+  TOutputParams extends JsonObject = JsonObject,
+  TInputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TOutputSchema extends z.ZodType<any, z.ZodTypeDef, any> | Schema = {},
+  TActionInput extends JsonObject = TInputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn
+  >
+    ? IReturn
+    : TInputParams,
+  TActionOutput extends JsonObject = TOutputSchema extends z.ZodType<
+    any,
+    any,
+    infer IReturn_1
+  >
+    ? IReturn_1
+    : TOutputParams,
+>(
+  action: TemplateActionOptions<
+    TActionInput,
+    TActionOutput,
+    TInputSchema,
+    TOutputSchema
+  >,
+) => TemplateAction<TActionInput, TActionOutput>;
 
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
-  addActions(...actions: TemplateAction<any>[]): void;
+  addActions(...actions: TemplateAction<any, any>[]): void;
 }
 
 // @alpha
@@ -51,7 +82,10 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public (undocumented)
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
   id: string;
   description?: string;
   examples?: {
@@ -63,6 +97,27 @@ export type TemplateAction<TInput extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
+};
+
+// @public (undocumented)
+export type TemplateActionOptions<
+  TActionInput extends JsonObject = {},
+  TActionOutput extends JsonObject = {},
+  TInputSchema extends Schema | z.ZodType = {},
+  TOutputSchema extends Schema | z.ZodType = {},
+> = {
+  id: string;
+  description?: string;
+  examples?: {
+    description: string;
+    example: string;
+  }[];
+  supportsDryRun?: boolean;
+  schema?: {
+    input?: TInputSchema;
+    output?: TOutputSchema;
+  };
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
 ```

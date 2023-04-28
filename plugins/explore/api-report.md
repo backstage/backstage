@@ -33,6 +33,12 @@ export const catalogEntityRouteRef: ExternalRouteRef<
 >;
 
 // @public (undocumented)
+export const CatalogKindExploreContent: (props: {
+  title?: string;
+  kind: string;
+}) => JSX.Element;
+
+// @public (undocumented)
 export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
 
 // @public (undocumented)
@@ -50,11 +56,7 @@ export const exploreApiRef: ApiRef<ExploreApi>;
 
 // @public
 export class ExploreClient implements ExploreApi {
-  constructor({
-    discoveryApi,
-    fetchApi,
-    exploreToolsConfig,
-  }: {
+  constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     exploreToolsConfig?: ExploreToolsConfig;

@@ -84,11 +84,11 @@ export interface Config {
                */
               repository?: string;
               /**
-               * (Optional) GitHub topic-based filters.
+               * (Optional) Allow Forks to be evaluated.
                */
               allowForks?: boolean;
               /**
-               * (Optional) Allow Forks to be evaluated.
+               * (Optional) GitHub topic-based filters.
                */
               topic?: {
                 /**
@@ -108,6 +108,10 @@ export interface Config {
                  */
                 exclude?: string[];
               };
+              /**
+               * (Optional) GitHub repository visibility filter.
+               */
+              visibility?: Array<'private' | 'internal' | 'public'>;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -169,6 +173,10 @@ export interface Config {
                    */
                   exclude?: string[];
                 };
+                /**
+                 * (Optional) GitHub repository visibility filter.
+                 */
+                visibility?: Array<'private' | 'internal' | 'public'>;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.

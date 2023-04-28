@@ -27,7 +27,7 @@ import { ShortcutForm } from './ShortcutForm';
 import { FormValues, Shortcut } from './types';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { ShortcutApi } from './api';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi, useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -46,14 +46,23 @@ type Props = {
   onClose: () => void;
   anchorEl?: Element;
   api: ShortcutApi;
+  allowExternalLinks?: boolean;
 };
 
-export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
+export const EditShortcut = ({
+  shortcut,
+  onClose,
+  anchorEl,
+  api,
+  allowExternalLinks,
+}: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const open = Boolean(anchorEl);
+  const analytics = useAnalytics();
 
   const handleSave: SubmitHandler<FormValues> = async ({ url, title }) => {
+    analytics.captureEvent('click', `Clicked 'Save' in Edit Shortcut`);
     const newShortcut: Shortcut = {
       ...shortcut,
       url,
@@ -127,6 +136,7 @@ export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
           formValues={{ url: shortcut.url, title: shortcut.title }}
           onClose={handleClose}
           onSave={handleSave}
+          allowExternalLinks={allowExternalLinks}
         />
       </Card>
     </Popover>

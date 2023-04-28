@@ -31,8 +31,8 @@ import { ConfigReader } from '@backstage/config';
 import {
   convertTechDocsRefToLocationAnnotation,
   createLogger,
+  getLogStream,
 } from '../../lib/utility';
-import { stdout } from 'process';
 
 export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
@@ -110,7 +110,7 @@ export default async function generate(opts: OptionValues) {
       : {}),
     logger,
     etag: opts.etag,
-    ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
+    logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
   });
 

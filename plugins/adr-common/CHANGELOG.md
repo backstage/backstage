@@ -1,5 +1,61 @@
 # @backstage/plugin-adr-common
 
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.2.8
+
+### Patch Changes
+
+- 77aa3a4d47e: use path attribute to fetch files instead of name and update the UI to navigate over subdirectories
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- 77aa3a4d47e: use path attribute to fetch files instead of name and update the UI to navigate over subdirectories
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-search-common@1.2.2
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 0.2.7-next.0
 
 ### Patch Changes

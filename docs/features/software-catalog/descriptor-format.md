@@ -255,7 +255,7 @@ i.e. not Backstage specific but the same as in Kubernetes.
 
 Each entity gets an automatically generated globally unique ID when it first
 enters the database. This field is not meant to be specified as input data, but
-is rater created by the database engine itself when producing the output entity.
+is rather created by the database engine itself when producing the output entity.
 
 Note that `uid` values are _not_ to be seen as stable, and should _not_ be used
 as external references to an entity. The `uid` can change over time even when a
@@ -400,12 +400,8 @@ follows.
   // ...
   "relations": [
     {
-      "target": {
-        "kind": "group",
-        "namespace": "default",
-        "name": "dev.infra"
-      },
-      "type": "ownedBy"
+      "type": "ownedBy",
+      "targetRef": "group:default/dev.infra"
     }
   ],
   "spec": {
@@ -417,11 +413,11 @@ follows.
 
 The fields of a relation are:
 
-| Field      | Type   | Description                                                                      |
-| ---------- | ------ | -------------------------------------------------------------------------------- |
-| `target`   | Object | A complete [compound reference](references.md) to the other end of the relation. |
-| `type`     | String | The type of relation FROM a source entity TO the target entity.                  |
-| `metadata` | Object | Reserved for future use.                                                         |
+| Field       | Type   | Description                                                                |
+| ----------- | ------ | -------------------------------------------------------------------------- |
+| `targetRef` | String | A full [entity reference](references.md) to the other end of the relation. |
+| `type`      | String | The type of relation FROM a source entity TO the target entity.            |
+| `metadata`  | Object | Reserved for future use.                                                   |
 
 Entity descriptor YAML files are not supposed to contain this field. Instead,
 catalog processors analyze the entity descriptor data and its surroundings, and

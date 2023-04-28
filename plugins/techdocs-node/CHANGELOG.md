@@ -1,5 +1,136 @@
 # @backstage/plugin-techdocs-node
 
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.7.0
+
+### Minor Changes
+
+- a8b9357eb71: Use the latest version `v.1.2.0` of the spotify/techdocs docker image as default
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.6.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.6.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.6.0
+
+### Minor Changes
+
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- bf493710f50: Update to a newer version of `@trendyol-js/openstack-swift-sdk`
+- bfe350ef4ce: Fixed bug that prevented deletion of stale files when non-empty directories where tried to be deleted as well.
+- Updated dependencies
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/integration-aws-node@0.1.2-next.0
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- bfe350ef4ce: Fixed bug that prevented deletion of stale files when non-empty directories where tried to be deleted as well.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/integration-aws-node@0.1.2-next.0
+  - @backstage/plugin-search-common@1.2.2-next.0
+
 ## 1.5.1-next.0
 
 ### Patch Changes

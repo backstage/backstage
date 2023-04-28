@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
 import { Typography, Grid, Chip } from '@material-ui/core';
 
@@ -29,7 +29,7 @@ export const DeploymentDrawer = ({
 }) => {
   const namespace = deployment.metadata?.namespace;
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={deployment}
       expanded={expanded}
       kind="Deployment"
@@ -73,6 +73,6 @@ export const DeploymentDrawer = ({
           </Grid>
         )}
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

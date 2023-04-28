@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Analytics Module plugin for Google Analytics.
+ *
+ * @packageDocumentation
+ */
+
 export { analyticsModuleGA } from './plugin';
 export * from './apis/implementations/AnalyticsApi';

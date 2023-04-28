@@ -10,13 +10,9 @@ When there is no Linguist data yet the card will be empty:
 
 ![Example of empty Linguist card](./docs/linguist-no-data.png)
 
-Clicking on the refresh icon will generate the language breakdown:
+Once the language breakdown has been generated the card will look like this:
 
-![Example of Linguist card with data](./docs/linguist-with-data.png)
-
-Here's an example where the permissions are hiding the refresh button:
-
-![Example of Linguist card without the refresh button](./docs/linguist-no-refresh.png)
+![Example of Linguist card without the refresh button](./docs/linguist-with-data.png)
 
 ## Setup
 

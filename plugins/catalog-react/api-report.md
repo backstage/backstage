@@ -27,13 +27,9 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 
 // @public
-export const AsyncEntityProvider: ({
-  children,
-  entity,
-  loading,
-  error,
-  refresh,
-}: AsyncEntityProviderProps) => JSX.Element;
+export const AsyncEntityProvider: (
+  props: AsyncEntityProviderProps,
+) => JSX.Element;
 
 // @public
 export interface AsyncEntityProviderProps {
@@ -82,6 +78,9 @@ export type CatalogReactComponentsNameToClassKey = {
 
 // @public (undocumented)
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
+
+// @public (undocumented)
+export type CatalogReactEntityNamespacePickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -135,6 +134,7 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
+  namespace?: EntityNamespaceFilter;
 };
 
 // @public
@@ -220,9 +220,9 @@ export type EntityListContextProps<
 };
 
 // @public
-export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
-  children,
-}: PropsWithChildren<{}>) => JSX.Element;
+export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
+  props: PropsWithChildren<{}>,
+) => JSX.Element;
 
 // @public (undocumented)
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -231,6 +231,20 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
   error?: Error;
   refresh?: VoidFunction;
 };
+
+// @public
+export class EntityNamespaceFilter implements EntityFilter {
+  constructor(values: string[]);
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  toQueryValue(): string[];
+  // (undocumented)
+  readonly values: string[];
+}
+
+// @public (undocumented)
+export const EntityNamespacePicker: () => JSX.Element;
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
@@ -246,7 +260,6 @@ export class EntityOwnerFilter implements EntityFilter {
   constructor(values: string[]);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
-  // (undocumented)
   toQueryValue(): string[];
   // (undocumented)
   readonly values: string[];
@@ -476,12 +489,11 @@ export function InspectEntityDialog(props: {
 // @public (undocumented)
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
->({
-  children,
-  value,
-}: PropsWithChildren<{
-  value?: Partial<EntityListContextProps<T>>;
-}>): JSX.Element;
+>(
+  props: PropsWithChildren<{
+    value?: Partial<EntityListContextProps<T>>;
+  }>,
+): JSX.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {

@@ -4,19 +4,19 @@
 
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
-import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-backend';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { GroupEntity } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -103,7 +103,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   constructor(options: GithubLocationAnalyzerOptions);
   // (undocumented)
-  analyze({ url, catalogFilename }: AnalyzeOptions): Promise<{
+  analyze(options: AnalyzeOptions): Promise<{
     existing: {
       location: {
         type: string;
@@ -131,6 +131,42 @@ export type GithubMultiOrgConfig = Array<{
   groupNamespace: string;
   userNamespace: string | undefined;
 }>;
+
+// @public
+export class GithubMultiOrgEntityProvider implements EntityProvider {
+  constructor(options: {
+    id: string;
+    gitHubConfig: GithubIntegrationConfig;
+    githubCredentialsProvider: GithubCredentialsProvider;
+    githubUrl: string;
+    logger: Logger;
+    orgs?: string[];
+    userTransformer?: UserTransformer;
+    teamTransformer?: TeamTransformer;
+  });
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: GithubMultiOrgEntityProviderOptions,
+  ): GithubMultiOrgEntityProvider;
+  // (undocumented)
+  getProviderName(): string;
+  read(options?: { logger?: Logger }): Promise<void>;
+}
+
+// @public
+export interface GithubMultiOrgEntityProviderOptions {
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  githubUrl: string;
+  id: string;
+  logger: Logger;
+  orgs?: string[];
+  schedule?: 'manual' | TaskRunner;
+  teamTransformer?: TeamTransformer;
+  userTransformer?: UserTransformer;
+}
 
 // @public
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {

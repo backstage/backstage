@@ -1,5 +1,54 @@
 # @backstage/catalog-client
 
+## 1.4.1
+
+### Patch Changes
+
+- c1c4e080b79: Fixed bug in `queryEntities` of `CatalogClient` where the `sortField` is supposed to be changed to `orderField`.
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/errors@1.1.5
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- c1c4e080b79: Fixed bug in `queryEntities` of `CatalogClient` where the `sortField` is supposed to be changed to `orderField`.
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+
+## 1.4.0
+
+### Minor Changes
+
+- 8c030b1826c: Add `queryEntities` method to `CatalogApi`.
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- c630360631f: Ensure that `getEntitiesByRefs` returns `undefined` instead of `null` for missing items
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/catalog-model@1.2.1
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+
 ## 1.4.0-next.0
 
 ### Minor Changes

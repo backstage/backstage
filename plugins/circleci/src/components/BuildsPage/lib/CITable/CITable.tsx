@@ -21,6 +21,7 @@ import {
   Box,
   IconButton,
   makeStyles,
+  Tooltip,
 } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -116,7 +117,13 @@ const SourceInfo = ({ build }: { build: CITableBuildInfo }) => {
 
   return (
     <Box display="flex" alignItems="center" className={classes.root}>
-      <Avatar alt={user.name} src={user.avatarUrl} className={classes.small} />
+      <Tooltip title={user.name ?? user.login}>
+        <Avatar
+          alt={user.name}
+          src={user.avatarUrl}
+          className={classes.small}
+        />
+      </Tooltip>
       <Box>
         <Typography variant="button">{source?.branchName}</Typography>
         <Typography variant="body1">
@@ -204,7 +211,9 @@ const generatedColumns: TableColumn[] = [
           run {relativeTimeTo(row?.startTime)}
         </Typography>
         <Typography variant="body2">
-          took {durationHumanized(row?.startTime, row?.stopTime)}
+          {row?.stopTime
+            ? `took ${durationHumanized(row?.startTime, row?.stopTime)}`
+            : ''}
         </Typography>
       </>
     ),
@@ -217,7 +226,11 @@ const generatedColumns: TableColumn[] = [
       <Link
         to={`https://app.circleci.com/pipelines/workflows/${row?.workflow?.id}`}
       >
-        {row?.workflow?.name}
+        <Box display="flex" alignItems="center">
+          <LaunchIcon fontSize="small" color="disabled" />
+          <Box mr={1} />
+          {row?.workflow?.name}
+        </Box>
       </Link>
     ),
   },

@@ -74,13 +74,15 @@ export type ConditionTransformer<TQuery> = (
 ) => PermissionCriteria<TQuery>;
 
 // @public
+export const createConditionAuthorizer: <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string>[],
+) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public
 export const createConditionExports: <
   TResourceType extends string,
   TResource,
-  TRules extends Record<
-    string,
-    PermissionRule<TResource, any, TResourceType, PermissionRuleParams>
-  >,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
 >(options: {
   pluginId: string;
   resourceType: TResourceType;
@@ -89,9 +91,7 @@ export const createConditionExports: <
   conditions: Conditions<TRules>;
   createConditionalDecision: (
     permission: ResourcePermission<TResourceType>,
-    conditions: PermissionCriteria<
-      PermissionCondition<TResourceType, PermissionRuleParams>
-    >,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
   ) => ConditionalPolicyDecision;
 };
 
@@ -106,26 +106,50 @@ export const createConditionFactory: <
 // @public
 export const createConditionTransformer: <
   TQuery,
-  TRules extends PermissionRule<any, TQuery, string, PermissionRuleParams>[],
+  TRules extends PermissionRule<any, TQuery, string>[],
 >(
   permissionRules: [...TRules],
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+  TResourceType2 extends string,
+  TResource2,
+  TResourceType3 extends string,
+  TResource3,
+>(
+  options:
+    | {
+        permissions: Array<Permission>;
+      }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType1,
+        TResource1
+      >
+    | PermissionIntegrationRouterOptions<
+        TResourceType1,
+        TResource1,
+        TResourceType2,
+        TResource2,
+        TResourceType3,
+        TResource3
+      >,
+): express.Router;
+
+// @public
+export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
->(options: {
+> = {
   resourceType: TResourceType;
-  permissions?: Permission[] | undefined;
-  rules: PermissionRule<
-    TResource,
-    any,
-    NoInfer<TResourceType>,
-    PermissionRuleParams
-  >[];
-  getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
-}) => express.Router;
+  permissions?: Array<Permission>;
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
+};
 
 // @public
 export const createPermissionRule: <
@@ -173,6 +197,49 @@ export type MetadataResponseSerializedRule = {
   description: string;
   resourceType: string;
   paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
+
+// @public
+export type PermissionIntegrationRouterOptions<
+  TResourceType1 extends string = string,
+  TResource1 = any,
+  TResourceType2 extends string = string,
+  TResource2 = any,
+  TResourceType3 extends string = string,
+  TResource3 = any,
+> = {
+  resources: Readonly<
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType3,
+          TResource3
+        >,
+      ]
+  >;
 };
 
 // @public

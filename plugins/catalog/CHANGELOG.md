@@ -1,5 +1,238 @@
 # @backstage/plugin-catalog
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 2258dcae970: Added an entity namespace filter and column on the default catalog page.
+
+  If you have a custom version of the catalog page, you can add this filter in your CatalogPage code:
+
+  ```ts
+  <CatalogFilterLayout>
+    <CatalogFilterLayout.Filters>
+      <EntityTypePicker />
+      <UserListPicker initialFilter={initiallySelectedFilter} />
+      <EntityTagPicker />
+      /* if you want namespace picker */
+      <EntityNamespacePicker />
+    </CatalogFilterLayout.Filters>
+    <CatalogFilterLayout.Content>
+      <CatalogTable columns={columns} actions={actions} />
+    </CatalogFilterLayout.Content>
+  </CatalogFilterLayout>
+  ```
+
+  The namespace column can be added using `createNamespaceColumn();`. This is only needed if you customized the columns for CatalogTable.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/plugin-search-react@1.6.0-next.0
+  - @backstage/integration-react@1.1.13-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.10.0
+
+### Minor Changes
+
+- 4dbf3d3e4da: Added a new EntitySwitch isResourceType to allow different views depending on Resource type
+- fc6cab4eb48: Added `isEntityWith` condition helper for `EntitySwitch` case statements.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/plugin-search-react@1.5.2
+  - @backstage/integration-react@1.1.12
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.10.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration-react@1.1.12-next.3
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-search-common@1.2.3-next.0
+  - @backstage/plugin-search-react@1.5.2-next.3
+
+## 1.10.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration-react@1.1.12-next.2
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+  - @backstage/plugin-search-react@1.5.2-next.2
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/integration-react@1.1.12-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/plugin-search-react@1.5.2-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 4dbf3d3e4da: Added a new EntitySwitch isResourceType to allow different views depending on Resource type
+- fc6cab4eb48: Added `isEntityWith` condition helper for `EntitySwitch` case statements.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-search-react@1.5.2-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/integration-react@1.1.12-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.9.0
+
+### Minor Changes
+
+- 23cc40039c0: Allow `EntitySwitch` to render all cases that match the condition.
+
+  This change introduces a new parameter for the `EntitySwitch` component
+  `renderMultipleMatches`. In case the parameter value is `all`, the `EntitySwitch`
+  will render all `EntitySwitch.Case` that contain `if` parameter, and it
+  evaluates to true. In case none of the cases match, the default case will be
+  rendered, if any.
+
+  This means for example in the CI/CD page you can now do the following:
+
+  ```tsx
+  <EntitySwitch renderMultipleMatches="all">
+    <EntitySwitch.Case if={isJenkinsAvailable}>Jenkins</EntitySwitch.Case>
+    <EntitySwitch.Case if={isCodebuildAvailable}>CodeBuild</EntitySwitch.Case>
+    <EntitySwitch.Case>No CI/CD</EntitySwitch.Case>
+  </EntitySwitch>
+  ```
+
+  This allows the component to have multiple CI/CD systems and all of those are
+  rendered on the same page.
+
+- 3f75b7607ca: Add ability to pass icon as function to have ability to customize it by search item
+- c9a9f3c834f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+
+### Patch Changes
+
+- 3fa41696820: Make the "Copied!" message disappear automatically after some time
+- 7e8930ae1c6: Fix icon alignment in `CatalogSearchResultListItem`
+- dbbde6ed353: fix entity switch rendering when there is no default case
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/plugin-search-react@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration-react@1.1.11
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.9.0-next.2
+
+### Minor Changes
+
+- 23cc40039c0: allow entity switch to render all cases that match the condition
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/plugin-search-react@1.5.1-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/integration-react@1.1.11-next.2
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- c9a9f3c834f: Add a `columns` prop to certain components that use the `EntityTable` for easier extensibility.
+
+### Patch Changes
+
+- 7e8930ae1c6: Fix icon alignment in `CatalogSearchResultListItem`
+- cb8ec97cdeb: Change black & white colors to be theme aware
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration-react@1.1.11-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+  - @backstage/plugin-search-react@1.5.1-next.1
+
 ## 1.9.0-next.0
 
 ### Minor Changes

@@ -139,21 +139,25 @@ import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 
 const techDocsTabsConfig = [
   {
-    label: "Recommended Documentation",
+    label: 'Recommended Documentation',
     panels: [
       {
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
-        filterPredicate: entity => entity?.metadata?.tags?.includes('recommended') ?? false,
-      }
-    ]
-  }
-]
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    ],
+  },
+];
 
 const AppRoutes = () => {
   <FlatRoutes>
-    <Route path="/docs" element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}>
+    <Route
+      path="/docs"
+      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+    />
   </FlatRoutes>;
 };
 ```
@@ -433,7 +437,7 @@ const app = createApp({
 
 ## How to add the documentation setup to your software templates
 
-[Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+[Software Templates](https://backstage.io/docs/features/software-templates/)
 in Backstage is a tool that can help your users to create new components out of
 already configured templates. It comes with a set of default templates to use,
 but you can also

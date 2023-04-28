@@ -1,5 +1,148 @@
 # @backstage/plugin-kubernetes
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/plugin-kubernetes-common@0.6.2
+
+## 0.8.0
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.8.0-next.3
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.2
+
+## 0.7.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/plugin-catalog-react@1.4.1-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.1
+
+## 0.7.10-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-kubernetes-common@0.6.2-next.1
+
+## 0.7.10-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/plugin-catalog-react@1.4.1-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/theme@0.2.18
+
+## 0.7.9
+
+### Patch Changes
+
+- 8adeb19b37d: GitLab can now be used as an `oidcTokenProvider` for Kubernetes clusters
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/plugin-catalog-react@1.4.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.18
+  - @backstage/plugin-kubernetes-common@0.6.1
+
+## 0.7.9-next.2
+
+### Patch Changes
+
+- 8adeb19b37d: GitLab can now be used as an `oidcTokenProvider` for Kubernetes clusters
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/plugin-catalog-react@1.4.0-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.7.9-next.1
+
+### Patch Changes
+
+- c10384a9235: Switch to using `LinkButton` instead of the deprecated `Button`
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/plugin-catalog-react@1.4.0-next.1
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/plugin-kubernetes-common@0.6.1-next.1
+
 ## 0.7.9-next.0
 
 ### Patch Changes

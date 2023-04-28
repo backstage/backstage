@@ -22,6 +22,7 @@ import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/Stitcher';
+import { ConfigReader } from '@backstage/config';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -61,13 +62,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       state: {},
       refreshKeys: [],
     });
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -127,13 +129,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       state: {},
       refreshKeys: [],
     });
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -209,13 +212,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       refreshKeys: [],
     });
 
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -284,13 +288,14 @@ describe('DefaultCatalogProcessingEngine', () => {
       errors: [],
     });
 
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -341,14 +346,15 @@ describe('DefaultCatalogProcessingEngine', () => {
   });
 
   it('should stitch both the previous and new sources when relations change', async () => {
-    const engine = new DefaultCatalogProcessingEngine(
-      getVoidLogger(),
-      db,
-      orchestrator,
-      stitcher,
-      () => hash,
-      100,
-    );
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
 
@@ -449,6 +455,252 @@ describe('DefaultCatalogProcessingEngine', () => {
     );
     expect([...stitcher.stitch.mock.calls[1][0]]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other3']),
+    );
+    await engine.stop();
+  });
+
+  it('should not stitch sources entities when relations are the same', async () => {
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'k',
+      metadata: { name: 'me', namespace: 'ns' },
+    };
+    const processableEntity = {
+      entityRef: 'foo',
+      id: '1',
+      unprocessedEntity: entity,
+      resultHash: '',
+      state: [] as any,
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
+    };
+
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.getProcessableEntities.mockResolvedValueOnce({
+      items: [processableEntity],
+    });
+    db.updateProcessedEntity.mockImplementationOnce(async () => ({
+      previous: {
+        relations: [
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other1',
+            target_entity_ref: 'k:ns/me',
+          },
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other2',
+            target_entity_ref: 'k:ns/me',
+          },
+        ],
+      },
+    }));
+
+    orchestrator.process.mockResolvedValueOnce({
+      ok: true,
+      completedEntity: entity,
+      relations: [
+        {
+          type: 't',
+          source: { kind: 'k', namespace: 'ns', name: 'other1' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+        {
+          type: 't',
+          source: { kind: 'k', namespace: 'ns', name: 'other2' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+      ],
+      errors: [],
+      deferredEntities: [],
+      state: {},
+      refreshKeys: [],
+    });
+
+    await engine.start();
+    await waitForExpect(() => {
+      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+    });
+    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+      expect.arrayContaining(['k:ns/me']),
+    );
+    await engine.stop();
+  });
+
+  it('should stitch sources entities when new relation of different type added', async () => {
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'k',
+      metadata: { name: 'me', namespace: 'ns' },
+    };
+    const processableEntity = {
+      entityRef: 'foo',
+      id: '1',
+      unprocessedEntity: entity,
+      resultHash: '',
+      state: [] as any,
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
+    };
+
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.getProcessableEntities.mockResolvedValueOnce({
+      items: [processableEntity],
+    });
+    db.updateProcessedEntity.mockImplementationOnce(async () => ({
+      previous: {
+        relations: [
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other1',
+            target_entity_ref: 'k:ns/me',
+          },
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other2',
+            target_entity_ref: 'k:ns/me',
+          },
+        ],
+      },
+    }));
+
+    orchestrator.process.mockResolvedValueOnce({
+      ok: true,
+      completedEntity: entity,
+      relations: [
+        {
+          type: 't',
+          source: { kind: 'k', namespace: 'ns', name: 'other1' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+        {
+          type: 't',
+          source: { kind: 'k', namespace: 'ns', name: 'other2' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+        {
+          type: 'u',
+          source: { kind: 'k', namespace: 'ns', name: 'other2' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+      ],
+      errors: [],
+      deferredEntities: [],
+      state: {},
+      refreshKeys: [],
+    });
+
+    await engine.start();
+    await waitForExpect(() => {
+      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+    });
+    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+      expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
+    );
+    await engine.stop();
+  });
+
+  it('should stitch sources entities when relation is removed', async () => {
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: getVoidLogger(),
+      processingDatabase: db,
+      orchestrator: orchestrator,
+      stitcher: stitcher,
+      createHash: () => hash,
+      pollingIntervalMs: 100,
+    });
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'k',
+      metadata: { name: 'me', namespace: 'ns' },
+    };
+    const processableEntity = {
+      entityRef: 'foo',
+      id: '1',
+      unprocessedEntity: entity,
+      resultHash: '',
+      state: [] as any,
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
+    };
+
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.getProcessableEntities.mockResolvedValueOnce({
+      items: [processableEntity],
+    });
+    db.updateProcessedEntity.mockImplementationOnce(async () => ({
+      previous: {
+        relations: [
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other1',
+            target_entity_ref: 'k:ns/me',
+          },
+          {
+            originating_entity_id: '',
+            type: 't',
+            source_entity_ref: 'k:ns/other2',
+            target_entity_ref: 'k:ns/me',
+          },
+        ],
+      },
+    }));
+
+    orchestrator.process.mockResolvedValueOnce({
+      ok: true,
+      completedEntity: entity,
+      relations: [
+        {
+          type: 't',
+          source: { kind: 'k', namespace: 'ns', name: 'other1' },
+          target: { kind: 'k', namespace: 'ns', name: 'me' },
+        },
+      ],
+      errors: [],
+      deferredEntities: [],
+      state: {},
+      refreshKeys: [],
+    });
+
+    await engine.start();
+    await waitForExpect(() => {
+      expect(stitcher.stitch).toHaveBeenCalledTimes(1);
+    });
+    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+      expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();
   });

@@ -78,13 +78,16 @@ export class DefaultIdentityClient implements IdentityApi {
       : ['ES256'];
   }
 
-  async getIdentity({ request }: IdentityApiGetIdentityRequest) {
-    if (!request.headers.authorization) {
+  async getIdentity(options: IdentityApiGetIdentityRequest) {
+    const {
+      request: { headers },
+    } = options;
+    if (!headers.authorization) {
       return undefined;
     }
     try {
       return await this.authenticate(
-        getBearerTokenFromAuthorizationHeader(request.headers.authorization),
+        getBearerTokenFromAuthorizationHeader(headers.authorization),
       );
     } catch (e) {
       throw new AuthenticationError(e.message);

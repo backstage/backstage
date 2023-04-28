@@ -4,7 +4,7 @@ title: Support and community
 description: Support and Community Details and Links
 ---
 
-- [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the
+- [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the
   project.
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/backstage) - Browse or ask questions on Stack Overflow.
 - [Good First Issues](https://github.com/backstage/backstage/contribute) - Start

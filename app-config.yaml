@@ -17,12 +17,12 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
   # auth:
   #   keys:
@@ -122,6 +122,9 @@ proxy:
     target: https://your.stackstorm.instance.com/api
     headers:
       St2-Api-Key: ${ST2_API_KEY}
+
+  '/puppetdb':
+    target: https://your.puppetdb.instance.com
 
 organization:
   name: My Company

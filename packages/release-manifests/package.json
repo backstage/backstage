@@ -1,7 +1,7 @@
 {
   "name": "@backstage/release-manifests",
   "description": "Helper library for receiving release manifests",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -38,7 +38,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@types/node": "^16.0.0",
-    "msw": "^0.49.0"
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

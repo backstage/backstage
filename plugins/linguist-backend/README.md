@@ -67,6 +67,14 @@ return createRouter({ schedule: schedule, batchSize: 40 }, { ...env });
 
 **Note:** The default batch size is 20
 
+## Kind
+
+The default setup only processes entities of kind `['API', 'Component', 'Template']`. To control the `kind` that are processed provide that to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` like this:
+
+```ts
+return createRouter({ schedule: schedule, kind: ['Component'] }, { ...env });
+```
+
 ## Refresh
 
 The default setup will only generate the language breakdown for entities with the linguist annotation that have not been generated yet. If you want this process to also refresh the data you can do so by adding the `age` (as a `HumanDuration`) in your `packages/backend/src/plugins/linguist.ts` when you call `createRouter`:
@@ -76,6 +84,17 @@ return createRouter({ schedule: schedule, age: { days: 30 } }, { ...env });
 ```
 
 With the `age` setup like this if the language breakdown is older than 15 days it will get regenerated. It's recommended that if you choose to use this configuration to set it to a large value - 30, 90, or 180 - as this data generally does not change drastically.
+
+## Linguist JS options
+
+The default setup will use the default [linguist-js](https://www.npmjs.com/package/linguist-js) options, a full list of the available options can be found [here](https://www.npmjs.com/package/linguist-js#API).
+
+```ts
+return createRouter(
+  { schedule: schedule, linguistJsOptions: { offline: true } },
+  { ...env },
+);
+```
 
 ## Use Source Location
 

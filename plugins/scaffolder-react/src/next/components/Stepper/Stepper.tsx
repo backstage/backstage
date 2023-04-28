@@ -21,12 +21,12 @@ import {
   StepLabel as MuiStepLabel,
   Button,
   makeStyles,
+  LinearProgress,
 } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { ErrorSchema } from '@rjsf/utils';
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { NextFieldExtensionOptions } from '../../extensions';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import {
   createAsyncValidators,
   type FormValidation,
@@ -36,21 +36,24 @@ import { useTemplateSchema } from '../../hooks/useTemplateSchema';
 import validator from '@rjsf/validator-ajv8';
 import { useFormDataFromQuery } from '../../hooks';
 import { FormProps } from '../../types';
-import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
 import { Form } from '../Form';
+import {
+  TemplateParameterSchema,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
     marginRight: theme.spacing(1),
   },
-
   footer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'right',
+    marginTop: theme.spacing(2),
   },
   formWrapper: {
     padding: theme.spacing(2),
@@ -91,6 +94,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
   const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
@@ -131,11 +135,14 @@ export const Stepper = (stepperProps: StepperProps) => {
   }: {
     formData?: Record<string, JsonValue>;
   }) => {
-    // TODO(blam): What do we do about loading states, does each field extension get a chance
-    // to display it's own loading? Or should we grey out the entire form.
+    // The validation should never throw, as the validators are wrapped in a try/catch.
+    // This makes it fine to set and unset state without try/catch.
     setErrors(undefined);
+    setIsValidating(true);
 
     const returnedValidation = await validation(formData);
+
+    setIsValidating(false);
 
     if (hasErrors(returnedValidation)) {
       setErrors(returnedValidation);
@@ -152,6 +159,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   return (
     <>
+      {isValidating && <LinearProgress variant="indeterminate" />}
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
         {steps.map((step, index) => (
           <MuiStep key={index}>
@@ -181,11 +189,16 @@ export const Stepper = (stepperProps: StepperProps) => {
               <Button
                 onClick={handleBack}
                 className={styles.backButton}
-                disabled={activeStep < 1}
+                disabled={activeStep < 1 || isValidating}
               >
                 Back
               </Button>
-              <Button variant="contained" color="primary" type="submit">
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isValidating}
+              >
                 {activeStep === steps.length - 1 ? reviewButtonText : 'Next'}
               </Button>
             </div>
@@ -203,6 +216,7 @@ export const Stepper = (stepperProps: StepperProps) => {
               </Button>
               <Button
                 variant="contained"
+                color="primary"
                 onClick={() => {
                   props.onCreate(formState);
                   const name =

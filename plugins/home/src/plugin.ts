@@ -108,6 +108,25 @@ export const HomePageRandomJoke = homePlugin.provide(
     name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
+    description: 'Shows a random joke about optional category',
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Random Joke settings',
+        type: 'object',
+        properties: {
+          defaultCategory: {
+            title: 'Category',
+            type: 'string',
+            enum: ['any', 'programming', 'dad'],
+            default: 'any',
+          },
+        },
+      },
+    },
   }),
 );
 

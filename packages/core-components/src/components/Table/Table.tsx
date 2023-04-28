@@ -169,7 +169,7 @@ function convertColumns<T extends object>(
   theme: BackstageTheme,
 ): TableColumn<T>[] {
   return columns.map(column => {
-    const headerStyle: React.CSSProperties = {};
+    const headerStyle: React.CSSProperties = column.headerStyle ?? {};
 
     let cellStyle = column.cellStyle || {};
 
@@ -376,7 +376,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!value.length)
+            .filter(([, value]) => !!(value as { length?: number }).length)
             .every(([key, filterValue]) => {
               const fieldValue = extractValueByField(
                 el,

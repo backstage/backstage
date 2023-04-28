@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.2
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: linux-v16
 
@@ -58,7 +58,7 @@ jobs:
           tags: type=raw,value=60d
 
       - name: Build Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: packages/backend/Dockerfile

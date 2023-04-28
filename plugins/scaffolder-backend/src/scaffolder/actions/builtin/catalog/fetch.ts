@@ -17,6 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
+import { z } from 'zod';
 
 const id = 'catalog:fetch';
 
@@ -36,10 +37,26 @@ const examples = [
       ],
     }),
   },
+  {
+    description: 'Fetch multiple entities by referencse',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'fetchMultiple',
+          name: 'Fetch catalog entities',
+          input: {
+            entityRefs: ['component:default/name'],
+          },
+        },
+      ],
+    }),
+  },
 ];
 
 /**
- * Returns entity from the catalog by entity reference.
+ * Returns entity or entities from the catalog by entity reference(s).
+ *
  * @public
  */
 export function createFetchCatalogEntityAction(options: {
@@ -47,58 +64,84 @@ export function createFetchCatalogEntityAction(options: {
 }) {
   const { catalogClient } = options;
 
-  return createTemplateAction<{ entityRef: string; optional?: boolean }>({
+  return createTemplateAction({
     id,
-    description: 'Returns entity from the catalog by entity reference',
+    description:
+      'Returns entity or entities from the catalog by entity reference(s)',
     examples,
     schema: {
-      input: {
-        required: ['entityRef'],
-        type: 'object',
-        properties: {
-          entityRef: {
-            type: 'string',
-            title: 'Entity reference',
+      input: z.object({
+        entityRef: z
+          .string({
             description: 'Entity reference of the entity to get',
-          },
-          optional: {
-            title: 'Optional',
+          })
+          .optional(),
+        entityRefs: z
+          .array(z.string(), {
+            description: 'Entity references of the entities to get',
+          })
+          .optional(),
+        optional: z
+          .boolean({
             description:
-              'Permit the entity to optionally exist. Default: false',
-            type: 'boolean',
-          },
-        },
-      },
-      output: {
-        type: 'object',
-        properties: {
-          entity: {
-            title: 'Entity found by the entity reference',
-            type: 'object',
+              'Allow the entity or entities to optionally exist. Default: false',
+          })
+          .optional(),
+      }),
+      output: z.object({
+        entity: z
+          .any({
             description:
-              'Object containing same values used in the Entity schema.',
-          },
-        },
-      },
+              'Object containing same values used in the Entity schema. Only when used with `entityRef` parameter.',
+          })
+          .optional(),
+        entities: z
+          .array(
+            z.any({
+              description:
+                'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
+            }),
+          )
+          .optional(),
+      }),
     },
     async handler(ctx) {
-      const { entityRef, optional } = ctx.input;
-      let entity;
-      try {
-        entity = await catalogClient.getEntityByRef(entityRef, {
+      const { entityRef, entityRefs, optional } = ctx.input;
+      if (!entityRef && !entityRefs) {
+        if (optional) {
+          return;
+        }
+        throw new Error('Missing entity reference or references');
+      }
+
+      if (entityRef) {
+        const entity = await catalogClient.getEntityByRef(entityRef, {
           token: ctx.secrets?.backstageToken,
         });
-      } catch (e) {
-        if (!optional) {
-          throw e;
+
+        if (!entity && !optional) {
+          throw new Error(`Entity ${entityRef} not found`);
         }
+        ctx.output('entity', entity ?? null);
       }
 
-      if (!entity && !optional) {
-        throw new Error(`Entity ${entityRef} not found`);
-      }
+      if (entityRefs) {
+        const entities = await catalogClient.getEntitiesByRefs(
+          { entityRefs },
+          {
+            token: ctx.secrets?.backstageToken,
+          },
+        );
 
-      ctx.output('entity', entity ?? null);
+        const finalEntities = entities.items.map((e, i) => {
+          if (!e && !optional) {
+            throw new Error(`Entity ${entityRefs[i]} not found`);
+          }
+          return e ?? null;
+        });
+
+        ctx.output('entities', finalEntities);
+      }
     },
   });
 }

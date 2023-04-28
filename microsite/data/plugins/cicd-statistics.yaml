@@ -5,7 +5,7 @@ authorUrl: https://github.com/spotify
 category: CI/CD
 description: Visualize CI/CD pipeline statistics such as build time or success and error rates.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/cicd-statistics
-iconUrl: img/cicd-statistics.svg
+iconUrl: /img/cicd-statistics.svg
 npmPackageName: '@backstage/plugin-cicd-statistics'
 tags:
   - ci

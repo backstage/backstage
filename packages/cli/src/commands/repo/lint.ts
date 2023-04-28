@@ -17,11 +17,11 @@
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
-import { PackageGraph, ExtendedPackageJSON } from '../../lib/monorepo';
-import { runWorkerQueueThreads } from '../../lib/parallel';
+import { PackageGraph, BackstagePackageJson } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
+import { runWorkerQueueThreads } from '../../lib/parallel';
 
-function depCount(pkg: ExtendedPackageJSON) {
+function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
   const devDeps = pkg.devDependencies
     ? Object.keys(pkg.devDependencies).length

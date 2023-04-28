@@ -28,37 +28,39 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 
 And then add the entity provider to your catalog builder:
 
-```diff
-  // In packages/backend/src/plugins/catalog.ts
-+ import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const builder = await CatalogBuilder.create(env);
-+   builder.addEntityProvider(
-+     GithubEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+       // optional: alternatively, use schedule
-+       scheduler: env.scheduler,
-+     }),
-+   );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    GithubEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
 
-    // [...]
-  }
+  // ..
+}
 ```
 
 ## Installation with Events Support
 
 Please follow the installation instructions at
 
-- https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md
-- https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
 
 Additionally, you need to decide how you want to receive events from external sources like
 
@@ -67,34 +69,37 @@ Additionally, you need to decide how you want to receive events from external so
 
 Set up your provider
 
-```diff
-// packages/backend/src/plugins/catalogEventBasedProviders.ts
-+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
- import { EntityProvider } from '@backstage/plugin-catalog-node';
- import { EventSubscriber } from '@backstage/plugin-events-node';
- import { PluginEnvironment } from '../types';
- export default async function createCatalogEventBasedProviders(
--  _: PluginEnvironment,
-+  env: PluginEnvironment,
- ): Promise<Array<EntityProvider & EventSubscriber>> {
-   const providers: Array<
-     (EntityProvider & EventSubscriber) | Array<EntityProvider & EventSubscriber>
-   > = [];
--  // add your event-based entity providers here
-+  providers.push(
-+    GithubEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+       // optional: alternatively, use schedule
-+       scheduler: env.scheduler,
-+    }),
-+  );
-   return providers.flat();
- }
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-next-line */
+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
+  });
+  env.eventBroker.subscribe(githubProvider);
+  builder.addEntityProvider(demoProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
 ```
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
@@ -157,6 +162,13 @@ catalog:
           branch: 'main' # string
           repository: '.*' # Regex
         validateLocationsExist: true # optional boolean
+      visibilityProviderId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          visibility:
+            - public
+            - internal
       enterpriseProviderId:
         host: ghe.example.net
         organization: 'backstage' # string
@@ -188,6 +200,8 @@ This provider supports multiple organizations via unique provider IDs.
     - **`exclude`** _(optional)_:
       An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
+  - **`visibility`** _(optional)_:
+    An array of strings used to filter results based on their visibility. Available options are `private`, `internal`, `public`. If configured (non empty), only repositories with visibility present in the filter will be ingested
 - **`host`** _(optional)_:
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 - **`organization`**:
@@ -255,34 +269,40 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 
 And then add the processors to your catalog builder:
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import {
-+  GithubDiscoveryProcessor,
-+  GithubOrgReaderProcessor,
-+} from '@backstage/plugin-catalog-backend-module-github';
-+import {
-+  ScmIntegrations,
-+  DefaultGithubCredentialsProvider
-+} from '@backstage/integration';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-start */
+import {
+  GithubDiscoveryProcessor,
+  GithubOrgReaderProcessor,
+} from '@backstage/plugin-catalog-backend-module-github';
+import {
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
+/* highlight-add-end */
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  const integrations = ScmIntegrations.fromConfig(env.config);
-+  const githubCredentialsProvider =
-+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-+  builder.addProcessor(
-+    GithubDiscoveryProcessor.fromConfig(env.config, {
-+      logger: env.logger,
-+      githubCredentialsProvider,
-+    }),
-+    GithubOrgReaderProcessor.fromConfig(env.config, {
-+      logger: env.logger,
-+      githubCredentialsProvider,
-+    }),
-+  );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  const integrations = ScmIntegrations.fromConfig(env.config);
+  const githubCredentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+  builder.addProcessor(
+    GithubDiscoveryProcessor.fromConfig(env.config, {
+      logger: env.logger,
+      githubCredentialsProvider,
+    }),
+    GithubOrgReaderProcessor.fromConfig(env.config, {
+      logger: env.logger,
+      githubCredentialsProvider,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Configuration

@@ -21,7 +21,7 @@ import {
   TaskRunner,
 } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
@@ -181,6 +181,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
         ],
       }),
@@ -284,6 +285,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
         ],
       }),
@@ -364,6 +366,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
         ],
       }),
@@ -453,6 +456,7 @@ describe('GithubEntityProvider', () => {
               name: 'main',
             },
             catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'another-repo',
@@ -470,6 +474,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
         ],
       }),
@@ -571,6 +576,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
           {
             name: 'test-repo-2',
@@ -595,6 +601,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
           {
             name: 'test-repo-3',
@@ -616,6 +623,7 @@ describe('GithubEntityProvider', () => {
               id: 'abc123',
               text: 'some yaml',
             },
+            visibility: 'public',
           },
         ],
       }),

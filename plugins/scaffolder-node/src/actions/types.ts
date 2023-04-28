@@ -16,23 +16,29 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue, JsonObject } from '@backstage/types';
-import { Schema } from 'jsonschema';
-import { TaskSecrets } from '../tasks/types';
+import { JsonObject } from '@backstage/types';
+import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
+import { Schema } from 'jsonschema';
 
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<TInput extends JsonObject> = {
+export type ActionContext<
+  TActionInput extends JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: TInput;
-  output(name: string, value: JsonValue): void;
+  input: TActionInput;
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
+  ): void;
 
   /**
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
@@ -60,10 +66,18 @@ export type ActionContext<TInput extends JsonObject> = {
      */
     ref?: string;
   };
+
+  /**
+   * Implement the signal to make your custom step abortable https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal
+   */
+  signal?: AbortSignal;
 };
 
 /** @public */
-export type TemplateAction<TInput extends JsonObject> = {
+export type TemplateAction<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+> = {
   id: string;
   description?: string;
   examples?: { description: string; example: string }[];
@@ -72,5 +86,5 @@ export type TemplateAction<TInput extends JsonObject> = {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TInput>) => Promise<void>;
+  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };

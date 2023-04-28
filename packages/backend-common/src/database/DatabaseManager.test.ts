@@ -165,6 +165,7 @@ describe('DatabaseManager', () => {
           user: 'foo',
           password: 'bar',
           port: '5432',
+          application_name: 'backstage_plugin_pluginwithoutconfig',
         },
       });
 
@@ -685,6 +686,138 @@ describe('DatabaseManager', () => {
           debug: true,
           something: false,
         }),
+      );
+    });
+
+    it('sets the owner config for plugin using default config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {},
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage');
+    });
+
+    it('sets the owner config for plugin using plugin config', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                database: 'foodb',
+              },
+              role: 'backstage',
+              plugin: {
+                testowner: {
+                  role: 'backstage-plugin',
+                },
+              },
+            },
+          },
+        }),
+      );
+      await testManager.forPlugin('testowner').getClient();
+
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig] = mockCalls[0];
+
+      expect(baseConfig.data.role).toEqual('backstage-plugin');
+    });
+
+    it('Defaults the application_name for postgres clients', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {},
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('testplugin').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, _] = mockCalls[0];
+      expect(baseConfig.get()).toMatchObject({
+        connection: {
+          application_name: 'backstage_plugin_testplugin',
+        },
+      });
+    });
+
+    it('Allows manually setting the application_name for postgres clients', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                application_name: 'backstage_custom_app_name',
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('testplugin').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, overrides] = mockCalls[0];
+      expect(baseConfig.get().connection.application_name).toBe(
+        'backstage_custom_app_name',
+      );
+      expect(overrides.connection.application_name).toBeUndefined();
+    });
+
+    it('Allows manually setting the application_name for individual plugin client', async () => {
+      const testManager = DatabaseManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                user: 'foo',
+                password: 'bar',
+                database: 'foodb',
+                application_name: 'backstage_custom_app_name',
+              },
+              plugin: {
+                overrideplugin: {
+                  connection: {
+                    application_name: 'custom_plugin',
+                  },
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      await testManager.forPlugin('overrideplugin').getClient();
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      const [baseConfig, _] = mockCalls[0];
+      expect(baseConfig.get().connection.application_name).toBe(
+        'custom_plugin',
       );
     });
   });

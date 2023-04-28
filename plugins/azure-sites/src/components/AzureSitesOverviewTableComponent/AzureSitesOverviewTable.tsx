@@ -31,6 +31,7 @@ import {
   azureSitesActionPermission,
 } from '@backstage/plugin-azure-sites-common';
 import { Table, TableColumn, Link } from '@backstage/core-components';
+import { useTheme } from '@material-ui/core/styles';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PublicIcon from '@material-ui/icons/Public';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -43,18 +44,27 @@ import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { azureSiteApiRef } from '../../api';
+import { BackstageTheme } from '@backstage/theme';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
 type Kinds = 'app' | 'functionapp';
 
 const State = ({ value }: { value: States }) => {
+  const {
+    palette: {
+      common: { black },
+      status: { ok, error },
+    },
+  } = useTheme<BackstageTheme>();
+
   const colorMap = {
     Waiting: '#dcbc21',
-    Running: 'green',
-    Paused: 'black',
-    Failed: 'red',
-    Stopped: 'black',
+    Running: ok,
+    Paused: black,
+    Failed: error,
+    Stopped: black,
   };
+
   return (
     <Box display="flex" alignItems="center">
       <Typography

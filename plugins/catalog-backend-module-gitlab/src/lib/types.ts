@@ -50,18 +50,35 @@ export type GitLabGroup = {
   parent_id?: number;
 };
 
-export type GitLabMembership = {
-  source_id: number;
-  source_name: string;
-  source_type: string;
-  access_level: number;
+export type GitLabGroupMembersResponse = {
+  errors: { message: string }[];
+  data: {
+    group: {
+      groupMembers: {
+        nodes: { user: { id: string } }[];
+        pageInfo: {
+          endCursor: string;
+          hasNextPage: boolean;
+        };
+      };
+    };
+  };
 };
 
 export type GitlabProviderConfig = {
   host: string;
   group: string;
   id: string;
-  branch: string;
+  /**
+   * The name of the branch to be used, to discover catalog files.
+   */
+  branch?: string;
+  /**
+   * If no `branch` is configured and there is no default branch defined at the project as well, this fallback is used
+   * to discover catalog files.
+   * Defaults to: `master`
+   */
+  fallbackBranch: string;
   catalogFile: string;
   projectPattern: RegExp;
   userPattern: RegExp;

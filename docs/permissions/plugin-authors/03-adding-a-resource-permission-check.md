@@ -10,24 +10,32 @@ When performing updates (or other operations) on specific [resources](../concept
 
 Let's add a new permission to the file `plugins/todo-list-common/src/permissions.ts` from [the previous section](./02-adding-a-basic-permission-check.md).
 
-```diff
-  import { createPermission } from '@backstage/plugin-permission-common';
+```ts title="plugins/todo-list-common/src/permissions.ts"
+import { createPermission } from '@backstage/plugin-permission-common';
 
-+ export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
-+
-  export const todoListCreatePermission = createPermission({
-    name: 'todo.list.create',
-    attributes: { action: 'create' },
-  });
-+
-+ export const todoListUpdatePermission = createPermission({
-+   name: 'todo.list.update',
-+   attributes: { action: 'update' },
-+   resourceType: TODO_LIST_RESOURCE_TYPE,
-+ });
+/* highlight-add-next-line */
+export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
-- export const todoListPermissions = [todoListCreatePermission];
-+ export const todoListPermissions = [todoListCreatePermission, todoListUpdatePermission];
+export const todoListCreatePermission = createPermission({
+  name: 'todo.list.create',
+  attributes: { action: 'create' },
+});
+
+/* highlight-add-start */
+export const todoListUpdatePermission = createPermission({
+  name: 'todo.list.update',
+  attributes: { action: 'update' },
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+});
+/* highlight-add-end */
+
+/* highlight-remove-next-line */
+export const todoListPermissions = [todoListCreatePermission];
+/* highlight-add-next-line */
+export const todoListPermissions = [
+  todoListCreatePermission,
+  todoListUpdatePermission,
+];
 ```
 
 Notice that unlike `todoListCreatePermission`, the `todoListUpdatePermission` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
@@ -36,35 +44,54 @@ Notice that unlike `todoListCreatePermission`, the `todoListUpdatePermission` pe
 
 To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the same manner as we did in the previous section:
 
-```diff
-- import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
-+ import { todoListCreatePermission, todoListUpdatePermission } from '@internal/plugin-todo-list-common';
+```ts title="plugins/todo-list-backend/src/service/router.ts"
+/* highlight-remove-next-line */
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+/* highlight-add-start */
+import {
+  todoListCreatePermission,
+  todoListUpdatePermission,
+} from '@internal/plugin-todo-list-common';
+/* highlight-add-end */
 
-  ...
+// ...
 
-    router.put('/todos', async (req, res) => {
-+     const token = getBearerTokenFromAuthorizationHeader(
-+       req.header('authorization'),
-+     );
+const permissionIntegrationRouter = createPermissionIntegrationRouter({
+  /* highlight-remove-next-line */
+  permissions: [todoListCreatePermission],
+  /* highlight-add-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+});
 
-      if (!isTodoUpdateRequest(req.body)) {
-        throw new InputError('Invalid payload');
-      }
-+     const decision = (
-+       await permissions.authorize(
-+         [{ permission: todoListUpdatePermission, resourceRef: req.body.id }],
-+         {
-+           token,
-+         },
-+       )
-+     )[0];
-+
-+     if (decision.result !== AuthorizeResult.ALLOW) {
-+       throw new NotAllowedError('Unauthorized');
-+     }
+// ...
 
-      res.json(update(req.body));
-    });
+router.put('/todos', async (req, res) => {
+  /* highlight-add-start */
+  const token = getBearerTokenFromAuthorizationHeader(
+    req.header('authorization'),
+  );
+  /* highlight-add-end */
+
+  if (!isTodoUpdateRequest(req.body)) {
+    throw new InputError('Invalid payload');
+  }
+  /* highlight-add-start */
+  const decision = (
+    await permissions.authorize(
+      [{ permission: todoListUpdatePermission, resourceRef: req.body.id }],
+      {
+        token,
+      },
+    )
+  )[0];
+
+  if (decision.result !== AuthorizeResult.ALLOW) {
+    throw new NotAllowedError('Unauthorized');
+  }
+  /* highlight-add-end */
+
+  res.json(update(req.body));
+});
 ```
 
 **Important:** Notice that we are passing an extra `resourceRef` field, with the `id` of the todo item as the value.
@@ -75,13 +102,13 @@ This enables decisions based on characteristics of the resource, but it's import
 
 Install the missing module:
 
-```
-$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node zod
+```bash
+$ yarn workspace @internal/plugin-todo-list-backend add zod
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
-```typescript
+```typescript title="plugins/todo-list-backend/src/service/rules.ts"
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { z } from 'zod';
@@ -130,35 +157,42 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 - `permissions`: the list of permissions that your plugin accepts.
 - `rules`: an array of all the permission rules you want to support in conditional decisions.
 
-```diff
-...
+```ts title="plugins/todo-list-backend/src/service/router.ts"
+// ...
+import {
+  /* highlight-add-next-line */
+  TODO_LIST_RESOURCE_TYPE,
+  todoListCreatePermission,
+  todoListUpdatePermission,
+} from '@internal/plugin-todo-list-common';
+/* highlight-remove-next-line */
+import { add, getAll, update } from './todos';
+/* highlight-add-start */
+import { add, getAll, getTodo, update } from './todos';
+import { rules } from './rules';
+/* highlight-add-end */
 
-- import { add, getAll, update } from './todos';
-+ import { add, getAll, getTodo, update } from './todos';
-+ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-+ import { TODO_LIST_RESOURCE_TYPE, todoListPermissions } from '@internal/plugin-todo-list-common';
-+ import { rules } from './rules';
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger, identity, permissions } = options;
 
-  export async function createRouter(
-    options: RouterOptions,
-  ): Promise<express.Router> {
-    const { logger, identity, permissions } = options;
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: [todoListCreatePermission, todoListUpdatePermission],
+    /* highlight-add-start */
+    getResources: async resourceRefs => {
+      return resourceRefs.map(getTodo);
+    },
+    resourceType: TODO_LIST_RESOURCE_TYPE,
+    rules: Object.values(rules),
+    /* highlight-add-end */
+  });
 
-+   const permissionIntegrationRouter = createPermissionIntegrationRouter({
-+     getResources: async resourceRefs => {
-+       return resourceRefs.map(getTodo);
-+     },
-+     resourceType: TODO_LIST_RESOURCE_TYPE,
-+     permissions: todoListPermissions,
-+     rules: Object.values(rules),
-+   });
+  const router = Router();
+  router.use(express.json());
 
-    const router = Router();
-    router.use(express.json());
-
-+   router.use(permissionIntegrationRouter);
-
-    router.post('/todos', async (req, res) => {
+  // ...
+}
 ```
 
 ## Provide utilities for policy authors
@@ -167,7 +201,7 @@ Now that we have a new resource type and a corresponding rule, we need to export
 
 Create a new `plugins/todo-list-backend/src/conditionExports.ts` file and add the following code:
 
-```typescript
+```typescript title="plugins/todo-list-backend/src/conditionExports.ts"
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { rules } from './service/rules';
@@ -185,63 +219,68 @@ export const createTodoListConditionalDecision = createConditionalDecision;
 
 Make sure `todoListConditions` and `createTodoListConditionalDecision` are exported from the `todo-list-backend` package by editing `plugins/todo-list-backend/src/index.ts`:
 
-```diff
-  export * from './service/router';
-+ export * from './conditionExports';
-  export { exampleTodoListPlugin } from './plugin';
+```ts title="plugins/todo-list-backend/src/index.ts"
+export * from './service/router';
+/* highlight-add-next-line */
+export * from './conditionExports';
+export { exampleTodoListPlugin } from './plugin';
 ```
 
 ## Test the authorized update endpoint
 
 Let's go back to the permission policy's handle function and try to authorize our new permission with an `isOwner` condition.
 
-```diff
-  // packages/backend/src/plugins/permission.ts
+```ts title="packages/backend/src/plugins/permission.ts"
+import {
+  BackstageIdentityResponse,
+  IdentityClient
+} from '@backstage/plugin-auth-node';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+import { isPermission } from '@backstage/plugin-permission-common';
+/* highlight-remove-next-line */
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
+/* highlight-add-start */
+import {
+  todoListCreatePermission,
+  todoListUpdatePermission,
+} from '@internal/plugin-todo-list-common';
+import {
+  todoListConditions,
+  createTodoListConditionalDecision,
+} from '@internal/plugin-todo-list-backend';
+/* highlight-add-end */
 
-  import {
-    BackstageIdentityResponse,
-    IdentityClient
-  } from '@backstage/plugin-auth-node';
-  import {
-    PermissionPolicy,
-    PolicyQuery,
-  } from '@backstage/plugin-permission-node';
-  import { isPermission } from '@backstage/plugin-permission-common';
-- import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
-+ import {
-+   todoListCreatePermission,
-+   todoListUpdatePermission,
-+ } from '@internal/plugin-todo-list-common';
-+ import {
-+   todoListConditions,
-+   createTodoListConditionalDecision,
-+ } from '@internal/plugin-todo-list-backend';
 
-...
-  async handle(
-    request: PolicyQuery,
--   _user?: BackstageIdentityResponse,
-+   user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    if (isPermission(request.permission, todoListCreatePermission)) {
-      return {
-        result: AuthorizeResult.ALLOW,
-      };
-    }
-
-+   if (isPermission(request.permission, todoListUpdatePermission)) {
-+     return createTodoListConditionalDecision(
-+       request.permission,
-+       todoListConditions.isOwner({
-+         userId: user?.identity.userEntityRef ?? '',
-+       }),
-+     );
-+   }
-+
+async handle(
+  request: PolicyQuery,
+  /* highlight-remove-next-line */
+  _user?: BackstageIdentityResponse,
+  /* highlight-add-next-line */
+  user?: BackstageIdentityResponse,
+): Promise<PolicyDecision> {
+  if (isPermission(request.permission, todoListCreatePermission)) {
     return {
       result: AuthorizeResult.ALLOW,
     };
   }
+  /* highlight-add-start */
+  if (isPermission(request.permission, todoListUpdatePermission)) {
+    return createTodoListConditionalDecision(
+      request.permission,
+      todoListConditions.isOwner({
+        userId: user?.identity.userEntityRef ?? '',
+      }),
+    );
+  }
+  /* highlight-add-end */
+
+  return {
+    result: AuthorizeResult.ALLOW,
+  };
+}
 ```
 
 For any incoming update requests, we now return a _Conditional Decision_. We are saying:

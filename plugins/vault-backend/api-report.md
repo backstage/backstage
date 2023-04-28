@@ -33,12 +33,9 @@ export interface VaultApi {
 export class VaultBuilder {
   constructor(env: VaultEnvironment);
   build(): VaultBuilderReturn;
-  protected buildRouter(vaultClient: VaultClient): express.Router;
   static createBuilder(env: VaultEnvironment): VaultBuilder;
   enableTokenRenew(schedule?: TaskRunner): Promise<this>;
-  // (undocumented)
-  protected readonly env: VaultEnvironment;
-  setVaultClient(vaultClient: VaultClient): this;
+  setVaultClient(vaultApi: VaultApi): this;
 }
 
 // @public

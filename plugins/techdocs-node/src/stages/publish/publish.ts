@@ -35,8 +35,10 @@ export class Publisher {
    */
   static async fromConfig(
     config: Config,
-    { logger, discovery }: PublisherFactory,
+    options: PublisherFactory,
   ): Promise<PublisherBase> {
+    const { logger, discovery } = options;
+
     const publisherType = (config.getOptionalString(
       'techdocs.publisher.type',
     ) ?? 'local') as PublisherType;

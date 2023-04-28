@@ -1,5 +1,17 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.2
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
 ## 0.1.1
 
 ### Patch Changes

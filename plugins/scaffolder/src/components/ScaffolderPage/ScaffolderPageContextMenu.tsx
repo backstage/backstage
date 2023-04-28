@@ -15,6 +15,7 @@
  */
 
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { BackstageTheme } from '@backstage/theme';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -34,11 +35,11 @@ import {
   scaffolderListTaskRouteRef,
 } from '../../routes';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
-    color: 'white',
+    color: theme.page.fontColor,
   },
-});
+}));
 
 export type ScaffolderPageContextMenuProps = {
   editor?: boolean;
@@ -76,9 +77,12 @@ export function ScaffolderPageContextMenu(
   return (
     <>
       <IconButton
+        id="long-menu"
         aria-label="more"
         aria-controls="long-menu"
+        aria-expanded={!!anchorEl}
         aria-haspopup="true"
+        role="button"
         onClick={onOpen}
         data-testid="menu-button"
         color="inherit"
@@ -87,6 +91,7 @@ export function ScaffolderPageContextMenu(
         <MoreVert />
       </IconButton>
       <Popover
+        aria-labelledby="long-menu"
         open={Boolean(anchorEl)}
         onClose={onClose}
         anchorEl={anchorEl}

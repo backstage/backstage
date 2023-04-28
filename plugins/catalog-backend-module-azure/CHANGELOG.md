@@ -1,5 +1,152 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.15
+
+### Patch Changes
+
+- 62a725e3a94: Use the `LocationSpec` type from the `catalog-common` package in place of the deprecated `LocationSpec` from the `catalog-node` package.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.15-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-catalog-node@1.3.5-next.3
+
+## 0.1.15-next.2
+
+### Patch Changes
+
+- 62a725e3a94: Use the `LocationSpec` type from the `catalog-common` package in place of the deprecated `LocationSpec` from the `catalog-node` package.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.2
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 90469c02c8c: Renamed `azureDevOpsEntityProviderCatalogModule` to `catalogModuleAzureDevOpsEntityProvider` to match the [recommended naming patterns](https://backstage.io/docs/backend-system/architecture/naming-patterns).
+- c17fa101825: Add branch filter support
+  https://backstage.io/docs/integrations/azure/discovery
+- e675f902980: Make sure to not use deprecated exports from `@backstage/plugin-catalog-backend`
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.1.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+
 ## 0.1.14-next.0
 
 ### Patch Changes

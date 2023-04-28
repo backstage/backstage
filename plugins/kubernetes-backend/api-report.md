@@ -5,7 +5,6 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Credentials } from 'aws-sdk';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
@@ -17,6 +16,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
@@ -33,25 +33,11 @@ export interface AWSClusterDetails extends ClusterDetails {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  // (undocumented)
-  awsGetCredentials: () => Promise<Credentials>;
+  constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: AWSClusterDetails,
   ): Promise<AWSClusterDetails>;
-  // (undocumented)
-  getBearerToken(
-    clusterName: string,
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<string>;
-  // (undocumented)
-  getCredentials(
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<SigningCreds>;
-  // (undocumented)
-  validCredentials(creds: SigningCreds): boolean;
 }
 
 // @public (undocumented)
@@ -109,6 +95,25 @@ export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
 // @public (undocumented)
 export const DEFAULT_OBJECTS: ObjectToFetch[];
 
+// @public
+export class DispatchingKubernetesAuthTranslator
+  implements KubernetesAuthTranslator
+{
+  constructor(options: DispatchingKubernetesAuthTranslatorOptions);
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    auth: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @public (undocumented)
+export type DispatchingKubernetesAuthTranslatorOptions = {
+  authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  };
+};
+
 // @public (undocumented)
 export interface FetchResponseWrapper {
   // (undocumented)
@@ -142,6 +147,9 @@ export class GoogleServiceAccountAuthTranslator
 }
 
 // @public
+export const HEADER_KUBERNETES_AUTH: string;
+
+// @public
 export const HEADER_KUBERNETES_CLUSTER: string;
 
 // @public (undocumented)
@@ -154,21 +162,14 @@ export interface KubernetesAuthTranslator {
 }
 
 // @public (undocumented)
-export class KubernetesAuthTranslatorGenerator {
-  // (undocumented)
-  static getKubernetesAuthTranslatorInstance(
-    authProvider: string,
-    options: {
-      logger: Logger;
-    },
-  ): KubernetesAuthTranslator;
-}
-
-// @public (undocumented)
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
   build(): KubernetesBuilderReturn;
+  // (undocumented)
+  protected buildAuthTranslatorMap(): {
+    [key: string]: KubernetesAuthTranslator;
+  };
   // (undocumented)
   protected buildClusterSupplier(
     refreshInterval: Duration,
@@ -200,6 +201,7 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -214,6 +216,10 @@ export class KubernetesBuilder {
   protected fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
   ): Promise<ClusterDetails[]>;
+  // (undocumented)
+  protected getAuthTranslatorMap(): {
+    [key: string]: KubernetesAuthTranslator;
+  };
   // (undocumented)
   protected getClusterSupplier(): KubernetesClustersSupplier;
   // (undocumented)
@@ -233,6 +239,10 @@ export class KubernetesBuilder {
   protected getServiceLocator(): KubernetesServiceLocator;
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
+  // (undocumented)
+  setAuthTranslatorMap(authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  }): void;
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
@@ -256,6 +266,9 @@ export type KubernetesBuilderReturn = Promise<{
   proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
+  authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  };
 }>;
 
 // @public
@@ -271,6 +284,8 @@ export interface KubernetesEnvironment {
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // @public
@@ -283,6 +298,7 @@ export interface KubernetesFetcher {
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     namespaces: Set<string>,
+    labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
 }
 
@@ -308,6 +324,8 @@ export interface KubernetesObjectsProvider {
 
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
+  // (undocumented)
+  config: Config;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
@@ -338,10 +356,24 @@ export type KubernetesObjectTypes =
 
 // @public
 export class KubernetesProxy {
-  constructor(logger: Logger, clusterSupplier: KubernetesClustersSupplier);
+  constructor(options: KubernetesProxyOptions);
   // (undocumented)
-  createRequestHandler(): RequestHandler;
+  createRequestHandler(
+    options: KubernetesProxyCreateRequestHandlerOptions,
+  ): RequestHandler;
 }
+
+// @public
+export type KubernetesProxyCreateRequestHandlerOptions = {
+  permissionApi: PermissionEvaluator;
+};
+
+// @public
+export type KubernetesProxyOptions = {
+  logger: Logger;
+  clusterSupplier: KubernetesClustersSupplier;
+  authTranslator: KubernetesAuthTranslator;
+};
 
 // @public
 export interface KubernetesServiceLocator {
@@ -418,6 +450,8 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
 }
 
 // @public (undocumented)

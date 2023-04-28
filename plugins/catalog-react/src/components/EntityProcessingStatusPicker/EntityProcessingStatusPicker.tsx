@@ -74,6 +74,7 @@ export const EntityProcessingStatusPicker = () => {
         Processing Status
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={availableAdvancedItems}
           value={selectedAdvancedItems}
           onChange={(_: object, value: string[]) => {
@@ -90,6 +91,7 @@ export const EntityProcessingStatusPicker = () => {
                   checked={selected}
                 />
               }
+              onClick={event => event.preventDefault()}
               label={option}
             />
           )}

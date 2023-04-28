@@ -33,6 +33,7 @@ export type GithubEntityProviderConfig = {
     branch?: string;
     topic?: GithubTopicFilters;
     allowForks?: boolean;
+    visibility?: string[];
   };
   validateLocationsExist: boolean;
   schedule?: TaskScheduleDefinition;
@@ -85,6 +86,9 @@ function readProviderConfig(
 
   const catalogPathContainsWildcard = catalogPath.includes('*');
 
+  const visibilityFilterInclude =
+    config?.getOptionalStringArray('filters.visibility');
+
   if (validateLocationsExist && catalogPathContainsWildcard) {
     throw Error(
       `Error while processing GitHub provider config. The catalog path ${catalogPath} contains a wildcard, which is incompatible with validation of locations existing before emitting them. Ensure that validateLocationsExist is set to false.`,
@@ -110,6 +114,7 @@ function readProviderConfig(
         include: topicFilterInclude,
         exclude: topicFilterExclude,
       },
+      visibility: visibilityFilterInclude,
     },
     schedule,
     validateLocationsExist,

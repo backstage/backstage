@@ -16,9 +16,9 @@
 
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { join as joinPath, resolve as resolvePath } from 'path';
-import { ExtendedPackageJSON } from '../monorepo';
-import { readEntryPoints } from '../monorepo/entryPoints';
+import { resolve as resolvePath, posix as posixPath } from 'path';
+import { BackstagePackageJson } from '@backstage/cli-node';
+import { readEntryPoints } from '../entryPoints';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -35,7 +35,7 @@ export async function productionPack(options: ProductionPackOptions) {
   const { packageDir, targetDir } = options;
   const pkgPath = resolvePath(packageDir, PKG_PATH);
   const pkgContent = await fs.readFile(pkgPath, 'utf8');
-  const pkg = JSON.parse(pkgContent) as ExtendedPackageJSON;
+  const pkg = JSON.parse(pkgContent) as BackstagePackageJson;
 
   // If we're making the update in-line, back up the package.json
   if (!targetDir) {
@@ -142,12 +142,12 @@ export async function revertProductionPack(packageDir: string) {
 
 function resolveEntrypoint(pkg: any, name: string) {
   const targetEntry = pkg.publishConfig[name] || pkg[name];
-  return targetEntry && joinPath('..', targetEntry);
+  return targetEntry && posixPath.join('..', targetEntry);
 }
 
 // Writes e.g. alpha/package.json
 async function writeReleaseStageEntrypoint(
-  pkg: ExtendedPackageJSON,
+  pkg: BackstagePackageJson,
   stage: 'alpha' | 'beta',
   targetDir: string,
 ) {
@@ -160,7 +160,7 @@ async function writeReleaseStageEntrypoint(
       main: resolveEntrypoint(pkg, 'main'),
       module: resolveEntrypoint(pkg, 'module'),
       browser: resolveEntrypoint(pkg, 'browser'),
-      types: joinPath('..', pkg.publishConfig![`${stage}Types`]!),
+      types: posixPath.join('..', pkg.publishConfig![`${stage}Types`]!),
     },
     { encoding: 'utf8', spaces: 2 },
   );
@@ -178,7 +178,7 @@ const EXPORT_MAP = {
  * entry points for importers that don't support exports.
  */
 async function prepareExportsEntryPoints(
-  pkg: ExtendedPackageJSON,
+  pkg: BackstagePackageJson,
   packageDir: string,
 ) {
   const distPath = resolvePath(packageDir, 'dist');
@@ -186,7 +186,7 @@ async function prepareExportsEntryPoints(
     return undefined;
   }
   const distFiles = await fs.readdir(distPath);
-  const outputExports = {} as Record<string, Record<string, string>>;
+  const outputExports = {} as Record<string, string | Record<string, string>>;
 
   const compatibilityWriters = new Array<
     (targetDir: string) => Promise<void>
@@ -195,13 +195,14 @@ async function prepareExportsEntryPoints(
   const entryPoints = readEntryPoints(pkg);
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
+      outputExports[entryPoint.mount] = entryPoint.path;
       continue;
     }
     const exp = {} as Record<string, string>;
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
       if (distFiles.includes(name)) {
-        exp[key] = `./${joinPath(`dist`, name)}`;
+        exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
     }
     exp.default = exp.require ?? exp.import;
@@ -227,9 +228,9 @@ async function prepareExportsEntryPoints(
           {
             name: pkg.name,
             version: pkg.version,
-            ...(exp.default ? { main: joinPath('..', exp.default) } : {}),
-            ...(exp.import ? { module: joinPath('..', exp.import) } : {}),
-            ...(exp.types ? { types: joinPath('..', exp.types) } : {}),
+            ...(exp.default ? { main: posixPath.join('..', exp.default) } : {}),
+            ...(exp.import ? { module: posixPath.join('..', exp.import) } : {}),
+            ...(exp.types ? { types: posixPath.join('..', exp.types) } : {}),
           },
           { encoding: 'utf8', spaces: 2 },
         );

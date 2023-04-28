@@ -1,5 +1,157 @@
 # @backstage/core-app-api
 
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.7.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/version-bridge@1.0.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.7.0-next.3
+
+### Minor Changes
+
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.6.0
+
+### Minor Changes
+
+- 456eaa8cf83: `OAuth2` now gets ID tokens from a session with the `openid` scope explicitly
+  requested.
+
+  This should not be considered a breaking change, because spec-compliant OIDC
+  providers will already be returning ID tokens if and only if the `openid` scope
+  is granted.
+
+  This change makes the dependence explicit, and removes the burden on
+  OAuth2-based providers which require an ID token (e.g. this is done by various
+  default [auth
+  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  `openid` to their default scopes. _That_ could carry another indirect benefit:
+  by removing `openid` from the default scopes for a provider, grants for
+  resource-specific access tokens can avoid requesting excess ID token-related
+  scopes.
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 456eaa8cf83: `OAuth2` now gets ID tokens from a session with the `openid` scope explicitly
+  requested.
+
+  This should not be considered a breaking change, because spec-compliant OIDC
+  providers will already be returning ID tokens if and only if the `openid` scope
+  is granted.
+
+  This change makes the dependence explicit, and removes the burden on
+  OAuth2-based providers which require an ID token (e.g. this is done by various
+  default [auth
+  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  `openid` to their default scopes. _That_ could carry another indirect benefit:
+  by removing `openid` from the default scopes for a provider, grants for
+  resource-specific access tokens can avoid requesting excess ID token-related
+  scopes.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
 ## 1.5.1-next.0
 
 ### Patch Changes

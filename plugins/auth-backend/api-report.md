@@ -230,6 +230,12 @@ export const defaultAuthProviderFactories: {
 };
 
 // @public (undocumented)
+export type EasyAuthResult = {
+  fullProfile: Profile;
+  accessToken?: string;
+};
+
+// @public (undocumented)
 export const encodeState: (state: OAuthState) => string;
 
 // @public (undocumented)
@@ -398,6 +404,8 @@ export type OAuthState = {
   env: string;
   origin?: string;
   scope?: string;
+  redirectUrl?: string;
+  flow?: string;
 };
 
 // @public
@@ -639,7 +647,10 @@ export const providers: Readonly<{
           }
         | undefined,
     ) => AuthProviderFactory;
-    resolvers: never;
+    resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+    }>;
   }>;
   okta: Readonly<{
     create: (
@@ -691,6 +702,19 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       nameIdMatchingUserEntityName(): SignInResolver<SamlAuthResult>;
     }>;
+  }>;
+  easyAuth: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<EasyAuthResult> | undefined;
+            signIn: {
+              resolver: SignInResolver<EasyAuthResult>;
+            };
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
   }>;
 }>;
 

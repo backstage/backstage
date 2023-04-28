@@ -2,7 +2,7 @@
 
 Welcome to the explore plugin!
 
-This plugin helps to visualize the domains and tools in your ecosystem.
+This plugin helps to visualize the top level entities like domains, groups and tools in your ecosystem.
 
 ## Setup
 
@@ -117,7 +117,10 @@ export const ExplorePage = () => {
       subtitle="Browse our ecosystem"
     >
       <ExploreLayout.Route path="domains" title="Domains">
-        <DomainExplorerContent />
+        <CatalogKindExploreContent kind="domain" />
+      </ExploreLayout.Route>
+      <ExploreLayout.Route path="systems" title="Systems">
+        <CatalogKindExploreContent kind="system" />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="inner-source" title="InnerSource">
         <AcmeInnserSourceExplorerContent />

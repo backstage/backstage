@@ -27,6 +27,7 @@ import {
   Permission,
   PermissionCondition,
   PermissionCriteria,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import {
@@ -36,6 +37,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { NotImplementedError } from '@backstage/errors';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -160,11 +162,111 @@ const applyConditions = <TResourceType extends string, TResource>(
 };
 
 /**
+
+ * Takes some permission conditions and returns a definitive authorization result
+ * on the resource to which they apply.
+ *
+ * @public
+ */
+export const createConditionAuthorizer = <TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string>[],
+) => {
+  const getRule = createGetRule(rules);
+
+  return (
+    decision: PolicyDecision,
+    resource: TResource | undefined,
+  ): boolean => {
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      return applyConditions(decision.conditions, resource, getRule);
+    }
+
+    return decision.result === AuthorizeResult.ALLOW;
+  };
+};
+
+/**
+ * Options for creating a permission integration router specific
+ * for a particular resource type.
+ *
+ * @public
+ */
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  // Do not infer value of TResourceType from supplied rules.
+  // instead only consider the resourceType parameter, and
+  // consider any rules whose resource type does not match
+  // to be an error.
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
+};
+
+/**
+ * Options for creating a permission integration router exposing
+ * permissions and rules from multiple resource types.
+ *
+ * @public
+ */
+export type PermissionIntegrationRouterOptions<
+  TResourceType1 extends string = string,
+  TResource1 = any,
+  TResourceType2 extends string = string,
+  TResource2 = any,
+  TResourceType3 extends string = string,
+  TResource3 = any,
+> = {
+  resources: Readonly<
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType3,
+          TResource3
+        >,
+      ]
+  >;
+};
+
+/**
  * Create an express Router which provides an authorization route to allow
  * integration between the permission backend and other Backstage backend
  * plugins. Plugin owners that wish to support conditional authorization for
  * their resources should add the router created by this function to their
  * express app inside their `createRouter` implementation.
+ *
+ * In case the `permissions` option is provided, the router also
+ * provides a route that exposes permissions and routes of a plugin.
+ *
+ * In case resources is provided, the routes can handle permissions
+ * for multiple resource types.
  *
  * @remarks
  *
@@ -194,27 +296,76 @@ const applyConditions = <TResourceType extends string, TResource>(
  *
  * @public
  */
-export const createPermissionIntegrationRouter = <
-  TResourceType extends string,
-  TResource,
->(options: {
-  resourceType: TResourceType;
-  permissions?: Array<Permission>;
-  // Do not infer value of TResourceType from supplied rules.
-  // instead only consider the resourceType parameter, and
-  // consider any rules whose resource type does not match
-  // to be an error.
-  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: (
-    resourceRefs: string[],
-  ) => Promise<Array<TResource | undefined>>;
-}): express.Router => {
-  const { resourceType, permissions, rules, getResources } = options;
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+  TResourceType2 extends string,
+  TResource2,
+  TResourceType3 extends string,
+  TResource3,
+>(
+  options:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType1,
+        TResource1
+      >
+    | PermissionIntegrationRouterOptions<
+        TResourceType1,
+        TResource1,
+        TResourceType2,
+        TResource2,
+        TResourceType3,
+        TResource3
+      >,
+): express.Router {
+  const optionsWithResources = options as PermissionIntegrationRouterOptions;
+  const allOptions = [
+    optionsWithResources.resources ? optionsWithResources.resources : options,
+  ].flat();
+  const allRules = allOptions.flatMap(
+    option =>
+      (
+        option as CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >
+      ).rules || [],
+  );
+  const allPermissions = [
+    ...((options as { permissions: Permission[] }).permissions || []),
+    ...(optionsWithResources.resources?.flatMap(o => o.permissions || []) ||
+      []),
+  ];
+
+  const allResourceTypes = allOptions.reduce((acc, option) => {
+    if (
+      isCreatePermissionIntegrationRouterResourceOptions(
+        option as
+          | { permissions: Array<Permission> }
+          | CreatePermissionIntegrationRouterResourceOptions<
+              TResourceType1,
+              TResource1
+            >,
+      )
+    ) {
+      acc.push(
+        (
+          option as CreatePermissionIntegrationRouterResourceOptions<
+            TResourceType1,
+            TResource1
+          >
+        ).resourceType,
+      );
+    }
+    return acc;
+  }, [] as string[]);
+
   const router = Router();
   router.use(express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializedRules: MetadataResponseSerializedRule[] = rules.map(
+    const serializedRules: MetadataResponseSerializedRule[] = allRules.map(
       rule => ({
         name: rule.name,
         description: rule.description,
@@ -224,32 +375,58 @@ export const createPermissionIntegrationRouter = <
     );
 
     const responseJson: MetadataResponse = {
-      permissions,
+      permissions: allPermissions,
       rules: serializedRules,
     };
 
     return res.json(responseJson);
   });
 
-  const getRule = createGetRule(rules);
-
-  const assertValidResourceTypes = (
-    requests: ApplyConditionsRequestEntry[],
-  ) => {
-    const invalidResourceTypes = requests
-      .filter(request => request.resourceType !== resourceType)
-      .map(request => request.resourceType);
-
-    if (invalidResourceTypes.length) {
-      throw new InputError(
-        `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
-      );
-    }
-  };
-
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
     async (req, res: Response<ApplyConditionsResponse | string>) => {
+      const ruleMapByResourceType: Record<
+        string,
+        ReturnType<typeof createGetRule>
+      > = {};
+      const getResourcesByResourceType: Record<
+        string,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >['getResources']
+      > = {};
+
+      for (let option of allOptions) {
+        option = option as
+          | { permissions: Array<Permission> }
+          | CreatePermissionIntegrationRouterResourceOptions<
+              TResourceType1,
+              TResource1
+            >;
+        if (isCreatePermissionIntegrationRouterResourceOptions(option)) {
+          ruleMapByResourceType[option.resourceType] = createGetRule(
+            option.rules,
+          );
+
+          getResourcesByResourceType[option.resourceType] = option.getResources;
+        }
+      }
+
+      const assertValidResourceTypes = (
+        requests: ApplyConditionsRequestEntry[],
+      ) => {
+        const invalidResourceTypes = requests
+          .filter(request => !allResourceTypes.includes(request.resourceType))
+          .map(request => request.resourceType);
+
+        if (invalidResourceTypes.length) {
+          throw new InputError(
+            `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
+          );
+        }
+      };
+
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
 
       if (!parseResult.success) {
@@ -260,23 +437,43 @@ export const createPermissionIntegrationRouter = <
 
       assertValidResourceTypes(body.items);
 
-      const resourceRefs = Array.from(
-        new Set(body.items.map(({ resourceRef }) => resourceRef)),
-      );
-      const resourceArray = await getResources(resourceRefs);
-      const resources = resourceRefs.reduce((acc, resourceRef, index) => {
-        acc[resourceRef] = resourceArray[index];
-
+      const resourceRefsByResourceType = body.items.reduce<
+        Record<string, Set<string>>
+      >((acc, item) => {
+        if (!acc[item.resourceType]) {
+          acc[item.resourceType] = new Set();
+        }
+        acc[item.resourceType].add(item.resourceRef);
         return acc;
-      }, {} as Record<string, TResource | undefined>);
+      }, {});
+
+      const resourcesByResourceType: Record<string, Record<string, any>> = {};
+      for (const resourceType of Object.keys(resourceRefsByResourceType)) {
+        const getResources = getResourcesByResourceType[resourceType];
+        if (!getResources) {
+          throw new NotImplementedError(
+            `This plugin does not expose any permission rule or can't evaluate the conditions request for ${resourceType}`,
+          );
+        }
+        const resourceRefs = Array.from(
+          resourceRefsByResourceType[resourceType],
+        );
+        const resources = await getResources(resourceRefs);
+        resourceRefs.forEach((resourceRef, index) => {
+          if (!resourcesByResourceType[resourceType]) {
+            resourcesByResourceType[resourceType] = {};
+          }
+          resourcesByResourceType[resourceType][resourceRef] = resources[index];
+        });
+      }
 
       return res.json({
         items: body.items.map(request => ({
           id: request.id,
           result: applyConditions(
             request.conditions,
-            resources[request.resourceRef],
-            getRule,
+            resourcesByResourceType[request.resourceType][request.resourceRef],
+            ruleMapByResourceType[request.resourceType],
           )
             ? AuthorizeResult.ALLOW
             : AuthorizeResult.DENY,
@@ -288,4 +485,28 @@ export const createPermissionIntegrationRouter = <
   router.use(errorHandler());
 
   return router;
-};
+}
+
+function isCreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+>(
+  options:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >,
+): options is CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType,
+  TResource
+> {
+  return (
+    (
+      options as CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >
+    ).resourceType !== undefined
+  );
+}

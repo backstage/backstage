@@ -13,6 +13,7 @@ import { EntityRatingsData } from '@backstage/plugin-entity-feedback-common';
 import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { Rating } from '@backstage/plugin-entity-feedback-common';
+import { Ratings } from '@backstage/plugin-entity-feedback-common';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -22,6 +23,7 @@ export interface EntityFeedbackApi {
   getAllRatings(): Promise<EntityRatingsData[]>;
   // (undocumented)
   getOwnedRatings(ownerRef: string): Promise<EntityRatingsData[]>;
+  getRatingAggregates(entityRef: string): Promise<Ratings>;
   // (undocumented)
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
   // (undocumented)
@@ -47,6 +49,8 @@ export class EntityFeedbackClient implements EntityFeedbackApi {
   getAllRatings(): Promise<EntityRatingsData[]>;
   // (undocumented)
   getOwnedRatings(ownerRef: string): Promise<EntityRatingsData[]>;
+  // (undocumented)
+  getRatingAggregates(entityRef: string): Promise<Ratings>;
   // (undocumented)
   getRatings(entityRef: string): Promise<Omit<Rating, 'entityRef'>[]>;
   // (undocumented)

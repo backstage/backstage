@@ -6,7 +6,8 @@
 /// <reference types="node" />
 /// <reference types="webpack-env" />
 
-import aws from 'aws-sdk';
+import { AppConfig } from '@backstage/config';
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -67,9 +68,9 @@ import { Writable } from 'stream';
 // @public
 export class AwsS3UrlReader implements UrlReader {
   constructor(
+    credsManager: AwsCredentialsManager,
     integration: AwsS3Integration,
     deps: {
-      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   );
@@ -301,6 +302,7 @@ export class FetchUrlReader implements UrlReader {
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
+  lastModifiedAt?: Date;
 }>;
 
 // @public
@@ -470,6 +472,20 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
+// @public
+export class HostDiscovery implements PluginEndpointDiscovery {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+}
+
 export { isChildPath };
 
 // @public
@@ -532,6 +548,7 @@ export const legacyPlugin: (
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
+  additionalConfigs?: AppConfig[];
   argv: string[];
 }): Promise<Config>;
 
@@ -635,6 +652,7 @@ export class ReadUrlResponseFactory {
 // @public
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
+  lastModifiedAt?: Date;
 };
 
 // @public
@@ -724,19 +742,8 @@ export type ServiceBuilder = {
 // @public
 export function setRootLogger(newLogger: winston.Logger): void;
 
-// @public
-export class SingleHostDiscovery implements PluginEndpointDiscovery {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): SingleHostDiscovery;
-  // (undocumented)
-  getBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-}
+// @public @deprecated
+export const SingleHostDiscovery: typeof HostDiscovery;
 
 // @public
 export type StatusCheck = () => Promise<any>;

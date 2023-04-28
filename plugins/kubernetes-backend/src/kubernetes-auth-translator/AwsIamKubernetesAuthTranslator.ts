@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import AWS, { Credentials } from 'aws-sdk';
-import { sign } from 'aws4';
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { SignatureV4 } from '@aws-sdk/signature-v4';
+import { Sha256 } from '@aws-crypto/sha256-js';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import { Config } from '@backstage/config';
 
 /**
  *
@@ -28,6 +34,8 @@ export type SigningCreds = {
   sessionToken: string | undefined;
 };
 
+const defaultRegion = 'us-east-1';
+
 /**
  *
  * @public
@@ -35,92 +43,70 @@ export type SigningCreds = {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  validCredentials(creds: SigningCreds): boolean {
-    return (creds?.accessKeyId && creds?.secretAccessKey) as unknown as boolean;
+  private readonly credsManager: AwsCredentialsManager;
+  constructor(opts: { config: Config }) {
+    this.credsManager = DefaultAwsCredentialsManager.fromConfig(opts.config);
   }
 
-  awsGetCredentials = async (): Promise<Credentials> => {
-    return new Promise((resolve, reject) => {
-      AWS.config.getCredentials(err => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(AWS.config.credentials as Credentials);
-      });
-    });
-  };
-
-  async getCredentials(
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<SigningCreds> {
-    return new Promise<SigningCreds>(async (resolve, reject) => {
-      const awsCreds = await this.awsGetCredentials();
-
-      if (!(awsCreds instanceof Credentials))
-        return reject(Error('No AWS credentials found.'));
-
-      let creds: SigningCreds = {
-        accessKeyId: awsCreds.accessKeyId,
-        secretAccessKey: awsCreds.secretAccessKey,
-        sessionToken: awsCreds.sessionToken,
-      };
-
-      if (!this.validCredentials(creds))
-        return reject(Error('Invalid AWS credentials found.'));
-      if (!assumeRole) return resolve(creds);
-
-      try {
-        const params: AWS.STS.Types.AssumeRoleRequest = {
-          RoleArn: assumeRole,
-          RoleSessionName: 'backstage-login',
-        };
-        if (externalId) params.ExternalId = externalId;
-
-        const assumedRole = await new AWS.STS().assumeRole(params).promise();
-
-        if (!assumedRole.Credentials) {
-          throw new Error(`No credentials returned for role ${assumeRole}`);
-        }
-
-        creds = {
-          accessKeyId: assumedRole.Credentials.AccessKeyId,
-          secretAccessKey: assumedRole.Credentials.SecretAccessKey,
-          sessionToken: assumedRole.Credentials.SessionToken,
-        };
-      } catch (e) {
-        console.warn(`There was an error assuming the role: ${e}`);
-        return reject(Error(`Unable to assume role: ${e}`));
-      }
-      return resolve(creds);
-    });
-  }
-  async getBearerToken(
+  private async getBearerToken(
     clusterName: string,
     assumeRole?: string,
     externalId?: string,
   ): Promise<string> {
-    const credentials = await this.getCredentials(assumeRole, externalId);
+    const region = process.env.AWS_REGION ?? defaultRegion;
 
-    const request = {
-      host: `sts.amazonaws.com`,
-      path: `/?Action=GetCallerIdentity&Version=2011-06-15&X-Amz-Expires=60`,
-      headers: {
-        'x-k8s-aws-id': clusterName,
+    let credentials = (await this.credsManager.getCredentialProvider())
+      .sdkCredentialProvider;
+    if (assumeRole) {
+      credentials = fromTemporaryCredentials({
+        masterCredentials: credentials,
+        clientConfig: {
+          region,
+        },
+        params: {
+          RoleArn: assumeRole,
+          ExternalId: externalId,
+        },
+      });
+    }
+
+    const signer = new SignatureV4({
+      credentials,
+      region,
+      service: 'sts',
+      sha256: Sha256,
+    });
+
+    const request = await signer.presign(
+      {
+        headers: {
+          host: `sts.${region}.amazonaws.com`,
+          'x-k8s-aws-id': clusterName,
+        },
+        hostname: `sts.${region}.amazonaws.com`,
+        method: 'GET',
+        path: '/',
+        protocol: 'https:',
+        query: {
+          Action: 'GetCallerIdentity',
+          Version: '2011-06-15',
+        },
       },
-      signQuery: true,
-    };
+      { expiresIn: 0 },
+    );
 
-    const signed = sign(request, credentials);
-    const url = `https://${signed.host}${signed.path}`;
-    const base64Url = Buffer.from(url, 'binary').toString('base64');
-    const urlSafeBase64Url = base64Url
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+    const query = Object.keys(request?.query ?? {})
+      .map(
+        q =>
+          `${encodeURIComponent(q)}=${encodeURIComponent(
+            request.query?.[q] as string,
+          )}`,
+      )
+      .join('&');
 
-    return `k8s-aws-v1.${urlSafeBase64Url}`;
+    const url = `https://${request.hostname}${request.path}?${query}`;
+
+    return `k8s-aws-v1.${Buffer.from(url).toString('base64url')}`;
   }
 
   async decorateClusterDetailsWithAuth(

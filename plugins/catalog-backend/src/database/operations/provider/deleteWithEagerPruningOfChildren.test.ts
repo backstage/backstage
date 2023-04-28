@@ -21,6 +21,8 @@ import { applyDatabaseMigrations } from '../../migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from '../../tables';
 import { deleteWithEagerPruningOfChildren } from './deleteWithEagerPruningOfChildren';
 
+jest.setTimeout(60_000);
+
 describe('deleteWithEagerPruningOfChildren', () => {
   const databases = TestDatabases.create({
     ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -111,7 +113,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await run(knex, { sourceKey: 'P1', entityRefs: ['E1', 'E3'] });
       await expect(remainingEntities(knex)).resolves.toEqual(['E4', 'E5']);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -141,7 +142,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2']);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -170,7 +170,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -199,7 +198,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await run(knex, { sourceKey: 'P1', entityRefs: ['E1'] });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -240,7 +238,6 @@ describe('deleteWithEagerPruningOfChildren', () => {
       await run(knex, { sourceKey: 'P1', entityRefs: ['E3'] });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -273,6 +270,5 @@ describe('deleteWithEagerPruningOfChildren', () => {
         'E4',
       ]);
     },
-    60_000,
   );
 });

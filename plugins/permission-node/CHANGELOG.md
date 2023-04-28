@@ -1,5 +1,127 @@
 # @backstage/plugin-permission-node
 
+## 0.7.8-next.0
+
+### Patch Changes
+
+- a788e715cfc: `createPermissionIntegrationRouter` now accepts rules and permissions for multiple resource types. Example:
+
+  ```typescript
+  createPermissionIntegrationRouter({
+    resources: [
+      {
+        resourceType: 'resourceType-1',
+        permissions: permissionsResourceType1,
+        rules: rulesResourceType1,
+      },
+      {
+        resourceType: 'resourceType-2',
+        permissions: permissionsResourceType2,
+        rules: rulesResourceType2,
+      },
+    ],
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.7.7
+
+### Patch Changes
+
+- 788f0f5a152: Introduced alpha export of the `policyExtensionPoint` for use in the new backend system.
+- 71fd0966d10: Added createConditionAuthorizer utility function, which takes some permission conditions and returns a function that returns a definitive authorization result given a decision and a resource.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.7.7-next.2
+
+### Patch Changes
+
+- 788f0f5a152: Introduced alpha export of the `policyExtensionPoint` for use in the new backend system.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- 71fd0966d10: Added createConditionAuthorizer utility function, which takes some permission conditions and returns a function that returns a definitive authorization result given a decision and a resource.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.1
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-permission-common@0.7.4
+
+## 0.7.6
+
+### Patch Changes
+
+- 27a103ca07b: Changed the `createPermissionIntegrationRouter` API to allow `getResources`, `resourceType` and `rules` to be optional
+- 37e9215c793: Update the service-to-service auth docs URL in error message.
+  ``
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+
+## 0.7.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- 27a103ca07b: Changed the `createPermissionIntegrationRouter` API to allow `getResources`, `resourceType` and `rules` to be optional
+- 37e9215c793: Update the service-to-service auth docs URL in error message.
+  ``
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/config@1.0.7-next.0
+
 ## 0.7.6-next.0
 
 ### Patch Changes

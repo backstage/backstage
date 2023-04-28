@@ -35,6 +35,8 @@ import { buildEntitySearch } from '../stitching/buildEntitySearch';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
 
+jest.setTimeout(60_000);
+
 describe('DefaultEntitiesCatalog', () => {
   let knex: Knex;
 
@@ -86,6 +88,9 @@ describe('DefaultEntitiesCatalog', () => {
         target_entity_ref: stringifyEntityRef(entity),
       });
     }
+
+    const search = await buildEntitySearch(id, entity);
+    await knex<DbSearchRow>('search').insert(search);
 
     return id;
   }
@@ -181,7 +186,6 @@ describe('DefaultEntitiesCatalog', () => {
           ]),
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -197,7 +201,6 @@ describe('DefaultEntitiesCatalog', () => {
           catalog.entityAncestry('k:default/root'),
         ).rejects.toThrow('No such entity k:default/root');
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -270,7 +273,6 @@ describe('DefaultEntitiesCatalog', () => {
           ]),
         );
       },
-      60_000,
     );
   });
 
@@ -310,7 +312,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity2);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -350,7 +351,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities[0]).toEqual(entity1);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -424,7 +424,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities).toContainEqual(entity2);
         expect(entities).toContainEqual(entity4);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -470,7 +469,6 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(1);
         expect(entities).toContainEqual(entity1);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -507,7 +505,6 @@ describe('DefaultEntitiesCatalog', () => {
 
         expect(entities.length).toBe(0);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -566,7 +563,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -662,7 +658,6 @@ describe('DefaultEntitiesCatalog', () => {
           }),
         ).resolves.toEqual(['n4', 'n3', 'n1', 'n2']);
       },
-      60_000,
     );
   });
 
@@ -719,7 +714,50 @@ describe('DefaultEntitiesCatalog', () => {
           'k:default/two',
         ]);
       },
-      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'queries for entities by ref, including filtering, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'one' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'two' },
+            spec: { owner: 'me' },
+            relations: [],
+          },
+          [],
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const { items } = await catalog.entitiesBatch({
+          entityRefs: ['k:default/two', 'k:default/one'],
+          filter: { key: 'spec.owner', values: ['me'] },
+        });
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/two',
+          null,
+        ]);
+      },
     );
   });
 
@@ -1072,6 +1110,193 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should filter the text results when sortOrder is not provided, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const names = ['lion', 'cat', 'atcatss', 'dog', 'dogcat', 'aa', 's'];
+        const entities: Entity[] = names.map((name, index) =>
+          // Need a stable search since default filtering is by uid, and those get generated on the fly
+          //  during the test case.
+          entityFrom(`${index}`, { uid: `id${index}`, title: name }),
+        );
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something else' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const filter = {
+          key: 'spec.should_include_this',
+        };
+
+        const request: QueryEntitiesInitialRequest = {
+          filter,
+          limit: 100,
+          fullTextFilter: { term: 'cAt ', fields: ['metadata.title'] },
+        };
+        const response = await catalog.queryEntities(request);
+        expect(response.items).toEqual([
+          entityFrom('1', { uid: 'id1', title: 'cat' }),
+          entityFrom('2', { uid: 'id2', title: 'atcatss' }),
+          entityFrom('4', { uid: 'id4', title: 'dogcat' }),
+        ]);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(3);
+
+        const paginatedResponse = await catalog.queryEntities({
+          ...request,
+          limit: 2,
+        });
+        expect(paginatedResponse.items).toEqual([
+          entityFrom('1', { uid: 'id1', title: 'cat' }),
+          entityFrom('2', { uid: 'id2', title: 'atcatss' }),
+        ]);
+        expect(paginatedResponse.pageInfo.nextCursor).not.toBeUndefined();
+        expect(paginatedResponse.pageInfo.prevCursor).toBeUndefined();
+        expect(paginatedResponse.totalItems).toBe(3);
+
+        const paginatedResponseNext = await catalog.queryEntities({
+          cursor: paginatedResponse.pageInfo.nextCursor!,
+        });
+        expect(paginatedResponseNext.items).toEqual([
+          entityFrom('4', { uid: 'id4', title: 'dogcat' }),
+        ]);
+        expect(paginatedResponseNext.pageInfo.nextCursor).toBeUndefined();
+        expect(paginatedResponseNext.pageInfo.prevCursor).not.toBeUndefined();
+        expect(paginatedResponseNext.totalItems).toBe(3);
+
+        const paginatedResponsePrev = await catalog.queryEntities({
+          cursor: paginatedResponseNext.pageInfo.prevCursor!,
+        });
+        expect(paginatedResponsePrev).toMatchObject(paginatedResponse);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should filter the text results by multiple search fields if provided, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const defs = [
+          {
+            title: 'lion',
+            name: 'KingOfTheJungle',
+          },
+          { title: 'cat', name: 'NotKingOfTheJungle' },
+          { title: 'atcatss', name: 'NotACatKing' },
+          { title: 'king', name: '123' },
+          { title: 'dogcat', name: 'dogcat' },
+          { title: 'aa', name: 'test123' },
+          { title: 's', name: 'idk' },
+        ];
+        const entities: Entity[] = defs.map(({ title, name }, index) =>
+          // Need a stable search since default filtering is by uid, and those get generated on the fly
+          //  during the test case.
+          entityFrom(name, { uid: `id${index}`, title }),
+        );
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something else' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: getVoidLogger(),
+          stitcher,
+        });
+
+        const filter = {
+          key: 'spec.should_include_this',
+        };
+
+        const request: QueryEntitiesInitialRequest = {
+          filter,
+          limit: 100,
+          fullTextFilter: {
+            term: 'KiNg ',
+            fields: ['metadata.title', 'metadata.name'],
+          },
+        };
+        const response = await catalog.queryEntities(request);
+
+        expect(response.items).toEqual([
+          entityFrom('KingOfTheJungle', { uid: 'id0', title: 'lion' }),
+          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
+          entityFrom('NotACatKing', { uid: 'id2', title: 'atcatss' }),
+          entityFrom('123', { uid: 'id3', title: 'king' }),
+        ]);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(4);
+
+        const paginatedResponse = await catalog.queryEntities({
+          ...request,
+          limit: 2,
+        });
+        expect(paginatedResponse.items).toEqual([
+          entityFrom('KingOfTheJungle', { uid: 'id0', title: 'lion' }),
+          entityFrom('NotKingOfTheJungle', { uid: 'id1', title: 'cat' }),
+        ]);
+        expect(paginatedResponse.pageInfo.nextCursor).not.toBeUndefined();
+        expect(paginatedResponse.pageInfo.prevCursor).toBeUndefined();
+        expect(paginatedResponse.totalItems).toBe(4);
+
+        const paginatedResponseNext = await catalog.queryEntities({
+          cursor: paginatedResponse.pageInfo.nextCursor!,
+        });
+        expect(paginatedResponseNext.items).toEqual([
+          entityFrom('NotACatKing', { uid: 'id2', title: 'atcatss' }),
+          entityFrom('123', { uid: 'id3', title: 'king' }),
+        ]);
+        expect(paginatedResponseNext.pageInfo.nextCursor).toBeUndefined();
+        expect(paginatedResponseNext.pageInfo.prevCursor).not.toBeUndefined();
+        expect(paginatedResponseNext.totalItems).toBe(4);
+
+        const paginatedResponsePrev = await catalog.queryEntities({
+          cursor: paginatedResponseNext.pageInfo.prevCursor!,
+        });
+        expect(paginatedResponsePrev).toMatchObject(paginatedResponse);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should include totalItems and empty entities in the response in case limit is zero, %p',
       async databaseId => {
         await createDatabase(databaseId);
@@ -1382,7 +1607,6 @@ describe('DefaultEntitiesCatalog', () => {
           new Set(['k:default/unrelated1', 'k:default/unrelated2']),
         );
       },
-      60_000,
     );
   });
 
@@ -1425,7 +1649,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -1476,7 +1699,6 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -1522,14 +1744,17 @@ describe('DefaultEntitiesCatalog', () => {
           },
         });
       },
-      60_000,
     );
   });
 });
 
 function entityFrom(
   name: string,
-  { uid, namespace }: { uid?: string; namespace?: string } = {},
+  {
+    uid,
+    namespace,
+    title,
+  }: { uid?: string; namespace?: string; title?: string } = {},
 ) {
   return {
     apiVersion: 'a',
@@ -1538,6 +1763,7 @@ function entityFrom(
       name,
       ...(!!namespace && { namespace }),
       ...(!!uid && { uid }),
+      ...(!!title && { title }),
     },
     spec: { should_include_this: 'yes' },
   };

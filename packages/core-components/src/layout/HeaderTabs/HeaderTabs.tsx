@@ -104,7 +104,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
+        aria-label="tabs"
         onChange={handleChange}
         value={selectedTab}
       >

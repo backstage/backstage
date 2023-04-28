@@ -33,6 +33,9 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { EntityProcessingRequest } from '../processing/types';
 import { Stitcher } from '../stitching/Stitcher';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { ConfigReader } from '@backstage/config';
+
+jest.setTimeout(60_000);
 
 describe('DefaultRefreshService', () => {
   const defaultLogger = getVoidLogger();
@@ -106,10 +109,11 @@ describe('DefaultRefreshService', () => {
       }
     }
 
-    const engine = new DefaultCatalogProcessingEngine(
-      defaultLogger,
-      db,
-      {
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: defaultLogger,
+      processingDatabase: db,
+      orchestrator: {
         async process(request: EntityProcessingRequest) {
           const entityRef = stringifyEntityRef(request.entity);
           const entity = entityMap.get(entityRef);
@@ -147,10 +151,10 @@ describe('DefaultRefreshService', () => {
           };
         },
       },
-      new Stitcher(knex, defaultLogger),
-      () => createHash('sha1'),
-      50,
-    );
+      stitcher: new Stitcher(knex, defaultLogger),
+      createHash: () => createHash('sha1'),
+      pollingIntervalMs: 50,
+    });
 
     return engine;
   };
@@ -221,7 +225,6 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -275,7 +278,6 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -337,6 +339,5 @@ describe('DefaultRefreshService', () => {
 
       await engine.stop();
     },
-    60_000,
   );
 });

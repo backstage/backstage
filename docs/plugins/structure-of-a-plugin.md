@@ -13,7 +13,8 @@ The new plugin should look something like:
 
 ```
 new-plugin/
-    dist/
+    dev/
+        index.ts
     node_modules/
     src/
         components/
@@ -29,11 +30,10 @@ new-plugin/
         plugin.test.ts
         plugin.ts
         routes.ts
-    jest.config.js
-    jest.setup.ts
+        setupTests.ts
+    .eslintrc.js
     package.json
     README.md
-    tsconfig.json
 ```
 
 You might note a thing or two. Yes, a plugin looks like a mini project on it's
@@ -48,8 +48,7 @@ folder.
 
 ## Base files
 
-In the root folder you have some configuration for typescript and jest, the test
-runner. You get a readme to populate with info about your plugin and a
+You get a readme to populate with info about your plugin and a
 package.json to declare the plugin dependencies, metadata and scripts.
 
 ## The plugin file
@@ -92,7 +91,7 @@ The generated plugin includes two example components to showcase how we
 structure our plugins. There are usually one or multiple page components and
 next to them you can split up the UI in as many components as you feel like.
 
-We have the `ExamplePage` to show an example Backstage page component. The
+We have the `ExampleComponent` to show an example Backstage page component. The
 `ExampleFetchComponent` showcases the common task of making an async request to
 a public API and plot the response data in a table using Material-UI components.
 
@@ -117,5 +116,3 @@ backend-side authorization. To smooth this process out you can use proxy -
 either the one you already have (like Nginx, HAProxy, etc.) or the proxy-backend
 plugin that we provide for the Backstage backend.
 [Read more](https://github.com/backstage/backstage/blob/master/plugins/proxy-backend/README.md)
-
-[Back to Getting Started](../README.md)

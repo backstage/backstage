@@ -24,7 +24,8 @@ import {
   ConfigTarget,
   LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
-import { Config, ConfigReader } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
+import type { Config, AppConfig } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
@@ -70,6 +71,7 @@ export async function createConfigSecretEnumerator(options: {
 export async function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
+  additionalConfigs?: AppConfig[];
 }): Promise<{ config: Config }> {
   const args = parseArgs(options.argv);
 
@@ -92,8 +94,11 @@ export async function loadBackendConfig(options: {
         console.info(
           `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
         );
-
-        config.setConfig(ConfigReader.fromConfigs(newConfigs));
+        const configsToMerge = [...newConfigs];
+        if (options.additionalConfigs) {
+          configsToMerge.push(...options.additionalConfigs);
+        }
+        config.setConfig(ConfigReader.fromConfigs(configsToMerge));
       },
       stopSignal: new Promise(resolve => {
         if (currentCancelFunc) {
@@ -109,12 +114,15 @@ export async function loadBackendConfig(options: {
       }),
     },
   });
-
   console.info(
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  config.setConfig(ConfigReader.fromConfigs(appConfigs));
+  const finalAppConfigs = [...appConfigs];
+  if (options.additionalConfigs) {
+    finalAppConfigs.push(...options.additionalConfigs);
+  }
+  config.setConfig(ConfigReader.fromConfigs(finalAppConfigs));
 
   return { config };
 }

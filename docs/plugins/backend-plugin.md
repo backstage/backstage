@@ -67,7 +67,7 @@ to your backend.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.1 # Change this to match the plugin's package.json
+yarn add --cwd packages/backend @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
 Create a new file named `packages/backend/src/plugins/carmen.ts`, and add the
@@ -184,9 +184,10 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
+  const { identity } = options;
 
   router.post('/example', async (req, res) => {
-    const identity = await identity.getIdentity({ request: req });
+    const userIdentity = await identity.getIdentity({ request: req });
     ...
   });
 ```
