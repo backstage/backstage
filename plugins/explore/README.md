@@ -104,11 +104,11 @@ Create a custom explore page in
 
 ```tsx
 import {
-  DomainExplorerContent,
+  CatalogKindExplorerContent,
   ExploreLayout,
 } from '@backstage/plugin-explore';
 import React from 'react';
-import { InnserSourceExplorerContent } from './InnserSourceExplorerContent';
+import { AcmeInnserSourceExploreContent } from './InnserSourceExplorerContent';
 
 export const ExplorePage = () => {
   return (
@@ -123,7 +123,7 @@ export const ExplorePage = () => {
         <CatalogKindExploreContent kind="system" />
       </ExploreLayout.Route>
       <ExploreLayout.Route path="inner-source" title="InnerSource">
-        <AcmeInnserSourceExplorerContent />
+        <AcmeInnserSourceExploreContent />
       </ExploreLayout.Route>
     </ExploreLayout>
   );
