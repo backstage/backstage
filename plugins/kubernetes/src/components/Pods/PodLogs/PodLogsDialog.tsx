@@ -47,7 +47,9 @@ interface PodLogsDialogProps {
   podScope: ContainerScope;
 }
 
-export const PodLogsDialog = ({ podScope }: PodLogsDialogProps) => {
+export const PodLogsDialog = ({
+  podScope: containerScope,
+}: PodLogsDialogProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -62,8 +64,8 @@ export const PodLogsDialog = ({ podScope }: PodLogsDialogProps) => {
     <>
       <Dialog maxWidth="xl" fullWidth open={open} onClose={closeDialog}>
         <DialogTitle id="dialog-title">
-          {podScope.podName} - {podScope.containerName} logs on cluster{' '}
-          {podScope.clusterName}
+          {containerScope.podName} - {containerScope.containerName} logs on
+          cluster {containerScope.clusterName}
           <IconButton
             aria-label="close"
             className={classes.closeButton}
@@ -73,7 +75,7 @@ export const PodLogsDialog = ({ podScope }: PodLogsDialogProps) => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <PodLogs podScope={podScope} />
+          <PodLogs containerScope={containerScope} />
         </DialogContent>
       </Dialog>
       <Button

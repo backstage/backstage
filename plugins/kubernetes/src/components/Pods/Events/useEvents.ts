@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
-import { ContainerScope } from './types';
-import { useApi } from '@backstage/core-plugin-api';
-
-interface PodLogsOptions {
-  containerScope: ContainerScope;
-  previous?: boolean;
+interface EventsOptions {
+  involvedObjectName: string;
+  namespace: string;
+  clusterName: string;
 }
 
-export const usePodLogs = ({ containerScope, previous }: PodLogsOptions) => {
+export const useEvents = ({
+  involvedObjectName,
+  namespace,
+  clusterName,
+}: EventsOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {
-    return await kubernetesProxyApi.getPodLogs({
-      podName: containerScope.podName,
-      namespace: containerScope.podNamespace,
-      containerName: containerScope.containerName,
-      clusterName: containerScope.clusterName,
-      previous,
+    return await kubernetesProxyApi.getEventsByInvolvedObjectName({
+      involvedObjectName,
+      namespace,
+      clusterName,
     });
-  }, [JSON.stringify(containerScope)]);
+  }, [involvedObjectName, namespace, clusterName]);
 };

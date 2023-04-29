@@ -24,8 +24,10 @@ import {
   makeStyles,
   Theme,
   Paper,
+  Grid,
 } from '@material-ui/core';
 import { PodAndErrors } from '../types';
+import { FixDialog } from '../FixDialog/FixDialog';
 
 const useStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -59,10 +61,21 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                 >
                   {i > 0 && <Divider key={`error-divider${i}`} />}
                   <ListItem>
-                    <ListItemText
+                    <Grid container>
+                      <Grid item xs={9}>
+                        <ListItemText
                       primary={error.message}
                       secondary={onlyPodWithErrors.pod.metadata?.name}
-                    />
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <FixDialog
+                          pod={onlyPodWithErrors.pod}
+                          error={error}
+                          clusterName={onlyPodWithErrors.clusterName}
+                        />
+                      </Grid>
+                    </Grid>
                   </ListItem>
                 </React.Fragment>
               );

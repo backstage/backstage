@@ -156,8 +156,15 @@ describe('detectErrors', () => {
       message:
         'back-off 5m0s restarting failed container=other-side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)',
       severity: 4,
+      proposedFix: {
+        container: 'other-side-car',
+        errorType: 'CrashLoopBackOff',
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        rootCauseExplanation:
+          'The container other-side-car has crashed many times, it will be exponentially restarted until it stops crashing',
+        type: 'logs',
+      },
       occuranceCount: 1,
-      proposedFix: [],
       type: 'container-waiting',
     });
 
@@ -168,11 +175,18 @@ describe('detectErrors', () => {
         name: 'dice-roller-canary-7d64cd756c-55rfq',
         namespace: 'default',
       },
+      proposedFix: {
+        container: 'other-side-car',
+        errorType: 'CrashLoopBackOff',
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        rootCauseExplanation:
+          'The container other-side-car has crashed many times, it will be exponentially restarted until it stops crashing',
+        type: 'logs',
+      },
       message:
         'back-off 5m0s restarting failed container=side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)',
       severity: 4,
       occuranceCount: 1,
-      proposedFix: [],
       type: 'container-waiting',
     });
 
@@ -186,7 +200,14 @@ describe('detectErrors', () => {
       message: 'container=other-side-car restarted 123 times',
       severity: 4,
       occuranceCount: 123,
-      proposedFix: [],
+      proposedFix: {
+        container: 'other-side-car',
+        errorType: 'Error',
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        rootCauseExplanation:
+          'This container has exited with a non-zero exit code (1)',
+        type: 'logs',
+      },
       type: 'containers-restarting',
     });
 
@@ -197,10 +218,17 @@ describe('detectErrors', () => {
         name: 'dice-roller-canary-7d64cd756c-55rfq',
         namespace: 'default',
       },
+      proposedFix: {
+        container: 'other-side-car',
+        errorType: 'Error',
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        rootCauseExplanation:
+          'This container has exited with a non-zero exit code (1)',
+        type: 'logs',
+      },
       message: 'container=side-car restarted 38 times',
       severity: 4,
       occuranceCount: 38,
-      proposedFix: [],
       type: 'containers-restarting',
     });
   });
@@ -219,7 +247,17 @@ describe('detectErrors', () => {
     expect(err1).toStrictEqual({
       message: 'configmap "some-cm" not found',
       occuranceCount: 1,
-      proposedFix: [],
+      proposedFix: {
+        docsLink: '',
+        errorType: 'CreateContainerConfigError',
+        possibleFixes: [
+          'Ensure ConfigMaps references in the Deployment manifest are correct and the keys exist',
+          'Ensure Secrets references in the Deployment manifest are correct and the keys exist',
+        ],
+        rootCauseExplanation:
+          'There is missing or mismatching configuration required to start the container',
+        type: 'docs',
+      },
       severity: 4,
       sourceRef: {
         apiGroup: 'v1',
@@ -262,7 +300,6 @@ describe('detectErrors', () => {
       message: 'Deployment does not have minimum availability.',
       severity: 6,
       occuranceCount: 1,
-      proposedFix: [],
       type: 'condition-message-present',
     });
   });
@@ -299,7 +336,6 @@ describe('detectErrors', () => {
         'Current number of replicas (10) is equal to the configured max number of replicas (10)',
       severity: 8,
       occuranceCount: 1,
-      proposedFix: [],
       type: 'hpa-max-current-replicas',
     });
   });
@@ -433,7 +469,18 @@ describe('detectErrors', () => {
       message:
         'The container some-container failed to start properly, but is not crashing',
       occuranceCount: 1,
-      proposedFix: [],
+      proposedFix: {
+        docsLink: 'TODO',
+        errorType: 'ReadinessProbeFailed',
+        podName: '',
+        possibleFixes: [
+          'Ensure that the container starts correctly locally',
+          "Check the container's logs looking for error during startup",
+        ],
+        rootCauseExplanation:
+          'The container some-container failed to start properly, but is not crashing',
+        type: 'events',
+      },
       severity: 4,
       sourceRef: {
         apiGroup: 'v1',

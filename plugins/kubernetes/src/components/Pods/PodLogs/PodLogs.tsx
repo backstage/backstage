@@ -15,7 +15,11 @@
  */
 import React from 'react';
 
-import { DismissableBanner, LogViewer } from '@backstage/core-components';
+import {
+  DismissableBanner,
+  EmptyState,
+  LogViewer,
+} from '@backstage/core-components';
 import { Paper } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
@@ -23,12 +27,17 @@ import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
 
 interface PodLogsProps {
-  podScope: ContainerScope;
+  containerScope: ContainerScope;
+  previous?: boolean;
 }
 
-export const PodLogs: React.FC<PodLogsProps> = ({ podScope }: PodLogsProps) => {
+export const PodLogs: React.FC<PodLogsProps> = ({
+  containerScope,
+  previous,
+}: PodLogsProps) => {
   const { value, error, loading } = usePodLogs({
-    podScope: podScope,
+    containerScope,
+    previous,
   });
 
   return (
@@ -45,10 +54,20 @@ export const PodLogs: React.FC<PodLogsProps> = ({ podScope }: PodLogsProps) => {
       )}
       <Paper
         elevation={1}
-        style={{ height: '100%', width: '100%', minHeight: '30rem' }}
+        style={{ height: '100%', width: '100%', minHeight: '15rem' }}
       >
         {loading && <Skeleton variant="rect" width="100%" height="100%" />}
-        {!loading && value !== undefined && <LogViewer text={value.text} />}
+        {!loading &&
+          value !== undefined &&
+          (value.text === '' ? (
+            <EmptyState
+              missing="data"
+              title="No logs emitted"
+              description="No logs were emitted by the container"
+            />
+          ) : (
+            <LogViewer text={value.text} />
+          ))}
       </Paper>
     </>
   );

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { KubernetesApi } from './types';
+import { Event } from 'kubernetes-models/v1';
 
 /**
  * A client for common requests through the proxy endpoint of the kubernetes backend plugin.
@@ -41,20 +42,63 @@ export class KubernetesProxyClient {
     return await response.text();
   }
 
+  private async handleResponse(response: Response): Promise<any> {
+    if (!response.ok) {
+      const payload = await response.text();
+      let message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      switch (response.status) {
+        case 404:
+          message = `Proxy request failed with ${response.status} ${response.statusText}, ${payload}`;
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
+      throw new Error(message);
+    }
+
+    return await response.json();
+  }
+
+  async getEventsByInvolvedObjectName({
+    clusterName,
+    involvedObjectName,
+    namespace,
+  }: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event[]> {
+    return await this.kubernetesApi
+      .proxy({
+        clusterName,
+        path: `/api/v1/namespaces/${namespace}/events?fieldSelector=involvedObject.name=${involvedObjectName}`,
+        init: {
+          method: 'GET',
+        },
+      })
+      .then(response => this.handleResponse(response))
+      .then(eventList => eventList.items);
+  }
+
   async getPodLogs({
     podName,
     namespace,
     clusterName,
     containerName,
+    previous,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{ text: string }> {
     const params = new URLSearchParams({
       container: containerName,
     });
+    if (previous) {
+      params.append('previous', '');
+    }
     return await this.kubernetesApi
       .proxy({
         clusterName: clusterName,

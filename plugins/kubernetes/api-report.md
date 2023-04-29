@@ -14,6 +14,7 @@ import { CustomObjectsByEntityRequest } from '@backstage/plugin-kubernetes-commo
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { Event as Event_2 } from 'kubernetes-models/v1';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import type { JsonObject } from '@backstage/types';
@@ -113,7 +114,7 @@ export interface DetectedError {
   // Warning: (ae-forgotten-export) The symbol "ProposedFix" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  proposedFix: ProposedFix[];
+  proposedFix?: ProposedFix;
   // (undocumented)
   severity: ErrorSeverity;
   // Warning: (ae-forgotten-export) The symbol "ResourceRef" needs to be exported by the entry point index.d.ts
@@ -417,11 +418,18 @@ export { kubernetesPlugin as plugin };
 // @public (undocumented)
 export interface KubernetesProxyApi {
   // (undocumented)
+  getEventsByInvolvedObjectName(request: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event_2[]>;
+  // (undocumented)
   getPodLogs(request: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{
     text: string;
   }>;
@@ -436,16 +444,28 @@ export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
 export class KubernetesProxyClient {
   constructor(options: { kubernetesApi: KubernetesApi });
   // (undocumented)
+  getEventsByInvolvedObjectName({
+    clusterName,
+    involvedObjectName,
+    namespace,
+  }: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event_2[]>;
+  // (undocumented)
   getPodLogs({
     podName,
     namespace,
     clusterName,
     containerName,
+    previous,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{
     text: string;
   }>;

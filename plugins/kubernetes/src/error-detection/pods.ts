@@ -15,7 +15,7 @@
  */
 
 import { Pod, IContainerStatus, IContainer } from 'kubernetes-models/v1';
-import { DetectedError, ErrorMapper } from './types';
+import { DetectedError, ErrorMapper, ProposedFix } from './types';
 import { detectErrorsInObjects } from './common';
 import lodash from 'lodash';
 import { DateTime } from 'luxon';
@@ -70,6 +70,131 @@ const podToContainerSpecsAndStatuses = (pod: Pod): ContainerSpecAndStatus[] => {
   return result;
 };
 
+const readinessProbeProposedFixes = (pod: Pod): ProposedFix | undefined => {
+  const firstUnreadyContainerStatus = pod.status?.containerStatuses?.find(
+    cs => {
+      return cs.ready === false;
+    },
+  );
+
+  return {
+    errorType: 'ReadinessProbeFailed',
+    rootCauseExplanation: `The container ${firstUnreadyContainerStatus?.name} failed to start properly, but is not crashing`,
+    possibleFixes: [
+      'Ensure that the container starts correctly locally',
+      "Check the container's logs looking for error during startup",
+    ],
+    type: 'events',
+    docsLink: 'TODO',
+    podName: pod.metadata?.name ?? '',
+  };
+};
+
+const restartingPodProposedFixes = (pod: Pod): ProposedFix | undefined => {
+  const lastTerminatedCs = (pod.status?.containerStatuses ?? []).find(
+    cs => cs.lastState?.terminated !== undefined,
+  );
+
+  const lastTerminated = lastTerminatedCs?.lastState?.terminated;
+
+  if (!lastTerminated) {
+    return undefined;
+  }
+
+  switch (lastTerminated?.reason) {
+    case 'Unknown':
+      return {
+        // TODO check this one, it's more likely a cluster issue
+        errorType: 'Unknown',
+        rootCauseExplanation: `This container has exited with a non-zero exit code (${lastTerminated.exitCode})`,
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        container: lastTerminatedCs.name,
+        type: 'logs',
+      };
+    case 'Error':
+      return {
+        errorType: 'Error',
+        rootCauseExplanation: `This container has exited with a non-zero exit code (${lastTerminated.exitCode})`,
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        container: lastTerminatedCs.name,
+        type: 'logs',
+      };
+    case 'OOMKilled':
+      return {
+        errorType: 'OOMKilled',
+        rootCauseExplanation: `The container "${lastTerminatedCs.name}" has crashed because it has tried to use more memory that it has been allocated`,
+        possibleFixes: [
+          `Increase the amount of memory assigned to the container`,
+          'Ensure the application is memory bounded and is not trying to consume too much memory',
+        ],
+        docsLink:
+          'https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#exceed-a-container-s-memory-limit',
+        type: 'docs',
+      };
+    default:
+      return undefined;
+  }
+};
+
+const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
+  const waitingCs = (pod.status?.containerStatuses ?? []).find(
+    cs => cs.state?.waiting !== undefined,
+  );
+
+  const waiting = (pod.status?.containerStatuses ?? [])
+    .map(cs => cs.state?.waiting)
+    .find(w => w?.reason !== undefined);
+
+  switch (waiting?.reason) {
+    case 'InvalidImageName':
+      return {
+        errorType: 'InvalidImageName',
+        rootCauseExplanation: 'The image in the pod is invalid',
+        possibleFixes: [
+          'Ensure the image name is correct and valid image name',
+        ],
+        type: 'docs',
+        docsLink:
+          'https://docs.docker.com/engine/reference/commandline/tag/#extended-description',
+      };
+    case 'ImagePullBackOff':
+      return {
+        errorType: 'ImagePullBackOff',
+        rootCauseExplanation:
+          'The image either could not be found or Kubernetes does not have permission to pull it',
+        possibleFixes: [
+          'Ensure the image name is correct',
+          'Ensure Kubernetes has permission to pull this image',
+        ],
+        type: 'docs',
+        docsLink:
+          'https://kubernetes.io/docs/concepts/containers/images/#imagepullbackoff',
+      };
+    case 'CrashLoopBackOff':
+      return {
+        errorType: 'CrashLoopBackOff',
+        rootCauseExplanation: `The container ${waitingCs?.name} has crashed many times, it will be exponentially restarted until it stops crashing`,
+        possibleFixes: ['Check the crash logs for stacktraces'],
+        type: 'logs',
+        container: waitingCs?.name ?? 'unknown',
+      };
+    case 'CreateContainerConfigError':
+      return {
+        errorType: 'CreateContainerConfigError',
+        rootCauseExplanation:
+          'There is missing or mismatching configuration required to start the container',
+        possibleFixes: [
+          'Ensure ConfigMaps references in the Deployment manifest are correct and the keys exist',
+          'Ensure Secrets references in the Deployment manifest are correct and the keys exist',
+        ],
+        type: 'docs',
+        docsLink: '', // TODO fix me
+      };
+    default:
+      return undefined;
+  }
+};
+
 const podErrorMappers: ErrorMapper<Pod>[] = [
   {
     detectErrors: pod => {
@@ -79,7 +204,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
           type: 'readiness-probe-taking-too-long',
           message: `The container ${cs.container.name} failed to start properly, but is not crashing`,
           severity: 4,
-          proposedFix: [], // TODO next PR
+          proposedFix: readinessProbeProposedFixes(pod),
           sourceRef: {
             name: pod.metadata?.name ?? 'unknown pod',
             namespace: pod.metadata?.namespace ?? 'unknown namespace',
@@ -98,7 +223,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
           type: 'container-waiting',
           message: cs.state?.waiting?.message ?? 'container waiting',
           severity: 4,
-          proposedFix: [], // TODO next PR
+          proposedFix: waitingProposedFix(pod),
           sourceRef: {
             name: pod.metadata?.name ?? 'unknown pod',
             namespace: pod.metadata?.namespace ?? 'unknown namespace',
@@ -117,7 +242,7 @@ const podErrorMappers: ErrorMapper<Pod>[] = [
           type: 'containers-restarting',
           message: `container=${cs.name} restarted ${cs.restartCount} times`,
           severity: 4,
-          proposedFix: [], // TODO next PR
+          proposedFix: restartingPodProposedFixes(pod),
           sourceRef: {
             name: pod.metadata?.name ?? 'unknown pod',
             namespace: pod.metadata?.namespace ?? 'unknown namespace',
