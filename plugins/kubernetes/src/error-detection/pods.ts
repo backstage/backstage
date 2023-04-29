@@ -85,7 +85,7 @@ const readinessProbeProposedFixes = (pod: Pod): ProposedFix | undefined => {
       "Check the container's logs looking for error during startup",
     ],
     type: 'events',
-    docsLink: 'TODO',
+    docsLink: 'TODO', // TODO not implement yet
     podName: pod.metadata?.name ?? '',
   };
 };
@@ -188,7 +188,8 @@ const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
           'Ensure Secrets references in the Deployment manifest are correct and the keys exist',
         ],
         type: 'docs',
-        docsLink: '', // TODO fix me
+        docsLink:
+          'https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/',
       };
     default:
       return undefined;

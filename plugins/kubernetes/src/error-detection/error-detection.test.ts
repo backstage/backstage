@@ -248,7 +248,8 @@ describe('detectErrors', () => {
       message: 'configmap "some-cm" not found',
       occuranceCount: 1,
       proposedFix: {
-        docsLink: '',
+        docsLink:
+          'https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/',
         errorType: 'CreateContainerConfigError',
         possibleFixes: [
           'Ensure ConfigMaps references in the Deployment manifest are correct and the keys exist',
