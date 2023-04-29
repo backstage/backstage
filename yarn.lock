@@ -13080,8 +13080,8 @@ __metadata:
   linkType: hard
 
 "@octokit/oauth-app@npm:^4.0.4, @octokit/oauth-app@npm:^4.0.6, @octokit/oauth-app@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "@octokit/oauth-app@npm:4.2.0"
+  version: 4.2.1
+  resolution: "@octokit/oauth-app@npm:4.2.1"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
@@ -13092,7 +13092,7 @@ __metadata:
     "@types/aws-lambda": ^8.10.83
     fromentries: ^1.3.1
     universal-user-agent: ^6.0.0
-  checksum: 6cf5638d27e589daa577653177f2b135c0c346c8f74cc420d9fd0dc0f559a84040073eee147bd555a55bb5756bd0940e6dc4c3a6b3a508a818e3d5bee3837095
+  checksum: 0f5d4036b027c6611147e5669e3fed0319d486149587c9e408751fd6cf1b4bd9b29b4acd00d51feb33dc1d146bc433c6e5fae96b065804c8f0dc3a5718a42dcf
   languageName: node
   linkType: hard
 
