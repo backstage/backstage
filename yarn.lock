@@ -5616,7 +5616,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.4.0":
+"@backstage/plugin-catalog-react@npm:^1.2.4, @backstage/plugin-catalog-react@npm:^1.4.0, @backstage/plugin-catalog-react@npm:^1.5.0":
   version: 1.5.0
   resolution: "@backstage/plugin-catalog-react@npm:1.5.0"
   dependencies:
@@ -13799,14 +13799,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
-  version: 2.1.8
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.8"
+  version: 2.1.9
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.9"
   dependencies:
-    "@backstage/catalog-model": ^1.2.1
-    "@backstage/core-components": ^0.12.5
-    "@backstage/core-plugin-api": ^1.5.0
-    "@backstage/plugin-catalog-react": ^1.4.0
-    "@backstage/theme": ^0.2.18
+    "@backstage/catalog-model": ^1.3.0
+    "@backstage/core-components": ^0.13.0
+    "@backstage/core-plugin-api": ^1.5.1
+    "@backstage/plugin-catalog-react": ^1.5.0
+    "@backstage/theme": ^0.2.19
     "@material-ui/core": ^4.12.1
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": 4.0.0-alpha.57
@@ -13818,7 +13818,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: f35f5bb78cb415a894532e5af5879d47d6b61c2f52bc6f4274fde46bc7bba2bca974845a802fdd361591002d048b8f14a4ce4aee1b6a2d70df531b8bb60ae447
+  checksum: e7218a5c1abe34eac99840da194159ba9b779f9a447050f6e793dd38c104e502fc8d67e4986dd4d14fbe847d841c124e2029c86735411c25842de072d16b2033
   languageName: node
   linkType: hard
 
