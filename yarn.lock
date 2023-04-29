@@ -4254,7 +4254,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.1.11":
+"@backstage/integration-react@npm:^1.1.12":
   version: 1.1.12
   resolution: "@backstage/integration-react@npm:1.1.12"
   dependencies:
@@ -13358,7 +13358,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^6.0.0, @octokit/types@npm:^6.0.1, @octokit/types@npm:^6.0.3, @octokit/types@npm:^6.10.0, @octokit/types@npm:^6.12.2, @octokit/types@npm:^6.14.2, @octokit/types@npm:^6.16.1, @octokit/types@npm:^6.16.2, @octokit/types@npm:^6.27.1, @octokit/types@npm:^6.39.0, @octokit/types@npm:^6.8.2":
+"@octokit/types@npm:^6.0.0, @octokit/types@npm:^6.0.1, @octokit/types@npm:^6.0.3, @octokit/types@npm:^6.10.0, @octokit/types@npm:^6.12.2, @octokit/types@npm:^6.16.1, @octokit/types@npm:^6.16.2, @octokit/types@npm:^6.27.1, @octokit/types@npm:^6.39.0, @octokit/types@npm:^6.8.2":
   version: 6.41.0
   resolution: "@octokit/types@npm:6.41.0"
   dependencies:
@@ -13823,21 +13823,21 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.3.9
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.9"
+  version: 2.3.11
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.11"
   dependencies:
-    "@backstage/catalog-model": ^1.2.1
-    "@backstage/core-components": ^0.12.5
-    "@backstage/core-plugin-api": ^1.5.0
-    "@backstage/integration-react": ^1.1.11
-    "@backstage/plugin-catalog-react": ^1.4.0
-    "@backstage/theme": ^0.2.18
+    "@backstage/catalog-model": ^1.3.0
+    "@backstage/core-components": ^0.13.0
+    "@backstage/core-plugin-api": ^1.5.1
+    "@backstage/integration-react": ^1.1.12
+    "@backstage/plugin-catalog-react": ^1.5.0
+    "@backstage/theme": ^0.2.19
     "@date-io/core": 2.10.7
     "@material-ui/core": ^4.11.0
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.45
-    "@octokit/rest": ^18.5.3
-    "@octokit/types": ^6.14.2
+    "@octokit/rest": ^19.0.3
+    "@octokit/types": ^9.0.0
     history: ^5.0.0
     immer: 9.0.7
     react-use: ^17.2.4
@@ -13846,7 +13846,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 49b95a6724cb1126686dc29fc6d949583209dc47cc299c30a84fa5f9ac951bd74bb15901110856ba410e86dd75027562277ce5a9456d5c07557a67ef04bb9d7f
+  checksum: 175b8b1f7e307fe5e06c3caa2845cee45840e64dfb0fd8a4a7e44f6bfa45a4c0ecc07998ec4239ca39246c073ae55bc4541650b0bb1e43d2ee3441efbedfe3cd
   languageName: node
   linkType: hard
 
