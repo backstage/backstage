@@ -134,7 +134,7 @@ export const FixDialog: React.FC<FixDialogProps> = ({
         aria-label="fix issue"
         component="label"
         onClick={openDialog}
-        endIcon={<HelpIcon />}
+        startIcon={<HelpIcon />}
       >
         Help
       </Button>
