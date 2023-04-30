@@ -56,8 +56,8 @@ backend:
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Add these two lines below
-    script-src: ["'self'", "'unsafe-eval'", 'https://www.google-analytics.com']
-    img-src: ["'self'", 'data:', 'https://www.google-analytics.com']
+    script-src: ["'self'", "'unsafe-eval'", 'https://www.googletagmanager.com']
+    img-src: ["'self'", 'data:', 'https://https://www.googletagmanager.com']
 ```
 
 ## Configuration
