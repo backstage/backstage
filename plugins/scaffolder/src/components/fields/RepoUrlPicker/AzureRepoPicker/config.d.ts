@@ -15,12 +15,12 @@
  */
 export interface Config {
   app: {
-    azureDevOpsApiRef: {
+    azureDevOpsApiRef?: {
       /**
        * Front end
        * @visibility frontend
        */
-      defaultOrganization: string;
+      defaultOrganization?: string;
     };
   };
 }
