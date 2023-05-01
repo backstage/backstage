@@ -51,7 +51,8 @@ export const createLoader = (
             context,
           );
           return refEntries.forEach(
-            ([key], index) => (result[key] = values[index]),
+            ([key], index) =>
+              (result[key] = { __source: source, ...values[index] }),
           );
         }),
       );

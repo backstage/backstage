@@ -134,7 +134,7 @@ just that.
 [graphql-backend]: ../graphql-backend/README.md
 [graphql-modules]: https://the-guild.dev/graphql/modules
 [relay]: https://relay.dev/docs/guides/graphql-server-specification
-[custom-loader]: ../graphql-backend/README.md#custom-loader
+[custom-loader]: ../graphql-backend/README.md#custom-data-loaders-advanced
 [roll-your-own]: ../graphql-common/README.md#getting-started
 [catalog]: https://backstage.io/docs/features/software-catalog/software-catalog-overview
 [directives-api]: ../graphql-common/README.md#directives-api

@@ -13,7 +13,7 @@ schema elements to access the [Backstage Catalog][backstage-catalog] via GraphQL
 
 - [Getting started](#getting-started)
 - [GraphQL Modules](#graphql-modules)
-- [Extending Schema](../graphql-common/README.md#extending-schema)
+- [Extending Schema](../graphql-common/README.md#extending-your-schema-with-a-custom-module)
 - [Envelop Plugins](#envelop-plugins)
 - [GraphQL Context](#graphql-context)
 - [Custom Data loaders](#custom-data-loaders-advanced)
@@ -204,11 +204,6 @@ export const graphqlModuleYoga = createBackendModule({
   },
 });
 ```
-
-> ⚠️Heads up! Currently
-> [`@relation`](../graphql-common/README.md#relation) directive can't
-> resolve relationships from non-Catalog data sources. There hasn't
-> workaround for this yet, but we are working on it.
 
 ## Integrations
 

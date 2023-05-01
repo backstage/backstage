@@ -949,6 +949,7 @@ export type Query = {
   __typename?: 'Query';
   entity?: Maybe<Entity>;
   node?: Maybe<Node>;
+  nodes: Array<Maybe<Node>>;
 };
 
 
@@ -961,6 +962,11 @@ export type QueryEntityArgs = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryNodesArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 export type Resource = {
@@ -1642,6 +1648,13 @@ export type RelationDirectiveArgs = {
 
 export type RelationDirectiveResolver<Result, Parent, ContextType = any, Args = RelationDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type ResolveDirectiveArgs = {
+  at: Scalars['_DirectiveArgument_'];
+  from?: Maybe<Scalars['String']>;
+};
+
+export type ResolveDirectiveResolver<Result, Parent, ContextType = any, Args = ResolveDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type ApiResolvers<ContextType = any, ParentType extends ResolversParentTypes['API'] = ResolversParentTypes['API']> = {
   __resolveType: TypeResolveFn<'AsyncAPI' | 'GRPC' | 'GraphQL' | 'OpaqueAPI' | 'OpenAPI', ParentType, ContextType>;
   annotations?: Resolver<Maybe<Array<ResolversTypes['KeyValuePair']>>, ParentType, ContextType>;
@@ -2233,6 +2246,7 @@ export type PageInfoResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   entity?: Resolver<Maybe<ResolversTypes['Entity']>, ParentType, ContextType, RequireFields<QueryEntityArgs, 'kind' | 'name'>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  nodes?: Resolver<Array<Maybe<ResolversTypes['Node']>>, ParentType, ContextType, RequireFields<QueryNodesArgs, 'ids'>>;
 };
 
 export type ResourceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
@@ -2554,6 +2568,7 @@ export type DirectiveResolvers<ContextType = any> = {
   field?: FieldDirectiveResolver<any, any, ContextType>;
   implements?: ImplementsDirectiveResolver<any, any, ContextType>;
   relation?: RelationDirectiveResolver<any, any, ContextType>;
+  resolve?: ResolveDirectiveResolver<any, any, ContextType>;
 };
 
 export type Json = Scalars["JSON"];
@@ -2568,6 +2583,8 @@ directive @field(at: _DirectiveArgument_!, default: _DirectiveArgument_) on FIEL
 directive @implements(interface: String!) on INTERFACE | OBJECT
 
 directive @relation(kind: String, name: String, nodeType: String) on FIELD_DEFINITION
+
+directive @resolve(at: _DirectiveArgument_!, from: String) on FIELD_DEFINITION
 
 interface API implements Entity & Node & Ownable {
   annotations: [KeyValuePair!]
@@ -3119,6 +3136,7 @@ type PageInfo {
 type Query {
   entity(kind: String!, name: String!, namespace: String): Entity
   node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
 }
 
 interface Resource implements Dependency & Entity & Node & Ownable {

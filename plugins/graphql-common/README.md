@@ -11,6 +11,7 @@ types and how to resolve them.
     - [`@implements`](#implements)
     - [`@discriminates`](#discriminates)
     - [`@discriminationAlias`](#discriminationalias)
+    - [`@resolve`](#resolve)
     - [`@relation`](#../graphql-catalog/README.md#relation-directive)
 - [Integrations](#integrations)
   - [@graphql-codegen/TypeScript](#graphql-codegentypescript)
@@ -228,6 +229,25 @@ type OpenAPI @implements(interface: "API") {
 ```
 
 This means, when `spec.type` equals to `openapi`, the `API` interface will be resolved to `OpenAPI` type.
+
+#### `@resolve`
+
+The `@resolve` directive is similar to the `@field` directive, but instead of
+resolving a field from the source data, it resolves a field from a 3rd party
+API. This is useful when you want to add fields to your schema that are not
+available in the source data, but are available from another API.
+
+1. You need to add a loader for your API to the GraphQL plugin config. Check
+   [Custom Data loaders](../graphql-backend/README.md#custom-data-loaders-advanced)
+   for details.
+
+2. Then you can use the `@resolve` directive with specifying the loader name of your API:
+
+```graphql
+type Project {
+  tasks: [Task!] @resolve(at: "spec.projectId", from: "MyAPI")
+}
+```
 
 ## Integrations
 

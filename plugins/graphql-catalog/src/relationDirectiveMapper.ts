@@ -21,10 +21,8 @@ import {
   GraphQLInt,
   GraphQLInterfaceType,
   GraphQLList,
-  GraphQLNamedType,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLOutputType,
   GraphQLString,
   isInputType,
   isInterfaceType,
@@ -36,6 +34,7 @@ import {
 import {
   DirectiveMapperAPI,
   ResolverContext,
+  unboxNamedType,
   encodeId,
 } from '@backstage/plugin-graphql-common';
 import { CATALOG_SOURCE } from './constants';
@@ -45,16 +44,6 @@ function isConnectionType(type: unknown): type is GraphQLInterfaceType {
     (isInterfaceType(type) && type.name === 'Connection') ||
     (isNonNullType(type) && isConnectionType(type.ofType))
   );
-}
-
-function unboxNamedType(type: GraphQLOutputType): GraphQLNamedType {
-  if (isNonNullType(type)) {
-    return unboxNamedType(type.ofType);
-  }
-  if (isListType(type)) {
-    return unboxNamedType(type.ofType);
-  }
-  return type;
 }
 
 function filterEntityRefs(

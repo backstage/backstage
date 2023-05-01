@@ -11,6 +11,7 @@ import { GraphQLError } from 'graphql';
 import { GraphQLFieldConfig } from 'graphql';
 import { GraphQLNamedType } from 'graphql';
 import { GraphQLObjectType } from 'graphql';
+import { GraphQLOutputType } from 'graphql';
 import { GraphQLSchema } from 'graphql';
 import { Module } from 'graphql-modules';
 import { Options } from 'dataloader';
@@ -122,6 +123,9 @@ export function transformSchema(
     generateOpaqueTypes?: boolean;
   },
 ): GraphQLSchema;
+
+// @public (undocumented)
+export function unboxNamedType(type: GraphQLOutputType): GraphQLNamedType;
 
 // (No @packageDocumentation comment for this package)
 ```

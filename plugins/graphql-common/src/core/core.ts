@@ -19,6 +19,7 @@ import { TypeDefs, createModule } from 'graphql-modules';
 import { createDirectiveMapperProvider } from '../mapperProvider';
 import { ResolverContext } from '../types';
 import { fieldDirectiveMapper } from './fieldDirectiveMapper';
+import { resolveDirectiveMapper } from './resolveDirectiveMapper';
 
 const coreSchemaPath = resolvePackagePath(
   '@backstage/plugin-graphql-common',
@@ -44,9 +45,14 @@ export const CoreSync = (typeDefs: TypeDefs = loadFilesSync(coreSchemaPath)) =>
       },
       Query: {
         node: (_: any, { id }: { id: string }): { id: string } => ({ id }),
+        nodes: (_: any, { ids }: { ids: string[] }): { id: string }[] =>
+          ids.map(id => ({ id })),
       },
     },
-    providers: [createDirectiveMapperProvider('field', fieldDirectiveMapper)],
+    providers: [
+      createDirectiveMapperProvider('field', fieldDirectiveMapper),
+      createDirectiveMapperProvider('resolve', resolveDirectiveMapper),
+    ],
   });
 
 /** @public */
