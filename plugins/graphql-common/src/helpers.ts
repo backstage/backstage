@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  GraphQLNamedType,
+  GraphQLOutputType,
+  isListType,
+  isNonNullType,
+} from 'graphql';
 import { NodeId } from './types';
 
 /** @public */
@@ -24,4 +30,15 @@ export function encodeId({ source, typename, ref }: NodeId): string {
 export function decodeId(id: string): NodeId {
   const [typename, source, ...ref] = id.split('@');
   return { typename, source, ref: ref.join('@') };
+}
+
+/** @public */
+export function unboxNamedType(type: GraphQLOutputType): GraphQLNamedType {
+  if (isNonNullType(type)) {
+    return unboxNamedType(type.ofType);
+  }
+  if (isListType(type)) {
+    return unboxNamedType(type.ofType);
+  }
+  return type;
 }

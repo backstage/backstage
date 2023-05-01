@@ -46,11 +46,17 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
+  nodes: Array<Maybe<Node>>;
 };
 
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryNodesArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -177,6 +183,13 @@ export type ImplementsDirectiveArgs = {
 
 export type ImplementsDirectiveResolver<Result, Parent, ContextType = any, Args = ImplementsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type ResolveDirectiveArgs = {
+  at: Scalars['_DirectiveArgument_'];
+  from?: Maybe<Scalars['String']>;
+};
+
+export type ResolveDirectiveResolver<Result, Parent, ContextType = any, Args = ResolveDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type ConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Connection'] = ResolversParentTypes['Connection']> = {
   __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -205,6 +218,7 @@ export type PageInfoResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  nodes?: Resolver<Array<Maybe<ResolversTypes['Node']>>, ParentType, ContextType, RequireFields<QueryNodesArgs, 'ids'>>;
 };
 
 export interface _DirectiveArgument_ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['_DirectiveArgument_'], any> {
@@ -225,6 +239,7 @@ export type DirectiveResolvers<ContextType = any> = {
   discriminationAlias?: DiscriminationAliasDirectiveResolver<any, any, ContextType>;
   field?: FieldDirectiveResolver<any, any, ContextType>;
   implements?: ImplementsDirectiveResolver<any, any, ContextType>;
+  resolve?: ResolveDirectiveResolver<any, any, ContextType>;
 };
 
 export type _DirectiveArgument_ = Scalars["_DirectiveArgument_"];",
@@ -235,6 +250,8 @@ directive @discriminationAlias(type: String!, value: String!) repeatable on INTE
 directive @field(at: _DirectiveArgument_!, default: _DirectiveArgument_) on FIELD_DEFINITION
 
 directive @implements(interface: String!) on INTERFACE | OBJECT
+
+directive @resolve(at: _DirectiveArgument_!, from: String) on FIELD_DEFINITION
 
 interface Connection {
   count: Int
@@ -260,6 +277,7 @@ type PageInfo {
 
 type Query {
   node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
 }
 
 scalar _DirectiveArgument_",

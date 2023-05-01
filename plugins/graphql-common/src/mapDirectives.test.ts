@@ -22,6 +22,7 @@ import { transformSchema } from './transformSchema';
 import { NodeId } from './types';
 import { CoreSync } from './core';
 import { decodeId, encodeId } from './helpers';
+import { createLoader } from './createLoader';
 
 describe('mapDirectives', () => {
   const transform = (source: DocumentNode, generateOpaqueTypes?: boolean) =>
@@ -664,6 +665,160 @@ describe('mapDirectives', () => {
     expect(result).toEqual({
       component: {
         name: 'hello world',
+      },
+    });
+  });
+
+  it('should add resolver for @resolve directive', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        type Entity @implements(interface: "Node") {
+          node: Entity @resolve(at: "id")
+          name: String! @field(at: "metadata.name")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+    };
+    const ref = 'component:default/hello';
+    const id = encodeId({ source: 'Mock', typename: 'Entity', ref });
+    const loader = () =>
+      new DataLoader(async ids =>
+        ids.map(i => (decodeId(i as string).ref === ref ? entity : null)),
+      );
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(id)}) {
+        id, ...on Entity { name, node { name } }
+      }
+    `);
+    expect(result).toEqual({
+      node: {
+        id,
+        name: 'hello',
+        node: { name: 'hello' },
+      },
+    });
+  });
+
+  it('should resolve node using same loader', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        type Entity @implements(interface: "Node") {
+          parent: Entity @resolve(at: "spec.parent")
+          name: String! @field(at: "metadata.name")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+      spec: {
+        parent: 'component:default/world',
+      },
+    };
+    const parent = {
+      kind: 'Component',
+      metadata: { name: 'world', namespace: 'default' },
+    };
+    const loader = () =>
+      new DataLoader(async ids =>
+        ids.map(id => {
+          const { ref } = decodeId(id as string);
+          if (ref === 'component:default/hello') return entity;
+          if (ref === 'component:default/world') return parent;
+          return null;
+        }),
+      );
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          ref: 'component:default/hello',
+        }),
+      )}) { ...on Entity { name, parent { name } } }
+    `);
+    expect(result).toEqual({
+      node: {
+        name: 'hello',
+        parent: {
+          name: 'world',
+        },
+      },
+    });
+  });
+
+  // NOTE: Test skipped because of this issue: https://github.com/ardatan/graphql-tools/issues/4767
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('should resolve node using different loader', async () => {
+    const TestModule = createModule({
+      id: 'test',
+      typeDefs: gql`
+        interface Node
+          @discriminates(with: "__source")
+          @discriminationAlias(value: "Mock", type: "Entity")
+          @discriminationAlias(value: "GraphQL", type: "GraphQLEntity")
+
+        type Entity @implements(interface: "Node") {
+          parent: GraphQLEntity @resolve(at: "spec.parentId", from: "GraphQL")
+          name: String! @field(at: "metadata.name")
+        }
+
+        type GraphQLEntity @implements(interface: "Node") {
+          name: String! @field(at: "name")
+        }
+      `,
+    });
+    const entity = {
+      kind: 'Component',
+      metadata: { name: 'hello', namespace: 'default' },
+      spec: {
+        parentId: 'Entity@Mock@component:default/world',
+      },
+    };
+    const parent = {
+      kind: 'Component',
+      metadata: { name: 'world', namespace: 'default' },
+    };
+    const loader = createLoader({
+      Mock: async refs =>
+        refs.map(ref => {
+          if (ref === 'component:default/hello') return entity;
+          if (ref === 'component:default/world') return parent;
+          return null;
+        }),
+      GraphQL: async refs => {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        const { nodes } = await query(/* GraphQL */ `
+          nodes(ids: ${JSON.stringify(refs)}) {
+            id, ...on Entity { name }
+          }
+        `);
+        return (nodes ?? []) as Array<any>;
+      },
+    });
+    const query = await createGraphQLAPI(TestModule, loader);
+    const result = await query(/* GraphQL */ `
+      node(id: ${JSON.stringify(
+        encodeId({
+          source: 'Mock',
+          typename: 'Entity',
+          ref: 'component:default/hello',
+        }),
+      )}) { ...on Entity { name, parent { name } } }
+    `);
+    expect(result).toEqual({
+      node: {
+        name: 'hello',
+        parent: {
+          name: 'world',
+        },
       },
     });
   });
