@@ -400,7 +400,7 @@ As you've seen there are many ways that you can customize your Backstage app. Th
 For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 1. Open the `Root.tsx` file located in `packages/app/src/components/Root` as this is where the sidebar code lives
-2. Then we want to add the following imports for the icons:
+2. Then we want to add the following import for `useApp`:
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    import { useApp } from '@backstage/core-plugin-api';
