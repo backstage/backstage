@@ -112,6 +112,8 @@
     "msw": "^1.0.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "src/components/fields/RepoUrlPicker/AzureRepoPicker/config.d.ts"
+  ],
+  "configSchema": "src/components/fields/RepoUrlPicker/AzureRepoPicker/config.d.ts"
 }
