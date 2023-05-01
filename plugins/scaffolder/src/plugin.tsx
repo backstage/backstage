@@ -39,6 +39,7 @@ import {
   RepoUrlPickerSchema,
 } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -64,6 +65,10 @@ import {
   actionsRouteRef,
   editRouteRef,
 } from './routes';
+import {
+  proxyAzurePluginApiRef,
+  ProxyAzureDevOpsPluginApiClient,
+} from './components/fields/RepoUrlPicker/AzureRepoPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -87,6 +92,14 @@ export const scaffolderPlugin = createPlugin({
           fetchApi,
           identityApi,
         }),
+    }),
+    createApiFactory({
+      api: proxyAzurePluginApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        configApi: configApiRef,
+      },
+      factory: config => new ProxyAzureDevOpsPluginApiClient(config),
     }),
   ],
   routes: {
