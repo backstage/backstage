@@ -25,6 +25,7 @@ import {
 
 import { GuestUserIdentity } from './GuestUserIdentity';
 import { LegacyUserIdentity } from './LegacyUserIdentity';
+import { Config } from '@backstage/config';
 
 // TODO(Rugvip): This and the other IdentityApi implementations still implement
 //               the old removed methods. This is to allow for backwards compatibility
@@ -40,13 +41,15 @@ import { LegacyUserIdentity } from './LegacyUserIdentity';
  */
 export class UserIdentity implements IdentityApi {
   private profilePromise?: Promise<ProfileInfo>;
+  // private static config: Config;
+
   /**
    * Creates a new IdentityApi that acts as a Guest User.
    *
    * @public
    */
-  static createGuest(): IdentityApi {
-    return new GuestUserIdentity();
+  static createGuest(options?: { config?: Config }): IdentityApi {
+    return GuestUserIdentity.fromConfig(options?.config);
   }
 
   /**
@@ -101,7 +104,7 @@ export class UserIdentity implements IdentityApi {
     private readonly authApi: ProfileInfoApi &
       BackstageIdentityApi &
       SessionApi,
-    private readonly profile?: ProfileInfo,
+    private readonly profile?: ProfileInfo, // private readonly config?: Config
   ) {}
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */

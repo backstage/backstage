@@ -19,14 +19,45 @@ import {
   ProfileInfo,
   BackstageUserIdentity,
 } from '@backstage/core-plugin-api';
+import { Config } from '@backstage/config';
+import nJwt from 'njwt';
 
 export class GuestUserIdentity implements IdentityApi {
+  private idToken?: string;
+
+  static fromConfig(config?: Config): GuestUserIdentity {
+    const newIdentity = new GuestUserIdentity();
+    if (
+      config &&
+      config.getOptionalConfig(`auth`)?.getOptionalBoolean(`allowGuestMode`)
+    ) {
+      newIdentity.setIdToken(newIdentity.issueToken());
+    }
+    return newIdentity;
+  }
+
+  private setIdToken(token: string) {
+    this.idToken = token;
+  }
+
+  private issueToken(): string {
+    const userEntityRef = `user:default/guest`;
+    const idToken: string = nJwt
+      .create(
+        { sub: userEntityRef, ent: [userEntityRef] },
+        Buffer.from('signing key'),
+      )
+      .compact();
+
+    return idToken;
+  }
+
   getUserId(): string {
     return 'guest';
   }
 
   async getIdToken(): Promise<string | undefined> {
-    return undefined;
+    return this.idToken;
   }
 
   getProfile(): ProfileInfo {
@@ -51,8 +82,11 @@ export class GuestUserIdentity implements IdentityApi {
       ownershipEntityRefs: [userEntityRef],
     };
   }
-
+  // guest-tokens are assigned if the auth.allowGuestMode flag is set to true in our config
   async getCredentials(): Promise<{ token?: string | undefined }> {
+    if (this.idToken) {
+      return { token: this.idToken };
+    }
     return {};
   }
 

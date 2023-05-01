@@ -114,6 +114,11 @@ export interface Config {
      * @visibility frontend
      */
     environment?: string;
+    /**
+     * Whether guest mode users are assigned a valid token or not.
+     * @visibility frontend
+     */
+    allowGuestMode: boolean;
   };
 
   /**

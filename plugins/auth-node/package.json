@@ -28,6 +28,7 @@
     "@types/express": "*",
     "express": "^4.17.1",
     "jose": "^4.6.0",
+    "njwt": "^2.0.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"
   },

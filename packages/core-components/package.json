@@ -57,6 +57,7 @@
     "linkify-react": "4.1.1",
     "linkifyjs": "4.1.1",
     "lodash": "^4.17.21",
+    "njwt": "^2.0.0",
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",

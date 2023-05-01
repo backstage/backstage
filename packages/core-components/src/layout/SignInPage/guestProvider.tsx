@@ -21,38 +21,43 @@ import { InfoCard } from '../InfoCard/InfoCard';
 import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GuestUserIdentity } from './GuestUserIdentity';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Config } from '@backstage/config';
 
-const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => (
-  <GridItem>
-    <InfoCard
-      title="Guest"
-      variant="fullHeight"
-      actions={
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={() => {
-            onSignInStarted();
-            onSignInSuccess(new GuestUserIdentity());
-          }}
-        >
-          Enter
-        </Button>
-      }
-    >
-      <Typography variant="body1">
-        Enter as a Guest User.
-        <br />
-        You will not have a verified identity,
-        <br />
-        meaning some features might be unavailable.
-      </Typography>
-    </InfoCard>
-  </GridItem>
-);
+const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
+  const config: Config = useApi(configApiRef);
+  return (
+    <GridItem>
+      <InfoCard
+        title="Guest"
+        variant="fullHeight"
+        actions={
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              onSignInStarted();
+              onSignInSuccess(GuestUserIdentity.fromConfig(config));
+            }}
+          >
+            Enter
+          </Button>
+        }
+      >
+        <Typography variant="body1">
+          Enter as a Guest User.
+          <br />
+          You will not have a verified identity,
+          <br />
+          meaning some features might be unavailable.
+        </Typography>
+      </InfoCard>
+    </GridItem>
+  );
+};
 
-const loader: ProviderLoader = async () => {
-  return new GuestUserIdentity();
+const loader: ProviderLoader = async apis => {
+  return GuestUserIdentity.fromConfig(apis.get(configApiRef));
 };
 
 export const guestProvider: SignInProvider = { Component, loader };
