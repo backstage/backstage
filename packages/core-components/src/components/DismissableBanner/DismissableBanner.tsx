@@ -64,14 +64,17 @@ const useStyles = makeStyles(
       width: '100%',
       maxWidth: 'inherit',
       flexWrap: 'nowrap',
+      color: theme.palette.banner.text,
     },
     message: {
       display: 'flex',
       alignItems: 'center',
-      color: theme.palette.banner.text,
       '& a': {
         color: theme.palette.banner.link,
       },
+    },
+    button: {
+      color: theme.palette.banner.closeButtonColor ?? 'inherit',
     },
     info: {
       backgroundColor: theme.palette.banner.info,
@@ -144,7 +147,7 @@ export const DismissableBanner = (props: Props) => {
           <IconButton
             key="dismiss"
             title="Permanently dismiss this message"
-            color="inherit"
+            className={classes.button}
             onClick={handleClick}
           >
             <Close className={classes.icon} />

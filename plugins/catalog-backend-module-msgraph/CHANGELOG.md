@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.5.3
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-catalog-common@1.0.13
+
 ## 0.5.3-next.3
 
 ### Patch Changes

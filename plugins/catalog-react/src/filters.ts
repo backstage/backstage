@@ -170,6 +170,22 @@ export class EntityLifecycleFilter implements EntityFilter {
 }
 
 /**
+ * Filters entities to those within the given namespace(s).
+ * @public
+ */
+export class EntityNamespaceFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v => entity.metadata.namespace === v);
+  }
+
+  toQueryValue(): string[] {
+    return this.values;
+  }
+}
+
+/**
  * Filters entities based on whatever the user has starred or owns them.
  * @public
  */

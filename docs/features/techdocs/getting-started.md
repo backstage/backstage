@@ -284,14 +284,6 @@ Note: We recommend Python version 3.7 or higher.
 > Python packages. The order is important to make sure we get correct version of
 > some of the dependencies.
 
-## Running Backstage locally
-
-Start the frontend and the backend app by
-[running Backstage locally](../../getting-started/running-backstage-locally.md).
-
-Open your browser at [http://localhost:3000/docs/](http://localhost:3000/docs/)
-to see all your documentation sites.
-
 ## Additional reading
 
 - [Creating and publishing your docs](creating-and-publishing.md)

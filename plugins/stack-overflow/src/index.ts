@@ -30,5 +30,6 @@ export type {
   StackOverflowQuestionsContentProps,
   StackOverflowQuestionsRequestParams,
 } from './types';
+export type { StackOverflowSearchResultListItemProps } from './search/StackOverflowSearchResultListItem';
 export { stackOverflowApiRef } from './api';
 export type { StackOverflowApi } from './api';

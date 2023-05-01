@@ -58,6 +58,6 @@ export class UrlPatternDiscovery implements DiscoveryApi {
   private constructor(private readonly parts: string[]) {}
 
   async getBaseUrl(pluginId: string): Promise<string> {
-    return this.parts.join(pluginId);
+    return this.parts.join(encodeURIComponent(pluginId));
   }
 }

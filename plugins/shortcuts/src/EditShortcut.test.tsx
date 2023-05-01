@@ -18,7 +18,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { EditShortcut } from './EditShortcut';
 import { Shortcut } from './types';
-import { LocalStoredShortcuts } from './api';
+import { DefaultShortcutsApi } from './api';
 import {
   MockAnalyticsApi,
   MockStorageApi,
@@ -34,7 +34,7 @@ describe('EditShortcut', () => {
     url: '/some-url',
     title: 'some title',
   };
-  const api = new LocalStoredShortcuts(MockStorageApi.create());
+  const api = new DefaultShortcutsApi(MockStorageApi.create());
 
   const props = {
     onClose: jest.fn(),

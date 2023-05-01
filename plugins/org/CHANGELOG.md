@@ -1,5 +1,34 @@
 # @backstage/plugin-org
 
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/theme@0.2.19
+
+## 0.6.7
+
+### Patch Changes
+
+- d7c8d8c52dd: Allow the title of the group profile card to use the title of the entity, if it is set.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- 228ab677d31: Added `entityLimit` to change the limit of entities displayed in the ownership boxes.
+
+  [StoryBook Example for Ownership Card](https://backstage.io/storybook/?path=/story/plugins-org-ownership-card--default)
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+
 ## 0.6.7-next.3
 
 ### Patch Changes

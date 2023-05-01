@@ -47,11 +47,23 @@ To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the sa
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
 /* highlight-remove-next-line */
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
-/* highlight-add-next-line */
+/* highlight-add-start */
 import {
   todoListCreatePermission,
   todoListUpdatePermission,
 } from '@internal/plugin-todo-list-common';
+/* highlight-add-end */
+
+// ...
+
+const permissionIntegrationRouter = createPermissionIntegrationRouter({
+  /* highlight-remove-next-line */
+  permissions: [todoListCreatePermission],
+  /* highlight-add-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+});
+
+// ...
 
 router.put('/todos', async (req, res) => {
   /* highlight-add-start */
@@ -91,7 +103,7 @@ This enables decisions based on characteristics of the resource, but it's import
 Install the missing module:
 
 ```bash
-$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node zod
+$ yarn workspace @internal/plugin-todo-list-backend add zod
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
@@ -146,12 +158,17 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 - `rules`: an array of all the permission rules you want to support in conditional decisions.
 
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
+// ...
+import {
+  /* highlight-add-next-line */
+  TODO_LIST_RESOURCE_TYPE,
+  todoListCreatePermission,
+  todoListUpdatePermission,
+} from '@internal/plugin-todo-list-common';
 /* highlight-remove-next-line */
 import { add, getAll, update } from './todos';
 /* highlight-add-start */
 import { add, getAll, getTodo, update } from './todos';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { TODO_LIST_RESOURCE_TYPE, todoListPermissions } from '@internal/plugin-todo-list-common';
 import { rules } from './rules';
 /* highlight-add-end */
 
@@ -160,27 +177,21 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, identity, permissions } = options;
 
-  /* highlight-add-start */
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: [todoListCreatePermission, todoListUpdatePermission],
+    /* highlight-add-start */
     getResources: async resourceRefs => {
       return resourceRefs.map(getTodo);
     },
     resourceType: TODO_LIST_RESOURCE_TYPE,
-    permissions: todoListPermissions,
     rules: Object.values(rules),
+    /* highlight-add-end */
   });
-  /* highlight-add-end */
 
   const router = Router();
   router.use(express.json());
 
-  /* highlight-add-next-line */
-  router.use(permissionIntegrationRouter);
-
-  router.post('/todos', async (req, res) => {
-    // ..
-  }
-  // ..
+  // ...
 }
 ```
 

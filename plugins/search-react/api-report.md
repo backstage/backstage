@@ -10,7 +10,6 @@ import { AsyncState } from 'react-use/lib/useAsync';
 import { AutocompleteProps } from '@material-ui/lab';
 import { Extension } from '@backstage/core-plugin-api';
 import { ForwardRefExoticComponent } from 'react';
-import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
@@ -26,6 +25,7 @@ import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import { TextFieldProps } from '@material-ui/core/TextField';
 import { TypographyProps } from '@material-ui/core';
 
 // @public (undocumented)
@@ -136,12 +136,13 @@ export const SearchBar: ForwardRefExoticComponent<SearchBarProps>;
 export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps>;
 
 // @public
-export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+export type SearchBarBaseProps = Omit<TextFieldProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
+  endAdornment?: React_2.ReactNode;
 };
 
 // @public

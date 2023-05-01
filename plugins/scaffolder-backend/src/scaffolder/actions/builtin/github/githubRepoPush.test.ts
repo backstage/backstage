@@ -14,10 +14,30 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+const mockGit = {
+  init: jest.fn(),
+  add: jest.fn(),
+  checkout: jest.fn(),
+  commit: jest
+    .fn()
+    .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
+  fetch: jest.fn(),
+  addRemote: jest.fn(),
+  push: jest.fn(),
+};
+
+jest.mock('@backstage/backend-common', () => ({
+  Git: {
+    fromAuth() {
+      return mockGit;
+    },
+  },
+  getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
+}));
 
 jest.mock('../helpers');
 
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -31,6 +51,10 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
+
+const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+  Promise<{ commitHash: string }>
+>;
 
 const mockOctokit = {
   rest: {
@@ -77,6 +101,9 @@ describe('github:repo:push', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
+
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoPushAction({

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { V1Job } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
 export const JobDrawer = ({
@@ -26,7 +26,7 @@ export const JobDrawer = ({
   expanded?: boolean;
 }) => {
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={job}
       expanded={expanded}
       kind="Job"
@@ -57,6 +57,6 @@ export const JobDrawer = ({
           </Typography>
         </Grid>
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

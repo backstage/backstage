@@ -76,6 +76,7 @@ const RadarPlot = (props: Props): JSX.Element => {
             description={entry.description}
             moved={entry.moved}
             title={entry.title}
+            timeline={entry.timeline}
             onMouseEnter={onEntryMouseEnter && (() => onEntryMouseEnter(entry))}
             onMouseLeave={onEntryMouseLeave && (() => onEntryMouseLeave(entry))}
           />

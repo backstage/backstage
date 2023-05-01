@@ -1,5 +1,16 @@
 # @backstage/plugin-microsoft-calendar
 
+## 0.1.2
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
 ## 0.1.2-next.3
 
 ### Patch Changes

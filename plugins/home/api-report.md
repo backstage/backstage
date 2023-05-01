@@ -8,13 +8,34 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Extension } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { RJSFSchema } from '@rjsf/utils';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
 } & T;
+
+// @public (undocumented)
+export type CardLayout = {
+  width?: {
+    minColumns?: number;
+    maxColumns?: number;
+    defaultColumns?: number;
+  };
+  height?: {
+    minRows?: number;
+    maxRows?: number;
+    defaultRows?: number;
+  };
+};
+
+// @public (undocumented)
+export type CardSettings = {
+  schema?: RJSFSchema;
+};
 
 // @public (undocumented)
 export type ClockConfig = {
@@ -66,7 +87,22 @@ export function createCardExtension<T>(options: {
   title: string;
   components: () => Promise<ComponentParts>;
   name?: string;
+  description?: string;
+  layout?: CardLayout;
+  settings?: CardSettings;
 }): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
+
+// @public
+export const CustomHomepageGrid: (
+  props: CustomHomepageGridProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type CustomHomepageGridProps = {
+  children?: ReactNode;
+  config?: LayoutConfiguration[];
+  rowHeight?: number;
+};
 
 // @public
 export const HeaderWorldClock: (props: {
@@ -111,6 +147,15 @@ export const homePlugin: BackstagePlugin<
   {},
   {}
 >;
+
+// @public
+export type LayoutConfiguration = {
+  component: ReactElement | string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
 // @public (undocumented)
 export type RendererProps = {

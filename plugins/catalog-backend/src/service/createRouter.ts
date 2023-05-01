@@ -51,7 +51,8 @@ import {
   validateRequestBody,
 } from './util';
 import type { ApiRouter } from '@backstage/backend-openapi-utils';
-import spec from '../schema/openapi';
+import spec from '../schema/openapi.generated';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 /**
  * Options used by {@link createRouter}.
@@ -64,6 +65,7 @@ export interface RouterOptions {
   locationService: LocationService;
   orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
+  scheduler?: PluginTaskScheduler;
   logger: Logger;
   config: Config;
   permissionIntegrationRouter?: express.Router;

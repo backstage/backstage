@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { renderInTestApp } from '@backstage/test-utils';
 import { AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import {
+  LogLine,
   calculateHighlightedChunks,
   findSearchResults,
   getModifierClasses,
 } from './LogLine';
+import React from 'react';
 
 describe('getModifierClasses', () => {
   const classes = {
@@ -352,5 +355,32 @@ describe('calculateHighlightedChunks', () => {
         highlight: 6,
       },
     ]);
+  });
+});
+
+describe('linkify', () => {
+  it('should add links around URLs', async () => {
+    const classes = {};
+    const testText = new AnsiLine(1, [
+      {
+        text: 'Fetching template content from remote URL: https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template/skeleton',
+        modifiers: {},
+      },
+    ]);
+
+    const rendered = await renderInTestApp(
+      <LogLine
+        line={testText}
+        classes={classes as Parameters<typeof getModifierClasses>[0]}
+        searchText=""
+      />,
+    );
+    const link = await rendered.findByText(
+      'https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template/skeleton',
+    );
+    expect(link).toBeInTheDocument();
+    expect(link.getAttribute('href')).toContain(
+      'https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template/skeleton',
+    );
   });
 });

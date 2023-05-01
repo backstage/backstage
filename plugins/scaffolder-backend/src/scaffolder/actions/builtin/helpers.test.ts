@@ -23,7 +23,9 @@ jest.mock('@backstage/backend-common', () => ({
       init: jest.fn(),
       add: jest.fn(),
       checkout: jest.fn(),
-      commit: jest.fn(),
+      commit: jest
+        .fn()
+        .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
       fetch: jest.fn(),
       addRemote: jest.fn(),
       push: jest.fn(),

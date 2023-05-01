@@ -23,6 +23,8 @@ import {
 import { createCardExtension } from '@backstage/plugin-home';
 import { StackOverflowQuestionsContentProps } from './types';
 import { stackOverflowApiRef, StackOverflowClient } from './api';
+import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
+import { StackOverflowSearchResultListItemProps } from './search/StackOverflowSearchResultListItem/StackOverflowSearchResultListItem';
 
 /**
  * The Backstage plugin that holds stack overflow specific components
@@ -45,7 +47,9 @@ export const stackOverflowPlugin = createPlugin({
  *
  * @public
  */
-export const StackOverflowSearchResultListItem = stackOverflowPlugin.provide(
+export const StackOverflowSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<StackOverflowSearchResultListItemProps>,
+) => JSX.Element | null = stackOverflowPlugin.provide(
   createComponentExtension({
     name: 'StackOverflowResultListItem',
     component: {

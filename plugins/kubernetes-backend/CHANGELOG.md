@@ -1,5 +1,56 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 890988341e9: Update `aws-sdk` client from v2 to v3.
+
+  **BREAKING**: The `AwsIamKubernetesAuthTranslator` class no longer exposes the following methods `awsGetCredentials`, `getBearerToken`, `getCredentials` and `validCredentials`. There is no replacement for these methods.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.10.0
+
+### Minor Changes
+
+- e6c7c850129: Plugins that instantiate the `KubernetesProxy` must now provide a parameter of the type `KubernetesProxyOptions` which includes providing a `KubernetesAuthTranslator`. The `KubernetesBuilder` now builds its own `KubernetesAuthTranslatorMap` that it provides to the `KubernetesProxy`. The `DispatchingKubernetesAuthTranslator` expects a `KubernetesTranslatorMap` to be provided as a parameter. The `KubernetesBuilder` now has a method called `setAuthTranslatorMap` which allows integrators to bring their own `KubernetesAuthTranslator's` to the `KubernetesPlugin`.
+- 804f6d16b0c: **BREAKING**: `KubernetesBuilder.create` now requires a `permissions` field of type `PermissionEvaluator`. The kubernetes `/proxy` endpoint now requires two tokens: the `Backstage-Kubernetes-Authorization` header should contain a bearer token for the target cluster, and the `Authorization` header should contain a backstage identity token. The kubernetes `/proxy` endpoint now requires a `Backstage-Kubernetes-Cluster` header replacing the previously required `X-Kubernetes-Cluster` header.
+- 88fbb3d075a: Add support for the new plugin system to the Kubernetes plugin
+
+### Patch Changes
+
+- 56a28b559e5: Updated kubernetes config schema to match available options
+- 75d4985f5e8: Fixes bug whereby backstage crashes when bad credentials are provided to the kubernetes plugin.
+- 83d250badc6: Fix parsing error when kubernetes api is returning badly structured data.
+- 76e8f08fa24: fix localKubectlProxy auth provider fetching
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.10.0-next.3
 
 ### Patch Changes
