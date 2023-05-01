@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import { Select, SelectItem } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import React from 'react';
 import { RepoUrlPickerState } from '../types';
-import { Select, SelectItem } from '@backstage/core-components';
-import { proxyAzurePluginApiRef } from './plugin';
-import { useApi } from '@backstage/core-plugin-api';
 
 export const AzureRepoPickerStatic = (props: {
   allowedOrganizations?: string[];
