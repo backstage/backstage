@@ -38,17 +38,25 @@ yarn --cwd packages/app add @backstage/plugin-apollo-explorer
 Then, in `packages/app/src/App.tsx` add the plugin as a `Route`
 
 ```typescript
-<Route
-  path="/apollo-explorer"
-  element={
-    <ApolloExplorerPage
-      endpoints={[
-        { title: 'Github', graphRef: 'my-github-graph-ref@current' },
-        { title: 'Linear', graphRef: 'my-linear-graph-ref@current' },
-      ]}
+// In packages/app/src/App.tsx
+import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
+
+// You can add the tab to any number of pages, the service page is shown as an
+// example here
+const routes = (
+  <FlatRoutes>
+    {/* other tabs... */}
+    <Route
+      path="/apollo-explorer"
+      element={
+        <ApolloExplorerPage
+          endpoints={[
+            { title: 'Github', graphRef: 'my-github-graph-ref@current' },
+            { title: 'Linear', graphRef: 'my-linear-graph-ref@current' },
+          ]}
+        />
+      }
     />
-  }
-/>
 ```
 
 Then, in `packages/app/src/components/Root/Root.tsx` add a sidebar item so users can find your beautiful plugin!
