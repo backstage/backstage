@@ -157,11 +157,17 @@ export const MembersListCard = (props: {
 
   const [showAggregateMembers, setShowAggregateMembers] = useState(false);
 
-  const { value: descendantMembers } = useAsync(
-    async () =>
-      await getAllDesendantMembersForGroupEntity(groupEntity, catalogApi),
-    [catalogApi, groupEntity],
-  );
+  const { loading: loadingDescendantMembers, value: descendantMembers } =
+    useAsync(async () => {
+      if (!showAggregateMembersToggle) {
+        return [] as UserEntity[];
+      }
+
+      return await getAllDesendantMembersForGroupEntity(
+        groupEntity,
+        catalogApi,
+      );
+    }, [catalogApi, groupEntity]);
   const {
     loading,
     error,
@@ -237,21 +243,25 @@ export const MembersListCard = (props: {
             Aggregated Members
           </>
         )}
-        <Grid container spacing={3}>
-          {members && members.length > 0 ? (
-            members
-              .slice(pageSize * (page - 1), pageSize * page)
-              .map(member => (
-                <MemberComponent member={member} key={member.metadata.uid} />
-              ))
-          ) : (
-            <Box p={2}>
-              <Typography>
-                This group has no {memberDisplayTitle.toLocaleLowerCase()}.
-              </Typography>
-            </Box>
-          )}
-        </Grid>
+        {showAggregateMembers && loadingDescendantMembers ? (
+          <Progress />
+        ) : (
+          <Grid container spacing={3}>
+            {members && members.length > 0 ? (
+              members
+                .slice(pageSize * (page - 1), pageSize * page)
+                .map(member => (
+                  <MemberComponent member={member} key={member.metadata.uid} />
+                ))
+            ) : (
+              <Box p={2}>
+                <Typography>
+                  This group has no {memberDisplayTitle.toLocaleLowerCase()}.
+                </Typography>
+              </Box>
+            )}
+          </Grid>
+        )}
       </InfoCard>
     </Grid>
   );
