@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import { RepoUrlPickerState } from './types';
+import { RepoUrlPickerState } from '../types';
 import { Select, SelectItem } from '@backstage/core-components';
+import { proxyAzurePluginApiRef } from './plugin';
+import { useApi } from '@backstage/core-plugin-api';
 
-export const AzureRepoPicker = (props: {
+export const AzureRepoPickerStatic = (props: {
   allowedOrganizations?: string[];
   allowedOwners?: string[];
   rawErrors: string[];
@@ -37,15 +39,16 @@ export const AzureRepoPicker = (props: {
     onChange,
   } = props;
 
-  const organizationItems: SelectItem[] = allowedOrganizations
-    ? allowedOrganizations.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
-
-  const ownerItems: SelectItem[] = allowedOwners
-    ? allowedOwners.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
-
   const { organization, owner } = state;
+
+  const organizationItems: SelectItem[] = allowedOrganizations.map(i => ({
+    label: i,
+    value: i,
+  }));
+  const ownerItems: SelectItem[] = allowedOwners.map(i => ({
+    label: i,
+    value: i,
+  }));
 
   return (
     <>
@@ -54,14 +57,14 @@ export const AzureRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !organization}
       >
-        {allowedOrganizations?.length ? (
+        {organizationItems?.length ? (
           <Select
             native
             label="Organization"
             onChange={s =>
               onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
             }
-            disabled={allowedOrganizations.length === 1}
+            disabled={organizationItems.length === 1}
             selected={organization}
             items={organizationItems}
           />
@@ -84,14 +87,14 @@ export const AzureRepoPicker = (props: {
         required
         error={rawErrors?.length > 0 && !owner}
       >
-        {allowedOwners?.length ? (
+        {ownerItems?.length ? (
           <Select
             native
             label="Owner"
             onChange={s =>
               onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
             }
-            disabled={allowedOwners.length === 1}
+            disabled={ownerItems.length === 1}
             selected={owner}
             items={ownerItems}
           />
