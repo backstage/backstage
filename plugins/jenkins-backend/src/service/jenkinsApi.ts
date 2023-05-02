@@ -80,7 +80,7 @@ export class JenkinsApiImpl {
       const job = await Promise.any(
         branches.map(branch =>
           client.job.get({
-            name: `${jenkinsInfo.jobFullName}/${branch}`,
+            name: `${jenkinsInfo.jobFullName}/${encodeURIComponent(branch)}`,
             tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
           }),
         ),
