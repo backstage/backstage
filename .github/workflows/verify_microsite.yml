@@ -11,10 +11,6 @@ jobs:
   build-microsite:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
@@ -24,10 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: use node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
 
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.

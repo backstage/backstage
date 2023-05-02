@@ -13,10 +13,6 @@ jobs:
   noop:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     name: Microsite
     steps:
       - run: echo NOOP
