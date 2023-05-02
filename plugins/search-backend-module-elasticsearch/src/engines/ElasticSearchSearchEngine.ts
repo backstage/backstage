@@ -21,9 +21,11 @@ import {
   SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { awsGetCredentials, createAWSConnection } from 'aws-os-connection';
 import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 
+import { defaultProvider } from '@aws-sdk/credential-provider-node'; // V3 SDK.
+import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
+import { RequestSigner } from 'aws4';
 import { Config } from '@backstage/config';
 import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
@@ -462,15 +464,14 @@ export async function createElasticSearchClientOptions(
     };
   }
   if (config.getOptionalString('provider') === 'aws') {
-    const awsCredentials = await awsGetCredentials();
-    const AWSConnection = createAWSConnection(awsCredentials);
+    const requestSigner = new RequestSigner(config.getString('node'));
+    const service =
+      config.getOptionalString('service') ?? requestSigner.service;
+    if (service !== 'es' && service !== 'aoss')
+      throw new Error(`Unrecognized serivce type: ${service}`);
     return {
       provider: 'aws',
-      // todo(backstage/techdocs-core): Remove the following ts-ignore when
-      // aws-os-connection is updated to work with opensearch >= 2.0.0
-      // @ts-ignore
       node: config.getString('node'),
-      ...AWSConnection,
       ...(sslConfig
         ? {
             ssl: {
@@ -479,6 +480,15 @@ export async function createElasticSearchClientOptions(
             },
           }
         : {}),
+      ...AwsSigv4Signer({
+        region: config.getOptionalString('region') ?? requestSigner.region, // for backwards compatibility
+        service: service,
+        getCredentials: () => {
+          // Any other method to acquire a new Credentials object can be used.
+          const credentialsProvider = defaultProvider();
+          return credentialsProvider();
+        },
+      }),
     };
   }
   if (config.getOptionalString('provider') === 'opensearch') {
