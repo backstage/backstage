@@ -54,7 +54,7 @@ module.exports = {
         'categories:pwa': 'off',
         'categories:best-practices': 'off',
         'categories:seo': 'off',
-        'categories:accessibility': ['error', { minScore: 0.85 }],
+        'categories:accessibility': ['error', { minScore: 0.95 }],
       },
     },
   },
