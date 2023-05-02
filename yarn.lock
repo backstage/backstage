@@ -7508,7 +7508,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-octopus-deploy@workspace:plugins/octopus-deploy":
+"@backstage/plugin-octopus-deploy@workspace:^, @backstage/plugin-octopus-deploy@workspace:plugins/octopus-deploy":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-octopus-deploy@workspace:plugins/octopus-deploy"
   dependencies:
@@ -23583,6 +23583,7 @@ __metadata:
     "@backstage/plugin-microsoft-calendar": "workspace:^"
     "@backstage/plugin-newrelic": "workspace:^"
     "@backstage/plugin-newrelic-dashboard": "workspace:^"
+    "@backstage/plugin-octopus-deploy": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-pagerduty": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
