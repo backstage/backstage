@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.0",
+  "version": "0.13.1-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

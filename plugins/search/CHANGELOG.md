@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 1.3.0-next.1
+
+### Patch Changes
+
+- 0e3d8d69318: Fixed 404 Error when fetching search results due to URL encoding changes
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+  - @backstage/plugin-search-react@1.6.0-next.1
+  - @backstage/config@1.0.7
+
 ## 1.3.0-next.0
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket",
   "description": "A Backstage catalog backend module that helps integrate towards Bitbucket",
-  "version": "0.2.12-next.0",
+  "version": "0.2.12-next.1",
   "deprecated": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
