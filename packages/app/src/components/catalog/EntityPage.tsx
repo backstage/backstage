@@ -41,6 +41,10 @@ import {
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
+import {
+  isOctopusDeployAvailable,
+  EntityOctopusDeployContent,
+} from '@backstage/plugin-octopus-deploy';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
@@ -260,6 +264,10 @@ export const cicdContent = (
 
     <EntitySwitch.Case if={isAzurePipelinesAvailable}>
       <EntityAzurePipelinesContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isOctopusDeployAvailable}>
+      <EntityOctopusDeployContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>

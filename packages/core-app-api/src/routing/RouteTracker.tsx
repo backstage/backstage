@@ -19,8 +19,8 @@ import { matchRoutes, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
-  CommonAnalyticsContext,
   RouteRef,
+  AnalyticsEventAttributes,
 } from '@backstage/core-plugin-api';
 import { BackstageRouteObject } from './types';
 
@@ -31,22 +31,23 @@ import { BackstageRouteObject } from './types';
 const getExtensionContext = (
   pathname: string,
   routes: BackstageRouteObject[],
-): CommonAnalyticsContext | {} => {
+) => {
   try {
     // Find matching routes for the given path name.
-    const matches = matchRoutes(routes, { pathname }) as
-      | { route: BackstageRouteObject }[]
-      | null;
+    const matches = matchRoutes(routes, { pathname });
 
     // Of the matching routes, get the last (e.g. most specific) instance of
     // the BackstageRouteObject.
-    const routeObject = matches
+
+    const routeMatch = matches
       ?.filter(match => match?.route.routeRefs?.size > 0)
-      .pop()?.route;
+      .pop();
+
+    const routeObject = routeMatch?.route;
 
     // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {
-      return {};
+      return undefined;
     }
 
     // If there is a single route ref, return it.
@@ -56,13 +57,23 @@ const getExtensionContext = (
       routeRef = routeObject.routeRefs.values().next().value;
     }
 
+    const params = Object.entries(
+      routeMatch?.params || {},
+    ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
     return {
       extension: 'App',
       pluginId: routeObject.plugin?.getId() || 'root',
       ...(routeRef ? { routeRef: (routeRef as { id?: string }).id } : {}),
+      params,
     };
   } catch {
-    return {};
+    return undefined;
   }
 };
 
@@ -73,16 +84,19 @@ const TrackNavigation = ({
   pathname,
   search,
   hash,
+  attributes,
 }: {
   pathname: string;
   search: string;
   hash: string;
+  attributes?: AnalyticsEventAttributes;
 }) => {
   const analytics = useAnalytics();
-
   useEffect(() => {
-    analytics.captureEvent('navigate', `${pathname}${search}${hash}`);
-  }, [analytics, pathname, search, hash]);
+    analytics.captureEvent('navigate', `${pathname}${search}${hash}`, {
+      attributes,
+    });
+  }, [analytics, pathname, search, hash, attributes]);
 
   return null;
 };
@@ -98,9 +112,19 @@ export const RouteTracker = ({
 }) => {
   const { pathname, search, hash } = useLocation();
 
+  const { params, ...attributes } = getExtensionContext(
+    pathname,
+    routeObjects,
+  ) || { params: {} };
+
   return (
-    <AnalyticsContext attributes={getExtensionContext(pathname, routeObjects)}>
-      <TrackNavigation pathname={pathname} search={search} hash={hash} />
+    <AnalyticsContext attributes={attributes}>
+      <TrackNavigation
+        pathname={pathname}
+        search={search}
+        hash={hash}
+        attributes={params}
+      />
     </AnalyticsContext>
   );
 };
