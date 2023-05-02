@@ -107,7 +107,7 @@ export const createConfluenceToMarkdownAction = (options: {
             `Could not find document ${url}. Please check your input.`,
           );
         }
-        // This gets attachements for the confluence page if they exist
+        // This gets attachments for the confluence page if they exist
         const getDocAttachments = await fetchConfluence(
           `/rest/api/content/${getConfluenceDoc.results[0].id}/child/attachment`,
           config,
