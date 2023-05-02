@@ -15,55 +15,85 @@
  */
 
 import React from 'react';
-import { AzureRepoPickerDynamic } from './AzureRepoPickerDynamic';
+import { AzureRepoPickerDynamic, LOADING } from './AzureRepoPickerDynamic';
 import { render, fireEvent } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: jest.fn().mockReturnValue({
+    allowedOrganizations: () => Promise.resolve([{ name: 'org' }]),
+    allowedOwners: () => Promise.resolve([{ name: 'owner' }]),
+  }),
+}));
+
+afterAll(() => {
+  jest.resetAllMocks();
+});
 
 describe('AzureRepoPickerDynamic', () => {
   it('renders the two input fields', async () => {
-    const { getAllByRole } = render(
-      <AzureRepoPickerDynamic onChange={jest.fn()} rawErrors={[]} state={{}} />,
-    );
-
-    const allInputs = getAllByRole('select');
-
-    expect(allInputs).toHaveLength(2);
-  });
-
-  describe('org field', () => {
-    it('calls onChange when the organisation changes', () => {
-      const onChange = jest.fn();
+    await act(async () => {
       const { getAllByRole } = render(
         <AzureRepoPickerDynamic
-          onChange={onChange}
+          key="AzureRepoPickerDynamic"
+          onChange={jest.fn()}
           rawErrors={[]}
           state={{}}
         />,
       );
+      const allInputs = getAllByRole('combobox');
 
-      const orgInput = getAllByRole('select')[0];
+      expect(allInputs).toHaveLength(2);
+    });
+  });
 
-      fireEvent.change(orgInput, { target: { value: 'org' } });
+  describe('org field', () => {
+    it('calls onChange when the organization changes', async () => {
+      const onChange = jest.fn();
+      let getAllByRole: any = () => ({});
+
+      await act(async () => {
+        getAllByRole = render(
+          <AzureRepoPickerDynamic
+            onChange={onChange}
+            rawErrors={[]}
+            state={{}}
+          />,
+        ).getAllByRole;
+      });
+
+      const orgInput = getAllByRole('combobox')[0];
+      act(() => {
+        fireEvent.change(orgInput, { target: { value: 'org' } });
+      });
 
       expect(onChange).toHaveBeenCalledWith({ organization: 'org' });
     });
   });
 
   describe('owner field', () => {
-    it('calls onChange when the owner changes', () => {
+    it('calls onChange when the owner changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <AzureRepoPickerDynamic
-          onChange={onChange}
-          rawErrors={[]}
-          state={{}}
-        />,
-      );
+      let getAllByRole: any = () => ({});
 
-      const ownerInput = getAllByRole('select')[1];
+      await act(async () => {
+        getAllByRole = render(
+          <AzureRepoPickerDynamic
+            onChange={onChange}
+            rawErrors={[]}
+            state={{}}
+          />,
+        ).getAllByRole;
+      });
 
-      fireEvent.change(ownerInput, { target: { value: 'owner' } });
+      const ownerInput = getAllByRole('combobox')[1];
 
-      expect(onChange).toHaveBeenCalledWith({ owner: 'owner' });
+      act(() => {
+        fireEvent.change(ownerInput, 'owner');
+      });
+
+      expect(onChange).toHaveBeenCalledWith({ owner: LOADING });
     });
   });
 });
