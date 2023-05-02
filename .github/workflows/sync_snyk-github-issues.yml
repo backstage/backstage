@@ -10,22 +10,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: use node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.6.3
         with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+          cache-prefix: ${{ runner.os }}-v18.x
 
       - name: Create Snyk report
         uses: snyk/actions/node@master

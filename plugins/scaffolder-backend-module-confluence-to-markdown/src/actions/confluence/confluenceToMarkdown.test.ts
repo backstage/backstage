@@ -209,7 +209,7 @@ describe('confluence:transform:markdown', () => {
     expect(writeFile).toHaveBeenCalledTimes(1);
   });
 
-  it('shoud fail on the first fetch call with response.ok set to false', async () => {
+  it('should fail on the first fetch call with response.ok set to false', async () => {
     const options = {
       reader,
       integrations,

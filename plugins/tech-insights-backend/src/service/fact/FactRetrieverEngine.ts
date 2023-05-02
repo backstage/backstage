@@ -48,7 +48,7 @@ export interface FactRetrieverEngine {
    * Schedules fact retriever run cycles based on configuration provided in the registration.
    *
    * Default implementation uses backend-tasks to handle scheduling. This function can be called multiple
-   * times, where initial calls schedule the tasks and subsequents invocations update the schedules.
+   * times, where initial calls schedule the tasks and subsequent invocations update the schedules.
    */
   schedule(): Promise<void>;
 
