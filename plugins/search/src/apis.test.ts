@@ -51,8 +51,8 @@ describe('apis', () => {
 
   it('Fetch is called with expected URL (including stringified Q params)', async () => {
     await client.query(query);
-    expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
+    expect(getBaseUrl).toHaveBeenLastCalledWith('search');
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
       headers: {},
     });
   });
@@ -63,8 +63,8 @@ describe('apis', () => {
       identityApi: createIdentityApiMock(withToken),
     });
     await authedClient.query(query);
-    expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
+    expect(getBaseUrl).toHaveBeenLastCalledWith('search');
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   });

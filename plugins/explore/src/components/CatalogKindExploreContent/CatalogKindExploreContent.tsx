@@ -99,7 +99,7 @@ export const CatalogKindExploreContent = (props: {
     <Content noPadding>
       <ContentHeader title={title || `${pluralize(kindCapitalized)}`}>
         <SupportButton>
-          Discover the {pluralize(kindLowercase)} in your ecosystem.
+          <>Discover the {pluralize(kindLowercase)} in your ecosystem.</>
         </SupportButton>
       </ContentHeader>
       <Body kind={kindLowercase} />

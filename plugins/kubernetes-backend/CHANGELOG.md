@@ -1,5 +1,48 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.0-next.1
+
+### Minor Changes
+
+- f4114f02d49: Allow fetching pod metrics limited by a `labelSelector`.
+
+  This is used by the Kubernetes tab on a components' page and leads to much smaller responses being received from Kubernetes, especially with larger Kubernetes clusters.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/plugin-permission-node@0.7.8-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 890988341e9: Update `aws-sdk` client from v2 to v3.
+
+  **BREAKING**: The `AwsIamKubernetesAuthTranslator` class no longer exposes the following methods `awsGetCredentials`, `getBearerToken`, `getCredentials` and `validCredentials`. There is no replacement for these methods.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/integration-aws-node@0.1.2
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.10.0
 
 ### Minor Changes

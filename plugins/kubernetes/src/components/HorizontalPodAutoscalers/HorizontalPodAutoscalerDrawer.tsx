@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
 /** @public */
 export const HorizontalPodAutoscalerDrawer = (props: {
@@ -27,7 +27,7 @@ export const HorizontalPodAutoscalerDrawer = (props: {
   const { hpa, expanded, children } = props;
 
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       kind="HorizontalPodAutoscaler"
       object={hpa}
       expanded={expanded}
@@ -45,6 +45,6 @@ export const HorizontalPodAutoscalerDrawer = (props: {
       }}
     >
       {children}
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

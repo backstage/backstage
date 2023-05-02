@@ -39,7 +39,7 @@ describe('MockRootLoggerService', () => {
     expect(console.debug).not.toHaveBeenCalled();
   });
 
-  it('shuld be able to set none level', () => {
+  it('should be able to set none level', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'info').mockImplementation(() => {});
@@ -57,7 +57,7 @@ describe('MockRootLoggerService', () => {
     expect(console.debug).not.toHaveBeenCalled();
   });
 
-  it('shuld be able to set error level', () => {
+  it('should be able to set error level', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'info').mockImplementation(() => {});
@@ -75,7 +75,7 @@ describe('MockRootLoggerService', () => {
     expect(console.debug).not.toHaveBeenCalled();
   });
 
-  it('shuld be able to set warn level', () => {
+  it('should be able to set warn level', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'info').mockImplementation(() => {});
@@ -93,7 +93,7 @@ describe('MockRootLoggerService', () => {
     expect(console.debug).not.toHaveBeenCalled();
   });
 
-  it('shuld be able to set info level', () => {
+  it('should be able to set info level', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'info').mockImplementation(() => {});
@@ -111,7 +111,7 @@ describe('MockRootLoggerService', () => {
     expect(console.debug).not.toHaveBeenCalled();
   });
 
-  it('shuld be able to set debug level', () => {
+  it('should be able to set debug level', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'info').mockImplementation(() => {});

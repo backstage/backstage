@@ -1,5 +1,19 @@
 # @backstage/create-app
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- 4027aa9e753: Pin some octokit dependencies to avoid failing typescript build under `tsc:full`
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.0
 
 ### Minor Changes

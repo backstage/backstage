@@ -66,7 +66,7 @@ export function registerCommands(program: Command) {
   program
     .command('schema:openapi:verify [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.ts` file.',
+      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
     )
     .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
 

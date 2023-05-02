@@ -127,3 +127,26 @@ export const myCustomBooleanRenderer: CheckResultRenderer = {
   ),
 };
 ```
+
+It's also possible to customize the description. Both strings and React components are accepted. As an example, you would like
+to display another information if the check has failed. In such cases, you could do something like the following:
+
+```tsx
+// packages/app/src/components/myCustomBooleanRenderer.tsx
+
+export const myCustomBooleanRenderer: CheckResultRenderer = {
+  type: 'boolean',
+  component: (checkResult: CheckResult) => (
+    <BooleanCheck checkResult={checkResult} />
+  ),
+  description: (checkResult: CheckResult) => (
+    <>
+      {
+        checkResult.result
+          ? checkResult.check.description // In case of success, return the same description
+          : `The check has failed! ${checkResult.check.description}` // Add a prefix text if the check failed
+      }
+    </>
+  ),
+};
+```

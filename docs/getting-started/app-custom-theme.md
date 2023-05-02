@@ -400,15 +400,10 @@ As you've seen there are many ways that you can customize your Backstage app. Th
 For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 1. Open the `Root.tsx` file located in `packages/app/src/components/Root` as this is where the sidebar code lives
-2. Then we want to add the following imports for the icons:
+2. Then we want to add the following import for `useApp`:
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
-   import ApiIcon from '@material-ui/icons/Extension';
-   import ComponentIcon from '@material-ui/icons/Memory';
-   import DomainIcon from '@material-ui/icons/Apartment';
-   import ResourceIcon from '@material-ui/icons/Work';
-   import SystemIcon from '@material-ui/icons/Category';
-   import UserIcon from '@material-ui/icons/Person';
+   import { useApp } from '@backstage/core-plugin-api';
    ```
 
 3. Then update the `@backstage/core-components` import like this:
@@ -441,39 +436,39 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
        <SidebarSubmenuItem
          title="Domains"
          to="catalog?filters[kind]=domain"
-         icon={DomainIcon}
+         icon={useApp().getSystemIcon('kind:domain')}
        />
        <SidebarSubmenuItem
          title="Systems"
          to="catalog?filters[kind]=system"
-         icon={SystemIcon}
+         icon={useApp().getSystemIcon('kind:system')}
        />
        <SidebarSubmenuItem
          title="Components"
          to="catalog?filters[kind]=component"
-         icon={ComponentIcon}
+         icon={useApp().getSystemIcon('kind:component')}
        />
        <SidebarSubmenuItem
          title="APIs"
          to="catalog?filters[kind]=api"
-         icon={ApiIcon}
+         icon={useApp().getSystemIcon('kind:api')}
        />
        <SidebarDivider />
        <SidebarSubmenuItem
          title="Resources"
          to="catalog?filters[kind]=resource"
-         icon={ResourceIcon}
+         icon={useApp().getSystemIcon('kind:resource')}
        />
        <SidebarDivider />
        <SidebarSubmenuItem
          title="Groups"
          to="catalog?filters[kind]=group"
-         icon={GroupIcon}
+         icon={useApp().getSystemIcon('kind:group')}
        />
        <SidebarSubmenuItem
          title="Users"
          to="catalog?filters[kind]=user"
-         icon={UserIcon}
+         icon={useApp().getSystemIcon('kind:user')}
        />
      </SidebarSubmenu>
    </SidebarItem>

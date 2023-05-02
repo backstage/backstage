@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { SingleHostDiscovery } from './SingleHostDiscovery';
+export { HostDiscovery, SingleHostDiscovery } from './HostDiscovery';
 export type { PluginEndpointDiscovery } from './types';

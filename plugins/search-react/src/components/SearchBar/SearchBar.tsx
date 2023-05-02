@@ -13,39 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  useState,
-  useEffect,
-  useCallback,
-  forwardRef,
-  ComponentType,
-  ForwardRefExoticComponent,
-} from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
-
-import {
-  InputBase,
-  InputBaseProps,
-  InputAdornment,
-  IconButton,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearButton from '@material-ui/icons/Clear';
-
 import {
   AnalyticsContext,
   configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { IconButton, InputAdornment, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { TextFieldProps } from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import React, {
+  ChangeEvent,
+  ComponentType,
+  forwardRef,
+  ForwardRefExoticComponent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import useDebounce from 'react-use/lib/useDebounce';
 
 import { SearchContextProvider, useSearch } from '../../context';
 import { TrackSearch } from '../SearchTracker';
 
 function withContext<T>(Component: ComponentType<T>) {
-  return forwardRef<unknown, T>((props, ref) => (
+  return forwardRef<HTMLDivElement, T>((props, ref) => (
     <SearchContextProvider inheritParentContextIfAvailable>
       <Component {...props} ref={ref} />
     </SearchContextProvider>
@@ -57,12 +50,13 @@ function withContext<T>(Component: ComponentType<T>) {
  *
  * @public
  */
-export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+export type SearchBarBaseProps = Omit<TextFieldProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
+  endAdornment?: React.ReactNode;
 };
 
 /**
@@ -84,9 +78,10 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         clearButton = true,
         fullWidth = true,
         value: defaultValue,
-        placeholder: defaultPlaceholder,
+        label,
+        placeholder,
         inputProps: defaultInputProps = {},
-        endAdornment: defaultEndAdornment,
+        endAdornment,
         ...rest
       } = props;
 
@@ -109,7 +104,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const handleKeyDown = useCallback(
-        (e: KeyboardEvent<HTMLInputElement>) => {
+        (e: KeyboardEvent<HTMLDivElement>) => {
           if (onKeyDown) onKeyDown(e);
           if (onSubmit && e.key === 'Enter') {
             onSubmit();
@@ -125,8 +120,10 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         }
       }, [onChange, onClear]);
 
-      const placeholder =
-        defaultPlaceholder ??
+      const ariaLabel: string | undefined = label ? undefined : 'Search';
+
+      const inputPlaceholder =
+        placeholder ??
         `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
 
       const startAdornment = (
@@ -137,24 +134,45 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         </InputAdornment>
       );
 
-      const endAdornment = (
+      const clearButtonEndAdornment = (
         <InputAdornment position="end">
-          <IconButton aria-label="Clear" size="small" onClick={handleClear}>
-            <ClearButton />
-          </IconButton>
+          <Button
+            aria-label="Clear"
+            size="small"
+            onClick={handleClear}
+            onKeyDown={event => {
+              if (event.key === 'Enter') {
+                // write your functionality here
+                event.stopPropagation();
+              }
+            }}
+          >
+            Clear
+          </Button>
         </InputAdornment>
       );
 
       return (
         <TrackSearch>
-          <InputBase
+          <TextField
+            id="search-bar-text-field"
             data-testid="search-bar-next"
-            ref={ref}
+            variant="outlined"
+            margin="normal"
+            inputRef={ref}
             value={value}
-            placeholder={placeholder}
-            startAdornment={startAdornment}
-            endAdornment={clearButton ? endAdornment : defaultEndAdornment}
-            inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+            label={label}
+            placeholder={inputPlaceholder}
+            InputProps={{
+              startAdornment,
+              endAdornment: clearButton
+                ? clearButtonEndAdornment
+                : endAdornment,
+            }}
+            inputProps={{
+              'aria-label': ariaLabel,
+              ...defaultInputProps,
+            }}
             fullWidth={fullWidth}
             onChange={handleChange}
             onKeyDown={handleKeyDown}

@@ -16,7 +16,7 @@
 
 import { JsonObject, Observable } from '@backstage/types';
 import {
-  AsyncConfigSourceIterator,
+  AsyncConfigSourceGenerator,
   ConfigSource,
   ReadConfigDataOptions,
 } from './types';
@@ -45,7 +45,7 @@ class StaticObservableConfigSource implements ConfigSource {
 
   async *readConfigData(
     options?: ReadConfigDataOptions | undefined,
-  ): AsyncConfigSourceIterator {
+  ): AsyncConfigSourceGenerator {
     const queue = new Array<JsonObject>();
     let deferred = simpleDefer<void>();
 
@@ -108,7 +108,7 @@ export class StaticConfigSource implements ConfigSource {
     const { data, context = 'static-config' } = options;
     if (!data) {
       return {
-        async *readConfigData(): AsyncConfigSourceIterator {
+        async *readConfigData(): AsyncConfigSourceGenerator {
           yield { configs: [] };
           return;
         },
@@ -121,7 +121,7 @@ export class StaticConfigSource implements ConfigSource {
 
     if (isAsyncIterable(data)) {
       return {
-        async *readConfigData(): AsyncConfigSourceIterator {
+        async *readConfigData(): AsyncConfigSourceGenerator {
           for await (const value of data) {
             yield { configs: [{ data: value, context }] };
           }
@@ -137,7 +137,7 @@ export class StaticConfigSource implements ConfigSource {
     private readonly context: string,
   ) {}
 
-  async *readConfigData(): AsyncConfigSourceIterator {
+  async *readConfigData(): AsyncConfigSourceGenerator {
     yield { configs: [{ data: await this.promise, context: this.context }] };
     return;
   }

@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.13.2-next.1
+
+### Patch Changes
+
+- 6d954de4b06: Update typing for `RouterOptions::actions` and `ScaffolderActionsExtensionPoint::addActions` to allow any kind of action being assigned to it.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-catalog-backend@1.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.1.3-next.1
+  - @backstage/backend-tasks@0.5.2-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/plugin-permission-node@0.7.8-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+
+## 1.13.2-next.0
+
+### Patch Changes
+
+- d20c87966a4: Bump minimum required version of `vm2` to be 3.9.17
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/plugin-catalog-backend@1.9.1-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/plugin-scaffolder-node@0.1.3-next.0
+
 ## 1.13.0
 
 ### Minor Changes

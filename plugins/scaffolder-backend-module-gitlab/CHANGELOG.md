@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.3-next.1
+  - @backstage/config@1.0.7
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-scaffolder-node@0.1.3-next.0
+
 ## 0.1.0
 
 ### Minor Changes

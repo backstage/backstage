@@ -1,5 +1,28 @@
 # @backstage/test-utils
 
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.8.0-next.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.7.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
 ## 1.3.0
 
 ### Minor Changes

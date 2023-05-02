@@ -1,5 +1,28 @@
 # @backstage/core-app-api
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
 ## 1.7.0
 
 ### Minor Changes

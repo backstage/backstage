@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
 import yaml from 'yaml';
 import {
-  AsyncConfigSourceIterator,
+  AsyncConfigSourceGenerator,
   ConfigSource,
   ConfigSourceData,
   SubstitutionFunc,
@@ -92,7 +92,7 @@ export class FileConfigSource implements ConfigSource {
   // changes it might be worth refactoring this to avoid duplicate work.
   async *readConfigData(
     options?: ReadConfigDataOptions,
-  ): AsyncConfigSourceIterator {
+  ): AsyncConfigSourceGenerator {
     const signal = options?.signal;
     const configFileName = basename(this.#path);
 

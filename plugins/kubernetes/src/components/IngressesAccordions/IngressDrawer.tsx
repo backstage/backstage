@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { V1Ingress } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
 export const IngressDrawer = ({
@@ -27,7 +27,7 @@ export const IngressDrawer = ({
   expanded?: boolean;
 }) => {
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={ingress}
       expanded={expanded}
       kind="Ingress"
@@ -53,6 +53,6 @@ export const IngressDrawer = ({
           </Typography>
         </Grid>
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

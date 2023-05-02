@@ -1,5 +1,33 @@
 # @backstage/plugin-search-react
 
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 750e45539ad: Add close button & improve search input.
+
+  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+
+  SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.3
+
 ## 1.5.2
 
 ### Patch Changes

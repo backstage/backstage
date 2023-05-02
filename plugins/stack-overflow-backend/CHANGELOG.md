@@ -1,5 +1,22 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/config@1.0.7
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
 ## 0.2.0
 
 ### Minor Changes

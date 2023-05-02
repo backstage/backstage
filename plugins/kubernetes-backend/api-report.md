@@ -298,6 +298,7 @@ export interface KubernetesFetcher {
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     namespaces: Set<string>,
+    labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
 }
 

@@ -16,13 +16,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, makeStyles, Paper } from '@material-ui/core';
+import { Box, Button, makeStyles, Paper } from '@material-ui/core';
 import {
   ScaffolderTaskOutput,
+  scaffolderApiRef,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -30,13 +31,22 @@ import {
   TaskLogStream,
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { useAsync } from '@react-hookz/web';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: 'flex',
     flexDirection: 'column',
   },
-});
+  buttonBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'right',
+  },
+  cancelButton: {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 export const OngoingTask = (props: {
   TemplateOutputsComponent?: React.ComponentType<{
@@ -47,6 +57,7 @@ export const OngoingTask = (props: {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
   const steps = useMemo(
@@ -59,12 +70,19 @@ export const OngoingTask = (props: {
   );
 
   const [logsVisible, setLogVisibleState] = useState(false);
+  const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
   useEffect(() => {
     if (taskStream.error) {
       setLogVisibleState(true);
     }
   }, [taskStream.error]);
+
+  useEffect(() => {
+    if (taskStream.completed && !taskStream.error) {
+      setButtonBarVisibleState(false);
+    }
+  }, [taskStream.error, taskStream.completed]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -100,6 +118,14 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
+  const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
+    async () => {
+      if (taskId) {
+        await scaffolderApi.cancelTask(taskId);
+      }
+    },
+  );
+
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const templateName =
@@ -121,8 +147,10 @@ export const OngoingTask = (props: {
         <ContextMenu
           cancelEnabled={cancelEnabled}
           logsVisible={logsVisible}
+          buttonBarVisible={buttonBarVisible}
           onStartOver={startOver}
           onToggleLogs={setLogVisibleState}
+          onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
         />
       </Header>
@@ -146,6 +174,33 @@ export const OngoingTask = (props: {
         </Box>
 
         <Outputs output={taskStream.output} />
+
+        {buttonBarVisible ? (
+          <Box paddingBottom={2}>
+            <Paper>
+              <Box padding={2}>
+                <div className={classes.buttonBar}>
+                  <Button
+                    className={classes.cancelButton}
+                    disabled={!cancelEnabled || cancelStatus !== 'not-executed'}
+                    onClick={triggerCancel}
+                    data-testid="cancel-button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={cancelEnabled}
+                    onClick={startOver}
+                  >
+                    Start Over
+                  </Button>
+                </div>
+              </Box>
+            </Paper>
+          </Box>
+        ) : null}
 
         {logsVisible ? (
           <Box paddingBottom={2} height="100%">

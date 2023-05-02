@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export const YAML_SCHEMA_PATH = 'src/schema/openapi.yaml';
-export const TS_MODULE = 'src/schema/openapi';
+
+export const TS_MODULE = 'src/schema/openapi.generated';
+
 export const TS_SCHEMA_PATH = `${TS_MODULE}.ts`;
