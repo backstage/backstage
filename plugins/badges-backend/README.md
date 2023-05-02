@@ -149,7 +149,7 @@ The badges backend api exposes two main endpoints for entity badges. The
 
 ### If obfuscation is enabled (apps.badges.obfuscate: true)
 
-- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated entity url.
+- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated `entity url`.
 
 > Note that endpoint have a embedded authMiddleware to authenticate the user requesting this endpoint. _It meant to be called from the frontend plugin._
 
