@@ -17,43 +17,67 @@
 import React from 'react';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { render, fireEvent } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: jest.fn().mockReturnValue({
+    allowedOrganizations: () => Promise.resolve([{ name: 'org' }]),
+    allowedOwners: () => Promise.resolve([{ name: 'owner' }]),
+  }),
+}));
+
+afterAll(() => {
+  jest.resetAllMocks();
+});
 
 describe('AzureRepoPicker', () => {
   it('renders the two input fields', async () => {
-    const { getAllByRole } = render(
-      <AzureRepoPicker onChange={jest.fn()} rawErrors={[]} state={{}} />,
-    );
+    await act(async () => {
+      const { getAllByRole } = render(
+        <AzureRepoPicker onChange={jest.fn()} rawErrors={[]} state={{}} />,
+      );
 
-    const allInputs = getAllByRole('textbox');
+      const allInputs = getAllByRole('textbox');
 
-    expect(allInputs).toHaveLength(2);
+      expect(allInputs).toHaveLength(2);
+    });
   });
 
   describe('org field', () => {
-    it('calls onChange when the organisation changes', () => {
+    it('calls onChange when the organization changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
-      );
+      let getAllByRole: any = () => ({});
 
+      await act(async () => {
+        getAllByRole = render(
+          <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
+        ).getAllByRole;
+      });
       const orgInput = getAllByRole('textbox')[0];
-
-      fireEvent.change(orgInput, { target: { value: 'org' } });
+      act(() => {
+        fireEvent.change(orgInput, { target: { value: 'org' } });
+      });
 
       expect(onChange).toHaveBeenCalledWith({ organization: 'org' });
     });
   });
 
   describe('owner field', () => {
-    it('calls onChange when the owner changes', () => {
+    it('calls onChange when the owner changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
-      );
+      let getAllByRole: any = () => ({});
+
+      await act(async () => {
+        getAllByRole = render(
+          <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
+        ).getAllByRole;
+      });
 
       const ownerInput = getAllByRole('textbox')[1];
-
-      fireEvent.change(ownerInput, { target: { value: 'owner' } });
+      act(() => {
+        fireEvent.change(ownerInput, { target: { value: 'owner' } });
+      });
 
       expect(onChange).toHaveBeenCalledWith({ owner: 'owner' });
     });
