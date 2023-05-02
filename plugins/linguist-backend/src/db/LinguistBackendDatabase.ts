@@ -133,7 +133,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
 
       const processEntity = {
         entityRef: rawEntity.entity_ref,
-        processedDate: processedDate,
+        processedDate,
       };
 
       return processEntity;
