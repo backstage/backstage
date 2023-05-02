@@ -42,9 +42,9 @@ const cicdContent = (
 )
 ```
 
-3. Add `octopus.com/project-id` and optionally an `octopus.com/space-id` annotation in the catalog descriptor file.
+3. Add `octopus.com/project-id` annotation in the catalog descriptor file.
 
-To obtain a projects ID you will have to query the Octopus API. You can get the space ID from the projects URL in the octopus deploy UI. In the future we'll add support for using a projects slug as well.
+To obtain a projects ID you will have to query the Octopus API. In the future we'll add support for using a projects slug as well.
 
 ```
 // catalog-info.yaml
@@ -57,5 +57,21 @@ metadata:
 spec:
   type: service
 ```
+
+If your project is not part of the default space you can add the space ID to the annotation as a prefix. For example:
+
+```
+// catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    octopus.com/project-id: Spaces-2/Projects-102
+spec:
+  type: service
+```
+
+You can get the ID of the space from the URL in the Octopus Deploy UI.
 
 All set, you will be able to see the plugin in action!
