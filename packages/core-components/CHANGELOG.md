@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.13.1-next.0
+
+### Patch Changes
+
+- 26cff1a5dfb: Start capturing sidebar click events in analytics by default.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
 ## 0.13.0
 
 ### Minor Changes
