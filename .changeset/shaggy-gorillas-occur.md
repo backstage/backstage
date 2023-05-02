@@ -2,6 +2,8 @@
 '@backstage/plugin-linguist-backend': patch
 ---
 
+**BREAKING**: Removed public constructor from `LinguistBackendApi`. Removed export of `LinguistBackendDatabase` and `LinguistBackendDatabase`
+
 Several improvements to the Linguist backend have been made:
 
 - Added tests for the `LinguistBackendDatabase` and `LinguistBackendApi`

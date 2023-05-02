@@ -93,7 +93,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
       .where({ entity_ref: entityRef })
       .first();
 
-    if (!entityResults) {
+    if (!entityResults || !entityResults.languages) {
       const emptyResults: Languages = {
         languageCount: 0,
         totalBytes: 0,
@@ -104,7 +104,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     }
 
     try {
-      return JSON.parse(entityResults.languages as string);
+      return JSON.parse(entityResults.languages);
     } catch (error) {
       throw new Error(`Failed to parse languages for '${entityRef}', ${error}`);
     }

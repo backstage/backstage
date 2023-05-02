@@ -170,7 +170,6 @@ export class LinguistBackendClient implements LinguistBackendApi {
       try {
         await this.generateEntityLanguages(entityRef, url);
       } catch (error) {
-        console.log(error);
         assertError(error);
         this.logger.error(
           `Unable to process "${entityRef}" using "${url}", message: ${error.message}, stack: ${error.stack}`,
