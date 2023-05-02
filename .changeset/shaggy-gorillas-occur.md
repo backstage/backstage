@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-linguist-backend': patch
+'@backstage/plugin-linguist-backend': minor
 ---
 
 **BREAKING**: Removed public constructor from `LinguistBackendApi`. Removed export of `LinguistBackendDatabase` and `LinguistBackendStore`
