@@ -17,6 +17,7 @@ import { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from '../constants';
 
 import { Entity } from '@backstage/catalog-model';
 
+/** @public */
 export type ProjectReference = { projectId: string; spaceId?: string };
 
 export function getProjectReferenceAnnotationFromEntity(

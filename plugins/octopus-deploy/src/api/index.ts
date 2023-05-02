@@ -18,6 +18,7 @@ import {
   DiscoveryApi,
   FetchApi,
 } from '@backstage/core-plugin-api';
+import { ProjectReference } from '../utils/getAnnotationFromEntity';
 
 /** @public */
 export type OctopusProgression = {
@@ -58,8 +59,7 @@ const DEFAULT_PROXY_PATH_BASE = '/octopus-deploy';
 /** @public */
 export interface OctopusDeployApi {
   getReleaseProgression(opts: {
-    projectId: string;
-    spaceId?: string;
+    projectReference: ProjectReference;
     releaseHistoryCount: number;
   }): Promise<OctopusProgression>;
 }
@@ -81,8 +81,7 @@ export class OctopusDeployClient implements OctopusDeployApi {
   }
 
   async getReleaseProgression(opts: {
-    projectId: string;
-    spaceId?: string;
+    projectReference: ProjectReference;
     releaseHistoryCount: number;
   }): Promise<OctopusProgression> {
     const url = await this.getApiUrl(opts);
@@ -109,24 +108,23 @@ export class OctopusDeployClient implements OctopusDeployApi {
   }
 
   private async getApiUrl(opts: {
-    projectId: string;
-    spaceId?: string;
+    projectReference: ProjectReference;
     releaseHistoryCount: number;
   }) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     const queryParameters = new URLSearchParams({
       releaseHistoryCount: opts.releaseHistoryCount.toString(),
     });
-    if (opts.spaceId !== undefined) {
+    if (opts.projectReference.spaceId !== undefined) {
       return `${proxyUrl}${this.proxyPathBase}/${encodeURIComponent(
-        opts.spaceId,
+        opts.projectReference.spaceId,
       )}/projects/${encodeURIComponent(
-        opts.projectId,
+        opts.projectReference.projectId,
       )}/progression?${queryParameters}`;
     }
 
     return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
-      opts.projectId,
+      opts.projectReference.projectId,
     )}/progression?${queryParameters}`;
   }
 }

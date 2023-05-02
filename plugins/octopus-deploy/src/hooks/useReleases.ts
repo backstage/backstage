@@ -35,8 +35,7 @@ export function useReleases(
 
   const { value, loading, error } = useAsync(() => {
     return api.getReleaseProgression({
-      projectId,
-      spaceId,
+      projectReference: { projectId, spaceId },
       releaseHistoryCount,
     });
   }, [api, projectId, spaceId, releaseHistoryCount]);
