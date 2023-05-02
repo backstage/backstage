@@ -20,6 +20,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,6 +42,8 @@ interface CustomHomepageButtonsProps {
   clearLayout: () => void;
   setAddWidgetDialogOpen: (open: boolean) => void;
   changeEditMode: (mode: boolean) => void;
+  defaultConfigAvailable: boolean;
+  restoreDefault: () => void;
 }
 export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
   const {
@@ -49,6 +52,8 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
     clearLayout,
     setAddWidgetDialogOpen,
     changeEditMode,
+    defaultConfigAvailable,
+    restoreDefault,
   } = props;
   const styles = useStyles();
 
@@ -59,27 +64,41 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
           variant="contained"
           color="primary"
           onClick={() => changeEditMode(true)}
+          size="small"
           startIcon={<EditIcon />}
         >
           Edit
         </Button>
       ) : (
         <>
+          {defaultConfigAvailable && (
+            <Button
+              variant="contained"
+              className={styles.contentHeaderBtn}
+              onClick={restoreDefault}
+              size="small"
+              startIcon={<CancelIcon />}
+            >
+              Restore defaults
+            </Button>
+          )}
           {numWidgets > 0 && (
             <Button
               variant="contained"
               color="secondary"
               className={styles.contentHeaderBtn}
               onClick={clearLayout}
+              size="small"
               startIcon={<DeleteIcon />}
             >
-              Clear
+              Clear all
             </Button>
           )}
           <Button
             variant="contained"
             className={styles.contentHeaderBtn}
             onClick={() => setAddWidgetDialogOpen(true)}
+            size="small"
             startIcon={<AddIcon />}
           >
             Add widget
@@ -90,6 +109,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
               variant="contained"
               color="primary"
               onClick={() => changeEditMode(false)}
+              size="small"
               startIcon={<SaveIcon />}
             >
               Save

@@ -19,6 +19,9 @@ import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// @public
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
 // @public @deprecated (undocumented)
 export type CardConfig = CardConfig_2;
 
@@ -77,11 +80,20 @@ export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type CustomHomepageGridProps = {
   children?: ReactNode;
   config?: LayoutConfiguration[];
   rowHeight?: number;
+  breakpoints?: Record<Breakpoint, number>;
+  cols?: Record<Breakpoint, number>;
+  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
+  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
+  maxRows?: number;
+  style?: React_2.CSSProperties;
+  compactType?: 'vertical' | 'horizontal' | null;
+  allowOverlap?: boolean;
+  preventCollision?: boolean;
 };
 
 // @public
