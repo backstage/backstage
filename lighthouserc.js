@@ -46,7 +46,6 @@ module.exports = {
       startServerReadyTimeout: 600000,
       numberOfRuns: 1,
       puppeteerScript: './.lighthouseci/scripts/guest-auth.js',
-      startServerReadyPattern: 'Listening on :7007',
     },
     assert: {
       assertions: {
