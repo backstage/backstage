@@ -466,12 +466,16 @@ app2:
   bindExternalRoutes:
     catalog.blah: /import
 
-  elements:
-    - import: '@backstage/core-components#AlertDisplay'
-    - import: '@backstage/sidebar#MobileSidebar'
-      role: sidebar
-      children:
-        - asd
+  rootElements:
+    - import: '@backstage/default-root'
+
+  sidebar:
+
+    # - import: '@backstage/core-components#AlertDisplay'
+    # - import: '@backstage/sidebar#MobileSidebar'
+    #   role: sidebar
+    #   children:
+    #     - asd
 
   pages:
     - '@backstage/plugin-scaffolder#TemplatePage'
@@ -480,48 +484,126 @@ app2:
       path: my-todos
       options:
         title: 'My TODOs'
-    - '@backstage/plugin-catalog#CatalogIndexPage'
+    - '@backstage/plugin-catalog#CatalogRoot'
+      # catalogRootRouteRef     /catalog
+      # entitySubRouteRef       /catalog + /:namespace/:kind/:name
     - import: '@backstage/plugin-catalog#EntityPage'
       children:
         - '@backstage/plugin-catalog#OverviewPage'
-    - children:
-        - '@backstage/plugin-catalog#OverviewPage'
-    - name: Catalog
-      subnav:
-        - 
+
+  # <EntitySwitch>
+  #   <EntitySwitch.Case if={isKind('component')} children={componentPage} />
+  #   <EntitySwitch.Case if={isKind('api')} children={apiPage} />
+  #   <EntitySwitch.Case if={isKind('group')} children={groupPage} />
+  #   <EntitySwitch.Case if={isKind('user')} children={userPage} />
+  #   <EntitySwitch.Case if={isKind('system')} children={systemPage} />
+  #   <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
+  #   <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
+
+  #   <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
+  # </EntitySwitch>
+  
+  # catalog:
+  #   cards:
+  #      - id: about-card
+  #        component: '@backstage/plugin-about-card#Card'
+  #      - id: open-api
+  #    pages: 
+  #     - id: overview-api
+  #        component: '@backstage/plugin-overview#Page'
+  #         cards: 
+  #           - about-card
+  #           - open-api
+  #       - id: overview-default
+  #         component: '@backstage/plugin-overview#Page'
+  #         cards: 
+  #           - about-card
+  #     tabs:
+  #       - api:
+  #         - overview-website
+  #         - ci/cd
+  #       - default:
+  #         - overview-default
+
+"@internal/tingle-plugin":
+  
+
+declarativeIntegration:
+  features:
+    - import: '@internal/tingle-plugin'
+      subfeatures:
+        EntityPageTab: 
+          enabled: false # default true
+        SidebarEntry:
+          enabled: false # default true
+
+sidebar:
+  entries:
+    - '@internal/tingle-plugin#TingleBuildButton'
+    - divider: true
+
+tingle:
+  sidebarEntry:
+    enabled: false
+  extensions:
+    'EntityPageTab': 
+      enabled: false # default true
 
   plugins:
+    tingle:
+      entityBuildsTab:
+        name: CI/CD
+        showIf:
+          isKind: Component
+
     catalog:
-      tabs:
-        - name: Overview
-          if: {{ entity.type === website}}
-          if2:
-            a: kind
-            op: equal
-            b: Component
-          if3: kind == Component
-          if4:
-            isKind: Components
-        - name: PagerDuty
-          id: pages.pagerduty.overview
-          package: plugin-pd#PagerdutyTab
+
+      indexPage:
+        - 'custom filter for the'
 
       entityPage:
-        - name: AboutCard
-          id: AboutCard
-          options:
-            fields:
-              - name
-              - description
-              - annotations
-        - name: PagerDuty
-          id: pagerduty.onCall
-          options:
-            something: 1
+        features:
+          # - import: '@backstage/plugin-catalog#DefaultOverview'
+          - import: '@internal/my-frontend-tweaks#MyEntityOverview'
+          - import: '@internal/tingle-plugin#TingleBuild'
+            if:
+              isKind: Component
+
+      tabs:
+        - name: Overview
+          pageId: common-overview
+          path: /
+        - name: CI/CD
+          pageId: common-cicd
+          if: is something that builds
+          path: /cicd
+            - '@internal/tingle-plugin#TingleBuild'
+    
+
+      #/catalog/default/component/foo
+      pages:
+        - id: overview
+          cards:
+            - '@backstage/plugin-catalog-react#AboutCard'
+            - import: '@backstage/plugin-openApi#OpenApiDefinitionCard'
+              if:
+                allOf:
+                  - isKind: API
+                  - isType: openapi
+            - import: '@backstage/plugin-kubernetes#deploymentStatus'
+              if:
+                - isKind: Component
+
+        - id: common-cicd
+        - id: website-quality-metrics
+          cards:
+            - '@backstage/plugin-catalog-react#AboutCard'
+            - import: '@backstage/plugin-catalog-react#AboutCard'
+              if: condition
+              placement:
+                column: 0
+                row: 0 #...
+            
     scaffolder:
       fieldExtensions:
         - MaPackage.FieldExtension
-
-    myHomeGrownPlugin:
-      something: 1
-      somethingElse: 2
