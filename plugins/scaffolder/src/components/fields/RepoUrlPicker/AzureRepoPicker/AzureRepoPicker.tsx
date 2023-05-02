@@ -25,6 +25,7 @@ export const AzureRepoPicker = (props: {
   rawErrors: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
+  dynamic?: boolean;
 }) => {
   const {
     allowedOrganizations = [],
@@ -32,13 +33,12 @@ export const AzureRepoPicker = (props: {
     rawErrors,
     state,
     onChange,
+    dynamic,
   } = props;
 
-  if (allowedOrganizations.length || allowedOwners.length) {
+  if (dynamic) {
     return (
-      <AzureRepoPickerStatic
-        allowedOrganizations={allowedOrganizations}
-        allowedOwners={allowedOwners}
+      <AzureRepoPickerDynamic
         rawErrors={rawErrors}
         state={state}
         onChange={onChange}
@@ -47,7 +47,9 @@ export const AzureRepoPicker = (props: {
   }
 
   return (
-    <AzureRepoPickerDynamic
+    <AzureRepoPickerStatic
+      allowedOrganizations={allowedOrganizations}
+      allowedOwners={allowedOwners}
       rawErrors={rawErrors}
       state={state}
       onChange={onChange}
