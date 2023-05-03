@@ -3590,6 +3590,7 @@ __metadata:
     stoppable: ^1.1.0
     supertest: ^6.1.3
     tar: ^6.1.12
+    undici: ^5.22.0
     uuid: ^8.3.2
     winston: ^3.2.1
     winston-transport: ^4.5.0
@@ -39093,12 +39094,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^5.12.0, undici@npm:^5.8.0":
-  version: 5.19.1
-  resolution: "undici@npm:5.19.1"
+"undici@npm:^5.12.0, undici@npm:^5.22.0, undici@npm:^5.8.0":
+  version: 5.22.0
+  resolution: "undici@npm:5.22.0"
   dependencies:
     busboy: ^1.6.0
-  checksum: 57ee94ee74d944faa41dbcb2faf4e0c90069708d3aaae860185884e51376b5d457728352a8396d69a3c9cb752b62ff99a19a664c5aacb7ee61cc488af499a01c
+  checksum: 8dc55240a60ae7680798df344e8f46ad0f872ed0fa434fb94cc4fd2b5b2f8053bdf11994d15902999d3880f9bf7cd875a2e90883d2702bf0f366dacd9cbf3fc6
   languageName: node
   linkType: hard
 

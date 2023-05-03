@@ -100,6 +100,7 @@
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
     "tar": "^6.1.12",
+    "undici": "^5.22.0",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",

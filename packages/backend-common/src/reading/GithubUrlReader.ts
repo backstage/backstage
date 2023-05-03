@@ -22,7 +22,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
-import fetch, { RequestInit, Response } from 'node-fetch';
+import { fetch, Response, RequestInit } from 'undici';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
