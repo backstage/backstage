@@ -23,7 +23,6 @@ import {
 } from '@backstage/plugin-search-common';
 import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 
-import { defaultProvider } from '@aws-sdk/credential-provider-node'; // V3 SDK.
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { RequestSigner } from 'aws4';
 import { Config } from '@backstage/config';
@@ -35,6 +34,10 @@ import { Logger } from 'winston';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
 
 export type { ElasticSearchClientOptions };
 
@@ -118,6 +121,7 @@ const DEFAULT_INDEXER_BATCH_SIZE = 1000;
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
+  private static credentialProvider: AwsCredentialsManager;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
@@ -147,8 +151,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       aliasPostfix = `search`,
       indexPrefix = ``,
     } = options;
-
-    const clientOptions = await createElasticSearchClientOptions(
+    this.credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
+    const clientOptions = await this.createElasticSearchClientOptions(
       config.getConfig('search.elasticsearch'),
     );
     if (clientOptions.provider === 'elastic') {
@@ -414,6 +418,108 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     const postFix = this.aliasPostfix ? `__${this.aliasPostfix}` : '';
     return `${this.indexPrefix}${type}${postFix}`;
   }
+
+  private static async createElasticSearchClientOptions(
+    config?: Config,
+  ): Promise<ElasticSearchClientOptions> {
+    if (!config) {
+      throw new Error('No elastic search config found');
+    }
+    const clientOptionsConfig = config.getOptionalConfig('clientOptions');
+    const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
+
+    if (config.getOptionalString('provider') === 'elastic') {
+      const authConfig = config.getConfig('auth');
+      return {
+        provider: 'elastic',
+        cloud: {
+          id: config.getString('cloudId'),
+        },
+        auth: {
+          username: authConfig.getString('username'),
+          password: authConfig.getString('password'),
+        },
+        ...(sslConfig
+          ? {
+              ssl: {
+                rejectUnauthorized:
+                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+              },
+            }
+          : {}),
+      };
+    }
+    if (config.getOptionalString('provider') === 'aws') {
+      const requestSigner = new RequestSigner(config.getString('node'));
+      const service =
+        config.getOptionalString('service') ?? requestSigner.service;
+      if (service !== 'es' && service !== 'aoss')
+        throw new Error(`Unrecognized serivce type: ${service}`);
+      return {
+        provider: 'aws',
+        node: config.getString('node'),
+        ...(sslConfig
+          ? {
+              ssl: {
+                rejectUnauthorized:
+                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+              },
+            }
+          : {}),
+        ...AwsSigv4Signer({
+          region: config.getOptionalString('region') ?? requestSigner.region, // for backwards compatibility
+          service: service,
+          getCredentials: async () => {
+            const provider =
+              await this.credentialProvider.getCredentialProvider();
+            return await provider.sdkCredentialProvider();
+          },
+        }),
+      };
+    }
+    if (config.getOptionalString('provider') === 'opensearch') {
+      const authConfig = config.getConfig('auth');
+      return {
+        provider: 'opensearch',
+        node: config.getString('node'),
+        auth: {
+          username: authConfig.getString('username'),
+          password: authConfig.getString('password'),
+        },
+        ...(sslConfig
+          ? {
+              ssl: {
+                rejectUnauthorized:
+                  sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+              },
+            }
+          : {}),
+      };
+    }
+    const authConfig = config.getOptionalConfig('auth');
+    const auth =
+      authConfig &&
+      (authConfig.has('apiKey')
+        ? {
+            apiKey: authConfig.getString('apiKey'),
+          }
+        : {
+            username: authConfig.getString('username'),
+            password: authConfig.getString('password'),
+          });
+    return {
+      node: config.getString('node'),
+      auth,
+      ...(sslConfig
+        ? {
+            ssl: {
+              rejectUnauthorized:
+                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
+            },
+          }
+        : {}),
+    };
+  }
 }
 
 /**
@@ -431,106 +537,4 @@ export function decodePageCursor(pageCursor?: string): { page: number } {
 
 export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
-}
-
-export async function createElasticSearchClientOptions(
-  config?: Config,
-): Promise<ElasticSearchClientOptions> {
-  if (!config) {
-    throw new Error('No elastic search config found');
-  }
-  const clientOptionsConfig = config.getOptionalConfig('clientOptions');
-  const sslConfig = clientOptionsConfig?.getOptionalConfig('ssl');
-
-  if (config.getOptionalString('provider') === 'elastic') {
-    const authConfig = config.getConfig('auth');
-    return {
-      provider: 'elastic',
-      cloud: {
-        id: config.getString('cloudId'),
-      },
-      auth: {
-        username: authConfig.getString('username'),
-        password: authConfig.getString('password'),
-      },
-      ...(sslConfig
-        ? {
-            ssl: {
-              rejectUnauthorized:
-                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-            },
-          }
-        : {}),
-    };
-  }
-  if (config.getOptionalString('provider') === 'aws') {
-    const requestSigner = new RequestSigner(config.getString('node'));
-    const service =
-      config.getOptionalString('service') ?? requestSigner.service;
-    if (service !== 'es' && service !== 'aoss')
-      throw new Error(`Unrecognized serivce type: ${service}`);
-    return {
-      provider: 'aws',
-      node: config.getString('node'),
-      ...(sslConfig
-        ? {
-            ssl: {
-              rejectUnauthorized:
-                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-            },
-          }
-        : {}),
-      ...AwsSigv4Signer({
-        region: config.getOptionalString('region') ?? requestSigner.region, // for backwards compatibility
-        service: service,
-        getCredentials: () => {
-          // Any other method to acquire a new Credentials object can be used.
-          const credentialsProvider = defaultProvider();
-          return credentialsProvider();
-        },
-      }),
-    };
-  }
-  if (config.getOptionalString('provider') === 'opensearch') {
-    const authConfig = config.getConfig('auth');
-    return {
-      provider: 'opensearch',
-      node: config.getString('node'),
-      auth: {
-        username: authConfig.getString('username'),
-        password: authConfig.getString('password'),
-      },
-      ...(sslConfig
-        ? {
-            ssl: {
-              rejectUnauthorized:
-                sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-            },
-          }
-        : {}),
-    };
-  }
-  const authConfig = config.getOptionalConfig('auth');
-  const auth =
-    authConfig &&
-    (authConfig.has('apiKey')
-      ? {
-          apiKey: authConfig.getString('apiKey'),
-        }
-      : {
-          username: authConfig.getString('username'),
-          password: authConfig.getString('password'),
-        });
-  return {
-    node: config.getString('node'),
-    auth,
-    ...(sslConfig
-      ? {
-          ssl: {
-            rejectUnauthorized:
-              sslConfig?.getOptionalBoolean('rejectUnauthorized'),
-          },
-        }
-      : {}),
-  };
 }
