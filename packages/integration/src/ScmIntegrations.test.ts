@@ -18,6 +18,10 @@ import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegrationConfig } from './azure';
 import { AzureIntegration } from './azure/AzureIntegration';
 import {
+  AzureBlobStorageIntegration,
+  AzureBlobStorageIntegrationConfig,
+} from './azureBlobStorage';
+import {
   BitbucketCloudIntegration,
   BitbucketCloudIntegrationConfig,
 } from './bitbucketCloud';
@@ -45,6 +49,10 @@ describe('ScmIntegrations', () => {
   const azure = new AzureIntegration({
     host: 'azure.local',
   } as AzureIntegrationConfig);
+
+  const azureBlobStorage = new AzureBlobStorageIntegration({
+    host: 'azure-blobstorage.local',
+  } as AzureBlobStorageIntegrationConfig);
 
   const bitbucket = new BitbucketIntegration({
     host: 'bitbucket.local',
@@ -77,6 +85,10 @@ describe('ScmIntegrations', () => {
   const i = new ScmIntegrations({
     awsS3: basicIntegrations([awsS3], item => item.config.host),
     azure: basicIntegrations([azure], item => item.config.host),
+    azureBlobStorage: basicIntegrations(
+      [azureBlobStorage],
+      item => item.config.host,
+    ),
     bitbucket: basicIntegrations([bitbucket], item => item.config.host),
     bitbucketCloud: basicIntegrations([bitbucketCloud], item => item.title),
     bitbucketServer: basicIntegrations(
@@ -92,6 +104,9 @@ describe('ScmIntegrations', () => {
   it('can get the specifics', () => {
     expect(i.awsS3.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.azure.byUrl('https://azure.local')).toBe(azure);
+    expect(i.azureBlobStorage.byUrl('https://azure-blobstorage.local')).toBe(
+      azureBlobStorage,
+    );
     expect(i.bitbucket.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.bitbucketCloud.byUrl('https://bitbucket.org')).toBe(
       bitbucketCloud,
@@ -110,6 +125,7 @@ describe('ScmIntegrations', () => {
       expect.arrayContaining([
         awsS3,
         azure,
+        azureBlobStorage,
         bitbucket,
         bitbucketCloud,
         bitbucketServer,
@@ -124,6 +140,7 @@ describe('ScmIntegrations', () => {
   it('can select by url and host', () => {
     expect(i.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.byUrl('https://azure.local')).toBe(azure);
+    expect(i.byUrl('https://azure-blobstorage.local')).toBe(azureBlobStorage);
     expect(i.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.byUrl('https://bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byUrl('https://bitbucket-server.local')).toBe(bitbucketServer);
@@ -134,6 +151,7 @@ describe('ScmIntegrations', () => {
 
     expect(i.byHost('awss3.local')).toBe(awsS3);
     expect(i.byHost('azure.local')).toBe(azure);
+    expect(i.byHost('azure-blobstorage.local')).toBe(azureBlobStorage);
     expect(i.byHost('bitbucket.local')).toBe(bitbucket);
     expect(i.byHost('bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byHost('bitbucket-server.local')).toBe(bitbucketServer);

@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
+import { AzureBlobStorageIntegration } from './azureBlobStorage/AzureBlobStorageIntegration';
 import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
@@ -36,6 +37,7 @@ import { GiteaIntegration } from './gitea';
 export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   /**
    * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`
    */
@@ -60,6 +62,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return new ScmIntegrations({
       awsS3: AwsS3Integration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
+      azureBlobStorage: AzureBlobStorageIntegration.factory({ config }),
       bitbucket: BitbucketIntegration.factory({ config }),
       bitbucketCloud: BitbucketCloudIntegration.factory({ config }),
       bitbucketServer: BitbucketServerIntegration.factory({ config }),
@@ -80,6 +83,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   get azure(): ScmIntegrationsGroup<AzureIntegration> {
     return this.byType.azure;
+  }
+
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration> {
+    return this.byType.azureBlobStorage;
   }
 
   /**

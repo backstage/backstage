@@ -22,6 +22,7 @@
 
 export * from './awsS3';
 export * from './azure';
+export * from './azureBlobStorage';
 export * from './bitbucket';
 export * from './bitbucketCloud';
 export * from './bitbucketServer';

@@ -98,6 +98,8 @@ nav:
           - Locations: 'integrations/azure/locations.md'
           - Discovery: 'integrations/azure/discovery.md'
           - Org Data: 'integrations/azure/org.md'
+      - Azure BlobStorage:
+          - Locations: 'integration/azure/locations.md'
       - Bitbucket:
           - Discovery: 'integrations/bitbucket/discovery.md'
       - Bitbucket Cloud:

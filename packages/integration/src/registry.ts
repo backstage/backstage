@@ -17,6 +17,7 @@
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
+import { AzureBlobStorageIntegration } from './azureBlobStorage/AzureBlobStorageIntegration';
 import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
@@ -34,6 +35,7 @@ export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   /**
    * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`
    */

@@ -33,6 +33,24 @@ export interface Config {
        */
       token?: string;
     }>;
+    /** Integration configuration for Azure BlobStorage */
+    azureBlobStorage?: Array<{
+      /**
+       * derived from accountName, and defaults to {accountname}.blob.core.windows.net
+       */
+      host: string;
+
+      /**
+       * The account of the given Azure instance
+       * @visibility frontend
+       */
+      accountName: string;
+      /**
+       * Token used to authenticate requests. SAS-Token, with leading '?'
+       * @visibility secret
+       */
+      secretAccessKey?: string;
+    }>;
 
     /**
      * Integration configuration for Bitbucket
