@@ -413,17 +413,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const isOrderingDescending = sortField.order === 'desc';
 
     if (prevItemOrderFieldValue) {
-      dbQuery.andWhere(
-        'value',
-        isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-        prevItemOrderFieldValue,
-      );
-      dbQuery.orWhere(function nested() {
-        this.where('value', '=', prevItemOrderFieldValue).andWhere(
-          'search.entity_id',
+      dbQuery.andWhere(function nested() {
+        this.where(
+          'value',
           isFetchingBackwards !== isOrderingDescending ? '<' : '>',
-          prevItemUid,
-        );
+          prevItemOrderFieldValue,
+        )
+          .orWhere('value', '=', prevItemOrderFieldValue)
+          .andWhere(
+            'search.entity_id',
+            isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+            prevItemUid,
+          );
       });
     }
 
