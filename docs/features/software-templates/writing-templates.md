@@ -510,10 +510,8 @@ take a look at, or you can
 
 Each individual step can output some variables that can be used in the
 scaffolder frontend for after the job is finished. This is useful for things
-like linking to the entity that has been created with the backend, and also
-linking to the created repository.
-
-The main two that are used are the following:
+like linking to the entity that has been created with the backend, linking
+to the created repository, or showing Markdown text blobs.
 
 ```yaml
 output:
@@ -523,6 +521,10 @@ output:
     - title: Open in catalog
       icon: catalog
       entityRef: ${{ steps['register'].output.entityRef }} # link to the entity that has been ingested to the catalog
+  text:
+    - title: More data
+      data: |
+        Access the [remote repository](${{ steps['publish'].output.remoteUrl }}).
 ```
 
 ## The templating syntax
