@@ -39,6 +39,34 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export class AzureBlobStorageIntegration implements ScmIntegration {
+  constructor(integrationConfig: AzureBlobStorageIntegrationConfig);
+  // (undocumented)
+  get config(): AzureBlobStorageIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<AzureBlobStorageIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type AzureBlobStorageIntegrationConfig = {
+  host: string;
+  accountName: string;
+  secretAccessKey?: string;
+};
+
+// @public
 export class AzureIntegration implements ScmIntegration {
   constructor(integrationConfig: AzureIntegrationConfig);
   // (undocumented)
@@ -519,6 +547,8 @@ export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
+  // (undocumented)
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // @deprecated (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   // (undocumented)
@@ -557,6 +587,16 @@ export function readAwsS3IntegrationConfig(
 export function readAwsS3IntegrationConfigs(
   configs: Config[],
 ): AwsS3IntegrationConfig[];
+
+// @public
+export function readAzureBlobStorageIntegrationConfig(
+  config: Config,
+): AzureBlobStorageIntegrationConfig;
+
+// @public
+export function readAzureBlobStorageIntegrationConfigs(
+  config: Config[],
+): AzureBlobStorageIntegrationConfig[];
 
 // @public
 export function readAzureIntegrationConfig(
@@ -676,6 +716,8 @@ export interface ScmIntegrationRegistry
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
+  // (undocumented)
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // @deprecated (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   // (undocumented)
@@ -705,6 +747,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   get awsS3(): ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   get azure(): ScmIntegrationsGroup<AzureIntegration>;
+  // (undocumented)
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // @deprecated (undocumented)
   get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration>;
   // (undocumented)
