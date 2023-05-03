@@ -30,6 +30,7 @@ import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
 import { GiteaUrlReader } from './GiteaUrlReader';
+import { AzureBlobStorageUrlReader } from './AzureBlobStorageUrlReader';
 
 /**
  * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
@@ -85,6 +86,7 @@ export class UrlReaders {
       config,
       factories: factories.concat([
         AzureUrlReader.factory,
+        AzureBlobStorageUrlReader.factory,
         BitbucketCloudUrlReader.factory,
         BitbucketServerUrlReader.factory,
         BitbucketUrlReader.factory,

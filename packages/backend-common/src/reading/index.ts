@@ -15,6 +15,7 @@
  */
 
 export { AzureUrlReader } from './AzureUrlReader';
+export { AzureBlobStorageUrlReader } from './AzureBlobStorageUrlReader';
 export { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
 export { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
