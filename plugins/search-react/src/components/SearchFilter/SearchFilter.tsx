@@ -130,7 +130,10 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
-          classes={{ root: classes.checkboxWrapper, label: classes.textWrapper }}
+          classes={{
+            root: classes.checkboxWrapper,
+            label: classes.textWrapper,
+          }}
           label={value}
           control={
             <Checkbox
@@ -209,7 +212,9 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         </MenuItem>
         {values.map((value: string) => (
           <MenuItem key={value} value={value}>
-            <Typography variant="inherit" noWrap>{value}</Typography>
+            <Typography variant="inherit" noWrap>
+              {value}
+            </Typography>
           </MenuItem>
         ))}
       </Select>
