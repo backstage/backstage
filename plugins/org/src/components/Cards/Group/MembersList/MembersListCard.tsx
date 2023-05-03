@@ -193,12 +193,9 @@ export const MembersListCard = (props: {
     [
       ...(directMembers ?? []),
       ...(descendantMembers && showAggregateMembers ? descendantMembers : []),
-    ].sort((a, b) => {
-      const nameToCompareInA = a.spec.profile?.displayName ?? a.metadata.name;
-      const nameToCompareInB = b.spec.profile?.displayName ?? b.metadata.name;
-
-      return nameToCompareInA.localeCompare(nameToCompareInB);
-    }),
+    ].sort((a, b) =>
+      stringifyEntityRef(a).localeCompare(stringifyEntityRef(b)),
+    ),
   ) as UserEntity[];
 
   if (loading) {
