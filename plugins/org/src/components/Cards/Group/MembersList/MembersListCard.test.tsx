@@ -33,7 +33,7 @@ import { MembersListCard } from './MembersListCard';
 import {
   groupA,
   mockedCatalogApiSupportingGroups,
-} from '../../../../test-helpers/catalogMocks';
+} from '../../../../__testUtils__/catalogMocks';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { EntityLayout } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';

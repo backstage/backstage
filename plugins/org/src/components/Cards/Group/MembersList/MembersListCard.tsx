@@ -167,7 +167,7 @@ export const MembersListCard = (props: {
         groupEntity,
         catalogApi,
       );
-    }, [catalogApi, groupEntity]);
+    }, [catalogApi, groupEntity, showAggregateMembersToggle]);
   const {
     loading,
     error,

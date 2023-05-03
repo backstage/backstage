@@ -23,7 +23,7 @@ import { MemoryRouter } from 'react-router-dom';
 import {
   groupA,
   mockedCatalogApiSupportingGroups,
-} from '../../../../test-helpers/catalogMocks';
+} from '../../../../__testUtils__/catalogMocks';
 import { MembersListCard } from './MembersListCard';
 
 export default {

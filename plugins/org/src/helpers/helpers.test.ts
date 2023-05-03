@@ -38,7 +38,7 @@ import {
   groupEUserOne,
   duplicatedUser,
   mockedCatalogApiSupportingGroups,
-} from '../test-helpers/catalogMocks';
+} from '../__testUtils__/catalogMocks';
 
 describe('Helper functions', () => {
   it('getAllDesendantMembersForGroupEntity correctly recursively returns all descendant members', async () => {
