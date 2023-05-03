@@ -21,7 +21,7 @@ import React, { ReactElement } from 'react';
 import { screen } from 'testing-library__dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Route } from 'react-router-dom';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -278,7 +278,9 @@ export class TechDocsAddonTester {
       render(this.build());
     });
 
-    const shadowHost = screen.getByTestId('techdocs-native-shadowroot');
+    await waitFor(() => screen.getByText('Documentation'));
+
+    const shadowHost = await screen.findByTestId('techdocs-native-shadowroot');
 
     return {
       ...screen,
