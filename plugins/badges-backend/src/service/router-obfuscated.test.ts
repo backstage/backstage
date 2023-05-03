@@ -129,15 +129,12 @@ describe('createRouter', () => {
   };
 
   const badgeStore: jest.Mocked<BadgesStore> = {
-    addBadge: jest.fn().mockImplementation(async () => {
+    getBadgeUuid: jest.fn().mockImplementation(async () => {
       return { uuid: 'uuid1' };
     }),
     getBadgeFromUuid: jest.fn().mockImplementation(async () => {
       return badgeEntity;
     }),
-    getUuidFromEntityMetadata: jest
-      .fn()
-      .mockImplementation(async () => 'uuid1'),
   };
 
   beforeAll(async () => {

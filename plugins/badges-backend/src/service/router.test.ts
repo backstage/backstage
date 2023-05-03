@@ -76,8 +76,7 @@ describe('createRouter', () => {
 
   const badgeStore: jest.Mocked<BadgesStore> = {
     getBadgeFromUuid: jest.fn(),
-    getUuidFromEntityMetadata: jest.fn(),
-    addBadge: jest.fn(),
+    getBadgeUuid: jest.fn(),
   };
 
   beforeAll(async () => {

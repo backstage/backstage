@@ -84,14 +84,6 @@ export type BadgeSpec = {
 // @public
 export interface BadgesStore {
   // (undocumented)
-  addBadge(
-    name: string,
-    namespace: string,
-    kind: string,
-  ): Promise<{
-    uuid: string;
-  }>;
-  // (undocumented)
   getBadgeFromUuid(uuid: string): Promise<
     | {
         name: string;
@@ -101,16 +93,13 @@ export interface BadgesStore {
     | undefined
   >;
   // (undocumented)
-  getUuidFromEntityMetadata(
+  getBadgeUuid(
     name: string,
     namespace: string,
     kind: string,
-  ): Promise<
-    | {
-        uuid: string;
-      }
-    | undefined
-  >;
+  ): Promise<{
+    uuid: string;
+  }>;
 }
 
 // @public (undocumented)

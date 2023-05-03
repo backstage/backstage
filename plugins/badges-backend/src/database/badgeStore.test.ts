@@ -48,11 +48,15 @@ describe('DatabaseBadgesStore', () => {
       ({ knex, badgeStore } = await createDatabaseBadgesStore(databaseId));
     });
 
-    it('createABadge', async () => {
-      const uuid = await badgeStore.addBadge(
+    it('createABadge if not existing in DB', async () => {
+      const uuid = await badgeStore.getBadgeUuid(
         entity.metadata.name,
         entity.metadata.namespace || 'default',
         entity.kind,
+      );
+
+      expect(uuid.uuid).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
       );
 
       const storedBadge = await badgeStore.getBadgeFromUuid(uuid.uuid);
@@ -63,7 +67,7 @@ describe('DatabaseBadgesStore', () => {
       );
     });
 
-    it('getBadgeFromUuid', async () => {
+    it('getBadge if badge already exist in DB', async () => {
       await knex('badges').truncate();
       await knex('badges').insert([
         {
@@ -83,7 +87,7 @@ describe('DatabaseBadgesStore', () => {
       });
     });
 
-    it('getUuidFromEntityMetadata', async () => {
+    it('getBadgeUuid if badge exist in DB', async () => {
       await knex('badges').truncate();
       await knex('badges').insert([
         {
@@ -94,15 +98,13 @@ describe('DatabaseBadgesStore', () => {
         },
       ]);
 
-      const storedUuid = await badgeStore.getUuidFromEntityMetadata(
+      const storedUuid = await badgeStore.getBadgeUuid(
         'test',
         'default',
         'component',
       );
 
-      expect(storedUuid).toEqual({
-        uuid: 'uuid1',
-      });
+      expect(storedUuid).toEqual({ uuid: 'uuid1' });
     });
   });
 });

@@ -233,17 +233,13 @@ async function obfuscatedRoute(
     },
     async (req, res) => {
       const { namespace, kind, name } = req.params;
-      let storedEntityUuid: { uuid: string } | undefined =
-        await store.getUuidFromEntityMetadata(name, namespace, kind);
+      const storedEntityUuid: { uuid: string } | undefined =
+        await store.getBadgeUuid(name, namespace, kind);
 
       if (isNil(storedEntityUuid)) {
-        storedEntityUuid = await store.addBadge(name, namespace, kind);
-
-        if (isNil(storedEntityUuid)) {
-          throw new NotFoundError(
-            `No uuid found for entity "${namespace}/${kind}/${name}"`,
-          );
-        }
+        throw new NotFoundError(
+          `No uuid found for entity "${namespace}/${kind}/${name}"`,
+        );
       }
 
       return res.status(200).json(storedEntityUuid);

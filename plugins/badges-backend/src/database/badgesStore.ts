@@ -19,6 +19,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
+import { isNil } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -26,7 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @public
  */
 export interface BadgesStore {
-  addBadge(
+  getBadgeUuid(
     name: string,
     namespace: string,
     kind: string,
@@ -35,12 +36,6 @@ export interface BadgesStore {
   getBadgeFromUuid(
     uuid: string,
   ): Promise<{ name: string; namespace: string; kind: string } | undefined>;
-
-  getUuidFromEntityMetadata(
-    name: string,
-    namespace: string,
-    kind: string,
-  ): Promise<{ uuid: string } | undefined>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -84,35 +79,31 @@ export class DatabaseBadgesStore implements BadgesStore {
     return result;
   }
 
-  async getUuidFromEntityMetadata(
+  async getBadgeUuid(
     name: string,
     namespace: string,
     kind: string,
-  ): Promise<{ uuid: string } | undefined> {
+  ): Promise<{ uuid: string }> {
     const result = await this.db('badges')
       .select('uuid')
       .where({ name: name, namespace: namespace, kind: kind })
       .first();
 
-    return result;
-  }
+    let uuid = result?.uuid;
 
-  async addBadge(
-    name: string,
-    namespace: string,
-    kind: string,
-  ): Promise<{ uuid: string }> {
-    const uuid = uuidv4();
+    if (isNil(uuid)) {
+      uuid = uuidv4();
 
-    await this.db('badges')
-      .insert({
-        uuid: uuid,
-        name: name,
-        namespace: namespace,
-        kind: kind,
-      })
-      .onConflict(['name', 'namespace', 'kind'])
-      .ignore();
+      await this.db('badges')
+        .insert({
+          uuid: uuid,
+          name: name,
+          namespace: namespace,
+          kind: kind,
+        })
+        .onConflict(['name', 'namespace', 'kind'])
+        .ignore();
+    }
 
     return { uuid };
   }
