@@ -8,18 +8,36 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export const createGitlabGroupEnsureExistsAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+  } & {
+    path: string[];
+  },
+  {
+    groupId?: number | undefined;
+  }
+>;
+
+// @public
 export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
-    name: string;
-    accessLevel: number;
-    scopes: string[];
     token?: string | undefined;
+  } & {
+    projectId: string | number;
+    name?: string | undefined;
+    accessLevel?: number | undefined;
+    scopes?: string[] | undefined;
   },
-  JsonObject
+  {
+    access_token: string;
+  }
 >;
 
 // @public
@@ -28,13 +46,17 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
-    name: string;
-    username: string;
-    scopes: string[];
     token?: string | undefined;
+  } & {
+    name: string;
+    projectId: string | number;
+    username?: string | undefined;
+    scopes?: string[] | undefined;
   },
-  JsonObject
+  {
+    user: string;
+    deploy_token: string;
+  }
 >;
 
 // @public
@@ -43,15 +65,16 @@ export const createGitlabProjectVariableAction: (options: {
 }) => TemplateAction<
   {
     repoUrl: string;
-    projectId: string | number;
+    token?: string | undefined;
+  } & {
     key: string;
     value: string;
+    projectId: string | number;
     variableType: string;
-    variableProtected: boolean;
-    masked: boolean;
-    raw: boolean;
-    environmentScope: string;
-    token?: string | undefined;
+    variableProtected?: boolean | undefined;
+    masked?: boolean | undefined;
+    raw?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
   JsonObject
 >;
