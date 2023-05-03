@@ -16,10 +16,12 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
+import { z } from 'zod';
 
 /**
- * Creates a `gitlab:create-project-access-token` Scaffolder action.
+ * Creates a `gitlab:projectAccessToken:create` Scaffolder action.
  *
  * @param options - Templating configuration.
  * @public
@@ -28,65 +30,29 @@ export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<{
-    repoUrl: string;
-    projectId: string | number;
-    name: string;
-    accessLevel: number;
-    scopes: string[];
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'gitlab:projectAccessToken:create',
     schema: {
-      input: {
-        required: ['projectId', 'repoUrl'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          projectId: {
-            title: 'Project ID',
-            type: ['string', 'number'],
-          },
-          name: {
-            title: 'Deploy Token Name',
-            type: 'string',
-          },
-          accessLevel: {
-            title: 'Access Level of the Token',
-            type: 'number',
-          },
-          scopes: {
-            title: 'Scopes',
-            type: 'array',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-        },
-      },
-      output: {
-        type: 'object',
-        properties: {
-          access_token: {
-            title: 'Access Token',
-            type: 'string',
-          },
-        },
-      },
+      input: commonGitlabConfig.and(
+        z.object({
+          projectId: z.union([z.number(), z.string()], {
+            description: 'Project ID',
+          }),
+          name: z.string({ description: 'Deploy Token Name' }).optional(),
+          accessLevel: z
+            .number({ description: 'Access Level of the Token' })
+            .optional(),
+          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+        }),
+      ),
+      output: z.object({
+        access_token: z.string({ description: 'Access Token' }),
+      }),
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { repoUrl, projectId, name, accessLevel, scopes } = ctx.input;
-      const { token, integrationConfig } = getToken(
-        repoUrl,
-        ctx.input.token,
-        integrations,
-      );
+      const { projectId, name, accessLevel, scopes } = ctx.input;
+      const { token, integrationConfig } = getToken(ctx.input, integrations);
 
       const response = await fetch(
         `${integrationConfig.config.baseUrl}/api/v4/projects/${projectId}/access_tokens`,

@@ -150,7 +150,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           track.markProcessorsCompleted(result);
 
           if (result.ok) {
-            if (stableStringify(state) !== stableStringify(result.state)) {
+            const { ttl: _, ...stateWithoutTtl } = state ?? {};
+            if (
+              stableStringify(stateWithoutTtl) !== stableStringify(result.state)
+            ) {
               await this.processingDatabase.transaction(async tx => {
                 await this.processingDatabase.updateEntityCache(tx, {
                   id,

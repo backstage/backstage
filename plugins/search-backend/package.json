@@ -57,6 +57,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
