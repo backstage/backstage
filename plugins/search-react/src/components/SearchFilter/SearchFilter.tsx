@@ -24,6 +24,7 @@ import {
   Select,
   MenuItem,
   FormLabel,
+  Typography,
 } from '@material-ui/core';
 
 import { useSearch } from '../../context';
@@ -129,21 +130,18 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
+          classes={{ root: classes.checkboxWrapper, label: classes.textWrapper }}
+          label={value}
           control={
-            <div className={classes.checkboxWrapper}>
-              <Checkbox
-                color="primary"
-                tabIndex={-1}
-                inputProps={{ 'aria-labelledby': value }}
-                value={value}
-                name={value}
-                onChange={handleChange}
-                checked={((filters[name] as string[]) ?? []).includes(value)}
-              />
-              <div className={classes.textWrapper}>
-                <span>{value}</span>
-              </div>
-            </div>
+            <Checkbox
+              color="primary"
+              tabIndex={-1}
+              inputProps={{ 'aria-labelledby': value }}
+              value={value}
+              name={value}
+              onChange={handleChange}
+              checked={((filters[name] as string[]) ?? []).includes(value)}
+            />
           }
         />
       ))}
@@ -211,7 +209,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         </MenuItem>
         {values.map((value: string) => (
           <MenuItem key={value} value={value}>
-            <span>{value}</span>
+            <Typography variant="inherit" noWrap>{value}</Typography>
           </MenuItem>
         ))}
       </Select>
