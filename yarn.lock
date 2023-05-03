@@ -8536,6 +8536,7 @@ __metadata:
   resolution: "@backstage/plugin-search-backend@workspace:plugins/search-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
