@@ -6,11 +6,14 @@ on:
     paths:
       - 'lighthouserc.js'
       - '.github/workflows/verify_accessibility_core.yml'
-      - 'plugins/catalog/**'
-      - 'plugins/techdocs/**'
-      - 'plugins/scaffolder/**'
-      - 'plugins/search/**'
-
+      - 'plugins/catalog/src/**'
+      - 'plugins/catalog-react/src/**'
+      - 'plugins/techdocs/src/**'
+      - 'plugins/techdocs-react/src/**'
+      - 'plugins/scaffolder/src/**'
+      - 'plugins/scaffolder-react/src/**'
+      - 'plugins/search/src/**'
+      - 'plugins/search-react/src/**'
 jobs:
   lhci:
     name: Accessibility

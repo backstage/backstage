@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.30-next.1
+
+### Patch Changes
+
+- d446f8fb0a8: Expose all `EntityRelationsGraphProps` to Catalog Graph Page
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+
 ## 0.2.30-next.0
 
 ### Patch Changes

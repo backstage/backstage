@@ -22,10 +22,6 @@ jobs:
   noop:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     name: Storybook
     steps:
       - run: echo NOOP

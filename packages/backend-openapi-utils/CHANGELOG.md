@@ -1,5 +1,11 @@
 # @backstage/backend-openapi-utils
 
+## 0.0.2-next.0
+
+### Patch Changes
+
+- 27956d78671: Adjusted README accordingly after the generated output now has a `.generated.ts` extension
+
 ## 0.0.1
 
 ### Patch Changes

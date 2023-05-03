@@ -173,6 +173,7 @@ describe('JenkinsApi', () => {
           'foo',
           'bar',
           'catpants',
+          'with-a/slash',
         ]);
 
         expect(mockedJenkins).toHaveBeenCalledWith({
@@ -190,6 +191,10 @@ describe('JenkinsApi', () => {
         });
         expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
           name: `${jenkinsInfo.jobFullName}/catpants`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: `${jenkinsInfo.jobFullName}/with-a%2Fslash`,
           tree: expect.anything(),
         });
         expect(result).toHaveLength(1);

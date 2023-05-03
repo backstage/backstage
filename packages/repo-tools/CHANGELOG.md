@@ -1,5 +1,11 @@
 # @backstage/repo-tools
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 27956d78671: Generated OpenAPI files now have a `.generated.ts` file name and a warning header at the top, to highlight that they should not be edited by hand.
+
 ## 0.2.0
 
 ### Minor Changes

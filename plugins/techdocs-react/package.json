@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "1.1.5",
+  "version": "1.1.6-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
