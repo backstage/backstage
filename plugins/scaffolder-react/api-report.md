@@ -217,6 +217,13 @@ export type ScaffolderOutputLink = {
   entityRef?: string;
 };
 
+// @public (undocumented)
+export type ScaffolderOutputText = {
+  title?: string;
+  icon?: string;
+  data?: string;
+};
+
 // @public
 export interface ScaffolderScaffoldOptions {
   // (undocumented)
@@ -261,6 +268,7 @@ export type ScaffolderTask = {
 // @public (undocumented)
 export type ScaffolderTaskOutput = {
   links?: ScaffolderOutputLink[];
+  text?: ScaffolderOutputText[];
 } & {
   [key: string]: unknown;
 };
