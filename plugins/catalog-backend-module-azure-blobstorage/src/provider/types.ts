@@ -14,40 +14,12 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
-interface AzureBlobStorageConfig {
+export type AzureBlobStorageConfig = {
   id: string;
-  /**
-   * accountname
-   */
   accountName: string;
-  /**
-   * The containerName; all files will be searched.
-   */
   containerName: string;
-  /**
-   * (Optional) Your project slug.
-   */
   prefix?: string;
-  /**
-   * (Optional) TaskScheduleDefinition for the refresh.
-   */
-  schedule?: TaskScheduleDefinitionConfig;
-}
-
-export interface Config {
-  catalog?: {
-    /**
-     * List of provider-specific options and attributes
-     */
-    providers?: {
-      /**
-       * AzureBlobStorageEntityProvider configuration
-       */
-      azureBlobStorage?:
-        | AzureBlobStorageConfig
-        | Record<string, AzureBlobStorageConfig>;
-    };
-  };
-}
+  schedule?: TaskScheduleDefinition;
+};

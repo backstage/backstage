@@ -16,7 +16,7 @@
 
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { AzureBlobStorageConfig } from '../../config';
+import { AzureBlobStorageConfig } from './types';
 
 export function readAzureBlobStorageConfigs(
   config: Config,

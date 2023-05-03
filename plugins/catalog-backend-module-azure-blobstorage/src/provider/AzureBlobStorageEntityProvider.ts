@@ -30,7 +30,7 @@ import {
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import * as uuid from 'uuid';
-import { AzureBlobStorageConfig } from '../../config';
+import { AzureBlobStorageConfig } from './types';
 
 /**
  * Provider which discovers catalog files (any name) within Azure BlobStorage
