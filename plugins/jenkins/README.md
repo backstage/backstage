@@ -86,24 +86,6 @@ spec:
 8. Click the component in the catalog. You should now see Jenkins builds, and a
    last build result for your master build.
 
-## Customize Action
-
-You can customize the action in the CI/CD table.
-
-| Action            | Description             |
-| ----------------- | ----------------------- |
-| rebuild (default) | Run new build with API  |
-| view              | link to view build page |
-| replay            | link to start replay    |
-
-```yaml
-jenkinsPlugin.__experimentalReconfigure({
-  tableAction: 'view',
-});
-```
-
-<img src="./src/assets/customize_action_view.png"  alt="Customized action - view"/>
-
 ## Features
 
 - View all runs inside a folder
