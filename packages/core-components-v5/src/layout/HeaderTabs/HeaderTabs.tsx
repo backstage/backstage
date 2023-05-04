@@ -37,7 +37,8 @@ const useStyles = makeStyles({ name: 'BackstageHeaderTabs' })(theme => ({
     minWidth: 0,
   },
   defaultTab: {
-    ...theme.typography.caption,
+    // TODO: FIX
+    // ...theme.typography.caption,
     padding: theme.spacing(3, 3),
     textTransform: 'uppercase',
     fontWeight: theme.typography.fontWeightBold,

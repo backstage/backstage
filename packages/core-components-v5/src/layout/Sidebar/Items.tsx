@@ -667,7 +667,8 @@ const styledScrollbar = (theme: Theme) => ({
     borderRadius: '5px',
   },
   '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.text.hint,
+    // TODO: FIX
+    // backgroundColor: theme.palette.text.hint,
     borderRadius: '5px',
   },
 });

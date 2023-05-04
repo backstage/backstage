@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Theme } from '@mui/material/styles';
-import { WithStyles } from '@mui/styles';
-import { withStyles } from 'tss-react/mui';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import React from 'react';
+import { Theme } from '@mui/material/styles';
+import { withStyles } from 'tss-react/mui';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
 const tableTitleCellStyles = (theme: Theme) => ({
   root: {
     fontWeight: theme.typography.fontWeightBold,
-    whiteSpace: 'nowrap',
+    // TODO: FIX
+    // whiteSpace: 'nowrap',
     paddingRight: theme.spacing(4),
     border: '0',
     verticalAlign: 'top',
@@ -47,20 +48,7 @@ const tableContentCellStyles = {
 
 export type MetadataTableListClassKey = 'root';
 
-const listStyles = (theme: Theme) => ({
-  root: {
-    margin: theme.spacing(0, 0, -1, 0),
-  },
-});
-
 export type MetadataTableListItemClassKey = 'root' | 'random';
-
-const listItemStyles = (theme: Theme) => ({
-  root: {
-    padding: theme.spacing(0, 0, 1, 0),
-  },
-  random: {},
-});
 
 const TitleCell = withStyles(TableCell, tableTitleCellStyles, {
   name: 'BackstageMetadataTableTitleCell',
@@ -97,27 +85,26 @@ export const MetadataTableItem = ({
   </TableRow>
 );
 
-interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
-}
-
 export const MetadataList = withStyles(
-  ({ classes, children }: StyleProps) => (
-    <List disablePadding className={classes.root}>
-      {children}
-    </List>
-  ),
-  listStyles,
+  List,
+  theme => ({
+    root: {
+      margin: theme.spacing(0, 0, -1, 0),
+    },
+  }),
   {
     name: 'BackstageMetadataTableList',
   },
 );
 
 export const MetadataListItem = withStyles(
-  ({ classes, children }: StyleProps) => (
-    <ListItem className={classes.root}>{children}</ListItem>
-  ),
-  listItemStyles,
+  ListItem,
+  theme => ({
+    root: {
+      padding: theme.spacing(0, 0, 1, 0),
+    },
+    random: {},
+  }),
   {
     name: 'BackstageMetadataTableListItem',
   },

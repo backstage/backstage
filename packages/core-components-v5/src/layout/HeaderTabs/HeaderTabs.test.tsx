@@ -55,20 +55,18 @@ describe('<HeaderTabs />', () => {
       },
     }));
 
-    const { classes: TextualBadge } = React.forwardRef<HTMLSpanElement>(
-      (props, ref) => (
-        <Badge
-          classes={useStyles()}
-          overlap="rectangular"
-          color="secondary"
-          badgeContent="three new alarms"
-        >
-          <span ref={ref} {...props}>
-            {props.children}
-          </span>
-        </Badge>
-      ),
-    );
+    const TextualBadge = React.forwardRef<HTMLSpanElement>((props, ref) => (
+      <Badge
+        classes={useStyles()}
+        overlap="rectangular"
+        color="secondary"
+        badgeContent="three new alarms"
+      >
+        <span ref={ref} {...props}>
+          {props.children}
+        </span>
+      </Badge>
+    ));
     const iconTab = [
       {
         id: 'icon-tab',

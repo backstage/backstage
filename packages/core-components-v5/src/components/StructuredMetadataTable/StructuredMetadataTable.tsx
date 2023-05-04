@@ -15,8 +15,6 @@
  */
 
 import React, { Fragment, ReactElement } from 'react';
-import { Theme } from '@mui/material/styles';
-import { WithStyles } from '@mui/styles';
 import { withStyles } from 'tss-react/mui';
 import startCase from 'lodash/startCase';
 import Typography from '@mui/material/Typography';
@@ -30,40 +28,32 @@ import {
 
 export type StructuredMetadataTableListClassKey = 'root';
 
-const listStyle = {
-  root: {
-    margin: '0 0',
-    listStyleType: 'none',
-  },
-};
-
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
-const nestedListStyle = (theme: Theme) => ({
-  root: {
-    ...listStyle.root,
-    paddingLeft: theme.spacing(1),
-  },
-});
-
-interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
-}
 // Sub Components
+// TODO: Missing `disablePadding` prop
 const StyledList = withStyles(
-  ({ classes, children }: StyleProps) => (
-    <MetadataList classes={classes}>{children}</MetadataList>
-  ),
-  listStyle,
+  MetadataList,
+  () => ({
+    root: {
+      margin: '0 0',
+      listStyleType: 'none',
+    },
+  }),
   {
     name: 'BackstageStructuredMetadataTableList',
   },
 );
+
 const StyledNestedList = withStyles(
-  ({ classes, children }: StyleProps) => (
-    <MetadataList classes={classes}>{children}</MetadataList>
-  ),
-  nestedListStyle,
+  MetadataList,
+  theme => ({
+    root: {
+      margin: '0 0',
+      listStyleType: 'none',
+      paddingLeft: theme.spacing(1),
+    },
+  }),
   {
     name: 'BackstageStructuredMetadataTableNestedList',
   },
