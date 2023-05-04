@@ -509,8 +509,8 @@ Done! You now have support for TechDocs in your own software template!
 
 ## how to enable iframes in TechDocs
 
-Techdocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) to sanitizes
-HTML and prevents XSS attacks
+TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
+sanitize HTML and prevent XSS attacks.
 
 It's possible to allow some iframes based on a list of allowed hosts. To do
 this, add the allowed hosts in the `techdocs.sanitizer.allowedIframeHosts`
@@ -530,7 +530,7 @@ This way, all iframes where the host of src attribute is in the
 
 ## How to add Mermaid support in TechDocs
 
-To add `Mermaid` support in Techdocs, you can use [`kroki`](https://kroki.io)
+To add `Mermaid` support in TechDocs, you can use [`kroki`](https://kroki.io)
 that creates diagrams from Textual descriptions. It is a single rendering
 gateway for all popular diagrams-as-a-code tools. It supports an enormous number
 of diagram types.
@@ -559,7 +559,7 @@ docker build . -t dockerHub_Username/repositoryName:tagName
 
 Once the docker image is ready, push it to DockerHub.
 
-2. **Update app-config.yaml:** So that when your app generates techdocs, it will
+2. **Update app-config.yaml:** So that when your app generates TechDocs, it will
    pull your docker image from DockerHub.
 
 ```python
