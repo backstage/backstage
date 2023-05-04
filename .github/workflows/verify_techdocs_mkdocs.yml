@@ -29,7 +29,6 @@ jobs:
       - name: build API reference
         run: yarn build:api-docs
 
-
       # Setup and start the MkDocs configuration
 
       - uses: actions/setup-python@v4
