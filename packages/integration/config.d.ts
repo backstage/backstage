@@ -36,7 +36,7 @@ export interface Config {
     /** Integration configuration for Azure BlobStorage */
     azureBlobStorage?: Array<{
       /**
-       * derived from accountName, and defaults to {accountname}.blob.core.windows.net
+       * derived from accountName, and defaults to accountName.blob.core.windows.net
        */
       host: string;
 
@@ -46,7 +46,7 @@ export interface Config {
        */
       accountName: string;
       /**
-       * Token used to authenticate requests. SAS-Token, with leading '?'
+       * Token used to authenticate requests. SAS-Token, with leading ?
        * @visibility secret
        */
       secretAccessKey?: string;

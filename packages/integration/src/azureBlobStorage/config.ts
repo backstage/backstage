@@ -23,7 +23,7 @@ import { Config } from '@backstage/config';
  */
 export type AzureBlobStorageIntegrationConfig = {
   /**
-   * derived from accountName, and defaults to {accountname}.blob.core.windows.net
+   * derived from accountName, and defaults to accountName.blob.core.windows.net
    */
   host: string;
 
@@ -33,7 +33,7 @@ export type AzureBlobStorageIntegrationConfig = {
   accountName: string;
 
   /**
-   * SAS-Token, with leading '?'
+   * SAS-Token, with leading ?
    */
   secretAccessKey?: string;
 };

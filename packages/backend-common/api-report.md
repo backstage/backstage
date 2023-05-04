@@ -9,6 +9,7 @@
 import { AppConfig } from '@backstage/config';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
+import { AzureBlobStorageIntegration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -80,6 +81,21 @@ export class AwsS3UrlReader implements UrlReader {
   read(url: string): Promise<Buffer>;
   // (undocumented)
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export class AzureBlobStorageUrlReader implements UrlReader {
+  constructor(integration: AzureBlobStorageIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
