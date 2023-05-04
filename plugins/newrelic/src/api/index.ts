@@ -68,7 +68,7 @@ type Options = {
 };
 
 export interface NewRelicApi {
-  getApplications(): Promise<NewRelicApplications>;
+  getApplications(apiKey: string): Promise<NewRelicApplications>;
 }
 
 export class NewRelicClient implements NewRelicApi {
@@ -80,8 +80,8 @@ export class NewRelicClient implements NewRelicApi {
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
   }
 
-  async getApplications(): Promise<NewRelicApplications> {
-    const url = await this.getApiUrl('apm', 'applications.json');
+  async getApplications(apiKey: string): Promise<NewRelicApplications> {
+    const url = await this.getApiUrl('apm', 'applications.json', apiKey);
     const response = await fetch(url);
     let responseJson;
 
@@ -102,8 +102,12 @@ export class NewRelicClient implements NewRelicApi {
     return responseJson;
   }
 
-  private async getApiUrl(product: string, path: string) {
+  private async getApiUrl(product: string, path: string, apiKey: string) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return `${proxyUrl}${this.proxyPathBase}/${product}/api/${path}`;
+    const url = `${proxyUrl}${this.proxyPathBase}/${product}/api/${path}`;
+    const urlWithApiKey = new URL(url);
+    urlWithApiKey.searchParams.set('api_key', apiKey);
+    return urlWithApiKey.toString();
   }
 }
+
