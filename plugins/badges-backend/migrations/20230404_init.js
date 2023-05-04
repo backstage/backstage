@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage backend plugin that generates README badges for your entities
- *
- * @packageDocumentation
- */
+exports.up = async function up(knex) {
+  await knex.schema.createTable('badges', table => {
+    table.string('kind').notNullable();
+    table.string('namespace').notNullable();
+    table.string('name').notNullable();
+    table.string('uuid').unique().notNullable();
+    table.index(['uuid'], 'badges_uuid_index');
+    table.primary(['kind', 'namespace', 'name']);
+  });
+};
 
-export * from './badges';
-export * from './lib';
-export * from './service/router';
-export * from './types';
-export * from './database/badgesStore';
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('badges', table => {
+    table.dropIndex('', 'badges_uuid_index');
+  });
+  await knex.schema.dropTable('badges');
+};

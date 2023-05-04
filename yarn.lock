@@ -4986,18 +4986,27 @@ __metadata:
   resolution: "@backstage/plugin-badges-backend@workspace:plugins/badges-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/node": "*"
     badge-maker: ^3.3.0
     cors: ^2.8.5
+    cross-fetch: ^3.1.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    supertest: ^6.1.3
+    knex: ^2.4.2
+    lodash: ^4.17.21
+    supertest: ^6.3.3
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -5020,14 +5029,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
-    "@testing-library/react": ^12.1.3
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/jest-dom": ^5.16.5
     "@types/node": ^16.11.26
-    "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -15002,7 +15006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^5.10.1, @testing-library/jest-dom@npm:^5.16.4":
+"@testing-library/jest-dom@npm:^5.10.1, @testing-library/jest-dom@npm:^5.16.4, @testing-library/jest-dom@npm:^5.16.5":
   version: 5.16.5
   resolution: "@testing-library/jest-dom@npm:5.16.5"
   dependencies:
@@ -20662,7 +20666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookiejar@npm:^2.1.3":
+"cookiejar@npm:^2.1.4":
   version: 2.1.4
   resolution: "cookiejar@npm:2.1.4"
   checksum: c4442111963077dc0e5672359956d6556a195d31cbb35b528356ce5f184922b99ac48245ac05ed86cf993f7df157c56da10ab3efdadfed79778a0d9b1b092d5b
@@ -24667,7 +24671,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formidable@npm:^2.0.1":
+"formidable@npm:^2.1.2":
   version: 2.1.2
   resolution: "formidable@npm:2.1.2"
   dependencies:
@@ -28975,7 +28979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0":
+"knex@npm:^2.0.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:
@@ -34267,7 +34271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.11.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+"qs@npm:6.11.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
   dependencies:
@@ -37879,32 +37883,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superagent@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "superagent@npm:8.0.0"
+"superagent@npm:^8.0.5":
+  version: 8.0.9
+  resolution: "superagent@npm:8.0.9"
   dependencies:
     component-emitter: ^1.3.0
-    cookiejar: ^2.1.3
+    cookiejar: ^2.1.4
     debug: ^4.3.4
     fast-safe-stringify: ^2.1.1
     form-data: ^4.0.0
-    formidable: ^2.0.1
+    formidable: ^2.1.2
     methods: ^1.1.2
     mime: 2.6.0
-    qs: ^6.10.3
-    readable-stream: ^3.6.0
-    semver: ^7.3.7
-  checksum: 14343e59327eafd85fa230acb876017079d5efcecc72a56566abc0f965220bb460af2e070dddecd9e2856410b2d2b318d81d9cc1d342aa5922da93c29a295dd7
+    qs: ^6.11.0
+    semver: ^7.3.8
+  checksum: 5d00cdc7ceb5570663da80604965750e6b1b8d7d7442b7791e285c62bcd8d578a8ead0242a2426432b59a255fb42eb3a196d636157538a1392e7b6c5f1624810
   languageName: node
   linkType: hard
 
-"supertest@npm:^6.1.3, supertest@npm:^6.1.6, supertest@npm:^6.2.4":
-  version: 6.2.4
-  resolution: "supertest@npm:6.2.4"
+"supertest@npm:^6.1.3, supertest@npm:^6.1.6, supertest@npm:^6.2.4, supertest@npm:^6.3.3":
+  version: 6.3.3
+  resolution: "supertest@npm:6.3.3"
   dependencies:
     methods: ^1.1.2
-    superagent: ^8.0.0
-  checksum: f2ddc4f3ba467a5c4036dd4aad41351e4b60eb13c39ecf5233ccd2ebb425504073b2b7036c973a70c7047f5c6bc1b9fef096b7bbff114d357cbe80654441db23
+    superagent: ^8.0.5
+  checksum: 38239e517f7ba62b7a139a79c5c48d55f8d67b5ff4b6e51d5b07732ca8bbc4a28ffa1b10916fbb403dd013a054dbf028edc5850057d9a43aecbff439d494673e
   languageName: node
   linkType: hard
 
