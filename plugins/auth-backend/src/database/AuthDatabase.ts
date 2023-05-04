@@ -39,6 +39,7 @@ export class AuthDatabase {
     return new AuthDatabase(database);
   }
 
+  /** @internal */
   static forTesting(): AuthDatabase {
     const config = new ConfigReader({
       backend: {

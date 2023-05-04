@@ -26,7 +26,7 @@ import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
 
 type Options = {
-  logger?: Logger;
+  logger: Logger;
   database: AuthDatabase;
 };
 
@@ -37,21 +37,15 @@ export class KeyStores {
    *
    * @returns a KeyStore store
    */
-  static async fromConfig(
-    config: Config,
-    options?: Options,
-  ): Promise<KeyStore> {
-    const { logger, database } = options ?? {};
+  static async fromConfig(config: Config, options: Options): Promise<KeyStore> {
+    const { logger, database } = options;
 
     const ks = config.getOptionalConfig('auth.keyStore');
     const provider = ks?.getOptionalString('provider') ?? 'database';
 
-    logger?.info(`Configuring "${provider}" as KeyStore provider`);
+    logger.info(`Configuring "${provider}" as KeyStore provider`);
 
     if (provider === 'database') {
-      if (!database) {
-        throw new Error('This KeyStore provider requires a database');
-      }
       return new DatabaseKeyStore(await database.get());
     }
 
