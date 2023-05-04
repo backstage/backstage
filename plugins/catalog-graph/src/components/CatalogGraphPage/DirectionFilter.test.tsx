@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Direction } from '../EntityRelationsGraph';
@@ -37,7 +37,9 @@ describe('<DirectionFilter/>', () => {
 
     expect(screen.getByText('Right to left')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByTestId('select'));
+    await userEvent.click(
+      within(screen.getByTestId('select')).getByRole('button'),
+    );
     await userEvent.click(screen.getByText('Top to bottom'));
 
     await waitFor(() => {
