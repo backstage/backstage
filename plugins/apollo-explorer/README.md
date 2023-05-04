@@ -39,6 +39,7 @@ Then, in `packages/app/src/App.tsx` add the plugin as a `Route`
 
 ```typescript
 import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
+
 const routes = (
   <FlatRoutes>
     {/* other routes... */}
