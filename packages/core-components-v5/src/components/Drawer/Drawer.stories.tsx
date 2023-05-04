@@ -15,12 +15,14 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import Drawer from '@mui/material/Drawer';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Close from '@mui/icons-material/Close';
 
 export default {
   title: 'Layout/Drawer',
@@ -65,39 +67,37 @@ const DrawerContent = ({
 }) => {
   const classes = useDrawerContentStyles();
 
-  return (
-    <>
-      <div className={classes.header}>
-        <Typography variant="h5">Side Panel Title</Typography>
-        <IconButton
-          key="dismiss"
-          title="Close the drawer"
-          onClick={() => toggleDrawer(false)}
-          color="inherit"
-        >
-          <Close className={classes.icon} />
-        </IconButton>
-      </div>
-      <div className={classes.content} />
-      <div>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleDrawer(false)}
-        >
-          Primary Action
-        </Button>
-        <Button
-          className={classes.secondaryAction}
-          variant="outlined"
-          color="primary"
-          onClick={() => toggleDrawer(false)}
-        >
-          Secondary Action
-        </Button>
-      </div>
-    </>
-  );
+  return <>
+    <div className={classes.header}>
+      <Typography variant="h5">Side Panel Title</Typography>
+      <IconButton
+        key="dismiss"
+        title="Close the drawer"
+        onClick={() => toggleDrawer(false)}
+        color="inherit"
+        size="large">
+        <Close className={classes.icon} />
+      </IconButton>
+    </div>
+    <div className={classes.content} />
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => toggleDrawer(false)}
+      >
+        Primary Action
+      </Button>
+      <Button
+        className={classes.secondaryAction}
+        variant="outlined"
+        color="primary"
+        onClick={() => toggleDrawer(false)}
+      >
+        Secondary Action
+      </Button>
+    </div>
+  </>;
 };
 
 /* Default drawer can toggle open or closed.

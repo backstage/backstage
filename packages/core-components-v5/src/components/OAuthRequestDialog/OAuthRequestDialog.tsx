@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import List from '@material-ui/core/List';
-import Button from '@material-ui/core/Button';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import List from '@mui/material/List';
+import Button from '@mui/material/Button';
 import React, { useMemo, useState } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
@@ -29,7 +30,7 @@ import {
   configApiRef,
   oauthRequestApiRef,
 } from '@backstage/core-plugin-api';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'

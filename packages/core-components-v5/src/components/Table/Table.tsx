@@ -23,24 +23,26 @@ import MTable, {
   MTableToolbar,
   Options,
 } from '@material-table/core';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import ViewColumn from '@material-ui/icons/ViewColumn';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import AddBox from '@mui/icons-material/AddBox';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import Check from '@mui/icons-material/Check';
+import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+import Clear from '@mui/icons-material/Clear';
+import DeleteOutline from '@mui/icons-material/DeleteOutline';
+import Edit from '@mui/icons-material/Edit';
+import FilterList from '@mui/icons-material/FilterList';
+import FirstPage from '@mui/icons-material/FirstPage';
+import LastPage from '@mui/icons-material/LastPage';
+import Remove from '@mui/icons-material/Remove';
+import SaveAlt from '@mui/icons-material/SaveAlt';
+import ViewColumn from '@mui/icons-material/ViewColumn';
 import { isEqual, transform } from 'lodash';
 import React, {
   forwardRef,
@@ -136,7 +138,7 @@ const StyledMTableToolbar = withStyles(
 /** @public */
 export type FiltersContainerClassKey = 'root' | 'title';
 
-const useFilterStyles = makeStyles<BackstageTheme>(
+const useFilterStyles = makeStyles(
   theme => ({
     root: {
       display: 'flex',
@@ -154,7 +156,7 @@ const useFilterStyles = makeStyles<BackstageTheme>(
 
 export type TableClassKey = 'root';
 
-const useTableStyles = makeStyles<BackstageTheme>(
+const useTableStyles = makeStyles(
   () => ({
     root: {
       display: 'flex',
@@ -270,7 +272,11 @@ export function TableToolbar(toolbarProps: {
     return (
       <Box className={filtersClasses.root}>
         <Box className={filtersClasses.root}>
-          <IconButton onClick={toggleFilters} aria-label="filter list">
+          <IconButton
+            onClick={toggleFilters}
+            aria-label="filter list"
+            size="large"
+          >
             <FilterList />
           </IconButton>
           <Typography className={filtersClasses.title}>
@@ -314,7 +320,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   } = props;
   const tableClasses = useTableStyles();
 
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
 
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 

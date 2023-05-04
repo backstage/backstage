@@ -19,7 +19,7 @@ import missingAnnotation from './assets/missingAnnotation.svg';
 import noInformation from './assets/noInformation.svg';
 import createComponent from './assets/createComponent.svg';
 import noBuild from './assets/noBuild.svg';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 type Props = {
   missing: 'field' | 'info' | 'content' | 'data';

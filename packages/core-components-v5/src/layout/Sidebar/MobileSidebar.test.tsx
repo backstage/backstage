@@ -15,10 +15,10 @@
  */
 
 import { mockBreakpoint, renderInTestApp } from '@backstage/test-utils';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import HomeIcon from '@material-ui/icons/Home';
-import LayersIcon from '@material-ui/icons/Layers';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
+import HomeIcon from '@mui/icons-material/Home';
+import LayersIcon from '@mui/icons-material/Layers';
+import LibraryBooks from '@mui/icons-material/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Sidebar } from './Bar';

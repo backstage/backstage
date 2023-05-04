@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { Line } from 'rc-progress';
 import React from 'react';
 
@@ -32,7 +32,7 @@ type Props = {
 
 export function LinearGauge(props: Props) {
   const { value, getColor = getProgressColor } = props;
-  const { palette } = useTheme<BackstageTheme>();
+  const { palette } = useTheme();
   if (isNaN(value)) {
     return null;
   }

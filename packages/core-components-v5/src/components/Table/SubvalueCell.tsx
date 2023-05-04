@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
-const useSubvalueCellStyles = makeStyles<BackstageTheme>(
+const useSubvalueCellStyles = makeStyles(
   theme => ({
     value: {
       marginBottom: theme.spacing(0.75),

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import React from 'react';
+
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import { useNavigate } from 'react-router-dom';
+
 import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
@@ -34,17 +35,17 @@ interface IErrorPageProps {
 /** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     container: {
       padding: theme.spacing(8),
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         padding: theme.spacing(2),
       },
     },
     title: {
       paddingBottom: theme.spacing(5),
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         paddingBottom: theme.spacing(4),
         fontSize: theme.typography.h3.fontSize,
       },

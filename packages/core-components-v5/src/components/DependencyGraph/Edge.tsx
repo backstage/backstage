@@ -17,7 +17,7 @@
 import React from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
 import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';

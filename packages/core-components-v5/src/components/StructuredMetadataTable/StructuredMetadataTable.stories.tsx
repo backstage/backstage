@@ -15,7 +15,7 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 const cardContentStyle = { heightX: 200, width: 500 };

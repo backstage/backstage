@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
@@ -24,7 +24,7 @@ import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 
 export type MarkdownContentClassKey = 'markdown';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     markdown: {
       '& table': {

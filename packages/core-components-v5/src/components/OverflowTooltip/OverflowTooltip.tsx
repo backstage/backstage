@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
 import { useIsMounted } from '@react-hookz/web';

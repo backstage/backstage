@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -89,37 +91,35 @@ export const Default = () => {
     );
   };
 
-  return (
-    <>
-      <Button color="primary" variant="contained" onClick={openDialog}>
-        Open Dialog
-      </Button>
-      <Dialog
-        open={open}
-        onClose={closeDialog}
-        aria-labelledby="dialog-title"
-        aria-describedby="dialog-description"
-      >
-        <DialogTitle id="dialog-title">
-          Dialog Box Title
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={closeDialog}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>{dialogContent()}</DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={closeDialog}>
-            Secondary action
-          </Button>
-          <Button color="primary" onClick={closeDialog}>
-            Primary action
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
+  return <>
+    <Button color="primary" variant="contained" onClick={openDialog}>
+      Open Dialog
+    </Button>
+    <Dialog
+      open={open}
+      onClose={closeDialog}
+      aria-labelledby="dialog-title"
+      aria-describedby="dialog-description"
+    >
+      <DialogTitle id="dialog-title">
+        Dialog Box Title
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={closeDialog}
+          size="large">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>{dialogContent()}</DialogContent>
+      <DialogActions>
+        <Button color="primary" onClick={closeDialog}>
+          Secondary action
+        </Button>
+        <Button color="primary" onClick={closeDialog}>
+          Primary action
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </>;
 };

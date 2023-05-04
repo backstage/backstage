@@ -16,11 +16,22 @@
 
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+} from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       display: 'grid',
@@ -30,7 +41,7 @@ const useStyles = makeStyles<BackstageTheme>(
       gridTemplateColumns: 'auto 1fr auto',
       overflowY: 'auto',
       height: '100vh',
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         height: '100%',
       },
     },
@@ -47,13 +58,15 @@ export function Page(props: Props) {
   const { themeId, children } = props;
   const classes = useStyles();
   return (
-    <ThemeProvider
-      theme={(baseTheme: BackstageTheme) => ({
-        ...baseTheme,
-        page: baseTheme.getPageTheme({ themeId }),
-      })}
-    >
-      <main className={classes.root}>{children}</main>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider
+        theme={(baseTheme: BackstageTheme) => ({
+          ...baseTheme,
+          page: baseTheme.getPageTheme({ themeId }),
+        })}
+      >
+        <main className={classes.root}>{children}</main>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }

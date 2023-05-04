@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { alpha, makeStyles } from '@material-ui/core/styles';
-import * as colors from '@material-ui/core/colors';
+import { alpha } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import * as colors from '@mui/material/colors';
 
 export const HEADER_SIZE = 40;
 

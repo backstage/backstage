@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  IconComponent,
-  useAnalytics,
-  useElementFilter,
-} from '@backstage/core-plugin-api';
+import { useAnalytics, useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import Badge from '@material-ui/core/Badge';
-import Box from '@material-ui/core/Box';
-import { makeStyles, styled, Theme } from '@material-ui/core/styles';
-import {
-  CreateCSSProperties,
-  StyledComponentProps,
-} from '@material-ui/core/styles/withStyles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import SearchIcon from '@material-ui/icons/Search';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import SearchIcon from '@mui/icons-material/Search';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import { CreateCSSProperties, styled, Theme } from '@mui/material/styles';
+import SvgIcon from '@mui/material/SvgIcon';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { StyledComponentProps } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import classnames from 'classnames';
 import { Location } from 'history';
 import React, {
@@ -55,6 +50,7 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 
+import Button from '@mui/material/Button';
 import {
   SidebarConfig,
   SidebarConfigContext,
@@ -66,7 +62,6 @@ import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
-import Button from '@material-ui/core/Button';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -90,7 +85,7 @@ export type SidebarItemClassKey =
   | 'selected';
 
 const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles<BackstageTheme>(
+  makeStyles(
     theme => ({
       root: {
         color: theme.palette.navigation.color,
@@ -263,7 +258,8 @@ const useLocationMatch = (
   );
 
 type SidebarItemBaseProps = {
-  icon: IconComponent;
+  // TODO: This doesn't align with @Rugvip comment in `'@backstage/core-plugin-api'` `IconComponent`
+  icon: typeof SvgIcon;
   text?: string;
   hasNotifications?: boolean;
   hasSubmenu?: boolean;
@@ -490,8 +486,8 @@ const SidebarItemWithSubmenu = ({
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
-  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
-    theme.breakpoints.down('sm'),
+  const isSmallScreen = useMediaQuery((theme: BackstageTheme) =>
+    theme.breakpoints.down('md'),
   );
 
   const handleMouseEnter = () => {
@@ -573,7 +569,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
   to?: string;
-  icon?: IconComponent;
+  icon?: typeof SvgIcon;
 };
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
@@ -712,9 +708,11 @@ export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const { isOpen, setOpen } = useSidebarOpenState();
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('md'),
-    { noSsr: true },
+  const isSmallScreen = useMediaQuery<Theme>(
+    theme => theme.breakpoints.down('lg'),
+    {
+      noSsr: true,
+    },
   );
 
   if (isSmallScreen) {

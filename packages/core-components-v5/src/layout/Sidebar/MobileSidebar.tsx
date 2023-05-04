@@ -16,14 +16,14 @@
 
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import MenuIcon from '@material-ui/icons/Menu';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
+import Drawer from '@mui/material/Drawer';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -137,7 +137,7 @@ const OverlayMenu = ({
         <IconButton
           onClick={onClose}
           classes={{ root: classes.overlayHeaderClose }}
-        >
+          size="large">
           <CloseIcon />
         </IconButton>
       </Box>

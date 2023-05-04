@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, darken, lighten } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import ErrorOutline from '@material-ui/icons/ErrorOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { darken, lighten } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 
 const getWarningTextColor = (
   severity: NonNullable<WarningProps['severity']>,
   theme: BackstageTheme,
 ) => {
-  const getColor = theme.palette.type === 'light' ? darken : lighten;
+  const getColor = theme.palette.mode === 'light' ? darken : lighten;
   return getColor(theme.palette[severity].light, 0.6);
 };
 
@@ -36,11 +37,11 @@ const getWarningBackgroundColor = (
   severity: NonNullable<WarningProps['severity']>,
   theme: BackstageTheme,
 ) => {
-  const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
+  const getBackgroundColor = theme.palette.mode === 'light' ? lighten : darken;
   return getBackgroundColor(theme.palette[severity].light, 0.9);
 };
 
-const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
+const useErrorOutlineStyles = makeStyles(theme => ({
   root: {
     marginRight: theme.spacing(1),
     fill: ({ severity }: WarningProps) =>
@@ -67,7 +68,7 @@ export type WarningPanelClassKey =
   | 'message'
   | 'details';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>

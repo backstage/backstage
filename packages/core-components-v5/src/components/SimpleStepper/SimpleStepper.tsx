@@ -20,7 +20,7 @@ import React, {
   useEffect,
   PropsWithChildren,
 } from 'react';
-import MuiStepper from '@material-ui/core/Stepper';
+import MuiStepper from '@mui/material/Stepper';
 
 type InternalState = {
   stepperLength: number;

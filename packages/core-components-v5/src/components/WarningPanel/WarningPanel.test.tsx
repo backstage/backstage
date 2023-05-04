@@ -17,7 +17,7 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { WarningPanel, WarningProps } from './WarningPanel';
 
 const propsTitle: WarningProps = { title: 'Mock title' };

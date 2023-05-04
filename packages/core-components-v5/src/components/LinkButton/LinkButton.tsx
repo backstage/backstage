@@ -16,7 +16,7 @@
 
 import MaterialButton, {
   ButtonProps as MaterialButtonProps,
-} from '@material-ui/core/Button';
+} from '@mui/material/Button';
 import React from 'react';
 import { Link, LinkProps } from '../Link';
 

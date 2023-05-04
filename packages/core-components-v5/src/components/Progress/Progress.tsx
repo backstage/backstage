@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import LinearProgress, {
   LinearProgressProps,
-} from '@material-ui/core/LinearProgress';
-import { useTheme } from '@material-ui/core/styles';
+} from '@mui/material/LinearProgress';
+import { useTheme } from '@mui/material/styles';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

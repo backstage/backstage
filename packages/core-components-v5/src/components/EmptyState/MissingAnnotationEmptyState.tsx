@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 
 import { CodeSnippet } from '../CodeSnippet';
@@ -49,13 +49,13 @@ type Props = {
 
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     code: {
       borderRadius: 6,
-      margin: `${theme.spacing(2)}px 0px`,
+      margin: `${theme.spacing(2)} 0px`,
       background:
-        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
+        theme.palette.mode === 'dark' ? '#444' : theme.palette.common.white,
     },
   }),
   { name: 'BackstageMissingAnnotationEmptyState' },

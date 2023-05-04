@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import AddIcon from '@material-ui/icons/Add';
-import WarningIcon from '@material-ui/icons/Warning';
-import EditIcon from '@material-ui/icons/Edit';
-import Chip, { ChipProps } from '@material-ui/core/Chip';
+import AddIcon from '@mui/icons-material/Add';
+import WarningIcon from '@mui/icons-material/Warning';
+import EditIcon from '@mui/icons-material/Edit';
+import Chip, { ChipProps } from '@mui/material/Chip';
 
 const icons = {
   AddIcon: <AddIcon />,

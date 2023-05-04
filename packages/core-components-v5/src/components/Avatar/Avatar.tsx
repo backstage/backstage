@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import MaterialAvatar from '@material-ui/core/Avatar';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import MaterialAvatar from '@mui/material/Avatar';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import React, { CSSProperties } from 'react';
 
 import { extractInitials, stringToColor } from './utils';

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { DismissableBanner, Props } from './DismissableBanner';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { WebStorage } from '@backstage/core-app-api';
 import {
   ErrorApi,

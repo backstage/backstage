@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
@@ -28,7 +28,7 @@ export type StatusClassKey =
   | 'running'
   | 'aborted';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     status: {
       fontWeight: theme.typography.fontWeightMedium,

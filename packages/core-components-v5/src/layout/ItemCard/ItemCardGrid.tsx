@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  WithStyles,
-} from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import { Theme } from '@mui/material/styles';
+import { WithStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 /** @public */

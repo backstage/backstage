@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import SvgIcon from '@mui/material/SvgIcon';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import classnames from 'classnames';
 import React, { useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import { Link } from '../../components/Link';
-import { IconComponent } from '@backstage/core-plugin-api';
-import classnames from 'classnames';
-import { BackstageTheme } from '@backstage/theme';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     item: {
       height: 48,
@@ -128,7 +127,7 @@ export type SidebarSubmenuItemProps = {
   title: string;
   subtitle?: string;
   to?: string;
-  icon?: IconComponent;
+  icon?: typeof SvgIcon;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
 };
 

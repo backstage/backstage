@@ -15,13 +15,14 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import makeStyles from '@mui/styles/makeStyles';
 import classnames from 'classnames';
 import React, { useContext, useRef, useState } from 'react';
 
+import { Theme } from '@mui/material/styles';
 import {
   makeSidebarConfig,
   makeSidebarSubmenuConfig,
@@ -130,9 +131,11 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   } = props;
 
   const classes = useStyles({ sidebarConfig });
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('md'),
-    { noSsr: true },
+  const isSmallScreen = useMediaQuery<Theme>(
+    theme => theme.breakpoints.down('lg'),
+    {
+      noSsr: true,
+    },
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();

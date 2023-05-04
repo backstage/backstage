@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { alertApiRef, AlertMessage, useApi } from '@backstage/core-plugin-api';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import { Alert } from '@material-ui/lab';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import { Alert } from '@mui/material';
 import pluralize from 'pluralize';
 import React, { useEffect, useState } from 'react';
 

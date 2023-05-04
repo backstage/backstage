@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import React, {
   createContext,
   useCallback,
@@ -30,6 +30,7 @@ import React, {
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { LocalStorage } from './localStorage';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
+import { Theme } from '@mui/material';
 
 export type SidebarPageClassKey = 'root';
 
@@ -47,7 +48,7 @@ const useStyles = makeStyles<BackstageTheme, PageStyleProps>(
             ? props.sidebarConfig.drawerWidthOpen
             : props.sidebarConfig.drawerWidthClosed,
       },
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         paddingBottom: (props: PageStyleProps) =>
           props.sidebarConfig.mobileSidebarHeight,
       },
@@ -104,10 +105,9 @@ export function SidebarPage(props: SidebarPageProps) {
     LocalStorage.setSidebarPinState(isPinned);
   }, [isPinned]);
 
-  const isMobile = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('xs'),
-    { noSsr: true },
-  );
+  const isMobile = useMediaQuery<Theme>(theme => theme.breakpoints.down('sm'), {
+    noSsr: true,
+  });
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 

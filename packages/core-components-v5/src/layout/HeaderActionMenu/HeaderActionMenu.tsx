@@ -15,16 +15,16 @@
  */
 
 import React, { Fragment, ReactElement } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText, {
   ListItemTextProps,
-} from '@material-ui/core/ListItemText';
-import Popover from '@material-ui/core/Popover';
-import MoreVert from '@material-ui/icons/MoreVert';
-import { useTheme } from '@material-ui/core/styles';
+} from '@mui/material/ListItemText';
+import Popover from '@mui/material/Popover';
+import MoreVert from '@mui/icons-material/MoreVert';
+import { useTheme } from '@mui/material/styles';
 
 /**
  * @public
@@ -96,7 +96,7 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
           marginRight: -4,
           padding: 0,
         }}
-      >
+        size="large">
         <MoreVert />
       </IconButton>
       <Popover

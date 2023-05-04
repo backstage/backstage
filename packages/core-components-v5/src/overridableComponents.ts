@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { Overrides } from '@mui/material/styles';
+
+import { StyleRules } from '@mui/styles';
 
 import {
   AvatarClassKey,

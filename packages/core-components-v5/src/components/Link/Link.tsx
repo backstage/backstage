@@ -17,9 +17,9 @@ import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
-} from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import classnames from 'classnames';
 import { trimEnd } from 'lodash';
 import React, { ElementType } from 'react';

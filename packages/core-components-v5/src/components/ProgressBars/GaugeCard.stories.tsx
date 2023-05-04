@@ -16,10 +16,10 @@
 
 import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { MemoryRouter } from 'react-router-dom';
-import Tooltip from '@material-ui/core/Tooltip';
-import Info from '@material-ui/icons/Info';
+import Tooltip from '@mui/material/Tooltip';
+import Info from '@mui/icons-material/Info';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 

@@ -15,8 +15,8 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import Badge from '@material-ui/core/Badge';
-import { makeStyles } from '@material-ui/core/styles';
+import Badge from '@mui/material/Badge';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { HeaderTabs } from './HeaderTabs';
 

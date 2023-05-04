@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import CopyIcon from '@material-ui/icons/FileCopy';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import CopyIcon from '@mui/icons-material/FileCopy';
 import classnames from 'classnames';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';

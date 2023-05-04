@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
 import { useLocalStorageValue } from '@react-hookz/web';
 import React, { useContext, useState } from 'react';
 
@@ -107,7 +107,7 @@ export function IntroCard(props: IntroCardProps) {
     <Box className={classes.introCard}>
       <Typography variant="subtitle2">{text}</Typography>
       <Box className={classes.introDismiss}>
-        <IconButton onClick={handleClose} className={classes.introDismissLink}>
+        <IconButton onClick={handleClose} className={classes.introDismissLink} size="large">
           <CloseIcon className={classes.introDismissIcon} />
           <Typography component="span" className={classes.introDismissText}>
             Dismiss

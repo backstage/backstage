@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
@@ -93,13 +94,13 @@ const useStyles = makeStyles<Theme>(
     fadeLeft: {
       left: -fadePadding,
       background: `linear-gradient(90deg, ${generateGradientStops(
-        theme.palette.type,
+        theme.palette.mode,
       )})`,
     },
     fadeRight: {
       right: -fadePadding,
       background: `linear-gradient(270deg, ${generateGradientStops(
-        theme.palette.type,
+        theme.palette.mode,
       )})`,
     },
     fadeHidden: {
@@ -252,7 +253,7 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
           title="Scroll Left"
           onClick={() => handleScrollClick(false)}
           className={classNames(classes.button, classes.buttonLeft, {})}
-        >
+          size="large">
           <ChevronLeftIcon />
         </IconButton>
       )}
@@ -261,7 +262,7 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
           title="Scroll Right"
           onClick={() => handleScrollClick(true)}
           className={classNames(classes.button, classes.buttonRight, {})}
-        >
+          size="large">
           <ChevronRightIcon />
         </IconButton>
       )}

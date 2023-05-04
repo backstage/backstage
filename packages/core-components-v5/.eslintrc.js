@@ -4,8 +4,8 @@ module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
   },
   restrictedImports: [
     {
-      name: '@material-ui/core',
-      message: "Please import '@material-ui/core/...' instead.",
+      name: '@mui/material',
+      message: "Please import '@mui/material/...' instead.",
     },
   ],
 });

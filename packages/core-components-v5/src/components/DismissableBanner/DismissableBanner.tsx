@@ -18,12 +18,12 @@ import React, { ReactNode, useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/lib/useObservable';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
+import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import IconButton from '@mui/material/IconButton';
+import Close from '@mui/icons-material/Close';
 
 /** @public */
 export type DismissableBannerClassKey =
@@ -149,7 +149,7 @@ export const DismissableBanner = (props: Props) => {
             title="Permanently dismiss this message"
             className={classes.button}
             onClick={handleClick}
-          >
+            size="large">
             <Close className={classes.icon} />
           </IconButton>,
         ]}

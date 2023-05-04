@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
@@ -69,7 +69,7 @@ const useStyles = makeStyles<
     }),
     drawerOpen: props => ({
       width: props.submenuConfig.drawerWidthOpen,
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         width: '100%',
         position: 'relative',
         paddingLeft: theme.spacing(3),
@@ -82,7 +82,7 @@ const useStyles = makeStyles<
       fontWeight: theme.typography.fontWeightMedium,
       color: theme.palette.common.white,
       padding: theme.spacing(2.5),
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         display: 'none',
       },
     },

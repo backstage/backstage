@@ -17,12 +17,12 @@ import React, { ComponentType } from 'react';
 import { LinkButton } from './LinkButton';
 import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import MaterialButton from '@material-ui/core/Button';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import MaterialButton from '@mui/material/Button';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Link } from '../Link';
 

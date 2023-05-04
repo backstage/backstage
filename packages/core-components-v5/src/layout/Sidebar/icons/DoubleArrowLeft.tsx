@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import React from 'react';
 
 const useStyles = makeStyles({

@@ -15,10 +15,10 @@
  */
 
 import { wrapInTestApp } from '@backstage/test-utils';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import {
   GaugeCard,

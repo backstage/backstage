@@ -15,11 +15,11 @@
  */
 import React from 'react';
 import classnames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import LinkIcon from '@material-ui/icons/Link';
+import makeStyles from '@mui/styles/makeStyles';
+import LinkIcon from '@mui/icons-material/Link';
 import { Link } from '../Link';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';

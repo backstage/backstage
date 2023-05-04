@@ -15,10 +15,10 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
+import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';

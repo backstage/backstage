@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import { Helmet } from 'react-helmet';
+
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
@@ -38,7 +39,7 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     header: {
       gridArea: 'pageHeader',
@@ -53,7 +54,7 @@ const useStyles = makeStyles<BackstageTheme>(
       backgroundImage: theme.page.backgroundImage,
       backgroundPosition: 'center',
       backgroundSize: 'cover',
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down('md')]: {
         flexWrap: 'wrap',
       },
     },

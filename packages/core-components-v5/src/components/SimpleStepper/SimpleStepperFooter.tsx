@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { PropsWithChildren, ReactNode, useContext } from 'react';
 
 import { VerticalStepperContext } from './SimpleStepper';

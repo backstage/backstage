@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import TabUI, { TabProps } from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import TabUI, { TabProps } from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import React, { useCallback, useEffect, useState } from 'react';
 
 // TODO(blam): Remove this implementation when the Tabs are ready

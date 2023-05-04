@@ -21,7 +21,7 @@ import {
   SparklinesLineProps,
   SparklinesProps,
 } from 'react-sparklines';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
 import { BackstageTheme } from '@backstage/theme';
 
 function color(data: number[], theme: BackstageTheme): string | undefined {
@@ -36,7 +36,7 @@ export function TrendLine(
   props: SparklinesProps &
     Pick<SparklinesLineProps, 'color'> & { title?: string },
 ) {
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
 
   if (!props.data) return null;
   return (

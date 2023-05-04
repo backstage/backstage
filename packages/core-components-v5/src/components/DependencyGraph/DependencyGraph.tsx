@@ -17,7 +17,7 @@
 import React from 'react';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
-import useTheme from '@material-ui/core/styles/useTheme';
+import { useTheme } from '@mui/material/styles';
 import dagre from 'dagre';
 import debounce from 'lodash/debounce';
 import { BackstageTheme } from '@backstage/theme';

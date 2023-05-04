@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { EmptyState } from './EmptyState';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 
 export default {

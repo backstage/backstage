@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader, { CardHeaderProps } from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';

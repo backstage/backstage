@@ -15,12 +15,12 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 
 /**
  * Properties for {@link CreateButton}
@@ -38,9 +38,7 @@ export type CreateButtonProps = {
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;
-  const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
+  const isXSScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   if (!to) {
     return null;

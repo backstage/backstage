@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
 import { DependencyGraphTypes as Types } from './types';
 import { NODE_TEST_ID } from './constants';

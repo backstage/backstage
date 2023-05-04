@@ -15,10 +15,11 @@
  */
 
 import { BackstagePalette, BackstageTheme } from '@backstage/theme';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 
 /** @public */
 export type GaugeClassKey =
@@ -28,7 +29,7 @@ export type GaugeClassKey =
   | 'circle'
   | 'colorUnknown';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       position: 'relative',
@@ -123,7 +124,7 @@ export function Gauge(props: GaugeProps) {
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
-  const { palette } = useTheme<BackstageTheme>();
+  const { palette } = useTheme();
   const { value, fractional, inverse, unit, max, description } = {
     ...defaultGaugeProps,
     ...props,

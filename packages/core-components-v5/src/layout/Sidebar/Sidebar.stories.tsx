@@ -15,14 +15,14 @@
  */
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import MenuIcon from '@material-ui/icons/Menu';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import CloudQueueIcon from '@material-ui/icons/CloudQueue';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import AppsIcon from '@material-ui/icons/Apps';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import AppsIcon from '@mui/icons-material/Apps';
 import React, { ComponentType } from 'react';
 import { SidebarPage } from './Page';
 import { Sidebar } from './Bar';

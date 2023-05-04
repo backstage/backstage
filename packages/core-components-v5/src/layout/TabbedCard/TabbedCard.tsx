@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Tab, { TabProps } from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Divider from '@mui/material/Divider';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import Tab, { TabProps } from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import React, {
   PropsWithChildren,
   ReactElement,
