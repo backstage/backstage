@@ -34,6 +34,7 @@ import {
   MapDiscriminatedUnion,
   PathTemplate,
   RequiredDoc,
+  SchemaRef,
 } from './common';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 
@@ -79,22 +80,10 @@ export type DocParameters<
 /**
  * @public
  */
-export type ResolveDocParameterSchema<
-  Doc extends RequiredDoc,
-  Schema extends ImmutableParameterObject['schema'],
-> = Schema extends ImmutableReferenceObject
-  ? 'parameters' extends ComponentTypes<Doc>
-    ? ComponentRef<Doc, 'parameters', Schema>
-    : never
-  : Schema;
-
-/**
- * @public
- */
 export type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
-> = ResolveDocParameterSchema<Doc, Schema> extends infer R
+> = SchemaRef<Doc, Schema> extends infer R
   ? R extends ImmutableSchemaObject
     ? R extends JSONSchema7
       ? FromSchema<R>
