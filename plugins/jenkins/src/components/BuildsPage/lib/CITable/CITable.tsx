@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Link, Table, TableColumn } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { Box, IconButton, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import { default as React, useState } from 'react';
+import { default as React } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { buildRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
 import { JenkinsRunStatus } from '../Status';
-import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-import { useJenkinsPluginOptions } from '../../../../options';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -176,64 +173,16 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     sorting: false,
     render: (row: Partial<Project>) => {
-      const ActionWrapper = () => {
-        const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
-        const { allowed, loading } = useEntityPermission(
-          jenkinsExecutePermission,
-        );
-
-        const alertApi = useApi(alertApiRef);
-
-        const onRebuild = async () => {
-          if (row.onRestartClick) {
-            setIsLoadingRebuild(true);
-            try {
-              await row.onRestartClick();
-              alertApi.post({
-                message: 'Jenkins re-build has successfully executed',
-                severity: 'success',
-              });
-            } catch (e) {
-              alertApi.post({
-                message: `Jenkins re-build has failed. Error: ${e.message}`,
-                severity: 'error',
-              });
-            } finally {
-              setIsLoadingRebuild(false);
-            }
-          }
-        };
-
-        const { tableAction } = useJenkinsPluginOptions();
-
-        if (tableAction === 'view') {
-          return row.lastBuild?.url ? (
-            <IconButton href={row.lastBuild.url} target="_blank">
-              <VisibilityIcon />
-            </IconButton>
-          ) : null;
-        } else if (tableAction === 'replay') {
-          return row.lastBuild?.url ? (
-            <IconButton href={`${row.lastBuild.url}replay`} target="_blank">
-              <RetryIcon />
-            </IconButton>
-          ) : null;
-        }
-
-        return (
-          <Tooltip title="Rerun build">
-            <>
-              {isLoadingRebuild && <Progress />}
-              {!isLoadingRebuild && (
-                <IconButton onClick={onRebuild} disabled={loading || !allowed}>
-                  <RetryIcon />
-                </IconButton>
-              )}
-            </>
-          </Tooltip>
-        );
-      };
-      return <ActionWrapper />;
+      return row.lastBuild?.url ? (
+        <div style={{ width: '98px' }}>
+          <IconButton href={row.lastBuild.url} target="_blank">
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton href={`${row.lastBuild.url}replay`} target="_blank">
+            <RetryIcon />
+          </IconButton>
+        </div>
+      ) : null;
     },
     width: '10%',
   },

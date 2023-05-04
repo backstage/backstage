@@ -98,7 +98,7 @@ const jenkinsPlugin: BackstagePlugin<
     entityContent: RouteRef<undefined>;
   },
   {},
-  JenkinsInputPluginOptions
+  {}
 >;
 export { jenkinsPlugin };
 export { jenkinsPlugin as plugin };
