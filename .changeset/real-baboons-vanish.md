@@ -2,4 +2,4 @@
 '@backstage/plugin-jenkins': minor
 ---
 
-Added configuration for the action column in Jenkins CI/CD table. It can be set to rebuild, view, or replay.
+Updated action column in Jenkins CI/CD table to include links to view and replay. The API based rebuild action was replaced because it does not work for Jenkins workflows that have parameters.

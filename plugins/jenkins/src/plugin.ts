@@ -25,7 +25,6 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { JenkinsClient, jenkinsApiRef } from './api';
-import { JenkinsInputPluginOptions, JenkinsPluginOptions } from './options';
 
 /** @public */
 export const rootRouteRef = createRouteRef({
@@ -52,14 +51,6 @@ export const jenkinsPlugin = createPlugin({
   ],
   routes: {
     entityContent: rootRouteRef,
-  },
-  __experimentalConfigure(
-    options?: JenkinsInputPluginOptions,
-  ): JenkinsPluginOptions {
-    const defaultOptions = {
-      tableAction: 'rebuild',
-    };
-    return { ...defaultOptions, ...options };
   },
 });
 
