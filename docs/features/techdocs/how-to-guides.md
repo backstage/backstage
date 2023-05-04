@@ -335,6 +335,7 @@ bucket matches this lower-case entity triplet expectation.
    able to read/copy/rename/move/delete files. The exact instructions vary by
    storage provider, but check the [using cloud storage][using-cloud-storage]
    page for details.
+
 2. **Run a non-destructive migration of files**: Ensure you have the latest
    version of `techdocs-cli` installed. Then run the following command, using
    the details relevant for your provider / configuration. This will copy all
@@ -348,10 +349,12 @@ techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --stora
 3. **Deploy the updated versions of the TechDocs plugins**: Once the migration
    above has been run, you can deploy the beta versions of the TechDocs backend
    and frontend plugins to your Backstage instance.
+
 4. **Verify that your TechDocs sites are still loading/accessible**: Try
    accessing a TechDocs site using different entity-triplet case variants, e.g.
    `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`. Your TechDocs
    site should load regardless of the URL path casing you use.
+
 5. **Clean up the old objects from storage**: Once you've verified that your
    TechDocs site is accessible, you can clean up your storage bucket by
    re-running the `migrate` command on the TechDocs CLI, but with an additional
@@ -554,8 +557,10 @@ folder where your `Dockerfile` is present:
 docker build . -t dockerHub_Username/repositoryName:tagName
 ```
 
-Once the docker image is ready, push it to DockerHub. 2. **Update app-config.yaml:** So that when your app generates TechDocs, it will
-pull your docker image from DockerHub.
+Once the docker image is ready, push it to DockerHub.
+
+2. **Update app-config.yaml:** So that when your app generates TechDocs, it will
+   pull your docker image from DockerHub.
 
 ```python
 techdocs:
@@ -581,7 +586,9 @@ plugins:
 > you have sensitive information in your organization's diagrams, you should set
 > up a [server of your own](https://docs.kroki.io/kroki/setup/install/) and use it
 > instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
-> for more plugin configuration details. 4. **Add mermaid code into TechDocs:**
+> for more plugin configuration details.
+
+4. **Add mermaid code into TechDocs:**
 
 ````md
 ```kroki-mermaid
