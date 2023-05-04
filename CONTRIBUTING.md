@@ -92,7 +92,7 @@ For those contributors who have earned write access to the repository, when a pu
 
 ## Code of Conduct
 
-This project adheres to the [Spotify FOSS Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
+This project adheres to the [CNCF Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
 
 [code-of-conduct]: https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md
 
