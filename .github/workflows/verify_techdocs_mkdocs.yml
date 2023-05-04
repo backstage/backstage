@@ -8,6 +8,9 @@ on:
 jobs:
   build-mkdocs:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v3
 
