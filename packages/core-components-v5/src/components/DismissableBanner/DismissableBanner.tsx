@@ -17,9 +17,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/lib/useObservable';
-import classNames from 'classnames';
-import makeStyles from '@mui/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from 'tss-react/mui';
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import IconButton from '@mui/material/IconButton';
@@ -41,54 +39,50 @@ export type DismissableBannerClassKey =
  */
 export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
-const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
-    root: {
-      padding: theme.spacing(0),
-      marginBottom: theme.spacing(0),
-      marginTop: theme.spacing(0),
-      display: 'flex',
-      flexFlow: 'row nowrap',
+const useStyles = makeStyles({ name: 'BackstageDismissableBanner' })(theme => ({
+  root: {
+    padding: theme.spacing(0),
+    marginBottom: theme.spacing(0),
+    marginTop: theme.spacing(0),
+    display: 'flex',
+    flexFlow: 'row nowrap',
+  },
+  // showing on top
+  topPosition: {
+    position: 'relative',
+    marginBottom: theme.spacing(6),
+    marginTop: -theme.spacing(3),
+    zIndex: 'unset',
+  },
+  icon: {
+    fontSize: theme.typography.h6.fontSize,
+  },
+  content: {
+    width: '100%',
+    maxWidth: 'inherit',
+    flexWrap: 'nowrap',
+    color: theme.palette.banner.text,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+    '& a': {
+      color: theme.palette.banner.link,
     },
-    // showing on top
-    topPosition: {
-      position: 'relative',
-      marginBottom: theme.spacing(6),
-      marginTop: -theme.spacing(3),
-      zIndex: 'unset',
-    },
-    icon: {
-      fontSize: theme.typography.h6.fontSize,
-    },
-    content: {
-      width: '100%',
-      maxWidth: 'inherit',
-      flexWrap: 'nowrap',
-      color: theme.palette.banner.text,
-    },
-    message: {
-      display: 'flex',
-      alignItems: 'center',
-      '& a': {
-        color: theme.palette.banner.link,
-      },
-    },
-    button: {
-      color: theme.palette.banner.closeButtonColor ?? 'inherit',
-    },
-    info: {
-      backgroundColor: theme.palette.banner.info,
-    },
-    error: {
-      backgroundColor: theme.palette.banner.error,
-    },
-    warning: {
-      backgroundColor:
-        theme.palette.banner.warning ?? theme.palette.banner.error,
-    },
-  }),
-  { name: 'BackstageDismissableBanner' },
-);
+  },
+  button: {
+    color: theme.palette.banner.closeButtonColor ?? 'inherit',
+  },
+  info: {
+    backgroundColor: theme.palette.banner.info,
+  },
+  error: {
+    backgroundColor: theme.palette.banner.error,
+  },
+  warning: {
+    backgroundColor: theme.palette.banner.warning ?? theme.palette.banner.error,
+  },
+}));
 
 export type Props = {
   variant: 'info' | 'error' | 'warning';
@@ -100,7 +94,7 @@ export type Props = {
 /** @public */
 export const DismissableBanner = (props: Props) => {
   const { variant, message, id, fixed = false } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
   const rawDismissedBanners =
@@ -134,12 +128,12 @@ export const DismissableBanner = (props: Props) => {
       }
       open={!dismissedBanners.has(id)}
       classes={{
-        root: classNames(classes.root, !fixed && classes.topPosition),
+        root: cx(classes.root, !fixed && classes.topPosition),
       }}
     >
       <SnackbarContent
         classes={{
-          root: classNames(classes.content, classes[variant]),
+          root: cx(classes.content, classes[variant]),
           message: classes.message,
         }}
         message={message}
@@ -149,7 +143,8 @@ export const DismissableBanner = (props: Props) => {
             title="Permanently dismiss this message"
             className={classes.button}
             onClick={handleClick}
-            size="large">
+            size="large"
+          >
             <Close className={classes.icon} />
           </IconButton>,
         ]}

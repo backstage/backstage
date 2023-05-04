@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import TabUI, { TabProps } from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -29,33 +29,30 @@ export type HeaderTabsClassKey =
   | 'selected'
   | 'tabRoot';
 
-const useStyles = makeStyles(
-  theme => ({
-    tabsWrapper: {
-      gridArea: 'pageSubheader',
-      backgroundColor: theme.palette.background.paper,
-      paddingLeft: theme.spacing(3),
-      minWidth: 0,
-    },
-    defaultTab: {
-      ...theme.typography.caption,
-      padding: theme.spacing(3, 3),
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.text.secondary,
-    },
-    selected: {
+const useStyles = makeStyles({ name: 'BackstageHeaderTabs' })(theme => ({
+  tabsWrapper: {
+    gridArea: 'pageSubheader',
+    backgroundColor: theme.palette.background.paper,
+    paddingLeft: theme.spacing(3),
+    minWidth: 0,
+  },
+  defaultTab: {
+    ...theme.typography.caption,
+    padding: theme.spacing(3, 3),
+    textTransform: 'uppercase',
+    fontWeight: theme.typography.fontWeightBold,
+    color: theme.palette.text.secondary,
+  },
+  selected: {
+    color: theme.palette.text.primary,
+  },
+  tabRoot: {
+    '&:hover': {
+      backgroundColor: theme.palette.background.default,
       color: theme.palette.text.primary,
     },
-    tabRoot: {
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-      },
-    },
-  }),
-  { name: 'BackstageHeaderTabs' },
-);
+  },
+}));
 
 export type Tab = {
   id: string;
@@ -78,7 +75,7 @@ type HeaderTabsProps = {
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
-  const styles = useStyles();
+  const { classes: styles } = useStyles();
 
   const handleChange = useCallback(
     (_: React.ChangeEvent<{}>, index: number) => {

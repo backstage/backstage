@@ -15,7 +15,7 @@
  */
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -38,29 +38,26 @@ export type OAuthRequestDialogClassKey =
   | 'contentList'
   | 'actionButtons';
 
-const useStyles = makeStyles<Theme>(
-  theme => ({
-    dialog: {
-      paddingTop: theme.spacing(1),
-    },
-    title: {
-      minWidth: 0,
-    },
-    titleHeading: {
-      fontSize: theme.typography.h6.fontSize,
-    },
-    contentList: {
-      padding: 0,
-    },
-    actionButtons: {
-      padding: theme.spacing(2, 0),
-    },
-  }),
-  { name: 'OAuthRequestDialog' },
-);
+const useStyles = makeStyles({ name: 'OAuthRequestDialog' })(theme => ({
+  dialog: {
+    paddingTop: theme.spacing(1),
+  },
+  title: {
+    minWidth: 0,
+  },
+  titleHeading: {
+    fontSize: theme.typography.h6.fontSize,
+  },
+  contentList: {
+    padding: 0,
+  },
+  actionButtons: {
+    padding: theme.spacing(2, 0),
+  },
+}));
 
 export function OAuthRequestDialog(_props: {}) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
   const configApi = useApi(configApiRef);

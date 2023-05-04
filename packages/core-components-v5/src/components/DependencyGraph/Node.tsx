@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { DefaultNode } from './DefaultNode';
 import { DependencyGraphTypes as Types } from './types';
 import { NODE_TEST_ID } from './constants';
@@ -24,13 +24,12 @@ import dagre from 'dagre';
 /** @public */
 export type DependencyGraphNodeClassKey = 'node';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageDependencyGraphNode' })(
   theme => ({
     node: {
       transition: `${theme.transitions.duration.shortest}ms`,
     },
   }),
-  { name: 'BackstageDependencyGraphNode' },
 );
 
 export type GraphNode<T> = dagre.Node<Types.DependencyNode<T>>;
@@ -52,7 +51,7 @@ export function Node<T>({
 }: NodeComponentProps<T>) {
   const { width, height, x = 0, y = 0 } = node;
   const nodeProps: Types.DependencyNode<T> = node;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const nodeRef = React.useRef<SVGGElement | null>(null);
 
   React.useLayoutEffect(() => {

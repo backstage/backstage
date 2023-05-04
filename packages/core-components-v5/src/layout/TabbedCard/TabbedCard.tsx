@@ -18,8 +18,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
 import Tab, { TabProps } from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React, {
@@ -33,31 +33,29 @@ import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
 export type TabbedCardClassKey = 'root' | 'indicator';
 
-const useTabsStyles = makeStyles(
-  theme => ({
-    root: {
-      padding: theme.spacing(0, 2, 0, 2.5),
-      minHeight: theme.spacing(3),
-    },
-    indicator: {
-      backgroundColor: theme.palette.info.main,
-      height: theme.spacing(0.3),
-    },
-  }),
-  { name: 'BackstageTabbedCard' },
-);
+const useTabsStyles = makeStyles({ name: 'BackstageTabbedCard' })(theme => ({
+  root: {
+    padding: theme.spacing(0, 2, 0, 2.5),
+    minHeight: theme.spacing(3),
+  },
+  indicator: {
+    backgroundColor: theme.palette.info.main,
+    height: theme.spacing(0.3),
+  },
+}));
 
 /** @public */
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
 const BoldHeader = withStyles(
+  CardHeader,
   theme => ({
     root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
     title: { fontWeight: 700 },
     subheader: { paddingTop: theme.spacing(1) },
   }),
   { name: 'BackstageTabbedCardBoldHeader' },
-)(CardHeader);
+);
 
 type Props = {
   /** @deprecated Use errorBoundaryProps instead */
@@ -80,7 +78,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     value,
     onChange,
   } = props;
-  const tabsClasses = useTabsStyles();
+  const { classes: tabsClasses } = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
   const handleChange = onChange
@@ -128,26 +126,23 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
 /** @public */
 export type CardTabClassKey = 'root' | 'selected';
 
-const useCardTabStyles = makeStyles(
-  theme => ({
-    root: {
-      minWidth: theme.spacing(6),
-      minHeight: theme.spacing(3),
-      margin: theme.spacing(0, 2, 0, 0),
-      padding: theme.spacing(0.5, 0, 0.5, 0),
-      textTransform: 'none',
-      '&:hover': {
-        opacity: 1,
-        backgroundColor: 'transparent',
-        color: theme.palette.text.primary,
-      },
+const useCardTabStyles = makeStyles({ name: 'BackstageCardTab' })(theme => ({
+  root: {
+    minWidth: theme.spacing(6),
+    minHeight: theme.spacing(3),
+    margin: theme.spacing(0, 2, 0, 0),
+    padding: theme.spacing(0.5, 0, 0.5, 0),
+    textTransform: 'none',
+    '&:hover': {
+      opacity: 1,
+      backgroundColor: 'transparent',
+      color: theme.palette.text.primary,
     },
-    selected: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-  }),
-  { name: 'BackstageCardTab' },
-);
+  },
+  selected: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+}));
 
 type CardTabProps = TabProps & {
   children: ReactNode;
@@ -161,7 +156,7 @@ type CardTabProps = TabProps & {
  */
 export function CardTab(props: PropsWithChildren<CardTabProps>) {
   const { children, ...restProps } = props;
-  const classes = useCardTabStyles();
+  const { classes } = useCardTabStyles();
 
   return <Tab disableRipple classes={classes} {...restProps} />;
 }

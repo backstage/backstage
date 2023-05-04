@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+import React from 'react';
+
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
-import React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: BackstageTheme) =>
+const styles = (theme: Theme) =>
   createStyles({
     root: {
       color: theme.palette.common.white,
@@ -35,7 +36,7 @@ const styles = (theme: BackstageTheme) =>
     },
   });
 
-const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
+const useStyles = makeStyles({ name: 'BackstageItemCardHeader' })(styles);
 
 /** @public */
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
@@ -77,7 +78,9 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
-  const classes = useStyles(props);
+  const { classes } = useStyles(props, {
+    props: props,
+  });
   return (
     <Box className={classes.root}>
       {subtitle && (

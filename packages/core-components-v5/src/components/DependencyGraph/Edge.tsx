@@ -17,8 +17,7 @@
 import React from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
-import makeStyles from '@mui/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from 'tss-react/mui';
 import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -41,8 +40,8 @@ export type GraphEdge<T> = Types.DependencyEdge<T> &
 /** @public */
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
 
-const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+const useStyles = makeStyles({ name: 'BackstageDependencyGraphEdge' })(
+  theme => ({
     path: {
       strokeWidth: 1,
       stroke: theme.palette.textSubtle,
@@ -53,7 +52,6 @@ const useStyles = makeStyles(
       transition: `${theme.transitions.duration.shortest}ms`,
     },
   }),
-  { name: 'BackstageDependencyGraphEdge' },
 );
 
 type EdgePoint = dagre.GraphEdge['points'][0];
@@ -83,7 +81,7 @@ export function Edge<EdgeData>({
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const labelRef = React.useRef<SVGGElement>(null);
 

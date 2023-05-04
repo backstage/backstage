@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import React from 'react';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
   iconContainer: {
     display: 'flex',
     position: 'relative',
@@ -31,7 +31,7 @@ const useStyles = makeStyles({
 });
 
 const DoubleArrowLeft = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Box className={classes.iconContainer}>

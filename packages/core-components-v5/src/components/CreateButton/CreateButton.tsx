@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import { Theme } from '@mui/material/styles';
 
 /**
  * Properties for {@link CreateButton}
@@ -38,7 +38,9 @@ export type CreateButtonProps = {
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;
-  const isXSScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  const isXSScreen = useMediaQuery<Theme>(theme =>
+    theme.breakpoints.down('sm'),
+  );
 
   if (!to) {
     return null;

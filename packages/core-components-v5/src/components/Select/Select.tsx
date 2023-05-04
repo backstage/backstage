@@ -24,8 +24,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 
@@ -36,6 +36,7 @@ import OpenedDropdown from './static/OpenedDropdown';
 export type SelectInputBaseClassKey = 'root' | 'input';
 
 const BootstrapInput = withStyles(
+  InputBase,
   (theme: Theme) =>
     createStyles({
       root: {
@@ -59,7 +60,7 @@ const BootstrapInput = withStyles(
       },
     }),
   { name: 'BackstageSelectInputBase' },
-)(InputBase);
+);
 
 /** @public */
 export type SelectClassKey =
@@ -70,48 +71,46 @@ export type SelectClassKey =
   | 'checkbox'
   | 'root';
 
-const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      formControl: {
-        margin: `${theme.spacing(1)} 0px`,
-        maxWidth: 300,
-      },
-      label: {
-        transform: 'initial',
-        fontWeight: 'bold',
-        fontSize: theme.typography.body2.fontSize,
-        fontFamily: theme.typography.fontFamily,
+const useStyles = makeStyles({ name: 'BackstageSelect' })((theme: Theme) =>
+  createStyles({
+    formControl: {
+      margin: `${theme.spacing(1)} 0px`,
+      maxWidth: 300,
+    },
+    label: {
+      transform: 'initial',
+      fontWeight: 'bold',
+      fontSize: theme.typography.body2.fontSize,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.text.primary,
+      '&.Mui-focused': {
         color: theme.palette.text.primary,
-        '&.Mui-focused': {
-          color: theme.palette.text.primary,
-        },
       },
-      formLabel: {
-        transform: 'initial',
-        fontWeight: 'bold',
-        fontSize: theme.typography.body2.fontSize,
-        fontFamily: theme.typography.fontFamily,
+    },
+    formLabel: {
+      transform: 'initial',
+      fontWeight: 'bold',
+      fontSize: theme.typography.body2.fontSize,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.text.primary,
+      '&.Mui-focused': {
         color: theme.palette.text.primary,
-        '&.Mui-focused': {
-          color: theme.palette.text.primary,
-        },
       },
-      chips: {
-        display: 'flex',
-        flexWrap: 'wrap',
-      },
-      chip: {
-        margin: 2,
-      },
-      checkbox: {},
+    },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
+    checkbox: {},
 
-      root: {
-        display: 'flex',
-        flexDirection: 'column',
-      },
-    }),
-  { name: 'BackstageSelect' },
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  }),
 );
 
 /** @public */
@@ -150,7 +149,7 @@ export function SelectComponent(props: SelectProps) {
     disabled = false,
     margin,
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [value, setValue] = useState<SelectedItems>(
     selected || (multiple ? [] : ''),
   );

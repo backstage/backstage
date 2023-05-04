@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
-import {
-  ThemeProvider,
-  Theme,
-  StyledEngineProvider,
-} from '@mui/material/styles';
 
-import makeStyles from '@mui/styles/makeStyles';
+import {
+  StyledEngineProvider,
+  Theme,
+  ThemeProvider,
+} from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -31,23 +29,20 @@ declare module '@mui/styles/defaultTheme' {
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      display: 'grid',
-      gridTemplateAreas:
-        "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
-      gridTemplateRows: 'max-content auto 1fr',
-      gridTemplateColumns: 'auto 1fr auto',
-      overflowY: 'auto',
-      height: '100vh',
-      [theme.breakpoints.down('sm')]: {
-        height: '100%',
-      },
+const useStyles = makeStyles({ name: 'BackstagePage' })(theme => ({
+  root: {
+    display: 'grid',
+    gridTemplateAreas:
+      "'pageHeader pageHeader pageHeader' 'pageSubheader pageSubheader pageSubheader' 'pageNav pageContent pageSidebar'",
+    gridTemplateRows: 'max-content auto 1fr',
+    gridTemplateColumns: 'auto 1fr auto',
+    overflowY: 'auto',
+    height: '100vh',
+    [theme.breakpoints.down('sm')]: {
+      height: '100%',
     },
-  }),
-  { name: 'BackstagePage' },
-);
+  },
+}));
 
 type Props = {
   themeId: string;
@@ -56,11 +51,11 @@ type Props = {
 
 export function Page(props: Props) {
   const { themeId, children } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider
-        theme={(baseTheme: BackstageTheme) => ({
+        theme={(baseTheme: Theme) => ({
           ...baseTheme,
           page: baseTheme.getPageTheme({ themeId }),
         })}

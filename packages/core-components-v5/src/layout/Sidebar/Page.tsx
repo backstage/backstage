@@ -15,7 +15,7 @@
  */
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React, {
   createContext,
@@ -30,39 +30,38 @@ import React, {
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { LocalStorage } from './localStorage';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 
 export type SidebarPageClassKey = 'root';
 
 type PageStyleProps = { sidebarConfig: SidebarConfig; isPinned: boolean };
 
-const useStyles = makeStyles<BackstageTheme, PageStyleProps>(
-  theme => ({
-    root: {
-      width: '100%',
-      transition: 'padding-left 0.1s ease-out',
-      isolation: 'isolate',
-      [theme.breakpoints.up('sm')]: {
-        paddingLeft: (props: PageStyleProps) =>
-          props.isPinned
-            ? props.sidebarConfig.drawerWidthOpen
-            : props.sidebarConfig.drawerWidthClosed,
-      },
-      [theme.breakpoints.down('sm')]: {
-        paddingBottom: (props: PageStyleProps) =>
-          props.sidebarConfig.mobileSidebarHeight,
-      },
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+const useStyles = makeStyles({ name: 'BackstageSidebarPage' })(theme => ({
+  root: {
+    width: '100%',
+    transition: 'padding-left 0.1s ease-out',
+    isolation: 'isolate',
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: (props: PageStyleProps) =>
+        props.isPinned
+          ? props.sidebarConfig.drawerWidthOpen
+          : props.sidebarConfig.drawerWidthClosed,
     },
-    content: {
-      zIndex: 0,
-      isolation: 'isolate',
-      '&:focus': {
-        outline: 0,
-      },
+    [theme.breakpoints.down('sm')]: {
+      paddingBottom: (props: PageStyleProps) =>
+        props.sidebarConfig.mobileSidebarHeight,
     },
-  }),
-  { name: 'BackstageSidebarPage' },
-);
+  },
+  content: {
+    zIndex: 0,
+    isolation: 'isolate',
+    '&:focus': {
+      outline: 0,
+    },
+  },
+}));
 
 /**
  * Props for SidebarPage
@@ -111,7 +110,7 @@ export function SidebarPage(props: SidebarPageProps) {
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
-  const classes = useStyles({ isPinned, sidebarConfig });
+  const { classes } = useStyles({ isPinned, sidebarConfig });
 
   return (
     <SidebarPinStateProvider

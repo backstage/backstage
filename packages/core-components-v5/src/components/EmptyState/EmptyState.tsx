@@ -15,7 +15,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { EmptyStateImage } from './EmptyStateImage';
@@ -23,21 +23,18 @@ import { EmptyStateImage } from './EmptyStateImage';
 /** @public */
 export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(2, 0, 0, 0),
-    },
-    action: {
-      marginTop: theme.spacing(2),
-    },
-    imageContainer: {
-      position: 'relative',
-    },
-  }),
-  { name: 'BackstageEmptyState' },
-);
+const useStyles = makeStyles({ name: 'BackstageEmptyState' })(theme => ({
+  root: {
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing(2, 0, 0, 0),
+  },
+  action: {
+    marginTop: theme.spacing(2),
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+}));
 
 type Props = {
   title: string;
@@ -54,7 +51,7 @@ type Props = {
  */
 export function EmptyState(props: Props) {
   const { title, description, missing, action } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <Grid
       container

@@ -15,7 +15,7 @@
  */
 
 import { alpha } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import * as colors from '@mui/material/colors';
 
 export const HEADER_SIZE = 40;
@@ -53,117 +53,115 @@ export type LogViewerClassKey =
   | 'modifierBackgroundWhite'
   | 'modifierBackgroundGrey';
 
-export const useStyles = makeStyles(
-  theme => ({
-    root: {
-      background: theme.palette.background.paper,
-    },
-    header: {
-      height: HEADER_SIZE,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
-    log: {
-      fontFamily: '"Monaco", monospace',
-      fontSize: theme.typography.pxToRem(12),
-    },
-    line: {
-      position: 'relative',
-      whiteSpace: 'pre',
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles({ name: 'BackstageLogViewer' })(theme => ({
+  root: {
+    background: theme.palette.background.paper,
+  },
+  header: {
+    height: HEADER_SIZE,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  log: {
+    fontFamily: '"Monaco", monospace',
+    fontSize: theme.typography.pxToRem(12),
+  },
+  line: {
+    position: 'relative',
+    whiteSpace: 'pre',
 
-      '&:hover': {
-        background: theme.palette.action.hover,
-      },
+    '&:hover': {
+      background: theme.palette.action.hover,
     },
-    lineSelected: {
+  },
+  lineSelected: {
+    background: theme.palette.action.selected,
+
+    '&:hover': {
       background: theme.palette.action.selected,
-
-      '&:hover': {
-        background: theme.palette.action.selected,
-      },
     },
-    lineCopyButton: {
-      position: 'absolute',
-      paddingTop: 0,
-      paddingBottom: 0,
-    },
-    lineNumber: {
-      display: 'inline-block',
-      textAlign: 'end',
-      width: 60,
-      marginRight: theme.spacing(1),
-      cursor: 'pointer',
-    },
-    textHighlight: {
-      background: alpha(theme.palette.info.main, 0.15),
-    },
-    textSelectedHighlight: {
-      background: alpha(theme.palette.info.main, 0.4),
-    },
-    modifierBold: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    modifierItalic: {
-      fontStyle: 'italic',
-    },
-    modifierUnderline: {
-      textDecoration: 'underline',
-    },
-    modifierForegroundBlack: {
-      color: colors.common.black,
-    },
-    modifierForegroundRed: {
-      color: colors.red[500],
-    },
-    modifierForegroundGreen: {
-      color: colors.green[500],
-    },
-    modifierForegroundYellow: {
-      color: colors.yellow[500],
-    },
-    modifierForegroundBlue: {
-      color: colors.blue[500],
-    },
-    modifierForegroundMagenta: {
-      color: colors.purple[500],
-    },
-    modifierForegroundCyan: {
-      color: colors.cyan[500],
-    },
-    modifierForegroundWhite: {
-      color: colors.common.white,
-    },
-    modifierForegroundGrey: {
-      color: colors.grey[500],
-    },
-    modifierBackgroundBlack: {
-      background: colors.common.black,
-    },
-    modifierBackgroundRed: {
-      background: colors.red[500],
-    },
-    modifierBackgroundGreen: {
-      background: colors.green[500],
-    },
-    modifierBackgroundYellow: {
-      background: colors.yellow[500],
-    },
-    modifierBackgroundBlue: {
-      background: colors.blue[500],
-    },
-    modifierBackgroundMagenta: {
-      background: colors.purple[500],
-    },
-    modifierBackgroundCyan: {
-      background: colors.cyan[500],
-    },
-    modifierBackgroundWhite: {
-      background: colors.common.white,
-    },
-    modifierBackgroundGrey: {
-      background: colors.grey[500],
-    },
-  }),
-  { name: 'BackstageLogViewer' },
-);
+  },
+  lineCopyButton: {
+    position: 'absolute',
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  lineNumber: {
+    display: 'inline-block',
+    textAlign: 'end',
+    width: 60,
+    marginRight: theme.spacing(1),
+    cursor: 'pointer',
+  },
+  textHighlight: {
+    background: alpha(theme.palette.info.main, 0.15),
+  },
+  textSelectedHighlight: {
+    background: alpha(theme.palette.info.main, 0.4),
+  },
+  modifierBold: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+  modifierItalic: {
+    fontStyle: 'italic',
+  },
+  modifierUnderline: {
+    textDecoration: 'underline',
+  },
+  modifierForegroundBlack: {
+    color: colors.common.black,
+  },
+  modifierForegroundRed: {
+    color: colors.red[500],
+  },
+  modifierForegroundGreen: {
+    color: colors.green[500],
+  },
+  modifierForegroundYellow: {
+    color: colors.yellow[500],
+  },
+  modifierForegroundBlue: {
+    color: colors.blue[500],
+  },
+  modifierForegroundMagenta: {
+    color: colors.purple[500],
+  },
+  modifierForegroundCyan: {
+    color: colors.cyan[500],
+  },
+  modifierForegroundWhite: {
+    color: colors.common.white,
+  },
+  modifierForegroundGrey: {
+    color: colors.grey[500],
+  },
+  modifierBackgroundBlack: {
+    background: colors.common.black,
+  },
+  modifierBackgroundRed: {
+    background: colors.red[500],
+  },
+  modifierBackgroundGreen: {
+    background: colors.green[500],
+  },
+  modifierBackgroundYellow: {
+    background: colors.yellow[500],
+  },
+  modifierBackgroundBlue: {
+    background: colors.blue[500],
+  },
+  modifierBackgroundMagenta: {
+    background: colors.purple[500],
+  },
+  modifierBackgroundCyan: {
+    background: colors.cyan[500],
+  },
+  modifierBackgroundWhite: {
+    background: colors.common.white,
+  },
+  modifierBackgroundGrey: {
+    background: colors.grey[500],
+  },
+}));

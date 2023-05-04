@@ -15,7 +15,6 @@
  */
 
 import { useApp } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,13 +24,14 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
+import { Theme } from '@mui/material/styles';
 
 type SupportButtonProps = {
   title?: string;
@@ -41,15 +41,12 @@ type SupportButtonProps = {
 
 export type SupportButtonClassKey = 'popoverList';
 
-const useStyles = makeStyles(
-  {
-    popoverList: {
-      minWidth: 260,
-      maxWidth: 400,
-    },
+const useStyles = makeStyles({ name: 'BackstageSupportButton' })({
+  popoverList: {
+    minWidth: 260,
+    maxWidth: 400,
   },
-  { name: 'BackstageSupportButton' },
-);
+});
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
   const app = useApp();
@@ -88,8 +85,10 @@ export function SupportButton(props: SupportButtonProps) {
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const classes = useStyles();
-  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('md'));
+  const { classes } = useStyles();
+  const isSmallScreen = useMediaQuery<Theme>(theme =>
+    theme.breakpoints.down('md'),
+  );
 
   const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);

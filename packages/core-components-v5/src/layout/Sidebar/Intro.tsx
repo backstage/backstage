@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLocalStorageValue } from '@react-hookz/web';
 import React, { useContext, useState } from 'react';
 
-import {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarConfig,
-  SidebarConfigContext,
-} from './config';
+import { SIDEBAR_INTRO_LOCAL_STORAGE, SidebarConfigContext } from './config';
 import { SidebarDivider } from './Items';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 
@@ -39,51 +34,50 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    introCard: props => ({
-      color: '#b5b5b5',
-      // XXX (@koroeskohr): should I be using a Mui theme variable?
-      fontSize: 12,
-      width: props.sidebarConfig.drawerWidthOpen,
-      marginTop: theme.spacing(2.25),
-      marginBottom: theme.spacing(1.5),
-      paddingLeft: props.sidebarConfig.iconPadding,
-      paddingRight: props.sidebarConfig.iconPadding,
-    }),
-    introDismiss: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginTop: theme.spacing(1.5),
-    },
-    introDismissLink: {
-      color: '#dddddd',
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: theme.spacing(0.5),
-      '&:hover': {
-        color: theme.palette.linkHover,
-        transition: theme.transitions.create('color', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
-        }),
-      },
-    },
-    introDismissText: {
-      fontSize: '0.7rem',
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-      letterSpacing: 1,
-    },
-    introDismissIcon: {
-      width: 18,
-      height: 18,
-      marginRight: theme.spacing(1.5),
-    },
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+const useStyles = makeStyles({ name: 'BackstageSidebarIntro' })(theme => ({
+  introCard: props => ({
+    color: '#b5b5b5',
+    // XXX (@koroeskohr): should I be using a Mui theme variable?
+    fontSize: 12,
+    width: props.sidebarConfig.drawerWidthOpen,
+    marginTop: theme.spacing(2.25),
+    marginBottom: theme.spacing(1.5),
+    paddingLeft: props.sidebarConfig.iconPadding,
+    paddingRight: props.sidebarConfig.iconPadding,
   }),
-  { name: 'BackstageSidebarIntro' },
-);
+  introDismiss: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: theme.spacing(1.5),
+  },
+  introDismissLink: {
+    color: '#dddddd',
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(0.5),
+    '&:hover': {
+      color: theme.palette.linkHover,
+      transition: theme.transitions.create('color', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest,
+      }),
+    },
+  },
+  introDismissText: {
+    fontSize: '0.7rem',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  introDismissIcon: {
+    width: 18,
+    height: 18,
+    marginRight: theme.spacing(1.5),
+  },
+}));
 
 type IntroCardProps = {
   text: string;
@@ -99,7 +93,7 @@ type IntroCardProps = {
 
 export function IntroCard(props: IntroCardProps) {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
+  const { classes } = useStyles({ sidebarConfig });
   const { text, onClose } = props;
   const handleClose = () => onClose();
 
@@ -107,7 +101,11 @@ export function IntroCard(props: IntroCardProps) {
     <Box className={classes.introCard}>
       <Typography variant="subtitle2">{text}</Typography>
       <Box className={classes.introDismiss}>
-        <IconButton onClick={handleClose} className={classes.introDismissLink} size="large">
+        <IconButton
+          onClick={handleClose}
+          className={classes.introDismissLink}
+          size="large"
+        >
           <CloseIcon className={classes.introDismissIcon} />
           <Typography component="span" className={classes.introDismissText}>
             Dismiss

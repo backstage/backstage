@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
-import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
 export type StatusClassKey =
@@ -28,59 +26,58 @@ export type StatusClassKey =
   | 'running'
   | 'aborted';
 
-const useStyles = makeStyles(
-  theme => ({
-    status: {
-      fontWeight: theme.typography.fontWeightMedium,
-      '&::before': {
-        width: '0.7em',
-        height: '0.7em',
-        display: 'inline-block',
-        marginRight: theme.spacing(1),
-        borderRadius: '50%',
-        content: '""',
-      },
+const useStyles = makeStyles({ name: 'BackstageStatus' })(theme => ({
+  status: {
+    fontWeight: theme.typography.fontWeightMedium,
+    '&::before': {
+      width: '0.7em',
+      height: '0.7em',
+      display: 'inline-block',
+      marginRight: theme.spacing(1),
+      borderRadius: '50%',
+      content: '""',
     },
-    ok: {
-      '&::before': {
-        backgroundColor: theme.palette.status.ok,
-      },
+  },
+  ok: {
+    '&::before': {
+      backgroundColor: theme.palette.status.ok,
     },
-    warning: {
-      '&::before': {
-        backgroundColor: theme.palette.status.warning,
-      },
+  },
+  warning: {
+    '&::before': {
+      backgroundColor: theme.palette.status.warning,
     },
-    error: {
-      '&::before': {
-        backgroundColor: theme.palette.status.error,
-      },
+  },
+  error: {
+    '&::before': {
+      backgroundColor: theme.palette.status.error,
     },
-    pending: {
-      '&::before': {
-        backgroundColor: theme.palette.status.pending,
-      },
+  },
+  pending: {
+    '&::before': {
+      backgroundColor: theme.palette.status.pending,
     },
-    running: {
-      '&::before': {
-        backgroundColor: theme.palette.status.running,
-      },
+  },
+  running: {
+    '&::before': {
+      backgroundColor: theme.palette.status.running,
     },
-    aborted: {
-      '&::before': {
-        backgroundColor: theme.palette.status.aborted,
-      },
+  },
+  aborted: {
+    '&::before': {
+      backgroundColor: theme.palette.status.aborted,
     },
-  }),
-  { name: 'BackstageStatus' },
-);
+  },
+}));
 
 export function StatusOK(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.ok)}
+      className={cx(classes.status, classes.ok)}
       aria-label="Status ok"
       aria-hidden="true"
       {...props}
@@ -89,11 +86,13 @@ export function StatusOK(props: PropsWithChildren<{}>) {
 }
 
 export function StatusWarning(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.warning)}
+      className={cx(classes.status, classes.warning)}
       aria-label="Status warning"
       aria-hidden="true"
       {...props}
@@ -102,11 +101,13 @@ export function StatusWarning(props: PropsWithChildren<{}>) {
 }
 
 export function StatusError(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.error)}
+      className={cx(classes.status, classes.error)}
       aria-label="Status error"
       aria-hidden="true"
       {...props}
@@ -115,11 +116,13 @@ export function StatusError(props: PropsWithChildren<{}>) {
 }
 
 export function StatusPending(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.pending)}
+      className={cx(classes.status, classes.pending)}
       aria-label="Status pending"
       aria-hidden="true"
       {...props}
@@ -128,11 +131,13 @@ export function StatusPending(props: PropsWithChildren<{}>) {
 }
 
 export function StatusRunning(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.running)}
+      className={cx(classes.status, classes.running)}
       aria-label="Status running"
       aria-hidden="true"
       {...props}
@@ -141,11 +146,13 @@ export function StatusRunning(props: PropsWithChildren<{}>) {
 }
 
 export function StatusAborted(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   return (
     <Typography
       component="span"
-      className={classNames(classes.status, classes.aborted)}
+      className={cx(classes.status, classes.aborted)}
       aria-label="Status aborted"
       aria-hidden="true"
       {...props}

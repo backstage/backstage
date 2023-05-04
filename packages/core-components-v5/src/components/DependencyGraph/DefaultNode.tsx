@@ -15,15 +15,14 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from 'tss-react/mui';
 import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultNodeClassKey = 'node' | 'text';
 
-const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+const useStyles = makeStyles({ name: 'BackstageDependencyGraphDefaultNode' })(
+  theme => ({
     node: {
       fill: theme.palette.primary.light,
       stroke: theme.palette.primary.light,
@@ -32,12 +31,11 @@ const useStyles = makeStyles(
       fill: theme.palette.primary.contrastText,
     },
   }),
-  { name: 'BackstageDependencyGraphDefaultNode' },
 );
 
 /** @public */
 export function DefaultNode({ node: { id } }: Types.RenderNodeProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);
   const idRef = React.useRef<SVGTextElement | null>(null);

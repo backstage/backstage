@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { useAnalytics, useElementFilter } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -27,8 +26,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { StyledComponentProps } from '@mui/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import classnames from 'classnames';
+import { makeStyles } from 'tss-react/mui';
 import { Location } from 'history';
 import React, {
   ComponentProps,
@@ -85,129 +83,131 @@ export type SidebarItemClassKey =
   | 'selected';
 
 const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles(
-    theme => ({
-      root: {
-        color: theme.palette.navigation.color,
-        display: 'flex',
-        flexFlow: 'row nowrap',
-        alignItems: 'center',
-        height: 48,
-        cursor: 'pointer',
+  makeStyles<void, 'root' | 'closed' | 'closedItemIcon' | 'iconContainer'>({
+    name: 'BackstageSidebarItem',
+  })((theme, _params, classes) => ({
+    root: {
+      color: theme.palette.navigation.color,
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
+      height: 48,
+      cursor: 'pointer',
+    },
+    buttonItem: {
+      background: 'none',
+      border: 'none',
+      width: '100%',
+      margin: 0,
+      padding: 0,
+      textAlign: 'inherit',
+      font: 'inherit',
+      textTransform: 'none',
+    },
+    closed: {
+      width: sidebarConfig.drawerWidthClosed,
+      justifyContent: 'center',
+    },
+    open: {
+      [theme.breakpoints.up('sm')]: {
+        width: sidebarConfig.drawerWidthOpen,
       },
-      buttonItem: {
-        background: 'none',
-        border: 'none',
-        width: '100%',
-        margin: 0,
-        padding: 0,
-        textAlign: 'inherit',
-        font: 'inherit',
-        textTransform: 'none',
-      },
-      closed: {
-        width: sidebarConfig.drawerWidthClosed,
-        justifyContent: 'center',
-      },
-      open: {
-        [theme.breakpoints.up('sm')]: {
-          width: sidebarConfig.drawerWidthOpen,
-        },
-      },
-      highlightable: {
-        '&:hover': {
-          background:
-            theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
-        },
-      },
-      highlighted: {
+    },
+    highlightable: {
+      '&:hover': {
         background:
           theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
       },
-      label: {
-        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-        fontWeight: 'bold',
-        whiteSpace: 'nowrap',
-        lineHeight: 'auto',
-        flex: '3 1 auto',
-        width: '110px',
-        overflow: 'hidden',
-        'text-overflow': 'ellipsis',
+    },
+    highlighted: {
+      background:
+        theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+    },
+    label: {
+      // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+      fontWeight: 'bold',
+      whiteSpace: 'nowrap',
+      lineHeight: 'auto',
+      flex: '3 1 auto',
+      width: '110px',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
+    },
+    iconContainer: {
+      boxSizing: 'border-box',
+      height: '100%',
+      width: sidebarConfig.iconContainerWidth,
+      marginRight: -theme.spacing(2),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      lineHeight: '0',
+    },
+    searchRoot: {
+      marginBottom: 12,
+    },
+    searchField: {
+      color: '#b5b5b5',
+      fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.fontSize,
+    },
+    searchFieldHTMLInput: {
+      padding: theme.spacing(2, 0, 2),
+    },
+    searchContainer: {
+      width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
+    },
+    secondaryAction: {
+      width: theme.spacing(6),
+      textAlign: 'center',
+      marginRight: theme.spacing(1),
+    },
+    closedItemIcon: {
+      width: '100%',
+      justifyContent: 'center',
+    },
+    submenuArrow: {
+      display: 'flex',
+    },
+    expandButton: {
+      background: 'none',
+      border: 'none',
+      color: theme.palette.navigation.color,
+      width: '100%',
+      cursor: 'pointer',
+      position: 'relative',
+      height: 48,
+    },
+    arrows: {
+      position: 'absolute',
+      right: 10,
+    },
+    selected: {
+      [`&.${classes.root}`]: {
+        borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+        color: theme.palette.navigation.selectedColor,
       },
-      iconContainer: {
-        boxSizing: 'border-box',
-        height: '100%',
-        width: sidebarConfig.iconContainerWidth,
-        marginRight: -theme.spacing(2),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        lineHeight: '0',
+      [`&.${classes.closed}`]: {
+        width: sidebarConfig.drawerWidthClosed,
       },
-      searchRoot: {
-        marginBottom: 12,
+      [`& .${classes.closedItemIcon}`]: {
+        paddingRight: sidebarConfig.selectedIndicatorWidth,
       },
-      searchField: {
-        color: '#b5b5b5',
-        fontWeight: theme.typography.fontWeightBold,
-        fontSize: theme.typography.fontSize,
+      [`& .${classes.iconContainer}`]: {
+        marginLeft: -sidebarConfig.selectedIndicatorWidth,
       },
-      searchFieldHTMLInput: {
-        padding: theme.spacing(2, 0, 2),
-      },
-      searchContainer: {
-        width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
-      },
-      secondaryAction: {
-        width: theme.spacing(6),
-        textAlign: 'center',
-        marginRight: theme.spacing(1),
-      },
-      closedItemIcon: {
-        width: '100%',
-        justifyContent: 'center',
-      },
-      submenuArrow: {
-        display: 'flex',
-      },
-      expandButton: {
-        background: 'none',
-        border: 'none',
-        color: theme.palette.navigation.color,
-        width: '100%',
-        cursor: 'pointer',
-        position: 'relative',
-        height: 48,
-      },
-      arrows: {
-        position: 'absolute',
-        right: 10,
-      },
-      selected: {
-        '&$root': {
-          borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-          color: theme.palette.navigation.selectedColor,
-        },
-        '&$closed': {
-          width: sidebarConfig.drawerWidthClosed,
-        },
-        '& $closedItemIcon': {
-          paddingRight: sidebarConfig.selectedIndicatorWidth,
-        },
-        '& $iconContainer': {
-          marginLeft: -sidebarConfig.selectedIndicatorWidth,
-        },
-      },
-    }),
-    { name: 'BackstageSidebarItem' },
-  );
+    },
+  }));
 
 // This is a workaround for this issue https://github.com/mui/material-ui/issues/15511
 // The styling of the `selected` elements doesn't work as expected when using a prop callback.
 // Don't use this pattern unless needed
 function useMemoStyles(sidebarConfig: SidebarConfig) {
-  const useStyles = useMemo(
-    () => makeSidebarStyles(sidebarConfig),
+  const { classes: useStyles } = useMemo(
+    () =>
+      makeSidebarStyles(sidebarConfig, {
+        props: sidebarConfig,
+      }),
     [sidebarConfig],
   );
   return useStyles();
@@ -486,7 +486,7 @@ const SidebarItemWithSubmenu = ({
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
-  const isSmallScreen = useMediaQuery((theme: BackstageTheme) =>
+  const isSmallScreen = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down('md'),
   );
 

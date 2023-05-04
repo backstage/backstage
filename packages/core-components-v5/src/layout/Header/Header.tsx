@@ -21,7 +21,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { Helmet } from 'react-helmet';
 
 import { Link } from '../../components/Link';
@@ -39,70 +39,67 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-const useStyles = makeStyles(
-  theme => ({
-    header: {
-      gridArea: 'pageHeader',
-      padding: theme.spacing(3),
-      width: '100%',
-      boxShadow: theme.shadows[4],
-      position: 'relative',
-      zIndex: 100,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundImage: theme.page.backgroundImage,
-      backgroundPosition: 'center',
-      backgroundSize: 'cover',
-      [theme.breakpoints.down('md')]: {
-        flexWrap: 'wrap',
-      },
+const useStyles = makeStyles({ name: 'BackstageHeader' })(theme => ({
+  header: {
+    gridArea: 'pageHeader',
+    padding: theme.spacing(3),
+    width: '100%',
+    boxShadow: theme.shadows[4],
+    position: 'relative',
+    zIndex: 100,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundImage: theme.page.backgroundImage,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    [theme.breakpoints.down('md')]: {
+      flexWrap: 'wrap',
     },
-    leftItemsBox: {
-      maxWidth: '100%',
-      flexGrow: 1,
-    },
-    rightItemsBox: {
-      width: 'auto',
-      alignItems: 'center',
-    },
-    title: {
-      color: theme.page.fontColor,
-      wordBreak: 'break-word',
-      fontSize: theme.typography.h3.fontSize,
-      marginBottom: 0,
-    },
-    subtitle: {
-      color: theme.page.fontColor,
-      opacity: 0.8,
-      display: 'inline-block', // prevents margin collapse of adjacent siblings
-      marginTop: theme.spacing(1),
-      maxWidth: '75ch',
-    },
-    type: {
-      textTransform: 'uppercase',
-      fontSize: 11,
-      opacity: 0.8,
-      marginBottom: theme.spacing(1),
-      color: theme.page.fontColor,
-    },
-    breadcrumb: {
-      color: theme.page.fontColor,
-    },
-    breadcrumbType: {
-      fontSize: 'inherit',
-      opacity: 0.7,
-      marginRight: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-    breadcrumbTitle: {
-      fontSize: 'inherit',
-      marginLeft: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-  }),
-  { name: 'BackstageHeader' },
-);
+  },
+  leftItemsBox: {
+    maxWidth: '100%',
+    flexGrow: 1,
+  },
+  rightItemsBox: {
+    width: 'auto',
+    alignItems: 'center',
+  },
+  title: {
+    color: theme.page.fontColor,
+    wordBreak: 'break-word',
+    fontSize: theme.typography.h3.fontSize,
+    marginBottom: 0,
+  },
+  subtitle: {
+    color: theme.page.fontColor,
+    opacity: 0.8,
+    display: 'inline-block', // prevents margin collapse of adjacent siblings
+    marginTop: theme.spacing(1),
+    maxWidth: '75ch',
+  },
+  type: {
+    textTransform: 'uppercase',
+    fontSize: 11,
+    opacity: 0.8,
+    marginBottom: theme.spacing(1),
+    color: theme.page.fontColor,
+  },
+  breadcrumb: {
+    color: theme.page.fontColor,
+  },
+  breadcrumbType: {
+    fontSize: 'inherit',
+    opacity: 0.7,
+    marginRight: -theme.spacing(0.3),
+    marginBottom: theme.spacing(0.3),
+  },
+  breadcrumbTitle: {
+    fontSize: 'inherit',
+    marginLeft: -theme.spacing(0.3),
+    marginBottom: theme.spacing(0.3),
+  },
+}));
 
 type HeaderStyles = ReturnType<typeof useStyles>;
 
@@ -211,7 +208,7 @@ export function Header(props: PropsWithChildren<Props>) {
     type,
     typeLink,
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const documentTitle = pageTitleOverride || title;

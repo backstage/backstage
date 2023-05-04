@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
-import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
 import {
@@ -27,68 +25,66 @@ import {
 } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 
-const useStyles = makeStyles<
-  BackstageTheme,
-  { submenuConfig: SubmenuConfig; left: number }
->(
-  theme => ({
-    root: {
-      zIndex: 1000,
-      position: 'relative',
-      overflow: 'visible',
-      width: theme.spacing(7) + 1,
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+const useStyles = makeStyles({ name: 'BackstageSidebarSubmenu' })(theme => ({
+  root: {
+    zIndex: 1000,
+    position: 'relative',
+    overflow: 'visible',
+    width: theme.spacing(7) + 1,
+  },
+  drawer: props => ({
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    alignItems: 'flex-start',
+    position: 'fixed',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: props.left,
+      transition: theme.transitions.create('margin-left', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest,
+      }),
     },
-    drawer: props => ({
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: props.left,
-        transition: theme.transitions.create('margin-left', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
-        }),
-      },
-      top: 0,
-      bottom: 0,
-      padding: 0,
-      background: theme.palette.navigation.submenu?.background ?? '#404040',
-      overflowX: 'hidden',
-      msOverflowStyle: 'none',
-      scrollbarWidth: 'none',
-      cursor: 'default',
-      width: props.submenuConfig.drawerWidthClosed,
-      transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
-      '& > *': {
-        flexShrink: 0,
-      },
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
-    }),
-    drawerOpen: props => ({
-      width: props.submenuConfig.drawerWidthOpen,
-      [theme.breakpoints.down('sm')]: {
-        width: '100%',
-        position: 'relative',
-        paddingLeft: theme.spacing(3),
-        left: 0,
-        top: 0,
-      },
-    }),
-    title: {
-      fontSize: theme.typography.h5.fontSize,
-      fontWeight: theme.typography.fontWeightMedium,
-      color: theme.palette.common.white,
-      padding: theme.spacing(2.5),
-      [theme.breakpoints.down('sm')]: {
-        display: 'none',
-      },
+    top: 0,
+    bottom: 0,
+    padding: 0,
+    background: theme.palette.navigation.submenu?.background ?? '#404040',
+    overflowX: 'hidden',
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    cursor: 'default',
+    width: props.submenuConfig.drawerWidthClosed,
+    transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
+    '& > *': {
+      flexShrink: 0,
+    },
+    '&::-webkit-scrollbar': {
+      display: 'none',
     },
   }),
-  { name: 'BackstageSidebarSubmenu' },
-);
+  drawerOpen: props => ({
+    width: props.submenuConfig.drawerWidthOpen,
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      position: 'relative',
+      paddingLeft: theme.spacing(3),
+      left: 0,
+      top: 0,
+    },
+  }),
+  title: {
+    fontSize: theme.typography.h5.fontSize,
+    fontWeight: theme.typography.fontWeightMedium,
+    color: theme.palette.common.white,
+    padding: theme.spacing(2.5),
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+}));
 
 /**
  * Holds a title for text Header of a sidebar submenu and children
@@ -112,7 +108,7 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const classes = useStyles({ left, submenuConfig });
+  const { classes, cx } = useStyles({ left, submenuConfig });
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
@@ -123,7 +119,7 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
 
   return (
     <Box
-      className={classnames(classes.drawer, {
+      className={cx(classes.drawer, {
         [classes.drawerOpen]: isSubmenuOpen,
       })}
     >

@@ -27,10 +27,10 @@ import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { renderHook } from '@testing-library/react-hooks';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
   spotlight: {
     backgroundColor: '#2b2a2a',
   },

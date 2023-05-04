@@ -15,30 +15,27 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import MicDropSvgUrl from './mic-drop.svg';
 
-const useStyles = makeStyles(
-  theme => ({
-    micDrop: {
-      maxWidth: '60%',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-      [theme.breakpoints.down('sm')]: {
-        maxWidth: '96%',
-        bottom: 'unset',
-        right: 'unset',
-        margin: `${theme.spacing(10)} auto ${theme.spacing(4)}`,
-      },
+const useStyles = makeStyles({ name: 'BackstageErrorPageMicDrop' })(theme => ({
+  micDrop: {
+    maxWidth: '60%',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '96%',
+      bottom: 'unset',
+      right: 'unset',
+      margin: `${theme.spacing(10)} auto ${theme.spacing(4)}`,
     },
-  }),
-  { name: 'BackstageErrorPageMicDrop' },
-);
+  },
+}));
 
 export type MicDropClassKey = 'micDrop';
 
 export const MicDrop = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <img
       src={MicDropSvgUrl}

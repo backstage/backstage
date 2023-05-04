@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import { Link } from '../Link';
 import { SubvalueCell } from './SubvalueCell';
@@ -25,7 +25,7 @@ export default {
   component: Table,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   container: {
     width: 850,
   },
@@ -54,7 +54,7 @@ const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
 const testData10 = generateTestData(10);
 
 export const DefaultTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -90,7 +90,7 @@ export const DefaultTable = () => {
 };
 
 export const EmptyTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -132,7 +132,7 @@ export const EmptyTable = () => {
 };
 
 export const SubtitleTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -169,7 +169,7 @@ export const SubtitleTable = () => {
 };
 
 export const HiddenSearchTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -204,7 +204,7 @@ export const HiddenSearchTable = () => {
 };
 
 export const SubvalueTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -245,7 +245,7 @@ export const SubvalueTable = () => {
 };
 
 export const DenseTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -281,7 +281,7 @@ export const DenseTable = () => {
 };
 
 export const FilterTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -328,7 +328,7 @@ export const FilterTable = () => {
 };
 
 export const StyledTable = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',

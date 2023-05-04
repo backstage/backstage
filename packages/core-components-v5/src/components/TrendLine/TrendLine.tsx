@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
+
+import { Theme, useTheme } from '@mui/material/styles';
 import {
   Sparklines,
   SparklinesLine,
   SparklinesLineProps,
   SparklinesProps,
 } from 'react-sparklines';
-import { useTheme } from '@mui/material/styles';
-import { BackstageTheme } from '@backstage/theme';
 
-function color(data: number[], theme: BackstageTheme): string | undefined {
+function color(data: number[], theme: Theme): string | undefined {
   const lastNum = data[data.length - 1];
   if (!lastNum) return undefined;
   if (lastNum >= 0.9) return theme.palette.status.ok;

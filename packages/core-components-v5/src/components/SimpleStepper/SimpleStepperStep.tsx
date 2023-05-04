@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 import MuiStep from '@mui/material/Step';
 import StepContent from '@mui/material/StepContent';
 import StepLabel from '@mui/material/StepLabel';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, { PropsWithChildren } from 'react';
 
@@ -26,18 +26,15 @@ import { StepProps } from './types';
 
 export type SimpleStepperStepClassKey = 'end';
 
-const useStyles = makeStyles(
-  theme => ({
-    end: {
-      padding: theme.spacing(3),
-    },
-  }),
-  { name: 'SimpleStepperStep' },
-);
+const useStyles = makeStyles({ name: 'SimpleStepperStep' })(theme => ({
+  end: {
+    padding: theme.spacing(3),
+  },
+}));
 
 export function SimpleStepperStep(props: PropsWithChildren<StepProps>) {
   const { title, children, end, actions, ...muiProps } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   // The end step is not a part of the stepper
   // It simply is the final screen with an option to have buttons such as reset or back

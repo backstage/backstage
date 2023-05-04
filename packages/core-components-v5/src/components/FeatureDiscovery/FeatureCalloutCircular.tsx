@@ -15,7 +15,7 @@
  */
 import Box from '@mui/material/Box';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, {
   PropsWithChildren,
@@ -40,7 +40,7 @@ export type FeatureCalloutCircleClassKey =
   | 'pulseCircle'
   | 'text';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageFeatureCalloutCircular' })(
   theme => ({
     '@keyframes pulsateSlightly': {
       '0%': { transform: 'scale(1.0)' },
@@ -90,7 +90,6 @@ const useStyles = makeStyles(
       zIndex: 2003,
     },
   }),
-  { name: 'BackstageFeatureCalloutCircular' },
 );
 
 export type Props = {
@@ -121,7 +120,7 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
   const portalElement = usePortal('core.callout');
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState<Placement | undefined>();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const update = useCallback(() => {
     if (wrapperRef.current) {

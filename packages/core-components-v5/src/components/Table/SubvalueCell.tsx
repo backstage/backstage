@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
-const useSubvalueCellStyles = makeStyles(
+const useSubvalueCellStyles = makeStyles({ name: 'BackstageSubvalueCell' })(
   theme => ({
     value: {
       marginBottom: theme.spacing(0.75),
@@ -30,7 +29,6 @@ const useSubvalueCellStyles = makeStyles(
       fontWeight: 'normal',
     },
   }),
-  { name: 'BackstageSubvalueCell' },
 );
 
 type SubvalueCellProps = {
@@ -40,7 +38,7 @@ type SubvalueCellProps = {
 
 export function SubvalueCell(props: SubvalueCellProps) {
   const { value, subvalue } = props;
-  const classes = useSubvalueCellStyles();
+  const { classes } = useSubvalueCellStyles();
 
   return (
     <>

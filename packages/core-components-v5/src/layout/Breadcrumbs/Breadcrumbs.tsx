@@ -19,7 +19,7 @@ import MaterialBreadcrumbs from '@mui/material/Breadcrumbs';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Popover from '@mui/material/Popover';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, { ComponentProps, Fragment } from 'react';
 
@@ -29,6 +29,7 @@ type Props = ComponentProps<typeof MaterialBreadcrumbs>;
 export type BreadcrumbsClickableTextClassKey = 'root';
 
 const ClickableText = withStyles(
+  Typography,
   {
     root: {
       textDecoration: 'underline',
@@ -36,15 +37,16 @@ const ClickableText = withStyles(
     },
   },
   { name: 'BackstageBreadcrumbsClickableText' },
-)(Typography);
+);
 
 /** @public */
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
 const StyledBox = withStyles(
+  Box,
   {},
   { name: 'BackstageBreadcrumbsStyledBox' },
-)(Box);
+);
 
 /**
  * Breadcrumbs component to show navigation hierarchical structure

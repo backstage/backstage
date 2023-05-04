@@ -16,7 +16,7 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import Badge from '@mui/material/Badge';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import { HeaderTabs } from './HeaderTabs';
 
@@ -49,24 +49,26 @@ describe('<HeaderTabs />', () => {
     );
   });
   it('should render extension component to tab if one present', async () => {
-    const useStyles = makeStyles(() => ({
+    const useStyles = makeStyles()(() => ({
       badge: {
         margin: '20px 20px 0 0',
       },
     }));
 
-    const TextualBadge = React.forwardRef<HTMLSpanElement>((props, ref) => (
-      <Badge
-        classes={useStyles()}
-        overlap="rectangular"
-        color="secondary"
-        badgeContent="three new alarms"
-      >
-        <span ref={ref} {...props}>
-          {props.children}
-        </span>
-      </Badge>
-    ));
+    const { classes: TextualBadge } = React.forwardRef<HTMLSpanElement>(
+      (props, ref) => (
+        <Badge
+          classes={useStyles()}
+          overlap="rectangular"
+          color="secondary"
+          badgeContent="three new alarms"
+        >
+          <span ref={ref} {...props}>
+            {props.children}
+          </span>
+        </Badge>
+      ),
+    );
     const iconTab = [
       {
         id: 'icon-tab',

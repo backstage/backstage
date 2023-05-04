@@ -13,6 +13,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
+    "@backstage/core-components-v5": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-airbrake": "workspace:^",

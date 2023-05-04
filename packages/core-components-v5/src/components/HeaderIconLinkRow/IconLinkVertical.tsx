@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import classnames from 'classnames';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import LinkIcon from '@mui/icons-material/Link';
 import { Link } from '../Link';
 import Box from '@mui/material/Box';
@@ -39,7 +38,7 @@ export type IconLinkVerticalClassKey =
   | 'secondary'
   | 'label';
 
-const useIconStyles = makeStyles(
+const useIconStyles = makeStyles({ name: 'BackstageIconLinkVertical' })(
   theme => ({
     link: {
       display: 'grid',
@@ -63,7 +62,6 @@ const useIconStyles = makeStyles(
       letterSpacing: 1.2,
     },
   }),
-  { name: 'BackstageIconLinkVertical' },
 );
 
 /** @public */
@@ -76,11 +74,11 @@ export function IconLinkVertical({
   onClick,
   title,
 }: IconLinkVerticalProps) {
-  const classes = useIconStyles();
+  const { classes, cx } = useIconStyles();
 
   if (disabled) {
     return (
-      <Box title={title} className={classnames(classes.link, classes.disabled)}>
+      <Box title={title} className={cx(classes.link, classes.disabled)}>
         {icon}
         <Typography
           variant="caption"
@@ -96,7 +94,7 @@ export function IconLinkVertical({
   return (
     <Link
       title={title}
-      className={classnames(classes.link, classes[color])}
+      className={cx(classes.link, classes[color])}
       to={href}
       onClick={onClick}
     >

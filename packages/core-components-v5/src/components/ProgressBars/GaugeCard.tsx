@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React, { ReactNode } from 'react';
 
 import { BottomLinkProps } from '../../layout/BottomLink';
@@ -37,15 +37,12 @@ type Props = {
 /** @public */
 export type GaugeCardClassKey = 'root';
 
-const useStyles = makeStyles(
-  {
-    root: {
-      height: '100%',
-      width: 250,
-    },
+const useStyles = makeStyles({ name: 'BackstageGaugeCard' })({
+  root: {
+    height: '100%',
+    width: 250,
   },
-  { name: 'BackstageGaugeCard' },
-);
+});
 
 /**
  * {@link Gauge} with header, subheader and footer
@@ -54,7 +51,9 @@ const useStyles = makeStyles(
  *
  */
 export function GaugeCard(props: Props) {
-  const classes = useStyles(props);
+  const { classes } = useStyles(props, {
+    props: props,
+  });
   const {
     title,
     subheader,

@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
-import { darken, lighten } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import React from 'react';
+
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import React from 'react';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { Theme, darken, lighten } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 
 const getWarningTextColor = (
   severity: NonNullable<WarningProps['severity']>,
-  theme: BackstageTheme,
+  theme: Theme,
 ) => {
   const getColor = theme.palette.mode === 'light' ? darken : lighten;
   return getColor(theme.palette[severity].light, 0.6);
@@ -35,13 +35,14 @@ const getWarningTextColor = (
 
 const getWarningBackgroundColor = (
   severity: NonNullable<WarningProps['severity']>,
-  theme: BackstageTheme,
+  theme: Theme,
 ) => {
   const getBackgroundColor = theme.palette.mode === 'light' ? lighten : darken;
   return getBackgroundColor(theme.palette[severity].light, 0.9);
 };
 
-const useErrorOutlineStyles = makeStyles(theme => ({
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+const useErrorOutlineStyles = makeStyles()(theme => ({
   root: {
     marginRight: theme.spacing(1),
     fill: ({ severity }: WarningProps) =>
@@ -53,11 +54,11 @@ const useErrorOutlineStyles = makeStyles(theme => ({
 }));
 
 const ErrorOutlineStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
-  const classes = useErrorOutlineStyles({ severity });
+  const { classes } = useErrorOutlineStyles({ severity });
   return <ErrorOutline classes={classes} />;
 };
 const ExpandMoreIconStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
-  const classes = useErrorOutlineStyles({ severity });
+  const { classes } = useErrorOutlineStyles({ severity });
   return <ExpandMoreIcon classes={classes} />;
 };
 
@@ -68,59 +69,61 @@ export type WarningPanelClassKey =
   | 'message'
   | 'details';
 
-const useStyles = makeStyles(
-  theme => ({
-    panel: {
-      backgroundColor: ({ severity }: WarningProps) =>
-        getWarningBackgroundColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      verticalAlign: 'middle',
-    },
-    summary: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    summaryText: {
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    message: {
-      width: '100%',
-      display: 'block',
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      backgroundColor: ({ severity }: WarningProps) =>
-        getWarningBackgroundColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-    },
-    details: {
-      width: '100%',
-      display: 'block',
-      color: theme.palette.textContrast,
-      backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.border}`,
-      padding: theme.spacing(2.0),
-      fontFamily: 'sans-serif',
-    },
-  }),
-  { name: 'BackstageWarningPanel' },
-);
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. ArrowFunctionExpression in CSS prop.
+const useStyles = makeStyles({ name: 'BackstageWarningPanel' })(theme => ({
+  panel: {
+    backgroundColor: ({ severity }: WarningProps) =>
+      getWarningBackgroundColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    verticalAlign: 'middle',
+  },
+  summary: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  summaryText: {
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    fontWeight: theme.typography.fontWeightBold,
+  },
+  message: {
+    width: '100%',
+    display: 'block',
+    color: ({ severity }: WarningProps) =>
+      getWarningTextColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+    backgroundColor: ({ severity }: WarningProps) =>
+      getWarningBackgroundColor(
+        severity as NonNullable<WarningProps['severity']>,
+        theme,
+      ),
+  },
+  details: {
+    width: '100%',
+    display: 'block',
+    color: theme.palette.textContrast,
+    backgroundColor: theme.palette.background.default,
+    border: `1px solid ${theme.palette.border}`,
+    padding: theme.spacing(2.0),
+    fontFamily: 'sans-serif',
+  },
+}));
 
 export type WarningProps = {
   title?: string;
@@ -156,7 +159,7 @@ export function WarningPanel(props: WarningProps) {
     children,
     defaultExpanded,
   } = props;
-  const classes = useStyles({ severity });
+  const { classes } = useStyles({ severity });
 
   // If no severity or title provided, the heading will read simply "Warning"
   const subTitle = capitalize(severity) + (title ? `: ${title}` : '');

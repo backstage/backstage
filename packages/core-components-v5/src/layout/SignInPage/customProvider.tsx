@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useForm, UseFormRegisterReturn } from 'react-hook-form';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -34,7 +34,7 @@ const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
 /** @public */
 export type CustomProviderClassKey = 'form' | 'button';
 
-const useFormStyles = makeStyles(
+const useFormStyles = makeStyles({ name: 'BackstageCustomProvider' })(
   theme => ({
     form: {
       display: 'flex',
@@ -45,7 +45,6 @@ const useFormStyles = makeStyles(
       marginTop: theme.spacing(2),
     },
   }),
-  { name: 'BackstageCustomProvider' },
 );
 
 type Data = {
@@ -62,7 +61,7 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
 };
 
 const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
-  const classes = useFormStyles();
+  const { classes } = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
   });

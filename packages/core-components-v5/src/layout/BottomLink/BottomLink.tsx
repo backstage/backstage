@@ -18,29 +18,26 @@ import ArrowIcon from '@mui/icons-material/ArrowForward';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      maxWidth: 'fit-content',
-      padding: theme.spacing(2, 2, 2, 2.5),
-    },
-    boxTitle: {
-      margin: 0,
-      color: theme.palette.textSubtle,
-    },
-    arrow: {
-      color: theme.palette.textSubtle,
-    },
-  }),
-  { name: 'BackstageBottomLink' },
-);
+const useStyles = makeStyles({ name: 'BackstageBottomLink' })(theme => ({
+  root: {
+    maxWidth: 'fit-content',
+    padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  boxTitle: {
+    margin: 0,
+    color: theme.palette.textSubtle,
+  },
+  arrow: {
+    color: theme.palette.textSubtle,
+  },
+}));
 
 /** @public */
 export type BottomLinkProps = {
@@ -57,7 +54,7 @@ export type BottomLinkProps = {
  */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Box>

@@ -17,7 +17,7 @@
 import React, { Fragment, ReactElement } from 'react';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import createStyles from '@mui/styles/createStyles';
 import startCase from 'lodash/startCase';
 import Typography from '@mui/material/Typography';
@@ -52,16 +52,24 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 // Sub Components
-const StyledList = withStyles(listStyle, {
-  name: 'BackstageStructuredMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-const StyledNestedList = withStyles(nestedListStyle, {
-  name: 'BackstageStructuredMetadataTableNestedList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
+const StyledList = withStyles(
+  ({ classes, children }: StyleProps) => (
+    <MetadataList classes={classes}>{children}</MetadataList>
+  ),
+  listStyle,
+  {
+    name: 'BackstageStructuredMetadataTableList',
+  },
+);
+const StyledNestedList = withStyles(
+  ({ classes, children }: StyleProps) => (
+    <MetadataList classes={classes}>{children}</MetadataList>
+  ),
+  nestedListStyle,
+  {
+    name: 'BackstageStructuredMetadataTableNestedList',
+  },
+);
 
 function renderList(list: Array<any>, nested?: boolean) {
   const values = list.map((item: any, index: number) => (

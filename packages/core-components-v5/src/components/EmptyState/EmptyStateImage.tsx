@@ -19,7 +19,7 @@ import missingAnnotation from './assets/missingAnnotation.svg';
 import noInformation from './assets/noInformation.svg';
 import createComponent from './assets/createComponent.svg';
 import noBuild from './assets/noBuild.svg';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 type Props = {
   missing: 'field' | 'info' | 'content' | 'data';
@@ -28,23 +28,20 @@ type Props = {
 /** @public */
 export type EmptyStateImageClassKey = 'generalImg';
 
-const useStyles = makeStyles(
-  {
-    generalImg: {
-      width: '95%',
-      zIndex: 2,
-      position: 'relative',
-      left: '50%',
-      top: '50%',
-      transform: 'translate(-50%, 15%)',
-    },
+const useStyles = makeStyles({ name: 'BackstageEmptyStateImage' })({
+  generalImg: {
+    width: '95%',
+    zIndex: 2,
+    position: 'relative',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, 15%)',
   },
-  { name: 'BackstageEmptyStateImage' },
-);
+});
 
 /** @public */
 export const EmptyStateImage = ({ missing }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   switch (missing) {
     case 'field':
       return (

@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 
 /** @public */
@@ -33,7 +33,7 @@ const styles = (theme: Theme) =>
     },
   });
 
-const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
+const useStyles = makeStyles({ name: 'BackstageItemCardGrid' })(styles);
 
 /** @public */
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
@@ -61,7 +61,9 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  */
 export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
+  const { classes } = useStyles(otherProps, {
+    props: otherProps,
+  });
   return (
     <Box className={classes.root} {...otherProps}>
       {children}

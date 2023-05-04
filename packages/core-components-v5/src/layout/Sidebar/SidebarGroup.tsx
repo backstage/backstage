@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@mui/material/BottomNavigationAction';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '../../components';
@@ -48,25 +47,25 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   children?: React.ReactNode;
 }
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    root: {
-      flexGrow: 0,
-      margin: theme.spacing(0, 2),
-      color: theme.palette.navigation.color,
-    },
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+const useStyles = makeStyles()(theme => ({
+  root: {
+    flexGrow: 0,
+    margin: theme.spacing(0, 2),
+    color: theme.palette.navigation.color,
+  },
 
-    selected: props => ({
-      color: `${theme.palette.navigation.selectedColor}!important`,
-      borderTop: `solid ${props.sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-      marginTop: '-1px',
-    }),
-
-    label: {
-      display: 'none',
-    },
+  selected: props => ({
+    color: `${theme.palette.navigation.selectedColor}!important`,
+    borderTop: `solid ${props.sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+    marginTop: '-1px',
   }),
-);
+
+  label: {
+    display: 'none',
+  },
+}));
 
 /**
  * Returns a MUI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
@@ -78,7 +77,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
+  const { classes } = useStyles({ sidebarConfig });
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);

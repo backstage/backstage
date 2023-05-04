@@ -19,9 +19,8 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
-import classNames from 'classnames';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
 import React, { ReactNode } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
@@ -36,37 +35,35 @@ export type InfoCardClassKey =
   | 'headerAction'
   | 'headerContent';
 
-const useStyles = makeStyles(
-  theme => ({
-    noPadding: {
-      padding: 0,
-      '&:last-child': {
-        paddingBottom: 0,
-      },
+const useStyles = makeStyles({ name: 'BackstageInfoCard' })(theme => ({
+  noPadding: {
+    padding: 0,
+    '&:last-child': {
+      paddingBottom: 0,
     },
-    header: {
-      padding: theme.spacing(2, 2, 2, 2.5),
-    },
-    headerTitle: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    headerSubheader: {
-      paddingTop: theme.spacing(1),
-    },
-    headerAvatar: {},
-    headerAction: {},
-    headerContent: {},
-    subheader: {
-      display: 'flex',
-    },
-  }),
-  { name: 'BackstageInfoCard' },
-);
+  },
+  header: {
+    padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  headerTitle: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+  headerSubheader: {
+    paddingTop: theme.spacing(1),
+  },
+  headerAvatar: {},
+  headerAction: {},
+  headerContent: {},
+  subheader: {
+    display: 'flex',
+  },
+}));
 
 /** @public */
 export type CardActionsTopRightClassKey = 'root';
 
 const CardActionsTopRight = withStyles(
+  CardActions,
   theme => ({
     root: {
       display: 'inline-block',
@@ -75,7 +72,7 @@ const CardActionsTopRight = withStyles(
     },
   }),
   { name: 'BackstageInfoCardCardActionsTopRight' },
-)(CardActions);
+);
 
 const VARIANT_STYLES = {
   card: {
@@ -177,7 +174,7 @@ export function InfoCard(props: Props): JSX.Element {
     noPadding,
     titleTypographyProps,
   } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   /**
    * If variant is specified, we build up styles for that particular variant for both
    * the Card and the CardContent (since these need to be synced)
@@ -245,7 +242,7 @@ export function InfoCard(props: Props): JSX.Element {
         )}
         {divider && <Divider />}
         <CardContent
-          className={classNames(cardClassName, {
+          className={cx(cardClassName, {
             [classes.noPadding]: noPadding,
           })}
           style={calculatedCardStyle}

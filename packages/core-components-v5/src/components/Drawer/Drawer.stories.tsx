@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import createStyles from '@mui/styles/createStyles';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
@@ -29,7 +29,7 @@ export default {
   component: Drawer,
 };
 
-const useDrawerStyles = makeStyles((theme: Theme) =>
+const useDrawerStyles = makeStyles()((theme: Theme) =>
   createStyles({
     paper: {
       width: '50%',
@@ -39,7 +39,7 @@ const useDrawerStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const useDrawerContentStyles = makeStyles((theme: Theme) =>
+const useDrawerContentStyles = makeStyles()((theme: Theme) =>
   createStyles({
     header: {
       display: 'flex',
@@ -65,39 +65,42 @@ const DrawerContent = ({
 }: {
   toggleDrawer: (isOpen: boolean) => void;
 }) => {
-  const classes = useDrawerContentStyles();
+  const { classes } = useDrawerContentStyles();
 
-  return <>
-    <div className={classes.header}>
-      <Typography variant="h5">Side Panel Title</Typography>
-      <IconButton
-        key="dismiss"
-        title="Close the drawer"
-        onClick={() => toggleDrawer(false)}
-        color="inherit"
-        size="large">
-        <Close className={classes.icon} />
-      </IconButton>
-    </div>
-    <div className={classes.content} />
-    <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => toggleDrawer(false)}
-      >
-        Primary Action
-      </Button>
-      <Button
-        className={classes.secondaryAction}
-        variant="outlined"
-        color="primary"
-        onClick={() => toggleDrawer(false)}
-      >
-        Secondary Action
-      </Button>
-    </div>
-  </>;
+  return (
+    <>
+      <div className={classes.header}>
+        <Typography variant="h5">Side Panel Title</Typography>
+        <IconButton
+          key="dismiss"
+          title="Close the drawer"
+          onClick={() => toggleDrawer(false)}
+          color="inherit"
+          size="large"
+        >
+          <Close className={classes.icon} />
+        </IconButton>
+      </div>
+      <div className={classes.content} />
+      <div>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleDrawer(false)}
+        >
+          Primary Action
+        </Button>
+        <Button
+          className={classes.secondaryAction}
+          variant="outlined"
+          color="primary"
+          onClick={() => toggleDrawer(false)}
+        >
+          Secondary Action
+        </Button>
+      </div>
+    </>
+  );
 };
 
 /* Default drawer can toggle open or closed.
@@ -106,7 +109,7 @@ const DrawerContent = ({
  */
 export const DefaultDrawer = () => {
   const [isOpen, toggleDrawer] = useState(false);
-  const classes = useDrawerStyles();
+  const { classes } = useDrawerStyles();
 
   return (
     <>
@@ -140,7 +143,7 @@ export const DefaultDrawer = () => {
  */
 export const PersistentDrawer = () => {
   const [isOpen, toggleDrawer] = useState(false);
-  const classes = useDrawerStyles();
+  const { classes } = useDrawerStyles();
 
   return (
     <>

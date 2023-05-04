@@ -15,7 +15,7 @@
  */
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
@@ -27,13 +27,12 @@ import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 
 export type LoginRequestListItemClassKey = 'root';
 
-const useItemStyles = makeStyles<Theme>(
+const useItemStyles = makeStyles({ name: 'BackstageLoginRequestListItem' })(
   theme => ({
     root: {
       paddingLeft: theme.spacing(3),
     },
   }),
-  { name: 'BackstageLoginRequestListItem' },
 );
 
 type RowProps = {
@@ -43,7 +42,7 @@ type RowProps = {
 };
 
 const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
-  const classes = useItemStyles();
+  const { classes } = useItemStyles();
   const [error, setError] = useState<string>();
 
   const handleContinue = async () => {

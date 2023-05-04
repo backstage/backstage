@@ -15,7 +15,7 @@
  */
 import MaterialAvatar from '@mui/material/Avatar';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, { CSSProperties } from 'react';
 
@@ -24,21 +24,18 @@ import { extractInitials, stringToColor } from './utils';
 /** @public */
 export type AvatarClassKey = 'avatar';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    avatar: {
-      width: '4rem',
-      height: '4rem',
-      color: theme.palette.common.white,
-    },
-    avatarText: {
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-    },
-  }),
-  { name: 'BackstageAvatar' },
-);
+const useStyles = makeStyles({ name: 'BackstageAvatar' })((theme: Theme) => ({
+  avatar: {
+    width: '4rem',
+    height: '4rem',
+    color: theme.palette.common.white,
+  },
+  avatarText: {
+    fontWeight: theme.typography.fontWeightBold,
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+}));
 
 /**
  * Properties for {@link Avatar}.
@@ -70,7 +67,7 @@ export interface AvatarProps {
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   let styles = { ...customStyles };
   const fontStyles = {
     fontFamily: styles.fontFamily,

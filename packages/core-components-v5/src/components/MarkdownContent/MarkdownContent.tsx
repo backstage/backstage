@@ -14,56 +14,52 @@
  * limitations under the License.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 
 export type MarkdownContentClassKey = 'markdown';
 
-const useStyles = makeStyles(
-  theme => ({
-    markdown: {
-      '& table': {
-        borderCollapse: 'collapse',
-        border: `1px solid ${theme.palette.border}`,
-      },
-      '& th, & td': {
-        border: `1px solid ${theme.palette.border}`,
-        padding: theme.spacing(1),
-      },
-      '& td': {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        verticalAlign: 'middle',
-        lineHeight: '1',
-        margin: 0,
-        padding: theme.spacing(3, 2, 3, 2.5),
-        borderBottom: 0,
-      },
-      '& th': {
-        backgroundColor: theme.palette.background.paper,
-      },
-      '& tr': {
-        backgroundColor: theme.palette.background.paper,
-      },
-      '& tr:nth-child(odd)': {
-        backgroundColor: theme.palette.background.default,
-      },
-
-      '& a': {
-        color: theme.palette.link,
-      },
-      '& img': {
-        maxWidth: '100%',
-      },
+const useStyles = makeStyles({ name: 'BackstageMarkdownContent' })(theme => ({
+  markdown: {
+    '& table': {
+      borderCollapse: 'collapse',
+      border: `1px solid ${theme.palette.border}`,
     },
-  }),
-  { name: 'BackstageMarkdownContent' },
-);
+    '& th, & td': {
+      border: `1px solid ${theme.palette.border}`,
+      padding: theme.spacing(1),
+    },
+    '& td': {
+      wordBreak: 'break-word',
+      overflow: 'hidden',
+      verticalAlign: 'middle',
+      lineHeight: '1',
+      margin: 0,
+      padding: theme.spacing(3, 2, 3, 2.5),
+      borderBottom: 0,
+    },
+    '& th': {
+      backgroundColor: theme.palette.background.paper,
+    },
+    '& tr': {
+      backgroundColor: theme.palette.background.paper,
+    },
+    '& tr:nth-child(odd)': {
+      backgroundColor: theme.palette.background.default,
+    },
+
+    '& a': {
+      color: theme.palette.link,
+    },
+    '& img': {
+      maxWidth: '100%',
+    },
+  },
+}));
 
 type Props = {
   content: string;
@@ -124,7 +120,7 @@ export function MarkdownContent(props: Props) {
     transformImageUri,
     className,
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}

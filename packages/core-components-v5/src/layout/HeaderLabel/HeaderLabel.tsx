@@ -17,34 +17,31 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      textAlign: 'left',
-    },
-    label: {
-      color: theme.page.fontColor,
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: 0,
-      fontSize: theme.typography.fontSize,
-      marginBottom: theme.spacing(1) / 2,
-      lineHeight: 1,
-    },
-    value: {
-      color: alpha(theme.page.fontColor, 0.8),
-      fontSize: theme.typography.fontSize,
-      lineHeight: 1,
-    },
-  }),
-  { name: 'BackstageHeaderLabel' },
-);
+const useStyles = makeStyles({ name: 'BackstageHeaderLabel' })(theme => ({
+  root: {
+    textAlign: 'left',
+  },
+  label: {
+    color: theme.page.fontColor,
+    fontWeight: theme.typography.fontWeightBold,
+    letterSpacing: 0,
+    fontSize: theme.typography.fontSize,
+    marginBottom: theme.spacing(1) / 2,
+    lineHeight: 1,
+  },
+  value: {
+    color: alpha(theme.page.fontColor, 0.8),
+    fontSize: theme.typography.fontSize,
+    lineHeight: 1,
+  },
+}));
 
 type HeaderLabelContentProps = {
   value: React.ReactNode;
@@ -76,7 +73,7 @@ type HeaderLabelProps = {
  */
 export function HeaderLabel(props: HeaderLabelProps) {
   const { label, value, url } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const content = (
     <HeaderLabelContent
       className={classes.value}

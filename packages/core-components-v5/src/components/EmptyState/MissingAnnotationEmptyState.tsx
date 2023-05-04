@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
@@ -49,7 +48,7 @@ type Props = {
 
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageMissingAnnotationEmptyState' })(
   theme => ({
     code: {
       borderRadius: 6,
@@ -58,7 +57,6 @@ const useStyles = makeStyles(
         theme.palette.mode === 'dark' ? '#444' : theme.palette.common.white,
     },
   }),
-  { name: 'BackstageMissingAnnotationEmptyState' },
 );
 
 function generateLineNumbers(lineCount: number) {
@@ -98,7 +96,7 @@ export function MissingAnnotationEmptyState(props: Props) {
   const url =
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <EmptyState

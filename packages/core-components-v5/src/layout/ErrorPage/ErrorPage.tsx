@@ -18,7 +18,7 @@ import React from 'react';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useNavigate } from 'react-router-dom';
 
 import { Link } from '../../components/Link';
@@ -35,27 +35,24 @@ interface IErrorPageProps {
 /** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
-const useStyles = makeStyles(
-  theme => ({
-    container: {
-      padding: theme.spacing(8),
-      [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(2),
-      },
+const useStyles = makeStyles({ name: 'BackstageErrorPage' })(theme => ({
+  container: {
+    padding: theme.spacing(8),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(2),
     },
-    title: {
-      paddingBottom: theme.spacing(5),
-      [theme.breakpoints.down('sm')]: {
-        paddingBottom: theme.spacing(4),
-        fontSize: theme.typography.h3.fontSize,
-      },
+  },
+  title: {
+    paddingBottom: theme.spacing(5),
+    [theme.breakpoints.down('sm')]: {
+      paddingBottom: theme.spacing(4),
+      fontSize: theme.typography.h3.fontSize,
     },
-    subtitle: {
-      color: theme.palette.textSubtle,
-    },
-  }),
-  { name: 'BackstageErrorPage' },
-);
+  },
+  subtitle: {
+    color: theme.palette.textSubtle,
+  },
+}));
 
 /**
  * Error page with status and description
@@ -65,7 +62,7 @@ const useStyles = makeStyles(
  */
 export function ErrorPage(props: IErrorPageProps) {
   const { status, statusMessage, additionalInfo, supportUrl } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
 

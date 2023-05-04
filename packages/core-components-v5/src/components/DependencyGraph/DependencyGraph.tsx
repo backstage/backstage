@@ -20,7 +20,6 @@ import * as d3Selection from 'd3-selection';
 import { useTheme } from '@mui/material/styles';
 import dagre from 'dagre';
 import debounce from 'lodash/debounce';
-import { BackstageTheme } from '@backstage/theme';
 import { DependencyGraphTypes as Types } from './types';
 import { Node } from './Node';
 import { Edge, GraphEdge } from './Edge';
@@ -205,7 +204,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     fit = 'grow',
     ...svgProps
   } = props;
-  const theme: BackstageTheme = useTheme();
+  const theme = useTheme();
   const [containerWidth, setContainerWidth] = React.useState<number>(100);
   const [containerHeight, setContainerHeight] = React.useState<number>(100);
 

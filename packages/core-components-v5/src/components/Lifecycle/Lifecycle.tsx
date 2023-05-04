@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import CSS from 'csstype';
 import React from 'react';
@@ -25,26 +25,25 @@ type Props = CSS.Properties & {
 
 export type LifecycleClassKey = 'alpha' | 'beta';
 
-const useStyles = makeStyles(
-  theme => ({
-    alpha: {
-      color: theme.palette.common.white,
-      fontFamily: 'serif',
-      fontWeight: 'normal',
-      fontStyle: 'italic',
-    },
-    beta: {
-      color: '#4d65cc',
-      fontFamily: 'serif',
-      fontWeight: 'normal',
-      fontStyle: 'italic',
-    },
-  }),
-  { name: 'BackstageLifecycle' },
-);
+const useStyles = makeStyles({ name: 'BackstageLifecycle' })(theme => ({
+  alpha: {
+    color: theme.palette.common.white,
+    fontFamily: 'serif',
+    fontWeight: 'normal',
+    fontStyle: 'italic',
+  },
+  beta: {
+    color: '#4d65cc',
+    fontFamily: 'serif',
+    fontWeight: 'normal',
+    fontStyle: 'italic',
+  },
+}));
 
 export function Lifecycle(props: Props) {
-  const classes = useStyles(props);
+  const { classes } = useStyles(props, {
+    props: props,
+  });
   const { shorthand, alpha } = props;
   return shorthand ? (
     <Typography

@@ -18,9 +18,8 @@ import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
-import classnames from 'classnames';
 import { trimEnd } from 'lodash';
 import React, { ElementType } from 'react';
 import {
@@ -35,23 +34,20 @@ export function isReactRouterBeta(): boolean {
   return !obj.index;
 }
 
-const useStyles = makeStyles(
-  {
-    visuallyHidden: {
-      clip: 'rect(0 0 0 0)',
-      clipPath: 'inset(50%)',
-      overflow: 'hidden',
-      position: 'absolute',
-      whiteSpace: 'nowrap',
-      height: 1,
-      width: 1,
-    },
-    externalLink: {
-      position: 'relative',
-    },
+const useStyles = makeStyles({ name: 'Link' })({
+  visuallyHidden: {
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    overflow: 'hidden',
+    position: 'absolute',
+    whiteSpace: 'nowrap',
+    height: 1,
+    width: 1,
   },
-  { name: 'Link' },
-);
+  externalLink: {
+    position: 'relative',
+  },
+});
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
@@ -158,7 +154,7 @@ const getNodeText = (node: React.ReactNode): string => {
  */
 export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
-    const classes = useStyles();
+    const { classes, cx } = useStyles();
     const analytics = useAnalytics();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
@@ -191,7 +187,7 @@ export const Link = React.forwardRef<any, LinkProps>(
         ref={ref}
         href={to}
         onClick={handleClick}
-        className={classnames(classes.externalLink, props.className)}
+        className={cx(classes.externalLink, props.className)}
       >
         {props.children}
         <Typography component="span" className={classes.visuallyHidden}>

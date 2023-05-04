@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import MTable, {
   Column,
-  Icons,
   MaterialTableProps,
   MTableBody,
   MTableHeader,
   MTableToolbar,
   Options,
 } from '@material-table/core';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
-import Typography from '@mui/material/Typography';
 import AddBox from '@mui/icons-material/AddBox';
 import ArrowUpward from '@mui/icons-material/ArrowUpward';
 import Check from '@mui/icons-material/Check';
@@ -43,6 +35,10 @@ import LastPage from '@mui/icons-material/LastPage';
 import Remove from '@mui/icons-material/Remove';
 import SaveAlt from '@mui/icons-material/SaveAlt';
 import ViewColumn from '@mui/icons-material/ViewColumn';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { isEqual, transform } from 'lodash';
 import React, {
   forwardRef,
@@ -52,33 +48,65 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { makeStyles, withStyles } from 'tss-react/mui';
 
+import { Theme } from '@mui/material/styles';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
-const tableIcons: Icons = {
-  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-  DetailPanel: forwardRef((props, ref) => (
+const tableIcons = {
+  Add: forwardRef<SVGSVGElement>((props, ref) => (
+    <AddBox {...props} ref={ref} />
+  )),
+  Check: forwardRef<SVGSVGElement>((props, ref) => (
+    <Check {...props} ref={ref} />
+  )),
+  Clear: forwardRef<SVGSVGElement>((props, ref) => (
+    <Clear {...props} ref={ref} />
+  )),
+  Delete: forwardRef<SVGSVGElement>((props, ref) => (
+    <DeleteOutline {...props} ref={ref} />
+  )),
+  DetailPanel: forwardRef<SVGSVGElement>((props, ref) => (
     <ChevronRight {...props} ref={ref} />
   )),
-  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-  PreviousPage: forwardRef((props, ref) => (
+  Edit: forwardRef<SVGSVGElement>((props, ref) => (
+    <Edit {...props} ref={ref} />
+  )),
+  Export: forwardRef<SVGSVGElement>((props, ref) => (
+    <SaveAlt {...props} ref={ref} />
+  )),
+  Filter: forwardRef<SVGSVGElement>((props, ref) => (
+    <FilterList {...props} ref={ref} />
+  )),
+  FirstPage: forwardRef<SVGSVGElement>((props, ref) => (
+    <FirstPage {...props} ref={ref} />
+  )),
+  LastPage: forwardRef<SVGSVGElement>((props, ref) => (
+    <LastPage {...props} ref={ref} />
+  )),
+  NextPage: forwardRef<SVGSVGElement>((props, ref) => (
+    <ChevronRight {...props} ref={ref} />
+  )),
+  PreviousPage: forwardRef<SVGSVGElement>((props, ref) => (
     <ChevronLeft {...props} ref={ref} />
   )),
-  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-  Search: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-  SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
-  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  ResetSearch: forwardRef<SVGSVGElement>((props, ref) => (
+    <Clear {...props} ref={ref} />
+  )),
+  Search: forwardRef<SVGSVGElement>((props, ref) => (
+    <FilterList {...props} ref={ref} />
+  )),
+  SortArrow: forwardRef<SVGSVGElement>((props, ref) => (
+    <ArrowUpward {...props} ref={ref} />
+  )),
+  ThirdStateCheck: forwardRef<SVGSVGElement>((props, ref) => (
+    <Remove {...props} ref={ref} />
+  )),
+  ViewColumn: forwardRef<SVGSVGElement>((props, ref) => (
+    <ViewColumn {...props} ref={ref} />
+  )),
 };
 
 // TODO: Material table might already have such a function internally that we can use?
@@ -101,24 +129,26 @@ function extractValueByField(data: any, field: string): any | undefined {
 export type TableHeaderClassKey = 'header';
 
 const StyledMTableHeader = withStyles(
+  MTableHeader,
   theme => ({
     header: {
       padding: theme.spacing(1, 2, 1, 2.5),
       borderTop: `1px solid ${theme.palette.grey.A100}`,
       borderBottom: `1px solid ${theme.palette.grey.A100}`,
       // withStyles hasn't a generic overload for theme
-      color: (theme as BackstageTheme).palette.textSubtle,
+      color: theme.palette.textSubtle,
       fontWeight: theme.typography.fontWeightBold,
       position: 'static',
       wordBreak: 'normal',
     },
   }),
   { name: 'BackstageTableHeader' },
-)(MTableHeader);
+);
 
 export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
 
 const StyledMTableToolbar = withStyles(
+  MTableToolbar,
   theme => ({
     root: {
       padding: theme.spacing(3, 0, 2.5, 2.5),
@@ -133,12 +163,12 @@ const StyledMTableToolbar = withStyles(
     },
   }),
   { name: 'BackstageTableToolbar' },
-)(MTableToolbar);
+);
 
 /** @public */
 export type FiltersContainerClassKey = 'root' | 'title';
 
-const useFilterStyles = makeStyles(
+const useFilterStyles = makeStyles({ name: 'BackstageTableFiltersContainer' })(
   theme => ({
     root: {
       display: 'flex',
@@ -151,24 +181,20 @@ const useFilterStyles = makeStyles(
       whiteSpace: 'nowrap',
     },
   }),
-  { name: 'BackstageTableFiltersContainer' },
 );
 
 export type TableClassKey = 'root';
 
-const useTableStyles = makeStyles(
-  () => ({
-    root: {
-      display: 'flex',
-      alignItems: 'start',
-    },
-  }),
-  { name: 'BackstageTable' },
-);
+const useTableStyles = makeStyles({ name: 'BackstageTable' })(() => ({
+  root: {
+    display: 'flex',
+    alignItems: 'start',
+  },
+}));
 
 function convertColumns<T extends object>(
   columns: TableColumn<T>[],
-  theme: BackstageTheme,
+  theme: Theme,
 ): TableColumn<T>[] {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = column.headerStyle ?? {};
@@ -259,7 +285,7 @@ export function TableToolbar(toolbarProps: {
     selectedFiltersLength,
     toggleFilters,
   } = toolbarProps;
-  const filtersClasses = useFilterStyles();
+  const { classes: filtersClasses } = useFilterStyles();
   const onSearchChanged = useCallback(
     (searchText: string) => {
       toolbarProps.onSearchChanged(searchText);
@@ -318,7 +344,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     components,
     ...restProps
   } = props;
-  const tableClasses = useTableStyles();
+  const { classes: tableClasses } = useTableStyles();
 
   const theme = useTheme();
 

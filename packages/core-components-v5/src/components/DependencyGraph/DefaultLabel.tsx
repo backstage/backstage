@@ -15,25 +15,23 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
+import { makeStyles } from 'tss-react/mui';
 import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultLabelClassKey = 'text';
 
-const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+const useStyles = makeStyles({ name: 'BackstageDependencyGraphDefaultLabel' })(
+  theme => ({
     text: {
       fill: theme.palette.textContrast,
     },
   }),
-  { name: 'BackstageDependencyGraphDefaultLabel' },
 );
 
 /** @public */
 export function DefaultLabel({ edge: { label } }: Types.RenderLabelProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <text className={classes.text} textAnchor="middle">
       {label}

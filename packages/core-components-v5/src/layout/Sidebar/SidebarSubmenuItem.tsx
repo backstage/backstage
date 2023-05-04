@@ -20,15 +20,14 @@ import Button from '@mui/material/Button';
 import SvgIcon from '@mui/material/SvgIcon';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
-import classnames from 'classnames';
+import { makeStyles } from 'tss-react/mui';
 import React, { useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageSidebarSubmenuItem' })(
   theme => ({
     item: {
       height: 48,
@@ -97,7 +96,6 @@ const useStyles = makeStyles(
       'text-overflow': 'ellipsis',
     },
   }),
-  { name: 'BackstageSidebarSubmenuItem' },
 );
 
 /**
@@ -138,7 +136,7 @@ export type SidebarSubmenuItemProps = {
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, subtitle, to, icon: Icon, dropdownItems } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
@@ -164,7 +162,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             role="button"
             onClick={handleClickDropdown}
             onTouchStart={e => e.stopPropagation()}
-            className={classnames(
+            className={cx(
               classes.item,
               isActive ? classes.selected : undefined,
             )}
@@ -220,10 +218,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
         <Link
           to={to!}
           underline="none"
-          className={classnames(
-            classes.item,
-            isActive ? classes.selected : undefined,
-          )}
+          className={cx(classes.item, isActive ? classes.selected : undefined)}
           onClick={closeSubmenu}
           onTouchStart={e => e.stopPropagation()}
         >

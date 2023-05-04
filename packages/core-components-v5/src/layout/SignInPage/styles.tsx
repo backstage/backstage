@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 
 export type SignInPageClassKey = 'container' | 'item';
 
-export const useStyles = makeStyles(
-  {
-    container: {
-      padding: 0,
-      listStyle: 'none',
-    },
-    item: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
-      maxWidth: '400px',
-      margin: 0,
-      padding: 0,
-    },
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles({ name: 'BackstageSignInPage' })({
+  container: {
+    padding: 0,
+    listStyle: 'none',
   },
-  { name: 'BackstageSignInPage' },
-);
+  item: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    maxWidth: '400px',
+    margin: 0,
+    padding: 0,
+  },
+});
 
 export const GridItem = ({ children }: { children: JSX.Element }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Grid component="li" item classes={classes}>

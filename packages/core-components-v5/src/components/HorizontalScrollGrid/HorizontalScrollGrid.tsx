@@ -17,10 +17,9 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
 
 const generateGradientStops = (themeType: 'dark' | 'light') => {
@@ -69,7 +68,7 @@ export type HorizontalScrollGridClassKey =
   | 'buttonLeft'
   | 'buttonRight';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles({ name: 'BackstageHorizontalScrollGrid' })(
   theme => ({
     root: {
       position: 'relative',
@@ -116,7 +115,6 @@ const useStyles = makeStyles<Theme>(
       right: -theme.spacing(2),
     },
   }),
-  { name: 'BackstageHorizontalScrollGrid' },
 );
 
 // Returns scroll distance from left and right
@@ -213,7 +211,9 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     children,
     ...otherProps
   } = props;
-  const classes = useStyles(props);
+  const { classes, cx } = useStyles(props, {
+    props: props,
+  });
   const ref = React.useRef<HTMLElement>();
 
   const [scrollLeft, scrollRight] = useScrollDistance(ref);
@@ -239,12 +239,12 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
         {children}
       </Grid>
       <Box
-        className={classNames(classes.fade, classes.fadeLeft, {
+        className={cx(classes.fade, classes.fadeLeft, {
           [classes.fadeHidden]: scrollLeft === 0,
         })}
       />
       <Box
-        className={classNames(classes.fade, classes.fadeRight, {
+        className={cx(classes.fade, classes.fadeRight, {
           [classes.fadeHidden]: scrollRight === 0,
         })}
       />
@@ -252,8 +252,9 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
         <IconButton
           title="Scroll Left"
           onClick={() => handleScrollClick(false)}
-          className={classNames(classes.button, classes.buttonLeft, {})}
-          size="large">
+          className={cx(classes.button, classes.buttonLeft, {})}
+          size="large"
+        >
           <ChevronLeftIcon />
         </IconButton>
       )}
@@ -261,8 +262,9 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
         <IconButton
           title="Scroll Right"
           onClick={() => handleScrollClick(true)}
-          className={classNames(classes.button, classes.buttonRight, {})}
-          size="large">
+          className={cx(classes.button, classes.buttonRight, {})}
+          size="large"
+        >
           <ChevronRightIcon />
         </IconButton>
       )}

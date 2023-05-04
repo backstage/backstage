@@ -15,11 +15,10 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
@@ -60,46 +59,48 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    root: {
-      position: 'fixed',
-      backgroundColor: theme.palette.navigation.background,
-      color: theme.palette.navigation.color,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: theme.zIndex.snackbar,
-      // SidebarDivider color
-      borderTop: '1px solid #383838',
-    },
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
+// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
+const useStyles = makeStyles()(theme => ({
+  root: {
+    position: 'fixed',
+    backgroundColor: theme.palette.navigation.background,
+    color: theme.palette.navigation.color,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: theme.zIndex.snackbar,
+    // SidebarDivider color
+    borderTop: '1px solid #383838',
+  },
 
-    overlay: props => ({
-      background: theme.palette.navigation.background,
-      width: '100%',
-      bottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-      height: `calc(100% - ${props.sidebarConfig.mobileSidebarHeight}px)`,
-      flex: '0 1 auto',
-      overflow: 'auto',
-    }),
-
-    overlayHeader: {
-      display: 'flex',
-      color: theme.palette.text.primary,
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: theme.spacing(2, 3),
-    },
-
-    overlayHeaderClose: {
-      color: theme.palette.text.primary,
-    },
-
-    marginMobileSidebar: props => ({
-      marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-    }),
+  overlay: props => ({
+    background: theme.palette.navigation.background,
+    width: '100%',
+    bottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
+    height: `calc(100% - ${props.sidebarConfig.mobileSidebarHeight}px)`,
+    flex: '0 1 auto',
+    overflow: 'auto',
   }),
-);
+
+  overlayHeader: {
+    display: 'flex',
+    color: theme.palette.text.primary,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: theme.spacing(2, 3),
+  },
+
+  overlayHeaderClose: {
+    color: theme.palette.text.primary,
+  },
+
+  marginMobileSidebar: props => ({
+    marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
+  }),
+}));
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(
@@ -117,7 +118,7 @@ const OverlayMenu = ({
   onClose,
 }: OverlayMenuProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
+  const { classes } = useStyles({ sidebarConfig });
 
   return (
     <Drawer
@@ -137,7 +138,8 @@ const OverlayMenu = ({
         <IconButton
           onClick={onClose}
           classes={{ root: classes.overlayHeaderClose }}
-          size="large">
+          size="large"
+        >
           <CloseIcon />
         </IconButton>
       </Box>
@@ -169,7 +171,7 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
 export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
-  const classes = useStyles({ sidebarConfig });
+  const { classes } = useStyles({ sidebarConfig });
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);

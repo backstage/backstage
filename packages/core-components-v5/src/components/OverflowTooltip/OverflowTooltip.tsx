@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
@@ -30,19 +30,16 @@ type Props = {
 
 export type OverflowTooltipClassKey = 'container';
 
-const useStyles = makeStyles(
-  {
-    container: {
-      overflow: 'visible !important',
-    },
+const useStyles = makeStyles({ name: 'BackstageOverflowTooltip' })({
+  container: {
+    overflow: 'visible !important',
   },
-  { name: 'BackstageOverflowTooltip' },
-);
+});
 
 export function OverflowTooltip(props: Props) {
   const [hover, setHover] = useState(false);
   const isMounted = useIsMounted();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const handleToggled = (truncated: boolean) => {
     if (isMounted()) {

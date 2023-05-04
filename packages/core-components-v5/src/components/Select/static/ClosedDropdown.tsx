@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import createStyles from '@mui/styles/createStyles';
 import SvgIcon from '@mui/material/SvgIcon';
 
 /** @public */
 export type ClosedDropdownClassKey = 'icon';
 
-const useStyles = makeStyles(
-  theme =>
-    createStyles({
-      icon: {
-        position: 'absolute',
-        right: theme.spacing(0.5),
-        pointerEvents: 'none',
-      },
-    }),
-  { name: 'BackstageClosedDropdown' },
+const useStyles = makeStyles({ name: 'BackstageClosedDropdown' })(theme =>
+  createStyles({
+    icon: {
+      position: 'absolute',
+      right: theme.spacing(0.5),
+      pointerEvents: 'none',
+    },
+  }),
 );
 
 const ClosedDropdown = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <SvgIcon
       className={classes.icon}

@@ -15,7 +15,7 @@
  */
 
 import { ResponseError } from '@backstage/errors';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -26,7 +26,7 @@ import { ErrorPanel, ErrorPanelProps } from '../ErrorPanel';
 
 export type ResponseErrorPanelClassKey = 'text' | 'divider';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageResponseErrorPanel' })(
   theme => ({
     text: {
       fontFamily: 'monospace',
@@ -38,7 +38,6 @@ const useStyles = makeStyles(
       margin: theme.spacing(2),
     },
   }),
-  { name: 'BackstageResponseErrorPanel' },
 );
 
 /**
@@ -50,7 +49,7 @@ const useStyles = makeStyles(
  */
 export function ResponseErrorPanel(props: ErrorPanelProps) {
   const { title, error, defaultExpanded } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   if (error.name !== 'ResponseError') {
     return (

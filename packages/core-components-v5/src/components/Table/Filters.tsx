@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React, { useEffect, useState } from 'react';
 
 import { Select } from '../Select';
@@ -24,7 +23,7 @@ import { SelectProps } from '../Select/Select';
 
 export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 
-const useFilterStyles = makeStyles(
+const useFilterStyles = makeStyles({ name: 'BackstageTableFilters' })(
   theme => ({
     root: {
       height: '100%',
@@ -52,7 +51,6 @@ const useFilterStyles = makeStyles(
       },
     },
   }),
-  { name: 'BackstageTableFilters' },
 );
 
 export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
@@ -73,7 +71,7 @@ type Props = {
 };
 
 export const Filters = (props: Props) => {
-  const classes = useFilterStyles();
+  const { classes } = useFilterStyles();
 
   const { onChangeFilters } = props;
 

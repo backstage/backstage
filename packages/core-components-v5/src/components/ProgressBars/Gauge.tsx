@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { BackstagePalette, BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { Palette, useTheme } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
@@ -29,38 +28,35 @@ export type GaugeClassKey =
   | 'circle'
   | 'colorUnknown';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      position: 'relative',
-      lineHeight: 0,
-    },
-    overlay: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -60%)',
-      fontSize: theme.typography.pxToRem(45),
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.textContrast,
-    },
-    description: {
-      fontSize: '100%',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      position: 'absolute',
-      wordBreak: 'break-all',
-      display: 'inline-block',
-    },
-    circle: {
-      width: '80%',
-      transform: 'translate(10%, 0)',
-    },
-    colorUnknown: {},
-  }),
-  { name: 'BackstageGauge' },
-);
+const useStyles = makeStyles({ name: 'BackstageGauge' })(theme => ({
+  root: {
+    position: 'relative',
+    lineHeight: 0,
+  },
+  overlay: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -60%)',
+    fontSize: theme.typography.pxToRem(45),
+    fontWeight: theme.typography.fontWeightBold,
+    color: theme.palette.textContrast,
+  },
+  description: {
+    fontSize: '100%',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    position: 'absolute',
+    wordBreak: 'break-all',
+    display: 'inline-block',
+  },
+  circle: {
+    width: '80%',
+    transform: 'translate(10%, 0)',
+  },
+  colorUnknown: {},
+}));
 
 /** @public */
 export type GaugeProps = {
@@ -75,7 +71,7 @@ export type GaugeProps = {
 
 /** @public */
 export type GaugePropsGetColorOptions = {
-  palette: BackstagePalette;
+  palette: Palette;
   value: number;
   inverse?: boolean;
   max?: number;
@@ -123,7 +119,9 @@ export const getProgressColor: GaugePropsGetColor = ({
 export function Gauge(props: GaugeProps) {
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
-  const classes = useStyles(props);
+  const { classes } = useStyles(props, {
+    props: props,
+  });
   const { palette } = useTheme();
   const { value, fractional, inverse, unit, max, description } = {
     ...defaultGaugeProps,

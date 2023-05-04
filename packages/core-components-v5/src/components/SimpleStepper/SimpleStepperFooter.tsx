@@ -15,7 +15,7 @@
  */
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React, { PropsWithChildren, ReactNode, useContext } from 'react';
 
 import { VerticalStepperContext } from './SimpleStepper';
@@ -23,7 +23,7 @@ import { StepActions } from './types';
 
 export type SimpleStepperFooterClassKey = 'root';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles({ name: 'BackstageSimpleStepperFooter' })(
   theme => ({
     root: {
       marginTop: theme.spacing(3),
@@ -32,7 +32,6 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'BackstageSimpleStepperFooter' },
 );
 
 interface CommonBtnProps {
@@ -108,7 +107,7 @@ export const SimpleStepperFooter = ({
   actions = {},
   children,
 }: PropsWithChildren<SimpleStepperFooterProps>) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const {
     stepperLength,
     stepIndex,

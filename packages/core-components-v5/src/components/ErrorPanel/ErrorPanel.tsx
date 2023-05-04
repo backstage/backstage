@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -25,20 +25,17 @@ import { WarningPanel } from '../WarningPanel';
 /** @public */
 export type ErrorPanelClassKey = 'text' | 'divider';
 
-const useStyles = makeStyles(
-  theme => ({
-    text: {
-      fontFamily: 'monospace',
-      whiteSpace: 'pre',
-      overflowX: 'auto',
-      marginRight: theme.spacing(2),
-    },
-    divider: {
-      margin: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageErrorPanel' },
-);
+const useStyles = makeStyles({ name: 'BackstageErrorPanel' })(theme => ({
+  text: {
+    fontFamily: 'monospace',
+    whiteSpace: 'pre',
+    overflowX: 'auto',
+    marginRight: theme.spacing(2),
+  },
+  divider: {
+    margin: theme.spacing(2),
+  },
+}));
 
 type ErrorListProps = {
   error: string;
@@ -54,7 +51,7 @@ const ErrorList = ({
   stack,
   children,
 }: PropsWithChildren<ErrorListProps>) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <List dense>

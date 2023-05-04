@@ -22,12 +22,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import createStyles from '@mui/styles/createStyles';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles()((theme: Theme) =>
   createStyles({
     closeButton: {
       position: 'absolute',
@@ -45,7 +45,7 @@ export default {
 
 export const Default = () => {
   const [open, setOpen] = useState(false);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const openDialog = () => {
     setOpen(true);
@@ -91,35 +91,38 @@ export const Default = () => {
     );
   };
 
-  return <>
-    <Button color="primary" variant="contained" onClick={openDialog}>
-      Open Dialog
-    </Button>
-    <Dialog
-      open={open}
-      onClose={closeDialog}
-      aria-labelledby="dialog-title"
-      aria-describedby="dialog-description"
-    >
-      <DialogTitle id="dialog-title">
-        Dialog Box Title
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={closeDialog}
-          size="large">
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>{dialogContent()}</DialogContent>
-      <DialogActions>
-        <Button color="primary" onClick={closeDialog}>
-          Secondary action
-        </Button>
-        <Button color="primary" onClick={closeDialog}>
-          Primary action
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </>;
+  return (
+    <>
+      <Button color="primary" variant="contained" onClick={openDialog}>
+        Open Dialog
+      </Button>
+      <Dialog
+        open={open}
+        onClose={closeDialog}
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-description"
+      >
+        <DialogTitle id="dialog-title">
+          Dialog Box Title
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={closeDialog}
+            size="large"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>{dialogContent()}</DialogContent>
+        <DialogActions>
+          <Button color="primary" onClick={closeDialog}>
+            Secondary action
+          </Button>
+          <Button color="primary" onClick={closeDialog}>
+            Primary action
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };

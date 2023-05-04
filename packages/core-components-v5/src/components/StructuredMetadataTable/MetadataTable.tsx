@@ -18,7 +18,7 @@ import ListItem from '@mui/material/ListItem';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -66,12 +66,12 @@ const listItemStyles = (theme: Theme) =>
     random: {},
   });
 
-const TitleCell = withStyles(tableTitleCellStyles, {
+const TitleCell = withStyles(TableCell, tableTitleCellStyles, {
   name: 'BackstageMetadataTableTitleCell',
-})(TableCell);
-const ContentCell = withStyles(tableContentCellStyles, {
+});
+const ContentCell = withStyles(TableCell, tableContentCellStyles, {
   name: 'BackstageMetadataTableCell',
-})(TableCell);
+});
 
 export const MetadataTable = ({
   dense,
@@ -105,16 +105,24 @@ interface StyleProps extends WithStyles {
   children?: React.ReactNode;
 }
 
-export const MetadataList = withStyles(listStyles, {
-  name: 'BackstageMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <List disablePadding className={classes.root}>
-    {children}
-  </List>
-));
+export const MetadataList = withStyles(
+  ({ classes, children }: StyleProps) => (
+    <List disablePadding className={classes.root}>
+      {children}
+    </List>
+  ),
+  listStyles,
+  {
+    name: 'BackstageMetadataTableList',
+  },
+);
 
-export const MetadataListItem = withStyles(listItemStyles, {
-  name: 'BackstageMetadataTableListItem',
-})(({ classes, children }: StyleProps) => (
-  <ListItem className={classes.root}>{children}</ListItem>
-));
+export const MetadataListItem = withStyles(
+  ({ classes, children }: StyleProps) => (
+    <ListItem className={classes.root}>{children}</ListItem>
+  ),
+  listItemStyles,
+  {
+    name: 'BackstageMetadataTableListItem',
+  },
+);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -33,7 +33,7 @@ export default {
 const text =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
   grid: {
     gridTemplateColumns: 'repeat(auto-fill, 12em)',
   },
@@ -74,7 +74,7 @@ export const Default = () => (
 );
 
 export const Styling = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <MemoryRouter>
       <Typography paragraph>
