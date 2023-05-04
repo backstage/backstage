@@ -211,5 +211,4 @@ nav:
       - ADR013 - Plugin Package Structure: 'architecture-decisions/adr013-use-node-fetch.md'
   - Support:
       - Backstage Project Structure: 'support/project-structure.md'
-  - Glossary: glossary.md
   - FAQ: FAQ.md
