@@ -51,6 +51,11 @@ backend:
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
+  '/newrelic':
+    target: https://api.newrelic.com/
+    headers:
+      X-Api-Key: <NRAK-F59AA8265UR4X6VL7HJIM1BHELL>
+
   '/circleci/api':
     target: https://circleci.com/api/v1.1
     headers:
