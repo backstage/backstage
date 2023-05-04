@@ -88,7 +88,7 @@ export type ScaffolderOutputLink = {
 export type ScaffolderOutputText = {
   title?: string;
   icon?: string;
-  data?: string;
+  content?: string;
 };
 
 /** @public */

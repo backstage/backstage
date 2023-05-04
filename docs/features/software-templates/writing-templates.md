@@ -522,8 +522,8 @@ output:
       icon: catalog
       entityRef: ${{ steps['register'].output.entityRef }} # link to the entity that has been ingested to the catalog
   text:
-    - title: More data
-      data: |
+    - title: More information
+      content: |
         Access the \[remote repository\](${{ steps['publish'].output.remoteUrl }}).
 ```
 

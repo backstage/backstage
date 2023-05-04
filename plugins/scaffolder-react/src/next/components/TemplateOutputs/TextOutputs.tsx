@@ -38,7 +38,7 @@ export const TextOutputs = (props: {
   return (
     <>
       {text
-        .filter(({ data }) => data)
+        .filter(({ content }) => content !== undefined)
         .map(({ title, icon }, i) => {
           const Icon = iconResolver(icon);
           return (

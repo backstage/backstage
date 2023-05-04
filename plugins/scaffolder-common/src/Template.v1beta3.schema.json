@@ -221,15 +221,15 @@
                 },
                 "text": {
                   "type": "array",
-                  "description": "A list of text blobs, like output data from the template.",
+                  "description": "A list of Markdown text blobs, like output data from the template.",
                   "items": {
                     "type": "object",
                     "required": [],
                     "properties": {
                       "title": {
                         "type": "string",
-                        "description": "A user friendly display name for the text blob.",
-                        "examples": ["Output Data"],
+                        "description": "A user friendly display name for the text.",
+                        "examples": ["Output Content"],
                         "minLength": 1
                       },
                       "icon": {
@@ -238,10 +238,10 @@
                         "examples": ["dashboard"],
                         "minLength": 1
                       },
-                      "data": {
+                      "content": {
                         "type": "string",
-                        "description": "The text blob to display in the UI.",
-                        "examples": ["{}"]
+                        "description": "The text blob to display in the UI, rendered as Markdown.",
+                        "examples": ["**hey** _I'm_ Markdown"]
                       }
                     }
                   }
