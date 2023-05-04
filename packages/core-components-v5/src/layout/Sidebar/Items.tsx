@@ -50,6 +50,7 @@ import {
 import { makeStyles } from 'tss-react/mui';
 
 import Button from '@mui/material/Button';
+import { clsx } from 'clsx';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
@@ -61,7 +62,6 @@ import {
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import { isLocationMatch } from './utils';
-import classnames from 'classnames';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -334,10 +334,7 @@ export const WorkaroundNavLink = React.forwardRef<
       ref={ref}
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
-      className={classnames([
-        className,
-        isActive ? activeClassName : undefined,
-      ])}
+      className={clsx([className, isActive ? activeClassName : undefined])}
     />
   );
 });
@@ -383,7 +380,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
-      className={classnames({ [classes.classes.closedItemIcon]: !isOpen })}
+      className={clsx({ [classes.classes.closedItemIcon]: !isOpen })}
     >
       {displayItemIcon}
     </Badge>
@@ -407,7 +404,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const childProps = {
     onClick,
-    className: classnames(
+    className: clsx(
       className,
       classes.classes.root,
       isOpen ? classes.classes.open : classes.classes.closed,
@@ -521,7 +518,7 @@ const SidebarItemWithSubmenu = ({
         onMouseLeave={handleMouseLeave}
         onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
         onMouseEnter={handleMouseEnter}
-        className={classnames(isHoveredOn && classes.classes.highlighted)}
+        className={clsx(isHoveredOn && classes.classes.highlighted)}
       >
         <SidebarItemBase
           hasSubmenu

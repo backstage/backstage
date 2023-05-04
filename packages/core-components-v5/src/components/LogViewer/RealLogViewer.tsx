@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { useEffect, useMemo, useRef } from 'react';
+
+import CopyIcon from '@mui/icons-material/FileCopy';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import CopyIcon from '@mui/icons-material/FileCopy';
-import classnames from 'classnames';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { clsx } from 'clsx';
 import { useLocation } from 'react-router-dom';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
@@ -88,7 +89,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
               return (
                 <Box
                   style={{ ...style }}
-                  className={classnames(classes.line, {
+                  className={clsx(classes.line, {
                     [classes.lineSelected]: selection.isSelected(lineNumber),
                   })}
                 >

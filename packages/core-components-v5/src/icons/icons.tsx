@@ -16,6 +16,7 @@
 
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import MuiBrokenImageIcon from '@mui/icons-material/BrokenImage';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import React, { ComponentProps } from 'react';
 
 type IconComponentProps = ComponentProps<IconComponent>;
@@ -23,7 +24,11 @@ type IconComponentProps = ComponentProps<IconComponent>;
 function useSystemIcon(key: string, props: IconComponentProps) {
   const app = useApp();
   const Icon = app.getSystemIcon(key);
-  return Icon ? <Icon {...props} /> : <MuiBrokenImageIcon {...props} />;
+  return Icon ? (
+    <Icon {...props} />
+  ) : (
+    <MuiBrokenImageIcon {...(props as SvgIconProps)} />
+  );
 }
 
 // Should match the list of overridable system icon keys in @backstage/core-app-api

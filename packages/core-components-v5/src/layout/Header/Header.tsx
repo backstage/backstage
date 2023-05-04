@@ -101,7 +101,7 @@ const useStyles = makeStyles({ name: 'BackstageHeader' })(theme => ({
   },
 }));
 
-type HeaderStyles = ReturnType<typeof useStyles>;
+type HeaderStyles = ReturnType<typeof useStyles>['classes'];
 
 type Props = {
   component?: ReactNode;

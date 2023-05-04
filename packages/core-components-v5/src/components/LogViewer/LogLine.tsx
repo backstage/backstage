@@ -17,36 +17,36 @@
 import React, { useMemo } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
-import classnames from 'classnames';
 import { useStyles } from './styles';
 import Linkify from 'linkify-react';
 import { Link } from '../Link';
+import clsx from 'clsx';
 
 export function getModifierClasses(
-  styles: ReturnType<typeof useStyles>,
+  classes: ReturnType<typeof useStyles>['classes'],
   modifiers: ChunkModifiers,
 ) {
   const classNames = new Array<string>();
   if (modifiers.bold) {
-    classNames.push(styles.classes.modifierBold);
+    classNames.push(classes.modifierBold);
   }
   if (modifiers.italic) {
-    classNames.push(styles.classes.modifierItalic);
+    classNames.push(classes.modifierItalic);
   }
   if (modifiers.underline) {
-    classNames.push(styles.classes.modifierUnderline);
+    classNames.push(classes.modifierUnderline);
   }
   if (modifiers.foreground) {
     const key = `modifierForeground${startCase(
       modifiers.foreground,
-    )}` as keyof typeof styles.classes;
-    classNames.push(styles.classes[key]);
+    )}` as keyof typeof classes;
+    classNames.push(classes[key]);
   }
   if (modifiers.background) {
     const key = `modifierBackground${startCase(
       modifiers.background,
-    )}` as keyof typeof styles.classes;
-    classNames.push(styles.classes[key]);
+    )}` as keyof typeof classes;
+    classNames.push(classes[key]);
   }
   return classNames.length > 0 ? classNames.join(' ') : undefined;
 }
@@ -156,14 +156,14 @@ const renderLink = ({
 
 export interface LogLineProps {
   line: AnsiLine;
-  styles: ReturnType<typeof useStyles>;
+  classes: ReturnType<typeof useStyles>['classes'];
   searchText: string;
   highlightResultIndex?: number;
 }
 
 export function LogLine({
   line,
-  styles,
+  classes,
   searchText,
   highlightResultIndex,
 }: LogLineProps) {
@@ -178,18 +178,18 @@ export function LogLine({
         // eslint-disable-next-line react/forbid-elements
         <span
           key={index}
-          className={classnames(
-            getModifierClasses(styles, modifiers),
+          className={clsx(
+            getModifierClasses(classes, modifiers),
             highlight !== undefined &&
               (highlight === highlightResultIndex
-                ? styles.classes.textSelectedHighlight
-                : styles.classes.textHighlight),
+                ? classes.textSelectedHighlight
+                : classes.textHighlight),
           )}
         >
           <Linkify options={{ render: renderLink }}>{text}</Linkify>
         </span>
       )),
-    [chunks, highlightResultIndex, styles],
+    [chunks, highlightResultIndex, classes],
   );
 
   return <>{elements}</>;
