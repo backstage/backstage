@@ -19,22 +19,20 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
 import { makeStyles } from 'tss-react/mui';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      color: theme.palette.common.white,
-      padding: theme.spacing(2, 2, 3),
-      backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
-      backgroundPosition: 0,
-      backgroundSize: 'inherit',
-    },
-  });
+const styles = (theme: Theme) => ({
+  root: {
+    color: theme.palette.common.white,
+    padding: theme.spacing(2, 2, 3),
+    backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
+    backgroundPosition: 0,
+    backgroundSize: 'inherit',
+  },
+});
 
 const useStyles = makeStyles({ name: 'BackstageItemCardHeader' })(styles);
 
@@ -78,9 +76,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
-  const { classes } = useStyles(props, {
-    props: props,
-  });
+  const { classes } = useStyles();
   return (
     <Box className={classes.root}>
       {subtitle && (

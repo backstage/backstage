@@ -50,7 +50,7 @@ describe('getModifierClasses', () => {
   };
   const curried = (modifiers: ChunkModifiers) =>
     getModifierClasses(
-      classes as Parameters<typeof getModifierClasses>[0],
+      { classes } as Parameters<typeof getModifierClasses>[0],
       modifiers,
     );
 
@@ -371,7 +371,7 @@ describe('linkify', () => {
     const rendered = await renderInTestApp(
       <LogLine
         line={testText}
-        classes={classes as Parameters<typeof getModifierClasses>[0]}
+        styles={classes as Parameters<typeof getModifierClasses>[0]}
         searchText=""
       />,
     );

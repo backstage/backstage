@@ -15,21 +15,18 @@
  */
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
-import createStyles from '@mui/styles/createStyles';
 import SvgIcon from '@mui/material/SvgIcon';
 
 /** @public */
 export type ClosedDropdownClassKey = 'icon';
 
-const useStyles = makeStyles({ name: 'BackstageClosedDropdown' })(theme =>
-  createStyles({
-    icon: {
-      position: 'absolute',
-      right: theme.spacing(0.5),
-      pointerEvents: 'none',
-    },
-  }),
-);
+const useStyles = makeStyles({ name: 'BackstageClosedDropdown' })(theme => ({
+  icon: {
+    position: 'absolute',
+    right: theme.spacing(0.5),
+    pointerEvents: 'none',
+  },
+}));
 
 const ClosedDropdown = () => {
   const { classes } = useStyles();

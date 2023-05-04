@@ -33,7 +33,8 @@ const useStyles = makeStyles({ name: 'BackstageHeaderLabel' })(theme => ({
     fontWeight: theme.typography.fontWeightBold,
     letterSpacing: 0,
     fontSize: theme.typography.fontSize,
-    marginBottom: theme.spacing(1) / 2,
+    // TODO: Use Theme Variable
+    marginBottom: '4px',
     lineHeight: 1,
   },
   value: {

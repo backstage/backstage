@@ -23,30 +23,30 @@ import Linkify from 'linkify-react';
 import { Link } from '../Link';
 
 export function getModifierClasses(
-  classes: ReturnType<typeof useStyles>,
+  styles: ReturnType<typeof useStyles>,
   modifiers: ChunkModifiers,
 ) {
   const classNames = new Array<string>();
   if (modifiers.bold) {
-    classNames.push(classes.modifierBold);
+    classNames.push(styles.classes.modifierBold);
   }
   if (modifiers.italic) {
-    classNames.push(classes.modifierItalic);
+    classNames.push(styles.classes.modifierItalic);
   }
   if (modifiers.underline) {
-    classNames.push(classes.modifierUnderline);
+    classNames.push(styles.classes.modifierUnderline);
   }
   if (modifiers.foreground) {
     const key = `modifierForeground${startCase(
       modifiers.foreground,
-    )}` as keyof typeof classes;
-    classNames.push(classes[key]);
+    )}` as keyof typeof styles.classes;
+    classNames.push(styles.classes[key]);
   }
   if (modifiers.background) {
     const key = `modifierBackground${startCase(
       modifiers.background,
-    )}` as keyof typeof classes;
-    classNames.push(classes[key]);
+    )}` as keyof typeof styles.classes;
+    classNames.push(styles.classes[key]);
   }
   return classNames.length > 0 ? classNames.join(' ') : undefined;
 }
@@ -156,14 +156,14 @@ const renderLink = ({
 
 export interface LogLineProps {
   line: AnsiLine;
-  classes: ReturnType<typeof useStyles>;
+  styles: ReturnType<typeof useStyles>;
   searchText: string;
   highlightResultIndex?: number;
 }
 
 export function LogLine({
   line,
-  classes,
+  styles,
   searchText,
   highlightResultIndex,
 }: LogLineProps) {
@@ -179,17 +179,17 @@ export function LogLine({
         <span
           key={index}
           className={classnames(
-            getModifierClasses(classes, modifiers),
+            getModifierClasses(styles, modifiers),
             highlight !== undefined &&
               (highlight === highlightResultIndex
-                ? classes.textSelectedHighlight
-                : classes.textHighlight),
+                ? styles.classes.textSelectedHighlight
+                : styles.classes.textHighlight),
           )}
         >
           <Linkify options={{ render: renderLink }}>{text}</Linkify>
         </span>
       )),
-    [chunks, highlightResultIndex, classes],
+    [chunks, highlightResultIndex, styles],
   );
 
   return <>{elements}</>;

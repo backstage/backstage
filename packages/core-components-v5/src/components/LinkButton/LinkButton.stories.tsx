@@ -103,10 +103,10 @@ export const Default = () => {
           Used commonly in a ButtonGroup and when the button function itself is
           not a primary function on a page.
           <br />
-          <pre>color="default" variant="outlined"</pre>
+          <pre>variant="outlined"</pre>
         </ListItemText>
 
-        <LinkButton to={link()} color="default" variant="outlined">
+        <LinkButton to={link()} variant="outlined">
           View Details
         </LinkButton>
       </ListItem>
@@ -128,7 +128,7 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <LinkButton to={link()} color="default" variant="outlined">
+          <LinkButton to={link()} variant="outlined">
             Route Ref
           </LinkButton>
           &nbsp; has props for both Material-UI's component as well as for
@@ -136,7 +136,7 @@ export const ButtonLinks = () => {
         </ListItem>
 
         <ListItem>
-          <LinkButton to="/staticpath" color="default" variant="outlined">
+          <LinkButton to="/staticpath" variant="outlined">
             Static Path
           </LinkButton>
           &nbsp; links to a statically defined route. In general, this should be
@@ -144,22 +144,14 @@ export const ButtonLinks = () => {
         </ListItem>
 
         <ListItem>
-          <MaterialButton
-            href="https://backstage.io"
-            color="default"
-            variant="outlined"
-          >
+          <MaterialButton href="https://backstage.io" variant="outlined">
             View URL
           </MaterialButton>
           &nbsp; links to a defined URL using Material-UI's Button.
         </ListItem>
 
         <ListItem>
-          <MaterialButton
-            onClick={handleClick}
-            color="default"
-            variant="outlined"
-          >
+          <MaterialButton onClick={handleClick} variant="outlined">
             Trigger Event
           </MaterialButton>
           &nbsp; triggers an onClick event using Material-UI's Button.

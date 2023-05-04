@@ -41,9 +41,7 @@ const useStyles = makeStyles({ name: 'BackstageLifecycle' })(theme => ({
 }));
 
 export function Lifecycle(props: Props) {
-  const { classes } = useStyles(props, {
-    props: props,
-  });
+  const { classes } = useStyles();
   const { shorthand, alpha } = props;
   return shorthand ? (
     <Typography

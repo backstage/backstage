@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React, {
+  CSSProperties,
+  ComponentProps,
+  ComponentType,
+  KeyboardEventHandler,
+  ReactNode,
+  forwardRef,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
+
 import { useAnalytics, useElementFilter } from '@backstage/core-plugin-api';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
@@ -20,26 +33,13 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import SearchIcon from '@mui/icons-material/Search';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
-import { CreateCSSProperties, styled, Theme } from '@mui/material/styles';
 import SvgIcon from '@mui/material/SvgIcon';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Theme, styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { StyledComponentProps } from '@mui/styles';
-import { makeStyles } from 'tss-react/mui';
 import { Location } from 'history';
-import React, {
-  ComponentProps,
-  ComponentType,
-  CSSProperties,
-  forwardRef,
-  KeyboardEventHandler,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
 import {
   Link,
   NavLinkProps,
@@ -47,8 +47,12 @@ import {
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
+import { makeStyles } from 'tss-react/mui';
 
 import Button from '@mui/material/Button';
+import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
+import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import {
   SidebarConfig,
   SidebarConfigContext,
@@ -56,10 +60,8 @@ import {
 } from './config';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
-import { useSidebarOpenState } from './SidebarOpenStateContext';
-import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
-import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
+import classnames from 'classnames';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -82,136 +84,123 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
-const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles<void, 'root' | 'closed' | 'closedItemIcon' | 'iconContainer'>({
-    name: 'BackstageSidebarItem',
-  })((theme, _params, classes) => ({
-    root: {
-      color: theme.palette.navigation.color,
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-      height: 48,
-      cursor: 'pointer',
+const useStyles = makeStyles<
+  { sidebarConfig: SidebarConfig },
+  'root' | 'closed' | 'closedItemIcon' | 'iconContainer'
+>({
+  name: 'BackstageSidebarItem',
+})((theme, { sidebarConfig }, classes) => ({
+  root: {
+    color: theme.palette.navigation.color,
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    alignItems: 'center',
+    height: 48,
+    cursor: 'pointer',
+  },
+  buttonItem: {
+    background: 'none',
+    border: 'none',
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    textAlign: 'inherit',
+    font: 'inherit',
+    textTransform: 'none',
+  },
+  closed: {
+    width: sidebarConfig.drawerWidthClosed,
+    justifyContent: 'center',
+  },
+  open: {
+    [theme.breakpoints.up('sm')]: {
+      width: sidebarConfig.drawerWidthOpen,
     },
-    buttonItem: {
-      background: 'none',
-      border: 'none',
-      width: '100%',
-      margin: 0,
-      padding: 0,
-      textAlign: 'inherit',
-      font: 'inherit',
-      textTransform: 'none',
-    },
-    closed: {
-      width: sidebarConfig.drawerWidthClosed,
-      justifyContent: 'center',
-    },
-    open: {
-      [theme.breakpoints.up('sm')]: {
-        width: sidebarConfig.drawerWidthOpen,
-      },
-    },
-    highlightable: {
-      '&:hover': {
-        background:
-          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
-      },
-    },
-    highlighted: {
+  },
+  highlightable: {
+    '&:hover': {
       background:
         theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
     },
-    label: {
-      // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-      fontWeight: 'bold',
-      whiteSpace: 'nowrap',
-      lineHeight: 'auto',
-      flex: '3 1 auto',
-      width: '110px',
-      overflow: 'hidden',
-      'text-overflow': 'ellipsis',
+  },
+  highlighted: {
+    background: theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
+  },
+  label: {
+    // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    lineHeight: 'auto',
+    flex: '3 1 auto',
+    width: '110px',
+    overflow: 'hidden',
+    'text-overflow': 'ellipsis',
+  },
+  iconContainer: {
+    boxSizing: 'border-box',
+    height: '100%',
+    width: sidebarConfig.iconContainerWidth,
+    marginRight: -theme.spacing(2),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    lineHeight: '0',
+  },
+  searchRoot: {
+    marginBottom: 12,
+  },
+  searchField: {
+    color: '#b5b5b5',
+    fontWeight: theme.typography.fontWeightBold,
+    fontSize: theme.typography.fontSize,
+  },
+  searchFieldHTMLInput: {
+    padding: theme.spacing(2, 0, 2),
+  },
+  searchContainer: {
+    width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
+  },
+  secondaryAction: {
+    width: theme.spacing(6),
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
+  },
+  closedItemIcon: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  submenuArrow: {
+    display: 'flex',
+  },
+  expandButton: {
+    background: 'none',
+    border: 'none',
+    color: theme.palette.navigation.color,
+    width: '100%',
+    cursor: 'pointer',
+    position: 'relative',
+    height: 48,
+  },
+  arrows: {
+    position: 'absolute',
+    right: 10,
+  },
+  selected: {
+    [`&.${classes.root}`]: {
+      borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+      color: theme.palette.navigation.selectedColor,
     },
-    iconContainer: {
-      boxSizing: 'border-box',
-      height: '100%',
-      width: sidebarConfig.iconContainerWidth,
-      marginRight: -theme.spacing(2),
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      lineHeight: '0',
+    [`&.${classes.closed}`]: {
+      width: sidebarConfig.drawerWidthClosed,
     },
-    searchRoot: {
-      marginBottom: 12,
+    [`& .${classes.closedItemIcon}`]: {
+      paddingRight: sidebarConfig.selectedIndicatorWidth,
     },
-    searchField: {
-      color: '#b5b5b5',
-      fontWeight: theme.typography.fontWeightBold,
-      fontSize: theme.typography.fontSize,
+    [`& .${classes.iconContainer}`]: {
+      marginLeft: -sidebarConfig.selectedIndicatorWidth,
     },
-    searchFieldHTMLInput: {
-      padding: theme.spacing(2, 0, 2),
-    },
-    searchContainer: {
-      width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
-    },
-    secondaryAction: {
-      width: theme.spacing(6),
-      textAlign: 'center',
-      marginRight: theme.spacing(1),
-    },
-    closedItemIcon: {
-      width: '100%',
-      justifyContent: 'center',
-    },
-    submenuArrow: {
-      display: 'flex',
-    },
-    expandButton: {
-      background: 'none',
-      border: 'none',
-      color: theme.palette.navigation.color,
-      width: '100%',
-      cursor: 'pointer',
-      position: 'relative',
-      height: 48,
-    },
-    arrows: {
-      position: 'absolute',
-      right: 10,
-    },
-    selected: {
-      [`&.${classes.root}`]: {
-        borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-        color: theme.palette.navigation.selectedColor,
-      },
-      [`&.${classes.closed}`]: {
-        width: sidebarConfig.drawerWidthClosed,
-      },
-      [`& .${classes.closedItemIcon}`]: {
-        paddingRight: sidebarConfig.selectedIndicatorWidth,
-      },
-      [`& .${classes.iconContainer}`]: {
-        marginLeft: -sidebarConfig.selectedIndicatorWidth,
-      },
-    },
-  }));
-
-// This is a workaround for this issue https://github.com/mui/material-ui/issues/15511
-// The styling of the `selected` elements doesn't work as expected when using a prop callback.
-// Don't use this pattern unless needed
-function useMemoStyles(sidebarConfig: SidebarConfig) {
-  const { classes: useStyles } = useMemo(
-    () =>
-      makeSidebarStyles(sidebarConfig, {
-        props: sidebarConfig,
-      }),
-    [sidebarConfig],
-  );
-  return useStyles();
-}
+  },
+}));
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
@@ -258,7 +247,6 @@ const useLocationMatch = (
   );
 
 type SidebarItemBaseProps = {
-  // TODO: This doesn't align with @Rugvip comment in `'@backstage/core-plugin-api'` `IconComponent`
   icon: typeof SvgIcon;
   text?: string;
   hasNotifications?: boolean;
@@ -371,7 +359,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     ...navLinkProps
   } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useStyles({ sidebarConfig });
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -395,7 +383,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       variant="dot"
       overlap="circular"
       invisible={!hasNotifications}
-      className={classnames({ [classes.closedItemIcon]: !isOpen })}
+      className={classnames({ [classes.classes.closedItemIcon]: !isOpen })}
     >
       {displayItemIcon}
     </Badge>
@@ -403,15 +391,15 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const openContent = (
     <>
-      <Box data-testid="login-button" className={classes.iconContainer}>
+      <Box data-testid="login-button" className={classes.classes.iconContainer}>
         {itemIcon}
       </Box>
       {text && (
-        <Typography variant="subtitle2" className={classes.label}>
+        <Typography variant="subtitle2" className={classes.classes.label}>
           {text}
         </Typography>
       )}
-      <div className={classes.secondaryAction}>{children}</div>
+      <div className={classes.classes.secondaryAction}>{children}</div>
     </>
   );
 
@@ -421,10 +409,10 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     onClick,
     className: classnames(
       className,
-      classes.root,
-      isOpen ? classes.open : classes.closed,
-      isButtonItem(props) && classes.buttonItem,
-      { [classes.highlightable]: !disableHighlight },
+      classes.classes.root,
+      isOpen ? classes.classes.open : classes.classes.closed,
+      isButtonItem(props) && classes.classes.buttonItem,
+      { [classes.classes.highlightable]: !disableHighlight },
     ),
   };
 
@@ -463,7 +451,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   return (
     <WorkaroundNavLink
       {...childProps}
-      activeClassName={classes.selected}
+      activeClassName={classes.classes.selected}
       to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
@@ -482,7 +470,7 @@ const SidebarItemWithSubmenu = ({
   children: React.ReactElement<SidebarSubmenuProps>;
 }) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useStyles({ sidebarConfig });
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
@@ -500,14 +488,23 @@ const SidebarItemWithSubmenu = ({
   const arrowIcon = () => {
     if (isSmallScreen) {
       return isHoveredOn ? (
-        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
+        <ArrowDropUp
+          fontSize="small"
+          className={classes.classes.submenuArrow}
+        />
       ) : (
-        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
+        <ArrowDropDown
+          fontSize="small"
+          className={classes.classes.submenuArrow}
+        />
       );
     }
     return (
       !isHoveredOn && (
-        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+        <ArrowRightIcon
+          fontSize="small"
+          className={classes.classes.submenuArrow}
+        />
       )
     );
   };
@@ -524,11 +521,11 @@ const SidebarItemWithSubmenu = ({
         onMouseLeave={handleMouseLeave}
         onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
         onMouseEnter={handleMouseEnter}
-        className={classnames(isHoveredOn && classes.highlighted)}
+        className={classnames(isHoveredOn && classes.classes.highlighted)}
       >
         <SidebarItemBase
           hasSubmenu
-          className={isActive ? classes.selected : ''}
+          className={isActive ? classes.classes.selected : ''}
           {...props}
         >
           {arrowIcon()}
@@ -575,7 +572,7 @@ type SidebarSearchFieldProps = {
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const [input, setInput] = useState('');
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useStyles({ sidebarConfig });
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
@@ -607,7 +604,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   };
 
   return (
-    <Box className={classes.searchRoot}>
+    <Box className={classes.classes.searchRoot}>
       <SidebarItem
         icon={Icon}
         to={props.to}
@@ -620,13 +617,13 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
           onClick={handleInputClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
-          className={classes.searchContainer}
+          className={classes.classes.searchContainer}
           InputProps={{
             disableUnderline: true,
-            className: classes.searchField,
+            className: classes.classes.searchField,
           }}
           inputProps={{
-            className: classes.searchFieldHTMLInput,
+            className: classes.classes.searchFieldHTMLInput,
           }}
         />
       </SidebarItem>
@@ -665,7 +662,7 @@ export const SidebarDivider = styled('hr')(
   { name: 'BackstageSidebarDivider' },
 ) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
 
-const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
+const styledScrollbar = (theme: Theme) => ({
   overflowY: 'auto',
   '&::-webkit-scrollbar': {
     backgroundColor: theme.palette.background.default,
@@ -706,7 +703,7 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
  */
 export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useStyles({ sidebarConfig });
   const { isOpen, setOpen } = useSidebarOpenState();
   const isSmallScreen = useMediaQuery<Theme>(
     theme => theme.breakpoints.down('lg'),
@@ -727,11 +724,11 @@ export const SidebarExpandButton = () => {
     <Button
       role="button"
       onClick={handleClick}
-      className={classes.expandButton}
+      className={classes.classes.expandButton}
       aria-label="Expand Sidebar"
       data-testid="sidebar-expand-button"
     >
-      <Box className={classes.arrows}>
+      <Box className={classes.classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
       </Box>
     </Button>

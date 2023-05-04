@@ -18,7 +18,6 @@ import React, { Fragment, ReactElement } from 'react';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
 import { withStyles } from 'tss-react/mui';
-import createStyles from '@mui/styles/createStyles';
 import startCase from 'lodash/startCase';
 import Typography from '@mui/material/Typography';
 
@@ -31,22 +30,21 @@ import {
 
 export type StructuredMetadataTableListClassKey = 'root';
 
-const listStyle = createStyles({
+const listStyle = {
   root: {
     margin: '0 0',
     listStyleType: 'none',
   },
-});
+};
 
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
-const nestedListStyle = (theme: Theme) =>
-  createStyles({
-    root: {
-      ...listStyle.root,
-      paddingLeft: theme.spacing(1),
-    },
-  });
+const nestedListStyle = (theme: Theme) => ({
+  root: {
+    ...listStyle.root,
+    paddingLeft: theme.spacing(1),
+  },
+});
 
 interface StyleProps extends WithStyles {
   children?: React.ReactNode;

@@ -18,6 +18,8 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Gauge, getProgressColor } from './Gauge';
 import * as theme from '@backstage/theme';
+import { Palette } from '@mui/material/styles';
+import createPalette from '@mui/material/styles/createPalette';
 
 describe('<Gauge />', () => {
   it('renders without exploding', async () => {
@@ -50,8 +52,9 @@ describe('<Gauge />', () => {
   const ok = '#111';
   const warning = '#222';
   const error = '#333';
-  const palette = {
-    ...theme.lightTheme.palette,
+  const palette: Palette = {
+    // TODO: Maybe exporting the palette by default from `@backstage/theme`
+    ...createPalette(theme.palettes.light),
     status: { ...theme.lightTheme.palette.status, ok, warning, error },
   };
 

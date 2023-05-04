@@ -16,7 +16,6 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -211,9 +210,7 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     children,
     ...otherProps
   } = props;
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   const ref = React.useRef<HTMLElement>();
 
   const [scrollLeft, scrollRight] = useScrollDistance(ref);

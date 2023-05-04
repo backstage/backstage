@@ -44,7 +44,12 @@ export type BreadcrumbsStyledBoxClassKey = 'root';
 
 const StyledBox = withStyles(
   Box,
-  {},
+  {
+    root: {
+      textDecoration: 'underline',
+      color: 'inherit',
+    },
+  },
   { name: 'BackstageBreadcrumbsStyledBox' },
 );
 
@@ -80,8 +85,8 @@ export function Breadcrumbs(props: Props) {
   return (
     <Fragment>
       <MaterialBreadcrumbs aria-label="breadcrumb" {...restProps}>
-        {childrenArray.length > 1 && <StyledBox clone>{firstPage}</StyledBox>}
-        {childrenArray.length > 2 && <StyledBox clone>{secondPage}</StyledBox>}
+        {childrenArray.length > 1 && <StyledBox>{firstPage}</StyledBox>}
+        {childrenArray.length > 2 && <StyledBox>{secondPage}</StyledBox>}
         {hasHiddenBreadcrumbs && (
           <ClickableText onClick={handleClick}>...</ClickableText>
         )}
@@ -103,7 +108,7 @@ export function Breadcrumbs(props: Props) {
         <List>
           {expandablePages.map((pageLink, index) => (
             <ListItem key={index} button>
-              <StyledBox clone>{pageLink}</StyledBox>
+              <StyledBox>{pageLink}</StyledBox>
             </ListItem>
           ))}
         </List>

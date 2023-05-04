@@ -25,24 +25,16 @@ import {
 } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-const useStyles = makeStyles({ name: 'BackstageSidebarSubmenu' })(theme => ({
-  root: {
-    zIndex: 1000,
-    position: 'relative',
-    overflow: 'visible',
-    width: theme.spacing(7) + 1,
-  },
-  drawer: props => ({
+const useStyles = makeStyles<{ left: number; submenuConfig: SubmenuConfig }>({
+  name: 'BackstageSidebarSubmenu',
+})((theme, { left, submenuConfig }) => ({
+  drawer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     alignItems: 'flex-start',
     position: 'fixed',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: props.left,
+      marginLeft: left,
       transition: theme.transitions.create('margin-left', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.shortest,
@@ -56,17 +48,17 @@ const useStyles = makeStyles({ name: 'BackstageSidebarSubmenu' })(theme => ({
     msOverflowStyle: 'none',
     scrollbarWidth: 'none',
     cursor: 'default',
-    width: props.submenuConfig.drawerWidthClosed,
-    transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
+    width: submenuConfig.drawerWidthClosed,
+    transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
     '& > *': {
       flexShrink: 0,
     },
     '&::-webkit-scrollbar': {
       display: 'none',
     },
-  }),
-  drawerOpen: props => ({
-    width: props.submenuConfig.drawerWidthOpen,
+  },
+  drawerOpen: {
+    width: submenuConfig.drawerWidthOpen,
     [theme.breakpoints.down('sm')]: {
       width: '100%',
       position: 'relative',
@@ -74,7 +66,7 @@ const useStyles = makeStyles({ name: 'BackstageSidebarSubmenu' })(theme => ({
       left: 0,
       top: 0,
     },
-  }),
+  },
   title: {
     fontSize: theme.typography.h5.fontSize,
     fontWeight: theme.typography.fontWeightMedium,

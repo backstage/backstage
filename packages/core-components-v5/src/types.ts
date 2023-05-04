@@ -15,6 +15,7 @@
  */
 
 import { Theme } from '@mui/material/styles';
+import SvgIcon from '@mui/material/SvgIcon';
 import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
@@ -34,4 +35,9 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/private-theming/defaultTheme' {
   interface DefaultTheme extends Theme {}
+}
+
+// TODO: This doesn't align with @Rugvip comment in `'@backstage/core-plugin-api'` `IconComponent`
+declare module '@backstage/core-plugin-api' {
+  type IconComponent = IconComponent | typeof SvgIcon;
 }

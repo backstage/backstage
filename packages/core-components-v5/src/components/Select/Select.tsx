@@ -21,11 +21,9 @@ import FormControl from '@mui/material/FormControl';
 import InputBase from '@mui/material/InputBase';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import { makeStyles } from 'tss-react/mui';
-import { withStyles } from 'tss-react/mui';
+import { makeStyles, withStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 
@@ -37,28 +35,28 @@ export type SelectInputBaseClassKey = 'root' | 'input';
 
 const BootstrapInput = withStyles(
   InputBase,
-  (theme: Theme) =>
-    createStyles({
-      root: {
-        'label + &': {
-          marginTop: theme.spacing(3),
-        },
+  theme => ({
+    root: {
+      'label + &': {
+        marginTop: theme.spacing(3),
       },
-      input: {
+    },
+    input: {
+      borderRadius: theme.shape.borderRadius,
+      // TODO: FIX
+      // position: 'relative',
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid #ced4da',
+      fontSize: theme.typography.body1.fontSize,
+      padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      fontFamily: 'Helvetica Neue',
+      '&:focus': {
+        background: theme.palette.background.paper,
         borderRadius: theme.shape.borderRadius,
-        position: 'relative',
-        backgroundColor: theme.palette.background.paper,
-        border: '1px solid #ced4da',
-        fontSize: theme.typography.body1.fontSize,
-        padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
-        transition: theme.transitions.create(['border-color', 'box-shadow']),
-        fontFamily: 'Helvetica Neue',
-        '&:focus': {
-          background: theme.palette.background.paper,
-          borderRadius: theme.shape.borderRadius,
-        },
       },
-    }),
+    },
+  }),
   { name: 'BackstageSelectInputBase' },
 );
 
@@ -71,47 +69,45 @@ export type SelectClassKey =
   | 'checkbox'
   | 'root';
 
-const useStyles = makeStyles({ name: 'BackstageSelect' })((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: `${theme.spacing(1)} 0px`,
-      maxWidth: 300,
-    },
-    label: {
-      transform: 'initial',
-      fontWeight: 'bold',
-      fontSize: theme.typography.body2.fontSize,
-      fontFamily: theme.typography.fontFamily,
+const useStyles = makeStyles({ name: 'BackstageSelect' })((theme: Theme) => ({
+  formControl: {
+    margin: `${theme.spacing(1)} 0px`,
+    maxWidth: 300,
+  },
+  label: {
+    transform: 'initial',
+    fontWeight: 'bold',
+    fontSize: theme.typography.body2.fontSize,
+    fontFamily: theme.typography.fontFamily,
+    color: theme.palette.text.primary,
+    '&.Mui-focused': {
       color: theme.palette.text.primary,
-      '&.Mui-focused': {
-        color: theme.palette.text.primary,
-      },
     },
-    formLabel: {
-      transform: 'initial',
-      fontWeight: 'bold',
-      fontSize: theme.typography.body2.fontSize,
-      fontFamily: theme.typography.fontFamily,
+  },
+  formLabel: {
+    transform: 'initial',
+    fontWeight: 'bold',
+    fontSize: theme.typography.body2.fontSize,
+    fontFamily: theme.typography.fontFamily,
+    color: theme.palette.text.primary,
+    '&.Mui-focused': {
       color: theme.palette.text.primary,
-      '&.Mui-focused': {
-        color: theme.palette.text.primary,
-      },
     },
-    chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    chip: {
-      margin: 2,
-    },
-    checkbox: {},
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+  checkbox: {},
 
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-  }),
-);
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
 
 /** @public */
 export type SelectItem = {
@@ -163,7 +159,7 @@ export function SelectComponent(props: SelectProps) {
     setValue(selected || (multiple ? [] : ''));
   }, [selected, multiple]);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleChange = (event: SelectChangeEvent<SelectedItems>) => {
     setValue(event.target.value as SelectedItems);
     onChange(event.target.value as SelectedItems);
   };
@@ -196,7 +192,7 @@ export function SelectComponent(props: SelectProps) {
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.formLabel}>{label}</InputLabel>
-          <Select
+          <Select<SelectedItems>
             aria-label={label}
             value={value}
             native={native}
@@ -246,7 +242,6 @@ export function SelectComponent(props: SelectProps) {
                 vertical: 'top',
                 horizontal: 'left',
               },
-              getContentAnchorEl: null,
             }}
           >
             {placeholder && !multiple && (

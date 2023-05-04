@@ -17,7 +17,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
 import { withStyles } from 'tss-react/mui';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -27,16 +26,15 @@ import React from 'react';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
-const tableTitleCellStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      fontWeight: theme.typography.fontWeightBold,
-      whiteSpace: 'nowrap',
-      paddingRight: theme.spacing(4),
-      border: '0',
-      verticalAlign: 'top',
-    },
-  });
+const tableTitleCellStyles = (theme: Theme) => ({
+  root: {
+    fontWeight: theme.typography.fontWeightBold,
+    whiteSpace: 'nowrap',
+    paddingRight: theme.spacing(4),
+    border: '0',
+    verticalAlign: 'top',
+  },
+});
 
 export type MetadataTableCellClassKey = 'root';
 
@@ -49,22 +47,20 @@ const tableContentCellStyles = {
 
 export type MetadataTableListClassKey = 'root';
 
-const listStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      margin: theme.spacing(0, 0, -1, 0),
-    },
-  });
+const listStyles = (theme: Theme) => ({
+  root: {
+    margin: theme.spacing(0, 0, -1, 0),
+  },
+});
 
 export type MetadataTableListItemClassKey = 'root' | 'random';
 
-const listItemStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(0, 0, 1, 0),
-    },
-    random: {},
-  });
+const listItemStyles = (theme: Theme) => ({
+  root: {
+    padding: theme.spacing(0, 0, 1, 0),
+  },
+  random: {},
+});
 
 const TitleCell = withStyles(TableCell, tableTitleCellStyles, {
   name: 'BackstageMetadataTableTitleCell',

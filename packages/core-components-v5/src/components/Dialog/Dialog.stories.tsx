@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -22,21 +23,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import createStyles from '@mui/styles/createStyles';
-import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles()((theme: Theme) =>
-  createStyles({
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
-  }),
-);
+const useStyles = makeStyles()((theme: Theme) => ({
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+}));
 
 export default {
   title: 'Layout/Dialog',

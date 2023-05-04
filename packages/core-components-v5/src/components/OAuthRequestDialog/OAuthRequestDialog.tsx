@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';

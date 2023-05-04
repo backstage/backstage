@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';

@@ -144,9 +144,7 @@ const useCardTabStyles = makeStyles({ name: 'BackstageCardTab' })(theme => ({
   },
 }));
 
-type CardTabProps = TabProps & {
-  children: ReactNode;
-};
+type CardTabProps = Omit<TabProps, 'children'> & { children?: ReactNode };
 
 /**
  * Card tab component used in {@link TabbedCard}

@@ -31,11 +31,10 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 
 export interface RealLogViewerProps {
   text: string;
-  classes?: { root?: string };
 }
 
 export function RealLogViewer(props: RealLogViewerProps) {
-  const classes = useStyles({ classes: props.classes });
+  const { classes } = useStyles();
   const listRef = useRef<FixedSizeList | null>(null);
 
   // The processor keeps state that optimizes appending to the text

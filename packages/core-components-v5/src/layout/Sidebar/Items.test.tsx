@@ -52,21 +52,21 @@ async function renderSidebar() {
           icon={CreateComponentIcon}
           onClick={handleSidebarItemClick}
           text="Create..."
-          className={result.current.spotlight}
+          className={result.current.classes.spotlight}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/docs"
           onClick={handleSidebarItemClick}
           text="Docs"
-          className={result.current.spotlight}
+          className={result.current.classes.spotlight}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/explore"
           onClick={handleSidebarItemClick}
           text="Explore"
-          className={result.current.spotlight}
+          className={result.current.classes.spotlight}
           noTrack
         />
         <SidebarExpandButton />

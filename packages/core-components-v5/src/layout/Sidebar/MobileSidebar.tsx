@@ -15,20 +15,20 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import { makeStyles } from 'tss-react/mui';
-import Drawer from '@mui/material/Drawer';
-import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import { orderBy } from 'lodash';
-import React, { createContext, useEffect, useState, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
+import { makeStyles } from 'tss-react/mui';
 import { SidebarGroup } from './SidebarGroup';
-import { SidebarConfigContext, SidebarConfig } from './config';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
+import { SidebarConfig, SidebarConfigContext } from './config';
 
 /**
  * Type of `MobileSidebarContext`
@@ -59,48 +59,46 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-const useStyles = makeStyles()(theme => ({
-  root: {
-    position: 'fixed',
-    backgroundColor: theme.palette.navigation.background,
-    color: theme.palette.navigation.color,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: theme.zIndex.snackbar,
-    // SidebarDivider color
-    borderTop: '1px solid #383838',
-  },
+const useStyles = makeStyles<{ sidebarConfig: SidebarConfig }>()(
+  (theme, { sidebarConfig }) => ({
+    root: {
+      position: 'fixed',
+      backgroundColor: theme.palette.navigation.background,
+      color: theme.palette.navigation.color,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: theme.zIndex.snackbar,
+      // SidebarDivider color
+      borderTop: '1px solid #383838',
+    },
 
-  overlay: props => ({
-    background: theme.palette.navigation.background,
-    width: '100%',
-    bottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-    height: `calc(100% - ${props.sidebarConfig.mobileSidebarHeight}px)`,
-    flex: '0 1 auto',
-    overflow: 'auto',
+    overlay: {
+      background: theme.palette.navigation.background,
+      width: '100%',
+      bottom: `${sidebarConfig.mobileSidebarHeight}px`,
+      height: `calc(100% - ${sidebarConfig.mobileSidebarHeight}px)`,
+      flex: '0 1 auto',
+      overflow: 'auto',
+    },
+
+    overlayHeader: {
+      display: 'flex',
+      color: theme.palette.text.primary,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing(2, 3),
+    },
+
+    overlayHeaderClose: {
+      color: theme.palette.text.primary,
+    },
+
+    marginMobileSidebar: {
+      marginBottom: `${sidebarConfig.mobileSidebarHeight}px`,
+    },
   }),
-
-  overlayHeader: {
-    display: 'flex',
-    color: theme.palette.text.primary,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2, 3),
-  },
-
-  overlayHeaderClose: {
-    color: theme.palette.text.primary,
-  },
-
-  marginMobileSidebar: props => ({
-    marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-  }),
-}));
+);
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(

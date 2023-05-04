@@ -4053,6 +4053,7 @@ __metadata:
     d3-shape: ^3.0.0
     d3-zoom: ^3.0.0
     dagre: ^0.8.5
+    eslint-plugin-tss-unused-classes: ^0.0.4
     history: ^5.0.0
     immer: ^9.0.1
     linkify-react: 4.1.1
@@ -24117,6 +24118,15 @@ __metadata:
   peerDependencies:
     eslint: ^7.5.0 || ^8.0.0
   checksum: 3033121a0040b98280cd41856273ad1b268f56083759401e7af72ac8a96dcb213892f1248983aa9a18988b44913263e93f0d182dbb0c5b27b00242bfffc9cdcc
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-tss-unused-classes@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "eslint-plugin-tss-unused-classes@npm:0.0.4"
+  peerDependencies:
+    eslint: ^7.14.0 || ^8.0.0
+  checksum: a2b6f5ddd721643eb850d304b288c7a38cbc2f69d6c0e4a9b690fff6fab5a6864e494f782bcefdae95fdffdf3e7932f167d1d945931a7efb46b06c37d9af0639
   languageName: node
   linkType: hard
 

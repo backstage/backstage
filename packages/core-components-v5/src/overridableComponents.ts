@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Overrides } from '@mui/material/styles';
+import { ComponentsOverrides as Overrides } from '@mui/material/styles';
 
 import { StyleRules } from '@mui/styles';
 
@@ -171,6 +171,6 @@ type BackstageComponentsNameToClassKey = {
 /** @public */
 export type BackstageOverrides = Overrides & {
   [Name in keyof BackstageComponentsNameToClassKey]?: Partial<
-    StyleRules<BackstageComponentsNameToClassKey[Name]>
+    StyleRules<{}, BackstageComponentsNameToClassKey[Name]>
   >;
 };

@@ -51,9 +51,7 @@ const useStyles = makeStyles({ name: 'BackstageGaugeCard' })({
  *
  */
 export function GaugeCard(props: Props) {
-  const { classes } = useStyles(props, {
-    props: props,
-  });
+  const { classes } = useStyles();
   const {
     title,
     subheader,

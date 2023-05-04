@@ -25,6 +25,7 @@ import React, { useContext, useState } from 'react';
 import { SIDEBAR_INTRO_LOCAL_STORAGE, SidebarConfigContext } from './config';
 import { SidebarDivider } from './Items';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarConfig } from '@backstage/core-components/src/layout/Sidebar/config';
 
 /** @public */
 export type SidebarIntroClassKey =
@@ -34,19 +35,19 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-const useStyles = makeStyles({ name: 'BackstageSidebarIntro' })(theme => ({
-  introCard: props => ({
+const useStyles = makeStyles<{ sidebarConfig: SidebarConfig }>({
+  name: 'BackstageSidebarIntro',
+})((theme, { sidebarConfig }) => ({
+  introCard: {
     color: '#b5b5b5',
     // XXX (@koroeskohr): should I be using a Mui theme variable?
     fontSize: 12,
-    width: props.sidebarConfig.drawerWidthOpen,
+    width: sidebarConfig.drawerWidthOpen,
     marginTop: theme.spacing(2.25),
     marginBottom: theme.spacing(1.5),
-    paddingLeft: props.sidebarConfig.iconPadding,
-    paddingRight: props.sidebarConfig.iconPadding,
-  }),
+    paddingLeft: sidebarConfig.iconPadding,
+    paddingRight: sidebarConfig.iconPadding,
+  },
   introDismiss: {
     display: 'flex',
     justifyContent: 'flex-end',

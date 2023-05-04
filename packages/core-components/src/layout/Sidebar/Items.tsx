@@ -351,7 +351,7 @@ export const WorkaroundNavLink = React.forwardRef<
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
       className={classnames([
-        className,
+        className as string,
         isActive ? activeClassName : undefined,
       ])}
     />

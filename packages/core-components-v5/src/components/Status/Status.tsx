@@ -71,9 +71,7 @@ const useStyles = makeStyles({ name: 'BackstageStatus' })(theme => ({
 }));
 
 export function StatusOK(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"
@@ -86,9 +84,7 @@ export function StatusOK(props: PropsWithChildren<{}>) {
 }
 
 export function StatusWarning(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"
@@ -101,9 +97,7 @@ export function StatusWarning(props: PropsWithChildren<{}>) {
 }
 
 export function StatusError(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"
@@ -116,9 +110,7 @@ export function StatusError(props: PropsWithChildren<{}>) {
 }
 
 export function StatusPending(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"
@@ -131,9 +123,7 @@ export function StatusPending(props: PropsWithChildren<{}>) {
 }
 
 export function StatusRunning(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"
@@ -146,9 +136,7 @@ export function StatusRunning(props: PropsWithChildren<{}>) {
 }
 
 export function StatusAborted(props: PropsWithChildren<{}>) {
-  const { classes, cx } = useStyles(props, {
-    props: props,
-  });
+  const { classes, cx } = useStyles();
   return (
     <Typography
       component="span"

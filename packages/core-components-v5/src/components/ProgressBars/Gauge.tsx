@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Palette, useTheme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
+
 import Box from '@mui/material/Box';
+import { Palette, useTheme } from '@mui/material/styles';
+import { Circle } from 'rc-progress';
+import { makeStyles } from 'tss-react/mui';
 
 /** @public */
 export type GaugeClassKey =
@@ -55,7 +56,6 @@ const useStyles = makeStyles({ name: 'BackstageGauge' })(theme => ({
     width: '80%',
     transform: 'translate(10%, 0)',
   },
-  colorUnknown: {},
 }));
 
 /** @public */
@@ -119,9 +119,7 @@ export const getProgressColor: GaugePropsGetColor = ({
 export function Gauge(props: GaugeProps) {
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor } = props;
-  const { classes } = useStyles(props, {
-    props: props,
-  });
+  const { classes } = useStyles();
   const { palette } = useTheme();
   const { value, fractional, inverse, unit, max, description } = {
     ...defaultGaugeProps,

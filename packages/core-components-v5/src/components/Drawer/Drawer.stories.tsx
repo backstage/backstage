@@ -17,7 +17,6 @@
 import React, { useState } from 'react';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
-import createStyles from '@mui/styles/createStyles';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -29,35 +28,31 @@ export default {
   component: Drawer,
 };
 
-const useDrawerStyles = makeStyles()((theme: Theme) =>
-  createStyles({
-    paper: {
-      width: '50%',
-      justifyContent: 'space-between',
-      padding: theme.spacing(2.5),
-    },
-  }),
-);
+const useDrawerStyles = makeStyles()((theme: Theme) => ({
+  paper: {
+    width: '50%',
+    justifyContent: 'space-between',
+    padding: theme.spacing(2.5),
+  },
+}));
 
-const useDrawerContentStyles = makeStyles()((theme: Theme) =>
-  createStyles({
-    header: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    icon: {
-      fontSize: 20,
-    },
-    content: {
-      height: '80%',
-      backgroundColor: '#EEEEEE',
-    },
-    secondaryAction: {
-      marginLeft: theme.spacing(2.5),
-    },
-  }),
-);
+const useDrawerContentStyles = makeStyles()((theme: Theme) => ({
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  icon: {
+    fontSize: 20,
+  },
+  content: {
+    height: '80%',
+    backgroundColor: '#EEEEEE',
+  },
+  secondaryAction: {
+    marginLeft: theme.spacing(2.5),
+  },
+}));
 
 /* Example content wrapped inside the Drawer component */
 const DrawerContent = ({

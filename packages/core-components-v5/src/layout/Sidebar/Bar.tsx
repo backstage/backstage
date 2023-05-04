@@ -37,11 +37,11 @@ import { useSidebarPinState } from './SidebarPinStateContext';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-// TODO jss-to-tss-react codemod: Unable to handle style definition reliably. Unsupported arrow function syntax.
-// Arrow function has parameter type of Identifier instead of ObjectPattern (e.g. `(props) => ({...})` instead of `({color}) => ({...})`).
-const useStyles = makeStyles({ name: 'BackstageSidebar' })(theme => ({
+
+const useStyles = makeStyles<{ sidebarConfig: SidebarConfig }>({
+  name: 'BackstageSidebar',
+})((theme, { sidebarConfig }) => ({
+  root: {},
   drawer: {
     display: 'flex',
     flexFlow: 'column nowrap',
@@ -66,16 +66,16 @@ const useStyles = makeStyles({ name: 'BackstageSidebar' })(theme => ({
       display: 'none',
     },
   },
-  drawerWidth: props => ({
-    width: props.sidebarConfig.drawerWidthClosed,
-  }),
-  drawerOpen: props => ({
-    width: props.sidebarConfig.drawerWidthOpen,
+  drawerWidth: {
+    width: sidebarConfig.drawerWidthClosed,
+  },
+  drawerOpen: {
+    width: sidebarConfig.drawerWidthOpen,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.shorter,
     }),
-  }),
+  },
   visuallyHidden: {
     top: 0,
     position: 'absolute',
