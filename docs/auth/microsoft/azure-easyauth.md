@@ -11,6 +11,14 @@ The Backstage `core-plugin-api` package comes with a Microsoft authentication pr
 
 Add the following into your `app-config.yaml` or `app-config.production.yaml` file
 
+```yaml
+auth:
+  environment: development
+  providers:
+    azure-easyauth:
+      development: {}
+```
+
 Add a `providerFactories` entry to the router in
 `packages/backend/src/plugins/auth.ts`.
 
@@ -59,8 +67,10 @@ sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 
 ## Frontend Changes
 
-It is recommended to use the `ProxiedSignInPage` for this provider, which is
-installed in `packages/app/src/App.tsx` like this:
+To use this component, you'll need to configure the app's `SignInPage`.
+It is recommended to use the `ProxiedSignInPage` for this provider when running in Azure, However for local development (or any other scenario running outside of Azure), you'll want to set up something different.
+For the closest experience to Easy Auth, you could set up the `microsoft` provider locally, but that will requires setting up App Registrations & secrets which may be locked down by your organisation, in which case it may be easier to use guest login locally.
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for more details.
 
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-next-line */
@@ -69,16 +79,24 @@ import { ProxiedSignInPage } from '@backstage/core-components';
 const app = createApp({
   /* highlight-add-start */
   components: {
-    SignInPage: props => (
-      <ProxiedSignInPage {...props} provider="azure-easyauth" />
-    ),
+    SignInPage: props => {
+      if (process.env.NODE_ENV === 'development') {
+        return <ProxiedSignInPage {...props} provider="azure-easyauth" />;
+      }
+      return (
+        <SignInPage
+          {...props}
+          providers={['guest', 'custom']}
+          title="Select a sign-in method"
+          align="center"
+        />
+      );
+    },
   },
   /* highlight-add-end */
   // ..
 });
 ```
-
-See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.
 
 ## Azure Configuration
 
