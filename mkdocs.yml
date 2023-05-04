@@ -66,7 +66,7 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
-          - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v2beta3.md'
+          - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
