@@ -834,6 +834,7 @@ describe('GithubOrgEntityProvider', () => {
                 },
                 name: 'mygroup-with-spaces',
               },
+              description: 'description-from-the-new-team',
               apiVersion: 'backstage.io/v1alpha1',
               kind: 'Group',
               spec: {
