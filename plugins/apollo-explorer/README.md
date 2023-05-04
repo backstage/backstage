@@ -38,14 +38,10 @@ yarn --cwd packages/app add @backstage/plugin-apollo-explorer
 Then, in `packages/app/src/App.tsx` add the plugin as a `Route`
 
 ```typescript
-// In packages/app/src/App.tsx
 import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
-
-// You can add the tab to any number of pages, the service page is shown as an
-// example here
 const routes = (
   <FlatRoutes>
-    {/* other tabs... */}
+    {/* other routes... */}
     <Route
       path="/apollo-explorer"
       element={
