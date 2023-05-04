@@ -134,9 +134,7 @@ export type GithubMultiOrgConfig = Array<{
 }>;
 
 // @public
-export class GithubMultiOrgEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GithubMultiOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     gitHubConfig: GithubIntegrationConfig;
@@ -156,11 +154,7 @@ export class GithubMultiOrgEntityProvider
   ): GithubMultiOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  onEvent(params: EventParams): Promise<void>;
   read(options?: { logger?: Logger }): Promise<void>;
-  // (undocumented)
-  supportsEventTopics(): string[];
 }
 
 // @public

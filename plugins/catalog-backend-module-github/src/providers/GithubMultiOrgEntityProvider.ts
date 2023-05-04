@@ -38,11 +38,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  EventBroker,
-  EventParams,
-  EventSubscriber,
-} from '@backstage/plugin-events-node';
+import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
@@ -161,9 +157,7 @@ type CreateDeltaOperation = (entities: Entity[]) => {
  *
  * @public
  */
-export class GithubMultiOrgEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GithubMultiOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
 
@@ -200,7 +194,10 @@ export class GithubMultiOrgEntityProvider
     provider.schedule(options.schedule);
 
     if (options.eventBroker) {
-      options.eventBroker.subscribe(provider);
+      options.eventBroker.subscribe({
+        supportsEventTopics: provider.supportsEventTopics.bind(provider),
+        onEvent: provider.onEvent.bind(provider),
+      });
     }
 
     return provider;
@@ -313,8 +310,7 @@ export class GithubMultiOrgEntityProvider
     markCommitComplete();
   }
 
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
-  supportsEventTopics(): string[] {
+  private supportsEventTopics(): string[] {
     return [
       'github.installation',
       'github.organization',
@@ -323,8 +319,7 @@ export class GithubMultiOrgEntityProvider
     ];
   }
 
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
-  async onEvent(params: EventParams): Promise<void> {
+  private async onEvent(params: EventParams): Promise<void> {
     const { logger } = this.options;
     logger.debug(`Received event from ${params.topic}`);
 
