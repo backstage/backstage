@@ -19,6 +19,9 @@ app:
         links:
           - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
+  features:
+    - import: catalog # '@backstage/plugin-catalog'
+      name: catalogPlugin
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins

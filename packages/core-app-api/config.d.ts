@@ -20,6 +20,23 @@ export interface Config {
    */
   app: {
     /**
+     * Declaratively enabled features
+     * @visibility frontend
+     */
+    features: Array<{
+      /**
+       * The package to import
+       * @visibility frontend
+       */
+      import: string;
+      /**
+       * The exported symbol to use, if not "default"
+       * @visibility frontend
+       */
+      name?: string;
+    }>;
+
+    /**
      * The public absolute root URL that the frontend.
      * @visibility frontend
      */
