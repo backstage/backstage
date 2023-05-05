@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { transformV5ComponentThemesToV4 } from './overrides';
 
 describe('transformV5ComponentThemesToV4', () => {
