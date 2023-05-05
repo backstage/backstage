@@ -27,7 +27,6 @@ import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';
 import { AwsS3Config } from './types';
 import {
-  ListObjectsCommand,
   ListObjectsV2Command,
   ListObjectsV2Output,
   S3,
