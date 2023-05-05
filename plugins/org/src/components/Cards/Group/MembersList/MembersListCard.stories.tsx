@@ -20,6 +20,10 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import {
+  groupA,
+  mockedCatalogApiSupportingGroups,
+} from '../../../../__testUtils__/catalogMocks';
 import { MembersListCard } from './MembersListCard';
 
 export default {
@@ -126,6 +130,20 @@ export const Empty = () => (
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <MembersListCard />
+          </Grid>
+        </Grid>
+      </EntityProvider>
+    </TestApiProvider>
+  </MemoryRouter>
+);
+
+export const AggregateMembersToggle = () => (
+  <MemoryRouter>
+    <TestApiProvider apis={[[catalogApiRef, mockedCatalogApiSupportingGroups]]}>
+      <EntityProvider entity={groupA}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <MembersListCard showAggregateMembersToggle />
           </Grid>
         </Grid>
       </EntityProvider>

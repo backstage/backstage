@@ -18,11 +18,13 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
+import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { InputError } from '@backstage/errors';
+import { z } from 'zod';
 
 /**
- * Creates a `gitlab:create-project-deploy-token` Scaffolder action.
+ * Creates a `gitlab:projectDeployToken:create` Scaffolder action.
  *
  * @param options - Templating configuration.
  * @public
@@ -31,69 +33,30 @@ export const createGitlabProjectDeployTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<{
-    repoUrl: string;
-    projectId: string | number;
-    name: string;
-    username: string;
-    scopes: string[];
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'gitlab:projectDeployToken:create',
     schema: {
-      input: {
-        required: ['projectId', 'repoUrl'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          projectId: {
-            title: 'Project ID',
-            type: ['string', 'number'],
-          },
-          name: {
-            title: 'Deploy Token Name',
-            type: 'string',
-          },
-          username: {
-            title: 'Deploy Token Username',
-            type: 'string',
-          },
-          scopes: {
-            title: 'Scopes',
-            type: 'array',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-        },
-      },
-      output: {
-        type: 'object',
-        properties: {
-          deploy_token: {
-            title: 'Deploy Token',
-            type: 'string',
-          },
-          user: {
-            title: 'User',
-            type: 'string',
-          },
-        },
-      },
+      input: commonGitlabConfig.and(
+        z.object({
+          projectId: z.union([z.number(), z.string()], {
+            description: 'Project ID',
+          }),
+          name: z.string({ description: 'Deploy Token Name' }),
+          username: z
+            .string({ description: 'Deploy Token Username' })
+            .optional(),
+          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+        }),
+      ),
+      output: z.object({
+        deploy_token: z.string({ description: 'Deploy Token' }),
+        user: z.string({ description: 'User' }),
+      }),
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { repoUrl, projectId, name, username, scopes } = ctx.input;
-      const { token, integrationConfig } = getToken(
-        repoUrl,
-        ctx.input.token,
-        integrations,
-      );
+      const { projectId, name, username, scopes } = ctx.input;
+      const { token, integrationConfig } = getToken(ctx.input, integrations);
 
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,

@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor, screen, within } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { default as React } from 'react';
 import { catalogApiRef } from '../../api';
@@ -87,7 +87,7 @@ describe('<EntityKindPicker/>', () => {
     expect(screen.getByText('Kind')).toBeInTheDocument();
 
     const input = screen.getByTestId('select');
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
     await waitFor(() => screen.getByText('Domain'));
 
@@ -115,7 +115,7 @@ describe('<EntityKindPicker/>', () => {
       </ApiProvider>,
     );
     const input = screen.getByTestId('select');
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
     await waitFor(() => screen.getByText('Domain'));
     fireEvent.click(screen.getByText('Domain'));
@@ -171,7 +171,7 @@ describe('<EntityKindPicker/>', () => {
     );
 
     const input = screen.getByTestId('select');
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
     expect(
       screen.getByRole('option', { name: 'Component' }),
@@ -196,7 +196,7 @@ describe('<EntityKindPicker/>', () => {
     expect(screen.getByText('Frob')).toBeInTheDocument();
 
     const input = screen.getByTestId('select');
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
     expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
 });

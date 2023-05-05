@@ -66,16 +66,12 @@ export const todoListReadPermission = createPermission({
 });
 /* highlight-add-end */
 
-/* highlight-add-next-line */
 export const todoListPermissions = [
   todoListCreatePermission,
   todoListUpdatePermission,
-];
-/* highlight-add-next-line */
-export const todoListPermissions = [
-  todoListCreatePermission,
-  todoListUpdatePermission,
+  /* highlight-add-start */
   todoListReadPermission,
+  /* highlight-add-end */
 ];
 ```
 

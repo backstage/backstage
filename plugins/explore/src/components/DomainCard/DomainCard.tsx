@@ -53,7 +53,10 @@ export const DomainCard = (props: { entity: DomainEntity }) => {
   return (
     <Card>
       <CardMedia>
-        <ItemCardHeader title={entity.metadata.name} subtitle={owner} />
+        <ItemCardHeader
+          title={entity.metadata.title ?? entity.metadata.name}
+          subtitle={owner}
+        />
       </CardMedia>
       <CardContent>
         {entity.metadata.tags?.length ? (

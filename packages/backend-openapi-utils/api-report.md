@@ -333,7 +333,6 @@ declare namespace internal {
     ImmutableSchemaObject,
     DocParameter,
     DocParameters,
-    ResolveDocParameterSchema,
     ParameterSchema,
     MapToSchema,
     ParametersSchema,
@@ -412,7 +411,7 @@ type OptionalMap<
 type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
-> = ResolveDocParameterSchema<Doc, Schema> extends infer R
+> = SchemaRef<Doc, Schema> extends infer R
   ? R extends ImmutableSchemaObject
     ? R extends JSONSchema7
       ? FromSchema<R>
@@ -548,16 +547,6 @@ type RequiredMap<
 > = {
   [P in Exclude<PickRequiredKeys<T>, undefined>]: NonNullable<T[P]>;
 };
-
-// @public (undocumented)
-type ResolveDocParameterSchema<
-  Doc extends RequiredDoc,
-  Schema extends ImmutableParameterObject['schema'],
-> = Schema extends ImmutableReferenceObject
-  ? 'parameters' extends ComponentTypes<Doc>
-    ? ComponentRef<Doc, 'parameters', Schema>
-    : never
-  : Schema;
 
 // @public (undocumented)
 type Response_2<
