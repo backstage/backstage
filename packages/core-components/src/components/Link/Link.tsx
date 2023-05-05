@@ -29,6 +29,7 @@ import {
   LinkProps as RouterLinkProps,
   Route,
 } from 'react-router-dom';
+import LaunchIcon from '@material-ui/icons/Launch';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -48,6 +49,14 @@ const useStyles = makeStyles(
     },
     externalLink: {
       position: 'relative',
+      display: 'inline-flex',
+      alignItems: 'center',
+    },
+    externalLinkWrapper: {
+      flexShrink: 1,
+    },
+    externalLinkIcon: {
+      marginLeft: '.25rem',
     },
   },
   { name: 'Link' },
@@ -197,6 +206,7 @@ export const Link = React.forwardRef<any, LinkProps>(
         <Typography component="span" className={classes.visuallyHidden}>
           , Opens in a new window
         </Typography>
+        <LaunchIcon fontSize="inherit" className={classes.externalLinkIcon} />
       </MaterialLink>
     ) : (
       // Interact with React Router for internal links
