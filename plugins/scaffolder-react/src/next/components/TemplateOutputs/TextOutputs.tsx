@@ -43,6 +43,7 @@ export const TextOutputs = (props: {
           const Icon = iconResolver(icon);
           return (
             <Button
+              key={i}
               startIcon={<Icon />}
               component="div"
               color="primary"
