@@ -15,18 +15,18 @@
  */
 
 import React, { useState, Suspense } from 'react';
-import { Tabs, Tab, Typography, Divider } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
 import { StorageBucket } from '../../lib/storage';
 import { GraphQLEndpoint } from '../../lib/api';
+import { BackstageTheme } from '@backstage/theme';
 import { Progress } from '@backstage/core-components';
 
 const GraphiQL = React.lazy(() =>
   import('graphiql').then(m => ({ default: m.GraphiQL })),
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -69,11 +69,10 @@ export const GraphiQLBrowser = (props: GraphiQLBrowserProps) => {
           classes={{ root: classes.tabs }}
           value={tabIndex}
           onChange={(_, value) => setTabIndex(value)}
-          indicatorColor="secondary"
-          textColor="inherit"
+          indicatorColor="primary"
         >
           {endpoints.map(({ title }, index) => (
-            <Tab key={index} label={title} sx={{ color: 'inherit' }} />
+            <Tab key={index} label={title} value={index} />
           ))}
         </Tabs>
         <Divider />
