@@ -24,7 +24,8 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
-import { Credentials, EKS } from 'aws-sdk';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
+import { EKS } from '@aws-sdk/client-eks';
 import { AWSCredentialFactory } from '../types';
 
 const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
@@ -73,20 +74,20 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
       );
     }
 
-    let credentials: Credentials | undefined;
+    let credentials: AwsCredentialIdentity | undefined;
 
     if (this.credentialsFactory) {
       credentials = await this.credentialsFactory(accountId);
     }
 
     const eksClient = new EKS({ credentials, region });
-    const clusters = await eksClient.listClusters({}).promise();
+    const clusters = await eksClient.listClusters({});
     if (clusters.clusters === undefined) {
       return true;
     }
 
     const results = clusters.clusters
-      .map(cluster => eksClient.describeCluster({ name: cluster }).promise())
+      .map(cluster => eksClient.describeCluster({ name: cluster }))
       .map(async describedClusterPromise => {
         const describedCluster = await describedClusterPromise;
         if (describedCluster.cluster) {

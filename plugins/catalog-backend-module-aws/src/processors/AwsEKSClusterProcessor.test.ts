@@ -15,24 +15,28 @@
  */
 
 import { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
-import AWSMock from 'aws-sdk-mock';
-import aws from 'aws-sdk';
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  EKS,
+  ListClustersResponse,
+  DescribeClusterResponse,
+  ListClustersCommand,
+  DescribeClusterCommand,
+} from '@aws-sdk/client-eks';
 
 describe('AwsEKSClusterProcessor', () => {
-  AWSMock.setSDKInstance(aws);
-
   describe('readLocation', () => {
     const processor = new (AwsEKSClusterProcessor as any)({});
     const location = { type: 'aws-eks', target: '957140518395/us-west-2' };
     const emit = jest.fn();
 
     it('generates cluster correctly', async () => {
-      const clusters: aws.EKS.Types.ListClustersResponse = {
+      const clusters: ListClustersResponse = {
         clusters: ['backstage-test'],
         nextToken: undefined,
       };
 
-      const cluster: aws.EKS.Types.DescribeClusterResponse = {
+      const cluster: DescribeClusterResponse = {
         cluster: {
           name: 'backstage-test',
           arn: 'arn:aws:1',
@@ -42,9 +46,10 @@ describe('AwsEKSClusterProcessor', () => {
           },
         },
       };
+      const mock = mockClient(EKS);
 
-      AWSMock.mock('EKS', 'listClusters', clusters);
-      AWSMock.mock('EKS', 'describeCluster', cluster);
+      mock.on(ListClustersCommand).resolves(clusters);
+      mock.on(DescribeClusterCommand).resolves(cluster);
 
       await processor.readLocation(location, false, emit);
 

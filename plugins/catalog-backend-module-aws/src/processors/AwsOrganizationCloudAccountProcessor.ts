@@ -22,8 +22,13 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import AWS, { Credentials, Organizations } from 'aws-sdk';
-import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
+import {
+  Account,
+  ListAccountsResponse,
+  Organizations,
+} from '@aws-sdk/client-organizations';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Logger } from 'winston';
 import {
   AwsOrganizationProviderConfig,
@@ -59,13 +64,13 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
   private static buildCredentials(
     config: AwsOrganizationProviderConfig,
-  ): Credentials | undefined {
+  ): AwsCredentialIdentityProvider | undefined {
     const roleArn = config.roleArn;
     if (!roleArn) {
       return undefined;
     }
 
-    return new AWS.ChainableTemporaryCredentials({
+    return fromTemporaryCredentials({
       params: {
         RoleSessionName: 'backstage-aws-organization-processor',
         RoleArn: roleArn,
@@ -78,7 +83,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     const credentials = AwsOrganizationCloudAccountProcessor.buildCredentials(
       this.provider,
     );
-    this.organizations = new AWS.Organizations({
+    this.organizations = new Organizations({
       credentials,
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
@@ -143,9 +148,8 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     let nextToken = undefined;
     while (isInitialAttempt || nextToken) {
       isInitialAttempt = false;
-      const orgAccounts: ListAccountsResponse = await this.organizations
-        .listAccounts({ NextToken: nextToken })
-        .promise();
+      const orgAccounts: ListAccountsResponse =
+        await this.organizations.listAccounts({ NextToken: nextToken });
       if (orgAccounts.Accounts) {
         awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
       }

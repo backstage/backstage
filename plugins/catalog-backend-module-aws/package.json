@@ -45,6 +45,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@aws-sdk/client-eks": "^3.328.0",
+    "@aws-sdk/client-organizations": "^3.328.0",
     "@aws-sdk/client-s3": "^3.208.0",
     "@aws-sdk/credential-providers": "^3.326.0",
     "@aws-sdk/middleware-endpoint": "^3.325.0",
@@ -60,7 +62,6 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "aws-sdk": "^2.840.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.0.2",
     "uuid": "^8.0.0",
@@ -72,7 +73,6 @@
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
     "aws-sdk-client-mock": "^2.0.0",
-    "aws-sdk-mock": "^5.2.1",
     "luxon": "^3.0.0",
     "yaml": "^2.0.0"
   },
