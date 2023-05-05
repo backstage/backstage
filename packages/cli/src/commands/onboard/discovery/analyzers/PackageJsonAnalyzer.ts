@@ -101,6 +101,10 @@ const packageSchema = z.object({
 /**
  * Makes sure that a name retrieved from a package.json file
  * is reasonable and conforms to the catalog naming format.
+ *
+ * Read more about the naming format here:
+ *  ADR002: Default Software Catalog File Format
+ *  https://backstage.io/docs/architecture-decisions/adrs-adr002/
  */
 function sanitizeName(name?: string) {
   return name && name !== 'root'
