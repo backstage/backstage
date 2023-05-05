@@ -66,17 +66,6 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 | Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47)       | mclarke#0725      |
 | Jamie Klassen  | VMware       |      | [jamieklassen](http://github.com/jamieklassen) | jamieklassen#3047 |
 
-### TechDocs
-
-Team: @backstage/techdocs-maintainers
-
-Scope: The TechDocs plugin and related tooling
-
-| Name                     | Organization | Team         | GitHub                                           | Discord            |
-| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
-| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
-| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
-
 ### Permission Framework
 
 Team: @backstage/permission-maintainers
@@ -87,6 +76,17 @@ Scope: The Permission Framework and plugins integrating with the permission fram
 | ------------------------ | ------------ | --------------- | ------------------------------------------------ | ------------------ |
 | Vincenzo Scamporlino     | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)           | vinzscam#6944      |
 | Ainhoa Larumbe           | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)             | ainhoa#8085        |
+
+### TechDocs
+
+Team: @backstage/techdocs-maintainers
+
+Scope: The TechDocs plugin and related tooling
+
+| Name                     | Organization | Team         | GitHub                                           | Discord            |
+| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
+| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
+| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
 
 
 ## Sponsors
