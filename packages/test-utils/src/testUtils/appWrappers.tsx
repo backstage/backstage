@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
+import React, {
+  ComponentType,
+  ReactNode,
+  ReactElement,
+  PropsWithChildren,
+} from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import MockIcon from '@material-ui/icons/AcUnit';
-import { createSpecializedApp } from '@backstage/core-app-api';
+import { createSpecializedApp, AppRouter } from '@backstage/core-app-api';
 import {
   BootErrorPageProps,
   RouteRef,
@@ -177,8 +182,8 @@ export function createTestAppWrapper(
     },
   );
 
+  // TODO(RobotSail): migrate to using app.createRoot instead
   const AppProvider = app.getProvider();
-  const AppRouter = app.getRouter();
 
   const TestAppWrapper = ({ children }: { children: ReactNode }) => (
     <AppProvider>
@@ -228,7 +233,7 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options: TestAppOptions = {},
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;

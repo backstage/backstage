@@ -69,7 +69,7 @@ export function createScaffolderLayout<TInputProps = unknown>(
  * @public
  */
 export const ScaffolderLayouts: React.ComponentType<
-  React.PropsWithChildren
+  React.PropsWithChildren<{}>
 > = (): JSX.Element | null => null;
 
 attachComponentData(ScaffolderLayouts, LAYOUTS_WRAPPER_KEY, true);

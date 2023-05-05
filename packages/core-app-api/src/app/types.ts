@@ -70,7 +70,7 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
-  Router: ComponentType<{ basename?: string }>;
+  Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<{}>;
 
@@ -335,7 +335,7 @@ export type BackstageApp = {
    *
    * @deprecated Use {@link BackstageApp.createRoot} instead.
    */
-  getProvider(): ComponentType<{}>;
+  getProvider(): ComponentType<PropsWithChildren<{}>>;
 
   /**
    * Router component that should wrap the App Routes create with getRoutes()
