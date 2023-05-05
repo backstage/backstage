@@ -28,12 +28,6 @@ module.exports = {
         onNonMatchingHeader: 'replace',
       },
     ],
-    'no-restricted-imports': [
-      'error',
-      {
-        patterns: ['@mui/*/*/*'],
-      },
-    ],
     'no-restricted-syntax': [
       'error',
       {

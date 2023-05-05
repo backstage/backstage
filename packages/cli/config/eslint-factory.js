@@ -24,6 +24,7 @@ const { join: joinPath } = require('path');
  * - `tsRules`: Additional ESLint rules to apply to TypeScript
  * - `testRules`: Additional ESLint rules to apply to tests
  * - `restrictedImports`: Additional paths to add to no-restricted-imports
+ * - `restrictedImportsPattern`: Additional patterns to add to no-restricted-imports
  * - `restrictedSrcImports`: Additional paths to add to no-restricted-imports in src files
  * - `restrictedTestImports`: Additional paths to add to no-restricted-imports in test files
  * - `restrictedSyntax`: Additional patterns to add to no-restricted-syntax
@@ -44,6 +45,7 @@ function createConfig(dir, extraConfig = {}) {
     testRules,
 
     restrictedImports,
+    restrictedImportsPatterns,
     restrictedSrcImports,
     restrictedTestImports,
     restrictedSyntax,
@@ -114,6 +116,7 @@ function createConfig(dir, extraConfig = {}) {
             '*.test*',
             '**/__testUtils__/**',
             '**/__mocks__/**',
+            ...(restrictedImportsPatterns ?? []),
           ],
         },
       ],
@@ -208,9 +211,16 @@ function createConfigForRole(dir, role, extraConfig = {}) {
             name: '@material-ui/icons/', // because this is possible too ._.
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
+          {
+            // https://mui.com/material-ui/guides/minimizing-bundle-size/
+            name: '@mui/material',
+            message: "Please import '@mui/material/...' instead.",
+          },
           ...require('module').builtinModules,
           ...(extraConfig.restrictedImports ?? []),
         ],
+        // https://mui.com/material-ui/guides/minimizing-bundle-size/
+        restrictedImportsPatterns: ['@mui/*/*/*'],
         tsRules: {
           'react/prop-types': 0,
           ...extraConfig.tsRules,

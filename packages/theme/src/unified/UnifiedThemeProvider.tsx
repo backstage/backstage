@@ -21,9 +21,8 @@ import {
   StyledEngineProvider,
   ThemeProvider as Mui5Provider,
 } from '@mui/material/styles';
-import Mui5CssBaseline from '@mui/material/CssBaseline';
+import CSSBaseline from '@mui/material/CssBaseline';
 import { UnifiedTheme } from './types';
-import { CssBaseline } from '@material-ui/core';
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -51,15 +50,7 @@ export function UnifiedThemeProvider(
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {
-    if (v5Theme) {
-      cssBaseline = <Mui5CssBaseline enableColorScheme />;
-    } else if (v4Theme) {
-      /* const CssBaseline = maybeLoadMui4CssBaseline();
-      if (!CssBaseline) {
-        throw new Error('Failed to load MUI 4 CssBaseline component');
-      } */
-      cssBaseline = <CssBaseline />;
-    }
+    cssBaseline = <CSSBaseline />;
   }
 
   let result = (
