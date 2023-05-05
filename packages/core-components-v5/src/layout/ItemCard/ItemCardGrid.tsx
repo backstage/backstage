@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+
 import Box from '@mui/material/Box';
 import { Theme } from '@mui/material/styles';
 import { WithStyles } from '@mui/styles';
+import { clsx } from 'clsx';
 import { makeStyles } from 'tss-react/mui';
-import React from 'react';
 
 /** @public */
 export type ItemCardGridClassKey = 'root';
@@ -58,10 +60,10 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * @public
  */
 export function ItemCardGrid(props: ItemCardGridProps) {
-  const { children, ...otherProps } = props;
+  const { children, classes: propsClasses, ...otherProps } = props;
   const { classes } = useStyles();
   return (
-    <Box className={classes.root} {...otherProps}>
+    <Box className={clsx(classes.root, propsClasses?.root)} {...otherProps}>
       {children}
     </Box>
   );
