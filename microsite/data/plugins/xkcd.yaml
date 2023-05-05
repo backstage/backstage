@@ -1,0 +1,10 @@
+---
+title: xkcd comic
+author: Vity
+authorUrl: https://github.com/Vity01
+category: Humor
+description: xkcd comic within Backstage
+documentation: https://github.com/Vity01/backstage-xkcd/
+iconUrl: https://raw.githubusercontent.com/Vity01/backstage-xkcd/main/docs/xkcd.svg
+npmPackageName: 'backstage-plugin-xkcd'
+addedDate: '2023-05-05'
