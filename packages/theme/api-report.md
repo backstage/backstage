@@ -95,6 +95,12 @@ export interface BackstageTheme extends Theme_2 {
   palette: BackstagePalette;
 }
 
+// @public
+export type BackstageThemeAdditions = {
+  page: PageTheme;
+  getPageTheme: (selector: PageThemeSelector) => PageTheme;
+};
+
 // @public @deprecated
 export interface BackstageThemeOptions extends ThemeOptions_3 {
   // (undocumented)
