@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-import { CatalogIndexPage } from '@backstage/plugin-catalog';
-import React from 'react';
-import { Routes, Route } from 'react-router';
+import useAsync from 'react-use/lib/useAsync';
+import { declarativeCreateApp } from './declarativeCreateApp';
 
-export function DeclarativeRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<h1>Home</h1>} />
-      <Route path="/catalog" element={<CatalogIndexPage />} />
-    </Routes>
-  );
+export function useDeclarativeRoot():
+  | { state: 'loading' }
+  | { state: 'boot-error'; error: Error }
+  | { state: 'loaded'; Root: React.ComponentType<{}> } {
+  const {
+    loading,
+    error,
+    value: RootComponent,
+  } = useAsync(async () => {
+    const app = await declarativeCreateApp();
+    return app;
+  }, []);
+
+  if (loading) {
+    return { state: 'loading' };
+  } else if (error) {
+    return { state: 'boot-error', error };
+  }
+
+  return { state: 'loaded', Root: RootComponent! };
 }

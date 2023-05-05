@@ -37,6 +37,28 @@ export interface Config {
     }>;
 
     /**
+     * Declaratively enabled routes
+     * @visibility frontend
+     */
+    routes: Array<{
+      /**
+       * The path to bind to
+       * @visibility frontend
+       */
+      path: string;
+      /**
+       * The package to import
+       * @visibility frontend
+       */
+      import: string;
+      /**
+       * The exported symbol to use
+       * @visibility frontend
+       */
+      name: string;
+    }>;
+
+    /**
      * The public absolute root URL that the frontend.
      * @visibility frontend
      */

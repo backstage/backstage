@@ -19,9 +19,23 @@ app:
         links:
           - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
+
   features:
     - import: catalog # '@backstage/plugin-catalog'
       name: catalogPlugin
+
+  routes:
+    - path: /catalog
+      import: catalog
+      name: CatalogIndexPage
+    - path: /catalog/:namespace/:kind/:name
+      import: catalog
+      name: CatalogEntityPage
+
+  sidebar:
+    - name: Catalog
+      icon: storefront
+      to: /catalog
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins

@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-import { createApp } from '@backstage/app-defaults';
-import {
-  AppRouter,
-  ConfigReader,
-  defaultConfigLoader,
-} from '@backstage/core-app-api';
-import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
-import { BackstagePlugin, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { stringifyError } from '@backstage/errors';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { apis } from './apis';
-import { DeclarativeRoot } from './declarative/DeclarativeRoot';
-import * as plugins from './plugins';
-
-type PluginThing = BackstagePlugin & {
-  output?(): Array<{ type: 'feature-flag'; name: string } | { type: string }>; // support for old plugins
-};
+import { useDeclarativeRoot } from './declarative/useDeclarativeRoot';
 
 export function TestPage() {
   const catalogApi = useApi(catalogApiRef);
@@ -50,68 +37,6 @@ export function TestPage() {
   console.log('useAsync', { loading, error, value });
 
   return <div>Test Page</div>;
-}
-
-export async function declarativeCreateApp() {
-  const loadedPlugins = new Array<PluginThing>();
-
-  const config = ConfigReader.fromConfigs(await defaultConfigLoader());
-  for (const featureConfig of config.getConfigArray('app.features')) {
-    const moduleName = featureConfig.getString('import');
-    const symbolName = featureConfig.getOptionalString('name') ?? 'default';
-
-    const loadedModule = (plugins as any)[moduleName] as any;
-    if (!loadedModule) {
-      throw new Error(`Could not load module ${moduleName}`);
-    }
-
-    // console.log(moduleName, plugins, loadedModule);
-    const loadedSymbol = loadedModule[symbolName];
-    if (!loadedSymbol) {
-      throw new Error(
-        `Could not load symbol ${symbolName} from module ${moduleName}`,
-      );
-    }
-
-    loadedPlugins.push(loadedSymbol as any);
-  }
-
-  const app = createApp({
-    plugins: loadedPlugins,
-    apis,
-  });
-
-  return app.createRoot(
-    <>
-      <AlertDisplay transientTimeoutMs={2500} />
-      <OAuthRequestDialog />
-      <AppRouter>
-        <DeclarativeRoot />
-      </AppRouter>
-    </>,
-  );
-}
-
-function useDeclarativeRoot():
-  | { state: 'loading' }
-  | { state: 'boot-error'; error: Error }
-  | { state: 'loaded'; Root: React.ComponentType<{}> } {
-  const {
-    loading,
-    error,
-    value: RootComponent,
-  } = useAsync(async () => {
-    const app = await declarativeCreateApp();
-    return app;
-  }, []);
-
-  if (loading) {
-    return { state: 'loading' };
-  } else if (error) {
-    return { state: 'boot-error', error };
-  }
-
-  return { state: 'loaded', Root: RootComponent! };
 }
 
 export default function App() {
