@@ -36,7 +36,6 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@aws-sdk/credential-provider-node": "^3.321.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",

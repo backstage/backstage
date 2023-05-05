@@ -1005,7 +1005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:^3.208.0, @aws-sdk/credential-provider-node@npm:^3.321.1":
+"@aws-sdk/credential-provider-node@npm:^3.208.0":
   version: 3.321.1
   resolution: "@aws-sdk/credential-provider-node@npm:3.321.1"
   dependencies:
@@ -8624,7 +8624,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-elasticsearch@workspace:plugins/search-backend-module-elasticsearch"
   dependencies:
-    "@aws-sdk/credential-provider-node": ^3.321.1
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
