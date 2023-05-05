@@ -25,6 +25,7 @@ import {
   CONFIG_VISIBILITIES,
   ConfigVisibility,
 } from './types';
+import { SchemaObject } from 'json-schema-traverse';
 
 /**
  * This takes a collection of Backstage configuration schemas from various
@@ -35,6 +36,9 @@ import {
  */
 export function compileConfigSchemas(
   schemas: ConfigSchemaPackageEntry[],
+  options?: {
+    noUndeclaredProperties?: boolean;
+  },
 ): ValidationFunc {
   // The ajv instance below is stateful and doesn't really allow for additional
   // output during validation. We work around this by having this extra piece
@@ -101,6 +105,18 @@ export function compileConfigSchemas(
   }
 
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
+
+  if (options?.noUndeclaredProperties) {
+    traverse(merged, (schema: SchemaObject) => {
+      /**
+       * The `additionalProperties` key can only be applied to `type: object` in the JSON
+       *  schema.
+       */
+      if (schema?.type === 'object') {
+        schema.additionalProperties ||= false;
+      }
+    });
+  }
 
   const validate = ajv.compile(merged);
 

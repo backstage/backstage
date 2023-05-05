@@ -345,6 +345,10 @@ export function registerCommands(program: Command) {
     .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Only validate the frontend configuration')
     .option('--deprecated', 'Output deprecated configuration settings')
+    .option(
+      '--strict',
+      'Enable strict config validation, forbidding errors and unknown errors',
+    )
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',

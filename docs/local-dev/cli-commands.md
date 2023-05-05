@@ -290,7 +290,8 @@ Options:
   --package <name>  Only load config schema that applies to the given package
   --lax             Do not require environment variables to be set
   --frontend        Only validate the frontend configuration
-  --deprecated      List all deprecated configuration settings
+  --deprecated      Output deprecated configuration settings
+  --strict          Ensure that the provided config(s) has no errors and does not contain keys not in the schema.
   --config <path>   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
 ```
