@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { createApp } from '@backstage/app-defaults';
 import {
   AppRouter,
   ConfigReader,
   defaultConfigLoader,
 } from '@backstage/core-app-api';
-import useAsync from 'react-use/lib/useAsync';
-import { stringifyError } from '@backstage/errors';
-import { apis } from './apis';
-import * as plugins from './plugins';
-import {
-  BackstagePlugin,
-  discoveryApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
-import { createApp } from '@backstage/app-defaults';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
-import { Root } from './components/Root';
+import { BackstagePlugin, useApi } from '@backstage/core-plugin-api';
+import { stringifyError } from '@backstage/errors';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import React, { useEffect } from 'react';
+import useAsync from 'react-use/lib/useAsync';
+import { apis } from './apis';
+import { DeclarativeRoot } from './declarative/DeclarativeRoot';
+import * as plugins from './plugins';
 
 type PluginThing = BackstagePlugin & {
   output?(): Array<{ type: 'feature-flag'; name: string } | { type: string }>; // support for old plugins
@@ -40,12 +36,8 @@ type PluginThing = BackstagePlugin & {
 
 export function TestPage() {
   const catalogApi = useApi(catalogApiRef);
-  const discovery = useApi(discoveryApiRef);
 
-  console.log('catalogapi', catalogApi);
   useEffect(() => {
-    discovery.getBaseUrl('catalog').then(r => console.log('catalog url', r));
-    console.log('I AFFECT');
     catalogApi
       .getEntities()
       .then(r => console.log('loaded entity', r.items[0]))
@@ -56,6 +48,7 @@ export function TestPage() {
     return await catalogApi.getEntities();
   }, [catalogApi]);
   console.log('useAsync', { loading, error, value });
+
   return <div>Test Page</div>;
 }
 
@@ -93,17 +86,16 @@ export async function declarativeCreateApp() {
       <AlertDisplay transientTimeoutMs={2500} />
       <OAuthRequestDialog />
       <AppRouter>
-        <Root>
-          <TestPage />
-        </Root>
+        <DeclarativeRoot />
       </AppRouter>
     </>,
   );
 }
 
 function useDeclarativeRoot():
-  | { loading: true }
-  | { loading: false; Root: React.ComponentType<{}> } {
+  | { state: 'loading' }
+  | { state: 'boot-error'; error: Error }
+  | { state: 'loaded'; Root: React.ComponentType<{}> } {
   const {
     loading,
     error,
@@ -114,22 +106,21 @@ function useDeclarativeRoot():
   }, []);
 
   if (loading) {
-    return { loading: true };
+    return { state: 'loading' };
   } else if (error) {
-    return {
-      loading: false,
-      Root: () => <h1>ERROR! {stringifyError(error)}</h1>,
-    };
+    return { state: 'boot-error', error };
   }
 
-  return { loading: false, Root: RootComponent! };
+  return { state: 'loaded', Root: RootComponent! };
 }
 
 export default function App() {
   const result = useDeclarativeRoot();
 
-  if (result.loading) {
+  if (result.state === 'loading') {
     return <h1>LOADING.....</h1>;
+  } else if (result.state === 'boot-error') {
+    return <h1>OH NO BOOT ERROR! {stringifyError(result.error)}</h1>;
   }
 
   return <result.Root />;
