@@ -20,6 +20,7 @@ export const EntityGroupProfileCard: (props: {
 export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
+  showAggregateMembersToggle?: boolean | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -47,6 +48,7 @@ export const GroupProfileCard: (props: {
 export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
+  showAggregateMembersToggle?: boolean;
 }) => JSX.Element;
 
 // @public

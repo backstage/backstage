@@ -31,11 +31,12 @@ export const todoListUpdatePermission = createPermission({
 
 /* highlight-remove-next-line */
 export const todoListPermissions = [todoListCreatePermission];
-/* highlight-add-next-line */
+/* highlight-add-start */
 export const todoListPermissions = [
   todoListCreatePermission,
   todoListUpdatePermission,
 ];
+/* highlight-add-end */
 ```
 
 Notice that unlike `todoListCreatePermission`, the `todoListUpdatePermission` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
