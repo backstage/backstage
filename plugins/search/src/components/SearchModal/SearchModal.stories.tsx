@@ -25,7 +25,7 @@ import {
   Paper,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { rootRouteRef } from '../../plugin';
 import {
   SearchBar,
@@ -74,7 +74,7 @@ export default {
   title: 'Plugins/Search/SearchModal',
   component: SearchModal,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[[searchApiRef, new MockSearchApi(mockResults)]]}

@@ -27,7 +27,7 @@ describe('useStarredEntity', () => {
     toggleStarred: jest.fn(),
     starredEntitie$: jest.fn(),
   };
-  let wrapper: React.ComponentType;
+  let wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     wrapper = (props: PropsWithChildren<{}>) => (

@@ -38,7 +38,7 @@ import {
 } from '@backstage/plugin-search-react';
 import { stackOverflowApiRef, HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 const entities = [
   {
@@ -107,7 +107,7 @@ starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 export default {
   title: 'Plugins/Home/Templates',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
           <TestApiProvider

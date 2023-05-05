@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useState } from 'react';
+import React, { ComponentType, useState, PropsWithChildren } from 'react';
 
 import { Grid, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 
@@ -59,7 +59,7 @@ export default {
   title: 'Plugins/Search/SearchResultList',
   component: SearchResultList,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <Grid container direction="row">

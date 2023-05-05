@@ -145,14 +145,14 @@ export class ApiResolver implements ApiHolder {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<{}>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
+  Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<{
     basename?: string;
   }>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<{}>;
+  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -274,9 +274,9 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
-  createRoot(element: JSX.Element): ComponentType<{}>;
-  getProvider(): ComponentType<{}>;
-  getRouter(): ComponentType<{}>;
+  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
+  getProvider(): ComponentType<PropsWithChildren<{}>>;
+  getRouter(): ComponentType<PropsWithChildren<{}>>;
 };
 
 // @public

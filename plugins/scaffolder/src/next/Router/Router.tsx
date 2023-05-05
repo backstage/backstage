@@ -58,7 +58,7 @@ export type NextRouterProps = {
     TemplateCardComponent?: React.ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
-    TaskPageComponent?: React.ComponentType<{}>;
+    TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
     TemplateOutputsComponent?: React.ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;

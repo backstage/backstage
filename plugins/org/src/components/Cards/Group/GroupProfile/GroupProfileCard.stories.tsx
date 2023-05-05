@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { GroupProfileCard } from './GroupProfileCard';
 
 const dummyDepartment = {
@@ -74,7 +74,7 @@ export default {
   title: 'Plugins/Org/Group Profile Card',
   component: GroupProfileCard,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <Story />
