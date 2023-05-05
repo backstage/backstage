@@ -17,6 +17,7 @@
 import { DomainEntity } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { DomainCard } from './DomainCard';
 
@@ -50,5 +51,34 @@ describe('<DomainCard />', () => {
       'href',
       '/catalog/default/domain/artists',
     );
+  });
+
+  it('renders a domain card with custom title', async () => {
+    const entity: DomainEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'artists',
+        title: 'my Custom Title',
+      },
+      spec: {
+        owner: 'guest',
+      },
+    };
+    const { getByText } = await renderInTestApp(
+      <DomainCard entity={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('Explore').parentElement).toHaveAttribute(
+      'href',
+      '/catalog/default/domain/artists',
+    );
+    expect(getByText('my Custom Title')).toBeInTheDocument();
+    expect(screen.queryByText('artists')).not.toBeInTheDocument();
   });
 });

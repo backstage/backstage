@@ -16,7 +16,6 @@
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -171,7 +170,7 @@ export function SelectComponent(props: SelectProps) {
     onChange(event.target.value as SelectedItems);
   };
 
-  const handleClick = (event: React.ChangeEvent<any>) => {
+  const handleOpen = (event: React.ChangeEvent<any>) => {
     if (disabled) {
       event.preventDefault();
       return;
@@ -184,7 +183,7 @@ export function SelectComponent(props: SelectProps) {
     });
   };
 
-  const handleClickAway = () => {
+  const handleClose = () => {
     setOpen(false);
   };
 
@@ -196,88 +195,85 @@ export function SelectComponent(props: SelectProps) {
 
   return (
     <Box className={classes.root}>
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formLabel}>{label}</InputLabel>
-          <Select
-            aria-label={label}
-            value={value}
-            native={native}
-            disabled={disabled}
-            data-testid="select"
-            displayEmpty
-            multiple={multiple}
-            margin={margin}
-            onChange={handleChange}
-            onClick={handleClick}
-            open={isOpen}
-            input={<BootstrapInput />}
-            label={label}
-            tabIndex={0}
-            renderValue={s =>
-              multiple && (value as any[]).length !== 0 ? (
-                <Box className={classes.chips}>
-                  {(s as string[]).map(selectedValue => (
-                    <Chip
-                      key={items.find(el => el.value === selectedValue)?.value}
-                      label={
-                        items.find(el => el.value === selectedValue)?.label
-                      }
-                      clickable
-                      onDelete={handleDelete(selectedValue)}
-                      className={classes.chip}
-                    />
-                  ))}
-                </Box>
-              ) : (
-                <Typography>
-                  {(value as any[]).length === 0
-                    ? placeholder || ''
-                    : items.find(el => el.value === s)?.label}
-                </Typography>
-              )
-            }
-            IconComponent={() =>
-              !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
-            }
-            MenuProps={{
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'left',
-              },
-              transformOrigin: {
-                vertical: 'top',
-                horizontal: 'left',
-              },
-              getContentAnchorEl: null,
-            }}
-          >
-            {placeholder && !multiple && (
-              <MenuItem value={[]}>{placeholder}</MenuItem>
-            )}
-            {native
-              ? items &&
-                items.map(item => (
-                  <option value={item.value} key={item.value}>
-                    {item.label}
-                  </option>
-                ))
-              : items &&
-                items.map(item => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {multiple && (
-                      <Checkbox
-                        color="primary"
-                        checked={(value as any[]).includes(item.value) || false}
-                        className={classes.checkbox}
-                      />
-                    )}
-                    {item.label}
-                  </MenuItem>
+      <FormControl className={classes.formControl}>
+        <InputLabel className={classes.formLabel}>{label}</InputLabel>
+        <Select
+          aria-label={label}
+          value={value}
+          native={native}
+          disabled={disabled}
+          data-testid="select"
+          displayEmpty
+          multiple={multiple}
+          margin={margin}
+          onChange={handleChange}
+          open={isOpen}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          input={<BootstrapInput />}
+          label={label}
+          tabIndex={0}
+          renderValue={s =>
+            multiple && (value as any[]).length !== 0 ? (
+              <Box className={classes.chips}>
+                {(s as string[]).map(selectedValue => (
+                  <Chip
+                    key={items.find(el => el.value === selectedValue)?.value}
+                    label={items.find(el => el.value === selectedValue)?.label}
+                    clickable
+                    onDelete={handleDelete(selectedValue)}
+                    className={classes.chip}
+                  />
                 ))}
-          </Select>
-        </FormControl>
-      </ClickAwayListener>
+              </Box>
+            ) : (
+              <Typography>
+                {(value as any[]).length === 0
+                  ? placeholder || ''
+                  : items.find(el => el.value === s)?.label}
+              </Typography>
+            )
+          }
+          IconComponent={() =>
+            !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
+          }
+          MenuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left',
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'left',
+            },
+            getContentAnchorEl: null,
+          }}
+        >
+          {placeholder && !multiple && (
+            <MenuItem value={[]}>{placeholder}</MenuItem>
+          )}
+          {native
+            ? items &&
+              items.map(item => (
+                <option value={item.value} key={item.value}>
+                  {item.label}
+                </option>
+              ))
+            : items &&
+              items.map(item => (
+                <MenuItem key={item.value} value={item.value}>
+                  {multiple && (
+                    <Checkbox
+                      color="primary"
+                      checked={(value as any[]).includes(item.value) || false}
+                      className={classes.checkbox}
+                    />
+                  )}
+                  {item.label}
+                </MenuItem>
+              ))}
+        </Select>
+      </FormControl>
     </Box>
   );
 }

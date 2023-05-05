@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CurveFilter } from './CurveFilter';
@@ -33,7 +33,9 @@ describe('<CurveFilter/>', () => {
 
     expect(screen.getByText('Step Before')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByTestId('select'));
+    await userEvent.click(
+      within(screen.getByTestId('select')).getByRole('button'),
+    );
     await userEvent.click(screen.getByText('Monotone X'));
 
     await waitFor(() => {
