@@ -43,7 +43,7 @@ jest.setTimeout(60_000);
 
 describe('migrations', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(
@@ -70,7 +70,7 @@ describe('migrations', () => {
 
       await migrateDownOnce(knex);
 
-      await expect(knex('sessions')).rejects.toThrow();
+      await expect(knex('sessions').orderBy('sid', 'asc')).rejects.toThrow();
 
       await knex.destroy();
     },
