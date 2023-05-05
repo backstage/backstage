@@ -77,6 +77,18 @@ Scope: The TechDocs plugin and related tooling
 | Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
 | Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
 
+### Permission Framework
+
+Team: @backstage/permission-maintainers
+
+Scope: The Permission Framework and plugins integrating with the permission framework
+
+| Name                     | Organization | Team            | GitHub                                           | Discord            |
+| ------------------------ | ------------ | --------------- | ------------------------------------------------ | ------------------ |
+| Vincenzo Scamporlino     | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)           | vinzscam#6944      |
+| Ainhoa Larumbe           | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)             | ainhoa#8085        |
+
+
 ## Sponsors
 
 | Name              | Organization | GitHub                                      | Email             |
