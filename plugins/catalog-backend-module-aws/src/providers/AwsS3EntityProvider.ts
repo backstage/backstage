@@ -26,10 +26,15 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';
 import { AwsS3Config } from './types';
-import { S3 } from 'aws-sdk';
-import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
+import {
+  ListObjectsCommand,
+  ListObjectsV2Command,
+  ListObjectsV2Output,
+  S3,
+} from '@aws-sdk/client-s3';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
+import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
 
 // TODO: event-based updates using S3 events (+ queue like SQS)?
 /**
@@ -44,6 +49,7 @@ export class AwsS3EntityProvider implements EntityProvider {
   private readonly s3: S3;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
+  private endpoint?: string;
 
   static fromConfig(
     configRoot: Config,
@@ -110,9 +116,8 @@ export class AwsS3EntityProvider implements EntityProvider {
       ),
       endpoint: integration.config.endpoint,
       region: this.config.region,
-      s3ForcePathStyle: integration.config.s3ForcePathStyle,
+      forcePathStyle: integration.config.s3ForcePathStyle,
     });
-
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
@@ -146,6 +151,18 @@ export class AwsS3EntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    // https://github.com/aws/aws-sdk-js-v3/issues/4122#issuecomment-1298968804
+    const endpoint = await getEndpointFromInstructions(
+      {
+        Bucket: this.config.bucketName,
+      },
+      ListObjectsV2Command,
+      this.s3.config as unknown as Record<string, unknown>,
+    );
+    if (endpoint?.url)
+      this.endpoint = endpoint.url.href.endsWith('/')
+        ? endpoint.url.href
+        : `${endpoint.url.href}/`;
     await this.scheduleFn();
   }
 
@@ -180,13 +197,12 @@ export class AwsS3EntityProvider implements EntityProvider {
     let continuationToken: string | undefined = undefined;
     let output: ListObjectsV2Output;
     do {
-      const request = this.s3.listObjectsV2({
+      output = await this.s3.listObjectsV2({
         Bucket: this.config.bucketName,
         ContinuationToken: continuationToken,
         Prefix: this.config.prefix,
       });
 
-      output = await request.promise();
       if (output.Contents) {
         output.Contents.forEach(item => {
           if (item.Key && !item.Key.endsWith('/')) {
@@ -209,9 +225,6 @@ export class AwsS3EntityProvider implements EntityProvider {
   }
 
   private createObjectUrl(key: string): string {
-    const bucketName = this.config.bucketName;
-    const endpoint = this.s3.endpoint.href;
-
-    return encodeURI(`${endpoint}${bucketName}/${key}`);
+    return new URL(key, this.endpoint).href;
   }
 }

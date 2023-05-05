@@ -46,6 +46,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.208.0",
+    "@aws-sdk/credential-providers": "^3.326.0",
+    "@aws-sdk/middleware-endpoint": "^3.325.0",
+    "@aws-sdk/types": "^3.310.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",

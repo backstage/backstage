@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import aws, { Credentials } from 'aws-sdk';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+import {
+  AwsCredentialIdentity,
+  AwsCredentialIdentityProvider,
+} from '@aws-sdk/types';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 
 export class AwsCredentials {
   /**
@@ -30,25 +33,25 @@ export class AwsCredentials {
       externalId?: string;
     },
     roleSessionName: string,
-  ): Credentials | CredentialsOptions | undefined {
+  ): AwsCredentialIdentity | AwsCredentialIdentityProvider | undefined {
     if (!config) {
       return undefined;
     }
 
     const accessKeyId = config.accessKeyId;
     const secretAccessKey = config.secretAccessKey;
-    let explicitCredentials: Credentials | undefined;
+    let explicitCredentials: AwsCredentialIdentity | undefined;
 
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new Credentials({
+      explicitCredentials = {
         accessKeyId,
         secretAccessKey,
-      });
+      };
     }
 
     const roleArn = config.roleArn;
     if (roleArn) {
-      return new aws.ChainableTemporaryCredentials({
+      return fromTemporaryCredentials({
         masterCredentials: explicitCredentials,
         params: {
           RoleArn: roleArn,
