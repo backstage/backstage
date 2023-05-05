@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-export {
-  readGitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-  getGitLabIntegrationRelativePath,
-} from './config';
-export type { GitLabIntegrationConfig } from './config';
-export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
-export { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
-export { DefaultGitlabCredentialsProvider } from './DefaultGitlabCredentialsProvider';
-export type { GitlabCredentials, GitlabCredentialsProvider } from './types';
+/**
+ * @public
+ */
+export type GitlabCredentials = {
+  headers?: { [name: string]: string };
+  token?: string;
+};
+
+/**
+ * @public
+ */
+export interface GitlabCredentialsProvider {
+  getCredentials(opts?: { url: string }): Promise<GitlabCredentials>;
+}

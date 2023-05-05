@@ -3848,6 +3848,7 @@ __metadata:
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -3858,12 +3859,15 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/eslint-plugin": "workspace:^"
+    "@backstage/integration": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@esbuild-kit/cjs-loader": ^2.4.1
     "@manypkg/get-packages": ^1.1.3
+    "@octokit/graphql": ^5.0.0
+    "@octokit/graphql-schema": ^13.7.0
     "@octokit/oauth-app": ^4.2.0
     "@octokit/request": ^6.0.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
@@ -3930,6 +3934,7 @@ __metadata:
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^7.0.0-alpha.8
     fs-extra: 10.1.0
+    git-url-parse: ^13.0.0
     glob: ^7.1.7
     global-agent: ^3.0.0
     handlebars: ^4.7.3
@@ -13127,6 +13132,16 @@ __metadata:
     is-plain-object: ^5.0.0
     universal-user-agent: ^6.0.0
   checksum: a0ff70202e8355845e9462df4e56e7ce4b32f15eddfb169d91e9939b7602fb05c78088b9d1ac9936b1655d61a883c7fe7b08e8f60c100ee05f40844bb4a95097
+  languageName: node
+  linkType: hard
+
+"@octokit/graphql-schema@npm:^13.7.0":
+  version: 13.10.0
+  resolution: "@octokit/graphql-schema@npm:13.10.0"
+  dependencies:
+    graphql: ^16.0.0
+    graphql-tag: ^2.10.3
+  checksum: fdec9c9a4df1f90b733ea0e24964744faceaf65e5d350b1727892e8e0e5821df1d29aec5cfa039925a044c6f56d4ed2028505108db7fbc0c68011053853c2411
   languageName: node
   linkType: hard
 
@@ -25543,7 +25558,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.6":
+"graphql-tag@npm:^2.10.3, graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
