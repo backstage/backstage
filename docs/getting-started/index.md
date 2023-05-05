@@ -21,6 +21,7 @@ you to use the [Contributors](contributors.md) guide to do a repository-based in
 
 - Access to a Unix-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- `make` and `build-essential` installed
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these
