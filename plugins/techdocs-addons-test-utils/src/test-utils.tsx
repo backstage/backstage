@@ -278,8 +278,6 @@ export class TechDocsAddonTester {
       render(this.build());
     });
 
-    await waitFor(() => screen.getByText('Documentation'));
-
     const shadowHost = await screen.findByTestId('techdocs-native-shadowroot');
 
     return {

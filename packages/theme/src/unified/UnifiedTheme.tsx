@@ -32,7 +32,6 @@ import { PageTheme } from '../base/types';
 import { defaultComponentThemes } from '../v5';
 import { createBaseThemeOptions } from '../base/createBaseThemeOptions';
 import { UnifiedTheme } from './types';
-import { maybeLoadMui4Styles } from '../v4/load';
 
 export class UnifiedThemeHolder implements UnifiedTheme {
   #themes = new Map<string, unknown>();
@@ -97,12 +96,6 @@ export function createUnifiedThemeFromV4(
   options: ThemeOptionsV4,
 ): UnifiedTheme {
   const v5Theme = adaptV4Theme(options as any);
-
-  const mui4Styles = maybeLoadMui4Styles();
-  if (!mui4Styles) {
-    return new UnifiedThemeHolder(undefined, v5Theme);
-  }
-
-  const v4Theme = mui4Styles.createTheme(options);
+  const v4Theme = createTheme(options);
   return new UnifiedThemeHolder(v4Theme, v5Theme);
 }
