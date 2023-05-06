@@ -11,6 +11,41 @@ groups -- directly from GitLab. The result is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group)
 entities that mirrors your org setup.
 
+As this provider is not one of the default providers, you will first need to install the Gitlab provider plugin:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
+```
+
+Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
+
+```ts
+/* packages/backend/src/plugins/catalog.ts */
+/* highlight-add-next-line */
+import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
+
+
+const builder = await CatalogBuilder.create(env);
+/** ... other processors and/or providers ... */
+/* highlight-add-start */
+  builder.addEntityProvider(
+    ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+```
+
+## Configuration
+
+To use the entity provider, you'll need a [Gitlab integration set up](https://backstage.io/docs/integrations/gitlab/locations).
+
 ```yaml
 integrations:
   gitlab:
