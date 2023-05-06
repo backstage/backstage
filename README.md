@@ -41,7 +41,7 @@ The documentation of Backstage includes:
 
 - [Main documentation](https://backstage.io/docs)
 - [Software Catalog](https://backstage.io/docs/features/software-catalog/)
-- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/))
+- [Architecture](https://backstage.io/docs/overview/architecture-overview)  || [Decisions](https://backstage.io/docs/architecture-decisions/) 
 - [Designing for Backstage](https://backstage.io/docs/dls/design)
 - [Storybook - UI components](https://backstage.io/storybook)
 
@@ -50,6 +50,7 @@ The documentation of Backstage includes:
 To engage with our community, you can use the following resources:
 
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
+- [Twitter Community](https://twitter.com/i/communities/1494019781716062215) - This community is for users, contributors, adopters of [Backstage](https://backstage.io)
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions
