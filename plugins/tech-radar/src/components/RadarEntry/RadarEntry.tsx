@@ -26,6 +26,7 @@ export type Props = {
   value: number;
   color: string;
   url?: string;
+  links?: Array<{ title: string; url: string }>;
   moved?: number;
   description?: string;
   timeline?: EntrySnapshot[];
@@ -73,6 +74,7 @@ const RadarEntry = (props: Props): JSX.Element => {
     title,
     color,
     url,
+    links,
     value,
     x,
     y,
@@ -112,6 +114,7 @@ const RadarEntry = (props: Props): JSX.Element => {
           description={description ? description : 'no description'}
           timeline={timeline ? timeline : []}
           url={url}
+          links={links}
         />
       )}
       {description ? (
