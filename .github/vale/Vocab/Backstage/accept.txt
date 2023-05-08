@@ -428,3 +428,5 @@ zod
 Zolotusky
 zoomable
 zsh
+Pulumi
+Lightsail
