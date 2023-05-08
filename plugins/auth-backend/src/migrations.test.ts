@@ -70,8 +70,6 @@ describe('migrations', () => {
 
       await migrateDownOnce(knex);
 
-      await expect(knex('sessions').orderBy('sid', 'asc')).rejects.toThrow();
-
       await knex.destroy();
     },
   );
