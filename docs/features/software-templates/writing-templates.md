@@ -524,7 +524,7 @@ output:
   text:
     - title: More information
       content: |
-        Access the \[remote repository\](${{ steps['publish'].output.remoteUrl }}).
+        **Entity URL:** `${{ steps['publish'].output.remoteUrl }}`
 ```
 
 ## The templating syntax
