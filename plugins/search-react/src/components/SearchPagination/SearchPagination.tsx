@@ -176,7 +176,7 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
   | 'pageLimit'
-  | 'onPageLimitChange'
+  | 'onLimitChange'
   | 'pageCursor'
   | 'onPageCursorChange'
   | 'hasNextPage'
