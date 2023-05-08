@@ -21,7 +21,6 @@ export { palettes } from './palettes';
 export type {
   BackstageThemeAdditions,
   BackstagePaletteAdditions,
-  BackstageThemeAdditions,
   PageTheme,
   PageThemeSelector,
 } from './types';
