@@ -19,6 +19,7 @@ import {
   ANNOTATION_LOCATION,
   GroupEntity,
   RELATION_CHILD_OF,
+  RELATION_HAS_LEADER,
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -53,6 +54,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
+import FaceIcon from '@material-ui/icons/Face';
 import { LinksGroup } from '../../Meta';
 
 const CardTitle = (props: { title: string }) => (
@@ -84,6 +86,10 @@ export const GroupProfileCard = (props: {
     metadata: { name, description, title, annotations, links },
     spec: { profile },
   } = group;
+
+  const leader = getEntityRelations(group, RELATION_HAS_LEADER, {
+    kind: 'User',
+  });
 
   const childRelations = getEntityRelations(group, RELATION_PARENT_OF, {
     kind: 'Group',
@@ -152,6 +158,25 @@ export const GroupProfileCard = (props: {
                 <ListItemText
                   primary={<Link to={emailHref}>{profile.email}</Link>}
                   secondary="Email"
+                />
+              </ListItem>
+            )}
+            {leader?.length === 1 && (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Group Leader">
+                    <FaceIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    leader.length ? (
+                      <EntityRefLinks entityRefs={leader} defaultKind="User" />
+                    ) : (
+                      'N/A'
+                    )
+                  }
+                  secondary="Group Leader"
                 />
               </ListItem>
             )}
