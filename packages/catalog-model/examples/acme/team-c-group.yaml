@@ -11,6 +11,7 @@ spec:
     picture: https://avatars.dicebear.com/api/identicon/team-c@example.com.svg?background=%23fff&margin=25
   parent: boxoffice
   children: []
+  leader: sarah.gilroy
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User

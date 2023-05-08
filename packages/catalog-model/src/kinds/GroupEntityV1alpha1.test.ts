@@ -40,6 +40,7 @@ describe('GroupV1alpha1Validator', () => {
         parent: 'group-a',
         children: ['child-a', 'child-b'],
         members: ['jdoe'],
+        leader: 'manager-a',
       },
     };
   });
@@ -194,5 +195,17 @@ describe('GroupV1alpha1Validator', () => {
   it('accepts no members', async () => {
     (entity as any).spec.members = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  // leaders
+
+  it('accepts missing leader', async () => {
+    delete (entity as any).spec.leader;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty leader', async () => {
+    (entity as any).spec.leader = '';
+    await expect(validator.check(entity)).rejects.toThrow(/leader/);
   });
 });
