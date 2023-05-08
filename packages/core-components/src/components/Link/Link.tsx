@@ -203,10 +203,17 @@ export const Link = React.forwardRef<any, LinkProps>(
         className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
-        <Typography component="span" className={classes.visuallyHidden}>
-          , Opens in a new window
-        </Typography>
-        <LaunchIcon fontSize="inherit" className={classes.externalLinkIcon} />
+        {newWindow && (
+          <>
+            <Typography component="span" className={classes.visuallyHidden}>
+              , Opens in a new window
+            </Typography>
+            <LaunchIcon
+              fontSize="inherit"
+              className={classes.externalLinkIcon}
+            />
+          </>
+        )}
       </MaterialLink>
     ) : (
       // Interact with React Router for internal links
