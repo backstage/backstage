@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CardExtensionProps } from '@backstage/plugin-home';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -14,7 +15,14 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
 // @public (undocumented)
-export const EntityPagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
+export const EntityPagerDutyCard: (
+  props: EntityPagerDutyCardProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type EntityPagerDutyCardProps = {
+  readOnly?: boolean;
+};
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
@@ -31,6 +39,9 @@ export interface PagerDutyApi {
   ): Promise<PagerDutyIncidentsResponse>;
   getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
   getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
+  getServiceByPagerDutyEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<PagerDutyServiceResponse>;
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
 
@@ -42,14 +53,6 @@ export type PagerDutyAssignee = {
   id: string;
   summary: string;
   html_url: string;
-};
-
-// @public (undocumented)
-export const PagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
-
-// @public (undocumented)
-export type PagerDutyCardProps = {
-  readOnly?: boolean;
 };
 
 // @public (undocumented)
@@ -98,6 +101,10 @@ export class PagerDutyClient implements PagerDutyApi {
   // (undocumented)
   getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
   // (undocumented)
+  getServiceByPagerDutyEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<PagerDutyServiceResponse>;
+  // (undocumented)
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
 
@@ -117,6 +124,16 @@ export type PagerDutyEntity = {
   integrationKey?: string;
   serviceId?: string;
   name: string;
+};
+
+// @public (undocumented)
+export const PagerDutyHomepageCard: (
+  props: CardExtensionProps<PagerDutyHomepageCardProps>,
+) => JSX.Element;
+
+// @public (undocumented)
+export type PagerDutyHomepageCardProps = PagerDutyEntity & {
+  readOnly?: boolean;
 };
 
 // @public (undocumented)

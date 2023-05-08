@@ -24,7 +24,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home';
-import { PagerDutyCardProps } from './components/PagerDutyHomepageCard/Content';
+import { PagerDutyHomepageCardProps } from './components/PagerDutyHomepageCard/Content';
 
 export const rootRouteRef = createRouteRef({
   id: 'pagerduty',
@@ -69,7 +69,7 @@ export const homePlugin = createPlugin({
 
 /** @public */
 export const PagerDutyHomepageCard = homePlugin.provide(
-  createCardExtension<PagerDutyCardProps>({
+  createCardExtension<PagerDutyHomepageCardProps>({
     name: 'PagerDutyHomepageCard',
     title: 'Pager Duty Homepage Card',
     components: () => import('./components/PagerDutyHomepageCard'),

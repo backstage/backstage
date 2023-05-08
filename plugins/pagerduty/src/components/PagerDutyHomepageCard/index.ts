@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { Content } from './Content';
+export type { PagerDutyHomepageCardProps } from './Content';

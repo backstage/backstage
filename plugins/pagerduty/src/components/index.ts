@@ -23,9 +23,8 @@ export type {
   PagerDutyUser,
 } from './types';
 
-export type { PagerDutyCardProps } from './PagerDutyCard';
-
-export { PagerDutyCard } from './PagerDutyCard';
+export type { EntityPagerDutyCardProps } from './EntityPagerDutyCard';
+export type { PagerDutyHomepageCardProps } from './PagerDutyHomepageCard';
 
 export {
   isPluginApplicableToEntity,

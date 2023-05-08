@@ -28,12 +28,12 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   );
 
 /** @public */
-export type PagerDutyCardProps = {
+export type EntityPagerDutyCardProps = {
   readOnly?: boolean;
 };
 
 /** @public */
-export const EntityPagerDutyCard = (props: PagerDutyCardProps) => {
+export const EntityPagerDutyCard = (props: EntityPagerDutyCardProps) => {
   const { readOnly } = props;
   const { entity } = useEntity();
   const pagerDutyEntity = getPagerDutyEntity(entity);

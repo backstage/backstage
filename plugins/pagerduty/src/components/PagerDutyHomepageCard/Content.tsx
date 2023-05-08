@@ -19,11 +19,11 @@ import { PagerDutyEntity } from '../../types';
 import { PagerDutyCard } from '../PagerDutyCard';
 
 /** @public */
-export type PagerDutyCardProps = PagerDutyEntity & {
+export type PagerDutyHomepageCardProps = PagerDutyEntity & {
   readOnly?: boolean;
 };
 
 /** @public */
-export const Content = (props: PagerDutyCardProps) => {
+export const Content = (props: PagerDutyHomepageCardProps) => {
   return <PagerDutyCard {...props} />;
 };
