@@ -94,11 +94,7 @@ export const ProjectCard = ({
         <CardActionArea onClick={() => setOpenCard(true)}>
           <ItemCardHeader
             classes={{ root: classes.header }}
-            title={
-              <Typography noWrap variant="h6" component="h4">
-                {title}
-              </Typography>
-            }
+            title={title}
             subtitle={`updated ${DateTime.fromISO(
               new Date(updatedAt!).toISOString(),
             ).toRelative({
