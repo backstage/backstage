@@ -33,7 +33,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 /** @public */
 export function TriggerButton(props: { children?: ReactNode }) {
   const { buttonStyle } = useStyles();
-  const { integrationKey } = usePagerdutyEntity();
+  const { integrationKey, name } = usePagerdutyEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
@@ -57,7 +57,12 @@ export function TriggerButton(props: { children?: ReactNode }) {
           : 'Missing integration key'}
       </Button>
       {integrationKey && (
-        <TriggerDialog showDialog={dialogShown} handleDialog={hideDialog} />
+        <TriggerDialog
+          showDialog={dialogShown}
+          handleDialog={hideDialog}
+          integrationKey={integrationKey}
+          name={name}
+        />
       )}
     </>
   );

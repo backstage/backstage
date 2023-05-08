@@ -25,6 +25,7 @@ import {
   PagerDutyIncident,
   PagerDutyChangeEvent,
 } from '../src/components/types';
+import { PagerDutyEntity } from '../src';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -46,6 +47,28 @@ const mockEntity: Entity = {
 };
 
 const mockPagerDutyApi: PagerDutyApi = {
+  async getServiceByPagerDutyEntity(pagerDutyEntity: PagerDutyEntity) {
+    return {
+      service: {
+        name: pagerDutyEntity.name,
+        integrationKey: 'key',
+        id: '123',
+        html_url: 'http://service',
+        escalation_policy: {
+          id: '123',
+          html_url: 'http://escalationpolicy',
+          user: {
+            id: '123',
+            summary: 'summary',
+            email: 'email@email.com',
+            html_url: 'http://user',
+            name: 'some-user',
+          },
+        },
+      },
+    };
+  },
+
   async getServiceByEntity(entity: Entity) {
     return {
       service: {
