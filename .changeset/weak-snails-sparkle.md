@@ -20,5 +20,5 @@ To allow the future support of plugins & components using MUI v5 you want to upg
 ```
 
 **'@backstage/test-utils':** Test App Wrapper is using `UnifiedThemeProvider` for tests now.
-**'@backstage/plugin-techdocs-addons-test-utils':** Fix avoiding test to run on unmount.
+**'@backstage/plugin-techdocs-addons-test-utils':** Fix tests by avoiding re-running theme on cleanup.
 **'@backstage/cli':** Enforcing MUI v5 specific linting to minimize bundle size.
