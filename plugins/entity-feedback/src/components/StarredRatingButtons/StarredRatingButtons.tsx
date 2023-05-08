@@ -52,6 +52,7 @@ export interface StarredRatingButtonsProps {
   feedbackDialogTitle?: ReactNode;
   requestResponse?: boolean;
   requestResponseThreshold?: number;
+  onChange?: (rating: FeedbackRatings | undefined) => void;
 }
 
 export const StarredRatingButtons = (props: StarredRatingButtonsProps) => {
@@ -60,6 +61,7 @@ export const StarredRatingButtons = (props: StarredRatingButtonsProps) => {
     feedbackDialogTitle,
     requestResponse = true,
     requestResponseThreshold = FeedbackRatings.two,
+    onChange,
   } = props;
   const errorApi = useApi(errorApiRef);
   const feedbackApi = useApi(entityFeedbackApiRef);
@@ -112,7 +114,9 @@ export const StarredRatingButtons = (props: StarredRatingButtonsProps) => {
       if (feedback === rating) {
         return;
       }
-
+      if (onChange) {
+        onChange(feedback);
+      }
       saveFeedback(feedback);
       if (feedback <= requestResponseThreshold && requestResponse) {
         setOpenFeedbackDialog(true);
@@ -122,6 +126,7 @@ export const StarredRatingButtons = (props: StarredRatingButtonsProps) => {
       rating,
       requestResponse,
       requestResponseThreshold,
+      onChange,
       saveFeedback,
       setOpenFeedbackDialog,
     ],
