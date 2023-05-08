@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AksKubernetesAuthTranslator } from './AksKubernetesAuthTranslator';
 
-export * from './AksKubernetesAuthTranslator';
-export * from './AwsIamKubernetesAuthTranslator';
-export * from './AzureIdentityKubernetesAuthTranslator';
-export * from './GoogleKubernetesAuthTranslator';
-export * from './GoogleServiceAccountAuthProvider';
-export * from './DispatchingKubernetesAuthTranslator';
-export * from './NoopKubernetesAuthTranslator';
-export * from './OidcKubernetesAuthTranslator';
-export * from './types';
+describe('AksKubernetesAuthTranslator', () => {
+  it('uses auth.aks value as bearer token', async () => {
+    const translator = new AksKubernetesAuthTranslator();
+
+    const details = await translator.decorateClusterDetailsWithAuth(
+      { name: '', authProvider: 'aks', url: '' },
+      { aks: 'aksToken' },
+    );
+
+    expect(details.serviceAccountToken).toBe('aksToken');
+  });
+});

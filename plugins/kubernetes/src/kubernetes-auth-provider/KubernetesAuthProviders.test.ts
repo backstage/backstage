@@ -39,17 +39,33 @@ const requestBody: KubernetesRequestBody = {
 };
 
 describe('KubernetesAuthProviders tests', () => {
-  const kap = new KubernetesAuthProviders({
-    googleAuthApi: new MockAuthApi('googleToken'),
-    oidcProviders: {
-      okta: new MockAuthApi('oktaToken'),
-    },
+  let microsoftAuthApi: MockAuthApi;
+  let kap: KubernetesAuthProviders;
+
+  beforeEach(() => {
+    microsoftAuthApi = new MockAuthApi('aksToken');
+    kap = new KubernetesAuthProviders({
+      microsoftAuthApi,
+      googleAuthApi: new MockAuthApi('googleToken'),
+      oidcProviders: {
+        okta: new MockAuthApi('oktaToken'),
+      },
+    });
   });
 
   it('adds token to request body for google authProvider', async () => {
     const details = await kap.decorateRequestBodyForAuth('google', requestBody);
 
     expect(details.auth?.google).toBe('googleToken');
+  });
+
+  it('adds token to request body for aks authProvider', async () => {
+    const details = await kap.decorateRequestBodyForAuth('aks', requestBody);
+
+    expect(details.auth?.aks).toBe('aksToken');
+    expect(microsoftAuthApi.getAccessToken).toHaveBeenCalledWith(
+      '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
+    );
   });
 
   it('adds token to request body for oidc authProvider', async () => {
