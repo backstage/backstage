@@ -1,3 +1,0 @@
-name: backstage-pulumi
-runtime: nodejs
-description: Deploying Backstage on your specified cloud provider with the help of Pulumi
