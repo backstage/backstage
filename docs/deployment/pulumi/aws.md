@@ -19,19 +19,148 @@ AWS offers a free tier for up to three months on $10 USD/month Container service
 
 AWS Lightsail offers a simple way to run containers in the cloud. To learn more about AWS Lightsail, please refer to the [official documentation](https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-container-services-deployments).
 
-## Configuring the AWS CLI
+## Creating user in AWS
 
-First, install the [AWS CLI](https://aws.amazon.com/cli/). You can then configure the CLI:
+- Open the AWS console and navigate to the IAM section
+- In the left side menu click on `Users` and then click on `Add users`
+- Specify an username and then click on `Next`
+- Afterwards you can assign permissions, select `Attach policies directly` and then click on `Create policy`.
+  This should take you to a new window in which you can create a new policy based on `JSON`.
+  Copy over the following `JSON`:
 
-```bash
-$ aws configure
-AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
-AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Default region name [None]: us-west-2
-Default output format [None]: json
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:DescribeImageReplicationStatus",
+        "ecr:ListTagsForResource",
+        "ecr:UploadLayerPart",
+        "ecr:BatchGetRepositoryScanningConfiguration",
+        "ecr:DeleteRepository",
+        "ecr:GetRegistryScanningConfiguration",
+        "ecr:CompleteLayerUpload",
+        "ecr:TagResource",
+        "ecr:DescribeRepositories",
+        "ecr:DeleteRepositoryPolicy",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetLifecyclePolicy",
+        "ecr:GetRegistryPolicy",
+        "ecr:PutLifecyclePolicy",
+        "ecr:DescribeImageScanFindings",
+        "ecr:GetLifecyclePolicyPreview",
+        "ecr:CreateRepository",
+        "ecr:DescribeRegistry",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetAuthorizationToken",
+        "ecr:DeleteLifecyclePolicy",
+        "ecr:PutImage",
+        "ecr:UntagResource",
+        "ecr:SetRepositoryPolicy",
+        "ecr:BatchGetImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:GetRepositoryPolicy",
+        "lightsail:GetRelationalDatabaseEvents",
+        "lightsail:CreateContainerService",
+        "lightsail:GetKeyPair",
+        "lightsail:GetContactMethods",
+        "lightsail:GetCloudFormationStackRecords",
+        "lightsail:GetContainerServiceDeployments",
+        "lightsail:GetBucketAccessKeys",
+        "lightsail:CreateContainerServiceRegistryLogin",
+        "lightsail:GetContainerImages",
+        "lightsail:UntagResource",
+        "lightsail:OpenInstancePublicPorts",
+        "lightsail:GetDomain",
+        "lightsail:GetBuckets",
+        "lightsail:GetRelationalDatabaseParameters",
+        "lightsail:GetInstanceState",
+        "lightsail:GetOperationsForResource",
+        "lightsail:RegisterContainerImage",
+        "lightsail:GetInstances",
+        "lightsail:GetRelationalDatabase",
+        "lightsail:GetDistributionLatestCacheReset",
+        "lightsail:GetLoadBalancerTlsPolicies",
+        "lightsail:GetLoadBalancers",
+        "lightsail:GetExportSnapshotRecords",
+        "lightsail:GetAutoSnapshots",
+        "lightsail:GetStaticIp",
+        "lightsail:GetRelationalDatabaseBundles",
+        "lightsail:GetRelationalDatabaseBlueprints",
+        "lightsail:CreateInstances",
+        "lightsail:GetRelationalDatabaseLogEvents",
+        "lightsail:GetContainerServices",
+        "lightsail:GetRelationalDatabaseSnapshot",
+        "lightsail:PutInstancePublicPorts",
+        "lightsail:GetInstancePortStates",
+        "lightsail:GetContainerServicePowers",
+        "lightsail:GetKeyPairs",
+        "lightsail:CreateContainerServiceDeployment",
+        "lightsail:GetLoadBalancer",
+        "lightsail:GetRelationalDatabaseSnapshots",
+        "lightsail:GetLoadBalancerTlsCertificates",
+        "lightsail:GetAlarms",
+        "lightsail:GetInstance",
+        "lightsail:GetDiskSnapshots",
+        "lightsail:GetRelationalDatabaseMetricData",
+        "lightsail:GetStaticIps",
+        "lightsail:GetRegions",
+        "lightsail:GetOperation",
+        "lightsail:GetDistributions",
+        "lightsail:GetDomains",
+        "lightsail:GetDisks",
+        "lightsail:GetBundles",
+        "lightsail:GetInstanceMetricData",
+        "lightsail:GetBucketBundles",
+        "lightsail:GetContainerServiceMetricData",
+        "lightsail:GetActiveNames",
+        "lightsail:GetInstanceSnapshot",
+        "lightsail:GetOperations",
+        "lightsail:GetDistributionBundles",
+        "lightsail:GetBlueprints",
+        "lightsail:GetContainerAPIMetadata",
+        "lightsail:DeleteContainerService",
+        "lightsail:GetCertificates",
+        "lightsail:GetLoadBalancerMetricData",
+        "lightsail:CloseInstancePublicPorts",
+        "lightsail:GetDiskSnapshot",
+        "lightsail:GetDisk",
+        "lightsail:GetDistributionMetricData",
+        "lightsail:GetRelationalDatabases",
+        "lightsail:GetContainerLog",
+        "lightsail:GetBucketMetricData",
+        "lightsail:TagResource",
+        "lightsail:IsVpcPeered",
+        "lightsail:GetInstanceSnapshots",
+        "lightsail:GetRelationalDatabaseLogStreams"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Statement1",
+      "Effect": "Allow",
+      "Action": [],
+      "Resource": []
+    }
+  ]
+}
 ```
 
-Optionally you can also export the following environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+Then click on `Next` and give the policy an name and a description of your liking. Afterwards, click on `Create policy`.
+
+- Navigate back to the user creation window and press on the refresh button and search for the policy you just created. Now, create the user.
+- Now you will be redirected to all users, click on the user you just created and click on `Security credentials`
+- Scroll below and click on `Create access key`
+- Choose `Command Line Interface (CLI)`
+- Now export the following values
+
+```bash
+$ export AWS_ACCESS_KEY_ID=... (first value)
+$ export AWS_SECRET_ACCESS_KEY=.... (second secret value)
+```
 
 ## Configuring the Pulumi CLI
 
