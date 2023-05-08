@@ -65,6 +65,6 @@ export async function bundleFileWithRefs(
     },
   };
   const fileObject = parse(fileWithRefs);
-  const bundledObject = await $RefParser.bundle(fileObject, options);
+  const bundledObject = await $RefParser.bundle(baseUrl, fileObject, options);
   return stringify(bundledObject);
 }

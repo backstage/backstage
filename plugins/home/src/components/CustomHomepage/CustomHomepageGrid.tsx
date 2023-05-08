@@ -46,7 +46,6 @@ import { CardConfig } from '../../extensions';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);
-const hash = require('object-hash');
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -336,14 +335,14 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
             ...widget.component.props,
             ...(w.settings ?? {}),
           };
-          const propsHash = hash(widgetProps, {});
+
           return (
             <div
               key={l.i}
               className={`${styles.widgetWrapper} ${editMode && 'edit'}`}
             >
               <ErrorBoundary>
-                <widget.component.type key={propsHash} {...widgetProps} />
+                <widget.component.type {...widgetProps} />
               </ErrorBoundary>
               {editMode && (
                 <WidgetSettingsOverlay
