@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './AksKubernetesAuthTranslator';
 export * from './AwsIamKubernetesAuthTranslator';
 export * from './AzureIdentityKubernetesAuthTranslator';
 export * from './GoogleKubernetesAuthTranslator';
