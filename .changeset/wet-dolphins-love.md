@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-github': major
 ---
 
-Adding description in function 'onTeamEditedInOrganization` in event of team.edited
+Updated the `team.edited` event emitted from `GithubOrgEntityProvider` to also include teams description.
