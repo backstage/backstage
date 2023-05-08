@@ -241,7 +241,7 @@ module.exports = {
               },
               {
                 label: 'Subscribe to our newsletter',
-                to: 'https://mailchi.mp/spotify/backstage-community',
+                to: 'https://info.backstage.spotify.com/newsletter_subscribe',
               },
               {
                 label: 'CNCF Incubation',

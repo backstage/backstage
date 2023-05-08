@@ -79,6 +79,7 @@ describe('readConfig', () => {
                     url: 'https://fake1.queue.url',
                     visibilityTimeout: { minutes: 5 },
                     waitTime: { seconds: 10 },
+                    endpoint: 'https://fake.endpoint.url',
                   },
                   timeout: { minutes: 5 },
                   waitTimeAfterEmptyReceive: { seconds: 30 },
@@ -97,6 +98,7 @@ describe('readConfig', () => {
     expect(publisherConfigs[0].topic).toEqual('fake1');
     expect(publisherConfigs[0].region).toEqual('eu-west-1');
     expect(publisherConfigs[0].queueUrl).toEqual('https://fake1.queue.url');
+    expect(publisherConfigs[0].endpoint).toEqual('https://fake.endpoint.url');
     expect(publisherConfigs[0].pollingWaitTime.as('seconds')).toBe(10);
     expect(publisherConfigs[0].timeout.as('seconds')).toBe(300);
     expect(publisherConfigs[0].waitTimeAfterEmptyReceive.as('seconds')).toBe(
