@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 
-/**
- * A Backstage plugin that integrates towards PagerDuty
- *
- * @packageDocumentation
- */
+import { PagerDutyEntity } from '../../types';
+import { PagerDutyCard } from '../PagerDutyCard';
 
-export {
-  pagerDutyPlugin,
-  pagerDutyPlugin as plugin,
-  EntityPagerDutyCard,
-  PagerDutyHomepageCard,
-} from './plugin';
+/** @public */
+export type PagerDutyCardProps = PagerDutyEntity & {
+  readOnly?: boolean;
+};
 
-export * from './components';
-export * from './api';
-
-export type { PagerDutyEntity } from './types';
+/** @public */
+export const Content = (props: PagerDutyCardProps) => {
+  return <PagerDutyCard {...props} />;
+};

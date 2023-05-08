@@ -17,8 +17,6 @@ import React from 'react';
 import { fireEvent, act } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
-import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerDialog } from './TriggerDialog';
 
 import { ApiProvider } from '@backstage/core-app-api';
@@ -49,26 +47,15 @@ describe('TriggerDialog', () => {
   );
 
   it('open the dialog and trigger an alarm', async () => {
-    const entity: Entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        name: 'pagerduty-test',
-        annotations: {
-          'pagerduty.com/integration-key': 'abc123',
-        },
-      },
-    };
-
     const { getByText, getByRole, getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <TriggerDialog
-            showDialog
-            handleDialog={() => {}}
-            onIncidentCreated={() => {}}
-          />
-        </EntityProvider>
+        <TriggerDialog
+          integrationKey="abc123"
+          name="pagerduty-test"
+          showDialog
+          handleDialog={() => {}}
+          onIncidentCreated={() => {}}
+        />
       </ApiProvider>,
     );
 
@@ -89,8 +76,7 @@ describe('TriggerDialog', () => {
     });
     expect(mockTriggerAlarmFn).toHaveBeenCalled();
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      integrationKey:
-        entity!.metadata!.annotations!['pagerduty.com/integration-key'],
+      integrationKey: 'abc123',
       source: window.location.toString(),
       description,
       userName: 'guest',

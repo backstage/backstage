@@ -30,6 +30,7 @@ import { createApiRef, ConfigApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { getPagerDutyEntity } from '../components/pagerDutyEntity';
+import { PagerDutyEntity } from '../types';
 
 /** @public */
 export class UnauthorizedError extends Error {}
@@ -63,8 +64,10 @@ export class PagerDutyClient implements PagerDutyApi {
 
   constructor(private readonly config: PagerDutyClientApiConfig) {}
 
-  async getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse> {
-    const { integrationKey, serviceId } = getPagerDutyEntity(entity);
+  async getServiceByPagerDutyEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<PagerDutyServiceResponse> {
+    const { integrationKey, serviceId } = pagerDutyEntity;
 
     let response: PagerDutyServiceResponse;
     let url: string;
@@ -92,6 +95,9 @@ export class PagerDutyClient implements PagerDutyApi {
     return response;
   }
 
+  async getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse> {
+    return await this.getServiceByPagerDutyEntity(getPagerDutyEntity(entity));
+  }
   async getIncidentsByServiceId(
     serviceId: string,
   ): Promise<PagerDutyIncidentsResponse> {

@@ -95,6 +95,30 @@ annotations:
   pagerduty.com/integration-key: [INTEGRATION_KEY]
 ```
 
+### The homepage component
+
+You may also add the component to the homepage of Backstage. Edit the `HomePage.tsx` file, import `PagerDutyHomepageCard` and add it to the home page. e.g.
+
+```typescript jsx
+...
+export const homePage = (
+  <Page themeId="home">
+    ...
+    <Content>
+      <CustomHomepageGrid config={defaultConfig}>
+        ...
+        <PagerDutyHomepageCard
+          name="My Service"
+          serviceId="<service id>"
+          integrationKey="<integration key>"
+          readOnly={false}
+        />
+      </CustomHomepageGrid>
+    </Content>
+  </Page>
+);
+```
+
 Next, provide the [API token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key) that the client will use to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/).
 
 Add the proxy configuration in `app-config.yaml`:

@@ -23,6 +23,8 @@ import {
   configApiRef,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
+import { createCardExtension } from '@backstage/plugin-home';
+import { PagerDutyCardProps } from './components/PagerDutyHomepageCard/Content';
 
 export const rootRouteRef = createRouteRef({
   id: 'pagerduty',
@@ -51,7 +53,25 @@ export const EntityPagerDutyCard = pagerDutyPlugin.provide(
     name: 'EntityPagerDutyCard',
     component: {
       lazy: () =>
-        import('./components/PagerDutyCard').then(m => m.PagerDutyCard),
+        import('./components/EntityPagerDutyCard').then(
+          m => m.EntityPagerDutyCard,
+        ),
     },
+  }),
+);
+
+export const homePlugin = createPlugin({
+  id: 'pagerduty-home',
+  routes: {
+    root: rootRouteRef,
+  },
+});
+
+/** @public */
+export const PagerDutyHomepageCard = homePlugin.provide(
+  createCardExtension<PagerDutyCardProps>({
+    name: 'PagerDutyHomepageCard',
+    title: 'Pager Duty Homepage Card',
+    components: () => import('./components/PagerDutyHomepageCard'),
   }),
 );

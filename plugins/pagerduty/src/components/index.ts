@@ -25,10 +25,12 @@ export type {
 
 export type { PagerDutyCardProps } from './PagerDutyCard';
 
+export { PagerDutyCard } from './PagerDutyCard';
+
 export {
   isPluginApplicableToEntity,
   isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from './PagerDutyCard';
+  EntityPagerDutyCard,
+} from './EntityPagerDutyCard';
 
 export { TriggerButton } from './TriggerButton';
