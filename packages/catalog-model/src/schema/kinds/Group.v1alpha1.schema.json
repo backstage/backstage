@@ -95,6 +95,12 @@
                 "examples": ["jdoe"],
                 "minLength": 1
               }
+            },
+            "leader": {
+              "type": "string",
+              "description": "The user who is the leader of this group, who may or may not be one of the members. This is an entity reference to a user.",
+              "examples": ["mmonroe"],
+              "minLength": 1
             }
           }
         }

@@ -71,6 +71,15 @@
                 "examples": ["team-b", "employees"],
                 "minLength": 1
               }
+            },
+            "leaderOf": {
+              "type": "array",
+              "description": "The list of groups that the user is the direct leader of (i.e., no transitive memberships are listed here). The list must be present, but may be empty if the user is not the leader of any groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references to groups.",
+              "items": {
+                "type": "string",
+                "examples": ["team-b", "employees"],
+                "minLength": 1
+              }
             }
           }
         }
