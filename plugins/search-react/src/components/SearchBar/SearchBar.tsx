@@ -80,7 +80,8 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
         value: defaultValue,
         label,
         placeholder,
-        inputProps: defaultInputProps = {},
+        inputProps = {},
+        InputProps = {},
         endAdornment,
         ...rest
       } = props;
@@ -168,10 +169,11 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
               endAdornment: clearButton
                 ? clearButtonEndAdornment
                 : endAdornment,
+              ...InputProps,
             }}
             inputProps={{
               'aria-label': ariaLabel,
-              ...defaultInputProps,
+              ...inputProps,
             }}
             fullWidth={fullWidth}
             onChange={handleChange}
