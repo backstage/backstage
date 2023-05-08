@@ -45,7 +45,7 @@ function createConfig(dir, extraConfig = {}) {
     testRules,
 
     restrictedImports,
-    restrictedImportsPatterns,
+    restrictedImportPatterns,
     restrictedSrcImports,
     restrictedTestImports,
     restrictedSyntax,
@@ -116,7 +116,7 @@ function createConfig(dir, extraConfig = {}) {
             '*.test*',
             '**/__testUtils__/**',
             '**/__mocks__/**',
-            ...(restrictedImportsPatterns ?? []),
+            ...(restrictedImportPatterns ?? []),
           ],
         },
       ],
@@ -220,7 +220,10 @@ function createConfigForRole(dir, role, extraConfig = {}) {
           ...(extraConfig.restrictedImports ?? []),
         ],
         // https://mui.com/material-ui/guides/minimizing-bundle-size/
-        restrictedImportsPatterns: ['@mui/*/*/*'],
+        restrictedImportPatterns: [
+          '@mui/*/*/*',
+          ...(extraConfig.restrictedImportPatterns ?? []),
+        ],
         tsRules: {
           'react/prop-types': 0,
           ...extraConfig.tsRules,
