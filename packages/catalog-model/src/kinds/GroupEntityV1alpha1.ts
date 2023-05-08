@@ -36,6 +36,7 @@ export interface GroupEntityV1alpha1 extends Entity {
     parent?: string;
     children: string[];
     members?: string[];
+    leader?: string;
   };
 }
 

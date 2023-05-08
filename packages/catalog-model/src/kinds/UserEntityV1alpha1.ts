@@ -33,6 +33,7 @@ export interface UserEntityV1alpha1 extends Entity {
       picture?: string;
     };
     memberOf?: string[];
+    leaderOf?: string[];
   };
 }
 

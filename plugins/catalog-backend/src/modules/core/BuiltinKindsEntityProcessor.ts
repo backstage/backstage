@@ -41,6 +41,8 @@ import {
   RELATION_PARENT_OF,
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
+  RELATION_HAS_LEADER,
+  RELATION_LEADER_OF,
   ResourceEntity,
   resourceEntityV1alpha1Validator,
   SystemEntity,
@@ -238,6 +240,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_MEMBER_OF,
         RELATION_HAS_MEMBER,
       );
+      doEmit(
+        user.spec.leaderOf,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_LEADER_OF,
+        RELATION_HAS_LEADER,
+      );
     }
 
     /*
@@ -263,6 +271,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'User', defaultNamespace: selfRef.namespace },
         RELATION_HAS_MEMBER,
         RELATION_MEMBER_OF,
+      );
+      doEmit(
+        group.spec.leader,
+        { defaultKind: 'User', defaultNamespace: selfRef.namespace },
+        RELATION_HAS_LEADER,
+        RELATION_LEADER_OF,
       );
     }
 
