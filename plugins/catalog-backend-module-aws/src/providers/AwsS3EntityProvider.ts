@@ -23,7 +23,6 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';
 import { AwsS3Config } from './types';
 import {
@@ -34,6 +33,10 @@ import {
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
 
 // TODO: event-based updates using S3 events (+ queue like SQS)?
 /**
@@ -45,7 +48,7 @@ import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
  */
 export class AwsS3EntityProvider implements EntityProvider {
   private readonly logger: Logger;
-  private readonly s3: S3;
+  private s3?: S3;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private endpoint?: string;
@@ -83,7 +86,8 @@ export class AwsS3EntityProvider implements EntityProvider {
           `No schedule provided neither via code nor config for awsS3-provider:${providerConfig.id}.`,
         );
       }
-
+      const awsCredentialsManager =
+        DefaultAwsCredentialsManager.fromConfig(configRoot);
       const taskRunner =
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
@@ -91,6 +95,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       return new AwsS3EntityProvider(
         providerConfig,
         integration,
+        awsCredentialsManager,
         options.logger,
         taskRunner,
       );
@@ -99,7 +104,8 @@ export class AwsS3EntityProvider implements EntityProvider {
 
   private constructor(
     private readonly config: AwsS3Config,
-    integration: AwsS3Integration,
+    private readonly integration: AwsS3Integration,
+    private readonly awsCredentialsManager: AwsCredentialsManager,
     logger: Logger,
     taskRunner: TaskRunner,
   ) {
@@ -107,16 +113,6 @@ export class AwsS3EntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
 
-    this.s3 = new S3({
-      apiVersion: '2006-03-01',
-      credentials: AwsCredentials.create(
-        integration.config,
-        'backstage-aws-s3-provider',
-      ),
-      endpoint: integration.config.endpoint,
-      region: this.config.region,
-      forcePathStyle: integration.config.s3ForcePathStyle,
-    });
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
@@ -150,6 +146,16 @@ export class AwsS3EntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    const credProvider =
+      await this.awsCredentialsManager.getCredentialProvider();
+    this.s3 = new S3({
+      apiVersion: '2006-03-01',
+      credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
+      endpoint: this.integration.config.endpoint,
+      region: this.config.region,
+      forcePathStyle: this.integration.config.s3ForcePathStyle,
+    });
+
     // https://github.com/aws/aws-sdk-js-v3/issues/4122#issuecomment-1298968804
     const endpoint = await getEndpointFromInstructions(
       {
@@ -191,6 +197,10 @@ export class AwsS3EntityProvider implements EntityProvider {
   }
 
   private async listAllObjectKeys(): Promise<string[]> {
+    if (!this.s3) {
+      throw new Error('Not initialized');
+    }
+
     const keys: string[] = [];
 
     let continuationToken: string | undefined = undefined;

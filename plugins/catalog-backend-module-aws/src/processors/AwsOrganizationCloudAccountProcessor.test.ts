@@ -15,6 +15,7 @@
  */
 
 import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 import {
   ListAccountsCommand,
@@ -32,7 +33,6 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
 
     afterEach(() => {
       jest.resetAllMocks();
-      mock.reset();
     });
 
     it('generates component entities for accounts', async () => {

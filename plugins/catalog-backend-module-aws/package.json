@@ -58,6 +58,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
@@ -73,6 +74,7 @@
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
     "aws-sdk-client-mock": "^2.0.0",
+    "aws-sdk-client-mock-jest": "^2.0.0",
     "luxon": "^3.0.0",
     "yaml": "^2.0.0"
   },

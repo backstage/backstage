@@ -4,6 +4,7 @@
 
 ```ts
 import { AwsCredentialIdentity } from '@aws-sdk/types';
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
@@ -23,7 +24,12 @@ export type AWSCredentialFactory = (
 
 // @public
 export class AwsEKSClusterProcessor implements CatalogProcessor {
-  constructor(options: { credentialsFactory?: AWSCredentialFactory });
+  constructor(options: {
+    credentialsFactory?: AWSCredentialFactory;
+    credentialsManager?: AwsCredentialsManager;
+  });
+  // (undocumented)
+  static fromConfig(configRoot: Config): AwsEKSClusterProcessor;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
@@ -42,9 +48,9 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger?: Logger;
     },
-  ): AwsOrganizationCloudAccountProcessor;
+  ): Promise<AwsOrganizationCloudAccountProcessor>;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

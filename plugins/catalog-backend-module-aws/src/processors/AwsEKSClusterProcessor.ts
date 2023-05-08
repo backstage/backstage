@@ -24,9 +24,14 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
-import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { EKS } from '@aws-sdk/client-eks';
 import { AWSCredentialFactory } from '../types';
+import { AwsCredentialIdentity, Provider } from '@aws-sdk/types';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import { Config } from '@backstage/config';
 
 const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
 const ARN_ANNOTATION: string = 'amazonaws.com/arn';
@@ -40,9 +45,22 @@ const ARN_ANNOTATION: string = 'amazonaws.com/arn';
  */
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
+  private credentialsManager?: AwsCredentialsManager;
 
-  constructor(options: { credentialsFactory?: AWSCredentialFactory }) {
+  static fromConfig(configRoot: Config): AwsEKSClusterProcessor {
+    const awsCredentaislManager =
+      DefaultAwsCredentialsManager.fromConfig(configRoot);
+    return new AwsEKSClusterProcessor({
+      credentialsManager: awsCredentaislManager,
+    });
+  }
+
+  constructor(options: {
+    credentialsFactory?: AWSCredentialFactory;
+    credentialsManager?: AwsCredentialsManager;
+  }) {
     this.credentialsFactory = options.credentialsFactory;
+    this.credentialsManager = options.credentialsManager;
   }
 
   getProcessorName(): string {
@@ -80,7 +98,17 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
       credentials = await this.credentialsFactory(accountId);
     }
 
-    const eksClient = new EKS({ credentials, region });
+    let providerFunction: (() => Provider<AwsCredentialIdentity>) | undefined;
+    if (this.credentialsManager) {
+      const credentialsProvider =
+        await this.credentialsManager.getCredentialProvider({ accountId });
+      providerFunction = () => credentialsProvider.sdkCredentialProvider;
+    }
+
+    const eksClient = new EKS({
+      credentials,
+      credentialDefaultProvider: providerFunction,
+    });
     const clusters = await eksClient.listClusters({});
     if (clusters.clusters === undefined) {
       return true;
