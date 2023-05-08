@@ -29,6 +29,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -48,6 +49,16 @@ import { ZodTypeDef } from 'zod';
 
 // @public @deprecated (undocumented)
 export type ActionContext<TInput extends JsonObject> = ActionContext_2<TInput>;
+
+// @public (undocumented)
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
 
 // @public
 export const createBuiltinActions: (
@@ -763,7 +774,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: TemplatePermissionRuleInput[];
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   // (undocumented)
   permissions?: PermissionEvaluator;
   // (undocumented)
