@@ -35,7 +35,7 @@ import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
 import {
-  AwsCredentialsManager,
+  AwsCredentialProvider,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
 
@@ -121,7 +121,6 @@ const DEFAULT_INDEXER_BATCH_SIZE = 1000;
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
-  private static credentialProvider: AwsCredentialsManager;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
@@ -151,8 +150,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       aliasPostfix = `search`,
       indexPrefix = ``,
     } = options;
-    this.credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
+    const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
     const clientOptions = await this.createElasticSearchClientOptions(
+      await credentialProvider?.getCredentialProvider(),
       config.getConfig('search.elasticsearch'),
     );
     if (clientOptions.provider === 'elastic') {
@@ -420,6 +420,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 
   private static async createElasticSearchClientOptions(
+    credentialProvider: AwsCredentialProvider,
     config?: Config,
   ): Promise<ElasticSearchClientOptions> {
     if (!config) {
@@ -469,11 +470,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         ...AwsSigv4Signer({
           region: config.getOptionalString('region') ?? requestSigner.region, // for backwards compatibility
           service: service,
-          getCredentials: async () => {
-            const provider =
-              await this.credentialProvider.getCredentialProvider();
-            return await provider.sdkCredentialProvider();
-          },
+          getCredentials: async () =>
+            await credentialProvider.sdkCredentialProvider(),
         }),
       };
     }
