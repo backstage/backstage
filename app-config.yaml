@@ -21,21 +21,25 @@ app:
             title: '#backstage'
 
   features:
+    # Registers all APIs and Pages, all the defaults
     - import: catalog # '@backstage/plugin-catalog'
       name: catalogPlugin
 
-  routes:
-    - path: /catalog
-      import: catalog
-      name: CatalogIndexPage
-    - path: /catalog/:namespace/:kind/:name
-      import: catalog
-      name: CatalogEntityPage
+# TODO:
+#  - figure out identifiers
 
-  sidebar:
-    - name: Catalog
-      icon: storefront
-      to: /catalog
+  routes:
+    # This should be for custom routes that are not part of any plugin
+    # - path: /catalog
+    #   import: catalog
+    #   name: CatalogIndexPage
+    # - path: /catalog/:namespace/:kind/:name
+    #   import: catalog
+    #   name: CatalogEntityPage
+
+  rootElements:
+    - DefaultErrorReporter
+    - DefaultSidebar
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
