@@ -73,5 +73,25 @@ export const PagerDutyHomepageCard = homePlugin.provide(
     name: 'PagerDutyHomepageCard',
     title: 'Pager Duty Homepage Card',
     components: () => import('./components/PagerDutyHomepageCard'),
+    settings: {
+      schema: {
+        title: 'Pagerduty',
+        type: 'object',
+        properties: {
+          integrationKey: {
+            title: 'Pager duty integration key',
+            type: 'string',
+          },
+          serviceId: {
+            title: 'Pager duty service id',
+            type: 'string',
+          },
+          name: {
+            title: 'Pager duty service name',
+            type: 'string',
+          },
+        },
+      },
+    },
   }),
 );
