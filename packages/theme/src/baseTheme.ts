@@ -159,7 +159,6 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
       head: {
         wordBreak: 'break-word',
         overflow: 'hidden',
-        color: theme.palette.textSubtle,
         fontWeight: 'normal',
         lineHeight: '1',
       },
@@ -198,14 +197,10 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         '&:hover': {
           color: 'inherit',
         },
-        '&:focus': {
-          color: 'inherit',
-        },
       },
       // Bold font for highlighting selected column
       active: {
         fontWeight: 'bold',
-        color: 'inherit',
       },
     },
     MuiListItemText: {
