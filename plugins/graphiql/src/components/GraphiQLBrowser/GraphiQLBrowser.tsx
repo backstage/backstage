@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useState, Suspense } from 'react';
-import { Tabs, Tab, Typography, Divider } from '@mui/material';
+import React, { Suspense, useState } from 'react';
+
+import { Progress } from '@backstage/core-components';
+import Divider from '@mui/material/Divider';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import 'graphiql/graphiql.css';
-import { StorageBucket } from '../../lib/storage';
+
 import { GraphQLEndpoint } from '../../lib/api';
-import { Progress } from '@backstage/core-components';
+import { StorageBucket } from '../../lib/storage';
 
 const GraphiQL = React.lazy(() =>
   import('graphiql').then(m => ({ default: m.GraphiQL })),
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   root: {
     height: '100%',
     display: 'flex',

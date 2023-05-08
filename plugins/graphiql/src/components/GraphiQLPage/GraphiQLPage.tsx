@@ -19,7 +19,7 @@ import useAsync from 'react-use/lib/useAsync';
 import 'graphiql/graphiql.css';
 import { graphQlBrowseApiRef } from '../../lib/api';
 import { GraphiQLBrowser } from '../GraphiQLBrowser';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import {
   Content,
   Header,
