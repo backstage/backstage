@@ -136,3 +136,19 @@ export const RELATION_PART_OF = 'partOf';
  * @public
  */
 export const RELATION_HAS_PART = 'hasPart';
+
+/**
+ * An relation defining who the leader (a user) of a group is. Reversed direction of
+ * {@link RELATION_LEADER_OF}
+ *
+ * @public
+ */
+export const RELATION_HAS_LEADER = 'hasLeader';
+
+/**
+ * A relationship from a user to a group that the user leads. Reversed direction of
+ * {@link RELATION_HAS_LEADER}
+ *
+ * @public
+ */
+export const RELATION_LEADER_OF = 'leaderOf';
