@@ -68,7 +68,11 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
       VisibilityTimeout: config.visibilityTimeout?.as('seconds'),
       WaitTimeSeconds: config.pollingWaitTime.as('seconds'),
     };
-    this.sqs = new SQSClient({ region: config.region });
+
+    this.sqs = new SQSClient({
+      region: config.region,
+      endpoint: config.endpoint,
+    });
     this.queueUrl = config.queueUrl;
 
     this.taskTimeoutSeconds = config.timeout.as('seconds');
