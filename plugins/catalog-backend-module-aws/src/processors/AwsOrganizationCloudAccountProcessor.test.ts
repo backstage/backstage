@@ -19,7 +19,7 @@ import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 import {
   ListAccountsCommand,
-  Organizations,
+  OrganizationsClient,
 } from '@aws-sdk/client-organizations';
 
 describe('AwsOrganizationCloudAccountProcessor', () => {
@@ -29,7 +29,7 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
-    const mock = mockClient(Organizations);
+    const mock = mockClient(OrganizationsClient);
 
     afterEach(() => {
       jest.resetAllMocks();

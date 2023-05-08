@@ -25,7 +25,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from './AwsS3EntityProvider';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { ListObjectsV2Command, S3 } from '@aws-sdk/client-s3';
+import { ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -53,7 +53,7 @@ describe('AwsS3EntityProvider', () => {
   };
 
   const keys = ['key1.yaml', 'key2.yaml', 'key3.yaml', 'key 4.yaml'];
-  const mock = mockClient(S3);
+  const mock = mockClient(S3Client);
 
   beforeEach(() => {
     mock.on(ListObjectsV2Command).callsFake(async req => {

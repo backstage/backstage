@@ -17,11 +17,11 @@
 import { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
-  EKS,
   ListClustersResponse,
   DescribeClusterResponse,
   ListClustersCommand,
   DescribeClusterCommand,
+  EKSClient,
 } from '@aws-sdk/client-eks';
 
 describe('AwsEKSClusterProcessor', () => {
@@ -46,7 +46,7 @@ describe('AwsEKSClusterProcessor', () => {
           },
         },
       };
-      const mock = mockClient(EKS);
+      const mock = mockClient(EKSClient);
 
       mock.on(ListClustersCommand).resolves(clusters);
       mock.on(DescribeClusterCommand).resolves(cluster);
