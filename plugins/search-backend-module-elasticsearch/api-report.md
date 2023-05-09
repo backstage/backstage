@@ -8,8 +8,8 @@
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { BulkHelper } from '@opensearch-project/opensearch/lib/Helpers';
-import { BulkStats } from '@opensearch-project/opensearch/lib/Helpers';
+import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
+import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -424,6 +424,10 @@ export interface OpenSearchElasticSearchClientOptions
   nodes?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];
   // (undocumented)
   provider?: 'aws' | 'opensearch';
+  // (undocumented)
+  region?: string;
+  // (undocumented)
+  service?: 'es' | 'aoss';
 }
 
 // @public (undocumented)
