@@ -9567,6 +9567,7 @@ __metadata:
   resolution: "@backstage/plugin-todo-backend@workspace:plugins/todo-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
