@@ -38,8 +38,40 @@ app:
     #   name: CatalogEntityPage
 
   rootElements:
-    - DefaultErrorReporter
-    - DefaultSidebar
+    - '@backstage/app-defaults#defaultRoot'
+# - DefaultErrorReporter
+# - DefaultSidebar
+# - DeclarativeRouter
+  '@backstage/core-components#Sidebar':
+    items:
+      # - '@backstage/plugin-search#SearchSidebarItem' ?
+      - title: Home
+        icon: home
+        path: /
+      - title: Catalog
+        icon: book
+        path: /catalog
+      - title: Settings
+        groupId: settings
+    groups:
+      items:
+        - title: Settings
+          id: settings
+          items:
+            - '@backstage/plugin-user-settings#userSettings'
+            - '@backstage/plugin-user-settings#somethingSettings'
+
+  '@backstage/plugin-catalog#EntityPage':
+    tabOrder: [Overview, CI/CD, Blah]  # followed by all tabs that were supplied but not mentioned here perhaps?
+
+    tabs:
+      - title: Overview
+        matchTags: overview 
+
+    # What about system, component, api
+    cards:
+      - '@backstage/plugin-catalog#AboutCard'
+      - '@backstage/plugin-pagerduty#OnCallOverview'
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
