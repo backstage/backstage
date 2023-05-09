@@ -24,6 +24,7 @@ app:
     # Registers all APIs and Pages, all the defaults
     - '@backstage/plugin-catalog'
     - '@backstage/plugin-techdocs'
+    - '@backstage/plugin-home'
     - '@internal/ma-magic-plugin'
 
     # - import: catalog # '@backstage/plugin-catalog'
@@ -33,6 +34,9 @@ app:
   # TBD:
   #   - Should route overrides be configured in the plugin instead?
   routes:
+    - route: home.index
+      path: /startpage # changes from /home to /startpage 
+
     # This should be for custom routes that are not part of any plugin
     # - path: /catalog
     #   import: catalog
@@ -78,17 +82,61 @@ app:
       - '@backstage/plugin-techdocs-module-addons-contrib#TextSize'
       - '@backstage/plugin-techdocs-module-addons-contrib#LightBox'
 
+  'backstage/plugin-scaffolder':
+    fieldExtensions:
+      - '@backstage/plugin-scaffolder-react#LowerCaseValuePickerFieldExtension'
+      - '@backstage/plugin-scaffolder-react#DelayingComponentFieldExtension'
+
+
+  # https://demo.backstage.io/catalog/default/component/playback-order
   '@backstage/plugin-catalog#EntityPage':
-    tabOrder: [Overview, CI/CD, Blah]  # followed by all tabs that were supplied but not mentioned here perhaps?
-
-    tabs:
-      - title: Overview
-        matchTags: overview 
-
-    # What about system, component, api
-    cards:
-      - '@backstage/plugin-catalog#AboutCard'
-      - '@backstage/plugin-pagerduty#OnCallOverview'
+    pages:
+      - kind: component
+        # Every page gets added in the top navigation
+        # or 'pages: ["Overview", "CI/CD"]'
+        type:
+          - id: website
+            pages:
+              - name: Overview
+                path: overview
+                cards:
+                  - '@backstage/plugin-catalog#AboutCard'
+                  - '@backstage/plugin-pagerduty#PagerDutyCard'
+                  - '@backstage/plugin-lighthouse#LightHouseReportCard'
+              - name: CI/CD
+                path: cicd
+                cards:
+                  - '@backstage/plugin-kubernetes#DeploymentOverview'
+          - id: service
+            pages:
+              - name: Overview
+                path: overview
+                cards:
+                  - '@backstage/plugin-catalog#AboutCard'
+                  - '@backstage/plugin-pagerduty#PagerDutyCard'
+                  - '@backstage/plugin-lighthouse#LightHouseReportCard'
+              - name: CI/CD
+                path: cicd
+                cards:
+                  - '@backstage/plugin-kubernetes#DeploymentOverview'
+        defaultPage:
+          name: Overview
+          path: overview
+          cards:
+            - '@backstage/plugin-catalog#AboutCard'
+      - kind: api
+        pages:
+          - name: Overview
+            path: overview
+            cards:
+              - '@backstage/plugin-catalog#AboutCard'
+              - '@backstage/plugin-swagger-ui#ApiDefinitionCard'
+      - kind: user
+        pages:
+          - name: Overview
+            path: overview
+            cards:
+              - '@internal/company#OrgStructureCard'
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
