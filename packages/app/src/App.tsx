@@ -109,12 +109,13 @@ import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
+import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
 const app = createApp({
-  localeConfig: {
-    lng: 'zh',
-    languageOptions: ['en', 'zh'],
-    lazyResources: () => import('./i18nRemoteLocales').then(m => m.locales),
+  initI18next(i18n) {
+    i18n.use(I18nextBrowserLanguageDetector).init({
+      supportedLngs: ['en', 'zh'],
+    });
   },
   apis,
   plugins: Object.values(plugins),

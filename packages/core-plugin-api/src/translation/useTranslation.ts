@@ -15,16 +15,19 @@
  */
 
 import { KeyPrefix, Namespace } from 'i18next';
-import { TranslationRef } from './types';
 import { UseTranslationOptions, useTranslation } from 'react-i18next';
-import { DefaultNamespace } from 'react-i18next/TransWithoutContext';
+import { TranslationRef } from './types';
 import { appTranslationApiRef, useApi } from '../apis';
 
 export function usePluginTranslation<
-  N extends Namespace = DefaultNamespace,
-  TKPrefix extends KeyPrefix<N> = undefined,
->(translationRef: TranslationRef, options?: UseTranslationOptions<TKPrefix>) {
+  N extends Namespace,
+  TKPrefix extends KeyPrefix<N>,
+>(
+  translationRef: TranslationRef,
+  options?: Omit<UseTranslationOptions<TKPrefix>, 'i18n'>,
+) {
   const translationApi = useApi(appTranslationApiRef);
+  translationApi.addPluginResources(translationRef);
   return useTranslation<string, TKPrefix>(translationRef.id, {
     ...options,
     i18n: translationApi.getI18next(),

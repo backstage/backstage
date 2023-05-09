@@ -25,7 +25,7 @@ import {
   ExternalRouteRef,
   IdentityApi,
   FeatureFlag,
-  LocalConfig,
+  i18n,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -289,9 +289,9 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
   /**
-   * local config i18n init function params
+   * Init i18next instance
    */
-  localeConfig?: LocalConfig;
+  initI18next?(i18n: i18n): void;
 };
 
 /**

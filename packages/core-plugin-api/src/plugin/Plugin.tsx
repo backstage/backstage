@@ -83,10 +83,6 @@ export class PluginImpl<
   toString() {
     return `plugin{${this.config.id}}`;
   }
-
-  getTranslationRef() {
-    return this.config.translationRef;
-  }
 }
 
 /**

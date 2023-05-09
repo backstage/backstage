@@ -82,6 +82,7 @@
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
     "@roadiehq/backstage-plugin-travis-ci": "^2.0.5",
     "history": "^5.0.0",
+    "i18next-browser-languagedetector": "^7.0.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

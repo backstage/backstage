@@ -228,9 +228,7 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.translationApi = AppTranslation.createWithStorage(
-      options.localeConfig,
-    );
+    this.translationApi = AppTranslation.create(options.initI18next);
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -297,9 +295,6 @@ export class AppManager implements BackstageApp {
         //               collection and then make sure we initialize things afterwards.
         result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
         this.verifyPlugins(this.plugins);
-
-        // Initialize translates in plugins
-        this.registryPluginsTranslation(this.plugins);
 
         // Initialize APIs once all plugins are available
         this.getApiHolder();
@@ -512,24 +507,6 @@ export class AppManager implements BackstageApp {
         throw new Error(`Duplicate plugin found '${id}'`);
       }
       pluginIds.add(id);
-    }
-  }
-
-  private registryPluginsTranslation(plugins: Iterable<CompatiblePlugin>) {
-    const translationIds = new Set<string>();
-
-    for (const plugin of plugins) {
-      const translationRef = plugin.getTranslationRef();
-      if (translationRef?.id) {
-        // id is the namespace in i18next resource
-        const id = translationRef.id;
-        if (translationIds.has(id)) {
-          throw new Error(`Duplicate translation id found '${id}'`);
-        }
-        translationIds.add(id);
-
-        this.translationApi.addResources(translationRef.resources, id);
-      }
     }
   }
 }

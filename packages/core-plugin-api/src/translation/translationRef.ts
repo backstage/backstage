@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Locals, TranslationRef } from './types';
+import { Resources, TranslationRef } from './types';
 
 /**
  * @internal
  */
 export class TranslationRefImpl implements TranslationRef {
-  constructor(readonly id: string, readonly resources: Locals) {}
+  constructor(readonly id: string, readonly resources: Resources) {}
 
   toString() {
     return `translationRefRef{id=${this.id}}`;
@@ -37,7 +37,7 @@ export function createTranslationRef(config: {
   /** The id of the translation ref, used to identify it when printed */
   id: string;
   /** A translating resources to be use in plugin */
-  resources: Locals;
+  resources: Resources;
 }): TranslationRef {
   return new TranslationRefImpl(config.id, config.resources);
 }

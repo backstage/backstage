@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
+import { Resources, TranslationRef } from '../../translation';
 import { ApiRef, createApiRef } from '../system';
-import { Observable } from '@backstage/types';
-import { InitOptions, Resource, i18n } from 'i18next';
-import { Locals } from '../../translation';
+import { i18n } from 'i18next';
 
 export type { Resource, i18n } from 'i18next';
-
-export type LocalConfig = InitOptions & {
-  lazyResources?: () => Promise<Resource>;
-  languageOptions?: Set<string> | string[];
-};
 
 /**
  * The AppTranslationApi gives access to the current app i18next, and allows switching
@@ -33,36 +27,20 @@ export type LocalConfig = InitOptions & {
  * @public
  */
 export type AppTranslationApi = {
-  instance: i18n;
   /**
    * Get a instance of i18next.
    */
   getI18next(): i18n;
 
   /**
-   * Get all support languages
+   * add namespaced resources to i18next instance
    */
-  getLanguages(): string[];
+  addResources(ns: string, resources: Resources): void;
 
   /**
-   * Observe the currently language.
+   * add a plugin resources to i18next instance
    */
-  activeLanguage$(): Observable<string>;
-
-  /**
-   * Get the current language.
-   */
-  getActiveLanguage(): string;
-
-  /**
-   * Set a specific language to use in the app, overriding the default language selection.
-   */
-  setActiveLanguage(lng?: string): void;
-
-  /**
-   * add namespaced locals resource to i18next instance
-   */
-  addResources(locals: Locals, ns: string): void;
+  addPluginResources(translationRef: TranslationRef): void;
 };
 
 /**

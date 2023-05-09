@@ -16,11 +16,11 @@
 
 import { ResourceKey } from 'i18next';
 
-export type Locals = {
+export type Resources = {
   [language: string]: ResourceKey;
 };
 
 export interface TranslationRef {
   id: string;
-  resources: Locals;
+  resources: Resources;
 }
