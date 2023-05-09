@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 import Mock from '@short.io/opensearch-mock';
 import { Readable } from 'stream';
 
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
-import {
-  createElasticSearchClientOptions,
-  ElasticSearchClientOptions,
-} from './ElasticSearchSearchEngine';
+import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';
 
 jest.mock('@elastic/elasticsearch', () => ({
   ...jest.requireActual('@elastic/elasticsearch'),
@@ -103,11 +99,9 @@ describe('ElasticSearchClientWrapper', () => {
     let esOptions: ElasticSearchClientOptions;
 
     beforeEach(async () => {
-      esOptions = await createElasticSearchClientOptions(
-        new ConfigReader({
-          node: 'http://localhost:9200',
-        }),
-      );
+      esOptions = {
+        node: 'http://localhost:9200',
+      };
       jest.clearAllMocks();
     });
 
@@ -229,6 +223,7 @@ describe('ElasticSearchClientWrapper', () => {
       osOptions = {
         provider: 'aws',
         node: 'https://my-es-cluster.eu-west-1.es.amazonaws.com',
+        region: 'eu-west-1',
         // todo(backstage/techdocs-core): Remove the following ts-ignore when
         // @short.io/opensearch-mock is updated to work w/opensearch >= 2.0.0
         // @ts-ignore

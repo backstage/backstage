@@ -1716,7 +1716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-stream-node@npm:3.329.0, @aws-sdk/util-stream-node@npm:^3.310.0, @aws-sdk/util-stream-node@npm:^3.329.0":
+"@aws-sdk/util-stream-node@npm:3.329.0, @aws-sdk/util-stream-node@npm:^3.310.0":
   version: 3.329.0
   resolution: "@aws-sdk/util-stream-node@npm:3.329.0"
   dependencies:
@@ -3600,7 +3600,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.310.0
     "@aws-sdk/credential-providers": ^3.310.0
     "@aws-sdk/types": ^3.310.0
-    "@aws-sdk/util-stream-node": ^3.329.0
+    "@aws-sdk/util-stream-node": ^3.310.0
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-dev-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -4884,6 +4884,7 @@ __metadata:
     "@types/passport-strategy": ^0.2.35
     "@types/xml2js": ^0.4.7
     compression: ^1.7.4
+    connect-session-knex: ^3.0.1
     cookie-parser: ^1.4.5
     cors: ^2.8.5
     express: ^4.17.1
@@ -8585,14 +8586,14 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@elastic/elasticsearch": ^7.13.0
     "@elastic/elasticsearch-mock": ^1.0.0
-    "@opensearch-project/opensearch": ^2.0.0
+    "@opensearch-project/opensearch": ^2.2.1
     "@short.io/opensearch-mock": ^0.3.1
-    aws-os-connection: ^0.2.0
-    aws-sdk: ^2.948.0
+    aws4: ^1.12.0
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
     uuid: ^8.3.2
@@ -9732,7 +9733,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.2.16, @backstage/theme@^0.2.18, @backstage/theme@^0.2.19, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18, @backstage/theme@npm:^0.2.19":
+  version: 0.2.19
+  resolution: "@backstage/theme@npm:0.2.19"
+  dependencies:
+    "@material-ui/core": ^4.12.2
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -13627,7 +13640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opensearch-project/opensearch@npm:^2.0.0":
+"@opensearch-project/opensearch@npm:^2.2.1":
   version: 2.2.1
   resolution: "@opensearch-project/opensearch@npm:2.2.1"
   dependencies:
@@ -18571,18 +18584,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-os-connection@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "aws-os-connection@npm:0.2.0"
-  dependencies:
-    aws4: ^1.11.0
-  peerDependencies:
-    "@opensearch-project/opensearch": 2
-    aws-sdk: ">=2"
-  checksum: 1708ffd9bdc5f7bd6b8447f97859936a8657f4df567f61f12dacd040e6f1a25020bbea8027bb28f19fe27d171a0d3a5090c2d84d6f752bb04e387640413fec7c
-  languageName: node
-  linkType: hard
-
 "aws-sdk-client-mock-jest@npm:^2.0.0":
   version: 2.1.1
   resolution: "aws-sdk-client-mock-jest@npm:2.1.1"
@@ -18617,7 +18618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1231.0, aws-sdk@npm:^2.948.0":
+"aws-sdk@npm:^2.1231.0":
   version: 2.1279.0
   resolution: "aws-sdk@npm:2.1279.0"
   dependencies:
@@ -18642,7 +18643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4@npm:^1.11.0, aws4@npm:^1.8.0":
+"aws4@npm:^1.11.0, aws4@npm:^1.12.0, aws4@npm:^1.8.0":
   version: 1.12.0
   resolution: "aws4@npm:1.12.0"
   checksum: 68f79708ac7c335992730bf638286a3ee0a645cf12575d557860100767c500c08b30e24726b9f03265d74116417f628af78509e1333575e9f8d52a80edfe8cbc
@@ -20733,6 +20734,16 @@ __metadata:
   version: 2.0.0
   resolution: "connect-history-api-fallback@npm:2.0.0"
   checksum: dc5368690f4a5c413889792f8df70d5941ca9da44523cde3f87af0745faee5ee16afb8195434550f0504726642734f2683d6c07f8b460f828a12c45fbd4c9a68
+  languageName: node
+  linkType: hard
+
+"connect-session-knex@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "connect-session-knex@npm:3.0.1"
+  dependencies:
+    bluebird: ^3.7.2
+    knex: ^2.3.0
+  checksum: f5a80c3c34d30e7cd4e79a6aae09d112825986d51ddc3a4563ef95ade425178239d4e3e05420fb3b6204b2353b0dfd754d318b288989b539583f6c0e52758b7a
   languageName: node
   linkType: hard
 
@@ -29197,7 +29208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0, knex@npm:^2.4.2":
+"knex@npm:^2.0.0, knex@npm:^2.3.0, knex@npm:^2.4.2":
   version: 2.4.2
   resolution: "knex@npm:2.4.2"
   dependencies:

@@ -33,7 +33,7 @@ export const lightTheme = createTheme({
       ok: '#1DB954',
       warning: '#FF9800',
       error: '#E22134',
-      running: '#2E77D0',
+      running: '#1F5493',
       pending: '#FFED51',
       aborted: '#757575',
     },
@@ -48,7 +48,7 @@ export const lightTheme = createTheme({
       },
     },
     primary: {
-      main: '#2E77D0',
+      main: '#1F5493',
     },
     banner: {
       info: '#2E77D0',
