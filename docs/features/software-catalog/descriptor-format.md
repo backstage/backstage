@@ -924,6 +924,7 @@ spec:
   parent: ops
   children: [backstage, other]
   members: [jdoe]
+  leader: mmanager
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -993,6 +994,19 @@ The entries of this array are
 | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
 | [`User`](#kind-user) (default)          | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
 
+### `spec.leader` [optional]
+
+The user who is the leader (manager, chairperson, etc) of the group, if any. Not all groups must have a
+leader, and groups may not have
+more than one parent. A given User can be the leader of multiple groups.
+
+This field is an
+[entity reference](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`User`](#kind-user) (default)          | Same as this entity, typically `default`   | [`hasLeader`, and reverse `leaderOf`](well-known-relations.md#leaderof-and-hasleader) |
+
 ## Kind: User
 
 Describes the following entity kind:
@@ -1022,6 +1036,7 @@ spec:
     email: jenny-doe@example.com
     picture: https://example.com/staff/jenny-with-party-hat.jpeg
   memberOf: [team-b, employees]
+  leaderOf: [team-b]
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -1052,6 +1067,20 @@ The entries of this array are
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
 | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
 | [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`memberOf`, and reverse `hasMember`](well-known-relations.md#memberof-and-hasmember) |
+
+### `spec.leaderOf` [optional]
+
+The list of groups that the user is the direct leader of (i.e., no transitive
+leaderships are listed here). "Leader" may mean manager, chairperson, etc. The list is optional, and may be empty if the
+user is not the leader of any groups. The items are not guaranteed to be ordered in
+any particular way. The user is not required to be a [member of](#specmemberof-required) the group.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`leaderOf`, and reverse `hasLeader`](well-known-relations.md#leaderof-and-hasleader) |
 
 ## Kind: Resource
 

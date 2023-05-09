@@ -107,3 +107,10 @@ component, API or resource belongs to a system; or that a system is grouped
 under a domain.
 
 This relation is commonly based on `spec.system` or `spec.domain`.
+
+### `leaderOf` and `hasLeader`
+
+A relationship describing a [User](descriptor-format.md#kind-user) as the leader of a [Group](descriptor-format.md#kind-group). A User can be the leader of many Groups, but a Group can have zero-or-one leader. The leader
+does not need to be a member of the group.
+
+This relation is commonly based on `spec.leader` on the Group entity.
