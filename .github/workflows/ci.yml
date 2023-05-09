@@ -95,6 +95,9 @@ jobs:
       - name: verify api reference
         run: node scripts/verify-api-reference.js
 
+      - name: lint openapi yaml files
+        run: yarn backstage-repo-tools schema openapi lint
+
       - name: verify openapi yaml file matches generated ts file
         run: yarn backstage-repo-tools schema openapi verify
 
