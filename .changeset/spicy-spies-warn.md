@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-common': patch
+'@backstage/plugin-scaffolder-common': minor
 ---
 
 Expose scaffolder permissions in new sub-aggregations.

@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
 Expose both types of scaffolder permissions and rules through the metadata endpoint.
