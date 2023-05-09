@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.0-next.2
+
+### Patch Changes
+
+- 05f1d74539d: Kubernetes clusters now support `authProvider: aks`. When configured this way,
+  the `retrieveObjectsByServiceId` action will use the `auth.aks` value in the
+  request body as a bearer token to authenticate with Kubernetes.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+
 ## 0.11.0-next.1
 
 ### Minor Changes

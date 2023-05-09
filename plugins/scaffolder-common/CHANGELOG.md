@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+
 ## 1.2.7
 
 ### Patch Changes

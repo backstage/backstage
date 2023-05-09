@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.5.1-next.2
+
+### Patch Changes
+
+- 1d5e42655cd: Correct command to create new plugins
+
 ## 0.5.1-next.1
 
 ### Patch Changes

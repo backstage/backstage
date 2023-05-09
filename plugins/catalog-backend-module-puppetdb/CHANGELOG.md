@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- 95b2168d71b: Fixes import paths and updates documentation
+- Updated dependencies
+  - @backstage/config@1.0.7
+
 ## 0.1.2-next.1
 
 ### Patch Changes
