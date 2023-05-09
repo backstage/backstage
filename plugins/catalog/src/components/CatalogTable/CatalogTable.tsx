@@ -47,7 +47,7 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 
-const DEFAULT_PAGE_SIZE = 3;
+const DEFAULT_PAGE_SIZE = 20;
 
 // From material table. https://github.com/mbrn/material-table/blob/master/src/utils/index.js
 export const selectFromObject = (o: object, s: string | undefined) => {

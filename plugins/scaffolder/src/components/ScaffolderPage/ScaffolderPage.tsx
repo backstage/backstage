@@ -149,16 +149,14 @@ export const ScaffolderPage = ({
   headerOptions,
 }: ScaffolderPageProps) => (
   <EntityFilterProvider>
-    <EntityFilterProvider>
-      <EntityListProvider>
-        <ScaffolderPageContents
-          TemplateCardComponent={TemplateCardComponent}
-          groups={groups}
-          templateFilter={templateFilter}
-          contextMenu={contextMenu}
-          headerOptions={headerOptions}
-        />
-      </EntityListProvider>
-    </EntityFilterProvider>
+    <EntityListProvider>
+      <ScaffolderPageContents
+        TemplateCardComponent={TemplateCardComponent}
+        groups={groups}
+        templateFilter={templateFilter}
+        contextMenu={contextMenu}
+        headerOptions={headerOptions}
+      />
+    </EntityListProvider>
   </EntityFilterProvider>
 );
