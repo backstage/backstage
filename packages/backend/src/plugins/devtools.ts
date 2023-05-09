@@ -17,13 +17,16 @@
 import { createRouter } from '@backstage/plugin-devtools-backend';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 export default async function createPlugin(
   env: PluginEnvironment,
+  taskSchedulers?: PluginTaskScheduler[],
 ): Promise<Router> {
   return createRouter({
     logger: env.logger,
     config: env.config,
     permissions: env.permissions,
+    taskSchedulers,
   });
 }

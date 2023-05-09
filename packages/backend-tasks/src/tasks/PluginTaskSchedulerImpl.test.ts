@@ -52,6 +52,7 @@ describe('PluginTaskManagerImpl', () => {
     const knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
     const manager = new PluginTaskSchedulerImpl(
+      'test',
       async () => knex,
       getVoidLogger(),
     );

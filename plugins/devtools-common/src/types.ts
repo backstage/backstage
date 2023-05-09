@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
+import { JsonValue, JsonObject } from '@backstage/types';
 
 /** @public */
 export type Endpoint = {
@@ -64,4 +64,12 @@ export type ConfigError = {
   message: string;
   messages?: string[];
   stack?: string;
+};
+
+/** @public */
+export type TaskInfo = {
+  id: string;
+  scope: string;
+  scheduler: string;
+  settings: { version: string } & JsonObject;
 };

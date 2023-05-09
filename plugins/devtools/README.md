@@ -28,6 +28,12 @@ Lists the status of configured External Dependencies based on your current runni
 
 ![Example of external dependencies tab](./docs/devtools-external-dependencies.png)
 
+### Scheduled Tasks
+
+Lists all scheduled tasks that are visible to the backend plugin. See backend documentation for more information.
+
+![Example of scheduled tasks tab](./docs/devtools-scheduled-tasks.png)
+
 ## Setup
 
 The following sections will help you get the DevTools plugin setup and running.
@@ -88,6 +94,7 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
      ConfigContent,
      ExternalDependenciesContent,
      InfoContent,
+     TasksContent,
    } from '@backstage/plugin-devtools';
    import { DevToolsLayout } from '@backstage/plugin-devtools';
    import React from 'react';
@@ -100,6 +107,9 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
          </DevToolsLayout.Route>
          <DevToolsLayout.Route path="config" title="Config">
            <ConfigContent />
+         </DevToolsLayout.Route>
+         <DevToolsLayout.Route path="tasks" title="Scheduled tasks">
+           <TasksContent />
          </DevToolsLayout.Route>
          <DevToolsLayout.Route
            path="external-dependencies"
@@ -257,6 +267,17 @@ class TestPermissionPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.DENY };
     }
 
+    if (isPermission(request.permission, devToolsTasksReadPermission)) {
+      if (
+        user?.identity.ownershipEntityRefs.includes(
+          'group:default/backstage-admins',
+        )
+      ) {
+        return { result: AuthorizeResult.ALLOW };
+      }
+      return { result: AuthorizeResult.DENY };
+    }
+
     if (
       isPermission(
         request.permission,
@@ -291,6 +312,7 @@ You'll also need to add these imports:
 import {
   devToolsAdministerPermission,
   devToolsConfigReadPermission,
+  devToolsTasksReadPermission,
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
@@ -307,12 +329,14 @@ import {
   ConfigContent,
   ExternalDependenciesContent,
   InfoContent,
+  TasksContent,
 } from '@backstage/plugin-devtools';
 import { DevToolsLayout } from '@backstage/plugin-devtools';
 import {
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
+  devToolsTasksReadPermission,
 } from '@backstage/plugin-devtools-common';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import React from 'react';
@@ -328,6 +352,11 @@ const DevToolsPage = () => {
       <DevToolsLayout.Route path="config" title="Config">
         <RequirePermission permission={devToolsConfigReadPermission}>
           <ConfigContent />
+        </RequirePermission>
+      </DevToolsLayout.Route>
+      <DevToolsLayout.Route path="tasks" title="Scheduled tasks">
+        <RequirePermission permission={devToolsTasksReadPermission}>
+          <TasksContent />
         </RequirePermission>
       </DevToolsLayout.Route>
       <DevToolsLayout.Route

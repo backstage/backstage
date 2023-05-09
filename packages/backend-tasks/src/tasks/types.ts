@@ -289,6 +289,8 @@ export interface TaskRunner {
  * @public
  */
 export interface PluginTaskScheduler {
+  readonly pluginId: string;
+
   /**
    * Manually triggers a task by ID.
    *

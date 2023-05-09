@@ -90,6 +90,10 @@ export class TaskScheduler {
       return knex;
     });
 
-    return new PluginTaskSchedulerImpl(databaseFactory, opts.logger);
+    return new PluginTaskSchedulerImpl(
+      opts.pluginId,
+      databaseFactory,
+      opts.logger,
+    );
   }
 }

@@ -10,6 +10,7 @@ import express from 'express';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -35,5 +36,7 @@ export interface RouterOptions {
   logger: Logger;
   // (undocumented)
   permissions: PermissionEvaluator;
+  // (undocumented)
+  taskSchedulers?: PluginTaskScheduler[];
 }
 ```

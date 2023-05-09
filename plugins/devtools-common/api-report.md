@@ -4,6 +4,7 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 
 // @public (undocumented)
@@ -41,6 +42,9 @@ export type DevToolsInfo = {
 export const devToolsInfoReadPermission: BasicPermission;
 
 // @public (undocumented)
+export const devToolsTasksReadPermission: BasicPermission;
+
+// @public (undocumented)
 export type Endpoint = {
   name: string;
   type: string;
@@ -68,5 +72,15 @@ export enum ExternalDependencyStatus {
 export type PackageDependency = {
   name: string;
   versions: string;
+};
+
+// @public (undocumented)
+export type TaskInfo = {
+  id: string;
+  scope: string;
+  scheduler: string;
+  settings: {
+    version: string;
+  } & JsonObject;
 };
 ```

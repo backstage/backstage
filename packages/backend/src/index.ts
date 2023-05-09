@@ -186,7 +186,10 @@ async function main() {
   apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
   apiRouter.use('/adr', await adr(adrEnv));
   apiRouter.use('/linguist', await linguist(linguistEnv));
-  apiRouter.use('/devtools', await devTools(devToolsEnv));
+  apiRouter.use(
+    '/devtools',
+    await devTools(devToolsEnv, [catalogEnv.scheduler, searchEnv.scheduler]),
+  );
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

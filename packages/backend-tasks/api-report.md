@@ -18,6 +18,8 @@ export type HumanDuration = HumanDuration_2;
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   getScheduledTasks(): Promise<TaskDescriptor[]>;
+  // (undocumented)
+  readonly pluginId: string;
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;

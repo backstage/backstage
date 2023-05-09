@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
-export * from './ConfigContent';
-export * from './InfoContent';
-export * from './ExternalDependenciesContent';
-export * from './TasksContent';
+import { devToolsApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { TaskInfo } from '@backstage/plugin-devtools-common';
+
+export function useTasks(): {
+  tasks?: TaskInfo[];
+  loading: boolean;
+  error?: Error;
+} {
+  const api = useApi(devToolsApiRef);
+  const { value, loading, error } = useAsync(() => {
+    return api.getTasks();
+  }, [api]);
+
+  return {
+    tasks: value,
+    loading,
+    error,
+  };
+}

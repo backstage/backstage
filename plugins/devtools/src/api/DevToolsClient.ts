@@ -19,6 +19,7 @@ import {
   ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
+  TaskInfo,
 } from '@backstage/plugin-devtools-common';
 import { ResponseError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
@@ -38,7 +39,7 @@ export class DevToolsClient implements DevToolsApi {
   public async getConfig(): Promise<ConfigInfo | undefined> {
     const urlSegment = 'config';
 
-    const configInfo = await this.get<ConfigInfo | undefined>(urlSegment);
+    const configInfo = await this.request<ConfigInfo | undefined>(urlSegment);
     return configInfo;
   }
 
@@ -47,7 +48,7 @@ export class DevToolsClient implements DevToolsApi {
   > {
     const urlSegment = 'external-dependencies';
 
-    const externalDependencies = await this.get<
+    const externalDependencies = await this.request<
       ExternalDependency[] | undefined
     >(urlSegment);
     return externalDependencies;
@@ -56,16 +57,28 @@ export class DevToolsClient implements DevToolsApi {
   public async getInfo(): Promise<DevToolsInfo | undefined> {
     const urlSegment = 'info';
 
-    const info = await this.get<DevToolsInfo | undefined>(urlSegment);
+    const info = await this.request<DevToolsInfo | undefined>(urlSegment);
     return info;
   }
 
-  private async get<T>(path: string): Promise<T> {
+  public async getTasks(): Promise<TaskInfo[] | undefined> {
+    const urlSegment = 'tasks';
+    const tasks = await this.request<TaskInfo[] | undefined>(urlSegment);
+    return tasks;
+  }
+
+  public async triggerTask(scheduler: string, task: string): Promise<void> {
+    const urlSegment = `tasks/${scheduler}/${task}`;
+    await this.request(urlSegment, 'POST');
+  }
+
+  private async request<T>(path: string, method?: string): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('devtools')}/`;
     const url = new URL(path, baseUrl);
 
     const { token } = await this.identityApi.getCredentials();
     const response = await fetch(url.toString(), {
+      method,
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 

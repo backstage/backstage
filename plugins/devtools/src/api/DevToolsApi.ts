@@ -19,6 +19,7 @@ import {
   ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
+  TaskInfo,
 } from '@backstage/plugin-devtools-common';
 
 export const devToolsApiRef = createApiRef<DevToolsApi>({
@@ -29,4 +30,6 @@ export interface DevToolsApi {
   getConfig(): Promise<ConfigInfo | undefined>;
   getExternalDependencies(): Promise<ExternalDependency[] | undefined>;
   getInfo(): Promise<DevToolsInfo | undefined>;
+  getTasks(): Promise<TaskInfo[] | undefined>;
+  triggerTask(scheduler: string, task: string): Promise<void>;
 }

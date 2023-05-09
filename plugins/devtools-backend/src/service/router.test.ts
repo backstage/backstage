@@ -18,8 +18,12 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { createRouter } from './router';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
@@ -34,6 +38,29 @@ const permissionEvaluator: PermissionEvaluator = {
 
 describe('createRouter', () => {
   let app: express.Express;
+
+  const taskScheduler1 = {
+    pluginId: 'taskScheduler1',
+    getScheduledTasks: async () => {
+      return [{ id: 'test-task', scope: 'global', settings: { version: 2 } }];
+    },
+    triggerTask: async (_: string) => {
+      return;
+    },
+  } as unknown as PluginTaskScheduler;
+
+  const taskScheduler2 = {
+    pluginId: 'taskScheduler2',
+    getScheduledTasks: async () => {
+      return [
+        { id: 'test-task2', scope: 'global', settings: { version: 2 } },
+        { id: 'test-task3', scope: 'global', settings: { version: 2 } },
+      ];
+    },
+    triggerTask: async (task: string) => {
+      throw new Error(`Failed to start task ${task}`);
+    },
+  } as unknown as PluginTaskScheduler;
 
   beforeAll(async () => {
     const router = await createRouter({
@@ -50,6 +77,7 @@ describe('createRouter', () => {
         },
       }),
       permissions: permissionEvaluator,
+      taskSchedulers: [taskScheduler1, taskScheduler2],
     });
     app = express().use(router);
   });
@@ -64,6 +92,62 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /tasks', () => {
+    it('returns tasks', async () => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const response = await request(app).get('/tasks');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          id: 'test-task',
+          scope: 'global',
+          settings: { version: 2 },
+          scheduler: 'taskScheduler1',
+        },
+        {
+          id: 'test-task2',
+          scope: 'global',
+          settings: { version: 2 },
+          scheduler: 'taskScheduler2',
+        },
+        {
+          id: 'test-task3',
+          scope: 'global',
+          settings: { version: 2 },
+          scheduler: 'taskScheduler2',
+        },
+      ]);
+    });
+  });
+
+  describe('POST /tasks', () => {
+    it('run task successfully', async () => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const response = await request(app).post(
+        '/tasks/taskScheduler1/test-task',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+
+    it('fail to run task', async () => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const response = await request(app).post(
+        '/tasks/taskScheduler2/test-task2',
+      );
+      expect(response.status).toEqual(500);
     });
   });
 });

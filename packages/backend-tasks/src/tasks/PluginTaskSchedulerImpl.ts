@@ -37,6 +37,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
   private readonly allScheduledTasks: TaskDescriptor[] = [];
 
   constructor(
+    readonly pluginId: string,
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,
   ) {}

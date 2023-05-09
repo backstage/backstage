@@ -50,6 +50,43 @@ Here's how to get the DevTools Backend up and running:
 4. Now run `yarn start-backend` from the repo root
 5. Finally open `http://localhost:7007/api/devtools/health` in a browser and it should return `{"status":"ok"}`
 
+## Adding scheduled tasks
+
+To add the scheduled tasks, the plugin task schedulers from other plugins, such as search and catalog, need to be passed
+to the DevTools plugin. Modify your `packages/backend/src/plugins/devtools.ts` as follows:
+
+```ts
+import { createRouter } from '@backstage/plugin-devtools-backend';
+import { Router } from 'express';
+import type { PluginEnvironment } from '../types';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+
+export default function createPlugin(
+  env: PluginEnvironment,
+  taskSchedulers?: PluginTaskScheduler[],
+): Promise<Router> {
+  return createRouter({
+    logger: env.logger,
+    config: env.config,
+    permissions: env.permissions,
+    taskSchedulers,
+  });
+}
+```
+
+And in the `packages/backend/src/index.ts` pass the wanted schdulers to the plugin:
+
+```ts
+import devTools from './plugins/devtools';
+// ...
+async function main() {
+  // ...
+  const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
+  // ...
+  apiRouter.use('/search', await search(searchEnv));
+  apiRouter.use('/devtools', await devTools(devToolsEnv, [searchEnv.scheduler]));
+```
+
 ## Links
 
 - [Frontend part of the plugin](../devtools/README.md)
