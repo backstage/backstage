@@ -36,6 +36,7 @@ describe('userEntityV1alpha1Validator', () => {
           picture: 'https://doe.org/john.jpeg',
         },
         memberOf: ['team-a', 'developers'],
+        leaderOf: ['team-a', 'team-b'],
       },
     };
   });
@@ -153,5 +154,32 @@ describe('userEntityV1alpha1Validator', () => {
   it('rejects null memberOf', async () => {
     (entity as any).spec.memberOf = null;
     await expect(validator.check(entity)).rejects.toThrow(/memberOf/);
+  });
+
+  // leaderOf
+
+  it('allows missing leaderOf', async () => {
+    delete (entity as any).spec.leaderOf;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong leaderOf', async () => {
+    (entity as any).spec.leaderOf = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/leaderOf/);
+  });
+
+  it('rejects wrong leaderOf item', async () => {
+    (entity as any).spec.leaderOf[0] = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/leaderOf/);
+  });
+
+  it('accepts empty leaderOf', async () => {
+    (entity as any).spec.leaderOf = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects null leaderOf', async () => {
+    (entity as any).spec.leaderOf = null;
+    await expect(validator.check(entity)).rejects.toThrow(/leaderOf/);
   });
 });
