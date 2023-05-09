@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 83b45f9df50: Fix accessibility issue with Backstage Table's header style
+- e97769f7c0b: Fix accessibility issue on controlled select input on tab navigation + keyboard enter/space action.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.13.1-next.0
 
 ### Patch Changes
