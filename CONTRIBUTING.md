@@ -99,3 +99,7 @@ This project adheres to the [Spotify FOSS Code of Conduct][code-of-conduct]. By 
 ## Security Issues?
 
 See [SECURITY](SECURITY.md).
+
+## Accessibility
+
+We encourage you to catch any accessibility issues already in the development phase of new features to Backstage, see our [Accessibility documentation](./docs/accessibility/index.md) for more details.
