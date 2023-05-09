@@ -22,12 +22,16 @@ app:
 
   features:
     # Registers all APIs and Pages, all the defaults
-    - import: catalog # '@backstage/plugin-catalog'
-      name: catalogPlugin
+    - '@backstage/plugin-catalog'
+    - '@backstage/plugin-techdocs'
+    - '@internal/ma-magic-plugin'
 
-# TODO:
-#  - figure out identifiers
+    # - import: catalog # '@backstage/plugin-catalog'
+    #   name: catalogPlugin
 
+  # Routes registered automatically but can be overridden.
+  # TBD:
+  #   - Should route overrides be configured in the plugin instead?
   routes:
     # This should be for custom routes that are not part of any plugin
     # - path: /catalog
@@ -37,20 +41,26 @@ app:
     #   import: catalog
     #   name: CatalogEntityPage
 
+  # This is the root elements of the JSX element tree.
+  # This is likely not something that most integrators configure instead rely on the default root elements from a package.
   rootElements:
     - '@backstage/app-defaults#defaultRoot'
-# - DefaultErrorReporter
-# - DefaultSidebar
-# - DeclarativeRouter
+    # - DefaultErrorReporter
+    # - DefaultSidebar
+    # - DeclarativeRouter
+
   '@backstage/core-components#Sidebar':
     items:
       # - '@backstage/plugin-search#SearchSidebarItem' ?
       - title: Home
-        icon: home
-        path: /
+        icon: house
+        route: home.index
       - title: Catalog
         icon: book
-        path: /catalog
+        route: catalog.entityPage
+      - title: I'm feeling lucky
+        icon: globe
+        to: https://google.com
       - title: Settings
         groupId: settings
     groups:
@@ -60,6 +70,13 @@ app:
           items:
             - '@backstage/plugin-user-settings#userSettings'
             - '@backstage/plugin-user-settings#somethingSettings'
+
+  'backstage/plugin-techdocs':
+    addons:
+      - '@backstage/plugin-techdocs-module-addons-contrib#ExpandableNavigation'
+      - '@backstage/plugin-techdocs-module-addons-contrib#ReportIssue'
+      - '@backstage/plugin-techdocs-module-addons-contrib#TextSize'
+      - '@backstage/plugin-techdocs-module-addons-contrib#LightBox'
 
   '@backstage/plugin-catalog#EntityPage':
     tabOrder: [Overview, CI/CD, Blah]  # followed by all tabs that were supplied but not mentioned here perhaps?
