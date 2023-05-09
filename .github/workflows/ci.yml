@@ -53,7 +53,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8096
 
     name: Verify ${{ matrix.node-version }}
     steps:
