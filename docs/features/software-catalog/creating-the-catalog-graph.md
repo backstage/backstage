@@ -1,4 +1,4 @@
-# Architecting your Catalog
+# Creating the Catalog Graph
 
 ## Overview
 
