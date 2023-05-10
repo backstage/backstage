@@ -51,9 +51,9 @@ const ORGANIZATION_ANNOTATION = 'amazonaws.com/organization-id';
  */
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   private readonly organizations: Organizations;
-  private readonly logger?: Logger;
+  private readonly logger: Logger;
 
-  static async fromConfig(config: Config, options: { logger?: Logger }) {
+  static async fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
     const orgConfig = c ? readAwsOrganizationConfig(c) : undefined;
     const awsCredentialsManager =
@@ -69,7 +69,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
   private constructor(
     private readonly credProvider: AwsCredentialProvider,
-    logger?: Logger,
+    logger: Logger,
   ) {
     this.logger = logger?.child({
       target: this.getProcessorName(),
