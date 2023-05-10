@@ -147,7 +147,8 @@ export async function createRouter(
   router.post(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
-      const { namespace, kind, name, jobFullName } = request.params;
+      const { namespace, kind, name, jobFullName, buildNumber } =
+        request.params;
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
@@ -161,11 +162,12 @@ export async function createRouter(
         backstageToken: token,
       });
 
-      const resourceRef = stringifyEntityRef({ kind, namespace, name });
-      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef, {
-        token,
-      });
-      response.json({});
+      const status = await jenkinsApi.rebuildProject(
+        jenkinsInfo,
+        jobFullName,
+        parseInt(buildNumber, 10),
+      );
+      response.json({}).status(status);
     },
   );
   router.use(errorHandler());
