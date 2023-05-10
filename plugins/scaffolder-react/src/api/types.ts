@@ -85,8 +85,16 @@ export type ScaffolderOutputLink = {
 };
 
 /** @public */
+export type ScaffolderOutputText = {
+  title?: string;
+  icon?: string;
+  content?: string;
+};
+
+/** @public */
 export type ScaffolderTaskOutput = {
   links?: ScaffolderOutputLink[];
+  text?: ScaffolderOutputText[];
 } & {
   [key: string]: unknown;
 };

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend
 
+## 1.9.1-next.2
+
+### Patch Changes
+
+- ce8d203235b: Ensure that entity cache state is only written to the database when actually changed
+- 485a6c5f7b5: Internal refactoring for performance in the service handlers
+- 3587a968dcd: Fixed a bug in the `queryEntities` endpoint that was causing filtered entities to be included in cursor requests.
+- 12a345317ab: Remove unnecessary join in the entity facets endpoint, exclude nulls
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.3.0-next.0
+  - @backstage/config@1.0.7
+
 ## 1.9.1-next.1
 
 ### Patch Changes

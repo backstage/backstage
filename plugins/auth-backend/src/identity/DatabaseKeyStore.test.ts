@@ -14,33 +14,10 @@
  * limitations under the License.
  */
 
-import Knex, { Knex as KnexType } from 'knex';
-import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { DateTime } from 'luxon';
-
-function createDatabaseManager(
-  client: KnexType,
-  skipMigrations: boolean = false,
-) {
-  return {
-    getClient: async () => client,
-    migrations: {
-      skip: skipMigrations,
-    },
-  };
-}
-
-function createDB() {
-  const knex = Knex({
-    client: 'better-sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
-  });
-  knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-    resource.run('PRAGMA foreign_keys = ON', () => {});
-  });
-  return knex;
-}
+import { AuthDatabase } from '../database/AuthDatabase';
+import { DatabaseKeyStore } from './DatabaseKeyStore';
+import { TestDatabases } from '@backstage/backend-test-utils';
 
 const keyBase = {
   use: 'sig',
@@ -48,95 +25,107 @@ const keyBase = {
   alg: 'Base64',
 } as const;
 
+jest.setTimeout(60_000);
+
 describe('DatabaseKeyStore', () => {
-  it('should store a key', async () => {
-    const client = createDB();
-    const store = await DatabaseKeyStore.create({
-      database: createDatabaseManager(client),
-    });
-
-    const key = {
-      kid: '123',
-      ...keyBase,
-    };
-
-    await expect(store.listKeys()).resolves.toEqual({ items: [] });
-    await store.addKey(key);
-
-    const { items } = await store.listKeys();
-    expect(items).toEqual([{ createdAt: expect.anything(), key }]);
-    expect(
-      Math.abs(
-        DateTime.fromJSDate(items[0].createdAt).diffNow('seconds').seconds,
-      ),
-    ).toBeLessThan(10);
+  const databases = TestDatabases.create({
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
-  it('should remove stored keys', async () => {
-    const client = createDB();
-    const store = await DatabaseKeyStore.create({
-      database: createDatabaseManager(client),
-    });
+  it.each(databases.eachSupportedId())(
+    'should store a key, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await AuthDatabase.runMigrations(knex);
 
-    const key1 = { kid: '1', ...keyBase };
-    const key2 = { kid: '2', ...keyBase };
-    const key3 = { kid: '3', ...keyBase };
+      const store = new DatabaseKeyStore(knex);
 
-    await store.addKey(key1);
-    await store.addKey(key2);
-    await store.addKey(key3);
+      const key = {
+        kid: '123',
+        ...keyBase,
+      };
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [
-        { key: key1, createdAt: expect.anything() },
-        { key: key2, createdAt: expect.anything() },
-        { key: key3, createdAt: expect.anything() },
-      ],
-    });
+      await expect(store.listKeys()).resolves.toEqual({ items: [] });
+      await store.addKey(key);
 
-    store.removeKeys(['1']);
+      const { items } = await store.listKeys();
+      expect(items).toEqual([{ createdAt: expect.anything(), key }]);
+      expect(
+        Math.abs(
+          DateTime.fromJSDate(items[0].createdAt).diffNow('seconds').seconds,
+        ),
+      ).toBeLessThan(10);
+    },
+  );
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [
-        { key: key2, createdAt: expect.anything() },
-        { key: key3, createdAt: expect.anything() },
-      ],
-    });
+  it.each(databases.eachSupportedId())(
+    'should remove stored keys, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await AuthDatabase.runMigrations(knex);
 
-    store.removeKeys(['1', '2']);
+      const store = new DatabaseKeyStore(knex);
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [{ key: key3, createdAt: expect.anything() }],
-    });
+      const key1 = { kid: '1', ...keyBase };
+      const key2 = { kid: '2', ...keyBase };
+      const key3 = { kid: '3', ...keyBase };
 
-    store.removeKeys([]);
+      await store.addKey(key1);
+      await store.addKey(key2);
+      await store.addKey(key3);
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [{ key: key3, createdAt: expect.anything() }],
-    });
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [
+          { key: key1, createdAt: expect.anything() },
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
+        ],
+      });
 
-    store.removeKeys(['3', '4']);
+      await store.removeKeys(['1']);
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [],
-    });
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
+        ],
+      });
 
-    await store.addKey(key1);
-    await store.addKey(key2);
-    await store.addKey(key3);
+      await store.removeKeys(['1', '2']);
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [
-        { key: key1, createdAt: expect.anything() },
-        { key: key2, createdAt: expect.anything() },
-        { key: key3, createdAt: expect.anything() },
-      ],
-    });
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [{ key: key3, createdAt: expect.anything() }],
+      });
 
-    store.removeKeys(['1', '2', '3']);
+      await store.removeKeys([]);
 
-    await expect(store.listKeys()).resolves.toEqual({
-      items: [],
-    });
-  });
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [{ key: key3, createdAt: expect.anything() }],
+      });
+
+      await store.removeKeys(['3', '4']);
+
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [],
+      });
+
+      await store.addKey(key1);
+      await store.addKey(key2);
+      await store.addKey(key3);
+
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [
+          { key: key1, createdAt: expect.anything() },
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
+        ],
+      });
+
+      await store.removeKeys(['1', '2', '3']);
+
+      await expect(store.listKeys()).resolves.toEqual({
+        items: [],
+      });
+    },
+  );
 });

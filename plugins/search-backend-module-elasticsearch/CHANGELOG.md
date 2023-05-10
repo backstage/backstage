@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.0-next.2
+
+### Minor Changes
+
+- 3d72bdb41c7: Upgrade to aws-sdk v3 and include OpenSearch Serverless support
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+
 ## 1.2.1-next.1
 
 ### Patch Changes

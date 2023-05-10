@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.3-next.2
+
+### Patch Changes
+
+- 3ffcdac7d07: Added a persistent session store through the database
+- Updated dependencies
+  - @backstage/config@1.0.7
+
 ## 0.18.3-next.1
 
 ### Patch Changes

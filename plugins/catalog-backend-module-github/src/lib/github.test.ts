@@ -21,6 +21,7 @@ import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
+  getOrganizationsFromUser,
   getOrganizationTeams,
   getOrganizationUsers,
   getTeamMembers,
@@ -445,6 +446,37 @@ describe('github', () => {
 
       expect(teams.groups).toHaveLength(1);
       expect(teams).toEqual(output);
+    });
+  });
+
+  describe('getOrganizationsFromUser', () => {
+    it('reads orgs from user', async () => {
+      const input: QueryResponse = {
+        user: {
+          organizations: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+              },
+              {
+                login: 'b',
+              },
+              {
+                login: 'c',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('orgs', (_req, res, ctx) => res(ctx.data(input))),
+      );
+
+      await expect(getOrganizationsFromUser(graphql, 'foo')).resolves.toEqual({
+        orgs: ['a', 'b', 'c'],
+      });
     });
   });
 

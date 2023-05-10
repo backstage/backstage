@@ -408,6 +408,7 @@
         "label": "Core Services",
         "items": ["backend-system/core-services/index"]
       }
-    ]
+    ],
+    "Accessibility": ["accessibility/index"]
   }
 }

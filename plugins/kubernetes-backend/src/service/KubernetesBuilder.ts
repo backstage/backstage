@@ -33,6 +33,7 @@ import {
   GoogleServiceAccountAuthTranslator,
   AzureIdentityKubernetesAuthTranslator,
   OidcKubernetesAuthTranslator,
+  AksKubernetesAuthTranslator,
 } from '../kubernetes-auth-translator';
 
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -355,6 +356,7 @@ export class KubernetesBuilder {
   protected buildAuthTranslatorMap() {
     this.authTranslatorMap = {
       google: new GoogleKubernetesAuthTranslator(),
+      aks: new AksKubernetesAuthTranslator(),
       aws: new AwsIamKubernetesAuthTranslator({ config: this.env.config }),
       azure: new AzureIdentityKubernetesAuthTranslator(this.env.logger),
       serviceAccount: new NoopKubernetesAuthTranslator(),

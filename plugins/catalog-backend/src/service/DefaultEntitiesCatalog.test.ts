@@ -1729,6 +1729,17 @@ describe('DefaultEntitiesCatalog', () => {
             ],
           },
         });
+
+        await expect(
+          catalog.facets({
+            facets: ['kind'],
+            filter: { not: { key: 'metadata.name', values: ['two'] } },
+          }),
+        ).resolves.toEqual({
+          facets: {
+            kind: [{ value: 'k', count: 1 }],
+          },
+        });
       },
     );
 
