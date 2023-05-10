@@ -17,6 +17,7 @@
 import {
   ANNOTATION_EDIT_URL,
   RELATION_MEMBER_OF,
+  RELATION_LEADER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
 import {
@@ -47,6 +48,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
+import FaceIcon from '@material-ui/icons/Face';
 import React from 'react';
 
 const CardTitle = (props: { title?: string }) =>
@@ -77,6 +79,9 @@ export const UserProfileCard = (props: {
   const displayName = profile?.displayName ?? metaName;
   const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
   const memberOfRelations = getEntityRelations(user, RELATION_MEMBER_OF, {
+    kind: 'Group',
+  });
+  const leaderOfRelations = getEntityRelations(user, RELATION_LEADER_OF, {
     kind: 'Group',
   });
 
@@ -114,9 +119,29 @@ export const UserProfileCard = (props: {
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
-                <ListItemText>
-                  <Link to={emailHref ?? ''}>{profile.email}</Link>
-                </ListItemText>
+                <ListItemText
+                  primary={<Link to={emailHref ?? ''}>{profile.email}</Link>}
+                  secondary="Email"
+                />
+              </ListItem>
+            )}
+
+            {leaderOfRelations?.length > 0 && (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Leader of">
+                    <FaceIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <EntityRefLinks
+                      entityRefs={leaderOfRelations}
+                      defaultKind="Group"
+                    />
+                  }
+                  secondary="Leader of"
+                />
               </ListItem>
             )}
 
@@ -126,12 +151,15 @@ export const UserProfileCard = (props: {
                   <GroupIcon />
                 </Tooltip>
               </ListItemIcon>
-              <ListItemText>
-                <EntityRefLinks
-                  entityRefs={memberOfRelations}
-                  defaultKind="Group"
-                />
-              </ListItemText>
+              <ListItemText
+                primary={
+                  <EntityRefLinks
+                    entityRefs={memberOfRelations}
+                    defaultKind="Group"
+                  />
+                }
+                secondary="Member of"
+              />
             </ListItem>
 
             {props?.showLinks && <LinksGroup links={links} />}
