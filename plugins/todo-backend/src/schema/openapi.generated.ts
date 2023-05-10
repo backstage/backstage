@@ -149,6 +149,7 @@ export default {
             required: true,
             schema: {
               type: 'string',
+              minLength: 1,
               description: 'A reference to the entity to list TODO items for',
             },
           },
@@ -183,6 +184,7 @@ export default {
             required: false,
             schema: {
               type: 'integer',
+              minimum: 0,
               description: 'The offset at which to start listing TODO items',
             },
           },
@@ -192,6 +194,7 @@ export default {
             required: false,
             schema: {
               type: 'integer',
+              minimum: 1,
               description: 'The number of TODO items to list',
             },
           },

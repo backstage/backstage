@@ -96,6 +96,7 @@ paths:
           required: true
           schema:
             type: string
+            minLength: 1
             description: A reference to the entity to list TODO items for
         - name: orderBy
           in: query
@@ -118,10 +119,12 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             description: The offset at which to start listing TODO items
         - name: limit
           in: query
           required: false
           schema:
             type: integer
+            minimum: 1
             description: The number of TODO items to list
