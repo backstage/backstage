@@ -19,7 +19,7 @@
 // ******************************************************************
 
 export default {
-  openapi: '3.1.0',
+  openapi: '3.0.3',
   info: {
     title: '@backstage/plugin-todo-backend',
     version: '1',
