@@ -243,6 +243,7 @@ interface GroupEntityV1alpha1 extends Entity {
     parent?: string;
     children: string[];
     members?: string[];
+    leader?: string;
   };
 }
 export { GroupEntityV1alpha1 as GroupEntity };
@@ -376,10 +377,16 @@ export const RELATION_DEPENDENCY_OF = 'dependencyOf';
 export const RELATION_DEPENDS_ON = 'dependsOn';
 
 // @public
+export const RELATION_HAS_LEADER = 'hasLeader';
+
+// @public
 export const RELATION_HAS_MEMBER = 'hasMember';
 
 // @public
 export const RELATION_HAS_PART = 'hasPart';
+
+// @public
+export const RELATION_LEADER_OF = 'leaderOf';
 
 // @public
 export const RELATION_MEMBER_OF = 'memberOf';
@@ -475,6 +482,7 @@ interface UserEntityV1alpha1 extends Entity {
       picture?: string;
     };
     memberOf?: string[];
+    leaderOf?: string[];
   };
 }
 export { UserEntityV1alpha1 as UserEntity };
