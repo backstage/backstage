@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Table, TableColumn } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Box, IconButton, Typography } from '@material-ui/core';
+import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import { default as React } from 'react';
+import { default as React, useState } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { buildRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
 import { JenkinsRunStatus } from '../Status';
+import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -173,16 +175,55 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     sorting: false,
     render: (row: Partial<Project>) => {
-      return row.lastBuild?.url ? (
-        <div style={{ width: '98px' }}>
-          <IconButton href={row.lastBuild.url} target="_blank">
-            <VisibilityIcon />
-          </IconButton>
-          <IconButton href={`${row.lastBuild.url}replay`} target="_blank">
-            <RetryIcon />
-          </IconButton>
-        </div>
-      ) : null;
+      const ActionWrapper = () => {
+        const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
+        const { allowed, loading } = useEntityPermission(
+          jenkinsExecutePermission,
+        );
+
+        const alertApi = useApi(alertApiRef);
+
+        const onRebuild = async () => {
+          if (row.onRestartClick) {
+            setIsLoadingRebuild(true);
+            try {
+              await row.onRestartClick();
+              alertApi.post({
+                message: 'Jenkins re-build has successfully executed',
+                severity: 'success',
+              });
+            } catch (e) {
+              alertApi.post({
+                message: `Jenkins re-build has failed. Error: ${e.message}`,
+                severity: 'error',
+              });
+            } finally {
+              setIsLoadingRebuild(false);
+            }
+          }
+        };
+
+        return (
+          <div style={{ width: '98px' }}>
+            {row.lastBuild?.url && (
+              <Tooltip title="View build">
+                <IconButton href={row.lastBuild.url} target="_blank">
+                  <VisibilityIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {isLoadingRebuild && <Progress />}
+            {!isLoadingRebuild && (
+              <Tooltip title="Rerun build">
+                <IconButton onClick={onRebuild} disabled={loading || !allowed}>
+                  <RetryIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
+        );
+      };
+      return <ActionWrapper />;
     },
     width: '10%',
   },
