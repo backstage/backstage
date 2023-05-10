@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -46,6 +45,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",

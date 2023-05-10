@@ -26,7 +26,7 @@ import {
   parseOrderByParam,
 } from '../lib/utils';
 import spec from '../schema/openapi.generated';
-import { ApiRouter } from '@backstage/backend-openapi-utils';
+import type { ApiRouter } from '@backstage/backend-openapi-utils';
 
 /** @public */
 export interface RouterOptions {
