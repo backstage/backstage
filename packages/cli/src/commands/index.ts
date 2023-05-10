@@ -347,7 +347,7 @@ export function registerCommands(program: Command) {
     .option('--deprecated', 'Output deprecated configuration settings')
     .option(
       '--strict',
-      'Enable strict config validation, forbidding errors and unknown errors',
+      'Enable strict config validation, forbidding errors and unknown keys',
     )
     .option(...configOption)
     .description(
