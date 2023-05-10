@@ -19,9 +19,10 @@ import jenkins from 'jenkins';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { NotAllowedError } from '@backstage/errors';
+import fetch, { Response } from 'node-fetch';
 
 jest.mock('jenkins');
+jest.mock('node-fetch');
 const mockedJenkinsClient = {
   job: {
     get: jest.fn(),
@@ -34,7 +35,6 @@ const mockedJenkinsClient = {
 const mockedJenkins = jenkins as jest.Mocked<any>;
 mockedJenkins.mockReturnValue(mockedJenkinsClient);
 
-const resourceRef = 'component:default/example-component';
 const jobFullName = 'example-jobName/foo';
 const buildNumber = 19;
 const jenkinsInfo: JenkinsInfo = {
@@ -54,6 +54,7 @@ const fakePermissionApi = {
 
 describe('JenkinsApi', () => {
   const jenkinsApi = new JenkinsApiImpl(fakePermissionApi);
+  const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 
   describe('getProjects', () => {
     const project: JenkinsProject = {
@@ -684,55 +685,44 @@ describe('JenkinsApi', () => {
       buildNumber,
     );
   });
-  it('buildProject', async () => {
-    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
+  it('getBuildUrl', async () => {
+    const jenkinsApiProto = Object.getPrototypeOf(jenkinsApi);
+    const buildUrl = jenkinsApiProto.getBuildUrl(
+      jenkinsInfo,
+      jobFullName,
+      buildNumber,
+    );
+    expect(buildUrl).toEqual(
+      'https://jenkins.example.com/job/example-jobName/job/foo/19',
+    );
 
-    expect(mockedJenkins).toHaveBeenCalledWith({
-      baseUrl: jenkinsInfo.baseUrl,
-      headers: jenkinsInfo.headers,
-      promisify: true,
-    });
-    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
+    const buildUrlTriple = jenkinsApiProto.getBuildUrl(
+      jenkinsInfo,
+      'example-jobName/foo/bar',
+      buildNumber,
+    );
+    expect(buildUrlTriple).toEqual(
+      'https://jenkins.example.com/job/example-jobName/job/foo/job/bar/19',
+    );
   });
-
-  it('buildProject should fail if it does not have required permissions', async () => {
-    fakePermissionApi.authorize.mockResolvedValueOnce([
-      {
-        result: AuthorizeResult.DENY,
-      },
-    ]);
-
-    await expect(() =>
-      jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef),
-    ).rejects.toThrow(NotAllowedError);
-  });
-
-  it('buildProject should succeed if it have required permissions', async () => {
-    fakePermissionApi.authorize.mockResolvedValueOnce([
-      {
-        result: AuthorizeResult.ALLOW,
-      },
-    ]);
-
-    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
-    expect(mockedJenkins).toHaveBeenCalledWith({
-      baseUrl: jenkinsInfo.baseUrl,
-      headers: jenkinsInfo.headers,
-      promisify: true,
+  describe('rebuildProject', () => {
+    it('successfully rebuilds', async () => {
+      mockFetch.mockResolvedValue({ status: 200 } as Response);
+      const status = await jenkinsApi.rebuildProject(
+        jenkinsInfo,
+        jobFullName,
+        buildNumber,
+      );
+      expect(status).toEqual(200);
     });
-    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
-  });
-
-  it('buildProject with crumbIssuer option', async () => {
-    const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
-    await jenkinsApi.buildProject(info, jobFullName, resourceRef);
-
-    expect(mockedJenkins).toHaveBeenCalledWith({
-      baseUrl: jenkinsInfo.baseUrl,
-      headers: jenkinsInfo.headers,
-      promisify: true,
-      crumbIssuer: true,
+    it('fails to rebuild', async () => {
+      mockFetch.mockResolvedValue({ status: 401 } as Response);
+      const status = await jenkinsApi.rebuildProject(
+        jenkinsInfo,
+        jobFullName,
+        buildNumber,
+      );
+      expect(status).toEqual(401);
     });
-    expect(mockedJenkinsClient.job.build).toHaveBeenCalledWith(jobFullName);
   });
 });
