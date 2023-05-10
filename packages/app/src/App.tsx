@@ -123,14 +123,16 @@ const app = createApp({
       .use(I18NextHttpBackend)
       .use(I18nextBrowserLanguageDetector)
       .init({
-        fallbackLng: 'en',
+        fallbackLng: {
+          'zh-CN': ['zh', 'en'],
+          default: ['en'],
+        },
         supportedLngs: ['en', 'zh-CN', 'zh'],
         interpolation: {
           escapeValue: false,
         },
         react: {
           bindI18n: 'loaded languageChanged',
-          bindI18nStore: 'added',
           useSuspense: false,
         },
         resources: {

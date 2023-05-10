@@ -77,19 +77,29 @@ export class AppTranslation implements AppTranslationApi {
       this.translationRefCache.set(translationRef, cache);
     }
 
-    const { language } = this.instance;
+    const { language, services, options } = this.instance;
 
     if (cache.has(language)) {
       return;
     }
 
+    cache.add(language);
+
     // when there is a backend used, we enforce a reload of resources once
     // for overriding the ones set by plugin
-    if (this.instance.services.backendConnector?.backend) {
-      this.instance.reloadResources([language], translationRef.id);
+    if (services.backendConnector?.backend) {
+      // current language could also rely on fallbackLng to be functional
+      // correctly, we need to load all fallbackCodes as well
+      const fallbackCodes: string[] = services.languageUtils.getFallbackCodes(
+        options.fallbackLng,
+        language,
+      );
+      for (const lng of fallbackCodes) {
+        cache.add(lng);
+      }
+      const loadLngs = new Set([language, ...fallbackCodes]);
+      this.instance.reloadResources([...loadLngs], translationRef.id);
     }
-
-    cache.add(language);
 
     if (translationRef.resources) {
       this.addResources(translationRef.id, translationRef.resources);
