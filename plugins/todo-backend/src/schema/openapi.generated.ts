@@ -42,7 +42,40 @@ export default {
     parameters: {},
     requestBodies: {},
     responses: {},
-    schemas: {},
+    schemas: {
+      TodoItem: {
+        type: 'object',
+        properties: {
+          text: {
+            type: 'string',
+            description: 'The contents of the TODO comment',
+          },
+          tag: {
+            type: 'string',
+            description: 'The tag used, e.g. TODO, FIXME',
+          },
+          author: {
+            type: 'string',
+            description: 'References author, if any',
+          },
+          viewUrl: {
+            type: 'string',
+            description: 'URL used to view the file',
+          },
+          lineNumber: {
+            type: 'integer',
+            description: 'The line number of the file that the TODO occurs at',
+          },
+          repoFilePath: {
+            type: 'string',
+            description:
+              'The path of the file containing the TODO within the repo',
+          },
+        },
+        required: ['text', 'tag'],
+        additionalProperties: false,
+      },
+    },
     securitySchemes: {
       JWT: {
         type: 'http',
@@ -66,37 +99,7 @@ export default {
                     items: {
                       type: 'array',
                       items: {
-                        type: 'object',
-                        properties: {
-                          text: {
-                            type: 'string',
-                            description: 'The contents of the TODO comment',
-                          },
-                          tag: {
-                            type: 'string',
-                            description: 'The tag used, e.g. TODO, FIXME',
-                          },
-                          author: {
-                            type: 'string',
-                            description: 'References author, if any',
-                          },
-                          viewUrl: {
-                            type: 'string',
-                            description: 'URL used to view the file',
-                          },
-                          lineNumber: {
-                            type: 'integer',
-                            description:
-                              'The line number of the file that the TODO occurs at',
-                          },
-                          repoFilePath: {
-                            type: 'string',
-                            description:
-                              'The path of the file containing the TODO within the repo',
-                          },
-                        },
-                        required: ['text', 'tag'],
-                        additionalProperties: false,
+                        $ref: '#/components/schemas/TodoItem',
                       },
                     },
                     totalCount: {
