@@ -11,7 +11,7 @@ npm.
 ### Creating a new release
 
 Releases are handled by changesets and trigger whenever the "Version Packages"
-PR is merged. This is typically done every Thursday around noon CET.
+PR is merged. This is typically done every Tuesday around noon CET.
 
 ## Emergency Release Process
 
