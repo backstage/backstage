@@ -23699,6 +23699,7 @@ __metadata:
     eslint-plugin-cypress: ^2.10.3
     history: ^5.0.0
     i18next-browser-languagedetector: ^7.0.1
+    i18next-http-backend: ^2.2.0
     prop-types: ^15.7.2
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -26202,6 +26203,15 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.19.4
   checksum: 03129614be8761988df59b630359ded4f7c989eec4553781b5968139fd898de1eb09128c4c69c1365b547649ad829ff9abe1f60161658f8789668bcc623adcf0
+  languageName: node
+  linkType: hard
+
+"i18next-http-backend@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "i18next-http-backend@npm:2.2.0"
+  dependencies:
+    cross-fetch: 3.1.5
+  checksum: 21d22d947a23a1b95f9bb7d4e1071639e4cfd5f6c2bd21eded7fe2df848108a87cdab31586764d9ef9c1ee0fba38a887bfe9c0daadc049f22760d8de0bfb4a4f
   languageName: node
   linkType: hard
 

@@ -16,22 +16,28 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api';
 
-export const settingTranslationRef = createTranslationRef({
-  id: 'setting',
+export const settingsTranslationRef = createTranslationRef({
+  id: 'settings',
   resources: {
     en: {
-      zh: '中文',
-      en: 'English',
+      lng: 'English',
       select: 'Select',
       language: 'Language',
+      select_lng: 'Select English',
       change_the_language: 'Change the language',
     },
     zh: {
-      zh: '中文',
-      en: 'English',
+      lng: '中文',
       select: '选择',
       language: '语言',
+      select_lng: '选择中文',
       change_the_language: '选择语言',
+      theme_light: '浅色主题',
+      theme_dark: '深色主题',
+      theme_auto: '自动主题',
+      select_theme_light: '选择浅色主题',
+      select_theme_dark: '选择深色主题',
+      select_theme_auto: '选择自动主题',
     },
   },
 });

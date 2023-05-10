@@ -22,5 +22,5 @@ export type Resources = {
 
 export interface TranslationRef {
   id: string;
-  resources: Resources;
+  resources?: Resources;
 }

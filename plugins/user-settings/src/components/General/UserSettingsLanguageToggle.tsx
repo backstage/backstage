@@ -15,23 +15,16 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Tooltip,
   makeStyles,
 } from '@material-ui/core';
 import { usePluginTranslation } from '@backstage/core-plugin-api';
-import { settingTranslationRef } from '../../translation';
-
-type TooltipToggleButtonProps = {
-  children: JSX.Element;
-  title: string;
-  value: string;
-};
+import { TooltipToggleButton } from './TooltipToggleButton';
+import { settingsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -66,26 +59,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-// ToggleButtonGroup uses React.children.map instead of context
-// so wrapping with Tooltip breaks ToggleButton functionality.
-const TooltipToggleButton = ({
-  children,
-  title,
-  value,
-  ...props
-}: TooltipToggleButtonProps) => (
-  <Tooltip placement="top" arrow title={title}>
-    <ToggleButton value={value} {...props}>
-      {children}
-    </ToggleButton>
-  </Tooltip>
-);
-
 /** @public */
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
 
-  const { t, i18n } = usePluginTranslation(settingTranslationRef);
+  const { t, i18n } = usePluginTranslation(settingsTranslationRef);
 
   const supportedLngs = useMemo(
     () => (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode'),
@@ -127,14 +105,14 @@ export const UserSettingsLanguageToggle = () => {
           value={i18n.language}
           onChange={handleSetLanguage}
         >
-          {supportedLngs.map(language => {
+          {supportedLngs.map(lng => {
             return (
               <TooltipToggleButton
-                key={language}
-                title={`${t('select', 'Select')} ${language}`}
-                value={language}
+                key={lng}
+                title={t('select_lng', { lng })}
+                value={lng}
               >
-                <>{t(language)}</>
+                {t('lng', { lng })}
               </TooltipToggleButton>
             );
           })}

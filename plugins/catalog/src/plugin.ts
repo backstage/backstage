@@ -49,7 +49,6 @@ import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
 import { rootRouteRef } from './routes';
 import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
-import { catalogTranslationRef } from './translation';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -87,7 +86,6 @@ export const catalogPlugin = createPlugin({
     };
     return { ...defaultOptions, ...options };
   },
-  translationRef: catalogTranslationRef,
 });
 
 /** @public */

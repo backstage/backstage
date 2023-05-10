@@ -29,15 +29,32 @@ import { initReactI18next } from 'react-i18next';
  * @public
  */
 export class AppTranslation implements AppTranslationApi {
-  static create(initI18next?: (i18next: i18n) => void) {
+  static create(
+    initI18next: (i18next: i18n) => void = this.defaultInitI18next,
+  ) {
     const i18n = i18next.createInstance();
 
-    initI18next?.(i18n.use(initReactI18next));
+    initI18next(i18n.use(initReactI18next));
 
     return new AppTranslation(i18n);
   }
 
-  private readonly translationRefCache = new WeakSet<TranslationRef>();
+  private static defaultInitI18next(i18n: i18n) {
+    i18n.init({
+      supportedLngs: [],
+      interpolation: {
+        escapeValue: false,
+      },
+      react: {
+        useSuspense: false,
+      },
+    });
+  }
+
+  private readonly translationRefCache = new WeakMap<
+    TranslationRef,
+    Set<string>
+  >();
 
   private constructor(private instance: i18n) {}
 
@@ -53,10 +70,29 @@ export class AppTranslation implements AppTranslationApi {
   }
 
   addPluginResources(translationRef: TranslationRef) {
-    if (this.translationRefCache.has(translationRef)) {
+    let cache = this.translationRefCache.get(translationRef);
+
+    if (!cache) {
+      cache = new Set<string>();
+      this.translationRefCache.set(translationRef, cache);
+    }
+
+    const { language } = this.instance;
+
+    if (cache.has(language)) {
       return;
     }
-    this.translationRefCache.add(translationRef);
-    this.addResources(translationRef.id, translationRef.resources);
+
+    // when there is a backend used, we enforce a reload of resources once
+    // for overriding the ones set by plugin
+    if (this.instance.services.backendConnector?.backend) {
+      this.instance.reloadResources([language], translationRef.id);
+    }
+
+    cache.add(language);
+
+    if (translationRef.resources) {
+      this.addResources(translationRef.id, translationRef.resources);
+    }
   }
 }

@@ -26,7 +26,13 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core';
-import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  appThemeApiRef,
+  useApi,
+  usePluginTranslation,
+} from '@backstage/core-plugin-api';
+import { TooltipToggleButton } from './TooltipToggleButton';
+import { settingsTranslationRef } from '../../translation';
 
 type ThemeIconProps = {
   id: string;
@@ -42,12 +48,6 @@ const ThemeIcon = ({ id, activeId, icon }: ThemeIconProps) =>
   ) : (
     <AutoIcon color={activeId === id ? 'primary' : undefined} />
   );
-
-type TooltipToggleButtonProps = {
-  children: JSX.Element;
-  title: string;
-  value: string;
-};
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -82,21 +82,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-// ToggleButtonGroup uses React.children.map instead of context
-// so wrapping with Tooltip breaks ToggleButton functionality.
-const TooltipToggleButton = ({
-  children,
-  title,
-  value,
-  ...props
-}: TooltipToggleButtonProps) => (
-  <Tooltip placement="top" arrow title={title}>
-    <ToggleButton value={value} {...props}>
-      {children}
-    </ToggleButton>
-  </Tooltip>
-);
-
 /** @public */
 export const UserSettingsThemeToggle = () => {
   const classes = useStyles();
@@ -106,13 +91,15 @@ export const UserSettingsThemeToggle = () => {
     appThemeApi.getActiveThemeId(),
   );
 
+  const { t } = usePluginTranslation(settingsTranslationRef);
+
   const themeIds = appThemeApi.getInstalledThemes();
 
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
     newThemeId: string | undefined,
   ) => {
-    if (themeIds.some(t => t.id === newThemeId)) {
+    if (themeIds.some(it => it.id === newThemeId)) {
       appThemeApi.setActiveThemeId(newThemeId);
     } else {
       appThemeApi.setActiveThemeId(undefined);
@@ -137,27 +124,25 @@ export const UserSettingsThemeToggle = () => {
           onChange={handleSetTheme}
         >
           {themeIds.map(theme => {
-            const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+            const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
             return (
               <TooltipToggleButton
                 key={theme.id}
-                title={`Select ${theme.title}`}
+                title={t(`select_theme_${theme.id}`, `Select ${theme.title}`)}
                 value={theme.id}
               >
-                <>
-                  {theme.title}&nbsp;
-                  <ThemeIcon
-                    id={theme.id}
-                    icon={themeIcon}
-                    activeId={themeId}
-                  />
-                </>
+                {t(`theme_${theme.id}`, theme.title)}&nbsp;
+                <ThemeIcon id={theme.id} icon={themeIcon} activeId={themeId} />
               </TooltipToggleButton>
             );
           })}
-          <Tooltip placement="top" arrow title="Select auto theme">
+          <Tooltip
+            placement="top"
+            arrow
+            title={t('select_theme_auto', 'Select Auto Theme')!}
+          >
             <ToggleButton value="auto" selected={themeId === undefined}>
-              Auto&nbsp;
+              {t('theme_auto', 'Auto')}&nbsp;
               <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </ToggleButton>
           </Tooltip>
