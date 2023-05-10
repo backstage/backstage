@@ -48,7 +48,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger?: Logger;
+      logger: Logger;
     },
   ): Promise<AwsOrganizationCloudAccountProcessor>;
   // (undocumented)
