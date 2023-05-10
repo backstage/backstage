@@ -78,7 +78,8 @@
             "type": "object",
             "additionalProperties": {
               "type": "object",
-              "visibility": "frontend"
+              "visibility": "frontend",
+              "additionalProperties": true
             }
           }
         }
