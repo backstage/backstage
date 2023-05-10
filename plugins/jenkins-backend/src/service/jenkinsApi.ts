@@ -23,6 +23,12 @@ import type {
   JenkinsProject,
   ScmDetails,
 } from '../types';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
+import { ResponseError } from '@backstage/errors';
 import fetch, { HeaderInit } from 'node-fetch';
 
 export class JenkinsApiImpl {
@@ -58,6 +64,8 @@ export class JenkinsApiImpl {
   private static readonly jobsTreeSpec = `jobs[
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
+
+  constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.
@@ -141,14 +149,29 @@ export class JenkinsApiImpl {
     jenkinsInfo: JenkinsInfo,
     jobFullName: string,
     buildNumber: number,
+    resourceRef: string,
+    options?: { token?: string },
   ): Promise<number> {
+    if (this.permissionApi) {
+      const response = await this.permissionApi.authorize(
+        [{ permission: jenkinsExecutePermission, resourceRef }],
+        { token: options?.token },
+      );
+      // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
+      const { result } = response[0];
+      if (result === AuthorizeResult.DENY) {
+        return 401;
+      }
+    }
+
     const buildUrl = this.getBuildUrl(jenkinsInfo, jobFullName, buildNumber);
+    const headers = await this.getHeaders(jenkinsInfo);
 
     // the current SDK only supports triggering a new build
     // replay the job by triggering request directly from Jenkins api
     const response = await fetch(`${buildUrl}/replay/rebuild`, {
       method: 'post',
-      headers: jenkinsInfo.headers as HeaderInit,
+      headers: headers,
     });
     return response.status;
   }
@@ -307,5 +330,37 @@ export class JenkinsApiImpl {
   ): string {
     const jobs = jobFullName.split('/');
     return `${jenkinsInfo.baseUrl}/job/${jobs.join('/job/')}/${buildId}`;
+  }
+
+  private async getHeaders(jenkinsInfo: JenkinsInfo): Promise<HeaderInit> {
+    let headers = jenkinsInfo.headers as HeaderInit;
+    if (!jenkinsInfo.crumbIssuer) {
+      return headers;
+    }
+    const response = await fetch(
+      `${jenkinsInfo.baseUrl}/crumbIssuer/api/json`,
+      {
+        method: 'get',
+        headers: headers,
+      },
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    type CrumbResponse = {
+      crumb: string;
+      crumbRequestField: string;
+    };
+
+    const crumbJson: CrumbResponse = await response.json();
+    if ('crumb' in crumbJson && 'crumbRequestField' in crumbJson) {
+      const headerObject = {
+        ...jenkinsInfo.headers,
+        [crumbJson.crumbRequestField]: crumbJson.crumb,
+      };
+      headers = headerObject as HeaderInit;
+    }
+
+    return headers;
   }
 }
