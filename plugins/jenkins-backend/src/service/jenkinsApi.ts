@@ -23,12 +23,6 @@ import type {
   JenkinsProject,
   ScmDetails,
 } from '../types';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-import { NotAllowedError } from '@backstage/errors';
 import fetch, { HeaderInit } from 'node-fetch';
 
 export class JenkinsApiImpl {
@@ -64,8 +58,6 @@ export class JenkinsApiImpl {
   private static readonly jobsTreeSpec = `jobs[
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
-
-  constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.

@@ -8,8 +8,6 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -85,7 +83,5 @@ export interface RouterOptions {
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
   logger: Logger;
-  // (undocumented)
-  permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 ```
