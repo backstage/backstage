@@ -20,7 +20,13 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { stringifyError } from '@backstage/errors';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { jenkinsPermissions } from '@backstage/plugin-jenkins-common';
@@ -29,15 +35,28 @@ import { jenkinsPermissions } from '@backstage/plugin-jenkins-common';
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
+  permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { jenkinsInfoProvider } = options;
+  const { jenkinsInfoProvider, permissions, logger } = options;
 
-  const jenkinsApi = new JenkinsApiImpl();
+  let permissionEvaluator: PermissionEvaluator | undefined;
+  if (permissions && 'authorizeConditional' in permissions) {
+    permissionEvaluator = permissions as PermissionEvaluator;
+  } else {
+    logger.warn(
+      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
+    );
+    permissionEvaluator = permissions
+      ? toPermissionEvaluator(permissions)
+      : undefined;
+  }
+
+  const jenkinsApi = new JenkinsApiImpl(permissionEvaluator);
 
   const router = Router();
   router.use(express.json());
