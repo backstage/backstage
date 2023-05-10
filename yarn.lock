@@ -7067,6 +7067,7 @@ __metadata:
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
     msw: ^1.0.0
+    node-fetch: ^2.6.7
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
