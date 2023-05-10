@@ -77,6 +77,20 @@ Scope: The TechDocs plugin and related tooling
 | Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
 | Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
 
+## Incubating Project Areas
+
+These incubating project areas have shared ownership with @backstage/maintainers.
+
+### OpenAPI Tooling
+
+Team: @backstage/openapi-tooling-maintainers
+
+Scope: Tooling for frontend and backend schema-first OpenAPI development.
+
+| Name           | Organization | GitHub                                  | Discord       |
+| -------------- | ------------ | --------------------------------------- | ------------- |
+| Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+
 ## Sponsors
 
 | Name              | Organization | GitHub                                      | Email             |
