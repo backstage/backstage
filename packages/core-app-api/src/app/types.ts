@@ -28,6 +28,7 @@ import {
   i18n,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
+import { InitOptions, Module, Newable, NewableModule } from 'i18next';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -162,6 +163,11 @@ type TargetRouteMap<
     : never;
 };
 
+export type AppTranslationOptions<T extends Module = Module> = {
+  modules?: Array<T | NewableModule<T> | Newable<T>>;
+  initOptions?: InitOptions;
+};
+
 /**
  * A function that can bind from external routes of a given plugin, to concrete
  * routes of other plugins. See {@link createSpecializedApp}.
@@ -289,9 +295,9 @@ export type AppOptions = {
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
   /**
-   * Init i18next instance
+   * Init i18next translation instance
    */
-  initI18next?(i18n: i18n): void;
+  translation?: AppTranslationOptions;
 };
 
 /**

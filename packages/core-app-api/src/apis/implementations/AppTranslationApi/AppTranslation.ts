@@ -21,6 +21,7 @@ import {
 } from '@backstage/core-plugin-api';
 import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { AppTranslationOptions } from '../../../app';
 
 /**
  * Exposes the locals installed in the app, and permits switching the currently
@@ -29,26 +30,27 @@ import { initReactI18next } from 'react-i18next';
  * @public
  */
 export class AppTranslation implements AppTranslationApi {
-  static create(
-    initI18next: (i18next: i18n) => void = this.defaultInitI18next,
-  ) {
+  static create(options?: AppTranslationOptions) {
     const i18n = i18next.createInstance();
 
-    initI18next(i18n.use(initReactI18next));
+    options?.modules?.reduce(
+      (acc, module) => acc.use(module),
+      i18n.use(initReactI18next),
+    );
 
-    return new AppTranslation(i18n);
-  }
-
-  private static defaultInitI18next(i18n: i18n) {
     i18n.init({
       supportedLngs: [],
       interpolation: {
         escapeValue: false,
       },
       react: {
+        bindI18n: 'loaded languageChanged',
         useSuspense: false,
       },
+      ...options?.initOptions,
     });
+
+    return new AppTranslation(i18n);
   }
 
   private readonly translationRefCache = new WeakMap<
@@ -56,7 +58,7 @@ export class AppTranslation implements AppTranslationApi {
     Set<string>
   >();
 
-  private constructor(private instance: i18n) {}
+  private constructor(private readonly instance: i18n) {}
 
   getI18next() {
     return this.instance;
@@ -87,7 +89,10 @@ export class AppTranslation implements AppTranslationApi {
 
     // when there is a backend used, we enforce a reload of resources once
     // for overriding the ones set by plugin
-    if (services.backendConnector?.backend) {
+    if (
+      services.backendConnector?.backend &&
+      !options.partialBundledLanguages
+    ) {
       // current language could also rely on fallbackLng to be functional
       // correctly, we need to load all fallbackCodes as well
       const fallbackCodes: string[] = services.languageUtils.getFallbackCodes(
@@ -97,8 +102,10 @@ export class AppTranslation implements AppTranslationApi {
       for (const lng of fallbackCodes) {
         cache.add(lng);
       }
-      const loadLngs = new Set([language, ...fallbackCodes]);
-      this.instance.reloadResources([...loadLngs], translationRef.id);
+      this.instance.reloadResources(
+        [language, ...fallbackCodes],
+        translationRef.id,
+      );
     }
 
     if (translationRef.resources) {

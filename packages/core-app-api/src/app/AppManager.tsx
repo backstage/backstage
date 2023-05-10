@@ -228,7 +228,7 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.translationApi = AppTranslation.create(options.initI18next);
+    this.translationApi = AppTranslation.create(options.translation);
   }
 
   getPlugins(): BackstagePlugin[] {
