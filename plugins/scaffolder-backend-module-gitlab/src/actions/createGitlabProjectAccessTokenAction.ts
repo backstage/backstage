@@ -33,7 +33,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
   return createTemplateAction({
     id: 'gitlab:projectAccessToken:create',
     schema: {
-      input: commonGitlabConfig.and(
+      input: commonGitlabConfig.merge(
         z.object({
           projectId: z.union([z.number(), z.string()], {
             description: 'Project ID',
