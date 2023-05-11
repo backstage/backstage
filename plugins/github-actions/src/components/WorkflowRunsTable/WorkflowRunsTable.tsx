@@ -30,7 +30,6 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../routes';
 import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { Entity } from '@backstage/catalog-model';
-import { readGithubIntegrationConfigs } from '@backstage/integration';
 
 import {
   EmptyState,
@@ -38,7 +37,8 @@ import {
   TableColumn,
   Link,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -164,12 +164,8 @@ export const WorkflowRunsTable = ({
   entity: Entity;
   branch?: string;
 }) => {
-  const config = useApi(configApiRef);
   const projectName = getProjectNameFromEntity(entity);
-  // TODO: Get github hostname from metadata annotation
-  const hostname = readGithubIntegrationConfigs(
-    config.getOptionalConfigArray('integrations.github') ?? [],
-  )[0].host;
+  const hostname = getHostnameFromEntity(entity);
   const [owner, repo] = (projectName ?? '/').split('/');
   const [{ runs, ...tableProps }, { retry, setPage, setPageSize }] =
     useWorkflowRuns({
