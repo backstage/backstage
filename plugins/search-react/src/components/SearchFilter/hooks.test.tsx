@@ -16,7 +16,7 @@
 import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';

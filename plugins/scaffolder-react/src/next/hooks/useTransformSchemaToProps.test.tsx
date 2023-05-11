@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { type ParsedTemplateSchema } from './useTemplateSchema';
 import { useTransformSchemaToProps } from './useTransformSchemaToProps';

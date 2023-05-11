@@ -15,7 +15,7 @@
  */
 
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useEntityPermission } from './useEntityPermission';
 import { useAsyncEntity } from './useEntity';
 import { usePermission } from '@backstage/plugin-permission-react';

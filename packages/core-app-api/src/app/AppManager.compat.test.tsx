@@ -15,7 +15,7 @@
  */
 
 import tlr, { render } from '@testing-library/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {
@@ -76,7 +76,9 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
             />
           ),
           ErrorBoundaryFallback: () => null,
-          ThemeProvider: ({ children }) => <>{children}</>,
+          ThemeProvider: ({ children }: PropsWithChildren<{}>) => (
+            <>{children}</>
+          ),
         },
         configLoader: async () => [
           {

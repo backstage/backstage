@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
@@ -40,7 +40,7 @@ describe('v1 consumer', () => {
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <AppContextProvider appContext={mockContext} children={children} />
       ),
     });

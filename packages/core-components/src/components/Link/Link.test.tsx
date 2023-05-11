@@ -24,7 +24,7 @@ import {
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router-dom';
-import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
+import { renderHook, WrapperComponent } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {

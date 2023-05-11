@@ -16,7 +16,7 @@
 
 import { NotFoundError } from '@backstage/errors';
 import { TestApiProvider } from '@backstage/test-utils';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import React from 'react';
 import { techdocsStorageApiRef } from '../../api';
 import {

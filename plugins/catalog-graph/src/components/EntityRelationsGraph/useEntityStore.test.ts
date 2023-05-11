@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useApi as useApiMocked } from '@backstage/core-plugin-api';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { useEntityStore } from './useEntityStore';
 
 jest.mock('@backstage/core-plugin-api');
