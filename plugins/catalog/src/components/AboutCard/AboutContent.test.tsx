@@ -485,8 +485,8 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Targets').nextSibling).toHaveTextContent(
         'https://backstage.io',
       );
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
