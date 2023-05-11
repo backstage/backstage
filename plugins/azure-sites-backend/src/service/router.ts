@@ -54,7 +54,6 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.get('/list/:name', async (request, response) => {
-    logger.debug('fetching azure sites');
     const { name } = request.params;
     response.json(
       await azureSitesApi.list({
@@ -90,7 +89,7 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      logger.info(`starting...${name}`);
+      logger.info(`entity ${entity.metadata.name} - azure site "${name}" is starting...`);
       response.json(
         await azureSitesApi.start({
           subscription,
@@ -128,7 +127,7 @@ export async function createRouter(
         throw new NotAllowedError('Unauthorized');
       }
 
-      logger.info(`stopping...${name}`);
+      logger.info(`entity ${entity.metadata.name} - azure site "${name}" is stopping...`);
       response.json(
         await azureSitesApi.stop({
           subscription,

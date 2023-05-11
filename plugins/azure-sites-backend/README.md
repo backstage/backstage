@@ -81,28 +81,28 @@ Here's how to get the backend plugin up and running:
    }
    ```
 
-4. Setup plugin permissions, if you need to control you action(start/stop), edit you `packages/backend/src/plugins/permission.ts`
+4. Enable permissions and that the below is just an example policy that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity, edit your `packages/backend/src/plugins/permission.ts`
 
    ```diff
-   // packages/backend/src/plugins/permission.ts
-   + import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
-   ...
-   class TestPermissionPolicy implements PermissionPolicy {
-   - async handle(): Promise<PolicyDecision> {
-   + async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
-      if (isPermission(request.permission, azureSitesActionPermission)) {
-        return createCatalogConditionalDecision(
-          request.permission,
-          catalogConditions.isEntityOwner({
-            claims: user?.identity.ownershipEntityRefs ??  [],
-          }),
-        );
-      }
+      // packages/backend/src/plugins/permission.ts
+   +  import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
       ...
-      return {
-        result: AuthorizeResult.ALLOW,
-      };
-   }
+      class TestPermissionPolicy implements PermissionPolicy {
+   -  async handle(): Promise<PolicyDecision> {
+   +  async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+        if (isPermission(request.permission, azureSitesActionPermission)) {
+          return createCatalogConditionalDecision(
+            request.permission,
+            catalogConditions.isEntityOwner({
+              claims: user?.identity.ownershipEntityRefs ??  [],
+            }),
+          );
+        }
+        ...
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
    ```
 
 5. Now run `yarn start-backend` from the repo root.

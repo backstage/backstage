@@ -4,5 +4,4 @@
 '@backstage/plugin-azure-sites': minor
 ---
 
-Implemented Permission framework to protect start and stop `Azure sites`
-Fixed issue #16035
+Implemented Permission framework to protect start and stop `Azure sites`.
