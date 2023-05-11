@@ -30,7 +30,7 @@ const mockProjects = [
 describe('<ProjectSelect />', () => {
   let Component: React.ReactNode;
   beforeEach(() => {
-    Component = () => (
+    Component = (
       <MockFilterProvider>
         <ProjectSelect
           project="all"

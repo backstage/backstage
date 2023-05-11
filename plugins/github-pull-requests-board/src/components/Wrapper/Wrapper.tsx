@@ -20,7 +20,9 @@ type Props = {
   fullscreen: boolean;
 };
 
-const Wrapper: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
+const Wrapper: FunctionComponent<PropsWithChildren<Props>> = (
+  props: PropsWithChildren<Props>,
+) => {
   const { children, fullscreen } = props;
 
   return (

@@ -33,14 +33,15 @@ const items = [
   },
 ];
 
-const tooltipItems = () =>
-  items.map(item => <BarChartTooltipItem key={item.label} item={item} />);
-
 describe('<BarChartTooltip/>', () => {
   it('formats label and tooltip item text correctly', async () => {
     const rendered = await renderInTestApp(
       <CostInsightsThemeProvider>
-        <BarChartTooltip title="05/16/2020">{tooltipItems}</BarChartTooltip>
+        <BarChartTooltip title="05/16/2020">
+          {items.map(item => (
+            <BarChartTooltipItem key={item.label} item={item} />
+          ))}
+        </BarChartTooltip>
       </CostInsightsThemeProvider>,
     );
     expect(rendered.getByText('05/16/2020')).toBeInTheDocument();

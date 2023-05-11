@@ -24,7 +24,7 @@ describe('SecretsContext', () => {
         hook: useTemplateSecrets(),
       }),
       {
-        wrapper: ({ children }) => (
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
           <SecretsContextProvider>{children}</SecretsContextProvider>
         ),
       },
