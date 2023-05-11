@@ -28,6 +28,7 @@ import {
   fetchConfluence,
   getAndWriteAttachments,
   createConfluenceVariables,
+  getConfluenceConfig,
 } from './helpers';
 
 /**
@@ -57,7 +58,7 @@ export const createConfluenceToMarkdownAction = (options: {
             type: 'array',
             title: 'Confluence URL',
             description:
-              'Paste your confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or  https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
+              'Paste your confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
             items: {
               type: 'string',
               default: 'Confluence URL',
@@ -73,6 +74,7 @@ export const createConfluenceToMarkdownAction = (options: {
       },
     },
     async handler(ctx) {
+      const confluenceConfig = getConfluenceConfig(config);
       const { confluenceUrls, repoUrl } = ctx.input;
       const parsedRepoUrl = parseGitUrl(repoUrl);
       const filePathToMkdocs = parsedRepoUrl.filepath.substring(
@@ -96,12 +98,12 @@ export const createConfluenceToMarkdownAction = (options: {
 
       for (const url of confluenceUrls) {
         const { spacekey, title, titleWithSpaces } =
-          await createConfluenceVariables(url);
+          createConfluenceVariables(url);
         // This calls confluence to get the page html and page id
         ctx.logger.info(`Fetching the Confluence content for ${url}`);
         const getConfluenceDoc = await fetchConfluence(
           `/rest/api/content?title=${title}&spaceKey=${spacekey}&expand=body.export_view`,
-          config,
+          confluenceConfig,
         );
         if (getConfluenceDoc.results.length === 0) {
           throw new InputError(
@@ -111,7 +113,7 @@ export const createConfluenceToMarkdownAction = (options: {
         // This gets attachments for the confluence page if they exist
         const getDocAttachments = await fetchConfluence(
           `/rest/api/content/${getConfluenceDoc.results[0].id}/child/attachment`,
-          config,
+          confluenceConfig,
         );
 
         if (getDocAttachments.results.length) {
@@ -121,7 +123,7 @@ export const createConfluenceToMarkdownAction = (options: {
           productArray = await getAndWriteAttachments(
             getDocAttachments,
             dirPath,
-            config,
+            confluenceConfig,
             filePathToMkdocs,
           );
         }

@@ -60,38 +60,58 @@ export default async function createPlugin(
 
 ### Configuration
 
-You will also need an access token for authorization with `Read` permissions. You can create a Personal Access Token (PAT) in confluence and add the PAT to your `app-config.yaml`
+There is some configuration that needs to be setup to use this action, here are all the settings:
 
 ```yaml
 confluence:
-  baseUrl: ${CONFLUENCE_BASE_URL}
-  token: ${CONFLUENCE_TOKEN}
+  baseUrl: 'https://confluence.example.com'
+  auth: 'basic'
+  token: '${CONFLUENCE_TOKEN}'
+  email: 'example@company.org'
+  username: 'your-username'
+  password: 'your-password'
 ```
 
-#### Confluence Cloud
-
-For those using Confluence Cloud you will need to have the following configuration:
-
-```yaml
-confluence:
-  baseUrl: ${CONFLUENCE_BASE_URL}
-  token: ${CONFLUENCE_TOKEN}
-  isCloud: true
-```
-
-##### Base URL
+#### Base URL
 
 The `baseUrl` for Confluence Cloud should include the product name which is `wiki` by default but can be something else if your Org has changed it. An example `baseUrl` for Confluence Cloud would look like this: `https://example.atlassian.net/wiki`
 
-##### Token
+If you are using a self-hosted Confluence instance this does not apply to you. Your `baseUrl` would look something like this: `https://confluence.example.com`
 
-The `token` for Confluence Cloud needs to be base-64 encoded with your Atlassian account email address. Here's how to do that:
+#### Auth Methods
 
-1. First get your token from: `https://<company-name>.atlassian.com/manage-profile/security/api-tokens`
-2. Next we need to setup a string in this format: `<your-atlassian-account-mail>:<your-jira-token>`
-3. For this example we'll use this: `confluence@backstage.io:wDzAzoXWRGLtvbgHvT0W`
-4. Now we can run `echo -n "confluence@backstage.io:wDzAzoXWRGLtvbgHvT0W" | base64`
-5. This gives us: `Y29uZmx1ZW5jZUBiYWNrc3RhZ2UuaW86d0R6QXpvWFdSR0x0dmJnSHZUMFc=` which we can now use as the value for the `token` in the configuration
+The default authorization method is `basic` but `bearer` and `userpass` are also supported. Here's how you would configure each of these:
+
+For `basic`:
+
+```yaml
+confluence:
+  baseUrl: 'https://confluence.example.com'
+  auth: 'basic'
+  token: '${CONFLUENCE_TOKEN}'
+```
+
+For `bearer`:
+
+```yaml
+confluence:
+  baseUrl: 'https://confluence.example.com'
+  auth: 'bearer'
+  token: '${CONFLUENCE_TOKEN}'
+  email: 'example@company.org'
+```
+
+For `userpass`
+
+```yaml
+confluence:
+  baseUrl: 'https://confluence.example.com'
+  auth: 'userpass'
+  username: 'your-username'
+  password: 'your-password'
+```
+
+**Note:** For `basic` and `bearer` authorization methods you will need an access token for authorization with `Read` permissions. You can create a Personal Access Token (PAT) in Confluence. The value used should be the raw token as it will be encoded for you by the action.
 
 ### Template Usage
 
@@ -146,4 +166,4 @@ spec:
 
 Replace `<GITHUB_BASE_URL>` with your GitHub URL without `https://`.
 
-You can find a list of all registered actions including their parameters at the /create/actions route in your Backstage application.
+You can find a list of all registered actions including their parameters at the `/create/actions` route in your Backstage application.

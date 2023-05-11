@@ -22,13 +22,28 @@ export interface Config {
      */
     baseUrl: string;
     /**
-     * The authentication token for accessing the Confluence API
-     * * @visibility secret
+     * Authentication method - basic, bearer, username/password
      */
-    token: string;
+    auth: 'basic' | 'bearer' | 'userpass';
     /**
-     * Flag to determine if you are on Confluence Cloud, optional
+     * Token used for the basic and bearer auth methods
+     * @visibility secret
      */
-    isCloud?: string;
+    token?: string;
+    /**
+     * Email encoded with the token for the bearer auth method
+     * @visibility secret
+     */
+    email?: string;
+    /**
+     * Username used with the Username/Password auth method
+     * @visibility secret
+     */
+    username?: string;
+    /**
+     * Password used with the Username/Password auth method
+     * @visibility secret
+     */
+    password?: string;
   };
 }

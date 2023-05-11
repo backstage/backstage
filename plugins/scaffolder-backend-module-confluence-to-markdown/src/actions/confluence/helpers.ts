@@ -43,21 +43,93 @@ export interface Results {
   results: Result[];
 }
 
+export type ConfluenceConfig = {
+  baseUrl: string;
+  auth: string;
+  token?: string;
+  email?: string;
+  username?: string;
+  password?: string;
+};
+
+export const getConfluenceConfig = (config: Config) => {
+  const confluenceConfig: ConfluenceConfig = {
+    baseUrl: config.getString('confluence.baseUrl'),
+    auth: config.getOptionalString('confluence.auth') ?? 'basic',
+    token: config.getOptionalString('confluence.token'),
+    email: config.getOptionalString('confluence.email'),
+    username: config.getOptionalString('confluence.username'),
+    password: config.getOptionalString('confluence.password'),
+  };
+
+  if (
+    (confluenceConfig.auth === 'basic' || confluenceConfig.auth === 'bearer') &&
+    !confluenceConfig.token
+  ) {
+    throw new Error(
+      `No token provided for the configured '${confluenceConfig.auth}' auth method`,
+    );
+  }
+
+  if (confluenceConfig.auth === 'bearer' && !confluenceConfig.email) {
+    throw new Error(
+      `No email provided for the configured '${confluenceConfig.auth}' auth method`,
+    );
+  }
+
+  if (
+    confluenceConfig.auth === 'userpass' &&
+    (!confluenceConfig.username || !confluenceConfig.password)
+  ) {
+    throw new Error(
+      `No username/password provided for the configured '${confluenceConfig.auth}' auth method`,
+    );
+  }
+
+  return confluenceConfig;
+};
+
+export const getAuthorizationHeaderValue = (config: ConfluenceConfig) => {
+  let authHeaderValue: string = '';
+  switch (config.auth) {
+    case 'basic':
+      authHeaderValue = `Basic ${config.token}`;
+      break;
+    case 'bearer': {
+      const buffer = Buffer.from(`${config.email}:${config.token}`, 'utf8');
+      authHeaderValue = `Bearer ${buffer.toString('base64')}`;
+      break;
+    }
+    case 'userpass': {
+      const buffer = Buffer.from(
+        `${config.username}:${config.password}`,
+        'utf8',
+      );
+      authHeaderValue = `Basic ${buffer.toString('base64')}`;
+      break;
+    }
+    default:
+      throw new Error(`Unknown auth method '${config.auth}' provided`);
+  }
+  return authHeaderValue;
+};
+
 export const readFileAsString = async (fileDir: string) => {
   const content = await fs.readFile(fileDir, 'utf-8');
   return content.toString();
 };
 
-export const fetchConfluence = async (relativeUrl: string, config: Config) => {
-  const baseUrl = config.getString('confluence.baseUrl');
-  const token = config.getString('confluence.token');
-  const isCloud = config.getOptionalBoolean('confluence.isCloud') || false;
-  const authToken = isCloud ? `Basic ${token}` : `Bearer ${token}`;
+export const fetchConfluence = async (
+  relativeUrl: string,
+  config: ConfluenceConfig,
+) => {
+  const baseUrl = config.baseUrl;
+  const authHeaderValue = getAuthorizationHeaderValue(config);
   const url = `${baseUrl}${relativeUrl}`;
   const response: Response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: authToken,
+      Authorization: authHeaderValue,
     },
   });
   if (!response.ok) {
@@ -70,14 +142,12 @@ export const fetchConfluence = async (relativeUrl: string, config: Config) => {
 export const getAndWriteAttachments = async (
   arr: Results,
   workspace: string,
-  config: Config,
+  config: ConfluenceConfig,
   mkdocsDir: string,
 ) => {
   const productArr: string[][] = [];
-  const baseUrl = config.getString('confluence.baseUrl');
-  const token = config.getString('confluence.token');
-  const isCloud = config.getOptionalBoolean('confluence.isCloud') || false;
-  const authToken = isCloud ? `Basic ${token}` : `Bearer ${token}`;
+  const baseUrl = config.baseUrl;
+  const authHeaderValue = getAuthorizationHeaderValue(config);
   await Promise.all(
     await arr.results.map(async (result: Result) => {
       const downloadLink = result._links.download;
@@ -89,7 +159,7 @@ export const getAndWriteAttachments = async (
       const res = await fetch(url, {
         method: 'GET',
         headers: {
-          Authorization: authToken,
+          Authorization: authHeaderValue,
         },
       });
       if (!res.ok) {
@@ -116,7 +186,7 @@ export const getAndWriteAttachments = async (
   return productArr;
 };
 
-export const createConfluenceVariables = async (url: string) => {
+export const createConfluenceVariables = (url: string) => {
   let spacekey: string | undefined = undefined;
   let title: string | undefined = undefined;
   let titleWithSpaces: string | undefined = '';
