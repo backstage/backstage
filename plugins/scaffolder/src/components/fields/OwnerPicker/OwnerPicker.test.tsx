@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
@@ -55,7 +55,7 @@ describe('<OwnerPicker />', () => {
     getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
     entities = [

@@ -28,7 +28,7 @@ import { HasSystemsCard } from './HasSystemsCard';
 
 describe('<HasSystemsCard />', () => {
   const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

@@ -40,7 +40,7 @@ const lines = [
 describe('useLogViewerSelection', () => {
   it('should manage a selection', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
           {children}
         </TestApiProvider>

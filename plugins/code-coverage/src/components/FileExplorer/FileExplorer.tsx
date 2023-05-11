@@ -173,7 +173,7 @@ export const FileExplorer = () => {
   }
   if (!value) {
     return (
-      <Alert severity="warning">No code coverage found for ${entity}</Alert>
+      <Alert severity="warning">No code coverage found for {`${entity}`}</Alert>
     );
   }
 

@@ -128,7 +128,7 @@ function EntityLabels(props: { entity: Entity }) {
         />
       )}
       {entity.spec?.lifecycle && (
-        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+        <HeaderLabel label="Lifecycle" value={`${entity.spec.lifecycle}`} />
       )}
     </>
   );

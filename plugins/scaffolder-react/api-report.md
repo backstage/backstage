@@ -207,7 +207,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public
-export const ScaffolderLayouts: React.ComponentType;
+export const ScaffolderLayouts: React.ComponentType<React.PropsWithChildren<{}>>;
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {

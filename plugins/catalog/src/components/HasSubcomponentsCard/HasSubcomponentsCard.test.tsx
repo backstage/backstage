@@ -28,7 +28,7 @@ import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
 describe('<HasSubcomponentsCard />', () => {
   const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

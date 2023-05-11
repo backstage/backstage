@@ -20,7 +20,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 
@@ -49,7 +49,7 @@ describe('<EntityPicker />', () => {
     getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     entities = [

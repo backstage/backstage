@@ -26,11 +26,11 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { FunctionComponent } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import { EntityRelationsGraph } from './EntityRelationsGraph';
 
 describe('<EntityRelationsGraph/>', () => {
-  let Wrapper: FunctionComponent;
+  let Wrapper: FC<PropsWithChildren<{}>>;
   const entities: { [ref: string]: Entity } = {
     'b:d/c': {
       apiVersion: 'a',

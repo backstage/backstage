@@ -85,7 +85,7 @@ describe('useSearchModal', () => {
     const history = createMemoryHistory({ initialEntries: ['/'] });
 
     const rendered = renderHook(() => useSearchModal(true), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router location={history.location} navigator={history}>
           {children}
         </Router>

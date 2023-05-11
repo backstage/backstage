@@ -28,7 +28,7 @@ import { DependencyOfComponentsCard } from './DependencyOfComponentsCard';
 
 describe('<DependencyOfComponentsCard />', () => {
   const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

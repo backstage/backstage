@@ -40,7 +40,7 @@ describe('v1 consumer', () => {
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <AppContextProvider appContext={mockContext} children={children} />
       ),
     });

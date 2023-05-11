@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { TestApiProvider } from '@backstage/test-utils';
 import { type ParsedTemplateSchema } from './useTemplateSchema';
@@ -39,7 +39,7 @@ describe('useTransformSchemaToProps', () => {
     const { result } = renderHook(
       () => useTransformSchemaToProps(step, { layouts }),
       {
-        wrapper: ({ children }) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider apis={[]}>{children}</TestApiProvider>
         ),
       },

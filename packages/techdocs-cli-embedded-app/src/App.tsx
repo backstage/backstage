@@ -29,7 +29,7 @@ import {
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
 import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
+import { FlatRoutes, AppRouter } from '@backstage/core-app-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 import { apis } from './apis';
@@ -45,7 +45,6 @@ const app = createApp({
 });
 
 const AppProvider = app.getProvider();
-const AppRouter = app.getRouter();
 
 const ThemeToggleAddon = techdocsPlugin.provide(
   createTechDocsAddonExtension({

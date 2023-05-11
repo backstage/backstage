@@ -36,7 +36,7 @@ describe('v1 consumer', () => {
     const routeRef = createRouteRef({ id: 'ref1' });
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <MemoryRouter initialEntries={['/my-page']} children={children} />
       ),
     });
@@ -60,7 +60,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -86,7 +86,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -112,7 +112,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
@@ -138,7 +138,7 @@ describe('v1 consumer', () => {
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router
           location={history.location}
           navigator={history}
