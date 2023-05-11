@@ -7,7 +7,7 @@ description: How to deploy Backstage on AWS Lightsail
 
 > **DISCLAIMER: The `deploy` command is in alpha and still experimental. Do not use the `deploy` command for production deployments.**
 
-Getting started with Backstage mostly starts with a proof-of-concept phase. To make the proof-of-concept phase more seamless there is the `deploy` command. The `deploy` command should make it easier for you to deploy your Backstage instance on a cloud provider. Currently the `deploy` command only supports deploying `Backstage` on AWS Lightsail.
+Getting started with Backstage often involves setting up an instance on a cloud provider and sharing it with your team so they can experiment. To make this cloud deployment easier, we've built a `deploy` command to stand up a proof-of-concept instance on AWS (using Lightsail).
 
 ## What is AWS Lightsail
 
