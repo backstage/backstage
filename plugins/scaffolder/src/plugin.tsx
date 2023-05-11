@@ -167,7 +167,7 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
  *
  * @public
  */
-export const OwnedGroupsFieldExtension = scaffolderPlugin.provide(
+export const GroupsImPartOfPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: GroupsImPartOfPicker,
     name: 'GroupsImPartOfPicker',
