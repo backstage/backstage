@@ -3,6 +3,7 @@
   "name": "Build",
   "node_id": "MDEyOldvcmtmbG93IFJ1bjI2OTI4OQ==",
   "check_suite_id": 42,
+  "display_title": "foo",
   "check_suite_node_id": "MDEwOkNoZWNrU3VpdGU0Mg==",
   "head_branch": "main",
   "head_sha": "acb5820ced9479c074f688cc328bf03f341a511d",

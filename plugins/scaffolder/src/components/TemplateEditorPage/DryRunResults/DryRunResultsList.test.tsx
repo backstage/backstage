@@ -18,7 +18,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect } from 'react';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
 
@@ -70,7 +70,7 @@ describe('DryRunResultsList', () => {
       </TestApiProvider>,
     );
 
-    expect(screen.queryByText('Result 1')).toBeInTheDocument();
+    expect(screen.getByText('Result 1')).toBeInTheDocument();
     expect(screen.queryByText('Result 2')).not.toBeInTheDocument();
 
     await act(async () => {
@@ -84,12 +84,12 @@ describe('DryRunResultsList', () => {
       );
     });
 
-    expect(screen.queryByText('Result 1')).toBeInTheDocument();
-    expect(screen.queryByText('Result 2')).toBeInTheDocument();
+    expect(screen.getByText('Result 1')).toBeInTheDocument();
+    expect(screen.getByText('Result 2')).toBeInTheDocument();
 
     await userEvent.click(screen.getAllByLabelText('delete')[0]);
 
     expect(screen.queryByText('Result 1')).not.toBeInTheDocument();
-    expect(screen.queryByText('Result 2')).toBeInTheDocument();
+    expect(screen.getByText('Result 2')).toBeInTheDocument();
   });
 });

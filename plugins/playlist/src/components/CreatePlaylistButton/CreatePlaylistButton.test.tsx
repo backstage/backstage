@@ -26,7 +26,6 @@ import { fireEvent, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import React from 'react';
 import { SWRConfig } from 'swr';
-
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { CreatePlaylistButton } from './CreatePlaylistButton';
@@ -103,7 +102,7 @@ describe('<CreatePlaylistButton/>', () => {
       fireEvent.click(rendered.getByRole('button'));
     });
     expect(
-      rendered.queryByTestId('mock-playlist-edit-dialog'),
+      rendered.getByTestId('mock-playlist-edit-dialog'),
     ).toBeInTheDocument();
   });
 

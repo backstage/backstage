@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AlphaEntity } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import {
   Box,
   DialogContentText,

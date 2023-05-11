@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { SyntheticsLocation } from './SyntheticsLocation';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
@@ -60,6 +61,6 @@ describe('SyntheticsLocation', () => {
       </ApiProvider>,
     );
     expect(await rendered.findByText(/__location__/)).toBeInTheDocument();
-    expect(await rendered.queryByText(/failed/)).not.toBeInTheDocument();
+    expect(rendered.queryByText(/failed/)).not.toBeInTheDocument();
   });
 });

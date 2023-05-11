@@ -20,7 +20,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have Node.js 14 active along with Yarn and Python.
+> This document assumes you have Node.js 16 active along with Yarn and Python.
 > Please note, that at the time of this writing, the current version is
 > 0.1.1-alpha.21. This guide can still be used with future versions, just,
 > verify as you go. If you run into issues, you can compare your setup with mine
@@ -29,8 +29,8 @@ title: Adding Custom Plugin to Existing Monorepo App
 
 # The Skeleton Plugin
 
-1. Start by using the built in creator. From the terminal and root of your
-   project run: `yarn create-plugin`
+1. Start by using the built-in creator. From the terminal and root of your
+   project run: `yarn new --select plugin`
 1. Enter a plugin ID. I used `github-playground`
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`

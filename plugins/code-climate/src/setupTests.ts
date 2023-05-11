@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 import '@testing-library/jest-dom';
 import 'cross-fetch/polyfill';

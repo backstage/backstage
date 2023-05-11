@@ -27,7 +27,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import usePrevious from 'react-use/lib/usePrevious';
 import { Direction } from '../EntityRelationsGraph';
 

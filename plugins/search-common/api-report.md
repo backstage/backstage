@@ -73,6 +73,8 @@ export interface ResultSet<TDocument extends SearchDocument> {
   // (undocumented)
   nextPageCursor?: string;
   // (undocumented)
+  numberOfResults?: number;
+  // (undocumented)
   previousPageCursor?: string;
   // (undocumented)
   results: Result<TDocument>[];

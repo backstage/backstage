@@ -24,30 +24,95 @@ package.
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbucket-cloud
 ```
 
+### Installation without Events Support
+
 And then add the entity provider to your catalog builder:
 
-```diff
-  // In packages/backend/src/plugins/catalog.ts
-+ import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
 
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const builder = await CatalogBuilder.create(env);
-+   builder.addEntityProvider(
-+     BitbucketCloudEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       // optional: alternatively, configure via app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+     }),
-+   );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    BitbucketCloudEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
 
-    // [...]
-  }
+  // ..
+}
 ```
+
+Alternatively to the config-based schedule, you can use
+
+```ts
+/* highlight-remove-next-line */
+scheduler: env.scheduler,
+/* highlight-add-start */
+schedule: env.scheduler.createScheduledTaskRunner({
+  frequency: { minutes: 30 },
+  timeout: { minutes: 3 },
+}),
+/* highlight-add-end */
+```
+
+### Installation with Events Support
+
+Please follow the installation instructions at
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-start */
+import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
+/* highlight-add-end */
+
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
+    env.config,
+    {
+      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+      logger: env.logger,
+      scheduler: env.scheduler,
+      tokenManager: env.tokenManager,
+    },
+  );
+  env.eventBroker.subscribe(bitbucketCloudProvider);
+  builder.addEntityProvider(bitbucketCloudProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
+
+**Attention:**
+`catalogApi` and `tokenManager` are required at this variant
+compared to the one without events support.
 
 ## Configuration
 
@@ -57,9 +122,7 @@ Very likely a `username` and `appPassword` will be required
 
 Additionally, you need to configure your entity provider instance(s):
 
-```yaml
-# app-config.yaml
-
+```yaml title="app-config.yaml"
 catalog:
   providers:
     bitbucketCloud:
@@ -102,9 +165,3 @@ catalog:
 - **`workspace`**:
   Name of your organization account/workspace.
   If you want to add multiple workspaces, you need to add one provider config each.
-
-## Alternative
-
-_Deprecated!_ Please raise issues for use cases not covered by the entity provider.
-
-[You can use the `BitbucketDiscoveryProcessor`.](../bitbucket/discovery.md#bitbucket-cloud)

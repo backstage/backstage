@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 import Mock from '@short.io/opensearch-mock';
 import { Readable } from 'stream';
 
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
-import {
-  createElasticSearchClientOptions,
-  ElasticSearchClientOptions,
-} from './ElasticSearchSearchEngine';
+import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';
 
 jest.mock('@elastic/elasticsearch', () => ({
   ...jest.requireActual('@elastic/elasticsearch'),
@@ -103,11 +99,9 @@ describe('ElasticSearchClientWrapper', () => {
     let esOptions: ElasticSearchClientOptions;
 
     beforeEach(async () => {
-      esOptions = await createElasticSearchClientOptions(
-        new ConfigReader({
-          node: 'http://localhost:9200',
-        }),
-      );
+      esOptions = {
+        node: 'http://localhost:9200',
+      };
       jest.clearAllMocks();
     });
 
@@ -119,7 +113,12 @@ describe('ElasticSearchClientWrapper', () => {
     it('search', async () => {
       const wrapper = ElasticSearchClientWrapper.fromClientOptions(esOptions);
 
-      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
       const result = (await wrapper.search(searchInput)) as any;
 
       // Should call the ElasticSearch client's search with expected input.
@@ -224,6 +223,7 @@ describe('ElasticSearchClientWrapper', () => {
       osOptions = {
         provider: 'aws',
         node: 'https://my-es-cluster.eu-west-1.es.amazonaws.com',
+        region: 'eu-west-1',
         // todo(backstage/techdocs-core): Remove the following ts-ignore when
         // @short.io/opensearch-mock is updated to work w/opensearch >= 2.0.0
         // @ts-ignore
@@ -241,7 +241,12 @@ describe('ElasticSearchClientWrapper', () => {
     it('search', async () => {
       const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
 
-      const searchInput = { index: 'xyz', body: { eg: 'etc' } };
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
       const result = (await wrapper.search(searchInput)) as any;
 
       // Should call the OpenSearch client's search with expected input.
@@ -335,6 +340,30 @@ describe('ElasticSearchClientWrapper', () => {
       expect(result.args).toStrictEqual({
         body: { actions: input.actions },
       });
+    });
+
+    it('accepts provider "opensearch"', async () => {
+      osOptions = {
+        provider: 'opensearch',
+        node: 'https://my-opensearch-instance.address.com',
+        // todo(backstage/techdocs-core): Remove the following ts-ignore when
+        // @short.io/opensearch-mock is updated to work w/opensearch >= 2.0.0
+        // @ts-ignore
+        connection: mock.getConnection(),
+      };
+
+      const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
+      expect(OpenSearchClient).toHaveBeenCalledWith(osOptions);
+
+      const searchInput = {
+        index: 'xyz',
+        body: { eg: 'etc' },
+        ignore_unavailable: true,
+        allow_no_indices: true,
+      };
+      const result = (await wrapper.search(searchInput)) as any;
+      expect(result.client).toBe('os');
+      expect(result.args).toStrictEqual(searchInput);
     });
   });
 });

@@ -107,7 +107,7 @@ export namespace Models {
    * @public
    */
   export type BaseCommitSummaryMarkupEnum =
-    typeof BaseCommitSummaryMarkupEnum[keyof typeof BaseCommitSummaryMarkupEnum];
+    (typeof BaseCommitSummaryMarkupEnum)[keyof typeof BaseCommitSummaryMarkupEnum];
 
   /**
    * A branch object, representing a branch in a repository.
@@ -146,7 +146,7 @@ export namespace Models {
    * @public
    */
   export type BranchMergeStrategiesEnum =
-    typeof BranchMergeStrategiesEnum[keyof typeof BranchMergeStrategiesEnum];
+    (typeof BranchMergeStrategiesEnum)[keyof typeof BranchMergeStrategiesEnum];
 
   /**
    * A repository commit object.
@@ -191,7 +191,7 @@ export namespace Models {
    * @public
    */
   export type CommitFileAttributesEnum =
-    typeof CommitFileAttributesEnum[keyof typeof CommitFileAttributesEnum];
+    (typeof CommitFileAttributesEnum)[keyof typeof CommitFileAttributesEnum];
 
   /**
    * A link to a resource related to this object.
@@ -280,7 +280,7 @@ export namespace Models {
    * @public
    */
   export type ParticipantRoleEnum =
-    typeof ParticipantRoleEnum[keyof typeof ParticipantRoleEnum];
+    (typeof ParticipantRoleEnum)[keyof typeof ParticipantRoleEnum];
 
   /**
    * @public
@@ -295,7 +295,7 @@ export namespace Models {
    * @public
    */
   export type ParticipantStateEnum =
-    typeof ParticipantStateEnum[keyof typeof ParticipantStateEnum];
+    (typeof ParticipantStateEnum)[keyof typeof ParticipantStateEnum];
 
   /**
    * A Bitbucket project.
@@ -423,7 +423,7 @@ export namespace Models {
    * @public
    */
   export type RepositoryForkPolicyEnum =
-    typeof RepositoryForkPolicyEnum[keyof typeof RepositoryForkPolicyEnum];
+    (typeof RepositoryForkPolicyEnum)[keyof typeof RepositoryForkPolicyEnum];
 
   /**
    * @public
@@ -436,7 +436,7 @@ export namespace Models {
    * @public
    */
   export type RepositoryScmEnum =
-    typeof RepositoryScmEnum[keyof typeof RepositoryScmEnum];
+    (typeof RepositoryScmEnum)[keyof typeof RepositoryScmEnum];
 
   /**
    * @public
@@ -517,5 +517,47 @@ export namespace Models {
     projects?: Link;
     repositories?: Link;
     self?: Link;
+  }
+
+  /**
+   * A Bitbucket workspace.
+   *             Workspaces are used to organize repositories.
+   * @public
+   */
+  export interface Workspace extends ModelObject {
+    created_on?: string;
+    /**
+     * Indicates whether the workspace is publicly accessible, or whether it is
+     * private to the members and consequently only visible to members.
+     */
+    is_private?: boolean;
+    links?: WorkspaceLinks;
+    /**
+     * The name of the workspace.
+     */
+    name?: string;
+    /**
+     * The short label that identifies this workspace.
+     */
+    slug?: string;
+    updated_on?: string;
+    /**
+     * The workspace's immutable id.
+     */
+    uuid?: string;
+  }
+
+  /**
+   * @public
+   */
+  export interface WorkspaceLinks {
+    avatar?: Link;
+    html?: Link;
+    members?: Link;
+    owners?: Link;
+    projects?: Link;
+    repositories?: Link;
+    self?: Link;
+    snippets?: Link;
   }
 }

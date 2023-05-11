@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { trimStart } from 'lodash';
-import { GerritIntegrationConfig } from '.';
+import { GerritIntegrationConfig } from './config';
 
 const GERRIT_BODY_PREFIX = ")]}'";
 
@@ -79,7 +80,7 @@ export function parseGerritGitilesUrl(
  * @param filePath - The absolute file path.
  * @public
  */
-export function builldGerritGitilesUrl(
+export function buildGerritGitilesUrl(
   config: GerritIntegrationConfig,
   project: string,
   branch: string,

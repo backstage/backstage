@@ -31,8 +31,11 @@ import {
 const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
-  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
-  const reader: UrlReader = { read, readTree: jest.fn(), search: jest.fn() };
+  const reader: jest.Mocked<UrlReader> = {
+    readTree: jest.fn(),
+    search: jest.fn(),
+    readUrl: jest.fn(),
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -86,7 +89,7 @@ describe('PlaceholderProcessor', () => {
       spec: { a: [{ b: 'TEXT' }] },
     });
 
-    expect(read).not.toHaveBeenCalled();
+    expect(reader.readUrl).not.toHaveBeenCalled();
     expect(upperResolver).toHaveBeenCalledWith(
       expect.objectContaining({
         key: 'upper',
@@ -115,7 +118,7 @@ describe('PlaceholderProcessor', () => {
       processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
-    expect(read).not.toHaveBeenCalled();
+    expect(reader.readUrl).not.toHaveBeenCalled();
   });
 
   it('ignores unknown placeholders', async () => {
@@ -136,11 +139,13 @@ describe('PlaceholderProcessor', () => {
       processor.preProcessEntity(entity, { type: 'a', target: 'b' }, () => {}),
     ).resolves.toEqual(entity);
 
-    expect(read).not.toHaveBeenCalled();
+    expect(reader.readUrl).not.toHaveBeenCalled();
   });
 
   it('works with the text resolver', async () => {
-    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
@@ -169,15 +174,19 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toHaveBeenCalledWith(
+    expect(reader.readUrl).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/file.txt',
     );
   });
 
   it('works with the json resolver', async () => {
-    read.mockResolvedValue(
-      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-    );
+    reader.readUrl.mockResolvedValue({
+      buffer: jest
+        .fn()
+        .mockResolvedValue(
+          Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+        ),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { json: jsonPlaceholderResolver },
       reader,
@@ -206,13 +215,17 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { a: ['b', 7] } },
     });
 
-    expect(read).toHaveBeenCalledWith(
+    expect(reader.readUrl).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/b/file.json',
     );
   });
 
   it('works with the yaml resolver', async () => {
-    read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
+    reader.readUrl.mockResolvedValue({
+      buffer: jest
+        .fn()
+        .mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8')),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { yaml: yamlPlaceholderResolver },
       reader,
@@ -241,13 +254,15 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { foo: [{ bar: 7 }] } },
     });
 
-    expect(read).toHaveBeenCalledWith(
+    expect(reader.readUrl).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/a/file.yaml',
     );
   });
 
   it('resolves absolute path for absolute location', async () => {
-    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
@@ -280,13 +295,15 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toHaveBeenCalledWith(
+    expect(reader.readUrl).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
 
   it('resolves absolute path for relative file location', async () => {
-    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
@@ -318,7 +335,7 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(read).toHaveBeenCalledWith(
+    expect(reader.readUrl).toHaveBeenCalledWith(
       'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
@@ -327,7 +344,9 @@ describe('PlaceholderProcessor', () => {
     // We explicitly don't support this case, as it would allow for file system
     // traversal attacks. If we want to implement this, we need to have additional
     // security measures in place!
-    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
       reader,
@@ -356,12 +375,16 @@ describe('PlaceholderProcessor', () => {
       /^Placeholder \$text could not form a URL out of \.\/a\/b\/catalog-info\.yaml and \.\.\/c\/catalog-info\.yaml, TypeError \[ERR_INVALID_URL\]/,
     );
 
-    expect(read).not.toHaveBeenCalled();
+    expect(reader.readUrl).not.toHaveBeenCalled();
   });
   it('should emit the resolverValue as a refreshKey', async () => {
-    read.mockResolvedValue(
-      Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
-    );
+    reader.readUrl.mockResolvedValue({
+      buffer: jest
+        .fn()
+        .mockResolvedValue(
+          Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
+        ),
+    });
 
     const processor = new PlaceholderProcessor({
       resolvers: {

@@ -15,16 +15,14 @@
  */
 
 import { TaskContext, TaskBroker, WorkflowRunner } from './types';
+import PQueue from 'p-queue';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
-import {
-  TemplateFilter,
-  TemplateGlobal,
-} from '../../lib/templating/SecureTemplater';
-
+import { TemplateFilter, TemplateGlobal } from '../../lib';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 /**
  * TaskWorkerOptions
  *
@@ -35,6 +33,8 @@ export type TaskWorkerOptions = {
   runners: {
     workflowRunner: WorkflowRunner;
   };
+  concurrentTasksLimit: number;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -49,7 +49,21 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  /**
+   * The number of tasks that can be executed at the same time by the worker
+   * @defaultValue 10
+   * @example
+   * ```
+   * {
+   *   concurrentTasksLimit: 1,
+   *   // OR
+   *   concurrentTasksLimit: Infinity
+   * }
+   * ```
+   */
+  concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -58,7 +72,13 @@ export type CreateWorkerOptions = {
  * @public
  */
 export class TaskWorker {
-  private constructor(private readonly options: TaskWorkerOptions) {}
+  private taskQueue: PQueue;
+
+  private constructor(private readonly options: TaskWorkerOptions) {
+    this.taskQueue = new PQueue({
+      concurrency: options.concurrentTasksLimit,
+    });
+  }
 
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
@@ -68,7 +88,9 @@ export class TaskWorker {
       integrations,
       workingDirectory,
       additionalTemplateFilters,
+      concurrentTasksLimit = 10, // from 1 to Infinity
       additionalTemplateGlobals,
+      permissions,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -78,21 +100,38 @@ export class TaskWorker {
       workingDirectory,
       additionalTemplateFilters,
       additionalTemplateGlobals,
+      permissions,
     });
 
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
+      concurrentTasksLimit,
+      permissions,
     });
   }
 
   start() {
     (async () => {
       for (;;) {
+        await this.onReadyToClaimTask();
         const task = await this.options.taskBroker.claim();
-        await this.runOneTask(task);
+        this.taskQueue.add(() => this.runOneTask(task));
       }
     })();
+  }
+
+  protected onReadyToClaimTask(): Promise<void> {
+    if (this.taskQueue.pending < this.options.concurrentTasksLimit) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      // "next" event emits when a task completes
+      // https://github.com/sindresorhus/p-queue#next
+      this.taskQueue.once('next', () => {
+        resolve();
+      });
+    });
   }
 
   async runOneTask(task: TaskContext) {

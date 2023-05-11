@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import * as services from './__fixtures__/2-services.json';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { textContentMatcher, wrapInTestApp } from '@backstage/test-utils';
 import { ServiceDrawer } from './ServiceDrawer';
 
 describe('ServiceDrawer', () => {
@@ -33,7 +33,11 @@ describe('ServiceDrawer', () => {
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Cluster IP')).toBeInTheDocument();
     expect(getByText('Ports')).toBeInTheDocument();
-    expect(getByText('Target Port: 1997')).toBeInTheDocument();
-    expect(getByText('App: awesome-service')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Target Port: 1997')),
+    ).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('App: awesome-service')),
+    ).toBeInTheDocument();
   });
 });

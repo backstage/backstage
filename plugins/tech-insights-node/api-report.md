@@ -8,7 +8,8 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
-import { HumanDuration } from '@backstage/backend-tasks';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
+import { HumanDuration } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -75,23 +76,7 @@ export type FactRetrieverRegistration = {
   cadence?: string;
   timeout?: Duration | HumanDuration;
   lifecycle?: FactLifecycle;
-};
-
-// @public
-export type FactSchema = {
-  [name: string]: {
-    type:
-      | 'integer'
-      | 'float'
-      | 'string'
-      | 'boolean'
-      | 'datetime'
-      | 'set'
-      | 'object';
-    description: string;
-    since?: string;
-    metadata?: Record<string, any>;
-  };
+  initialDelay?: Duration | HumanDuration;
 };
 
 // @public

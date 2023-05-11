@@ -14,18 +14,39 @@
  * limitations under the License.
  */
 
-export { configServiceRef } from './configServiceRef';
-export { httpRouterServiceRef } from './httpRouterServiceRef';
-export type { HttpRouterService } from './httpRouterServiceRef';
-export { loggerServiceRef } from './loggerServiceRef';
-export type { Logger } from './loggerServiceRef';
-export { urlReaderServiceRef } from './urlReaderServiceRef';
-export { cacheServiceRef } from './cacheServiceRef';
-export { databaseServiceRef } from './databaseServiceRef';
-export { discoveryServiceRef } from './discoveryServiceRef';
-export { tokenManagerServiceRef } from './tokenManagerServiceRef';
-export { permissionsServiceRef } from './permissionsServiceRef';
-export { schedulerServiceRef } from './schedulerServiceRef';
-export { rootLoggerServiceRef } from './rootLoggerServiceRef';
-export { pluginMetadataServiceRef } from './pluginMetadataServiceRef';
-export type { PluginMetadata } from './pluginMetadataServiceRef';
+export { coreServices } from './coreServices';
+export type {
+  CacheService,
+  CacheServiceOptions,
+  CacheServiceSetOptions,
+} from './CacheService';
+export type { ConfigService } from './ConfigService';
+export type { DatabaseService } from './DatabaseService';
+export type { DiscoveryService } from './DiscoveryService';
+export type { HttpRouterService } from './HttpRouterService';
+export type {
+  LifecycleService,
+  LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
+} from './LifecycleService';
+export type { LoggerService } from './LoggerService';
+export type { PermissionsService } from './PermissionsService';
+export type { PluginMetadataService } from './PluginMetadataService';
+export type { RootHttpRouterService } from './RootHttpRouterService';
+export type { RootLifecycleService } from './RootLifecycleService';
+export type { RootLoggerService } from './RootLoggerService';
+export type { SchedulerService } from './SchedulerService';
+export type { TokenManagerService } from './TokenManagerService';
+export type {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
+  ReadUrlResponse,
+  ReadUrlOptions,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
+  UrlReaderService,
+} from './UrlReaderService';
+export type { IdentityService } from './IdentityService';

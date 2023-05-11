@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { RoutedTabs } from './RoutedTabs';
 
 const testRoute1 = {
@@ -65,14 +66,14 @@ describe('RoutedTabs', () => {
     expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(rendered.getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content-2')).toBeInTheDocument();
 
     const thirdTab = rendered.queryAllByRole('tab')[2];
     act(() => {
       fireEvent.click(thirdTab);
     });
     expect(rendered.getByText('tabbed-test-title-3')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content-3')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content-3')).toBeInTheDocument();
   });
 
   describe('correctly delegates nested links', () => {
@@ -113,9 +114,9 @@ describe('RoutedTabs', () => {
       expect(
         rendered.queryByText('tabbed-test-content'),
       ).not.toBeInTheDocument();
-      expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+      expect(rendered.getByText('tabbed-test-content-2')).toBeInTheDocument();
       expect(
-        rendered.queryByText('tabbed-test-nested-content-2'),
+        rendered.getByText('tabbed-test-nested-content-2'),
       ).toBeInTheDocument();
     });
 
@@ -125,7 +126,7 @@ describe('RoutedTabs', () => {
       expect(
         rendered.queryByText('tabbed-test-content'),
       ).not.toBeInTheDocument();
-      expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+      expect(rendered.getByText('tabbed-test-content-2')).toBeInTheDocument();
       expect(
         rendered.queryByText('tabbed-test-nested-content-2'),
       ).not.toBeInTheDocument();
@@ -142,7 +143,7 @@ describe('RoutedTabs', () => {
     expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(rendered.getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(rendered.queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content-2')).toBeInTheDocument();
   });
 
   it('redirects to the top level when no route is matching the url', async () => {

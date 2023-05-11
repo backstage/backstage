@@ -26,26 +26,31 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbuck
 
 And then add the entity provider to your catalog builder:
 
-```diff
-  // In packages/backend/src/plugins/catalog.ts
-+ import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
 
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const builder = await CatalogBuilder.create(env);
-+   builder.addEntityProvider(
-+     BitbucketServerEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+     }),
-+   );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    BitbucketServerEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
 
-    // [...]
-  }
+  // ..
+}
 ```
 
 ## Configuration
@@ -54,9 +59,7 @@ To use the entity provider, you'll need a [Bitbucket Server integration set up](
 
 Additionally, you need to configure your entity provider instance(s):
 
-```yaml
-# app-config.yaml
-
+```yaml title="app-config.yaml"
 catalog:
   providers:
     bitbucketServer:
@@ -66,19 +69,33 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
-- **host**:
+- **`host`**:
   The host of the Bitbucket Server instance, **note**: the host needs to registered as an integration as well, see [location](locations.md).
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
-- **filters** _(optional)_:
+- **`filters`** _(optional)_:
   - **`projectKey`** _(optional)_:
     Regular expression used to filter results based on the project key.
-  - **repoSlug** _(optional)_:
+  - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
+- **`schedule`** _(optional)_:
+  - **`frequency`**:
+    How often you want the task to run. The system does its best to avoid overlapping invocations.
+  - **`timeout`**:
+    The maximum amount of time that a single task invocation can take.
+  - **`initialDelay`** _(optional)_:
+    The amount of time that should pass before the first invocation happens.
+  - **`scope`** _(optional)_:
+    `'global'` or `'local'`. Sets the scope of concurrency control.
 
 ## Custom location processing
 
@@ -93,22 +110,13 @@ repository.
 ```typescript
 const provider = BitbucketServerEntityProvider.fromConfig(env.config, {
   logger: env.logger,
-  schedule: env.scheduler.createScheduledTaskRunner({
-    frequency: { minutes: 30 },
-    timeout: { minutes: 3 },
-  }),
+  schedule: env.scheduler,
   parser: async function* customLocationParser(options: {
-    location: LocationSpec,
-    client: BitbucketServerClient,
+    location: LocationSpec;
+    client: BitbucketServerClient;
   }) {
     // Custom logic for interpreting the matching repository
     // See defaultBitbucketServerLocationParser for an example
-  }
-);
+  },
+});
 ```
-
-## Alternative
-
-_Deprecated!_ Please raise issues for use cases not covered by the entity provider.
-
-[You can use the `BitbucketDiscoveryProcessor`.](../bitbucket/discovery.md#self-hosted-bitbucket-server)

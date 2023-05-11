@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Box, Grid, Typography, Link } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import React from 'react';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Table, TableColumn, Link } from '@backstage/core-components';
 
 export type TopicPartitionInfo = {
   topic: string;
@@ -103,11 +103,7 @@ export const ConsumerGroupOffsets = ({
         <Box display="flex" alignItems="center">
           <Typography variant="h6">
             Consumed Topics for {consumerGroup} (
-            {(dashboardUrl && (
-              <Link href={dashboardUrl} target="_blank">
-                {clusterId}
-              </Link>
-            )) ||
+            {(dashboardUrl && <Link to={dashboardUrl}>{clusterId}</Link>) ||
               clusterId}
             )
           </Typography>

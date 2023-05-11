@@ -19,7 +19,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import { errorHandler } from '@backstage/backend-common';
-import { ErrorResponseBody, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
@@ -35,6 +35,8 @@ import {
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
+import type { ApiRouter } from '@backstage/backend-openapi-utils';
+import spec from '../schema/openapi.generated';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -62,7 +64,7 @@ export type RouterOptions = {
   logger: Logger;
 };
 
-const maxPageLimit = 100;
+const defaultMaxPageLimit = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
@@ -72,6 +74,9 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { engine: inputEngine, types, permissions, config, logger } = options;
+
+  const maxPageLimit =
+    config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
 
   const requestSchema = z.object({
     term: z.string().default(''),
@@ -143,49 +148,43 @@ export async function createRouter(
     })),
   });
 
-  const router = Router();
-  router.get(
-    '/query',
-    async (
-      req: express.Request,
-      res: express.Response<SearchResultSet | ErrorResponseBody>,
-    ) => {
-      const parseResult = requestSchema.passthrough().safeParse(req.query);
+  const router = Router() as ApiRouter<typeof spec>;
+  router.get('/query', async (req, res) => {
+    const parseResult = requestSchema.passthrough().safeParse(req.query);
 
-      if (!parseResult.success) {
-        throw new InputError(`Invalid query string: ${parseResult.error}`);
+    if (!parseResult.success) {
+      throw new InputError(`Invalid query string: ${parseResult.error}`);
+    }
+
+    const query = parseResult.data;
+
+    logger.info(
+      `Search request received: term="${query.term}", filters=${JSON.stringify(
+        query.filters,
+      )}, types=${query.types ? query.types.join(',') : ''}, pageCursor=${
+        query.pageCursor ?? ''
+      }`,
+    );
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+
+    try {
+      const resultSet = await engine?.query(query, { token });
+
+      res.json(filterResultSet(toSearchResults(resultSet)));
+    } catch (error) {
+      if (error.name === 'MissingIndexError') {
+        // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
+        throw error;
       }
 
-      const query = parseResult.data;
-
-      logger.info(
-        `Search request received: term="${
-          query.term
-        }", filters=${JSON.stringify(query.filters)}, types=${
-          query.types ? query.types.join(',') : ''
-        }, pageCursor=${query.pageCursor ?? ''}`,
+      throw new Error(
+        `There was a problem performing the search query: ${error.message}`,
       );
-
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-
-      try {
-        const resultSet = await engine?.query(query, { token });
-
-        res.json(filterResultSet(toSearchResults(resultSet)));
-      } catch (error) {
-        if (error.name === 'MissingIndexError') {
-          // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
-          throw error;
-        }
-
-        throw new Error(
-          `There was a problem performing the search query. ${error}`,
-        );
-      }
-    },
-  );
+    }
+  });
 
   router.use(errorHandler());
 

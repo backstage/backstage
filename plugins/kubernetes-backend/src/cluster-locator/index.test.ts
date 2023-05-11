@@ -60,6 +60,7 @@ describe('getCombinedClusterSupplier', () => {
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
+        caFile: undefined,
       },
       {
         name: 'cluster2',
@@ -69,6 +70,7 @@ describe('getCombinedClusterSupplier', () => {
         skipMetricsLookup: false,
         skipTLSVerify: false,
         caData: undefined,
+        caFile: undefined,
       },
     ]);
   });

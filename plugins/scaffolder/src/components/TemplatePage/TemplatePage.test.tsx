@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import { act, fireEvent, within } from '@testing-library/react';
+
+import {
+  MockAnalyticsApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import React from 'react';
-import { Route, Routes } from 'react-router';
-import { scaffolderApiRef } from '../../api';
-import { ScaffolderApi } from '../../types';
-import { rootRouteRef } from '../../routes';
+import { Route, Routes } from 'react-router-dom';
+import {
+  scaffolderApiRef,
+  ScaffolderApi,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplatePage } from './TemplatePage';
 import {
   featureFlagsApiRef,
   FeatureFlagsApi,
+  analyticsApiRef,
 } from '@backstage/core-plugin-api';
-
 import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -39,6 +47,7 @@ jest.mock('react-router-dom', () => {
 });
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
+  cancelTask: jest.fn(),
   scaffold: jest.fn(),
   getTemplateParameterSchema: jest.fn(),
   getIntegrationsList: jest.fn(),
@@ -56,6 +65,8 @@ const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
 };
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
+
+const analyticsMock = new MockAnalyticsApi();
 
 const schemaMockValue = {
   title: 'my-schema',
@@ -105,6 +116,7 @@ const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
   [featureFlagsApiRef, featureFlagsApiMock],
+  [analyticsApiRef, analyticsMock],
 );
 
 describe('TemplatePage', () => {
@@ -117,7 +129,9 @@ describe('TemplatePage', () => {
     });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -126,8 +140,8 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
-    expect(rendered.queryByText('React SSR Template')).toBeInTheDocument();
+    expect(rendered.getByText('Create a New Component')).toBeInTheDocument();
+    expect(rendered.getByText('React SSR Template')).toBeInTheDocument();
   });
 
   it('renders spinner while loading', async () => {
@@ -138,7 +152,9 @@ describe('TemplatePage', () => {
     scaffolderApiMock.getTemplateParameterSchema.mockReturnValueOnce(promise);
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -147,14 +163,76 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
-    expect(rendered.queryByTestId('loading-progress')).toBeInTheDocument();
+    expect(rendered.getByText('Create a New Component')).toBeInTheDocument();
+    expect(rendered.getByTestId('loading-progress')).toBeInTheDocument();
 
     await act(async () => {
       resolve!({
         title: 'React SSR Template',
         steps: [],
       });
+    });
+  });
+
+  it('captures expected analytics events', async () => {
+    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      title: 'schema-4-analytics',
+      steps: [
+        {
+          title: 'Fill in some steps',
+          schema: {
+            properties: {
+              name: {
+                title: 'Name',
+                type: 'string',
+              },
+            },
+            required: ['name'],
+          },
+        },
+      ],
+    });
+    const { findByLabelText, findByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
+    );
+
+    // Fill out the name field
+    expect(await findByText('Fill in some steps')).toBeInTheDocument();
+    fireEvent.change(await findByLabelText('Name', { exact: false }), {
+      target: { value: 'expected-name' },
+    });
+
+    // Go to the final page
+    fireEvent.click(await findByText('Next step'));
+    expect(await findByText('Reset')).toBeInTheDocument();
+
+    // Create the software
+    await act(async () => {
+      fireEvent.click(await findByText('Create'));
+    });
+
+    // The "Next Step" button should have fired an event
+    expect(analyticsMock.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'Next Step (1)',
+      context: { entityRef: 'template:default/test' },
+    });
+
+    // And the "Create" button should have fired an event
+    expect(analyticsMock.getEvents()[1]).toMatchObject({
+      action: 'create',
+      subject: 'expected-name',
+      context: { entityRef: 'template:default/test' },
     });
   });
 
@@ -166,7 +244,14 @@ describe('TemplatePage', () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <Routes>
-          <Route path="/create/test" element={<TemplatePage />} />
+          <Route
+            path="/create/test"
+            element={
+              <SecretsContextProvider>
+                <TemplatePage />
+              </SecretsContextProvider>
+            }
+          />
           <Route path="/create" element={<>This is root</>} />
         </Routes>
       </ApiProvider>,
@@ -179,7 +264,7 @@ describe('TemplatePage', () => {
     expect(
       rendered.queryByText('Create a New Component'),
     ).not.toBeInTheDocument();
-    expect(rendered.queryByText('This is root')).toBeInTheDocument();
+    expect(rendered.getByText('This is root')).toBeInTheDocument();
   });
 
   it('display template with oneOf', async () => {
@@ -219,7 +304,9 @@ describe('TemplatePage', () => {
     const { findByText, findByLabelText, findAllByRole, findByRole } =
       await renderInTestApp(
         <ApiProvider apis={apis}>
-          <TemplatePage />
+          <SecretsContextProvider>
+            <TemplatePage />
+          </SecretsContextProvider>
         </ApiProvider>,
         {
           mountedRoutes: {
@@ -252,18 +339,17 @@ describe('TemplatePage', () => {
 
   it('should display a section or property based on a feature flag', async () => {
     featureFlagsApiMock.isActive.mockImplementation(flag => {
-      if (flag === 'experimental-feature') {
-        return true;
-      }
-      return false;
+      return flag === 'experimental-feature';
     });
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
       schemaMockValue,
     );
 
-    const { queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TemplatePage />
+        <SecretsContextProvider>
+          <TemplatePage />
+        </SecretsContextProvider>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -272,9 +358,9 @@ describe('TemplatePage', () => {
       },
     );
 
-    expect(await queryByText('Name')).not.toBeInTheDocument();
-    expect(await queryByText('Description')).toBeInTheDocument();
-    expect(await queryByText('Owner')).toBeInTheDocument();
-    expect(await queryByText('Send data')).toBeInTheDocument();
+    expect(screen.queryByText('Name')).not.toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Owner')).toBeInTheDocument();
+    expect(screen.getByText('Send data')).toBeInTheDocument();
   });
 });

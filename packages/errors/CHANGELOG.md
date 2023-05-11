@@ -1,5 +1,64 @@
 # @backstage/errors
 
+## 1.1.5
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4
+
+### Patch Changes
+
+- ac6cc9f7bd: Removed a circular import
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
 ## 1.1.2-next.2
 
 ### Patch Changes

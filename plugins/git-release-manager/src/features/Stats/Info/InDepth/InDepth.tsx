@@ -21,6 +21,7 @@ import {
   Tooltip as MaterialTooltip,
   Typography,
 } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { BarChart, Bar, XAxis, YAxis, Legend, Tooltip } from 'recharts';
 
 import { AverageReleaseTime } from './AverageReleaseTime';
@@ -30,6 +31,12 @@ import { useGetReleaseTimes } from '../hooks/useGetReleaseTimes';
 import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
 
 export function InDepth() {
+  const {
+    palette: {
+      success,
+      common: { black },
+    },
+  } = useTheme();
   const { releaseStats } = useReleaseStatsContext();
   const { averageReleaseTime, progress, releaseCommitPairs, run } =
     useGetReleaseTimes();
@@ -112,9 +119,9 @@ export function InDepth() {
         >
           <XAxis type="number" />
           <YAxis dataKey="version" type="category" />
-          <Tooltip labelStyle={{ color: '#000', fontWeight: 'bold' }} />
+          <Tooltip labelStyle={{ color: black, fontWeight: 'bold' }} />
           <Legend />
-          <Bar dataKey="days" fill="#82ca9d" />
+          <Bar dataKey="days" fill={success.light} />
         </BarChart>
 
         {progress > 0 && progress < 100 && (

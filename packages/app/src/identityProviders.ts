@@ -22,6 +22,7 @@ import {
   microsoftAuthApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const providers = [
@@ -66,5 +67,11 @@ export const providers = [
     title: 'Bitbucket',
     message: 'Sign In using Bitbucket',
     apiRef: bitbucketAuthApiRef,
+  },
+  {
+    id: 'bitbucket-server-auth-provider',
+    title: 'Bitbucket Server',
+    message: 'Sign In using Bitbucket Server',
+    apiRef: bitbucketServerAuthApiRef,
   },
 ];

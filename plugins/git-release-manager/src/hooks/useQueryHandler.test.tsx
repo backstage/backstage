@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import { mockSearchSemver } from '../test-helpers/test-helpers';
 import { useQueryHandler } from './useQueryHandler';
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(() => ({
     search: mockSearchSemver,
   })),

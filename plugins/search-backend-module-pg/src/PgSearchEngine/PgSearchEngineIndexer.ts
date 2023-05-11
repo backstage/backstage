@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 import { DatabaseStore } from '../database';
 
 /** @public */
@@ -24,18 +26,22 @@ export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
+  logger?: Logger;
 };
 
 /** @public */
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
+  private logger: Logger;
   private store: DatabaseStore;
   private type: string;
   private tx: Knex.Transaction | undefined;
+  private numRecords = 0;
 
   constructor(options: PgSearchEngineIndexerOptions) {
     super({ batchSize: options.batchSize });
     this.store = options.databaseStore;
     this.type = options.type;
+    this.logger = options.logger || getVoidLogger();
   }
 
   async initialize(): Promise<void> {
@@ -51,6 +57,8 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async index(documents: IndexableDocument[]): Promise<void> {
+    this.numRecords += documents.length;
+
     try {
       await this.store.insertDocuments(this.tx!, this.type, documents);
     } catch (e) {
@@ -62,6 +70,17 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
   }
 
   async finalize(): Promise<void> {
+    // If no documents were indexed, rollback the transaction, log a warning,
+    // and do not continue. This ensures that collators that return empty sets
+    // of documents do not cause the index to be deleted.
+    if (this.numRecords === 0) {
+      this.logger.warn(
+        `Index for ${this.type} was not replaced: indexer received 0 documents`,
+      );
+      this.tx!.rollback!();
+      return;
+    }
+
     // Attempt to complete and commit the transaction.
     try {
       await this.store.completeInsert(this.tx!, this.type);
@@ -72,5 +91,32 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
       this.tx!.rollback!(e);
       throw e;
     }
+  }
+
+  /**
+   * Custom handler covering the case where an error occurred somewhere else in
+   * the indexing pipeline (e.g. a collator or decorator). In such cases, the
+   * finalize method is not called, which leaves a dangling transaction and
+   * therefore an open connection to PG. This handler ensures we close the
+   * transaction and associated connection.
+   *
+   * todo(@backstage/discoverability-maintainers): Consider introducing a more
+   * formal mechanism for handling such errors in BatchSearchEngineIndexer and
+   * replacing this method with it. See: #17291
+   *
+   * @internal
+   */
+  async _destroy(error: Error | null, done: (error?: Error | null) => void) {
+    // Ignore situations where there was no error.
+    if (!error) {
+      done();
+      return;
+    }
+
+    if (!this.tx!.isCompleted()) {
+      await this.tx!.rollback(error);
+    }
+
+    done(error);
   }
 }

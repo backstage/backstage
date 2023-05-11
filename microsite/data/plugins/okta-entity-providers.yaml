@@ -7,3 +7,4 @@ description: Load users and groups from Okta into the Backstage catalog.
 documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/tree/main/plugins/backend/catalog-backend-module-okta
 iconUrl: https://roadie.io/images/logos/okta.png
 npmPackageName: '@roadiehq/catalog-backend-module-okta'
+addedDate: '2022-07-26'

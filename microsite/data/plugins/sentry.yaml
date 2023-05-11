@@ -7,3 +7,4 @@ description: View Sentry issues in Backstage.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/sentry
 iconUrl: https://sentry-brand.storage.googleapis.com/sentry-glyph-white.png
 npmPackageName: '@backstage/plugin-sentry'
+addedDate: '2020-11-03'

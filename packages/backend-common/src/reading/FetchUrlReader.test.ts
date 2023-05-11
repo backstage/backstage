@@ -45,6 +45,21 @@ describe('FetchUrlReader', () => {
           );
         }
 
+        if (
+          req.headers.get('if-modified-since') &&
+          new Date(req.headers.get('if-modified-since') ?? '') <
+            new Date('2021-01-01T00:00:00Z')
+        ) {
+          return res(
+            ctx.status(304),
+            ctx.set('Content-Type', 'text/plain'),
+            ctx.set(
+              'last-modified',
+              new Date('2021-01-01T00:00:00Z').toUTCString(),
+            ),
+          );
+        }
+
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'text/plain'),
@@ -171,30 +186,39 @@ describe('FetchUrlReader', () => {
 
   describe('read', () => {
     it('should return etag from the response', async () => {
-      const buffer = await fetchUrlReader.read(
+      const { buffer } = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
-      expect(buffer.toString()).toBe('content foo');
+      const response = await buffer();
+      expect(response.toString()).toBe('content foo');
     });
 
     it('should throw NotFound if server responds with 404', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/not-exists'),
+        fetchUrlReader.readUrl('https://backstage.io/not-exists'),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw Error if server responds with 500', async () => {
       await expect(
-        fetchUrlReader.read('https://backstage.io/error'),
+        fetchUrlReader.readUrl('https://backstage.io/error'),
       ).rejects.toThrow(Error);
     });
   });
 
   describe('readUrl', () => {
-    it('should throw NotModified if server responds with 304', async () => {
+    it('should throw NotModified if server responds with 304 from etag', async () => {
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/some-resource', {
           etag: 'foo',
+        }),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
+      await expect(
+        fetchUrlReader.readUrl('https://backstage.io/some-resource', {
+          lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
         }),
       ).rejects.toThrow(NotModifiedError);
     });

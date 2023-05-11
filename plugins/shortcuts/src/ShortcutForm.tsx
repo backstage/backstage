@@ -40,11 +40,16 @@ type Props = {
   formValues?: FormValues;
   onSave: SubmitHandler<FormValues>;
   onClose: () => void;
+  allowExternalLinks?: boolean;
 };
 
-export const ShortcutForm = ({ formValues, onSave, onClose }: Props) => {
+export const ShortcutForm = ({
+  formValues,
+  onSave,
+  onClose,
+  allowExternalLinks,
+}: Props) => {
   const classes = useStyles();
-
   const {
     handleSubmit,
     reset,
@@ -70,10 +75,19 @@ export const ShortcutForm = ({ formValues, onSave, onClose }: Props) => {
           control={control}
           rules={{
             required: true,
-            pattern: {
-              value: /^\//,
-              message: 'Must be a relative URL (starts with a /)',
-            },
+            ...(allowExternalLinks
+              ? {
+                  pattern: {
+                    value: /^(https?:\/\/)|\//,
+                    message: 'Must start with http(s):// or /',
+                  },
+                }
+              : {
+                  pattern: {
+                    value: /^\//,
+                    message: 'Must be a relative URL (starts with a /)',
+                  },
+                }),
           }}
           render={({ field }) => (
             <TextField

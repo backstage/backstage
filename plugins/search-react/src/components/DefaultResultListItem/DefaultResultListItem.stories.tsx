@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button } from '@backstage/core-components';
+import { LinkButton } from '@backstage/core-components';
 import { lightTheme } from '@backstage/theme';
 import { Grid } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -22,7 +22,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GroupIcon from '@material-ui/icons/Group';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
 export default {
@@ -66,7 +66,7 @@ export const WithSecondaryAction = () => {
     <DefaultResultListItem
       result={mockSearchResult}
       secondaryAction={
-        <Button
+        <LinkButton
           to="#"
           size="small"
           aria-label="owner"
@@ -75,7 +75,7 @@ export const WithSecondaryAction = () => {
           style={{ textTransform: 'lowercase' }}
         >
           {mockSearchResult.owner}
-        </Button>
+        </LinkButton>
       }
     />
   );

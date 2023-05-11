@@ -25,7 +25,7 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { PlaylistApi, playlistApiRef } from '../api';
 import {
   DefaultSortCompareFunctions,

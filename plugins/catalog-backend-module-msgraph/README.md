@@ -85,6 +85,13 @@ catalog:
           # in order to add extra information to your groups that can be used on your custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           select: ['id', 'displayName', 'description']
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { hours: 1 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 50 }
+          # supports ISO duration, "human duration" as used in code
+          initialDelay: { seconds: 15},
 ```
 
 `user.filter` and `userGroupMember.filter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
@@ -116,13 +123,21 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 +  builder.addEntityProvider(
 +    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
 +      logger: env.logger,
++      scheduler,
++    }),
++  );
+```
+
+Instead of configuring the refresh schedule inside the config (per provider instance),
+you can define it in code (for all of them):
+
+```diff
+-      scheduler,
 +      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: { hours: 1 },
 +        timeout: { minutes: 50 },
-+        initialDelay: { seconds: 15}
++        initialDelay: { seconds: 15},
 +      }),
-+    }),
-+  );
 ```
 
 ## Customize the Processor or Entity Provider
@@ -161,10 +176,7 @@ export async function myGroupTransformer(
  builder.addEntityProvider(
    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
      logger: env.logger,
-     schedule: env.scheduler.createScheduledTaskRunner({
-       frequency: { minutes: 5 },
-       timeout: { minutes: 3 },
-     }),
+     scheduler,
 +    groupTransformer: myGroupTransformer,
    }),
  );

@@ -89,16 +89,14 @@ export const ProjectDialog = ({
         </CustomDialogTitle>
         <DialogContent style={{ padding: '1rem', paddingTop: '0rem' }} dividers>
           <InputField
-            error={errors.name}
+            error={errors.title}
             control={control}
             rules={{
               required: true,
-              pattern: RegExp('^[a-zA-Z0-9_-]*$'),
             }}
-            inputType="name"
-            helperText="please enter a url safe project name"
+            inputType="title"
+            helperText="Please enter a title for your project"
           />
-
           <InputField
             error={errors.description}
             control={control}
@@ -106,7 +104,7 @@ export const ProjectDialog = ({
               required: true,
             }}
             inputType="description"
-            helperText="please enter a description"
+            helperText="Please enter a description"
           />
 
           <InputSelector
@@ -128,7 +126,7 @@ export const ProjectDialog = ({
               required: true,
             }}
             inputType="responsible"
-            helperText="please enter a contact person"
+            helperText="Please enter a contact person"
             placeholder="Contact person of the project"
           />
 
@@ -142,8 +140,20 @@ export const ProjectDialog = ({
               pattern: RegExp('^(https?)://'),
             }}
             inputType="community"
-            helperText="please enter a link starting with http/https"
+            helperText="Please enter a link starting with http/https"
             placeholder="Community link to e.g. Teams or Discord"
+          />
+
+          <InputField
+            error={errors.docs}
+            control={control}
+            rules={{
+              required: false,
+              pattern: RegExp('^(https?)://'),
+            }}
+            inputType="docs"
+            helperText="Please enter a link starting with http/https"
+            placeholder="Project docs link"
           />
 
           <DoubleDateSelector setValue={setValue} control={control} />

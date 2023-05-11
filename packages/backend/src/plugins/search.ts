@@ -16,6 +16,7 @@
 
 import { useHotCleanup } from '@backstage/backend-common';
 import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
+import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
@@ -81,6 +82,14 @@ export default async function createPlugin(
       discovery: env.discovery,
       logger: env.logger,
       tokenManager: env.tokenManager,
+    }),
+  });
+
+  indexBuilder.addCollator({
+    schedule,
+    factory: ToolDocumentCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      logger: env.logger,
     }),
   });
 

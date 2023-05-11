@@ -15,13 +15,12 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useTheme, useMediaQuery } from '@material-ui/core';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -47,6 +46,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
 } from '../../transformers';
+import { useNavigateUrl } from './useNavigateUrl';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -58,11 +58,12 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
 ): Element | null => {
-  const navigate = useNavigate();
+  const navigate = useNavigateUrl();
   const theme = useTheme<BackstageTheme>();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
+  const analytics = useAnalytics();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -176,12 +177,18 @@ export const useTechDocsReaderDom = (
             const modifierActive = event.ctrlKey || event.metaKey;
             const parsedUrl = new URL(url);
 
+            // capture link clicks within documentation
+            const linkText =
+              (event.target as HTMLAnchorElement | undefined)?.innerText || url;
+            const to = url.replace(window.location.origin, '');
+            analytics.captureEvent('click', linkText, { attributes: { to } });
+
             // hash exists when anchor is clicked on secondary sidebar
             if (parsedUrl.hash) {
               if (modifierActive) {
-                window.open(`${parsedUrl.pathname}${parsedUrl.hash}`, '_blank');
+                window.open(url, '_blank');
               } else {
-                navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+                navigate(url);
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
@@ -189,9 +196,9 @@ export const useTechDocsReaderDom = (
               }
             } else {
               if (modifierActive) {
-                window.open(parsedUrl.pathname, '_blank');
+                window.open(url, '_blank');
               } else {
-                navigate(parsedUrl.pathname);
+                navigate(url);
               }
             }
           },
@@ -218,7 +225,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate],
+    [theme, navigate, analytics],
   );
 
   useEffect(() => {

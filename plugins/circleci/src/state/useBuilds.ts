@@ -64,7 +64,7 @@ const mapSourceDetails = (buildData: BuildSummary) => {
     branchName: String(buildData.branch),
     commit: {
       hash: String(buildData.vcs_revision),
-      shortHash: String(buildData.vcs_revision).substr(0, 7),
+      shortHash: String(buildData.vcs_revision).slice(0, 7),
       committerName: buildData.committer_name,
       url: commitDetails.commit_url,
     },

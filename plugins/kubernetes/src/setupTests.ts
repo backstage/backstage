@@ -16,6 +16,7 @@
 import '@testing-library/jest-dom';
 // eslint-disable-next-line no-restricted-imports
 import { TextDecoder, TextEncoder } from 'util';
+import 'cross-fetch/polyfill';
 
 // These are missing from jest-node, so not available on global.
 Object.defineProperty(global, 'TextEncoder', {

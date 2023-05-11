@@ -193,7 +193,7 @@ export interface ImportInfoCardProps {
 }
 
 // Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ImportState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "ImportState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type ImportState = State & {
@@ -346,7 +346,7 @@ export interface StepPrepareCreatePullRequestProps {
       notRepeatable?: boolean;
     },
   ) => void;
-  // Warning: (ae-forgotten-export) The symbol "FormData" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "FormData_2" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   renderFormFields: (

@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import fetch from 'node-fetch';
 import plimit from 'p-limit';
 import { getVaultConfig, VaultConfig } from '../config';
@@ -56,7 +56,7 @@ type RenewTokenResponse = {
  */
 export interface VaultApi {
   /**
-   * Returns the URL to acces the Vault UI with the defined config.
+   * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;
   /**
@@ -103,6 +103,8 @@ export class VaultClient implements VaultApi {
       return (await response.json()) as T;
     } else if (response.status === 404) {
       throw new NotFoundError(`No secrets found in path '${path}'`);
+    } else if (response.status === 403) {
+      throw new NotAllowedError(response.statusText);
     }
     throw new Error(
       `Unexpected error while fetching secrets from path '${path}'`,
@@ -133,11 +135,13 @@ export class VaultClient implements VaultApi {
             )),
           );
         } else {
+          const vaultUrl =
+            this.vaultConfig.publicUrl || this.vaultConfig.baseUrl;
           secrets.push({
             name: secret,
             path: secretPath,
-            editUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+            editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
+            showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
           });
         }
       }),

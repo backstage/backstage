@@ -1,5 +1,6 @@
 name: CI
 on:
+  # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
     paths-ignore:
       - 'microsite/**'
@@ -17,12 +18,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Install ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -33,7 +35,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -47,12 +49,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Verify ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -63,9 +66,12 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: verify yarn dependency duplicates
+        run: node scripts/verify-lockfile-duplicates.js
 
       - name: verify changesets
         run: node scripts/verify-changesets.js
@@ -88,6 +94,9 @@ jobs:
 
       - name: verify api reference
         run: node scripts/verify-api-reference.js
+
+      - name: verify openapi yaml file matches generated ts file
+        run: yarn backstage-repo-tools schema:openapi:verify
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -121,8 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
+    name: Test ${{ matrix.node-version }}
     services:
       postgres13:
         image: postgres:13
@@ -178,40 +188,16 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
-      - name: check for yarn.lock changes
-        id: yarn-lock
-        run: git diff --quiet origin/master HEAD -- yarn.lock
-        continue-on-error: true
-
       - name: lint changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn backstage-cli repo lint --since origin/master
 
-      - name: lint all packages
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn backstage-cli repo lint
-
       - name: test changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --since origin/master
         env:
-          BACKSTAGE_NEXT_TESTS: 1
-          BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
-
-      - name: test all packages (and upload coverage)
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: |
-          yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --coverage
-          bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
-        env:
-          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}

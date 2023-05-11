@@ -15,7 +15,6 @@
  */
 import {
   Box,
-  Link as MaterialLink,
   Paper,
   Table,
   TableBody,
@@ -102,10 +101,12 @@ const BuildWithStepsView = () => {
                 <Typography noWrap>Jenkins</Typography>
               </TableCell>
               <TableCell>
-                <MaterialLink target="_blank" href={value?.url}>
-                  View on Jenkins{' '}
-                  <ExternalLinkIcon className={classes.externalLinkIcon} />
-                </MaterialLink>
+                {value?.url && (
+                  <Link to={value.url}>
+                    View on Jenkins{' '}
+                    <ExternalLinkIcon className={classes.externalLinkIcon} />
+                  </Link>
+                )}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -114,10 +115,12 @@ const BuildWithStepsView = () => {
                 <Typography noWrap>GitHub</Typography>
               </TableCell>
               <TableCell>
-                <MaterialLink target="_blank" href={value?.source?.url}>
-                  View on GitHub{' '}
-                  <ExternalLinkIcon className={classes.externalLinkIcon} />
-                </MaterialLink>
+                {value?.source?.url && (
+                  <Link to={value.source.url}>
+                    View on GitHub{' '}
+                    <ExternalLinkIcon className={classes.externalLinkIcon} />
+                  </Link>
+                )}
               </TableCell>
             </TableRow>
           </TableBody>

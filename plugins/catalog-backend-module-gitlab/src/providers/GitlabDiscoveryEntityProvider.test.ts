@@ -15,13 +15,17 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
+import { ConfigReader } from '@backstage/config';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -330,6 +334,220 @@ describe('GitlabDiscoveryEntityProvider', () => {
               presence: 'optional',
               target:
                 'https://api.gitlab.example/john/example/-/blob/master/catalog-info.yaml',
+              type: 'url',
+            },
+          },
+          locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+        },
+      ],
+    });
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+            },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id',
+    );
+  });
+
+  it('single simple provider config with schedule in config', async () => {
+    const schedule = new PersistingTaskRunner();
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: 'PT3M',
+              },
+            },
+          },
+        },
+      },
+    });
+    const providers = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      scheduler,
+    });
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual(
+      'GitlabDiscoveryEntityProvider:test-id',
+    );
+  });
+
+  it('should filter found projects based on the branch', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              branch: 'test',
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    server.use(
+      rest.get(
+        `https://api.gitlab.example/api/v4/projects`,
+        (_req, res, ctx) => {
+          const response = [
+            {
+              id: 123,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/test-group/test-repo',
+              path_with_namespace: 'test-group/test-repo',
+            },
+            {
+              id: 124,
+              default_branch: 'master',
+              archived: false,
+              last_activity_at: new Date().toString(),
+              web_url: 'https://api.gitlab.example/john/example',
+              path_with_namespace: 'john/example',
+            },
+          ];
+          return res(ctx.json(response));
+        },
+      ),
+      rest.head(
+        'https://api.gitlab.example/api/v4/projects/test-group%2Ftest-repo/repository/files/catalog-info.yaml',
+        (_, res, ctx) => {
+          return res(ctx.status(404, 'Not Found'));
+        },
+      ),
+      rest.head(
+        'https://api.gitlab.example/api/v4/projects/john%2Fexample/repository/files/catalog-info.yaml',
+        (req, res, ctx) => {
+          if (req.url.searchParams.get('ref') === 'test') {
+            return res(ctx.status(200));
+          }
+          return res(ctx.status(404, 'Not Found'));
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Location',
+            metadata: {
+              annotations: {
+                'backstage.io/managed-by-location':
+                  'url:https://api.gitlab.example/john/example/-/blob/test/catalog-info.yaml',
+                'backstage.io/managed-by-origin-location':
+                  'url:https://api.gitlab.example/john/example/-/blob/test/catalog-info.yaml',
+              },
+              name: 'generated-232185d858fee049986d202c10316d634e76a3d1',
+            },
+            spec: {
+              presence: 'optional',
+              target:
+                'https://api.gitlab.example/john/example/-/blob/test/catalog-info.yaml',
               type: 'url',
             },
           },

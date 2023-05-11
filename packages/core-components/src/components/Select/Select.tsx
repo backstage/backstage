@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -30,6 +29,7 @@ import {
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
+
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
@@ -45,17 +45,17 @@ const BootstrapInput = withStyles(
         },
       },
       input: {
-        borderRadius: 4,
+        borderRadius: theme.shape.borderRadius,
         position: 'relative',
         backgroundColor: theme.palette.background.paper,
         border: '1px solid #ced4da',
-        fontSize: 16,
-        padding: '10px 26px 10px 12px',
+        fontSize: theme.typography.body1.fontSize,
+        padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
         transition: theme.transitions.create(['border-color', 'box-shadow']),
         fontFamily: 'Helvetica Neue',
         '&:focus': {
           background: theme.palette.background.paper,
-          borderRadius: 4,
+          borderRadius: theme.shape.borderRadius,
         },
       },
     }),
@@ -81,7 +81,7 @@ const useStyles = makeStyles(
       label: {
         transform: 'initial',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: theme.typography.body2.fontSize,
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         '&.Mui-focused': {
@@ -91,7 +91,7 @@ const useStyles = makeStyles(
       formLabel: {
         transform: 'initial',
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: theme.typography.body2.fontSize,
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         '&.Mui-focused': {
@@ -162,17 +162,15 @@ export function SelectComponent(props: SelectProps) {
   }, [triggerReset, multiple]);
 
   useEffect(() => {
-    if (selected !== undefined) {
-      setValue(selected);
-    }
-  }, [selected]);
+    setValue(selected || (multiple ? [] : ''));
+  }, [selected, multiple]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setValue(event.target.value as SelectedItems);
     onChange(event.target.value as SelectedItems);
   };
 
-  const handleClick = (event: React.ChangeEvent<any>) => {
+  const handleOpen = (event: React.ChangeEvent<any>) => {
     if (disabled) {
       event.preventDefault();
       return;
@@ -185,7 +183,7 @@ export function SelectComponent(props: SelectProps) {
     });
   };
 
-  const handleClickAway = () => {
+  const handleClose = () => {
     setOpen(false);
   };
 
@@ -196,89 +194,86 @@ export function SelectComponent(props: SelectProps) {
   };
 
   return (
-    <div className={classes.root}>
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formLabel}>{label}</InputLabel>
-          <Select
-            aria-label={label}
-            value={value}
-            native={native}
-            disabled={disabled}
-            data-testid="select"
-            displayEmpty
-            multiple={multiple}
-            margin={margin}
-            onChange={handleChange}
-            onClick={handleClick}
-            open={isOpen}
-            input={<BootstrapInput />}
-            label={label}
-            tabIndex={0}
-            renderValue={s =>
-              multiple && (value as any[]).length !== 0 ? (
-                <div className={classes.chips}>
-                  {(s as string[]).map(selectedValue => (
-                    <Chip
-                      key={items.find(el => el.value === selectedValue)?.value}
-                      label={
-                        items.find(el => el.value === selectedValue)?.label
-                      }
-                      clickable
-                      onDelete={handleDelete(selectedValue)}
-                      className={classes.chip}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Typography>
-                  {(value as any[]).length === 0
-                    ? placeholder || ''
-                    : items.find(el => el.value === s)?.label}
-                </Typography>
-              )
-            }
-            IconComponent={() =>
-              !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
-            }
-            MenuProps={{
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'left',
-              },
-              transformOrigin: {
-                vertical: 'top',
-                horizontal: 'left',
-              },
-              getContentAnchorEl: null,
-            }}
-          >
-            {placeholder && !multiple && (
-              <MenuItem value={[]}>{placeholder}</MenuItem>
-            )}
-            {native
-              ? items &&
-                items.map(item => (
-                  <option value={item.value} key={item.value}>
-                    {item.label}
-                  </option>
-                ))
-              : items &&
-                items.map(item => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {multiple && (
-                      <Checkbox
-                        color="primary"
-                        checked={(value as any[]).includes(item.value) || false}
-                        className={classes.checkbox}
-                      />
-                    )}
-                    {item.label}
-                  </MenuItem>
+    <Box className={classes.root}>
+      <FormControl className={classes.formControl}>
+        <InputLabel className={classes.formLabel}>{label}</InputLabel>
+        <Select
+          aria-label={label}
+          value={value}
+          native={native}
+          disabled={disabled}
+          data-testid="select"
+          displayEmpty
+          multiple={multiple}
+          margin={margin}
+          onChange={handleChange}
+          open={isOpen}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          input={<BootstrapInput />}
+          label={label}
+          tabIndex={0}
+          renderValue={s =>
+            multiple && (value as any[]).length !== 0 ? (
+              <Box className={classes.chips}>
+                {(s as string[]).map(selectedValue => (
+                  <Chip
+                    key={items.find(el => el.value === selectedValue)?.value}
+                    label={items.find(el => el.value === selectedValue)?.label}
+                    clickable
+                    onDelete={handleDelete(selectedValue)}
+                    className={classes.chip}
+                  />
                 ))}
-          </Select>
-        </FormControl>
-      </ClickAwayListener>
-    </div>
+              </Box>
+            ) : (
+              <Typography>
+                {(value as any[]).length === 0
+                  ? placeholder || ''
+                  : items.find(el => el.value === s)?.label}
+              </Typography>
+            )
+          }
+          IconComponent={() =>
+            !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
+          }
+          MenuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left',
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'left',
+            },
+            getContentAnchorEl: null,
+          }}
+        >
+          {placeholder && !multiple && (
+            <MenuItem value={[]}>{placeholder}</MenuItem>
+          )}
+          {native
+            ? items &&
+              items.map(item => (
+                <option value={item.value} key={item.value}>
+                  {item.label}
+                </option>
+              ))
+            : items &&
+              items.map(item => (
+                <MenuItem key={item.value} value={item.value}>
+                  {multiple && (
+                    <Checkbox
+                      color="primary"
+                      checked={(value as any[]).includes(item.value) || false}
+                      className={classes.checkbox}
+                    />
+                  )}
+                  {item.label}
+                </MenuItem>
+              ))}
+        </Select>
+      </FormControl>
+    </Box>
   );
 }

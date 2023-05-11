@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 jest.mock('./helpers');
 
 import os from 'os';
@@ -33,7 +34,7 @@ describe('fetch:plain', () => {
     }),
   );
   const reader: UrlReader = {
-    read: jest.fn(),
+    readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
   };

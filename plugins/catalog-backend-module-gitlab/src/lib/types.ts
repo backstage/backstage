@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
 export type GitlabGroupDescription = {
   id: number;
   web_url: string;
@@ -29,11 +31,58 @@ export type GitLabProject = {
   path_with_namespace?: string;
 };
 
+export type GitLabUser = {
+  id: number;
+  username: string;
+  email: string;
+  name: string;
+  state: string;
+  web_url: string;
+  avatar_url: string;
+  groups?: GitLabGroup[];
+};
+
+export type GitLabGroup = {
+  id: number;
+  name: string;
+  full_path: string;
+  description?: string;
+  parent_id?: number;
+};
+
+export type GitLabGroupMembersResponse = {
+  errors: { message: string }[];
+  data: {
+    group: {
+      groupMembers: {
+        nodes: { user: { id: string } }[];
+        pageInfo: {
+          endCursor: string;
+          hasNextPage: boolean;
+        };
+      };
+    };
+  };
+};
+
 export type GitlabProviderConfig = {
   host: string;
   group: string;
   id: string;
-  branch: string;
+  /**
+   * The name of the branch to be used, to discover catalog files.
+   */
+  branch?: string;
+  /**
+   * If no `branch` is configured and there is no default branch defined at the project as well, this fallback is used
+   * to discover catalog files.
+   * Defaults to: `master`
+   */
+  fallbackBranch: string;
   catalogFile: string;
   projectPattern: RegExp;
+  userPattern: RegExp;
+  groupPattern: RegExp;
+  orgEnabled?: boolean;
+  schedule?: TaskScheduleDefinition;
 };

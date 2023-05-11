@@ -3,6 +3,9 @@ kind: Component
 metadata:
   name: shuffle-api
   description: Shuffle API
+  labels:
+    goVersion: go1.15.3
+    category: music
   tags:
     - go
 spec:

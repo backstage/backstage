@@ -1,15 +1,27 @@
 {
   "name": "@backstage/plugin-catalog-react",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
-  "version": "1.2.0-next.2",
+  "version": "1.6.0-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "web-library"
@@ -24,7 +36,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -47,19 +59,21 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "classnames": "^2.2.6",
     "jwt-decode": "^3.1.0",
     "lodash": "^4.17.21",
+    "material-ui-popup-state": "^1.9.3",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
     "yaml": "^2.0.0",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.10.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0",
-    "react-router": "6.0.0-beta.0 || ^6.3.0"
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -67,6 +81,7 @@
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/react-hooks": "^8.0.0",
@@ -77,7 +92,6 @@
     "react-test-renderer": "^16.13.1"
   },
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ]
 }

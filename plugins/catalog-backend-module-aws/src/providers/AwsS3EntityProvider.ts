@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { AwsCredentials } from '../credentials/AwsCredentials';
 import { readAwsS3Configs } from './config';
 import { AwsS3Config } from './types';
@@ -49,7 +49,8 @@ export class AwsS3EntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): AwsS3EntityProvider[] {
     const providerConfigs = readAwsS3Configs(configRoot);
@@ -67,22 +68,35 @@ export class AwsS3EntityProvider implements EntityProvider {
       throw new Error('No integration found for awsS3');
     }
 
-    return providerConfigs.map(
-      providerConfig =>
-        new AwsS3EntityProvider(
-          providerConfig,
-          integration,
-          options.logger,
-          options.schedule,
-        ),
-    );
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
+    return providerConfigs.map(providerConfig => {
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for awsS3-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
+      return new AwsS3EntityProvider(
+        providerConfig,
+        integration,
+        options.logger,
+        taskRunner,
+      );
+    });
   }
 
   private constructor(
     private readonly config: AwsS3Config,
     integration: AwsS3Integration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.logger = logger.child({
       target: this.getProviderName(),
@@ -99,13 +113,13 @@ export class AwsS3EntityProvider implements EntityProvider {
       s3ForcePathStyle: integration.config.s3ForcePathStyle,
     });
 
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -117,7 +131,7 @@ export class AwsS3EntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

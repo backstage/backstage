@@ -381,7 +381,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -412,7 +412,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -452,7 +452,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -495,7 +495,7 @@ describe('LunrSearchEngine', () => {
         inspectableSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -544,7 +544,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -583,7 +583,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -623,7 +623,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -663,7 +663,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -708,7 +708,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -763,10 +763,10 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer1)
+      await TestPipeline.fromIndexer(indexer1)
         .withDocuments(mockDocuments)
         .execute();
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -811,7 +811,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -871,14 +871,14 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
       const indexer2 = await getActualIndexer(
         testLunrSearchEngine,
         'test-index-2',
       );
-      await TestPipeline.withSubject(indexer2)
+      await TestPipeline.fromIndexer(indexer2)
         .withDocuments(mockDocuments2)
         .execute();
 
@@ -924,7 +924,7 @@ describe('LunrSearchEngine', () => {
         testLunrSearchEngine,
         'test-index',
       );
-      await TestPipeline.withSubject(indexer)
+      await TestPipeline.fromIndexer(indexer)
         .withDocuments(mockDocuments)
         .execute();
 
@@ -974,7 +974,7 @@ describe('LunrSearchEngine', () => {
       }));
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1026,7 +1026,7 @@ describe('LunrSearchEngine', () => {
 
       // Get the indexer and invoke its close handler.
       await inspectableSearchEngine.getIndexer('test-index');
-      const onClose = indexerMock.on.mock.calls[0][1] as Function;
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
       onClose();
 
       // Ensure mocked methods were called.
@@ -1042,6 +1042,60 @@ describe('LunrSearchEngine', () => {
       expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
         'existing-location': doc,
         'new-location': doc,
+      });
+    });
+
+    it('should not replace index or docs if no docs were indexed', async () => {
+      // Set up an inspectable search engine to pre-set some data.
+      const doc = { title: 'A doc', text: 'test', location: 'some-location' };
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
+        logger: getVoidLogger(),
+      });
+      inspectableSearchEngine.setDocStore({ 'existing-location': doc });
+
+      // Mock methods called by close handler (resolving no documents)
+      indexerMock.buildIndex.mockReturnValueOnce('expected-index');
+      indexerMock.getDocumentStore.mockReturnValueOnce({});
+
+      // Get the indexer and invoke its close handler.
+      await inspectableSearchEngine.getIndexer('test-index');
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
+      onClose();
+
+      // Ensure buildIndex method was not called.
+      expect(indexerMock.buildIndex).not.toHaveBeenCalled();
+
+      // Ensure pre-existing documents still exist in the store
+      expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
+        'existing-location': doc,
+      });
+    });
+
+    it('should not replace index or docs if an error was thrown', async () => {
+      // Set up an inspectable search engine to pre-set some data.
+      const doc = { title: 'A doc', text: 'test', location: 'some-location' };
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
+        logger: getVoidLogger(),
+      });
+      inspectableSearchEngine.setDocStore({ 'existing-location': doc });
+
+      // Mock methods called by close handler (resolving no documents)
+      indexerMock.buildIndex.mockReturnValueOnce('expected-index');
+      indexerMock.getDocumentStore.mockReturnValueOnce({});
+
+      // Get the indexer and invoke its close handler after firing an error.
+      await inspectableSearchEngine.getIndexer('test-index');
+      const onError = indexerMock.on.mock.calls[0][1] as Function;
+      const onClose = indexerMock.on.mock.calls[1][1] as Function;
+      onError(new Error('Some collator error'));
+      onClose();
+
+      // Ensure buildIndex method was not called.
+      expect(indexerMock.buildIndex).not.toHaveBeenCalled();
+
+      // Ensure pre-existing documents still exist in the store
+      expect(inspectableSearchEngine.getDocStore()).toStrictEqual({
+        'existing-location': doc,
       });
     });
   });
@@ -1112,7 +1166,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1149,7 +1203,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 
@@ -1186,7 +1240,7 @@ describe('stopword testing', () => {
 
     const indexer = await getActualIndexer(testLunrSearchEngine, 'test-index');
 
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments(mockDocuments)
       .execute();
 

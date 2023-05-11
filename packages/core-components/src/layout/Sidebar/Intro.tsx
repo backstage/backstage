@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
-import Link from '@material-ui/core/Link';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useContext, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
+import React, { useContext, useState } from 'react';
+
 import {
-  SidebarConfigContext,
-  SidebarConfig,
   SIDEBAR_INTRO_LOCAL_STORAGE,
+  SidebarConfig,
+  SidebarConfigContext,
 } from './config';
 import { SidebarDivider } from './Items';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
@@ -45,8 +46,8 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       // XXX (@koroeskohr): should I be using a Mui theme variable?
       fontSize: 12,
       width: props.sidebarConfig.drawerWidthOpen,
-      marginTop: 18,
-      marginBottom: 12,
+      marginTop: theme.spacing(2.25),
+      marginBottom: theme.spacing(1.5),
       paddingLeft: props.sidebarConfig.iconPadding,
       paddingRight: props.sidebarConfig.iconPadding,
     }),
@@ -54,13 +55,13 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       display: 'flex',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginTop: 12,
+      marginTop: theme.spacing(1.5),
     },
     introDismissLink: {
       color: '#dddddd',
       display: 'flex',
       alignItems: 'center',
-      marginBottom: 4,
+      marginBottom: theme.spacing(0.5),
       '&:hover': {
         color: theme.palette.linkHover,
         transition: theme.transitions.create('color', {
@@ -78,7 +79,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
     introDismissIcon: {
       width: 18,
       height: 18,
-      marginRight: 12,
+      marginRight: theme.spacing(1.5),
     },
   }),
   { name: 'BackstageSidebarIntro' },
@@ -103,22 +104,17 @@ export function IntroCard(props: IntroCardProps) {
   const handleClose = () => onClose();
 
   return (
-    <div className={classes.introCard}>
+    <Box className={classes.introCard}>
       <Typography variant="subtitle2">{text}</Typography>
-      <div className={classes.introDismiss}>
-        <Link
-          component="button"
-          onClick={handleClose}
-          underline="none"
-          className={classes.introDismissLink}
-        >
+      <Box className={classes.introDismiss}>
+        <IconButton onClick={handleClose} className={classes.introDismissLink}>
           <CloseIcon className={classes.introDismissIcon} />
           <Typography component="span" className={classes.introDismissText}>
             Dismiss
           </Typography>
-        </Link>
-      </div>
-    </div>
+        </IconButton>
+      </Box>
+    </Box>
   );
 }
 
@@ -156,7 +152,7 @@ export function SidebarIntro(_props: {}) {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
   };
-  const [dismissedIntro, setDismissedIntro] =
+  const { value: dismissedIntro, set: setDismissedIntro } =
     useLocalStorageValue<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =

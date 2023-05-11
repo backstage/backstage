@@ -16,12 +16,15 @@
 
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
-// @ts-expect-error
-import KeyvMemcache from 'keyv-memcache';
+import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
-import { Logger } from 'winston';
+import {
+  CacheService,
+  CacheServiceOptions,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
-import { DefaultCacheClient, CacheClient } from './CacheClient';
+import { DefaultCacheClient } from './CacheClient';
 import { NoStore } from './NoStore';
 import { CacheManagerOptions, PluginCacheManager } from './types';
 
@@ -51,7 +54,7 @@ export class CacheManager {
    */
   private readonly memoryStore = new Map();
 
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
@@ -80,7 +83,7 @@ export class CacheManager {
   private constructor(
     store: string,
     connectionString: string,
-    logger: Logger,
+    logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
@@ -100,23 +103,32 @@ export class CacheManager {
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {
-      getClient: (opts = {}): CacheClient => {
-        const concreteClient = this.getClientWithTtl(pluginId, opts.defaultTtl);
+      getClient: (defaultOptions = {}) => {
+        const clientFactory = (options: CacheServiceOptions) => {
+          const concreteClient = this.getClientWithTtl(
+            pluginId,
+            options.defaultTtl,
+          );
 
-        // Always provide an error handler to avoid killing the process.
-        concreteClient.on('error', (err: Error) => {
-          // In all cases, just log the error.
-          this.logger.error(err);
+          // Always provide an error handler to avoid stopping the process.
+          concreteClient.on('error', (err: Error) => {
+            // In all cases, just log the error.
+            this.logger.error('Failed to create cache client', err);
 
-          // Invoke any custom error handler if provided.
-          if (typeof this.errorHandler === 'function') {
-            this.errorHandler(err);
-          }
-        });
+            // Invoke any custom error handler if provided.
+            if (typeof this.errorHandler === 'function') {
+              this.errorHandler(err);
+            }
+          });
 
-        return new DefaultCacheClient({
-          client: concreteClient,
-        });
+          return concreteClient;
+        };
+
+        return new DefaultCacheClient(
+          clientFactory(defaultOptions),
+          clientFactory,
+          defaultOptions,
+        );
       },
     };
   }
@@ -164,4 +176,13 @@ export class CacheManager {
       store: new NoStore(),
     });
   }
+}
+
+/** @public */
+export function cacheToPluginCacheManager(
+  cache: CacheService,
+): PluginCacheManager {
+  return {
+    getClient: (opts: CacheServiceOptions) => cache.withOptions(opts),
+  };
 }

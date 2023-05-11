@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import CSS from 'csstype';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import CSS from 'csstype';
+import React from 'react';
 
 type Props = CSS.Properties & {
   shorthand?: boolean;
@@ -26,9 +26,9 @@ type Props = CSS.Properties & {
 export type LifecycleClassKey = 'alpha' | 'beta';
 
 const useStyles = makeStyles(
-  {
+  theme => ({
     alpha: {
-      color: '#ffffff',
+      color: theme.palette.common.white,
       fontFamily: 'serif',
       fontWeight: 'normal',
       fontStyle: 'italic',
@@ -39,7 +39,7 @@ const useStyles = makeStyles(
       fontWeight: 'normal',
       fontStyle: 'italic',
     },
-  },
+  }),
   { name: 'BackstageLifecycle' },
 );
 
@@ -47,15 +47,16 @@ export function Lifecycle(props: Props) {
   const classes = useStyles(props);
   const { shorthand, alpha } = props;
   return shorthand ? (
-    <span
+    <Typography
+      component="span"
       className={classes[alpha ? 'alpha' : 'beta']}
       style={{ fontSize: '120%' }}
     >
       {alpha ? <>&alpha;</> : <>&beta;</>}
-    </span>
+    </Typography>
   ) : (
-    <span className={classes[alpha ? 'alpha' : 'beta']}>
+    <Typography component="span" className={classes[alpha ? 'alpha' : 'beta']}>
       {alpha ? 'Alpha' : 'Beta'}
-    </span>
+    </Typography>
   );
 }

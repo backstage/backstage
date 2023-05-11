@@ -101,7 +101,9 @@ export class MockStorageApi implements StorageApi {
     });
   }
 
-  observe$<T>(key: string): Observable<StorageValueSnapshot<T>> {
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>> {
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
@@ -109,7 +111,7 @@ export class MockStorageApi implements StorageApi {
     return `${this.namespace}/${encodeURIComponent(key)}`;
   }
 
-  private notifyChanges<T>(message: StorageValueSnapshot<T>) {
+  private notifyChanges<T extends JsonValue>(message: StorageValueSnapshot<T>) {
     for (const subscription of this.subscribers) {
       subscription.next(message);
     }

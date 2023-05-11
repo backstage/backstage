@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  gitHubIssuesPlugin,
-  GitHubIssuesPage,
-  GitHubIssuesCard,
-} from './plugin';
 
-export type { GitHubIssuesProps } from './components/GitHubIssues';
+export {
+  githubIssuesPlugin,
+  GithubIssuesPage,
+  GithubIssuesCard,
+} from './plugin';
+export type { GithubIssuesProps } from './components/GithubIssues';
 export type {
   GithubIssuesFilters,
   GithubIssuesOrdering,
-  GitubIssuesByRepoOptions,
-} from './api/gitHubIssuesApi';
+  GithubIssuesByRepoOptions,
+} from './api/githubIssuesApi';

@@ -164,7 +164,7 @@ function EditModal({
   onSubmit,
 }: {
   todo?: Todo;
-  onSubmit(todo: Todo): any;
+  onSubmit(t: Todo): any;
   onCancel(): any;
 }) {
   const title = useRef('');

@@ -13,134 +13,130 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  configServiceRef,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
-  loggerToWinstonLogger,
-  permissionsServiceRef,
-  urlReaderServiceRef,
-  httpRouterServiceRef,
-  createExtensionPoint,
+  coreServices,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { TemplateFilter, TemplateGlobal } from './lib';
-import { createBuiltinActions, TaskBroker, TemplateAction } from './scaffolder';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import {
+  scaffolderActionsExtensionPoint,
+  ScaffolderActionsExtensionPoint,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateFilter,
+  TemplateGlobal,
+  TaskBroker,
+} from '@backstage/plugin-scaffolder-backend';
+import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
  * Catalog plugin options
+ *
  * @alpha
  */
 export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction<any, any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 };
 
-/**
- * @alpha
- * TODO: MOVE to scaffolder-node.
- */
-interface ScaffolderActionsExtensionPoint {
-  addActions(...actions: TemplateAction<any>[]): void;
-}
-
 class ScaffolderActionsExtensionPointImpl
   implements ScaffolderActionsExtensionPoint
 {
-  #actions = new Array<TemplateAction<any>>();
+  #actions = new Array<TemplateAction<any, any>>();
+
   addActions(...actions: TemplateAction<any>[]): void {
     this.#actions.push(...actions);
   }
+
   get actions() {
     return this.#actions;
   }
 }
 
 /**
- * @alpha
- * TODO: MOVE to scaffolder-node.
- */
-export const scaffolderActionsExtensionPoint =
-  createExtensionPoint<ScaffolderActionsExtensionPoint>({
-    id: 'scaffolder.actions',
-  });
-
-/**
  * Catalog plugin
+ *
  * @alpha
  */
-export const scaffolderPlugin = createBackendPlugin({
-  id: 'scaffolder',
-  register(env, options: ScaffolderPluginOptions) {
-    const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
-    env.registerExtensionPoint(
-      scaffolderActionsExtensionPoint,
-      actionsExtensions,
-    );
+export const scaffolderPlugin = createBackendPlugin(
+  (options?: ScaffolderPluginOptions) => ({
+    pluginId: 'scaffolder',
+    register(env) {
+      const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
 
-    env.registerInit({
-      deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        reader: urlReaderServiceRef,
-        permissions: permissionsServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
-        catalogClient: catalogServiceRef,
-      },
-      async init({
-        logger,
-        config,
-        reader,
-        database,
-        httpRouter,
-        catalogClient,
-      }) {
-        const {
-          additionalTemplateFilters,
-          taskBroker,
-          taskWorkers,
-          additionalTemplateGlobals,
-        } = options;
-        const log = loggerToWinstonLogger(logger);
+      env.registerExtensionPoint(
+        scaffolderActionsExtensionPoint,
+        actionsExtensions,
+      );
 
-        const actions = options.actions || [
-          ...actionsExtensions.actions,
-          ...createBuiltinActions({
-            integrations: ScmIntegrations.fromConfig(config),
+      env.registerInit({
+        deps: {
+          logger: coreServices.logger,
+          config: coreServices.config,
+          reader: coreServices.urlReader,
+          permissions: coreServices.permissions,
+          database: coreServices.database,
+          httpRouter: coreServices.httpRouter,
+          catalogClient: catalogServiceRef,
+        },
+        async init({
+          logger,
+          config,
+          reader,
+          database,
+          httpRouter,
+          catalogClient,
+          permissions,
+        }) {
+          const {
+            additionalTemplateFilters,
+            taskBroker,
+            taskWorkers,
+            additionalTemplateGlobals,
+          } = options ?? {};
+          const log = loggerToWinstonLogger(logger);
+
+          const actions = options?.actions || [
+            ...actionsExtensions.actions,
+            ...createBuiltinActions({
+              integrations: ScmIntegrations.fromConfig(config),
+              catalogClient,
+              reader,
+              config,
+              additionalTemplateFilters,
+              additionalTemplateGlobals,
+            }),
+          ];
+
+          const actionIds = actions.map(action => action.id).join(', ');
+          log.info(
+            `Starting scaffolder with the following actions enabled ${actionIds}`,
+          );
+
+          const router = await createRouter({
+            logger: log,
+            config,
+            database,
             catalogClient,
             reader,
-            config,
+            actions,
+            taskBroker,
+            taskWorkers,
             additionalTemplateFilters,
             additionalTemplateGlobals,
-          }),
-        ];
-
-        const actionIds = actions.map(action => action.id).join(', ');
-        log.info(
-          `Starting scaffolder with the following actions enabled ${actionIds}`,
-        );
-
-        const router = await createRouter({
-          logger: log,
-          config,
-          database,
-          catalogClient,
-          reader,
-          actions,
-          taskBroker,
-          taskWorkers,
-          additionalTemplateFilters,
-          additionalTemplateGlobals,
-        });
-        httpRouter.use(router);
-      },
-    });
-  },
-});
+            permissions,
+          });
+          httpRouter.use(router);
+        },
+      });
+    },
+  }),
+);

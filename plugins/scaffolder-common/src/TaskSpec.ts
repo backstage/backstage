@@ -15,7 +15,7 @@
  */
 
 import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
-import type { JsonValue, JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 
 /**
  * Information about a template that is stored on a task specification.
@@ -51,7 +51,7 @@ export type TemplateInfo = {
  */
 export interface TaskStep {
   /**
-   * A unqiue identifier for this step.
+   * A unique identifier for this step.
    */
   id: string;
   /**

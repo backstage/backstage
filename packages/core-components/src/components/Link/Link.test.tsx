@@ -23,7 +23,7 @@ import {
 } from '@backstage/test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
 import { ConfigReader } from '@backstage/config';
 
@@ -107,58 +107,6 @@ describe('<Link />', () => {
     });
   });
 
-  describe('resolves a sub-path correctly', () => {
-    it('when it starts with base path', async () => {
-      const testString = 'This is test string';
-      const linkText = 'Navigate!';
-      const configApi = new ConfigReader({
-        app: { baseUrl: 'http://localhost:3000/example' },
-      });
-
-      const { getByText } = render(
-        wrapInTestApp(
-          <TestApiProvider apis={[[configApiRef, configApi]]}>
-            <Link to="/example/test">{linkText}</Link>
-            <Routes>
-              <Route path="/example/test" element={<p>{testString}</p>} />
-            </Routes>
-          </TestApiProvider>,
-        ),
-      );
-
-      expect(() => getByText(testString)).toThrow();
-      fireEvent.click(getByText(linkText));
-      await waitFor(() => {
-        expect(getByText(testString)).toBeInTheDocument();
-      });
-    });
-
-    it('when it does not start with base path', async () => {
-      const testString = 'This is test string';
-      const linkText = 'Navigate!';
-      const configApi = new ConfigReader({
-        app: { baseUrl: 'http://localhost:3000/example' },
-      });
-
-      const { getByText } = render(
-        wrapInTestApp(
-          <TestApiProvider apis={[[configApiRef, configApi]]}>
-            <Link to="/test">{linkText}</Link>
-            <Routes>
-              <Route path="/example/test" element={<p>{testString}</p>} />
-            </Routes>
-          </TestApiProvider>,
-        ),
-      );
-
-      expect(() => getByText(testString)).toThrow();
-      fireEvent.click(getByText(linkText));
-      await waitFor(() => {
-        expect(getByText(testString)).toBeInTheDocument();
-      });
-    });
-  });
-
   describe('isExternalUri', () => {
     it.each([
       [true, 'http://'],
@@ -224,5 +172,25 @@ describe('<Link />', () => {
         expect(result.current).toBe(path);
       });
     });
+  });
+
+  it('throws an error when attempting to link to script code', () => {
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      render(wrapInTestApp(<Link to="javascript:alert('hello')">Script</Link>)),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Link component rejected javascript: URL as a security precaution"`,
+    );
+  });
+});
+
+describe('window.open', () => {
+  it('throws an error when attempting to open script code', () => {
+    expect(() =>
+      // eslint-disable-next-line no-script-url
+      window.open("javascript:alert('hello')"),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Rejected window.open() with a javascript: URL as a security precaution"`,
+    );
   });
 });

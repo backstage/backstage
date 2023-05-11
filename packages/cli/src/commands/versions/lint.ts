@@ -18,6 +18,7 @@ import { OptionValues } from 'commander';
 import { Lockfile } from '../../lib/versioning';
 import { paths } from '../../lib/paths';
 import partition from 'lodash/partition';
+import { PackageGraph } from '@backstage/cli-node';
 
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];
@@ -52,9 +53,13 @@ export default async (cmd: OptionValues) => {
 
   let success = true;
 
-  const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+  const lockfile = await Lockfile.load(lockfilePath);
   const result = lockfile.analyze({
     filter: includedFilter,
+    localPackages: PackageGraph.fromPackages(
+      await PackageGraph.listTargetPackages(),
+    ),
   });
 
   logArray(
@@ -65,7 +70,7 @@ export default async (cmd: OptionValues) => {
 
   if (fix) {
     lockfile.replaceVersions(result.newVersions);
-    await lockfile.save();
+    await lockfile.save(lockfilePath);
   } else {
     const [newVersionsForbidden, newVersionsAllowed] = partition(
       result.newVersions,

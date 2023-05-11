@@ -15,37 +15,67 @@
  */
 
 import fs from 'fs-extra';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
-import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { z } from 'zod';
+
+const id = 'catalog:write';
+
+const examples = [
+  {
+    description: 'Write a catalog yaml file',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: id,
+          id: 'create-catalog-info-file',
+          name: 'Create catalog file',
+          input: {
+            entity: {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test',
+                annotations: {},
+              },
+              spec: {
+                type: 'service',
+                lifecycle: 'production',
+                owner: 'default/owner',
+              },
+            },
+          },
+        },
+      ],
+    }),
+  },
+];
 
 /**
  * Writes a catalog descriptor file containing the provided entity to a path in the workspace.
  * @public
  */
+
 export function createCatalogWriteAction() {
-  return createTemplateAction<{ filePath?: string; entity: Entity }>({
-    id: 'catalog:write',
+  return createTemplateAction({
+    id,
     description: 'Writes the catalog-info.yaml for your template',
     schema: {
-      input: {
-        type: 'object',
-        properties: {
-          filePath: {
-            title: 'Catalog file path',
-            description: 'Defaults to catalog-info.yaml',
-            type: 'string',
-          },
-          entity: {
-            title: 'Entity info to write catalog-info.yaml',
-            description:
-              'You can provide the same values used in the Entity schema.',
-            type: 'object',
-          },
-        },
-      },
+      input: z.object({
+        filePath: z
+          .string()
+          .optional()
+          .describe('Defaults to catalog-info.yaml'),
+        // TODO: this should reference an zod entity validator if it existed.
+        entity: z
+          .record(z.any())
+          .describe(
+            'You can provide the same values used in the Entity schema.',
+          ),
+      }),
     },
+    examples,
     supportsDryRun: true,
     async handler(ctx) {
       ctx.logStream.write(`Writing catalog-info.yaml`);

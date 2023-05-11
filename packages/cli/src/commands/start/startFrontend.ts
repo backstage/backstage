@@ -19,9 +19,10 @@ import chalk from 'chalk';
 import uniq from 'lodash/uniq';
 import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
+import { PackageGraph } from '@backstage/cli-node';
 import { Lockfile } from '../../lib/versioning';
-import { includedFilter } from '../versions/lint';
+import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
+import { paths } from '../../lib/paths';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -36,10 +37,13 @@ export async function startFrontend(options: StartAppOptions) {
     const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
     const result = lockfile.analyze({
       filter: includedFilter,
+      localPackages: PackageGraph.fromPackages(
+        await PackageGraph.listTargetPackages(),
+      ),
     });
-    const problemPackages = [...result.newVersions, ...result.newRanges].map(
-      ({ name }) => name,
-    );
+    const problemPackages = [...result.newVersions, ...result.newRanges]
+      .map(({ name }) => name)
+      .filter(forbiddenDuplicatesFilter);
 
     if (problemPackages.length > 1) {
       console.log(
@@ -76,7 +80,7 @@ export async function startFrontend(options: StartAppOptions) {
         `⚠️   Conflict between app baseUrl and backend baseUrl:
 
     app.baseUrl:     ${appBaseUrl}
-    backend.baseUrl: ${appBaseUrl}
+    backend.baseUrl: ${backendBaseUrl}
 
     Must have unique hostname and/or ports.
 

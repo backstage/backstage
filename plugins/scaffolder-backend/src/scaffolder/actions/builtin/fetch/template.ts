@@ -19,7 +19,7 @@ import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
@@ -28,6 +28,7 @@ import {
   SecureTemplater,
   TemplateGlobal,
 } from '../../../../lib/templating/SecureTemplater';
+import { createDefaultFilters } from '../../../../lib/templating/filters';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -49,6 +50,8 @@ export function createFetchTemplateAction(options: {
     additionalTemplateGlobals,
   } = options;
 
+  const defaultTemplateFilters = createDefaultFilters({ integrations });
+
   return createTemplateAction<{
     url: string;
     targetPath?: string;
@@ -62,10 +65,11 @@ export function createFetchTemplateAction(options: {
     copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
+    replace?: boolean;
   }>({
     id: 'fetch:template',
     description:
-      "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
+      'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
         type: 'object',
@@ -117,6 +121,12 @@ export function createFetchTemplateAction(options: {
             description:
               'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
             type: ['string', 'boolean'],
+          },
+          replace: {
+            title: 'Replace files',
+            description:
+              'If set, replace files in targetPath instead of skipping existing ones.',
+            type: 'boolean',
           },
         },
       },
@@ -224,8 +234,11 @@ export function createFetchTemplateAction(options: {
 
       const renderTemplate = await SecureTemplater.loadRenderer({
         cookiecutterCompat: ctx.input.cookiecutterCompat,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
+        templateFilters: {
+          ...defaultTemplateFilters,
+          ...additionalTemplateFilters,
+        },
+        templateGlobals: additionalTemplateGlobals,
       });
 
       for (const location of allEntriesInTemplate) {
@@ -261,7 +274,7 @@ export function createFetchTemplateAction(options: {
         }
 
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-        if (fs.existsSync(outputPath)) {
+        if (fs.existsSync(outputPath) && !ctx.input.replace) {
           continue;
         }
 
@@ -311,7 +324,7 @@ function containsSkippedContent(localOutputPath: string): boolean {
   // if the path is empty means that there is a file skipped in the root
   // if the path starts with a separator it means that the root directory has been skipped
   // if the path includes // means that there is a subdirectory skipped
-  // All paths returned are considered with / seperator because of globby returning the linux seperator for all os'.
+  // All paths returned are considered with / separator because of globby returning the linux separator for all os'.
   return (
     localOutputPath === '' ||
     localOutputPath.startsWith('/') ||

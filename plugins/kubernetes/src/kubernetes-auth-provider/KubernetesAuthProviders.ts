@@ -20,6 +20,7 @@ import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServerSideKubernetesAuthProvider } from './ServerSideAuthProvider';
 import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { OidcKubernetesAuthProvider } from './OidcKubernetesAuthProvider';
+import { AksKubernetesAuthProvider } from './AksKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
@@ -28,6 +29,7 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   >;
 
   constructor(options: {
+    microsoftAuthApi: OAuthApi;
     googleAuthApi: OAuthApi;
     oidcProviders?: { [key: string]: OpenIdConnectApi };
   }) {
@@ -56,6 +58,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       'localKubectlProxy',
       new ServerSideKubernetesAuthProvider(),
     );
+    this.kubernetesAuthProviderMap.set(
+      'aks',
+      new AksKubernetesAuthProvider(options.microsoftAuthApi),
+    );
 
     if (options.oidcProviders) {
       Object.keys(options.oidcProviders).forEach(provider => {
@@ -80,6 +86,24 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       return await kubernetesAuthProvider.decorateRequestBodyForAuth(
         requestBody,
       );
+    }
+
+    if (authProvider.startsWith('oidc.')) {
+      throw new Error(
+        `KubernetesAuthProviders has no oidcProvider configured for ${authProvider}`,
+      );
+    }
+    throw new Error(
+      `authProvider "${authProvider}" has no KubernetesAuthProvider defined for it`,
+    );
+  }
+
+  async getCredentials(authProvider: string): Promise<{ token?: string }> {
+    const kubernetesAuthProvider: KubernetesAuthProvider | undefined =
+      this.kubernetesAuthProviderMap.get(authProvider);
+
+    if (kubernetesAuthProvider) {
+      return await kubernetesAuthProvider.getCredentials();
     }
 
     if (authProvider.startsWith('oidc.')) {

@@ -19,11 +19,14 @@ import {
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
+import { CustomFieldExplorer } from './CustomFieldExplorer';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
-import { FieldExtensionOptions } from '../../extensions';
-import type { LayoutOptions } from '../../layouts';
+import {
+  type FieldExtensionOptions,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 
 type Selection =
   | {
@@ -32,6 +35,9 @@ type Selection =
     }
   | {
       type: 'form';
+    }
+  | {
+      type: 'field-explorer';
     };
 
 interface TemplateEditorPageProps {
@@ -62,6 +68,13 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         layouts={props.layouts}
       />
     );
+  } else if (selection?.type === 'field-explorer') {
+    content = (
+      <CustomFieldExplorer
+        customFieldExtensions={props.customFieldExtensions}
+        onClose={() => setSelection(undefined)}
+      />
+    );
   } else {
     content = (
       <Content>
@@ -73,6 +86,8 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
                 .catch(() => {});
             } else if (option === 'form') {
               setSelection({ type: 'form' });
+            } else if (option === 'field-explorer') {
+              setSelection({ type: 'field-explorer' });
             }
           }}
         />

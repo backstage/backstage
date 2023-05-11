@@ -22,8 +22,8 @@ import { useTooltipStyles as useStyles } from '../../utils/styles';
 /** @public */
 export type TooltipItem = {
   fill: string;
-  label: string;
-  value: string;
+  label?: string;
+  value?: string;
 };
 
 /** @public */

@@ -27,15 +27,15 @@ import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import {
-  createTemplateAction,
   fetchContents,
   executeShellCommand,
 } from '@backstage/plugin-scaffolder-backend';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
 export class CookiecutterRunner {
-  private readonly containerRunner: ContainerRunner;
+  private readonly containerRunner?: ContainerRunner;
 
-  constructor({ containerRunner }: { containerRunner: ContainerRunner }) {
+  constructor({ containerRunner }: { containerRunner?: ContainerRunner }) {
     this.containerRunner = containerRunner;
   }
 
@@ -101,6 +101,11 @@ export class CookiecutterRunner {
         logStream,
       });
     } else {
+      if (this.containerRunner === undefined) {
+        throw new Error(
+          'Invalid state: containerRunner cannot be undefined when cookiecutter is not installed',
+        );
+      }
       await this.containerRunner.runContainer({
         imageName: imageName ?? 'spotify/backstage-cookiecutter',
         command: 'cookiecutter',
@@ -139,7 +144,7 @@ export class CookiecutterRunner {
 export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
 }) {
   const { reader, containerRunner, integrations } = options;
 

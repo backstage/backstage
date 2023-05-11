@@ -34,7 +34,7 @@ import {
 import {
   patchMkdocsYmlPreBuild,
   pathMkdocsYmlWithTechdocsPlugin,
-} from './mkDocsPatchers';
+} from './mkdocsPatchers';
 import {
   GeneratorBase,
   GeneratorConfig,
@@ -53,7 +53,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.1.0';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.0';
   private readonly logger: Logger;
   private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -96,10 +96,14 @@ export class TechdocsGenerator implements GeneratorBase {
       etag,
       logger: childLogger,
       logStream,
+      siteOptions,
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
+    const { path: mkdocsYmlPath, content } = await getMkdocsYml(
+      inputDir,
+      siteOptions,
+    );
 
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);

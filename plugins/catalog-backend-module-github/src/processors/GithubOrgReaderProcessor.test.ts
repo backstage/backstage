@@ -20,7 +20,7 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 
@@ -85,7 +85,10 @@ describe('GithubOrgReaderProcessor', () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
-            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [{}] },
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [{ login: 'foo' }],
+            },
           },
         })
         .mockResolvedValueOnce({
@@ -93,7 +96,12 @@ describe('GithubOrgReaderProcessor', () => {
             teams: {
               pageInfo: { hasNextPage: false },
               nodes: [
-                { members: { pageInfo: { hasNextPage: false }, nodes: [{}] } },
+                {
+                  members: {
+                    pageInfo: { hasNextPage: false },
+                    nodes: [{ login: 'foo' }],
+                  },
+                },
               ],
             },
           },
@@ -134,7 +142,10 @@ describe('GithubOrgReaderProcessor', () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
-            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [{}] },
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [{ login: 'foo' }],
+            },
           },
         })
         .mockResolvedValueOnce({
@@ -142,7 +153,12 @@ describe('GithubOrgReaderProcessor', () => {
             teams: {
               pageInfo: { hasNextPage: false },
               nodes: [
-                { members: { pageInfo: { hasNextPage: false }, nodes: [{}] } },
+                {
+                  members: {
+                    pageInfo: { hasNextPage: false },
+                    nodes: [{ login: 'foo' }],
+                  },
+                },
               ],
             },
           },

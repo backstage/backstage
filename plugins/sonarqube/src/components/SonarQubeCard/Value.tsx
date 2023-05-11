@@ -16,6 +16,7 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 const useStyles = makeStyles((theme: BackstageTheme) => {
@@ -29,5 +30,9 @@ const useStyles = makeStyles((theme: BackstageTheme) => {
 
 export const Value = (props: { value?: string }) => {
   const classes = useStyles();
-  return <span className={classes.value}>{props.value}</span>;
+  return (
+    <Typography component="span" className={classes.value}>
+      {props.value}
+    </Typography>
+  );
 };

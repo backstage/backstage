@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { AzureIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { readAzureDevOpsConfigs } from './config';
 import { Logger } from 'winston';
 import { AzureDevOpsConfig } from './types';
@@ -45,10 +45,15 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): AzureDevOpsEntityProvider[] {
     const providerConfigs = readAzureDevOpsConfigs(configRoot);
+
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
 
     return providerConfigs.map(providerConfig => {
       const integration = ScmIntegrations.fromConfig(configRoot).azure.byHost(
@@ -61,11 +66,21 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
         );
       }
 
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for AzureDevOpsEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       return new AzureDevOpsEntityProvider(
         providerConfig,
         integration,
         options.logger,
-        options.schedule,
+        taskRunner,
       );
     });
   }
@@ -74,19 +89,19 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     private readonly config: AzureDevOpsConfig,
     private readonly integration: AzureIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
   ) {
     this.logger = logger.child({
       target: this.getProviderName(),
     });
 
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -98,7 +113,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });
@@ -151,17 +166,23 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(file: CodeSearchResultItem): LocationSpec {
+    const target = this.createObjectUrl(file);
+
     return {
       type: 'url',
-      target: this.createObjectUrl(file),
+      target: target,
       presence: 'required',
     };
   }
 
   private createObjectUrl(file: CodeSearchResultItem): string {
-    const baseUrl = `https://${this.config.host}/${this.config.organization}/${this.config.project}`;
-    return encodeURI(
-      `${baseUrl}/_git/${file.repository.name}?path=${file.path}`,
-    );
+    const baseUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}`;
+
+    let fullUrl = `${baseUrl}/_git/${file.repository.name}?path=${file.path}`;
+    if (this.config.branch) {
+      fullUrl += `&version=GB${this.config.branch}`;
+    }
+
+    return encodeURI(fullUrl);
   }
 }

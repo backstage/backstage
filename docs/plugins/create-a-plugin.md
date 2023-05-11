@@ -11,7 +11,7 @@ A Backstage Plugin adds functionality to Backstage.
 To create a new plugin, make sure you've run `yarn install` and installed
 dependencies, then run the following on your command line (a shortcut to
 invoking the
-[`backstage-cli create-plugin`](../local-dev/cli-commands.md#create-plugin))
+[`backstage-cli new --select plugin`](../local-dev/cli-commands.md#new))
 from the root of your project.
 
 ```bash
@@ -33,7 +33,7 @@ You can also serve the plugin in isolation by running `yarn start` in the plugin
 directory. Or by using the yarn workspace command, for example:
 
 ```bash
-yarn workspace @backstage/my-plugin start # Also supports --check
+yarn workspace @backstage/plugin-my-plugin start # Also supports --check
 ```
 
 This method of serving the plugin provides quicker iteration speed and a faster

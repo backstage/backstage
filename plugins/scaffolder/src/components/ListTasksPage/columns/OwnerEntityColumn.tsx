@@ -20,6 +20,7 @@ import useAsync from 'react-use/lib/useAsync';
 
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
+import Typography from '@material-ui/core/Typography';
 
 export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   const catalogApi = useApi(catalogApiRef);
@@ -30,7 +31,7 @@ export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   );
 
   if (!entityRef) {
-    return <p>Unknown</p>;
+    return <Typography paragraph>Unknown</Typography>;
   }
 
   if (loading || error) {

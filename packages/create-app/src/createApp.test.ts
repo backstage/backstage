@@ -32,7 +32,7 @@ const promptMock = jest.spyOn(inquirer, 'prompt');
 const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
 const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
-const initGitRepositoryMock = jest.spyOn(tasks, 'initGitRepository');
+const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
 const createTemporaryAppFolderMock = jest.spyOn(
   tasks,
@@ -42,7 +42,7 @@ const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockFs({
       [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
       'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
@@ -59,8 +59,6 @@ describe('command entrypoint', () => {
       dbType: 'PostgreSQL',
     });
     readGitConfig.mockResolvedValue({
-      name: 'git-user',
-      email: 'git-email',
       defaultBranch: 'git-default-branch',
     });
   });
@@ -74,7 +72,7 @@ describe('command entrypoint', () => {
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(createTemporaryAppFolderMock).toHaveBeenCalled();
-    expect(initGitRepositoryMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
@@ -84,7 +82,7 @@ describe('command entrypoint', () => {
     const cmd = { path: 'myDirectory' } as unknown as Command;
     await createApp(cmd);
     expect(checkPathExistsMock).toHaveBeenCalled();
-    expect(initGitRepositoryMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });
@@ -97,8 +95,8 @@ describe('command entrypoint', () => {
 
   it('should not call `initGitRepository` when `gitConfig` is undefined', async () => {
     const cmd = {} as unknown as Command;
-    readGitConfig.mockResolvedValue({});
+    readGitConfig.mockResolvedValue(undefined);
     await createApp(cmd);
-    expect(initGitRepositoryMock).not.toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).not.toHaveBeenCalled();
   });
 });

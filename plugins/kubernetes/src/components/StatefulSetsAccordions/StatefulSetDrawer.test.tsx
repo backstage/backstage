@@ -16,7 +16,7 @@
 
 import React from 'react';
 import * as statefulsets from '../../__fixtures__/2-statefulsets.json';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
 import { StatefulSetDrawer } from './StatefulSetDrawer';
 
 describe('StatefulSetDrawer', () => {
@@ -28,19 +28,25 @@ describe('StatefulSetDrawer', () => {
       />,
     );
 
-    expect(getAllByText('dice-roller')).toHaveLength(3);
+    expect(getAllByText('dice-roller')).toHaveLength(4);
     expect(getByText('StatefulSet')).toBeInTheDocument();
     expect(getByText('YAML')).toBeInTheDocument();
-    expect(getByText('Type: RollingUpdate')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Type: RollingUpdate')),
+    ).toBeInTheDocument();
     expect(getByText('Rolling Update:')).toBeInTheDocument();
-    expect(getByText('Max Surge: 25%')).toBeInTheDocument();
-    expect(getByText('Max Unavailable: 25%')).toBeInTheDocument();
+    expect(getByText(textContentMatcher('Max Surge: 25%'))).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('Max Unavailable: 25%')),
+    ).toBeInTheDocument();
     expect(getByText('Pod Management Policy')).toBeInTheDocument();
     expect(getByText('Parallel')).toBeInTheDocument();
     expect(getByText('Service Name')).toBeInTheDocument();
     expect(getByText('Selector')).toBeInTheDocument();
     expect(getByText('Match Labels:')).toBeInTheDocument();
-    expect(getByText('App: dice-roller')).toBeInTheDocument();
+    expect(
+      getByText(textContentMatcher('App: dice-roller')),
+    ).toBeInTheDocument();
     expect(getByText('Revision History Limit')).toBeInTheDocument();
     expect(getByText('10')).toBeInTheDocument();
     expect(getByText('namespace: default')).toBeInTheDocument();

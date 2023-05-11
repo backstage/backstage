@@ -18,6 +18,7 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostGrowthIndicator } from './CostGrowthIndicator';
 import { ChangeThreshold, EngineerThreshold } from '../../types';
+import { MockConfigProvider } from '../../testUtils';
 
 describe.each`
   ratio                           | amount                     | ariaLabel
@@ -30,7 +31,9 @@ describe.each`
 `('growthOf', ({ ratio, amount, ariaLabel }) => {
   it(`should display the correct indicator for ${ariaLabel}`, async () => {
     const { getByLabelText } = await renderInTestApp(
-      <CostGrowthIndicator change={{ ratio, amount }} />,
+      <MockConfigProvider engineerThreshold={EngineerThreshold}>
+        <CostGrowthIndicator change={{ ratio, amount }} />
+      </MockConfigProvider>,
     );
     expect(getByLabelText(ariaLabel)).toBeInTheDocument();
   });
@@ -48,7 +51,9 @@ describe.each`
 `('growthOf', ({ ratio, amount }) => {
   it('should display the correct indicator for negligible growth', async () => {
     const { queryByLabelText } = await renderInTestApp(
-      <CostGrowthIndicator change={{ ratio, amount }} />,
+      <MockConfigProvider engineerThreshold={EngineerThreshold}>
+        <CostGrowthIndicator change={{ ratio, amount }} />
+      </MockConfigProvider>,
     );
     expect(queryByLabelText('savings')).not.toBeInTheDocument();
     expect(queryByLabelText('excess')).not.toBeInTheDocument();

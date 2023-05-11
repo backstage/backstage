@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TextField, List, ListItem, Link } from '@material-ui/core';
+import { TextField, List, ListItem } from '@material-ui/core';
 
 import ClusterTemplateCardList from '../ClusterTemplateCardList';
 import ProfileCardList from '../ProfileCardList';
@@ -32,6 +32,7 @@ import {
   SimpleStepper,
   SimpleStepperStep,
   InfoCard,
+  Link,
   Progress,
   Table,
   StatusWarning,
@@ -340,9 +341,7 @@ const ProfileCatalog = () => {
           />
           <Link
             hidden={runLink === ''}
-            rel="noopener noreferrer"
-            href={`${runLink}?check_suite_focus=true`}
-            target="_blank"
+            to={`${runLink}?check_suite_focus=true`}
           >
             Details
           </Link>

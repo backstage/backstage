@@ -21,8 +21,16 @@ export interface RadarEntry {
   description?: string;
   id: string;
   key: string;
+  links?: Array<RadarEntryLink>;
   quadrant: string;
   timeline: Array<RadarEntrySnapshot>;
+  title: string;
+  // @deprecated
+  url?: string;
+}
+
+// @public
+export interface RadarEntryLink {
   title: string;
   url: string;
 }

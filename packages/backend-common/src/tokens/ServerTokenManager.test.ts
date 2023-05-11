@@ -16,8 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import * as jose from 'jose';
-import { Logger } from 'winston';
-import { getVoidLogger } from '../logging/voidLogger';
+import { getVoidLogger } from '../logging';
 import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
 
@@ -26,12 +25,11 @@ const configWithSecret = new ConfigReader({
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
 const env = process.env;
-let logger: Logger;
+const logger = getVoidLogger();
 
 describe('ServerTokenManager', () => {
   beforeEach(() => {
     process.env = { ...env };
-    logger = getVoidLogger();
   });
 
   afterEach(() => {

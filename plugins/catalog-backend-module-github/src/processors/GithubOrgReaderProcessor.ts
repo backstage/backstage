@@ -27,7 +27,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import {
@@ -35,7 +35,7 @@ import {
   buildOrgHierarchy,
   getOrganizationTeams,
   getOrganizationUsers,
-  parseGitHubOrgUrl,
+  parseGithubOrgUrl,
 } from '../lib';
 
 type GraphQL = typeof graphql;
@@ -45,7 +45,7 @@ type GraphQL = typeof graphql;
  *
  * @remarks
  *
- * Consider using {@link GitHubOrgEntityProvider} instead.
+ * Consider using {@link GithubOrgEntityProvider} instead.
  *
  * @public
  */
@@ -94,24 +94,21 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     const { client, tokenType } = await this.createClient(location.target);
-    const { org } = parseGitHubOrgUrl(location.target);
+    const { org } = parseGithubOrgUrl(location.target);
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
     this.logger.info('Reading GitHub users and groups');
 
     const { users } = await getOrganizationUsers(client, org, tokenType);
-    const { groups, groupMemberUsers } = await getOrganizationTeams(
-      client,
-      org,
-    );
+    const { groups } = await getOrganizationTeams(client, org);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${users.length} GitHub users and ${groups.length} GitHub groups in ${duration} seconds`,
     );
 
-    assignGroupsToUsers(users, groupMemberUsers);
+    assignGroupsToUsers(users, groups);
     buildOrgHierarchy(groups);
 
     // Done!

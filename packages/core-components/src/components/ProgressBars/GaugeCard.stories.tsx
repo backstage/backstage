@@ -17,7 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
 import Grid from '@material-ui/core/Grid';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import Info from '@material-ui/icons/Info';
 

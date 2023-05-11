@@ -39,11 +39,17 @@ import { Link as RouterLink } from 'react-router-dom';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
-    return <span>{text}</span>;
+    return (
+      <Typography color="primary" component="span">
+        {text}
+      </Typography>
+    );
   }
   return (
     <Tooltip title={text}>
-      <span>{text.slice(0, max)}...</span>
+      <Typography color="primary" component="span">
+        {text.slice(0, max)}...
+      </Typography>
     </Tooltip>
   );
 };

@@ -96,6 +96,8 @@ export interface Config {
        * @default database
        */
       pluginDivisionMode?: 'database' | 'schema';
+      /** Configures the ownership of newly created schemas in pg databases. */
+      role?: string;
       /**
        * Arbitrary config object to pass to knex when initializing
        * (https://knexjs.org/#Installation-client). Most notable is the debug
@@ -125,6 +127,8 @@ export interface Config {
            * This is merged recursively into the base knexConfig
            */
           knexConfig?: object;
+          /** Configures the ownership of newly created schemas in pg databases. */
+          role?: string;
         };
       };
     };
@@ -199,5 +203,25 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+  };
+
+  /** Discovery options. */
+  discovery?: {
+    /**
+     * Endpoints
+     *
+     * A list of target baseUrls and the associated plugins.
+     */
+    endpoints: {
+      /**
+       * The target baseUrl to use for the plugin
+       *
+       * Can be either a string or an object with internal and external keys.
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the url will be replaced with the pluginId.
+       */
+      target: string | { internal: string; external: string };
+      /** Array of plugins which use the target baseUrl. */
+      plugins: string[];
+    }[];
   };
 }

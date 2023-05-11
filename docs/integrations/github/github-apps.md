@@ -135,3 +135,4 @@ integration:
   - `Pull requests`: `Read & write`
   - `Issues`: `Read & write`
   - `Workflows`: `Read & write` (if templates include GitHub workflows)
+  - `Commit statuses`: `Read-only`

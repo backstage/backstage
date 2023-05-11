@@ -22,7 +22,8 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { Logger } from 'winston';
-import { CatalogProcessor, LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { findCodeOwnerByTarget } from './lib';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];

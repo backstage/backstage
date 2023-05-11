@@ -18,16 +18,30 @@ import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
 import { lightTheme } from '@backstage/theme';
 import { waitFor } from '@testing-library/react';
+import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 const clipboardSpy = jest.fn();
-Object.defineProperty(navigator, 'clipboard', {
+Object.defineProperty(window.navigator, 'clipboard', {
   value: {
     writeText: clipboardSpy,
   },
 });
 
+jest.mock('react-use/lib/useCopyToClipboard', () => {
+  const original = jest.requireActual('react-use/lib/useCopyToClipboard');
+
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(original.default),
+  };
+});
+
 describe('copyToClipboard', () => {
   it('calls navigator.clipboard.writeText when clipboard button has been clicked', async () => {
+    const spy = useCopyToClipboard as jest.Mock;
+    const copy = jest.fn();
+    spy.mockReturnValue([{}, copy]);
+
     const expectedClipboard = 'function foo() {return "bar";}';
     const shadowDom = await createTestShadowDom(
       `
@@ -51,7 +65,7 @@ describe('copyToClipboard', () => {
       expect(tooltip).toHaveTextContent('Copied to clipboard');
     });
 
-    expect(clipboardSpy).toHaveBeenCalledWith(expectedClipboard);
+    expect(copy).toHaveBeenCalledWith(expectedClipboard);
   });
 
   it('only gets applied to code blocks', async () => {

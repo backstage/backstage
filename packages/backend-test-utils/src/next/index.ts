@@ -15,3 +15,4 @@
  */
 
 export * from './wiring';
+export * from './services';

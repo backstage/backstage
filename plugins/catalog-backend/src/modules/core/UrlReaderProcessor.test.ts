@@ -194,7 +194,7 @@ describe('UrlReaderProcessor', () => {
     const logger = getVoidLogger();
 
     const reader: jest.Mocked<UrlReader> = {
-      read: jest.fn(),
+      readUrl: jest.fn(),
       readTree: jest.fn(),
       search: jest.fn().mockImplementation(async () => []),
     };

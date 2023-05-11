@@ -25,35 +25,82 @@ import {
   Box,
   Chip,
 } from '@material-ui/core';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-type StackOverflowSearchResultListItemProps = {
-  result: any; // TODO(emmaindal): type to StackOverflowDocument.
+/**
+ * Props for {@link StackOverflowSearchResultListItem}
+ *
+ * @public
+ */
+export type StackOverflowSearchResultListItemProps = {
+  result?: any; // TODO(emmaindal): type to StackOverflowDocument.
   icon?: React.ReactNode;
+  rank?: number;
+  highlight?: ResultHighlight;
 };
 
 export const StackOverflowSearchResultListItem = (
   props: StackOverflowSearchResultListItemProps,
 ) => {
-  const { location, title, text, answers, tags } = props.result;
+  const { result, highlight } = props;
+  const analytics = useAnalytics();
+
+  const handleClick = () => {
+    analytics.captureEvent('discover', result.title, {
+      attributes: { to: result.location },
+      value: props.rank,
+    });
+  };
+
+  if (!result) {
+    return null;
+  }
 
   return (
-    <Link to={location}>
+    <>
       <ListItem alignItems="center">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <Box flexWrap="wrap">
           <ListItemText
             primaryTypographyProps={{ variant: 'h6' }}
-            primary={_unescape(title)}
-            secondary={`Author: ${text}`}
+            primary={
+              <Link to={result.location} noTrack onClick={handleClick}>
+                {highlight?.fields?.title ? (
+                  <HighlightedSearchResultText
+                    text={highlight.fields.title}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                ) : (
+                  _unescape(result.title)
+                )}
+              </Link>
+            }
+            secondary={
+              highlight?.fields?.text ? (
+                <>
+                  Author:{' '}
+                  <HighlightedSearchResultText
+                    text={highlight.fields.text}
+                    preTag={highlight.preTag}
+                    postTag={highlight.postTag}
+                  />
+                </>
+              ) : (
+                `Author: ${result.text}`
+              )
+            }
           />
-          <Chip label={`Answer(s): ${answers}`} size="small" />
-          {tags &&
-            tags.map((tag: string) => (
+          <Chip label={`Answer(s): ${result.answers}`} size="small" />
+          {result.tags &&
+            result.tags.map((tag: string) => (
               <Chip key={tag} label={`Tag: ${tag}`} size="small" />
             ))}
         </Box>
       </ListItem>
       <Divider />
-    </Link>
+    </>
   );
 };

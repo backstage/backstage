@@ -36,7 +36,9 @@ describe('GoCdArtifactsComponent', () => {
       baseUrl: 'gocd.baseurl.com',
     },
   });
-  const entityValue = { entity: { metadata: {} } as Entity };
+  const entityValue = {
+    entity: { metadata: { name: 'mock' }, kind: 'MockKind' } as Entity,
+  };
 
   const renderComponent = () =>
     renderWithEffects(

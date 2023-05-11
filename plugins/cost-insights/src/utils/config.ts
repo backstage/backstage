@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Metric, Currency } from '../types';
+import { Currency } from '../types';
+import { Metric } from '@backstage/plugin-cost-insights-common';
 
 export function validateMetrics(metrics: Metric[]) {
   const defaults = metrics.filter(metric => metric.default);

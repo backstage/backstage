@@ -45,7 +45,7 @@ yarn backstage-cli migrate react-router-deps
 
 For those interested in doing this manually, apply the below change to all `package.json` files except the one at `packages/app/package.json` or any other app packages. Skip moving any dependencies that don't already exist, and move both `dependencies` and `devDependencies`.
 
-```diff
+```diff title="package.json"
  dependencies {
    ...
 -  "react-router-dom": "^6.0.0-beta.0",
@@ -64,13 +64,13 @@ It's important that you also update your external plugins to their latest versio
 
 During this migration there may be external plugins that need updating. If you encounter any plugins outside of the `@backstage` scope that are incompatible with your installation, make sure to check for an existing issue or raise a new one at the plugin's GitHub repository.
 
-### Step 4 - Bump the React Router dependencies in your app.
+### Step 4 - Bump the React Router dependencies in your app
 
 Now it's time to do the actual migration to the latest version of React Router. At this time of writing that is `6.3.0`, but that is of course a moving target.
 
 The first step is to modify `packages/app/package.json`:
 
-```diff
+```diff title="package.json"
 -    "react-router": "6.0.0-beta.0",
 -    "react-router-dom": "6.0.0-beta.0",
 +    "react-router": "^6.3.0",
@@ -81,7 +81,7 @@ In case you happen to have multiple app packages in your project, apply the same
 
 Once the change has been made, run `yarn install`, and then `yarn why react-router` to validate the installation. You should see the following line in the log as the only resulting entry:
 
-```
+```bash
 => Found "react-router@6.3.0"
 ```
 
@@ -157,28 +157,38 @@ Because of the above change, the `PermissionedRoute` component no longer works i
 
 It's crucial that you update to `RequirePermission` at the same time as you update to React Router v6 stable as the `PermissionedRoute` component will no longer function.
 
-```diff
--    <PermissionedRoute
--      path="/catalog-import"
--      permission={catalogEntityCreatePermission}
--      element={<CatalogImportPage />}
-+    <Route
-+      path="/catalog-import"
-+      element={
-+        <RequirePermission permission={catalogEntityCreatePermission}>
-+          <CatalogImportPage />
-+        </RequirePermission>
-+      }
-     />
+```tsx
+{/* highlight-remove-start */}
+<PermissionedRoute
+  path="/catalog-import"
+  permission={catalogEntityCreatePermission}
+  element={<CatalogImportPage />}
+{/* highlight-remove-end */}
+{/* highlight-add-start */}
+<Route
+  path="/catalog-import"
+  element={
+    <RequirePermission permission={catalogEntityCreatePermission}>
+      <CatalogImportPage />
+    </RequirePermission>
+  }
+{/* highlight-add-end */}
+/>
 ```
 
 ### `<Navigate />` component
 
 When migrating over to React Router v6 stable, you might also see browser console warnings for the `Navigate` component. This will need to be wrapped up in a `Route` component with the `Navigate` component in the `element` prop.
 
-```diff
-- <Navigate key="/" to="catalog" />
-+ <Route path="/" element={<Navigate to="/catalog" />} />
+```tsx
+{
+  /* highlight-remove-next-line */
+}
+<Navigate key="/" to="catalog" />;
+{
+  /* highlight-add-next-line */
+}
+<Route path="/" element={<Navigate to="catalog" />} />;
 ```
 
 ### `NavLink`

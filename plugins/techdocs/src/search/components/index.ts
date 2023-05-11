@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './TechDocsSearchResultListItem';
 export * from './TechDocsSearch';

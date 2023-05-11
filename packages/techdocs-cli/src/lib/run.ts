@@ -63,7 +63,7 @@ export const run = async (
   return childProcess;
 };
 
-// Block indefinitely and wait for a signal to kill the child process(es)
+// Block indefinitely and wait for a signal to stop the child process(es)
 // Throw error if any child process errors
 // Resolves only when all processes exit with status code 0
 export async function waitForSignal(

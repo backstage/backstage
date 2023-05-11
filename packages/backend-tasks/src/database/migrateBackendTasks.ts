@@ -18,12 +18,12 @@ import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DB_MIGRATIONS_TABLE } from './tables';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/backend-tasks',
-  'migrations',
-);
-
 export async function migrateBackendTasks(knex: Knex): Promise<void> {
+  const migrationsDir = resolvePackagePath(
+    '@backstage/backend-tasks',
+    'migrations',
+  );
+
   await knex.migrate.latest({
     directory: migrationsDir,
     tableName: DB_MIGRATIONS_TABLE,

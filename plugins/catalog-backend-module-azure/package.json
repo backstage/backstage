@@ -1,14 +1,27 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-azure",
   "description": "A Backstage catalog backend module that helps integrate towards Azure",
-  "version": "0.1.8-next.2",
+  "version": "0.1.16-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "backstage": {
     "role": "backend-plugin-module"
@@ -23,25 +36,26 @@
     "backstage"
   ],
   "scripts": {
+    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "msw": "^0.47.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
@@ -49,11 +63,13 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/lodash": "^4.14.151"
+    "@types/lodash": "^4.14.151",
+    "luxon": "^3.0.0",
+    "msw": "^1.0.0"
   },
   "files": [
-    "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "dist"
   ],
   "configSchema": "config.d.ts"
 }

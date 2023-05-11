@@ -18,11 +18,11 @@ import fs from 'fs-extra';
 import g from 'glob';
 import path from 'path';
 import { promisify } from 'util';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 

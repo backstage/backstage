@@ -30,6 +30,15 @@ type Props = {
   toggleHandler: Function;
 };
 
+const getSecondaryText = (flag: FeatureFlag) => {
+  if (flag.description) {
+    return flag.description;
+  }
+  return flag.pluginId
+    ? `Registered in ${flag.pluginId} plugin`
+    : 'Registered in the application';
+};
+
 export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
   <ListItem divider button onClick={() => toggleHandler(flag.name)}>
     <ListItemIcon>
@@ -37,9 +46,6 @@ export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
         <Switch color="primary" checked={enabled} name={flag.name} />
       </Tooltip>
     </ListItemIcon>
-    <ListItemText
-      primary={flag.name}
-      secondary={`Registered in ${flag.pluginId} plugin`}
-    />
+    <ListItemText primary={flag.name} secondary={getSecondaryText(flag)} />
   </ListItem>
 );

@@ -20,6 +20,13 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 // @public (undocumented)
 export const ApiDefinitionCard: () => JSX.Element;
 
+// @public
+export function ApiDefinitionDialog(props: {
+  open: boolean;
+  entity: ApiEntity;
+  onClose: () => void;
+}): JSX.Element;
+
 // @public (undocumented)
 export type ApiDefinitionWidget = {
   type: string;
@@ -78,6 +85,7 @@ export type AsyncApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ConsumedApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -106,6 +114,7 @@ export const EntityApiDefinitionCard: () => JSX.Element;
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -116,11 +125,13 @@ export const EntityConsumingComponentsCard: (props: {
 // @public (undocumented)
 export const EntityHasApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ApiEntity>[] | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -141,6 +152,7 @@ export type GraphQlDefinitionWidgetProps = {
 // @public (undocumented)
 export const HasApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -167,10 +179,21 @@ export type PlainApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ProvidedApisCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ApiEntity>[];
 }) => JSX.Element;
 
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
 }) => JSX.Element;
+
+// @public (undocumented)
+export const TrpcApiDefinitionWidget: (
+  props: TrpcApiDefinitionWidgetProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type TrpcApiDefinitionWidgetProps = {
+  definition: string;
+};
 ```

@@ -29,49 +29,51 @@ import { BazaarProject } from '../../types';
 import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
+import { BackstageTheme } from '@backstage/theme';
 
 type Props = {
   project: BazaarProject;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
-  fullHeight?: boolean;
+  height: 'large' | 'small';
 };
 
-const useStyles = makeStyles({
+type StyleProps = {
+  height: 'large' | 'small';
+};
+
+const useStyles = makeStyles((theme: BackstageTheme) => ({
+  description: (props: StyleProps) => ({
+    height: props.height === 'large' ? '10rem' : '4rem',
+    WebkitBackgroundClip: 'text',
+    backgroundImage: `linear-gradient(180deg, ${theme.palette.textContrast} 0%, ${theme.palette.textContrast} 60%, transparent 100%)`,
+    color: 'transparent',
+  }),
   statusTag: {
     display: 'inline-block',
     whiteSpace: 'nowrap',
     marginBottom: '0.8rem',
   },
-  description: {
-    display: '-webkit-box',
-    WebkitLineClamp: 7,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textAlign: 'justify',
-  },
   memberCount: {
     float: 'right',
-  },
-  content: {
-    overflow: 'scroll',
   },
   header: {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    height: '5rem',
   },
-});
+}));
 
 export const ProjectCard = ({
   project,
   fetchBazaarProjects,
   catalogEntities,
-  fullHeight,
+  height,
 }: Props) => {
-  const classes = useStyles();
+  const classes = useStyles({ height });
   const [openCard, setOpenCard] = useState(false);
-  const { id, name, status, updatedAt, description, membersCount } = project;
+  const { id, title, status, updatedAt, description, membersCount } = project;
 
   const handleClose = () => {
     setOpenCard(false);
@@ -92,21 +94,14 @@ export const ProjectCard = ({
         <CardActionArea onClick={() => setOpenCard(true)}>
           <ItemCardHeader
             classes={{ root: classes.header }}
-            title={
-              <Typography noWrap variant="h6" component="h4">
-                {name}
-              </Typography>
-            }
+            title={title}
             subtitle={`updated ${DateTime.fromISO(
               new Date(updatedAt!).toISOString(),
             ).toRelative({
               base: DateTime.now(),
             })}`}
           />
-          <CardContent
-            className={classes.content}
-            style={{ height: fullHeight ? '13rem' : '7rem' }}
-          >
+          <CardContent>
             <StatusTag styles={classes.statusTag} status={status} />
             <Typography variant="body2" className={classes.memberCount}>
               {Number(membersCount) === Number(1)

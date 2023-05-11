@@ -34,6 +34,10 @@ export interface CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse>;
+  getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse>;
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
@@ -54,6 +58,10 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  queryEntities(
+    request?: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -91,6 +99,10 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse>;
+  getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse>;
   getEntityAncestors(
     request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
@@ -116,6 +128,10 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  queryEntities(
+    request?: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse>;
   refreshEntity(
     entityRef: string,
     options?: CatalogRequestOptions,
@@ -146,15 +162,43 @@ export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
 
 // @public
+export type EntityFieldsQuery = string[];
+
+// @public
+export type EntityFilterQuery =
+  | Record<string, string | symbol | (string | symbol)[]>[]
+  | Record<string, string | symbol | (string | symbol)[]>;
+
+// @public
+export type EntityOrderQuery =
+  | {
+      field: string;
+      order: 'asc' | 'desc';
+    }
+  | Array<{
+      field: string;
+      order: 'asc' | 'desc';
+    }>;
+
+// @public
+export interface GetEntitiesByRefsRequest {
+  entityRefs: string[];
+  fields?: EntityFieldsQuery | undefined;
+}
+
+// @public
+export interface GetEntitiesByRefsResponse {
+  items: Array<Entity | undefined>;
+}
+
+// @public
 export interface GetEntitiesRequest {
   after?: string;
-  fields?: string[] | undefined;
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  fields?: EntityFieldsQuery;
+  filter?: EntityFilterQuery;
   limit?: number;
   offset?: number;
+  order?: EntityOrderQuery;
 }
 
 // @public
@@ -183,10 +227,7 @@ export interface GetEntityAncestorsResponse {
 // @public
 export interface GetEntityFacetsRequest {
   facets: string[];
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
+  filter?: EntityFilterQuery;
 }
 
 // @public
@@ -207,6 +248,40 @@ type Location_2 = {
   target: string;
 };
 export { Location_2 as Location };
+
+// @public
+export type QueryEntitiesCursorRequest = {
+  fields?: string[];
+  limit?: number;
+  cursor: string;
+};
+
+// @public
+export type QueryEntitiesInitialRequest = {
+  fields?: string[];
+  limit?: number;
+  filter?: EntityFilterQuery;
+  orderFields?: EntityOrderQuery;
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
+};
+
+// @public
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
+
+// @public
+export type QueryEntitiesResponse = {
+  items: Entity[];
+  totalItems: number;
+  pageInfo: {
+    nextCursor?: string;
+    prevCursor?: string;
+  };
+};
 
 // @public
 export type ValidateEntityResponse =

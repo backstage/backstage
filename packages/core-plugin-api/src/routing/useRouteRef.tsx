@@ -85,7 +85,7 @@ export function useRouteRef<Params extends AnyParams>(
     | SubRouteRef<Params>
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
-  const sourceLocation = useLocation();
+  const { pathname } = useLocation();
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',
   );
@@ -95,8 +95,8 @@ export function useRouteRef<Params extends AnyParams>(
 
   const resolver = versionedContext.atVersion(1);
   const routeFunc = useMemo(
-    () => resolver && resolver.resolve(routeRef, sourceLocation),
-    [resolver, routeRef, sourceLocation],
+    () => resolver && resolver.resolve(routeRef, { pathname }),
+    [resolver, routeRef, pathname],
   );
 
   if (!versionedContext) {

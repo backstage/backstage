@@ -169,8 +169,21 @@ export const getStaleFiles = (
   oldFiles: string[],
 ): string[] => {
   const staleFiles = new Set(oldFiles);
+  const removedParentDirs = new Set();
   newFiles.forEach(newFile => {
     staleFiles.delete(newFile);
+
+    // We have to traverse through the directory hierarchy of a new file and
+    // ensure that we won't try to delete one of the parent directories.
+    let parentDir = newFile.substring(0, newFile.lastIndexOf('/'));
+    while (
+      !removedParentDirs.has(parentDir) &&
+      parentDir.length >= newFile.indexOf('/')
+    ) {
+      staleFiles.delete(parentDir);
+      removedParentDirs.add(parentDir);
+      parentDir = parentDir.substring(0, parentDir.lastIndexOf('/'));
+    }
   });
   return Array.from(staleFiles);
 };

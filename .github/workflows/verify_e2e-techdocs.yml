@@ -1,4 +1,4 @@
-name: E2E Test Techdocs
+name: E2E Techdocs
 on:
   pull_request:
     paths:
@@ -18,15 +18,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
 
+    name: Techdocs
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
       - name: install dependencies
         run: yarn install --immutable

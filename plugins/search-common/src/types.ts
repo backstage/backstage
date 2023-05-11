@@ -87,6 +87,7 @@ export interface ResultSet<TDocument extends SearchDocument> {
   results: Result<TDocument>[];
   nextPageCursor?: string;
   previousPageCursor?: string;
+  numberOfResults?: number;
 }
 
 /**

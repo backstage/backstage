@@ -115,7 +115,7 @@ export function parseMysqlConnectionString(
       password,
       host: hostname,
       port: Number(port || 3306),
-      database: decodeURIComponent(pathname.substr(1)),
+      database: decodeURIComponent(pathname.substring(1)),
     };
 
     const ssl = searchParams.get('ssl');

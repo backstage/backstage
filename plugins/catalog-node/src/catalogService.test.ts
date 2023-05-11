@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import {
-  createBackendModule,
-  createServiceFactory,
-  discoveryServiceRef,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogServiceRef } from './catalogService';
@@ -27,15 +22,6 @@ import { catalogServiceRef } from './catalogService';
 describe('catalogServiceRef', () => {
   it('should return a catalogClient', async () => {
     expect.assertions(1);
-
-    const mockDiscoveryFactory = createServiceFactory({
-      service: discoveryServiceRef,
-      deps: {},
-      factory: async ({}) => {
-        return async () => jest.fn() as unknown as PluginEndpointDiscovery;
-      },
-    });
-
     const testModule = createBackendModule({
       moduleId: 'test',
       pluginId: 'test',
@@ -52,7 +38,6 @@ describe('catalogServiceRef', () => {
     });
 
     await startTestBackend({
-      services: [mockDiscoveryFactory],
       features: [testModule()],
     });
   });

@@ -16,6 +16,7 @@
 
 import type { JsonObject } from '@backstage/types';
 import {
+  PodStatus,
   V1ConfigMap,
   V1CronJob,
   V1DaemonSet,
@@ -34,6 +35,7 @@ import { Entity } from '@backstage/catalog-model';
 /** @public */
 export interface KubernetesRequestAuth {
   google?: string;
+  aks?: string;
   oidc?: {
     [key: string]: string;
   };
@@ -126,7 +128,7 @@ export type FetchResponse =
   | ServiceFetchResponse
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
-  | LimitRangeFetchReponse
+  | LimitRangeFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -134,7 +136,8 @@ export type FetchResponse =
   | IngressesFetchResponse
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
-  | DaemonSetsFetchResponse;
+  | DaemonSetsFetchResponse
+  | PodStatusFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -167,7 +170,7 @@ export interface ReplicaSetsFetchResponse {
 }
 
 /** @public */
-export interface LimitRangeFetchReponse {
+export interface LimitRangeFetchResponse {
   type: 'limitranges';
   resources: Array<V1LimitRange>;
 }
@@ -215,16 +218,32 @@ export interface DaemonSetsFetchResponse {
 }
 
 /** @public */
-export interface KubernetesFetchError {
+export interface PodStatusFetchResponse {
+  type: 'podstatus';
+  resources: Array<PodStatus>;
+}
+
+/** @public */
+export type KubernetesFetchError = StatusError | RawFetchError;
+
+/** @public */
+export interface StatusError {
   errorType: KubernetesErrorTypes;
   statusCode?: number;
   resourcePath?: string;
 }
 
 /** @public */
+export interface RawFetchError {
+  errorType: 'FETCH_ERROR';
+  message: string;
+}
+
+/** @public */
 export type KubernetesErrorTypes =
   | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
+  | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
 

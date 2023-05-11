@@ -25,6 +25,57 @@ export class BitbucketCloudClient {
 }
 
 // @public (undocumented)
+export namespace Events {
+  // (undocumented)
+  export interface Change {
+    // (undocumented)
+    closed: boolean;
+    // (undocumented)
+    commits: Models.Commit[];
+    // (undocumented)
+    created: boolean;
+    // (undocumented)
+    forced: boolean;
+    // (undocumented)
+    links: ChangeLinks;
+    // (undocumented)
+    new: Models.Branch;
+    // (undocumented)
+    old: Models.Branch;
+    // (undocumented)
+    truncated: boolean;
+  }
+  // (undocumented)
+  export interface ChangeLinks {
+    // (undocumented)
+    commits: Models.Link;
+    // (undocumented)
+    diff: Models.Link;
+    // (undocumented)
+    html: Models.Link;
+  }
+  // (undocumented)
+  export interface RepoEvent {
+    // (undocumented)
+    actor: Models.Account;
+    // (undocumented)
+    repository: Models.Repository & {
+      workspace: Models.Workspace;
+    };
+  }
+  // (undocumented)
+  export interface RepoPush {
+    // (undocumented)
+    changes: Change[];
+  }
+  // (undocumented)
+  export interface RepoPushEvent extends RepoEvent {
+    // (undocumented)
+    push: RepoPush;
+  }
+}
+
+// @public (undocumented)
 export type FilterAndSortOptions = {
   q?: string;
   sort?: string;
@@ -81,7 +132,7 @@ export namespace Models {
     readonly Plaintext: 'plaintext';
   };
   export type BaseCommitSummaryMarkupEnum =
-    typeof BaseCommitSummaryMarkupEnum[keyof typeof BaseCommitSummaryMarkupEnum];
+    (typeof BaseCommitSummaryMarkupEnum)[keyof typeof BaseCommitSummaryMarkupEnum];
   export interface Branch {
     default_merge_strategy?: string;
     // (undocumented)
@@ -99,7 +150,7 @@ export namespace Models {
     readonly FastForward: 'fast_forward';
   };
   export type BranchMergeStrategiesEnum =
-    typeof BranchMergeStrategiesEnum[keyof typeof BranchMergeStrategiesEnum];
+    (typeof BranchMergeStrategiesEnum)[keyof typeof BranchMergeStrategiesEnum];
   export interface Commit extends BaseCommit {
     // (undocumented)
     participants?: Array<Participant>;
@@ -128,7 +179,7 @@ export namespace Models {
     };
   // (undocumented)
   export type CommitFileAttributesEnum =
-    typeof CommitFileAttributesEnum[keyof typeof CommitFileAttributesEnum];
+    (typeof CommitFileAttributesEnum)[keyof typeof CommitFileAttributesEnum];
   export interface Link {
     // (undocumented)
     href?: string;
@@ -170,7 +221,7 @@ export namespace Models {
     };
   // (undocumented)
   export type ParticipantRoleEnum =
-    typeof ParticipantRoleEnum[keyof typeof ParticipantRoleEnum];
+    (typeof ParticipantRoleEnum)[keyof typeof ParticipantRoleEnum];
   const // (undocumented)
     ParticipantStateEnum: {
       readonly Approved: 'approved';
@@ -179,7 +230,7 @@ export namespace Models {
     };
   // (undocumented)
   export type ParticipantStateEnum =
-    typeof ParticipantStateEnum[keyof typeof ParticipantStateEnum];
+    (typeof ParticipantStateEnum)[keyof typeof ParticipantStateEnum];
   export interface Project extends ModelObject {
     // (undocumented)
     created_on?: string;
@@ -255,7 +306,7 @@ export namespace Models {
     readonly NoForks: 'no_forks';
   };
   export type RepositoryForkPolicyEnum =
-    typeof RepositoryForkPolicyEnum[keyof typeof RepositoryForkPolicyEnum];
+    (typeof RepositoryForkPolicyEnum)[keyof typeof RepositoryForkPolicyEnum];
   const // (undocumented)
     RepositoryScmEnum: {
       readonly Git: 'git';
@@ -285,7 +336,7 @@ export namespace Models {
   }
   // (undocumented)
   export type RepositoryScmEnum =
-    typeof RepositoryScmEnum[keyof typeof RepositoryScmEnum];
+    (typeof RepositoryScmEnum)[keyof typeof RepositoryScmEnum];
   // (undocumented)
   export interface SearchCodeSearchResult {
     // (undocumented)
@@ -339,6 +390,37 @@ export namespace Models {
     repositories?: Link;
     // (undocumented)
     self?: Link;
+  }
+  export interface Workspace extends ModelObject {
+    // (undocumented)
+    created_on?: string;
+    is_private?: boolean;
+    // (undocumented)
+    links?: WorkspaceLinks;
+    name?: string;
+    slug?: string;
+    // (undocumented)
+    updated_on?: string;
+    uuid?: string;
+  }
+  // (undocumented)
+  export interface WorkspaceLinks {
+    // (undocumented)
+    avatar?: Link;
+    // (undocumented)
+    html?: Link;
+    // (undocumented)
+    members?: Link;
+    // (undocumented)
+    owners?: Link;
+    // (undocumented)
+    projects?: Link;
+    // (undocumented)
+    repositories?: Link;
+    // (undocumented)
+    self?: Link;
+    // (undocumented)
+    snippets?: Link;
   }
 }
 

@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
@@ -84,11 +85,12 @@ export interface DocumentResultRow {
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
   // @deprecated
-  constructor(databaseStore: DatabaseStore, config: Config);
+  constructor(databaseStore: DatabaseStore, config: Config, logger?: Logger);
   // @deprecated (undocumented)
   static from(options: {
     database: PluginDatabaseManager;
     config: Config;
+    logger?: Logger;
   }): Promise<PgSearchEngine>;
   // (undocumented)
   static fromConfig(
@@ -126,6 +128,7 @@ export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
+  logger?: Logger;
 };
 
 // @public
@@ -144,6 +147,7 @@ export type PgSearchHighlightOptions = {
 // @public
 export type PgSearchOptions = {
   database: PluginDatabaseManager;
+  logger?: Logger;
 };
 
 // @public (undocumented)

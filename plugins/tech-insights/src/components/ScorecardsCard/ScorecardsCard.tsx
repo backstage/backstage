@@ -16,10 +16,9 @@
 
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
+import { ErrorPanel, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ScorecardInfo } from '../ScorecardsInfo';
-import Alert from '@material-ui/lab/Alert';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
@@ -31,15 +30,16 @@ export const ScorecardsCard = (props: {
 }) => {
   const { title, description, checksId } = props;
   const api = useApi(techInsightsApiRef);
-  const { namespace, kind, name } = getCompoundEntityRef(useEntity().entity);
+  const { entity } = useEntity();
   const { value, loading, error } = useAsync(
-    async () => await api.runChecks({ namespace, kind, name }, checksId),
+    async () => await api.runChecks(getCompoundEntityRef(entity), checksId),
+    [api, entity, JSON.stringify(checksId)],
   );
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ErrorPanel error={error} />;
   }
 
   return (

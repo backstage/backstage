@@ -17,10 +17,11 @@
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { FindingSummary, SonarQubeClient } from './index';
+import { SonarQubeClient } from './index';
 import { InstanceUrlWrapper, FindingsWrapper } from './types';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { FindingSummary } from '@backstage/plugin-sonarqube-react';
 
 const server = setupServer();
 

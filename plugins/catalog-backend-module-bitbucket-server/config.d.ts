@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
   catalog?: {
-    /**
-     * List of provider-specific options and attributes
-     */
     providers?: {
       /**
        * BitbucketServerEntityProvider configuration
@@ -48,6 +47,10 @@ export interface Config {
                */
               projectKey?: RegExp;
             };
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: TaskScheduleDefinitionConfig;
           }
         | Record<
             string,
@@ -73,6 +76,10 @@ export interface Config {
                  */
                 projectKey?: RegExp;
               };
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: TaskScheduleDefinitionConfig;
             }
           >;
     };

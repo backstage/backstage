@@ -33,7 +33,7 @@ export const useGetPullRequestsFromRepository = () => {
       const limit = pullRequestLimit ?? PULL_REQUEST_LIMIT;
       const [organisation, repositoryName] = repo.split('/');
 
-      return await getPullRequestEdges(
+      return await getPullRequestNodes(
         graphql,
         repositoryName,
         organisation,
@@ -45,7 +45,7 @@ export const useGetPullRequestsFromRepository = () => {
   return fn.current;
 };
 
-async function getPullRequestEdges(
+async function getPullRequestNodes(
   graphql: (
     path: string,
     options?: any,
@@ -54,7 +54,7 @@ async function getPullRequestEdges(
   organisation: string,
   pullRequestLimit: number,
 ): Promise<PullRequestsNumber[]> {
-  const pullRequestEdges: PullRequestsNumber[] = [];
+  const pullRequestNodes: PullRequestsNumber[] = [];
   let result: GraphQlPullRequests<PullRequestsNumber[]> | undefined = undefined;
 
   do {
@@ -68,10 +68,8 @@ async function getPullRequestEdges(
         ) {
           repository(name: $name, owner: $owner) {
             pullRequests(states: OPEN, first: $first, after: $endCursor) {
-              edges {
-                node {
-                  number
-                }
+              nodes {
+                number
               }
               pageInfo {
                 hasNextPage
@@ -94,10 +92,10 @@ async function getPullRequestEdges(
       },
     );
 
-    pullRequestEdges.push(...result.repository.pullRequests.edges);
+    pullRequestNodes.push(...result.repository.pullRequests.nodes);
 
-    if (pullRequestEdges.length >= pullRequestLimit) return pullRequestEdges;
+    if (pullRequestNodes.length >= pullRequestLimit) return pullRequestNodes;
   } while (result.repository.pullRequests.pageInfo.hasNextPage);
 
-  return pullRequestEdges;
+  return pullRequestNodes;
 }

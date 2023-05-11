@@ -16,8 +16,6 @@ To run the example backend, first go to the project root and run
 
 ```bash
 yarn install
-yarn tsc
-yarn build
 ```
 
 You should only need to do this once.
@@ -25,16 +23,11 @@ You should only need to do this once.
 After that, go to the `packages/backend` directory and run
 
 ```bash
-AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x \
-AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x \
-AUTH_OAUTH2_CLIENT_ID=x AUTH_OAUTH2_CLIENT_SECRET=x \
-AUTH_OAUTH2_AUTH_URL=x AUTH_OAUTH2_TOKEN_URL=x \
-LOG_LEVEL=debug \
 yarn start
 ```
 
-Substitute `x` for actual values, or leave them as dummy values just to try out
-the backend without using the auth or sentry features.
+If you want to override any configuration locally, for example adding any secrets,
+you can do so in `app-config.local.yaml`.
 
 The backend starts up on port 7007 per default.
 
@@ -43,7 +36,7 @@ The backend starts up on port 7007 per default.
 If you want to use the catalog functionality, you need to add so called
 locations to the backend. These are places where the backend can find some
 entity descriptor data to consume and serve. For more information, see
-[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog).
+[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog).
 
 To get started quickly, this template already includes some statically configured example locations
 in `app-config.yaml` under `catalog.locations`. You can remove and replace these locations as you
@@ -63,4 +56,4 @@ and
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

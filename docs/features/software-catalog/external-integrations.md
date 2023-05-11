@@ -89,37 +89,37 @@ export class FrobsProvider implements EntityProvider {
   private readonly reader: UrlReader;
   private connection?: EntityProviderConnection;
 
-  /** [1] **/
+  /** [1] */
   constructor(env: string, reader: UrlReader) {
     this.env = env;
     this.reader = reader;
   }
 
-  /** [2] **/
+  /** [2] */
   getProviderName(): string {
     return `frobs-${this.env}`;
   }
 
-  /** [3] **/
+  /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
   }
 
-  /** [4] **/
+  /** [4] */
   async run(): Promise<void> {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const raw = await this.reader.read(
+    const response = await this.reader.readUrl(
       `https://frobs-${this.env}.example.com/data`,
     );
-    const data = JSON.parse(raw.toString());
+    const data = JSON.parse(await response.buffer()).toString();
 
-    /** [5] **/
+    /** [5] */
     const entities: Entity[] = frobsToEntities(data);
 
-    /** [6] **/
+    /** [6] */
     await this.connection.applyMutation({
       type: 'full',
       entities: entities.map(entity => ({
@@ -159,7 +159,12 @@ Check out the numbered markings - let's go through them one by one.
    the outcome of that. This example issues a `fetch` to the right service and
    issues a full refresh of its entity bucket based on that.
 5. The method translates the foreign data model to the native `Entity` form, as
-   expected by the catalog.
+   expected by the catalog. The `Entity` must include the
+   `backstage.io/managed-by-location` and
+   `backstage.io/managed-by-origin-location annotations`; otherwise, it will not
+   appear in the Catalog and will generate warning logs. The
+   [Well-known Annotations](./well-known-annotations.md#backstageiomanaged-by-location)
+   documentation has guidance on what values to use for these.
 6. Finally, we issue a "mutation" to the catalog. This persists the entities in
    our own bucket, along with an optional `locationKey` that's used for conflict
    checks. But this is a bigger topic - mutations warrant their own explanatory
@@ -230,26 +235,35 @@ others.
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { FrobsProvider } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-start */
+  const frobs = new FrobsProvider('production', env.reader);
+  builder.addEntityProvider(frobs);
+  /* highlight-add-end */
 
-+  const frobs = new FrobsProvider('production', env.reader);
-+  builder.addEntityProvider(frobs);
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
 
-   const { processingEngine, router } = await builder.build();
-   await processingEngine.start();
+  /* highlight-add-start */
+  await env.scheduler.scheduleTask({
+    id: 'run_frobs_refresh',
+    fn: async () => {
+      await frobs.run();
+    },
+    frequency: { minutes: 30 },
+    timeout: { minutes: 10 },
+  });
+  /* highlight-add-end */
 
-+  await env.scheduler.scheduleTask({
-+    id: 'run_frobs_refresh',
-+    fn: async () => { await frobs.run(); },
-+    frequency: { minutes: 30 },
-+    timeout: { minutes: 10 },
-+  });
+  // ..
+}
 ```
 
 Note that we used the builtin scheduler facility to regularly call the `run`
@@ -260,6 +274,129 @@ the `connect` call has been made to the provider.
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
+
+### Example User Entity Provider
+
+If you have a 3rd party entity provider such as an internal HR system that you wish to use you are not limited to using our entity providers, (or simply wish to add to existing entity providers with your own data).
+
+We can create an entity provider to read entities that are based off that provider.
+
+We create a basic entity provider as shown above. In the example below we might want to extract our users from an HR system, I am assuming the HR system already has the slackUserId to get that information please see the [Slack Api](https://api.slack.com/methods).
+
+```typescript
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model'
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend'
+import { WebClient } from '@slack/web-api'
+import {kebabCase} from 'lodash'
+
+interface Staff {
+  displayName: string
+  slackUserId: string
+  jobTitle: string
+  photoUrl: string
+  address: string
+  email:string
+}
+
+export class UserEntityProvider implements EntityProvider {
+  private readonly getStaffUrl: string
+  protected readonly slackTeam: string
+  protected readonly slackToken: string
+  protected connection?: EntityProviderConnection
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const getStaffUrl = config.getString('staff.url')
+    const slackToken = config.getString('slack.token')
+    const slackTeam = config.getString('slack.team')
+    return new UserEntityProvider({
+      ...options,
+      getStaffUrl,
+      slackToken,
+      slackTeam,
+    })
+  }
+
+  private constructor(options: {
+    getStaffUrl: string
+    slackToken: string
+    slackTeam: string
+  }) {
+    this.getStaffUrl = options.getStaffUrl
+    this.slackToken = options.slackToken
+    this.slackTeam = options.slackTeam
+  }
+
+  async getAllStaff(): Promise<Staff[]>{
+    await return axios.get(this.getStaffUrl)
+  }
+
+  public async connect(connection: EntityProviderConnection): Promise<void> {
+    this.connection = connection
+  }
+
+  async run(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('User Connection Not initialized')
+    }
+
+    const userResources: UserEntity[] = []
+    const staff = await this.getAllStaff()
+
+    for (const user of staff) {
+      // we can add any links here in this case it would be adding a slack link to the users so you can directly slack them.
+      const links =
+        user.slackUserId != null && user.slackUserId.length > 0
+          ? [
+              {
+                url: `slack://user?team=${this.slackTeam}&id=${user.slackUserId}`,
+                title: 'Slack',
+                icon: 'message',
+              },
+            ]
+          : undefined
+      const userEntity: UserEntity = {
+        kind: 'User',
+        apiVersion: 'backstage.io/v1alpha1',
+        metadata: {
+          annotations: {
+            [ANNOTATION_LOCATION]: 'hr-user-https://www.hrurl.com/',
+            [ANNOTATION_ORIGIN_LOCATION]: 'hr-user-https://www.hrurl.com/',
+          },
+          links,
+          // name of the entity
+          name: kebabCase(user.displayName),
+          // name for display purposes could be anything including email
+          title: user.displayName,
+        },
+        spec: {
+          profile: {
+            displayName: user.displayName,
+            email: user.email,
+            picture: user.photoUrl,
+          },
+          memberOf: [],
+        },
+      }
+
+      userResources.push(userEntity)
+    }
+
+    await this.connection.applyMutation({
+      type: 'full',
+      entities: userResources.map((entity) => ({
+        entity,
+        locationKey: 'hr-user-https://www.hrurl.com/',
+      })),
+    })
+}
+
+```
 
 ## Custom Processors
 
@@ -336,8 +473,7 @@ feeding it into the ingestion loop. For this kind of an integration, you'd
 typically want to add it to the list of statically always-available locations in
 the config.
 
-```yaml
-# In app-config.yaml
+```yaml title="app-config.yaml"
 catalog:
   locations:
     - type: system-x
@@ -370,8 +506,9 @@ import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
 } from '@backstage/plugin-catalog-node';
+
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
@@ -397,8 +534,8 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // API. If you prefer, you can just use plain fetch here
       // (from the node-fetch package), or any other method of
       // your choosing.
-      const data = await this.reader.read(location.target);
-      const json = JSON.parse(data.toString());
+      const response = await this.reader.readUrl(location.target);
+      const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
@@ -423,14 +560,19 @@ The key points to note are:
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { SystemXReaderProcessor } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { SystemXReaderProcessor } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
-+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+
+  // ..
+}
 ```
 
 Start up the backend - it should now start reading from the previously
@@ -499,7 +641,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // We send the ETag from the previous run if it exists.
       // The previous ETag will be set in the headers for the outgoing request and system-x
       // is going to throw NOT_MODIFIED (HTTP 304) if the ETag matches.
-      const response = await this.reader.readUrl?.(location.target, {
+      const response = await this.reader.readUrl(location.target, {
         etag: cacheItem?.etag,
       });
       if (!response) {

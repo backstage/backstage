@@ -40,7 +40,7 @@ describe('Select', () => {
     expect(rendered.getAllByText(testLabel)).toHaveLength(2);
   });
 
-  describe('when the user hasn`t clicked on it', () => {
+  describe("when the user hasn't clicked on it", () => {
     it('should only render the current select item', async () => {
       const rendered = await renderInTestApp(
         <SelectComponent

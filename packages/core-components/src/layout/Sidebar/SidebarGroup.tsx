@@ -22,10 +22,10 @@ import BottomNavigationAction, {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSidebarPinState } from '.';
 import { Link } from '../../components';
-import { SidebarConfigContext, SidebarConfig } from './config';
+import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebar';
+import { useSidebarPinState } from './SidebarPinStateContext';
 
 /**
  * Props for the `SidebarGroup`
@@ -100,6 +100,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     <BottomNavigationAction
+      aria-label={label}
       label={label}
       icon={icon}
       component={Link as any}

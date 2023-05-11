@@ -26,9 +26,10 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getAdrLocationUrl } from '@backstage/plugin-adr-common';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { useOctokitRequest } from '../../hooks';
 import { adrDecoratorFactories } from './decorators';
 import { AdrContentDecorator } from './types';
+import { adrApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 /**
  * Component to fetch and render an ADR.
@@ -42,10 +43,13 @@ export const AdrReader = (props: {
   const { adr, decorators } = props;
   const { entity } = useEntity();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
+  const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
 
-  const { value, loading, error } = useOctokitRequest(
-    `${adrLocationUrl.replace(/\/$/, '')}/${adr}`,
+  const url = `${adrLocationUrl.replace(/\/$/, '')}/${adr}`;
+  const { value, loading, error } = useAsync(
+    async () => adrApi.readAdr(url),
+    [url],
   );
 
   const adrContent = useMemo(() => {

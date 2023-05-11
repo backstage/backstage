@@ -310,6 +310,40 @@ describe('PermissionClient', () => {
       ).rejects.toThrow(/request failed with 401/i);
     });
 
+    it('should handle reponses with rules with no params', async () => {
+      mockPolicyDecisionHandler.mockImplementationOnce(
+        (req, res, { json }: RestContext) => {
+          const responses = req.body.items.map(
+            (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+              id: a.id,
+              pluginId: 'test-plugin',
+              resourceType: 'test-resource',
+              result: AuthorizeResult.CONDITIONAL,
+              conditions: {
+                resourceType: 'test-resource',
+                rule: 'FOO',
+              },
+            }),
+          );
+
+          return res(json({ items: responses }));
+        },
+      );
+
+      const response = await client.authorizeConditional([
+        mockResourceAuthorizeConditional,
+      ]);
+      expect(response[0]).toEqual(
+        expect.objectContaining({
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'FOO',
+            resourceType: 'test-resource',
+          },
+        }),
+      );
+    });
+
     it('should reject responses with missing ids', async () => {
       mockPolicyDecisionHandler.mockImplementationOnce(
         (_req, res, { json }: RestContext) => {

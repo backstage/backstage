@@ -120,6 +120,19 @@ const getEntitiesMock = (
   } as GetEntitiesResponse);
 };
 
+// Mock needed because jsdom doesn't correctly implement box-sizing
+// https://github.com/ShinyChang/React-Text-Truncate/issues/70
+// https://stackoverflow.com/questions/71916701/how-to-mock-a-react-function-component-that-takes-a-ref-prop
+jest.mock('react-text-truncate', () => {
+  const { forwardRef } = jest.requireActual('react');
+  return {
+    __esModule: true,
+    default: forwardRef((props: any, ref: any) => (
+      <div ref={ref}>{props.text}</div>
+    )),
+  };
+});
+
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -177,19 +190,19 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
-      queryByText(getByText('OPENAPI').parentElement!, '1'),
+      queryByText(getByText('OPENAPI').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('SERVICE')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SERVICE').parentElement!, '1'),
+      queryByText(getByText('SERVICE').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('LIBRARY')).toBeInTheDocument();
     expect(
-      queryByText(getByText('LIBRARY').parentElement!, '1'),
+      queryByText(getByText('LIBRARY').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SYSTEM').parentElement!, '1'),
+      queryByText(getByText('SYSTEM').closest('a')!, '1'),
     ).toBeInTheDocument();
   });
 
@@ -215,11 +228,17 @@ describe('OwnershipCard', () => {
 
     expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SYSTEM').parentElement!, '1'),
+      queryByText(getByText('SYSTEM').closest('a')!, '1'),
     ).toBeInTheDocument();
+    expect(
+      queryByText(getByText('SYSTEM').closest('a')!, 'System'),
+    ).not.toBeInTheDocument();
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
-      queryByText(getByText('OPENAPI').parentElement!, '1'),
+      queryByText(getByText('OPENAPI').closest('a')!, '1'),
+    ).toBeInTheDocument();
+    expect(
+      queryByText(getByText('OPENAPI').closest('a')!, 'API'),
     ).toBeInTheDocument();
     expect(() => getByText('LIBRARY')).toThrow();
   });
@@ -246,7 +265,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=api&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
     );
   });
 
@@ -292,7 +311,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=api&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
     );
   });
 

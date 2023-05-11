@@ -7,10 +7,9 @@ With this plugin, you can view data from XCMetrics directly in Backstage.
 
 ## Getting started
 
-From `packages/app`:
-
 ```bash
-yarn add @backstage/plugin-xcmetrics
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-xcmetrics
 ```
 
 In `packages/app/src/App.tsx`, add the following:

@@ -52,76 +52,84 @@ If you don't have a homepage already, most likely you have a redirect setup to u
 
 Inside your `packages/app/src/App.tsx`, look for
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
+    {/* ... */}
+  </FlatRoutes>
+);
 ```
 
 Let's replace the `<Navigate>` line and use the new component we created in the previous step as the new homepage.
 
-```diff
-// File: packages/app/src/App.tsx
+```tsx title="packages/app/src/App.tsx"
+/* highlight-add-start */
+import { HomepageCompositionRoot } from '@backstage/plugin-home';
+import { HomePage } from './components/home/HomePage';
+/* highlight-add-end */
 
-+ import { HomepageCompositionRoot } from '@backstage/plugin-home';
-+ import { HomePage } from './components/home/HomePage';
-
-// ...
 const routes = (
   <FlatRoutes>
--   <Navigate key="/" to="catalog" />
-+   <Route path="/" element={<HomepageCompositionRoot />}>
-+     <HomePage />
-+   </Route>
-// ...
-
-)
+    {/* highlight-remove-next-line */}
+    <Navigate key="/" to="catalog" />
+    {/* highlight-add-start */}
+    <Route path="/" element={<HomepageCompositionRoot />}>
+      <HomePage />
+    </Route>
+    {/* highlight-add-end */}
+    {/* ... */}
+  </FlatRoutes>
+);
 ```
 
-### 4. Update sidebar items
+#### 4. Update sidebar items
 
 Let's update the route for "Home" in the Backstage sidebar to point to the new homepage. We'll also add a Sidebar item to quickly open Catalog.
 
-<table>
-  <tr>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-without-catalog.png" alt="Sidebar without Catalog" /></td>
-    <th><img data-zoomable src="../assets/getting-started/sidebar-with-catalog.png" alt="Sidebar with Catalog" /></td>
-  </tr>
-  <tr align="center">
-    <td>Before</td>
-    <td>After</td>
-  </tr>
-</table>
+| Before                                                                            | After                                                                       |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| ![Sidebar without Catalog](../assets/getting-started/sidebar-without-catalog.png) | ![Sidebar with Catalog](../assets/getting-started/sidebar-with-catalog.png) |
 
 The code for the Backstage sidebar is most likely inside your [`packages/app/src/components/Root/Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx).
 
 Let's make the following changes
 
-```diff
-// Other imports
-+ import CategoryIcon from '@material-ui/icons/Category';
+```tsx title="packages/app/src/components/Root/Root.tsx"
+/* highlight-add-next-line */
+import CategoryIcon from '@material-ui/icons/Category';
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      # ...
+      {/* ... */}
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
--       <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-+       <SidebarItem icon={HomeIcon} to="/" text="Home" />
-+       <SidebarItem icon={CategoryIcon} to="catalog" text="Catalog" />
+        {/* highlight-remove-next-line */}
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+        {/* highlight-add-start */}
+        <SidebarItem icon={HomeIcon} to="/" text="Home" />
+        <SidebarItem icon={CategoryIcon} to="catalog" text="Catalog" />
+        {/* highlight-add-end */}
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
+        {/* ... */}
+      </SidebarGroup>
+    </Sidebar>
+  </SidebarPage>
+);
 ```
 
 That's it! You should now have _(although slightly boring)_ a homepage!
 
-<img data-zoomable src="../assets/getting-started/simple-homepage.png" alt="Screenshot of a blank homepage" />
+<!-- todo: Needs zoomable plugin -->
+
+![Screenshot of a blank homepage](../assets/getting-started/simple-homepage.png)
 
 In the next steps, we will make it interesting and useful!
 

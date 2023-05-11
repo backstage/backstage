@@ -16,13 +16,9 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import {
-  ChangeStatistic,
-  CurrencyType,
-  Duration,
-  EngineerThreshold,
-  GrowthType,
-} from '../../types';
+import Typography from '@material-ui/core/Typography';
+import { CurrencyType, Duration, GrowthType } from '../../types';
+import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
 import { rateOf } from '../../utils/currency';
 import { growthOf } from '../../utils/change';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
@@ -42,7 +38,7 @@ export const CostGrowth = (props: CostGrowthProps) => {
   const { change, duration } = props;
 
   const styles = useStyles();
-  const { engineerCost } = useConfig();
+  const { engineerCost, engineerThreshold } = useConfig();
   const [currency] = useCurrency();
 
   // Only display costs in absolute values
@@ -55,7 +51,7 @@ export const CostGrowth = (props: CostGrowthProps) => {
 
   // If a ratio cannot be calculated, don't format.
   const growth = notEmpty(change.ratio)
-    ? growthOf({ ratio: change.ratio, amount: engineers })
+    ? growthOf({ ratio: change.ratio, amount: engineers }, engineerThreshold)
     : null;
   // Determine if growth is significant enough to highlight
   const classes = classnames({
@@ -63,49 +59,53 @@ export const CostGrowth = (props: CostGrowthProps) => {
     [styles.savings]: growth === GrowthType.Savings,
   });
 
-  if (engineers < EngineerThreshold) {
-    return <span className={classes}>Negligible</span>;
+  if (engineers < engineerThreshold) {
+    return (
+      <Typography component="span" className={classes}>
+        Negligible
+      </Typography>
+    );
   }
 
   if (currency.kind === CurrencyType.USD) {
     // Do not display percentage if ratio cannot be calculated
     if (isNaN(ratio)) {
       return (
-        <span className={classes}>
+        <Typography component="span" className={classes}>
           ~{currency.prefix}
           {formatCurrency(converted)}
-        </span>
+        </Typography>
       );
     }
 
     return (
-      <span className={classes}>
+      <Typography component="span" className={classes}>
         {formatPercent(ratio)} or ~{currency.prefix}
         {formatCurrency(converted)}
-      </span>
+      </Typography>
     );
   }
 
   if (amount < 1) {
     return (
-      <span className={classes}>
+      <Typography component="span" className={classes}>
         less than {indefiniteArticleOf(['a', 'an'], currency.unit)}
-      </span>
+      </Typography>
     );
   }
 
   // Do not display percentage if ratio cannot be calculated
   if (isNaN(ratio)) {
     return (
-      <span className={classes}>
+      <Typography component="span" className={classes}>
         ~{formatCurrency(converted, currency.unit)}
-      </span>
+      </Typography>
     );
   }
 
   return (
-    <span className={classes}>
+    <Typography component="span" className={classes}>
       {formatPercent(ratio)} or ~{formatCurrency(converted, currency.unit)}
-    </span>
+    </Typography>
   );
 };

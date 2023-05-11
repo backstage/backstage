@@ -32,6 +32,7 @@ import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
+jest.useFakeTimers();
 
 jest.mock('node-fetch', () => ({
   __esModule: true,
@@ -130,6 +131,8 @@ describe('DocsSynchronizer', () => {
 
         const logger = MockedDocsBuilder.mock.calls[0][0].logger;
 
+        jest.advanceTimersByTime(10001);
+
         logger.info('Some more log');
 
         return true;
@@ -144,11 +147,17 @@ describe('DocsSynchronizer', () => {
         generators,
       });
 
-      expect(mockResponseHandler.log).toHaveBeenCalledTimes(3);
+      expect(mockResponseHandler.log).toHaveBeenCalledTimes(4);
       expect(mockResponseHandler.log).toHaveBeenCalledWith('Some log');
       expect(mockResponseHandler.log).toHaveBeenCalledWith('Another log');
       expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(/info.*Some more log/),
+      );
+
+      expect(mockResponseHandler.log).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /info.*The docs building process is taking a little bit longer to process this entity. Please bear with us/,
+        ),
       );
 
       expect(mockResponseHandler.finish).toHaveBeenCalledWith({

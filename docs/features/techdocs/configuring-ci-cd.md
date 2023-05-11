@@ -59,7 +59,7 @@ working directory. This is almost always the first step in most CI workflows.
 
 On GitHub Actions, you can add a step
 
-[`- uses: actions@checkout@v2`](https://github.com/actions/checkout).
+[`- uses: actions@checkout@v3`](https://github.com/actions/checkout).
 
 On CircleCI, you can add a special
 [`checkout`](https://circleci.com/docs/2.0/configuration-reference/#checkout)
@@ -141,14 +141,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
       # the 2 steps below can be removed if you aren't using plantuml in your documentation
       - name: setup java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '11'

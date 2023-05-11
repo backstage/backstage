@@ -19,7 +19,7 @@ import * as container from '@google-cloud/container';
 
 /**
  *
- * @alpha
+ * @public
  */
 export class GoogleServiceAccountAuthTranslator
   implements KubernetesAuthTranslator

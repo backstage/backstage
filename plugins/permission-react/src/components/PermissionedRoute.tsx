@@ -15,7 +15,7 @@
  */
 
 import React, { ReactElement, ReactNode } from 'react';
-import { Route } from 'react-router';
+import { Route } from 'react-router-dom';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
 import {

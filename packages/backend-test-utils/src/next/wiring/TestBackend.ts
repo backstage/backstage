@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-import { createSpecializedBackend } from '@backstage/backend-app-api';
+import {
+  Backend,
+  createSpecializedBackend,
+  MiddlewareFactory,
+  createHttpServer,
+  ExtendedHttpServer,
+  DefaultRootHttpRouter,
+} from '@backstage/backend-app-api';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import {
   ServiceFactory,
   ServiceRef,
   createServiceFactory,
   BackendFeature,
   ExtensionPoint,
+  coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '../services';
+import { ConfigReader } from '@backstage/config';
+import express from 'express';
 
-/** @alpha */
+/** @public */
 export interface TestBackendOptions<
   TServices extends any[],
   TExtensionPoints extends any[],
@@ -47,17 +60,102 @@ export interface TestBackendOptions<
   features?: BackendFeature[];
 }
 
-/** @alpha */
+/** @public */
+export interface TestBackend extends Backend {
+  /**
+   * Provides access to the underling HTTP server for use with utilities
+   * such as `supertest`.
+   *
+   * If the root http router service has been replaced, this will throw an error.
+   */
+  readonly server: ExtendedHttpServer;
+}
+
+const defaultServiceFactories = [
+  mockServices.cache.factory(),
+  mockServices.config.factory(),
+  mockServices.database.factory(),
+  mockServices.httpRouter.factory(),
+  mockServices.identity.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.logger.factory(),
+  mockServices.permissions.factory(),
+  mockServices.rootLifecycle.factory(),
+  mockServices.rootLogger.factory(),
+  mockServices.scheduler.factory(),
+  mockServices.tokenManager.factory(),
+  mockServices.urlReader.factory(),
+];
+
+const backendInstancesToCleanUp = new Array<Backend>();
+
+/** @public */
 export async function startTestBackend<
   TServices extends any[],
   TExtensionPoints extends any[],
->(options: TestBackendOptions<TServices, TExtensionPoints>): Promise<void> {
+>(
+  options: TestBackendOptions<TServices, TExtensionPoints>,
+): Promise<TestBackend> {
   const {
     services = [],
     extensionPoints = [],
     features = [],
     ...otherOptions
   } = options;
+
+  let server: ExtendedHttpServer;
+
+  const rootHttpRouterFactory = createServiceFactory({
+    service: coreServices.rootHttpRouter,
+    deps: {
+      config: coreServices.config,
+      lifecycle: coreServices.rootLifecycle,
+      rootLogger: coreServices.rootLogger,
+    },
+    async factory({ config, lifecycle, rootLogger }) {
+      const router = DefaultRootHttpRouter.create();
+      const logger = rootLogger.child({ service: 'rootHttpRouter' });
+
+      const app = express();
+
+      const middleware = MiddlewareFactory.create({ config, logger });
+
+      app.use(router.handler());
+      app.use(middleware.notFound());
+      app.use(middleware.error());
+
+      server = await createHttpServer(
+        app,
+        { listen: { host: '', port: 0 } },
+        { logger },
+      );
+
+      lifecycle.addShutdownHook(() => server.stop(), { logger });
+
+      await server.start();
+
+      return router;
+    },
+  });
+
+  const discoveryFactory = createServiceFactory({
+    service: coreServices.discovery,
+    deps: {
+      rootHttpRouter: coreServices.rootHttpRouter,
+    },
+    async factory() {
+      if (!server) {
+        throw new Error('Test server not started yet');
+      }
+      const port = server.port();
+      const discovery = SingleHostDiscovery.fromConfig(
+        new ConfigReader({
+          backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
+        }),
+      );
+      return discovery;
+    },
+  });
 
   const factories = services.map(serviceDef => {
     if (Array.isArray(serviceDef)) {
@@ -66,39 +164,87 @@ export async function startTestBackend<
       const [ref, impl] = serviceDef;
       if (ref.scope === 'plugin') {
         return createServiceFactory({
-          service: ref,
+          service: ref as ServiceRef<unknown, 'plugin'>,
           deps: {},
-          factory: async () => async () => impl,
-        });
+          factory: async () => impl,
+        })();
       }
       return createServiceFactory({
-        service: ref,
+        service: ref as ServiceRef<unknown, 'root'>,
         deps: {},
         factory: async () => impl,
-      });
+      })();
+    }
+    if (typeof serviceDef === 'function') {
+      return serviceDef();
     }
     return serviceDef as ServiceFactory;
   });
 
+  for (const factory of defaultServiceFactories) {
+    if (!factories.some(f => f.service.id === factory.service.id)) {
+      factories.push(factory);
+    }
+  }
+
   const backend = createSpecializedBackend({
     ...otherOptions,
-    services: factories,
+    services: [...factories, rootHttpRouterFactory, discoveryFactory],
   });
 
-  backend.add({
-    id: `---test-extension-point-registrar`,
-    register(reg) {
-      for (const [ref, impl] of extensionPoints) {
-        reg.registerExtensionPoint(ref, impl);
-      }
+  backendInstancesToCleanUp.push(backend);
 
-      reg.registerInit({ deps: {}, async init() {} });
-    },
-  });
+  backend.add(
+    createBackendPlugin({
+      pluginId: `---test-extension-point-registrar`,
+      register(reg) {
+        for (const [ref, impl] of extensionPoints) {
+          reg.registerExtensionPoint(ref, impl);
+        }
+
+        reg.registerInit({ deps: {}, async init() {} });
+      },
+    })(),
+  );
 
   for (const feature of features) {
     backend.add(feature);
   }
 
   await backend.start();
+
+  return Object.assign(backend, {
+    get server() {
+      if (!server) {
+        throw new Error('TestBackend server is not available');
+      }
+      return server;
+    },
+  });
 }
+
+let registered = false;
+function registerTestHooks() {
+  if (typeof afterAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(async () => {
+    await Promise.all(
+      backendInstancesToCleanUp.map(async backend => {
+        try {
+          await backend.stop();
+        } catch (error) {
+          console.error(`Failed to stop backend after tests, ${error}`);
+        }
+      }),
+    );
+    backendInstancesToCleanUp.length = 0;
+  });
+}
+
+registerTestHooks();

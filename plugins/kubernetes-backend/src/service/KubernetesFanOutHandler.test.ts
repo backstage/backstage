@@ -18,13 +18,20 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   ClusterDetails,
   CustomResource,
+  FetchResponseWrapper,
   ObjectFetchParams,
+  KubernetesServiceLocator,
 } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
-import { PodStatus } from '@kubernetes/client-node/dist/top';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { ConfigReader } from '@backstage/config';
 
 const fetchObjectsForService = jest.fn();
-const fetchPodMetricsByNamespace = jest.fn();
+const fetchPodMetricsByNamespaces = jest.fn();
 
 const getClustersByEntity = jest.fn();
 
@@ -55,8 +62,9 @@ const mockFetch = (mock: jest.Mock) => {
 };
 
 const mockMetrics = (mock: jest.Mock) => {
-  mock.mockImplementation((clusterDetails: ClusterDetails, namespace: string) =>
-    Promise.resolve(generatePodStatus(clusterDetails.name, namespace)),
+  mock.mockImplementation(
+    (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+      Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
   );
 };
 
@@ -143,7 +151,7 @@ function mockFetchAndGetKubernetesFanOutHandler(
   customResources: CustomResource[],
 ) {
   mockFetch(fetchObjectsForService);
-  mockMetrics(fetchPodMetricsByNamespace);
+  mockMetrics(fetchPodMetricsByNamespaces);
 
   return getKubernetesFanOutHandler(customResources);
 }
@@ -151,37 +159,51 @@ function mockFetchAndGetKubernetesFanOutHandler(
 function getKubernetesFanOutHandler(customResources: CustomResource[]) {
   return new KubernetesFanOutHandler({
     logger: getVoidLogger(),
+    config: new ConfigReader({}),
     fetcher: {
       fetchObjectsForService,
-      fetchPodMetricsByNamespace,
+      fetchPodMetricsByNamespaces,
     },
     serviceLocator: {
       getClustersByEntity,
     },
     customResources: customResources,
+    authTranslator: {
+      decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+        return clusterDetails;
+      },
+    },
   });
 }
 
 function generatePodStatus(
   _clusterName: string,
-  _namespace: string,
-): PodStatus[] {
-  return [
-    {
-      Pod: {},
-      CPU: {
-        CurrentUsage: 100,
-        RequestTotal: 101,
-        LimitTotal: 102,
-      },
-      Memory: {
-        CurrentUsage: BigInt('1000'),
-        RequestTotal: BigInt('1001'),
-        LimitTotal: BigInt('1002'),
-      },
-      Containers: [],
-    },
-  ] as any;
+  _namespaces: Set<string>,
+): FetchResponseWrapper {
+  return {
+    errors: [],
+    responses: Array.from(_namespaces).map(() => {
+      return {
+        type: 'podstatus',
+        resources: [
+          {
+            Pod: {},
+            CPU: {
+              CurrentUsage: 100,
+              RequestTotal: 101,
+              LimitTotal: 102,
+            },
+            Memory: {
+              CurrentUsage: BigInt('1000'),
+              RequestTotal: BigInt('1001'),
+              LimitTotal: BigInt('1002'),
+            },
+            Containers: [],
+          },
+        ],
+      };
+    }),
+  };
 }
 
 function generateMockResourcesAndErrors(
@@ -292,9 +314,9 @@ describe('getKubernetesObjectsByEntity', () => {
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe(
-      'ns-test-component-test-cluster',
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
+      new Set(['ns-test-component-test-cluster']),
     );
 
     expect(result).toStrictEqual({
@@ -433,7 +455,7 @@ describe('getKubernetesObjectsByEntity', () => {
       }),
     );
 
-    mockMetrics(fetchPodMetricsByNamespace);
+    mockMetrics(fetchPodMetricsByNamespaces);
 
     const sut = getKubernetesFanOutHandler([]);
 
@@ -444,9 +466,10 @@ describe('getKubernetesObjectsByEntity', () => {
 
     expect(getClustersByEntity.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
-    expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(2);
-    expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe('ns-a');
-    expect(fetchPodMetricsByNamespace.mock.calls[1][1]).toBe('ns-b');
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls[0][1]).toStrictEqual(
+      new Set(['ns-a', 'ns-b']),
+    );
 
     expect(result).toStrictEqual({
       items: [
@@ -483,6 +506,47 @@ describe('getKubernetesObjectsByEntity', () => {
           ],
         },
       ],
+    });
+  });
+
+  it('pods api is returning garbage', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+          },
+        ],
+      }),
+    );
+
+    fetchObjectsForService.mockImplementation((_: ObjectFetchParams) =>
+      Promise.resolve({
+        errors: [],
+        responses: [
+          {
+            garbage: ['thrash', 'rubbish'],
+          },
+        ],
+      }),
+    );
+
+    mockMetrics(fetchPodMetricsByNamespaces);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
+    expect(fetchPodMetricsByNamespaces.mock.calls.length).toBe(0);
+
+    expect(result).toStrictEqual({
+      items: [],
     });
   });
 
@@ -663,6 +727,204 @@ describe('getKubernetesObjectsByEntity', () => {
           ],
         },
       ],
+    });
+  });
+  it('retrieve objects for two clusters, one fails to fetch pod metrics', async () => {
+    getClustersByEntity.mockImplementation(() =>
+      Promise.resolve({
+        clusters: [
+          {
+            name: 'test-cluster',
+            authProvider: 'serviceAccount',
+            dashboardUrl: 'https://k8s.foo.coom',
+          },
+          {
+            name: 'other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      }),
+    );
+
+    mockFetch(fetchObjectsForService);
+
+    // To simulate the partial failure, return a valid response for the first call,
+    // and an error for the second call.
+    fetchPodMetricsByNamespaces
+      .mockImplementationOnce(
+        (clusterDetails: ClusterDetails, namespaces: Set<string>) =>
+          Promise.resolve(generatePodStatus(clusterDetails.name, namespaces)),
+      )
+      .mockResolvedValueOnce({
+        errors: [
+          {
+            errorType: 'NOT_FOUND',
+            resourcePath: '/some/path',
+            statusCode: 404,
+          },
+        ],
+        responses: [],
+      });
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {
+        google: 'google_token_123',
+      },
+    });
+
+    expect(getClustersByEntity.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(2);
+    expect(result).toStrictEqual({
+      items: [
+        {
+          cluster: {
+            dashboardUrl: 'https://k8s.foo.coom',
+            name: 'test-cluster',
+          },
+          errors: [],
+          podMetrics: [POD_METRICS_FIXTURE],
+          resources: resourcesByCluster('test-cluster'),
+        },
+        {
+          cluster: {
+            name: 'other-cluster',
+          },
+          errors: [
+            {
+              errorType: 'NOT_FOUND',
+              resourcePath: '/some/path',
+              statusCode: 404,
+            },
+          ],
+          podMetrics: [],
+          resources: resourcesByCluster('other-cluster'),
+        },
+      ],
+    });
+  });
+  it('fails when fetcher rejects with a non-FetchError', async () => {
+    const nonFetchError = new Error('not a fetch error');
+    getClustersByEntity.mockResolvedValue({
+      clusters: [
+        {
+          name: 'test-cluster',
+          authProvider: 'serviceAccount',
+          skipMetricsLookup: true,
+        },
+      ],
+    });
+    fetchObjectsForService.mockRejectedValue(nonFetchError);
+
+    const sut = getKubernetesFanOutHandler([]);
+
+    const result = sut.getKubernetesObjectsByEntity({
+      entity,
+      auth: {},
+    });
+    await expect(result).rejects.toThrow(nonFetchError);
+  });
+  describe('with a real fetcher', () => {
+    const worker = setupServer();
+    setupRequestMockHandlers(worker);
+    it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
+      const pods = [{ metadata: { name: 'pod-name' } }];
+      const services = [{ metadata: { name: 'service-name' } }];
+      worker.use(
+        rest.get('https://works/api/v1/pods', (_, res, ctx) =>
+          res(ctx.json({ items: pods })),
+        ),
+        rest.get('https://works/api/v1/services', (_, res, ctx) =>
+          res(ctx.json({ items: services })),
+        ),
+        rest.get('https://fails/api/v1/pods', (_, res) =>
+          res.networkError('socket error'),
+        ),
+        rest.get('https://fails/api/v1/services', (_, res, ctx) =>
+          res(ctx.json({ items: services })),
+        ),
+      );
+      const fleet: jest.Mocked<KubernetesServiceLocator> = {
+        getClustersByEntity: jest.fn().mockResolvedValue({
+          clusters: [
+            {
+              name: 'works',
+              url: 'https://works',
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+              skipMetricsLookup: true,
+            },
+            {
+              name: 'fails',
+              url: 'https://fails',
+              authProvider: 'serviceAccount',
+              serviceAccountToken: 'token',
+              skipMetricsLookup: true,
+            },
+          ],
+        }),
+      };
+      const logger = getVoidLogger();
+      const sut = new KubernetesFanOutHandler({
+        logger,
+        fetcher: new KubernetesClientBasedFetcher({ logger }),
+        config: new ConfigReader({}),
+        serviceLocator: fleet,
+        customResources: [],
+        objectTypesToFetch: [
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'pods',
+            objectType: 'pods',
+          },
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'services',
+            objectType: 'services',
+          },
+        ],
+        authTranslator: {
+          decorateClusterDetailsWithAuth: async (clusterDetails, _) => {
+            return clusterDetails;
+          },
+        },
+      });
+
+      const result = await sut.getKubernetesObjectsByEntity({
+        entity,
+        auth: {},
+      });
+
+      const expected: ObjectsByEntityResponse = {
+        items: [
+          {
+            cluster: { name: 'works' },
+            resources: [
+              { type: 'pods', resources: pods },
+              { type: 'services', resources: services },
+            ],
+            podMetrics: [],
+            errors: [],
+          },
+          {
+            cluster: { name: 'fails' },
+            resources: [],
+            podMetrics: [],
+            errors: [
+              {
+                errorType: 'FETCH_ERROR',
+                message:
+                  'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: socket error',
+              },
+            ],
+          },
+        ],
+      };
+      expect(result).toStrictEqual(expected);
     });
   });
 });

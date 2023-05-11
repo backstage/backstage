@@ -22,6 +22,10 @@ import { mergeDatabaseConfig } from './config';
 import { DatabaseConnector } from './types';
 
 import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';
+import {
+  LifecycleService,
+  PluginMetadataService,
+} from '@backstage/backend-plugin-api';
 
 type DatabaseClient =
   | 'pg'
@@ -55,11 +59,15 @@ const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
+  deps?: {
+    lifecycle: LifecycleService;
+    pluginMetadata: PluginMetadataService;
+  },
 ) {
   const client: DatabaseClient = dbConfig.getString('client');
 
   return (
-    ConnectorMapping[client]?.createClient(dbConfig, overrides) ??
+    ConnectorMapping[client]?.createClient(dbConfig, overrides, deps) ??
     knexFactory(mergeDatabaseConfig(dbConfig.get(), overrides))
   );
 }

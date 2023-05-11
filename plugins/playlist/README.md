@@ -6,6 +6,14 @@ This plugin allows you to create, share, and follow custom collections of entiti
 
 ## Setup
 
+The following sections will help you get the Playlist plugin setup and running
+
+### Backend
+
+You need to setup the [Playlist backend plugin](https://github.com/backstage/backstage/tree/master/plugins/playlist-backend) before you move forward with any of these steps if you haven't already
+
+### Installation
+
 Install this plugin:
 
 ```bash
@@ -122,6 +130,37 @@ const defaultEntityPage = (
 ```
 
 Note: the above only shows an example for the `defaultEntityPage` for a full example of this you can look at [this EntityPage](../../packages/app/src/components/catalog/EntityPage.tsx)
+
+## Custom Title
+
+You can define a custom title to be shown in all the components of this plugin to replace the default term "playlist" in the UI. To do this you just need to add some config in your **app-config.yaml**, here's an example:
+
+```yaml
+playlist:
+  title: Collection
+```
+
+## Features
+
+### View All Playlists
+
+![View all playlists example](./docs/playlist-view-all.png)
+
+### View Playlist
+
+![View Playlist example](./docs/playlist-view-single.png)
+
+### Create New Playlist
+
+![Create New Playlist example](./docs/playlist-create-new.png)
+
+### Add Entities to Playlist
+
+![Add Entities to Playlist example](./docs/playlist-add-entities.png)
+
+### Add to Playlist from Entity
+
+![Add to Playlist from Entity example](./docs/playlist-add-from-entity.png)
 
 ## Links
 

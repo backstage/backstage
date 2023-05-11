@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
-import { assertError, InputError } from '@backstage/errors';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
@@ -28,6 +29,7 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
+import { entityRefToName } from '../../builtin/helpers';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -101,6 +103,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   deleteBranchOnMerge: boolean,
   allowMergeCommit: boolean,
   allowSquashMerge: boolean,
+  squashMergeCommitTitle: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined,
+  squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
   allowRebaseMerge: boolean,
   allowAutoMerge: boolean,
   access: string | undefined,
@@ -108,11 +112,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     | (
         | {
             user: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             team: string;
-            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+            access: string;
           }
         | {
             /** @deprecated This field is deprecated in favor of team */
@@ -121,12 +125,20 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           }
       )[]
     | undefined,
+  hasProjects: boolean | undefined,
+  hasWiki: boolean | undefined,
+  hasIssues: boolean | undefined,
   topics: string[] | undefined,
   logger: Logger,
 ) {
+  // eslint-disable-next-line testing-library/no-await-sync-query
   const user = await client.rest.users.getByUsername({
     username: owner,
   });
+
+  if (access?.startsWith(`${owner}/`)) {
+    await validateAccessTeam(client, access);
+  }
 
   const repoCreationPromise =
     user.data.type === 'Organization'
@@ -139,9 +151,14 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           delete_branch_on_merge: deleteBranchOnMerge,
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
         })
       : client.rest.repos.createForAuthenticatedUser({
           name: repo,
@@ -150,9 +167,14 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           delete_branch_on_merge: deleteBranchOnMerge,
           allow_merge_commit: allowMergeCommit,
           allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
           homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
         });
 
   let newRepo;
@@ -197,13 +219,13 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           await client.rest.repos.addCollaborator({
             owner,
             repo,
-            username: collaborator.user,
+            username: entityRefToName(collaborator.user),
             permission: collaborator.access,
           });
         } else if ('team' in collaborator) {
           await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
             org: owner,
-            team_slug: collaborator.team,
+            team_slug: entityRefToName(collaborator.team),
             owner,
             repo,
             permission: collaborator.access,
@@ -247,14 +269,32 @@ export async function initRepoPushAndProtect(
   client: Octokit,
   repo: string,
   requireCodeOwnerReviews: boolean,
+  bypassPullRequestAllowances:
+    | {
+        users?: string[];
+        teams?: string[];
+        apps?: string[];
+      }
+    | undefined,
+  requiredApprovingReviewCount: number,
+  restrictions:
+    | {
+        users: string[];
+        teams: string[];
+        apps?: string[];
+      }
+    | undefined,
   requiredStatusCheckContexts: string[],
   requireBranchesToBeUpToDate: boolean,
+  requiredConversationResolution: boolean,
   config: Config,
   logger: any,
   gitCommitMessage?: string,
   gitAuthorName?: string,
   gitAuthorEmail?: string,
-) {
+  dismissStaleReviews?: boolean,
+  requiredCommitSigning?: boolean,
+): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
       ? gitAuthorName
@@ -268,7 +308,7 @@ export async function initRepoPushAndProtect(
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 
-  await initRepoAndPush({
+  const commitResult = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
     defaultBranch,
@@ -289,10 +329,16 @@ export async function initRepoPushAndProtect(
         repoName: repo,
         logger,
         defaultBranch,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requireCodeOwnerReviews,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         enforceAdmins: protectEnforceAdmins,
+        dismissStaleReviews: dismissStaleReviews,
+        requiredCommitSigning: requiredCommitSigning,
       });
     } catch (e) {
       assertError(e);
@@ -301,6 +347,8 @@ export async function initRepoPushAndProtect(
       );
     }
   }
+
+  return { commitHash: commitResult.commitHash };
 }
 
 function extractCollaboratorName(
@@ -309,4 +357,23 @@ function extractCollaboratorName(
   if ('username' in collaborator) return collaborator.username;
   if ('user' in collaborator) return collaborator.user;
   return collaborator.team;
+}
+
+async function validateAccessTeam(client: Octokit, access: string) {
+  const [org, team_slug] = access.split('/');
+  try {
+    // Below rule disabled because of a 'getByName' check for a different library
+    // incorrectly triggers here.
+    // eslint-disable-next-line testing-library/no-await-sync-query
+    await client.rest.teams.getByName({
+      org,
+      team_slug,
+    });
+  } catch (e) {
+    if (e.response.data.message === 'Not Found') {
+      const message = `Received 'Not Found' from the API; one of org:
+        ${org} or team: ${team_slug} was not found within GitHub.`;
+      throw new NotFoundError(message);
+    }
+  }
 }

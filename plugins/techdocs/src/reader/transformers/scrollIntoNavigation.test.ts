@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { scrollIntoNavigation } from '.';
+import { scrollIntoNavigation } from './scrollIntoNavigation';
 import { createTestShadowDom, FIXTURES } from '../../test-utils';
 
 jest.useFakeTimers();

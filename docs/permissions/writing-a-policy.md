@@ -8,9 +8,7 @@ In the [previous section](./getting-started.md), we were able to set up the perm
 
 That policy looked like this:
 
-```typescript
-// packages/backend/src/plugins/permission.ts
-
+```typescript title="packages/backend/src/plugins/permission.ts"
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(request: PolicyQuery): Promise<PolicyDecision> {
     if (request.permission.name === 'catalog.entity.delete') {
@@ -36,49 +34,61 @@ As we confirmed in the previous section, we know that this now prevents us from 
 
 Let's change the policy to the following:
 
-```diff
-- import { IdentityClient } from '@backstage/plugin-auth-node';
-+ import {
-+   BackstageIdentityResponse,
-+   IdentityClient
-+ } from '@backstage/plugin-auth-node';
-  import {
+```ts
+/* highlight-remove-next-line */
+import { IdentityClient } from '@backstage/plugin-auth-node';
+/* highlight-add-start */
+import {
+  BackstageIdentityResponse,
+  IdentityClient
+} from '@backstage/plugin-auth-node';
+  /* highlight-add-end */
+import {
   AuthorizeResult,
   PolicyDecision,
-+ isPermission,
+  /* highlight-add-next-line */
+  isPermission,
 } from '@backstage/plugin-permission-common';
-+ import {
-+   catalogConditions,
-+   createCatalogConditionalDecision,
-+ } from '@backstage/plugin-catalog-backend/alpha';
-+ import {
-+   catalogEntityDeletePermission,
-+ } from '@backstage/plugin-catalog-common/alpha';
+/* highlight-add-start */
+import {
+  catalogConditions,
+  createCatalogConditionalDecision,
+} from '@backstage/plugin-catalog-backend/alpha';
+import {
+  catalogEntityDeletePermission,
+} from '@backstage/plugin-catalog-common/alpha';
+/* highlight-add-end */
 
-  ...
-
-  class TestPermissionPolicy implements PermissionPolicy {
--   async handle(request: PolicyQuery): Promise<PolicyDecision> {
-+   async handle(
-+     request: PolicyQuery,
-+     user?: BackstageIdentityResponse,
-+    ): Promise<PolicyDecision> {
--     if (request.permission.name === 'catalog.entity.delete') {
-+     if (isPermission(request.permission, catalogEntityDeletePermission)) {
--       return {
--         result: AuthorizeResult.DENY,
--       };
-+       return createCatalogConditionalDecision(
-+         request.permission,
-+         catalogConditions.isEntityOwner(
-+           user?.identity.ownershipEntityRefs ?? [],
-+         ),
-+       );
-      }
-
-      return { result: AuthorizeResult.ALLOW };
+class TestPermissionPolicy implements PermissionPolicy {
+  /* highlight-remove-next-line */
+  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+  /* highlight-add-start */
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+   ): Promise<PolicyDecision> {
+  /* highlight-add-end */
+    /* highlight-remove-next-line */
+    if (request.permission.name === 'catalog.entity.delete') {
+    /* highlight-add-next-line */
+    if (isPermission(request.permission, catalogEntityDeletePermission)) {
+      /* highlight-remove-start */
+      return {
+      result: AuthorizeResult.DENY,
+      };
+      /* highlight-remove-end */
+      /* highlight-add-start */
+      return createCatalogConditionalDecision(
+        request.permission,
+        catalogConditions.isEntityOwner({
+          claims: user?.identity.ownershipEntityRefs ?? [],
+        }),
+      );
+      /* highlight-add-end */
     }
+     return { result: AuthorizeResult.ALLOW };
   }
+}
 ```
 
 Let's walk through the new code that we just added.
@@ -93,40 +103,45 @@ You should now be able to see in your Backstage app that the unregister entity b
 
 Now let's say we want to prevent all actions on catalog entities unless performed by the owner. One way to achieve this may be to simply update the `if` statement and check for each permission. If you choose to write your policy this way, it will certainly work! However, it may be difficult to maintain as the policy grows, and it may not be obvious if certain permissions are left out. We can author this same policy in a more scalable way by checking the resource type of the requested permission.
 
-```diff
+```ts
 import {
   AuthorizeResult,
   PolicyDecision,
-- isPermission,
-+ isResourcePermission,
+  /* highlight-remove-next-line */
+  isPermission,
+  isResourcePermission,
+  /* highlight-add-next-line */
 } from '@backstage/plugin-permission-common';
- import {
-   catalogConditions,
-   createCatalogConditionalDecision,
- } from '@backstage/plugin-catalog-backend/alpha';
-- import {
--   catalogEntityDeletePermission,
-- } from '@backstage/plugin-catalog-common/alpha';
-
-...
+import {
+  catalogConditions,
+  createCatalogConditionalDecision,
+} from '@backstage/plugin-catalog-backend/alpha';
+/* highlight-remove-start */
+import {
+  catalogEntityDeletePermission,
+} from '@backstage/plugin-catalog-common/alpha';
+/* highlight-remove-end */
 
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
--   if (isPermission(request.permission, catalogEntityDeletePermission)) {
-+   if (isResourcePermission(request.permission, 'catalog-entity')) {
+    /* highlight-remove-next-line */
+    if (isPermission(request.permission, catalogEntityDeletePermission)) {
+    /* highlight-add-next-line */
+    if (isResourcePermission(request.permission, 'catalog-entity')) {
       return createCatalogConditionalDecision(
         request.permission,
-        catalogConditions.isEntityOwner(
-          user?.identity.ownershipEntityRefs ?? [],
-        ),
+        catalogConditions.isEntityOwner({
+          claims: user?.identity.ownershipEntityRefs ?? [],
+        }),
       );
     }
 
     return { result: AuthorizeResult.ALLOW };
   }
+}
 ```
 
 In this example, we use [`isResourcePermission`](https://backstage.io/docs/reference/plugin-permission-common.isresourcepermission) to match all permissions with a resource type of `catalog-entity`. Just like `isPermission`, this helper will "narrow" the type of `request.permission` and enable the use of `createCatalogConditionalDecision`. In addition to the behavior you observed before, you should also see that catalog entities are no longer visible unless you are the owner - success!

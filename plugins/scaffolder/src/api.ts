@@ -16,7 +16,6 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
-  createApiRef,
   DiscoveryApi,
   FetchApi,
   IdentityApi,
@@ -30,7 +29,6 @@ import {
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
-  TemplateParameterSchema,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
@@ -39,17 +37,10 @@ import {
   ScaffolderTask,
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
-} from './types';
-import queryString from 'qs';
+  TemplateParameterSchema,
+} from '@backstage/plugin-scaffolder-react';
 
-/**
- * Utility API reference for the {@link ScaffolderApi}.
- *
- * @public
- */
-export const scaffolderApiRef = createApiRef<ScaffolderApi>({
-  id: 'plugin.scaffolder.service',
-});
+import queryString from 'qs';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -149,12 +140,6 @@ export class ScaffolderClient implements ScaffolderApi {
     return schema;
   }
 
-  /**
-   * Executes the scaffolding of a component, given a template and its
-   * parameter values.
-   *
-   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
-   */
   async scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse> {
@@ -244,24 +229,22 @@ export class ScaffolderClient implements ScaffolderApi {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
+
+          const processEvent = (event: any) => {
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+          };
+
           const eventSource = new EventSource(url, { withCredentials: true });
-          eventSource.addEventListener('log', (event: any) => {
-            if (event.data) {
-              try {
-                subscriber.next(JSON.parse(event.data));
-              } catch (ex) {
-                subscriber.error(ex);
-              }
-            }
-          });
+          eventSource.addEventListener('log', processEvent);
+          eventSource.addEventListener('cancelled', processEvent);
           eventSource.addEventListener('completion', (event: any) => {
-            if (event.data) {
-              try {
-                subscriber.next(JSON.parse(event.data));
-              } catch (ex) {
-                subscriber.error(ex);
-              }
-            }
+            processEvent(event);
             eventSource.close();
             subscriber.complete();
           });
@@ -319,6 +302,21 @@ export class ScaffolderClient implements ScaffolderApi {
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const response = await this.fetchApi.fetch(`${baseUrl}/v2/actions`);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
+
+  async cancelTask(taskId: string): Promise<void> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/cancel`;
+
+    const response = await this.fetchApi.fetch(url, {
+      method: 'POST',
+    });
+
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }

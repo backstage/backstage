@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { Store } from 'keyv';
+
 /**
  * Storage class compatible with Keyv which always results in a no-op. This is
  * used when no cache store is configured in a Backstage backend instance.
  */
-export class NoStore extends Map<string, any> {
+export class NoStore implements Store<string | undefined> {
   clear(): void {
     return;
   }
@@ -28,7 +30,7 @@ export class NoStore extends Map<string, any> {
   }
 
   get(_key: string) {
-    return;
+    return undefined;
   }
 
   has(_key: string): boolean {

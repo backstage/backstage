@@ -21,6 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { AboutContent } from './AboutContent';
 
@@ -65,34 +66,31 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:o');
-      expect(getByText('Domain')).toBeInTheDocument();
-      expect(getByText('Domain').nextSibling).toHaveTextContent('d');
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('s');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('t');
-      expect(getByText('Lifecycle')).toBeInTheDocument();
-      expect(getByText('Lifecycle').nextSibling).toHaveTextContent('l');
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent('user:o');
+      expect(screen.getByText('Domain')).toBeInTheDocument();
+      expect(screen.getByText('Domain').nextSibling).toHaveTextContent('d');
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent('s');
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('t');
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent('l');
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -102,26 +100,25 @@ describe('<AboutContent />', () => {
       entity.spec = {};
       entity.relations = [];
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(queryByText('Type')).not.toBeInTheDocument();
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.queryByText('Type')).not.toBeInTheDocument();
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
     });
   });
 
@@ -161,35 +158,36 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('system');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('openapi');
-      expect(getByText('Lifecycle')).toBeInTheDocument();
-      expect(getByText('Lifecycle').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'user:guest',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'system',
+      );
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('openapi');
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent(
         'production',
       );
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -202,32 +200,36 @@ describe('<AboutContent />', () => {
       entity.relations = [];
       delete entity.metadata.labels;
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('No System');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('unknown');
-      expect(getByText('Lifecycle')).toBeInTheDocument();
-      expect(getByText('Lifecycle').nextSibling).toHaveTextContent('unknown');
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'No System',
+      );
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('unknown');
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent(
+        'unknown',
+      );
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 
@@ -271,38 +273,39 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('system');
-      expect(getByText('Parent Component')).toBeInTheDocument();
-      expect(getByText('Parent Component').nextSibling).toHaveTextContent(
-        'parent-software',
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'user:guest',
       );
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('service');
-      expect(getByText('Lifecycle')).toBeInTheDocument();
-      expect(getByText('Lifecycle').nextSibling).toHaveTextContent(
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'system',
+      );
+      expect(screen.getByText('Parent Component')).toBeInTheDocument();
+      expect(
+        screen.getByText('Parent Component').nextSibling,
+      ).toHaveTextContent('parent-software');
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('service');
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent(
         'production',
       );
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -315,32 +318,35 @@ describe('<AboutContent />', () => {
       entity.relations = [];
       delete entity.metadata.labels;
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('No System');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('unknown');
-      expect(getByText('Lifecycle')).toBeInTheDocument();
-      expect(getByText('Lifecycle').nextSibling).toHaveTextContent('unknown');
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'No System',
+      );
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('unknown');
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent(
+        'unknown',
+      );
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 
@@ -372,30 +378,29 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(queryByText('Type')).not.toBeInTheDocument();
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'user:guest',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.queryByText('Type')).not.toBeInTheDocument();
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -405,29 +410,28 @@ describe('<AboutContent />', () => {
       entity.relations = [];
       delete entity.metadata.labels;
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(queryByText('Type')).not.toBeInTheDocument();
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.queryByText('Type')).not.toBeInTheDocument();
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 
@@ -455,31 +459,30 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('root');
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Targets')).toBeInTheDocument();
-      expect(getByText('Targets').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('root');
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Targets')).toBeInTheDocument();
+      expect(screen.getByText('Targets').nextSibling).toHaveTextContent(
         'https://backstage.io',
       );
       expect(getByText('Labels')).toBeInTheDocument();
@@ -493,30 +496,29 @@ describe('<AboutContent />', () => {
       delete entity.spec!.type;
       delete entity.metadata.labels;
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('unknown');
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('unknown');
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 
@@ -554,32 +556,33 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('system');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('s3');
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'user:guest',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'system',
+      );
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('s3');
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -591,31 +594,32 @@ describe('<AboutContent />', () => {
       entity.relations = [];
       delete entity.metadata.labels;
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(queryByText('Domain')).not.toBeInTheDocument();
-      expect(getByText('System')).toBeInTheDocument();
-      expect(getByText('System').nextSibling).toHaveTextContent('No System');
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(getByText('Type')).toBeInTheDocument();
-      expect(getByText('Type').nextSibling).toHaveTextContent('unknown');
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System').nextSibling).toHaveTextContent(
+        'No System',
+      );
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Type').nextSibling).toHaveTextContent('unknown');
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 
@@ -652,31 +656,32 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('user:guest');
-      expect(getByText('Domain')).toBeInTheDocument();
-      expect(getByText('Domain').nextSibling).toHaveTextContent('domain');
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(queryByText('Type')).not.toBeInTheDocument();
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('tag-1');
-      expect(getByText('Labels')).toBeInTheDocument();
-      expect(getByText('Labels').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'user:guest',
+      );
+      expect(screen.getByText('Domain')).toBeInTheDocument();
+      expect(screen.getByText('Domain').nextSibling).toHaveTextContent(
+        'domain',
+      );
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.queryByText('Type')).not.toBeInTheDocument();
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
         'label-1: label',
       );
     });
@@ -687,30 +692,31 @@ describe('<AboutContent />', () => {
       delete entity.spec!.domain;
       entity.relations = [];
 
-      const { getByText, queryByText } = await renderInTestApp(
-        <AboutContent entity={entity} />,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+      await renderInTestApp(<AboutContent entity={entity} />, {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      );
+      });
 
-      expect(getByText('Description')).toBeInTheDocument();
-      expect(getByText('Description').nextSibling).toHaveTextContent(
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
         'This is the description',
       );
-      expect(getByText('Owner')).toBeInTheDocument();
-      expect(getByText('Owner').nextSibling).toHaveTextContent('No Owner');
-      expect(getByText('Domain')).toBeInTheDocument();
-      expect(getByText('Domain').nextSibling).toHaveTextContent('No Domain');
-      expect(queryByText('System')).not.toBeInTheDocument();
-      expect(queryByText('Parent Component')).not.toBeInTheDocument();
-      expect(queryByText('Type')).not.toBeInTheDocument();
-      expect(queryByText('Lifecycle')).not.toBeInTheDocument();
-      expect(getByText('Tags')).toBeInTheDocument();
-      expect(getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(queryByText('Labels')).not.toBeInTheDocument();
+      expect(screen.getByText('Owner')).toBeInTheDocument();
+      expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
+        'No Owner',
+      );
+      expect(screen.getByText('Domain')).toBeInTheDocument();
+      expect(screen.getByText('Domain').nextSibling).toHaveTextContent(
+        'No Domain',
+      );
+      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
+      expect(screen.queryByText('Type')).not.toBeInTheDocument();
+      expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();  
     });
   });
 });

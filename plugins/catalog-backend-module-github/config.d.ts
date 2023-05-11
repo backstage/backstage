@@ -50,7 +50,7 @@ export interface Config {
 
     providers?: {
       /**
-       * GitHubEntityProvider configuration
+       * GithubEntityProvider configuration
        *
        * Uses "default" as default id for the single config variant.
        */
@@ -84,6 +84,10 @@ export interface Config {
                */
               repository?: string;
               /**
+               * (Optional) Allow Forks to be evaluated.
+               */
+              allowForks?: boolean;
+              /**
                * (Optional) GitHub topic-based filters.
                */
               topic?: {
@@ -104,6 +108,10 @@ export interface Config {
                  */
                 exclude?: string[];
               };
+              /**
+               * (Optional) GitHub repository visibility filter.
+               */
+              visibility?: Array<'private' | 'internal' | 'public'>;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -143,6 +151,10 @@ export interface Config {
                 /**
                  * (Optional) GitHub topic-based filters.
                  */
+                allowForks?: boolean;
+                /**
+                 * (Optional) Allow Forks to be evaluated.
+                 */
                 topic?: {
                   /**
                    * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
@@ -161,6 +173,10 @@ export interface Config {
                    */
                   exclude?: string[];
                 };
+                /**
+                 * (Optional) GitHub repository visibility filter.
+                 */
+                visibility?: Array<'private' | 'internal' | 'public'>;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.

@@ -15,7 +15,12 @@
  */
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useNavigate, useParams, useRoutes } from 'react-router';
+import {
+  matchRoutes,
+  useNavigate,
+  useParams,
+  useRoutes,
+} from 'react-router-dom';
 import { Content } from '../../layout/Content';
 import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';

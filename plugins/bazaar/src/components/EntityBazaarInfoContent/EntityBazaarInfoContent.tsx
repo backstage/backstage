@@ -16,6 +16,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CardHeader, Divider, IconButton, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -25,6 +26,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
+import Description from '@material-ui/icons/Description';
 import { EditProjectDialog } from '../EditProjectDialog';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { BazaarProject, Member } from '../../types';
@@ -127,6 +129,12 @@ export const EntityBazaarInfoContent = ({
       href: bazaarProject?.community,
       disabled: bazaarProject?.community === '' || !isMember,
     },
+    {
+      label: 'Docs',
+      icon: <Description />,
+      href: bazaarProject?.docs,
+      disabled: bazaarProject?.docs === null || bazaarProject?.docs === '',
+    },
   ];
 
   const handleEditClose = () => {
@@ -173,7 +181,7 @@ export const EntityBazaarInfoContent = ({
                 {parseEntityRef(bazaarProject.entityRef!).name}
               </b>,
               ' from ',
-              <b className={classes.wordBreak}>{bazaarProject.name}</b>,
+              <b className={classes.wordBreak}>{bazaarProject.title}</b>,
               ' ?',
             ]}
             type="unlink"
@@ -182,7 +190,11 @@ export const EntityBazaarInfoContent = ({
         )}
 
         <CardHeader
-          title={<p className={classes.wordBreak}>{bazaarProject?.name!}</p>}
+          title={
+            <Typography paragraph className={classes.wordBreak}>
+              {bazaarProject?.title!}
+            </Typography>
+          }
           action={
             <div>
               <IconButton

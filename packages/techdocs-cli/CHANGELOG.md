@@ -1,5 +1,354 @@
 # @techdocs/cli
 
+## 1.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-techdocs-node@1.7.1-next.1
+  - @backstage/config@1.0.7
+
+## 1.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-techdocs-node@1.7.1-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.1
+
+### Patch Changes
+
+- b348420a804: Adding global-agent to enable the ability to publish through a proxy
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-techdocs-node@1.7.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.3
+
+## 1.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.2
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/plugin-techdocs-node@1.6.1-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- b348420a804: Adding global-agent to enable the ability to publish through a proxy
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/plugin-techdocs-node@1.6.1-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- 8e465ce52e2: Running `@techdocs/cli generate` with the `--verbose` flag will now print the mkdocs output.
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/catalog-model@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.0-next.1
+
+### Minor Changes
+
+- 8e465ce52e2: Running `@techdocs/cli generate` with the `--verbose` flag will now print the mkdocs output.
+- ea2bbef1b16: Added support for an HTTPS proxy for techdocs AWS S3 requests
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.6.0-next.1
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+
+## 1.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.5.1-next.0
+
+## 1.3.2
+
+### Patch Changes
+
+- dd1e37649f: Deprecated getMkDocsYml in favor of getMkdocsYml (lowercase 'd')
+- dcacf94912: Fix proxying to mkdocs
+
+  The domain localhost may point to both 127.0.0.1 and ::1, ipv4 and ipv6
+  and when node tries to lookup localhost it might prefer ipv6 while mkdocs
+  is only listening on ipv4. This tells node-proxy to target the ipv4 address
+  instead of relying on localhost hostname lookup.
+
+- 339d9a5b5c: Added support for using a default `mkdocs.yml` configuration file when none is provided
+- 6e0b6a0d50: Fixed publish command missing awsBucketRootPath option.
+  Fixed publish command having the gcsBucketRootPath option misconfigured, previously returning a boolean vs a string.
+- Updated dependencies
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-techdocs-node@1.5.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.4.6-next.2
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6
+  - @backstage/plugin-techdocs-node@1.4.6-next.1
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 6e0b6a0d50: Fixed publish command missing awsBucketRootPath option.
+  Fixed publish command having the gcsBucketRootPath option misconfigured, previously returning a boolean vs a string.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.4.6-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- bc18c902a2: Add `--preview-app-bundle-path` and `--preview-app-port` options to the `serve` command enabling previewing with apps other than the provided one
+
+### Patch Changes
+
+- 9f2b786fc9: Provide context for logged errors.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/plugin-techdocs-node@1.4.4
+
+## 1.3.0-next.2
+
+### Minor Changes
+
+- bc18c902a2: Add `--preview-app-bundle-path` and `--preview-app-port` options to the `serve` command enabling previewing with apps other than the provided one
+
+### Patch Changes
+
+- 9f2b786fc9: Provide context for logged errors.
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/plugin-techdocs-node@1.4.4-next.2
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.6-next.0
+
+## 1.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/cli-common@0.1.11
+  - @backstage/plugin-techdocs-node@1.4.4-next.1
+
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+  - @backstage/plugin-techdocs-node@1.4.4-next.0
+
+## 1.2.4
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-techdocs-node@1.4.3
+  - @backstage/cli-common@0.1.11
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+
+## 1.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/plugin-techdocs-node@1.4.3-next.3
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/plugin-techdocs-node@1.4.3-next.2
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-techdocs-node@1.4.3-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/cli-common@0.1.10
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-techdocs-node@1.4.3-next.0
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-techdocs-node@1.4.2
+  - @backstage/catalog-model@1.1.3
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/plugin-techdocs-node@1.4.2-next.1
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-techdocs-node@1.4.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+
+## 1.2.2
+
+### Patch Changes
+
+- 0b2a30dead: fixing techdocs-cli Docker client creation
+
+  Docker client does not need to be created when --no-docker
+  option is provided.
+
+  If you had DOCKER_CERT_PATH environment variable defined
+  the Docker client was looking for certificates
+  and breaking techdocs-cli generate command even with --no-docker
+  option.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-techdocs-node@1.4.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+
 ## 1.2.2-next.2
 
 ### Patch Changes

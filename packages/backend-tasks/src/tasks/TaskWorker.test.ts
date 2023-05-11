@@ -17,12 +17,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
-import { AbortController } from 'node-abort-controller';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
+
+jest.setTimeout(60_000);
 
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
@@ -116,7 +117,6 @@ describe('TaskWorker', () => {
         }),
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -141,7 +141,6 @@ describe('TaskWorker', () => {
         expect(logger.error).toHaveBeenCalled();
       });
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -165,7 +164,6 @@ describe('TaskWorker', () => {
         expect(fn).toHaveBeenCalledTimes(3);
       });
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -224,7 +222,6 @@ describe('TaskWorker', () => {
         }),
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -281,7 +278,6 @@ describe('TaskWorker', () => {
         false,
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -335,6 +331,5 @@ describe('TaskWorker', () => {
       await promise2;
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
-    60_000,
   );
 });

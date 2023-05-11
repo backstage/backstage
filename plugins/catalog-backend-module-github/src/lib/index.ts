@@ -20,6 +20,15 @@ export {
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
+  type GithubUser,
+  type GithubTeam,
 } from './github';
+export {
+  type UserTransformer,
+  defaultUserTransformer,
+  type TeamTransformer,
+  defaultOrganizationTeamTransformer,
+  type TransformerContext,
+} from './defaultTransformers';
 export { assignGroupsToUsers, buildOrgHierarchy } from './org';
-export { parseGitHubOrgUrl } from './util';
+export { parseGithubOrgUrl } from './util';

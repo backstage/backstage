@@ -21,8 +21,10 @@ import React, {
   useState,
   memo,
   ReactNode,
+  useEffect,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
 import {
   CompoundEntityRef,
@@ -33,7 +35,11 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  configApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
@@ -107,16 +113,18 @@ export type TechDocsReaderPageProviderProps = {
  * @public
  */
 export const TechDocsReaderPageProvider = memo(
-  ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
+  (props: TechDocsReaderPageProviderProps) => {
+    const { entityRef, children } = props;
+
     const techdocsApi = useApi(techdocsApiRef);
     const config = useApi(configApiRef);
 
-    const metadata = useAsync(async () => {
-      return techdocsApi.getTechDocsMetadata(entityRef);
-    }, [entityRef]);
-
     const entityMetadata = useAsync(async () => {
       return techdocsApi.getEntityMetadata(entityRef);
+    }, [entityRef]);
+
+    const metadata = useAsyncRetry(async () => {
+      return techdocsApi.getTechDocsMetadata(entityRef);
     }, [entityRef]);
 
     const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
@@ -127,7 +135,19 @@ export const TechDocsReaderPageProvider = memo(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
 
-    const value = {
+    useEffect(() => {
+      if (shadowRoot && !metadata.value && !metadata.loading) {
+        metadata.retry();
+      }
+    }, [
+      metadata.value,
+      metadata.loading,
+      shadowRoot,
+      metadata.retry,
+      metadata,
+    ]);
+
+    const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
@@ -141,9 +161,13 @@ export const TechDocsReaderPageProvider = memo(
     const versionedValue = createVersionedValueMap({ 1: value });
 
     return (
-      <TechDocsReaderPageContext.Provider value={versionedValue}>
-        {children instanceof Function ? children(value) : children}
-      </TechDocsReaderPageContext.Provider>
+      <AnalyticsContext
+        attributes={{ entityRef: stringifyEntityRef(entityRef) }}
+      >
+        <TechDocsReaderPageContext.Provider value={versionedValue}>
+          {children instanceof Function ? children(value) : children}
+        </TechDocsReaderPageContext.Provider>
+      </AnalyticsContext>
     );
   },
   (prevProps, nextProps) => {

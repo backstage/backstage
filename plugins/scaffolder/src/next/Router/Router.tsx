@@ -14,22 +14,39 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
-import { TemplateListPage } from '../TemplateListPage';
-import { TemplateWizardPage } from '../TemplateWizardPage';
+import { Routes, Route, useOutlet } from 'react-router-dom';
+import { TemplateListPage, TemplateListPageProps } from '../TemplateListPage';
 import {
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
+  TemplateWizardPage,
+  TemplateWizardPageProps,
+} from '../TemplateWizardPage';
+import {
   NextFieldExtensionOptions,
-  FieldExtensionOptions,
-} from '../../extensions';
+  FormProps,
+  TemplateGroupFilter,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderTaskOutput,
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+  useCustomLayouts,
+} from '@backstage/plugin-scaffolder-react';
 
-import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
-import { nextSelectedTemplateRouteRef } from '../../routes';
-import { SecretsContextProvider } from '../../components/secrets/SecretsContext';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
+
+import {
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderListTaskRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../../routes';
+import { ErrorPage } from '@backstage/core-components';
+import { OngoingTask } from '../OngoingTask';
+import { ActionsPage } from '../../components/ActionsPage';
+import { ListTasksPage } from '../../components/ListTasksPage';
+import { TemplateEditorPage } from '../TemplateEditorPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -42,8 +59,24 @@ export type NextRouterProps = {
       template: TemplateEntityV1beta3;
     }>;
     TaskPageComponent?: React.ComponentType<{}>;
+    TemplateOutputsComponent?: React.ComponentType<{
+      output?: ScaffolderTaskOutput;
+    }>;
+    TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
+    TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  // todo(blam): rename this to formProps
+  FormProps?: FormProps;
+  contextMenu?: {
+    /** Whether to show a link to the template editor */
+    editor?: boolean;
+    /** Whether to show a link to the actions documentation */
+    actions?: boolean;
+    /** Whether to show a link to the tasks page */
+    tasks?: boolean;
+  };
 };
 
 /**
@@ -52,19 +85,18 @@ export type NextRouterProps = {
  * @alpha
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
-  const { components: { TemplateCardComponent } = {} } = props;
-
+  const {
+    components: {
+      TemplateCardComponent,
+      TemplateOutputsComponent,
+      TaskPageComponent = OngoingTask,
+      TemplateListPageComponent = TemplateListPage,
+      TemplateWizardPageComponent = TemplateWizardPage,
+    } = {},
+  } = props;
   const outlet = useOutlet() || props.children;
-
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions | NextFieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
+  const customFieldExtensions =
+    useCustomFieldExtensions<NextFieldExtensionOptions>(outlet);
 
   const fieldExtensions = [
     ...customFieldExtensions,
@@ -76,24 +108,61 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
     ),
   ] as NextFieldExtensionOptions[];
 
+  const customLayouts = useCustomLayouts(outlet);
+
   return (
     <Routes>
       <Route
         path="/"
         element={
-          <TemplateListPage
+          <TemplateListPageComponent
             TemplateCardComponent={TemplateCardComponent}
+            contextMenu={props.contextMenu}
             groups={props.groups}
+            templateFilter={props.templateFilter}
           />
         }
       />
       <Route
-        path={nextSelectedTemplateRouteRef.path}
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateWizardPage customFieldExtensions={fieldExtensions} />
+            <TemplateWizardPageComponent
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+              FormProps={props.FormProps}
+            />
           </SecretsContextProvider>
         }
+      />
+      <Route
+        path={scaffolderTaskRouteRef.path}
+        element={
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
+        }
+      />
+      <Route
+        path={editRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateEditorPage
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+            />
+          </SecretsContextProvider>
+        }
+      />
+
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={scaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
+      />
+      <Route
+        path="*"
+        element={<ErrorPage status="404" statusMessage="Page not found" />}
       />
     </Routes>
   );

@@ -52,6 +52,8 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
   maxPage?: number;
   apiKey?: string;
+  apiAccessToken?: string;
+  teamName?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
@@ -67,6 +69,8 @@ export class StackOverflowQuestionsCollatorFactory
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
   private readonly apiKey: string | undefined;
+  private readonly apiAccessToken: string | undefined;
+  private readonly teamName: string | undefined;
   private readonly maxPage: number | undefined;
   private readonly logger: Logger;
   public readonly type: string = 'stack-overflow';
@@ -74,6 +78,8 @@ export class StackOverflowQuestionsCollatorFactory
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
     this.apiKey = options.apiKey;
+    this.apiAccessToken = options.apiAccessToken;
+    this.teamName = options.teamName;
     this.maxPage = options.maxPage;
     this.requestParams = options.requestParams;
     this.logger = options.logger.child({ documentType: this.type });
@@ -84,15 +90,21 @@ export class StackOverflowQuestionsCollatorFactory
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
     const apiKey = config.getOptionalString('stackoverflow.apiKey');
+    const apiAccessToken = config.getOptionalString(
+      'stackoverflow.apiAccessToken',
+    );
+    const teamName = config.getOptionalString('stackoverflow.teamName');
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
-      'https://api.stackexchange.com/2.2';
+      'https://api.stackexchange.com/2.3';
     const maxPage = options.maxPage || 100;
     return new StackOverflowQuestionsCollatorFactory({
-      ...options,
       baseUrl,
       maxPage,
       apiKey,
+      apiAccessToken,
+      teamName,
+      ...options,
     });
   }
 
@@ -107,10 +119,16 @@ export class StackOverflowQuestionsCollatorFactory
       );
     }
 
+    if (this.apiKey && this.teamName) {
+      this.logger.debug(
+        'Both stackoverflow.apiKey and stackoverflow.teamName configured in your app-config.yaml, apiKey must be removed before teamName will be used',
+      );
+    }
+
     try {
       if (Object.keys(this.requestParams).indexOf('key') >= 0) {
         this.logger.warn(
-          'The API Key should be passed as a seperate param to bypass encoding',
+          'The API Key should be passed as a separate param to bypass encoding',
         );
         delete this.requestParams.key;
       }
@@ -127,6 +145,15 @@ export class StackOverflowQuestionsCollatorFactory
       ? `${params ? '&' : '?'}key=${this.apiKey}`
       : '';
 
+    const teamParam = this.teamName
+      ? `${params ? '&' : '?'}team=${this.teamName}`
+      : '';
+
+    // PAT change requires team name as a parameter
+    const requestUrl = this.apiKey
+      ? `${this.baseUrl}/questions${params}${apiKeyParam}`
+      : `${this.baseUrl}/questions${params}${teamParam}`;
+
     let hasMorePages = true;
     let page = 1;
     while (hasMorePages) {
@@ -137,7 +164,14 @@ export class StackOverflowQuestionsCollatorFactory
         break;
       }
       const res = await fetch(
-        `${this.baseUrl}/questions${params}${apiKeyParam}&page=${page}`,
+        `${requestUrl}&page=${page}`,
+        this.apiAccessToken
+          ? {
+              headers: {
+                'X-API-Access-Token': this.apiAccessToken,
+              },
+            }
+          : undefined,
       );
 
       const data = await res.json();

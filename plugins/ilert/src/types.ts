@@ -15,17 +15,18 @@
  */
 
 /** @public */
-export interface Incident {
+export interface Alert {
   id: number;
   summary: string;
   details: string;
   reportTime: string;
   resolvedOn: string;
-  status: IncidentStatus;
-  priority: IncidentPriority;
-  incidentKey: string;
+  status: AlertStatus;
+  priority: AlertPriority;
+  alertKey: string;
   alertSource: AlertSource | null;
   assignedTo: User | null;
+  responders: Responder[];
   logEntries: LogEntry[];
   links: Link[];
   images: Image[];
@@ -42,10 +43,10 @@ export const ACCEPTED = 'ACCEPTED';
 export const RESOLVED = 'RESOLVED';
 
 /** @public */
-export type IncidentStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
+export type AlertStatus = typeof PENDING | typeof ACCEPTED | typeof RESOLVED;
 
 /** @public */
-export type IncidentPriority = 'HIGH' | 'LOW';
+export type AlertPriority = 'HIGH' | 'LOW';
 
 /** @public */
 export interface Link {
@@ -76,7 +77,7 @@ export interface LogEntry {
   timestamp: string;
   logEntryType: string;
   text: string;
-  incidentId?: number;
+  alertId?: number;
   iconName?: string;
   iconClass?: string;
   filterTypes?: string[];
@@ -97,6 +98,13 @@ export interface User {
   notificationPreferences?: any[];
   position: string;
   department: string;
+}
+
+/** @public */
+export interface Responder {
+  acceptedAt?: string;
+  status: string;
+  user: User;
 }
 
 /** @public */
@@ -125,8 +133,8 @@ export interface AlertSource {
   iconUrl?: string;
   lightIconUrl?: string;
   darkIconUrl?: string;
-  incidentCreation?: AlertSourceIncidentCreation;
-  incidentPriorityRule?: AlertSourceIncidentPriorityRule;
+  alertCreation?: AlertSourceAlertCreation;
+  alertPriorityRule?: AlertSourceAlertPriorityRule;
   emailFiltered?: boolean;
   emailResolveFiltered?: boolean;
   active?: boolean;
@@ -209,20 +217,48 @@ export type AlertSourceIntegrationType =
   | 'CORTEXXSOAR'
   | string;
 /** @public */
-export type AlertSourceIncidentCreation =
-  | 'ONE_INCIDENT_PER_EMAIL'
-  | 'ONE_INCIDENT_PER_EMAIL_SUBJECT'
-  | 'ONE_PENDING_INCIDENT_ALLOWED'
-  | 'ONE_OPEN_INCIDENT_ALLOWED'
+export type AlertSourceAlertCreation =
+  | 'ONE_ALERT_PER_EMAIL'
+  | 'ONE_ALERT_PER_EMAIL_SUBJECT'
+  | 'ONE_PENDING_ALERT_ALLOWED'
+  | 'ONE_OPEN_ALERT_ALLOWED'
   | 'OPEN_RESOLVE_ON_EXTRACTION';
 /** @public */
 export type AlertSourceFilterOperator = 'AND' | 'OR';
 /** @public */
-export type AlertSourceIncidentPriorityRule =
+export type AlertSourceAlertPriorityRule =
   | 'HIGH'
   | 'LOW'
   | 'HIGH_DURING_SUPPORT_HOURS'
   | 'LOW_DURING_SUPPORT_HOURS';
+
+/** @public */
+export const OPERATIONAL = 'OPERATIONAL';
+/** @public */
+export const UNDER_MAINTENANCE = 'UNDER_MAINTENANCE';
+/** @public */
+export const DEGRADED = 'DEGRADED';
+/** @public */
+export const PARTIAL_OUTAGE = 'PARTIAL_OUTAGE';
+/** @public */
+export const MAJOR_OUTAGE = 'MAJOR_OUTAGE';
+
+/** @public */
+export type ServiceStatus =
+  | typeof OPERATIONAL
+  | typeof UNDER_MAINTENANCE
+  | typeof DEGRADED
+  | typeof PARTIAL_OUTAGE
+  | typeof MAJOR_OUTAGE;
+
+/** @public */
+export const PRIVATE = 'PRIVATE';
+/** @public */
+export const PUBLIC = 'PUBLIC';
+
+/** @public */
+export type StatusPageVisibility = typeof PRIVATE | typeof PUBLIC;
+
 /** @public */
 export interface AlertSourceEmailPredicate {
   field: 'EMAIL_FROM' | 'EMAIL_SUBJECT' | 'EMAIL_BODY';
@@ -251,7 +287,7 @@ export interface AlertSourceSupportDay {
 /** @public */
 export interface AlertSourceSupportHours {
   timezone: AlertSourceTimeZone;
-  autoRaiseIncidents: boolean;
+  autoRaiseAlerts: boolean;
   supportDays: {
     MONDAY: AlertSourceSupportDay;
     TUESDAY: AlertSourceSupportDay;
@@ -316,33 +352,7 @@ export interface Shift {
 }
 
 /** @public */
-export interface UptimeMonitor {
-  id: number;
-  name: string;
-  region: 'EU' | 'US';
-  checkType: 'http' | 'tcp' | 'udp' | 'ping';
-  checkParams: UptimeMonitorCheckParams;
-  intervalSec: number;
-  timeoutMs: number;
-  createIncidentAfterFailedChecks: number;
-  paused: boolean;
-  embedUrl: string;
-  shareUrl: string;
-  status: string;
-  lastStatusChange: string;
-  escalationPolicy: EscalationPolicy;
-  teams: TeamShort[];
-}
-
-/** @public */
-export interface UptimeMonitorCheckParams {
-  host?: string;
-  port?: number;
-  url?: string;
-}
-
-/** @public */
-export interface IncidentResponder {
+export interface AlertResponder {
   group: 'SUGGESTED' | 'USER' | 'ESCALATION_POLICY' | 'ON_CALL_SCHEDULE';
   id: number;
   name: string;
@@ -350,19 +360,19 @@ export interface IncidentResponder {
 }
 
 /** @public */
-export interface IncidentAction {
+export interface AlertAction {
   name: string;
   type: string;
   webhookId: string;
   extensionId?: string;
-  history?: IncidentActionHistory[];
+  history?: AlertActionHistory[];
 }
 
 /** @public */
-export interface IncidentActionHistory {
+export interface AlertActionHistory {
   id: string;
   webhookId: string;
-  incidentId: number;
+  alertId: number;
   actor: User;
   success: boolean;
 }
@@ -375,4 +385,32 @@ export interface OnCall {
   start: string;
   end: string;
   escalationLevel: number;
+}
+
+/** @public */
+export interface Service {
+  id: number;
+  name: string;
+  status: ServiceStatus;
+  uptime: Uptime;
+}
+
+/** @public */
+export interface Uptime {
+  uptimePercentage: UptimePercentage;
+}
+
+/** @public */
+export interface UptimePercentage {
+  p90: number;
+}
+
+/** @public */
+export interface StatusPage {
+  id: number;
+  name: string;
+  domain: string;
+  subdomain: string;
+  visibility: StatusPageVisibility;
+  status: ServiceStatus;
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import crypto from 'crypto';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
@@ -21,7 +22,7 @@ import {
   getGerritRequestOptions,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
@@ -148,6 +149,10 @@ export function createPublishGerritAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          commitHash: {
+            title: 'The git commit hash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },
@@ -200,7 +205,7 @@ export function createPublishGerritAction(options: {
       };
 
       const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
         auth,
@@ -212,6 +217,7 @@ export function createPublishGerritAction(options: {
 
       const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });

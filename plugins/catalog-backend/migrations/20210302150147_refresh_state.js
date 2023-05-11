@@ -20,39 +20,30 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  const isMySQL = knex.client.config.client.includes('mysql');
   await knex.schema.createTable('refresh_state', table => {
-    table.comment(
-      'Location refresh states. Every individual location (that was ever directly or indirectly discovered) and entity has an entry in this table. It therefore represents the entire live set of things that the refresh loop considers.',
-    );
+    table.comment('Location refresh states');
     table
-      .text('entity_id')
+      .string('entity_id')
       .primary()
       .notNullable()
-      .comment(
-        'Primary ID, which will also be used as the uid of the resulting entity',
-      );
+      .comment('Primary ID, also used as the uid of the entity');
     table
-      .text('entity_ref')
+      .string('entity_ref')
       .notNullable()
-      .comment('A reference to the entity that the refresh state is tied to');
+      .comment('A reference to the entity for this refresh state');
     table
       .text('unprocessed_entity')
       .notNullable()
-      .comment(
-        'The unprocessed entity (in its source form, before being run through all of the processors) as JSON',
-      );
+      .comment('The unprocessed entity (in original form) as JSON');
     table
       .text('processed_entity')
       .nullable()
-      .comment(
-        'The processed entity (after running through all processors, but before being stitched together with state and relations) as JSON',
-      );
+      .comment('The processed entity (not yet stitched) as JSON');
     table
       .text('cache')
       .nullable()
-      .comment(
-        'Cache information tied to the refreshing of this entity, such as etag information or actual response caching',
-      );
+      .comment('Cache information tied to refreshes of this entity');
     table
       .text('errors')
       .notNullable()
@@ -64,7 +55,7 @@ exports.up = async function up(knex) {
     table
       .dateTime('last_discovery_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
-      .comment('The last timestamp of which this entity was discovered');
+      .comment('The last timestamp that this entity was discovered');
     table.unique(['entity_ref'], {
       indexName: 'refresh_state_entity_ref_uniq',
     });
@@ -74,31 +65,23 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('final_entities', table => {
-    table.comment(
-      'This table contains the final entity result after processing and stitching',
-    );
+    table.comment('Final entities after processing and stitching');
     table
-      .text('entity_id')
+      .string('entity_id')
       .primary()
       .notNullable()
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')
-      .comment(
-        'Entity ID which corresponds to the ID in the refresh_state table',
-      );
+      .comment('Entity ID -> refresh_state table');
     table
-      .text('hash')
+      .string('hash')
       .notNullable()
-      .comment(
-        'Stable hash of the entity data, to be used for caching and avoiding redundant work',
-      );
+      .comment('Stable hash of the entity data');
     table
       .text('stitch_ticket')
       .notNullable()
-      .comment(
-        'A random value representing a unique stitch attempt ticket, that gets updated each time that a stitching attempt is made on the entity',
-      );
+      .comment('Random value representing a unique stitch attempt ticket');
     table
       .text('final_entity')
       .nullable()
@@ -107,29 +90,24 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('refresh_state_references', table => {
-    table.comment(
-      'Holds edges between refresh state rows. Every time when an entity is processed and emits another entity, an edge will be stored to represent that fact. This is used to detect orphans and ultimately deletions.',
-    );
+    const textColumn = isMySQL
+      ? table.string.bind(table)
+      : table.text.bind(table);
+
+    table.comment('Edges between refresh state rows');
     table
       .increments('id')
       .comment('Primary key to distinguish unique lines from each other');
-    table
-      .text('source_key')
+    textColumn('source_key')
       .nullable()
-      .comment(
-        'When the reference source is not an entity, this is an opaque identifier for that source.',
-      );
-    table
-      .text('source_entity_ref')
+      .comment('Opaque identifier for non-entity sources');
+    textColumn('source_entity_ref')
       .nullable()
       .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
-      .comment(
-        'When the reference source is an entity, this is the EntityRef of the source entity.',
-      );
-    table
-      .text('target_entity_ref')
+      .comment('EntityRef of entity sources');
+    textColumn('target_entity_ref')
       .notNullable()
       .references('entity_ref')
       .inTable('refresh_state')
@@ -147,36 +125,34 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.createTable('relations', table => {
-    table.comment('All relations between entities in the catalog');
+    table.comment('All relations between entities');
     table
-      .text('originating_entity_id')
+      .string('originating_entity_id')
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .notNullable()
       .comment('The entity that provided the relation');
     table
-      .text('source_entity_ref')
+      .string('source_entity_ref')
       .notNullable()
-      .comment('The entity reference of the source entity of the relation');
+      .comment('Entity reference of the source entity of the relation');
     table
-      .text('type')
+      .string('type')
       .notNullable()
       .comment('The type of the relation between the entities');
     table
-      .text('target_entity_ref')
+      .string('target_entity_ref')
       .notNullable()
-      .comment('The entity reference of the target entity of the relation');
+      .comment('Entity reference of the target entity of the relation');
     table.index('source_entity_ref', 'relations_source_entity_ref_idx');
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
 
   await knex.schema.createTable('search', table => {
-    table.comment(
-      'Flattened key-values from the entities, used for quick filtering',
-    );
+    table.comment('Flattened key-values from the entities, for filtering');
     table
-      .text('entity_id')
+      .string('entity_id')
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')

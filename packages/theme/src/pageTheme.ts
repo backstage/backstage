@@ -23,7 +23,7 @@ import { PageTheme } from './types';
  *
  * How to add a shape:
  *
- * 1. Get the svg shape from figma, should be ~1400 wide, ~400 high
+ * 1. Get the SVG shape from figma, should be ~1400 wide, ~400 high
  *    and only the white-to-transparent mask, no colors.
  * 2. Run it through https://jakearchibald.github.io/svgomg/
  * 3. Run that through https://github.com/tigt/mini-svg-data-uri
@@ -62,7 +62,7 @@ export const colorVariants: Record<string, string[]> = {
  * @remarks
  *
  * As the background shapes and colors are decorative, we place them onto the
- * page as a css background-image instead of an html element of its own.
+ * page as a CSS `background-image` instead of an HTML element of its own.
  */
 export function genPageTheme(props: {
   colors: string[];

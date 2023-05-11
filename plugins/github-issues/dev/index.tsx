@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import {
@@ -20,21 +21,20 @@ import {
   catalogApiRef,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-
-import { gitHubIssuesPlugin, GitHubIssuesPage } from '../src';
-import { GitHubIssuesApi, gitHubIssuesApiRef } from '../src/api';
+import { githubIssuesPlugin, GithubIssuesPage } from '../src';
+import { GithubIssuesApi, githubIssuesApiRef } from '../src/api';
 
 import testData from './__fixtures__/component-issues-data.json';
 
 createDevApp()
-  .registerPlugin(gitHubIssuesPlugin)
+  .registerPlugin(githubIssuesPlugin)
   .registerApi({
-    api: gitHubIssuesApiRef,
+    api: githubIssuesApiRef,
     deps: {},
     factory: () =>
       ({
-        fetchIssuesByRepoFromGitHub: async () => testData,
-      } as GitHubIssuesApi),
+        fetchIssuesByRepoFromGithub: async () => testData,
+      } as GithubIssuesApi),
   })
   .registerApi({
     api: catalogApiRef,
@@ -59,7 +59,7 @@ createDevApp()
           kind: 'Component',
         }}
       >
-        <GitHubIssuesPage />
+        <GithubIssuesPage />
       </EntityProvider>
     ),
   })

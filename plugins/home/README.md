@@ -9,7 +9,7 @@ For App Integrators, the system is designed to be composable to give total freed
 If you have a standalone app (you didn't clone this repo), then do
 
 ```bash
-# From the Backstage repository root
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-home
 ```
 
@@ -66,22 +66,170 @@ In summary: it is not necessary to use the `createCardExtension` extension creat
 Composing a Home Page is no different from creating a regular React Component, i.e. the App Integrator is free to include whatever content they like. However, there are components developed with the Home Page in mind, as described in the previous section. If created by the `createCardExtension` extension creator, they are rendered like so
 
 ```tsx
-import React from 'react'
-import Grid from '@material-ui/core/Grid'
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
 import { RandomJokeHomePageComponent } from '@backstage/plugin-home';
 
 export const HomePage = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
-        <RandomJokeHomePageComponent>
+        <RandomJokeHomePageComponent />
       </Grid>
     </Grid>
-  )
-}
+  );
+};
 ```
 
 Additionally, the App Integrator is provided an escape hatch in case the way the card is rendered does not fit their requirements. They may optionally pass the `Renderer`-prop, which will receive the `title`, `content` and optionally `actions`, `settings` and `contextProvider`, if they exist for the component. This allows the App Integrator to render the content in any way they want.
+
+## Customizable home page
+
+If you want to allow users to customize the components that are shown in the home page, you can use CustomHomePageGrid component.
+By adding the allowed components inside the grid, the user can add, configure, remove and move the components around in their
+home page. The user configuration is also saved and restored in the process for later use.
+
+```tsx
+import {
+  HomePageRandomJoke,
+  HomePageStarredEntities,
+  CustomHomepageGrid,
+} from '@backstage/plugin-home';
+import { Content, Header, Page } from '@backstage/core-components';
+import { HomePageSearchBar } from '@backstage/plugin-search';
+import { HomePageCalendar } from '@backstage/plugin-gcalendar';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
+
+export const HomePage = () => {
+  return (
+    <CustomHomepageGrid>
+      // Insert the allowed widgets inside the grid
+      <HomePageSearchBar />
+      <HomePageRandomJoke />
+      <HomePageCalendar />
+      <MicrosoftCalendarCard />
+      <HomePageStarredEntities />
+    </CustomHomepageGrid>
+  );
+};
+```
+
+### Creating Customizable Components
+
+The custom home page can use the default components created by using the default `createCardExtension` method but if you
+want to add additional configuration like component size or settings, you can define those in the `layout`
+property:
+
+```tsx
+export const RandomJokeHomePageComponent = homePlugin.provide(
+  createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
+    name: 'HomePageRandomJoke',
+    title: 'Random Joke',
+    components: () => import('./homePageComponents/RandomJoke'),
+    layout: {
+      height: { minRows: 7 },
+      width: { minColumns: 3 },
+    },
+  }),
+);
+```
+
+These settings can also be defined for components that use `createReactExtension` instead `createCardExtension` by using
+the data property:
+
+```tsx
+export const HomePageSearchBar = searchPlugin.provide(
+  createReactExtension({
+    name: 'HomePageSearchBar',
+    component: {
+      lazy: () =>
+        import('./components/HomePageComponent').then(m => m.HomePageSearchBar),
+    },
+    data: {
+      'home.widget.config': {
+        layout: {
+          height: { maxRows: 1 },
+        },
+      },
+    },
+  }),
+);
+```
+
+Available home page properties that are used for homepage widgets are:
+
+| Key                           | Type    | Description                                                  |
+| ----------------------------- | ------- | ------------------------------------------------------------ |
+| `title`                       | string  | User friend title. Shown when user adds widgets to homepage  |
+| `description`                 | string  | Widget description. Shown when user adds widgets to homepage |
+| `layout.width.defaultColumns` | integer | Default width of the widget (1-12)                           |
+| `layout.width.minColumns`     | integer | Minimum width of the widget (1-12)                           |
+| `layout.width.maxColumns`     | integer | Maximum width of the widget (1-12)                           |
+| `layout.height.defaultRows`   | integer | Default height of the widget (1-12)                          |
+| `layout.height.minRows`       | integer | Minimum height of the widget (1-12)                          |
+| `layout.height.maxRows`       | integer | Maximum height of the widget (1-12)                          |
+| `settings.schema`             | object  | Customization settings of the widget, see below              |
+
+#### Widget Specific Settings
+
+To define settings that the users can change for your component, you should define the `layout` and `settings`
+properties. The `settings.schema` object should follow
+[react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/docs/) definition and the type of the schema
+must be `object`.
+
+```tsx
+export const HomePageRandomJoke = homePlugin.provide(
+  createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
+    name: 'HomePageRandomJoke',
+    title: 'Random Joke',
+    components: () => import('./homePageComponents/RandomJoke'),
+    description: 'Shows a random joke about optional category',
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Random Joke settings',
+        type: 'object',
+        properties: {
+          defaultCategory: {
+            title: 'Category',
+            type: 'string',
+            enum: ['any', 'programming', 'dad'],
+            default: 'any',
+          },
+        },
+      },
+    },
+  }),
+);
+```
+
+This allows the user to select `defaultCategory` for the RandomJoke widgets that are added to the homepage.
+Each widget has its own settings and the setting values are passed to the underlying React component in props.
+
+In case your `CardExtension` had `Settings` component defined, it will automatically disappear when you add the
+`settingsSchema` to the component data structure.
+
+### Adding Default Layout
+
+You can set the default layout of the customizable home page by passing configuration to the `CustomHomepageGrid`
+component:
+
+```tsx
+const defaultConfig = [
+  {
+    component: <HomePageSearchBar />, // Or 'HomePageSearchBar' as a string if you know the component name
+    x: 0,
+    y: 0,
+    width: 12,
+    height: 1,
+  },
+];
+
+<CustomHomepageGrid config={defaultConfig}>
+```
 
 ## Contributing
 

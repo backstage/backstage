@@ -28,7 +28,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import {
   BitbucketRepository,
@@ -342,7 +342,7 @@ function parseUrl(urlString: string): {
   const url = new URL(urlString);
   const indexOfProjectSegment =
     url.pathname.toLowerCase().indexOf('/projects/') + 1;
-  const path = url.pathname.substr(indexOfProjectSegment).split('/');
+  const path = url.pathname.slice(indexOfProjectSegment).split('/');
 
   // /projects/backstage/repos/techdocs-*/catalog-info.yaml
   if (path.length > 3 && path[1].length && path[3].length) {
@@ -373,7 +373,7 @@ function parseBitbucketCloudUrl(urlString: string): {
   searchEnabled: boolean;
 } {
   const url = new URL(urlString);
-  const pathMap = readPathParameters(url.pathname.substr(1).split('/'));
+  const pathMap = readPathParameters(url.pathname.slice(1).split('/'));
   const query = url.searchParams;
 
   if (!pathMap.has('workspaces')) {

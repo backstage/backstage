@@ -15,11 +15,15 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { attachComponentData } from '@backstage/core-plugin-api';
+import {
+  LAYOUT_ROUTE_DATA_KEY,
+  SettingsLayout,
+} from '../SettingsLayout/SettingsLayout';
 
-/** @public */
-export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
+/** @public @deprecated Use SettingsLayout.Route approach instead */
+export const USER_SETTINGS_TAB_KEY = LAYOUT_ROUTE_DATA_KEY;
 
-/** @public */
+/** @public @deprecated Use SettingsLayoutRouteProps instead */
 export type UserSettingsTabProps = PropsWithChildren<{
   /**
    * The path to the tab in the settings route
@@ -34,9 +38,12 @@ export type UserSettingsTabProps = PropsWithChildren<{
  * Renders a tab inside the settings page
  * @param props - Component props
  * @public
+ * @deprecated Use SettingsLayout.Route instead
  */
-export const UserSettingsTab = (props: UserSettingsTabProps) => {
-  return <>{props.children}</>;
-};
+export const UserSettingsTab = (props: UserSettingsTabProps) => (
+  <SettingsLayout.Route path={props.path} title={props.title}>
+    <>props.children</>
+  </SettingsLayout.Route>
+);
 
 attachComponentData(UserSettingsTab, USER_SETTINGS_TAB_KEY, 'UserSettingsTab');

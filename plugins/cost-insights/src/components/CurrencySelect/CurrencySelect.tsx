@@ -22,6 +22,7 @@ import {
   Select,
   SelectProps,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Currency, CurrencyType } from '../../types';
 import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
@@ -73,9 +74,9 @@ export const CurrencySelect = ({
             key={c.kind || NULL_VALUE}
             value={c.kind || NULL_VALUE}
           >
-            <span role="img" aria-label={c.label}>
+            <Typography component="span" role="img" aria-label={c.label}>
               {c.label}
-            </span>
+            </Typography>
           </MenuItem>
         ))}
       </Select>

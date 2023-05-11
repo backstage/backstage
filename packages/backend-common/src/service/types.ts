@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import cors from 'cors';
 import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * A helper for building backend service instances.
@@ -60,7 +60,7 @@ export type ServiceBuilder = {
    *
    * @param logger - A winston logger
    */
-  setLogger(logger: Logger): ServiceBuilder;
+  setLogger(logger: LoggerService): ServiceBuilder;
 
   /**
    * Enables CORS handling using the given settings.
@@ -128,4 +128,6 @@ export type ServiceBuilder = {
  *
  * @public
  */
-export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
+export type RequestLoggingHandlerFactory = (
+  logger?: LoggerService,
+) => RequestHandler;

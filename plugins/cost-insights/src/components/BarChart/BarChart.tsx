@@ -19,11 +19,8 @@ import {
   Bar,
   BarChart as RechartsBarChart,
   CartesianGrid,
-  ContentRenderer,
-  TooltipProps as RechartsTooltipProps,
-  RechartsFunction,
-  ResponsiveContainer,
   Tooltip as RechartsTooltip,
+  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -34,31 +31,33 @@ import { BarChartTooltip } from './BarChartTooltip';
 import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { currencyFormatter } from '../../utils/formatters';
 import {
-  BarChartData,
   ResourceData,
   DataKey,
   CostInsightsTheme,
+  BarChartOptions,
 } from '../../types';
 import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
 import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
+import { TooltipRenderer } from '../../types';
+import { useConfig } from '../../hooks';
 
-export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
-  label,
-  payload = [],
-}) => {
-  if (isInvalid({ label, payload })) return null;
+const defaultTooltip = (baseCurrency: Intl.NumberFormat) => {
+  const tooltip: TooltipRenderer = ({ label, payload = [] }) => {
+    if (isInvalid({ label, payload })) return null;
 
-  const title = titleOf(label);
-  const items = payload.map(tooltipItemOf).filter(notEmpty);
-  return (
-    <BarChartTooltip title={title}>
-      {items.map((item, index) => (
-        <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
-      ))}
-    </BarChartTooltip>
-  );
+    const title = titleOf(label);
+    const items = payload.map(tooltipItemOf(baseCurrency)).filter(notEmpty);
+    return (
+      <BarChartTooltip title={title}>
+        {items.map((item, index) => (
+          <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
+        ))}
+      </BarChartTooltip>
+    );
+  };
+  return tooltip;
 };
 
 /** @public */
@@ -66,20 +65,22 @@ export type BarChartProps = {
   resources: ResourceData[];
   responsive?: boolean;
   displayAmount?: number;
-  options?: Partial<BarChartData>;
-  tooltip?: ContentRenderer<RechartsTooltipProps>;
-  onClick?: RechartsFunction;
-  onMouseMove?: RechartsFunction;
+  options?: Partial<BarChartOptions>;
+  tooltip?: TooltipRenderer;
+  onClick?: (...args: any[]) => void;
+  onMouseMove?: (...args: any[]) => void;
 };
 
 /** @public */
 export const BarChart = (props: BarChartProps) => {
+  const { baseCurrency } = useConfig();
+
   const {
     resources,
     responsive = true,
     displayAmount = 6,
     options = {},
-    tooltip = defaultTooltip,
+    tooltip = defaultTooltip(baseCurrency),
     onClick,
     onMouseMove,
   } = props;
@@ -169,7 +170,7 @@ export const BarChart = (props: BarChartProps) => {
             tick={BarChartTick}
           />
           <YAxis
-            tickFormatter={currencyFormatter.format}
+            tickFormatter={currencyFormatter(baseCurrency).format}
             domain={[() => 0, globalResourcesMax]}
             tick={styles.axis}
           />

@@ -88,19 +88,26 @@ describe('buildEntitySearch', () => {
       ];
       const output = mapToRows(input, 'eid');
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'a', value: 'true' },
-        { entity_id: 'eid', key: 'b', value: 'false' },
-        { entity_id: 'eid', key: 'c', value: '7' },
-        { entity_id: 'eid', key: 'd', value: 'string' },
-        { entity_id: 'eid', key: 'e', value: null },
-        { entity_id: 'eid', key: 'f', value: null },
+        { entity_id: 'eid', key: 'a', original_value: 'true', value: 'true' },
+        { entity_id: 'eid', key: 'b', original_value: 'false', value: 'false' },
+        { entity_id: 'eid', key: 'c', original_value: '7', value: '7' },
+        {
+          entity_id: 'eid',
+          key: 'd',
+          original_value: 'string',
+          value: 'string',
+        },
+        { entity_id: 'eid', key: 'e', original_value: null, value: null },
+        { entity_id: 'eid', key: 'f', original_value: null, value: null },
       ]);
     });
 
-    it('emits lowercase version of keys and values', () => {
+    it('emits lowercase version of keys and values and also keeps the original value', () => {
       const input = [{ key: 'fOo', value: 'BaR' }];
       const output = mapToRows(input, 'eid');
-      expect(output).toEqual([{ entity_id: 'eid', key: 'foo', value: 'bar' }]);
+      expect(output).toEqual([
+        { entity_id: 'eid', key: 'foo', original_value: 'BaR', value: 'bar' },
+      ]);
     });
 
     it('skips very large keys', () => {
@@ -112,7 +119,9 @@ describe('buildEntitySearch', () => {
     it('replaces very large values with null', () => {
       const input = [{ key: 'foo', value: 'a'.repeat(10000) }];
       const output = mapToRows(input, 'eid');
-      expect(output).toEqual([{ entity_id: 'eid', key: 'foo', value: null }]);
+      expect(output).toEqual([
+        { entity_id: 'eid', key: 'foo', original_value: null, value: null },
+      ]);
     });
   });
 
@@ -124,14 +133,35 @@ describe('buildEntitySearch', () => {
         metadata: { name: 'n' },
       };
       expect(buildEntitySearch('eid', input)).toEqual([
-        { entity_id: 'eid', key: 'apiversion', value: 'a' },
-        { entity_id: 'eid', key: 'kind', value: 'b' },
-        { entity_id: 'eid', key: 'metadata.name', value: 'n' },
-        { entity_id: 'eid', key: 'metadata.namespace', value: null },
-        { entity_id: 'eid', key: 'metadata.uid', value: null },
+        {
+          entity_id: 'eid',
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        { entity_id: 'eid', key: 'kind', original_value: 'b', value: 'b' },
+        {
+          entity_id: 'eid',
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
         {
           entity_id: 'eid',
           key: 'metadata.namespace',
+          original_value: null,
+          value: null,
+        },
+        {
+          entity_id: 'eid',
+          key: 'metadata.uid',
+          original_value: null,
+          value: null,
+        },
+        {
+          entity_id: 'eid',
+          key: 'metadata.namespace',
+          original_value: DEFAULT_NAMESPACE,
           value: DEFAULT_NAMESPACE,
         },
       ]);
@@ -154,18 +184,49 @@ describe('buildEntitySearch', () => {
         metadata: { name: 'n' },
       };
       expect(buildEntitySearch('eid', input)).toEqual([
-        { entity_id: 'eid', key: 'apiversion', value: 'a' },
-        { entity_id: 'eid', key: 'kind', value: 'b' },
-        { entity_id: 'eid', key: 'metadata.name', value: 'n' },
-        { entity_id: 'eid', key: 'metadata.namespace', value: null },
-        { entity_id: 'eid', key: 'metadata.uid', value: null },
+        {
+          entity_id: 'eid',
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        { entity_id: 'eid', key: 'kind', original_value: 'b', value: 'b' },
+        {
+          entity_id: 'eid',
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
         {
           entity_id: 'eid',
           key: 'metadata.namespace',
+          original_value: null,
+          value: null,
+        },
+        {
+          entity_id: 'eid',
+          key: 'metadata.uid',
+          original_value: null,
+          value: null,
+        },
+        {
+          entity_id: 'eid',
+          key: 'metadata.namespace',
+          original_value: DEFAULT_NAMESPACE,
           value: DEFAULT_NAMESPACE,
         },
-        { entity_id: 'eid', key: 'relations.t1', value: 'k:ns/a' },
-        { entity_id: 'eid', key: 'relations.t2', value: 'k:ns/b' },
+        {
+          entity_id: 'eid',
+          key: 'relations.t1',
+          original_value: 'k:ns/a',
+          value: 'k:ns/a',
+        },
+        {
+          entity_id: 'eid',
+          key: 'relations.t2',
+          original_value: 'k:ns/b',
+          value: 'k:ns/b',
+        },
       ]);
     });
 

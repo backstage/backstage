@@ -25,7 +25,7 @@ import { VersioningStrategy } from './VersioningStrategy';
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router', () => ({
+jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,

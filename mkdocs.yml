@@ -6,6 +6,7 @@ edit_uri: edit/master/docs
 plugins:
   - techdocs-core
 
+# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.json`
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -22,7 +23,6 @@ nav:
   - Getting Started:
       - Getting Started: 'getting-started/index.md'
       - Create an App: 'getting-started/create-an-app.md'
-      - Running Backstage locally: 'getting-started/running-backstage-locally.md'
       - App configuration:
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
@@ -62,6 +62,7 @@ nav:
           - Configuration: 'features/software-templates/configuration.md'
           - Adding your own Templates: 'features/software-templates/adding-templates.md'
           - Writing Templates: 'features/software-templates/writing-templates.md'
+          - Input Examples: 'features/software-templates/input-examples.md'
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
@@ -153,6 +154,7 @@ nav:
       - Included providers:
           - Auth0: 'auth/auth0/provider.md'
           - Azure: 'auth/microsoft/provider.md'
+          - Azure EasyAuth: 'auth/microsoft/azure-easyauth.md'
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
@@ -176,6 +178,7 @@ nav:
       - Heroku: 'deployment/heroku.md'
   - Designing for Backstage:
       - Design: 'dls/design.md'
+      - Component Design Guidelines: 'dls/component-design-guidelines.md'
       - Contributing to Storybook: 'dls/contributing-to-storybook.md'
       - Figma: 'dls/figma.md'
   - API Reference:

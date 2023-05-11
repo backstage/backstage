@@ -28,9 +28,10 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import React, { useState } from 'react';
-import { scaffolderApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
-import { ScaffolderTask } from '../../types';
+import {
+  ScaffolderTask,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 import { OwnerListPicker } from './OwnerListPicker';
 import {
   CreatedAtColumn,
@@ -38,6 +39,7 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
+import { rootRouteRef } from '../../routes';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';

@@ -14,10 +14,30 @@
  * limitations under the License.
  */
 
-import { TemplateAction } from '../../types';
+const mockGit = {
+  init: jest.fn(),
+  add: jest.fn(),
+  checkout: jest.fn(),
+  commit: jest
+    .fn()
+    .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
+  fetch: jest.fn(),
+  addRemote: jest.fn(),
+  push: jest.fn(),
+};
+
+jest.mock('@backstage/backend-common', () => ({
+  Git: {
+    fromAuth() {
+      return mockGit;
+    },
+  },
+  getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
+}));
 
 jest.mock('../helpers');
 
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -31,6 +51,10 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
+
+const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+  Promise<{ commitHash: string }>
+>;
 
 const mockOctokit = {
   rest: {
@@ -77,6 +101,9 @@ describe('github:repo:push', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
+
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoPushAction({
@@ -284,7 +311,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -304,7 +337,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: true,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -324,7 +363,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -347,7 +392,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -367,7 +418,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -387,7 +444,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: false,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -410,7 +473,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -419,6 +488,7 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -431,7 +501,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -452,7 +528,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
 
     await action.handler({
@@ -461,6 +543,7 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
       },
     });
 
@@ -473,7 +556,13 @@ describe('github:repo:push', () => {
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
       enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
     });
   });
 
@@ -494,5 +583,167 @@ describe('github:repo:push', () => {
     });
 
     expect(enableBranchProtectionOnDefaultRepoBranch).not.toHaveBeenCalled();
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of dismissStaleReviews', async () => {
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: true,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        dismissStaleReviews: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: true,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: true,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredConversationResolution: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+      requireBranchesToBeUpToDate: true,
+      requiredConversationResolution: false,
+      enforceAdmins: true,
+      dismissStaleReviews: false,
+      bypassPullRequestAllowances: undefined,
+      requiredApprovingReviewCount: 1,
+      requiredCommitSigning: false,
+      restrictions: undefined,
+    });
   });
 });

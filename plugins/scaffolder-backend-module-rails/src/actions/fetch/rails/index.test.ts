@@ -74,7 +74,7 @@ describe('fetch:rails', () => {
   };
 
   const mockReader: UrlReader = {
-    read: jest.fn(),
+    readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
   };
@@ -91,7 +91,7 @@ describe('fetch:rails', () => {
 
   beforeEach(() => {
     mockFs({ [`${mockContext.workspacePath}/result`]: {} });
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {

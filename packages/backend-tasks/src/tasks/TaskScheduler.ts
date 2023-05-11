@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DatabaseManager, getRootLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getRootLogger,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { once } from 'lodash';
 import { Duration } from 'luxon';
@@ -57,27 +61,35 @@ export class TaskScheduler {
    * @returns A {@link PluginTaskScheduler} instance
    */
   forPlugin(pluginId: string): PluginTaskScheduler {
-    const databaseFactory = once(async () => {
-      const databaseManager = this.databaseManager.forPlugin(pluginId);
-      const knex = await databaseManager.getClient();
+    return TaskScheduler.forPlugin({
+      pluginId,
+      databaseManager: this.databaseManager.forPlugin(pluginId),
+      logger: this.logger,
+    });
+  }
 
-      if (!databaseManager.migrations?.skip) {
+  static forPlugin(opts: {
+    pluginId: string;
+    databaseManager: PluginDatabaseManager;
+    logger: Logger;
+  }): PluginTaskScheduler {
+    const databaseFactory = once(async () => {
+      const knex = await opts.databaseManager.getClient();
+
+      if (!opts.databaseManager.migrations?.skip) {
         await migrateBackendTasks(knex);
       }
 
       const janitor = new PluginTaskSchedulerJanitor({
         knex,
         waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
-        logger: this.logger,
+        logger: opts.logger,
       });
       janitor.start();
 
       return knex;
     });
 
-    return new PluginTaskSchedulerImpl(
-      databaseFactory,
-      this.logger.child({ plugin: pluginId }),
-    );
+    return new PluginTaskSchedulerImpl(databaseFactory, opts.logger);
   }
 }

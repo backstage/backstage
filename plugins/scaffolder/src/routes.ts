@@ -30,21 +30,21 @@ export const viewTechDocRouteRef = createExternalRouteRef({
   params: ['namespace', 'kind', 'name'],
 });
 
+/**
+ * @public
+ */
 export const rootRouteRef = createRouteRef({
   id: 'scaffolder',
 });
 
 /**
  * @deprecated This is the old template route, can be deleted before next major release
+ * @public
  */
 export const legacySelectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/legacy/selected-template',
   parent: rootRouteRef,
   path: '/templates/:templateName',
-});
-
-export const nextRouteRef = createRouteRef({
-  id: 'scaffolder/next',
 });
 
 export const selectedTemplateRouteRef = createSubRouteRef({
@@ -53,21 +53,9 @@ export const selectedTemplateRouteRef = createSubRouteRef({
   path: '/templates/:namespace/:templateName',
 });
 
-export const nextSelectedTemplateRouteRef = createSubRouteRef({
-  id: 'scaffolder/next/selected-template',
-  parent: nextRouteRef,
-  path: '/templates/:namespace/:templateName',
-});
-
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,
-  path: '/tasks/:taskId',
-});
-
-export const nextScaffolderTaskRouteRef = createSubRouteRef({
-  id: 'scaffolder/next/task',
-  parent: nextRouteRef,
   path: '/tasks/:taskId',
 });
 

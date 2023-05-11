@@ -25,14 +25,17 @@ describe('App', () => {
 
   it('should display support info when clicking the button', () => {
     cy.visit('/');
+    // eslint-disable-next-line testing-library/await-async-query
     cy.findByTestId('support-button').click({ force: true });
     cy.contains('#backstage');
   });
 
   it('should display error message when triggering it', () => {
     cy.visit('/');
+    // eslint-disable-next-line testing-library/await-async-query
     cy.findByTestId('error-button').click({ force: true });
     cy.contains('Error: Oh no!');
+    // eslint-disable-next-line testing-library/await-async-query
     cy.findByTestId('error-button-close').click({ force: true });
   });
 
@@ -55,6 +58,7 @@ describe('App', () => {
     cy.contains('Token')
       .get('input[name=github-auth-tf]')
       .type('password', { force: true });
+    // eslint-disable-next-line testing-library/await-async-query
     cy.findByTestId('github-auth-button').click({ force: true });
     cy.contains(`Welcome, ${name}!`);
     cy.contains('Logout').click({ force: true });

@@ -17,32 +17,25 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { BuildWithSteps, BuildStepAction } from '../../api';
-import {
-  Grid,
-  Box,
-  IconButton,
-  Typography,
-  Link as MaterialLink,
-} from '@material-ui/core';
+import { Grid, Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 import {
   Breadcrumbs,
+  LinkButton,
   InfoCard,
   Progress,
   Link,
 } from '@backstage/core-components';
 
-const IconLink = IconButton as any as typeof MaterialLink;
-
 const BuildName = ({ build }: { build?: BuildWithSteps }) => (
   <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
-    <IconLink href={build?.build_url} target="_blank">
+    <LinkButton to={build?.build_url || '#'}>
       <LaunchIcon />
-    </IconLink>
+    </LinkButton>
   </Box>
 );
 

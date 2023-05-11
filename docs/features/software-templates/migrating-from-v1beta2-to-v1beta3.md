@@ -38,14 +38,20 @@ to upgrade.
 
 An important change is to add the required processor to your `packages/backend/src/plugins/catalog.ts`
 
-```diff
-+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 
-...
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
 
-   const builder = await CatalogBuilder.create(env);
-+  builder.addProcessor(new ScaffolderEntitiesProcessor());
-   const { processingEngine, router } = await builder.build();
+  // ..
+}
 ```
 
 ## `backstage.io/v1beta2` -> `scaffolder.backstage.io/v1beta3`
@@ -53,10 +59,12 @@ An important change is to add the required processor to your `packages/backend/s
 The most important change is that you'll need to switch over the `apiVersion` in
 your templates to the new one.
 
-```diff
+```yaml
   kind: Template
-- apiVersion: backstage.io/v1beta2
-+ apiVersion: scaffolder.backstage.io/v1beta3
+  # highlight-remove-next-line
+  apiVersion: backstage.io/v1beta2
+  # highlight-add-next-line
+  apiVersion: scaffolder.backstage.io/v1beta3
 ```
 
 ## `${{ }}` instead of `"{{ }}"`
@@ -68,15 +76,19 @@ was pretty annoying, as it also meant that all things look like strings. Now
 that's no longer the case, you can now remove the `""` and take advantage of
 writing nice `yaml` files that just work.
 
-```diff
-  spec:
-    steps:
-        input:
-          allowedHosts: ['github.com']
--         description: 'This is {{ parameters.name }}'
-+         description: This is ${{ parameters.name }}
--         repoUrl: '{{ parameters.repoUrl }}'
-+         repoUrl: ${{ parameters.repoUrl }}
+```yaml
+spec:
+  steps:
+      input:
+        allowedHosts: ['github.com']
+        # highlight-remove-next-line
+        description: 'This is {{ parameters.name }}'
+        # highlight-add-next-line
+        description: This is ${{ parameters.name }}
+        # highlight-remove-next-line
+        repoUrl: '{{ parameters.repoUrl }}'
+        # highlight-add-next-line
+        repoUrl: ${{ parameters.repoUrl }}
 ```
 
 ## No more `eq` or `not` helpers
@@ -85,24 +97,26 @@ These helpers are no longer needed with the more expressive `api` that
 `nunjucks` provides. You can simply use the built-in `nunjucks` and `jinja2`
 style operators.
 
-```diff
-  spec:
-    steps:
-        input:
--         if: '{{ eq parameters.value "backstage" }}'
-+         if: ${{ parameters.value === "backstage" }}
-          ...
+```yaml
+spec:
+  steps:
+      input:
+        # highlight-remove-next-line
+        if: '{{ eq parameters.value "backstage" }}'
+        # highlight-add-next-line
+        if: ${{ parameters.value === "backstage" }}
 ```
 
 And then for the `not`
 
-```diff
-  spec:
-    steps:
-        input:
--         if: '{{ not parameters.value "backstage" }}'
-+         if: ${{ parameters.value !== "backstage" }}
-          ...
+```yaml
+spec:
+  steps:
+      input:
+        # highlight-remove-next-line
+        if: '{{ not parameters.value "backstage" }}'
+        # highlight-add-next-line
+        if: ${{ parameters.value !== "backstage" }}
 ```
 
 Much better right? ✨
@@ -115,32 +129,36 @@ supporting the additional primitive values now rather than everything being a
 should all work as expected and keep the type that has been declared in the
 input schema.
 
-```diff
-  spec:
-    parameters:
-      test:
-        type: number
-        name: Test Number
-      address:
-        type: object
-        required:
-          - line1
-        properties:
-          line1:🙏
-            type: string
-            name: Line 1
-          line2:
-            type: string
-            name: Line 2
+```yaml
+spec:
+  parameters:
+    test:
+      type: number
+      name: Test Number
+    address:
+      type: object
+      required:
+        - line1
+      properties:
+        line1:
+          type: string
+          name: Line 1
+        line2:
+          type: string
+          name: Line 2
 
-    steps:
-      - id: test step
-        action: run:something
-        input:
--         address: '{{ json parameters.address }}'
-+         address: ${{ parameters.address }}
--         test: '{{ parameters.test }}'
-+         test: ${{ parameters.test }} # this will now make sure that the type of test is a number 🙏
+  steps:
+    - id: test step
+      action: run:something
+      input:
+        # highlight-remove-next-line
+        address: '{{ json parameters.address }}'
+        # highlight-add-next-line
+        address: ${{ parameters.address }}
+        # highlight-remove-next-line
+        test: '{{ parameters.test }}'
+        # highlight-add-next-line
+        test: ${{ parameters.test }} # this will now make sure that the type of test is a number 🙏
 ```
 
 ## `parseRepoUrl` is now a `filter`
@@ -148,13 +166,14 @@ input schema.
 All calls to `parseRepoUrl` are now a `jinja2` `filter`, which means you'll need
 to update the syntax.
 
-```diff
-  spec:
-    steps:
-        input:
--         repoUrl: '{{ parseRepoUrl parameters.repoUrl }}'
-+         repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
-          ...
+```yaml
+spec:
+  steps:
+      input:
+        # highlight-remove-next-line
+        repoUrl: '{{ parseRepoUrl parameters.repoUrl }}'
+        # highlight-add-next-line
+        repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
 ```
 
 Now we have complex value support here too, expect that this `filter` will go
@@ -167,39 +186,46 @@ away in future versions and the `RepoUrlPicker` will return an object so
 Previously, it was possible to provide links to the frontend using the named output `entityRef` and `remoteUrl`.
 These should be moved to `links` under the `output` object instead.
 
-```diff
-  output:
--   remoteUrl: '{{ steps.publish.output.remoteUrl }}'
--   entityRef: '{{ steps.register.output.entityRef }}'
-+   links:
-+     - title: Repository
-+       url: ${{ steps.publish.output.remoteUrl }}
-+     - title: Open in catalog
-+       icon: catalog
-+       entityRef: ${{ steps.register.output.entityRef }}
-
+```yaml
+output:
+  # highlight-remove-start
+  remoteUrl: {{ steps['publish'].output.remoteUrl }}
+  entityRef: {{ steps['register'].output.entityRef }}
+  # highlight-remove-end
+  # highlight-add-start
+  links:
+    - title: Repository
+      url: ${{ steps['publish'].output.remoteUrl }}
+    - title: Open in catalog
+      icon: catalog
+      entityRef: ${{ steps['register'].output.entityRef }}
+      # highlight-add-end
 ```
 
 ## Watch out for `dash-case`
 
 The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. One possible migration path is to use `camelCase` for your action IDs.
 
-```diff
+```yaml
   steps:
--   id: my-custom-action
--   ...
--
--   id: publish-pull-request
--   input:
--     repoUrl: {{ steps.my-custom-action.output.repoUrl }} # Will not recognize 'my-custom-action' as a JS property since it contains dashes!
+    # highlight-remove-start
+    id: my-custom-action
+    ...
+
+    id: publish-pull-request
+    input:
+      repoUrl: {{ steps.my-custom-action.output.repoUrl }} # Will not recognize 'my-custom-action' as a JS property since it contains dashes!
+      # highlight-remove-end
 
   steps:
-+   id: myCustomAction
-+   ...
-+
-+   id: publishPullRequest
-+   input:
-+     repoUrl: ${{ steps.myCustomAction.output.repoUrl }}
+    # highlight-add-start
+    id: myCustomAction
+    ...
+
+    id: publishPullRequest
+    input:
+      repoUrl: ${{ steps.myCustomAction.output.repoUrl }}
+      # highlight-add-end
 ```
 
 Alternatively, it's possible to keep the `dash-case` syntax and use brackets for property access as you would in JavaScript:
@@ -211,7 +237,7 @@ input:
 
 ### Summary
 
-Of course, we're always available on [discord](https://discord.gg/MUpMjP2) if
+Of course, we're always available on [discord](https://discord.gg/backstage-687207715902193673) if
 you're stuck or something's not working as expected. You can also
 [raise an issue](https://github.com/backstage/backstage/issues/new/choose) with
 feedback or bugs!

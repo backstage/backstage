@@ -15,11 +15,12 @@
  */
 
 import {
-  getGitHubFileFetchUrl,
+  getGithubFileFetchUrl,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  GitHubIntegration,
+  GithubIntegration,
   ScmIntegrations,
+  GithubCredentials,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch, { RequestInit, Response } from 'node-fetch';
@@ -40,18 +41,19 @@ import {
   ReadUrlResponse,
 } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
-export type GhBranchResponse =
-  RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+export type GhCombinedCommitStatusResponse =
+  RestEndpointMethodTypes['repos']['getCombinedStatusForRef']['response']['data'];
 export type GhTreeResponse =
   RestEndpointMethodTypes['git']['getTree']['response']['data'];
 export type GhBlobResponse =
   RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
- * Implements a {@link UrlReader} for files through the GitHub v3 APIs, such as
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files through the GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  *
  * @public
@@ -72,7 +74,7 @@ export class GithubUrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly integration: GitHubIntegration,
+    private readonly integration: GithubIntegration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
@@ -97,7 +99,7 @@ export class GithubUrlReader implements UrlReader {
     const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
-    const ghUrl = getGitHubFileFetchUrl(
+    const ghUrl = getGithubFileFetchUrl(
       url,
       this.integration.config,
       credentials,
@@ -109,6 +111,9 @@ export class GithubUrlReader implements UrlReader {
         headers: {
           ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(options?.lastModifiedAfter && {
+            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+          }),
           Accept: 'application/vnd.github.v3.raw',
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -130,6 +135,9 @@ export class GithubUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -156,7 +164,7 @@ export class GithubUrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     const repoDetails = await this.getRepoDetails(url);
-    const commitSha = repoDetails.branch.commit.sha!;
+    const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
@@ -184,7 +192,7 @@ export class GithubUrlReader implements UrlReader {
 
   async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
     const repoDetails = await this.getRepoDetails(url);
-    const commitSha = repoDetails.branch.commit.sha!;
+    const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
@@ -290,36 +298,48 @@ export class GithubUrlReader implements UrlReader {
     return files.map(file => ({
       url: pathToUrl(file.path),
       content: file.content,
+      lastModifiedAt: file.lastModifiedAt,
     }));
   }
 
   private async getRepoDetails(url: string): Promise<{
-    repo: GhRepoResponse;
-    branch: GhBranchResponse;
+    commitSha: string;
+    repo: {
+      archive_url: string;
+      trees_url: string;
+    };
   }> {
     const parsed = parseGitUrl(url);
     const { ref, full_name } = parsed;
 
-    // Caveat: The ref will totally be incorrect if the branch name includes a
-    // slash. Thus, some operations can not work on URLs containing branch
-    // names that have a slash in them.
-
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
+    const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
+    const { headers } = credentials;
 
+    const commitStatus: GhCombinedCommitStatusResponse = await this.fetchJson(
+      `${this.integration.config.apiBaseUrl}/repos/${full_name}/commits/${
+        ref || (await this.getDefaultBranch(full_name, credentials))
+      }/status?per_page=0`,
+      { headers },
+    );
+
+    return {
+      commitSha: commitStatus.sha,
+      repo: commitStatus.repository,
+    };
+  }
+
+  private async getDefaultBranch(
+    repoFullName: string,
+    credentials: GithubCredentials,
+  ): Promise<string> {
     const repo: GhRepoResponse = await this.fetchJson(
-      `${this.integration.config.apiBaseUrl}/repos/${full_name}`,
-      { headers },
+      `${this.integration.config.apiBaseUrl}/repos/${repoFullName}`,
+      { headers: credentials.headers },
     );
 
-    // branches_url looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
-    const branch: GhBranchResponse = await this.fetchJson(
-      repo.branches_url.replace('{/branch}', `/${ref || repo.default_branch}`),
-      { headers },
-    );
-
-    return { repo, branch };
+    return repo.default_branch;
   }
 
   private async fetchResponse(

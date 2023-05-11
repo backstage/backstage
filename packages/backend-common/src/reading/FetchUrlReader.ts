@@ -26,6 +26,7 @@ import {
 } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 const isInRange = (num: number, [start, end]: [number, number]) => {
   return num >= start && num <= end;
@@ -63,7 +64,7 @@ const parsePortPredicate = (port: string | undefined) => {
 };
 
 /**
- * A {@link UrlReader} that does a plain fetch of the URL.
+ * A {@link @backstage/backend-plugin-api#UrlReaderService} that does a plain fetch of the URL.
  *
  * @public
  */
@@ -127,6 +128,9 @@ export class FetchUrlReader implements UrlReader {
       response = await fetch(url, {
         headers: {
           ...(options?.etag && { 'If-None-Match': options.etag }),
+          ...(options?.lastModifiedAfter && {
+            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -147,6 +151,9 @@ export class FetchUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 

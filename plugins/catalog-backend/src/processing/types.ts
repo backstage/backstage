@@ -29,6 +29,7 @@ export type EntityProcessingRequest = {
   entity: Entity;
   state?: JsonObject; // Versions for multiple deployments etc
 };
+
 /**
  * The result of processing an entity.
  * @internal
@@ -57,13 +58,18 @@ export type RefreshKeyData = {
 
 /**
  * Responsible for executing the individual processing steps in order to fully process an entity.
- * @public
  */
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
-/** @public */
+/**
+ * Represents the engine that drives the processing loops. Some backend
+ * instances may choose to not call start, if they focus only on API
+ * interactions.
+ *
+ * @public
+ */
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;

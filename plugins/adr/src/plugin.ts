@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import { adrApiRef, AdrClient } from './api';
 import {
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
-
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
 import { rootRouteRef } from './routes';
+import { AdrSearchResultListItemProps } from './search';
 
 /**
  * The Backstage plugin that holds ADR specific components
@@ -27,6 +32,18 @@ import { rootRouteRef } from './routes';
  */
 export const adrPlugin = createPlugin({
   id: 'adr',
+  apis: [
+    createApiFactory({
+      api: adrApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory({ discoveryApi, fetchApi }) {
+        return new AdrClient({ discoveryApi, fetchApi });
+      },
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
@@ -42,5 +59,23 @@ export const EntityAdrContent = adrPlugin.provide(
     component: () =>
       import('./components/EntityAdrContent').then(m => m.EntityAdrContent),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * React extension used to render results on Search page or modal
+ *
+ * @public
+ */
+export const AdrSearchResultListItem: (
+  props: AdrSearchResultListItemProps,
+) => JSX.Element | null = adrPlugin.provide(
+  createSearchResultListItemExtension({
+    name: 'AdrSearchResultListItem',
+    component: () =>
+      import('./search/AdrSearchResultListItem').then(
+        m => m.AdrSearchResultListItem,
+      ),
+    predicate: result => result.type === 'adr',
   }),
 );

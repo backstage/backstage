@@ -25,7 +25,7 @@ import { ShortcutApi } from './api';
 import { Shortcut } from './types';
 import { SidebarItem } from '@backstage/core-components';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     '&:hover #edit': {
       visibility: 'visible',
@@ -35,10 +35,10 @@ const useStyles = makeStyles({
     visibility: 'hidden',
   },
   icon: {
-    color: 'white',
+    color: theme.palette.common.white,
     fontSize: 16,
   },
-});
+}));
 
 const getIconText = (title: string) =>
   title.split(' ').length === 1
@@ -58,9 +58,10 @@ const getIconText = (title: string) =>
 type Props = {
   shortcut: Shortcut;
   api: ShortcutApi;
+  allowExternalLinks?: boolean;
 };
 
-export const ShortcutItem = ({ shortcut, api }: Props) => {
+export const ShortcutItem = ({ shortcut, api, allowExternalLinks }: Props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
 
@@ -100,6 +101,7 @@ export const ShortcutItem = ({ shortcut, api }: Props) => {
         anchorEl={anchorEl}
         api={api}
         shortcut={shortcut}
+        allowExternalLinks={allowExternalLinks}
       />
     </>
   );

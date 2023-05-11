@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  readTaskScheduleDefinitionFromConfig,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
@@ -121,6 +125,11 @@ export type MicrosoftGraphProviderConfig = {
    * Some features like `$expand` are not available for advanced queries, though.
    */
   queryMode?: 'basic' | 'advanced';
+
+  /**
+   * Schedule configuration for refresh tasks.
+   */
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -255,6 +264,7 @@ export function readProviderConfig(
 
   const userExpand = config.getOptionalString('user.expand');
   const userFilter = config.getOptionalString('user.filter');
+  const userSelect = config.getOptionalStringArray('user.select');
 
   const groupExpand = config.getOptionalString('group.expand');
   const groupFilter = config.getOptionalString('group.filter');
@@ -296,6 +306,10 @@ export function readProviderConfig(
     throw new Error(`clientId must be provided when clientSecret is defined.`);
   }
 
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
+
   return {
     id,
     target,
@@ -305,6 +319,7 @@ export function readProviderConfig(
     tenantId,
     userExpand,
     userFilter,
+    userSelect,
     groupExpand,
     groupFilter,
     groupSearch,
@@ -312,5 +327,6 @@ export function readProviderConfig(
     queryMode,
     userGroupMemberFilter,
     userGroupMemberSearch,
+    schedule,
   };
 }

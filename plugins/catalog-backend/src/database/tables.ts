@@ -66,10 +66,12 @@ export type DbFinalEntitiesRow = {
   hash: string;
   stitch_ticket: string;
   final_entity?: string;
+  last_updated_at?: string | Date;
 };
 
 export type DbSearchRow = {
   entity_id: string;
   key: string;
+  original_value: string | null;
   value: string | null;
 };

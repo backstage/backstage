@@ -1,6 +1,6 @@
 ---
 title: Prometheus
-author: Roadie
+author: roadie.io
 authorUrl: https://roadie.io
 category: Monitoring
 description: Prometheus plugin provides visualization of Prometheus metrics and alerts
@@ -11,3 +11,4 @@ tags:
   - monitoring
   - graphs
   - alerting
+addedDate: '2021-10-06'

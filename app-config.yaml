@@ -1,7 +1,6 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
-  googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
@@ -18,12 +17,12 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
   # auth:
   #   keys:
@@ -118,6 +117,14 @@ proxy:
     target: https://your.dynatrace.instance.com/api/v2
     headers:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+
+  '/stackstorm':
+    target: https://your.stackstorm.instance.com/api
+    headers:
+      St2-Api-Key: ${ST2_API_KEY}
+
+  '/puppetdb':
+    target: https://your.puppetdb.instance.com
 
 organization:
   name: My Company
@@ -216,7 +223,6 @@ catalog:
         - Component
         - API
         - Resource
-        - Template
         - System
         - Domain
         - Location
@@ -271,6 +277,8 @@ catalog:
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      rules:
+        - allow: [Template]
     # Backstage end-to-end tests of TechDocs
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
@@ -373,6 +381,7 @@ auth:
       development: {}
 costInsights:
   engineerCost: 200000
+  engineerThreshold: 0.5
   products:
     computeEngine:
       name: Compute Engine
@@ -420,16 +429,6 @@ costInsights:
       kind: 'PINTS_OF_ICE_CREAM'
       unit: 'ice cream pint'
       rate: 5.5
-homepage:
-  clocks:
-    - label: UTC
-      timezone: UTC
-    - label: NYC
-      timezone: 'America/New_York'
-    - label: STO
-      timezone: 'Europe/Stockholm'
-    - label: TYO
-      timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
 jenkins:
@@ -449,6 +448,9 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+stackstorm:
+  webUrl: https://your.stackstorm.webui.instance.com
 
 permission:
   enabled: true

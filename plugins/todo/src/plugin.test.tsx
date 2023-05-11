@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { todoPlugin, EntityTodoContent } from './plugin';
 import { todoApiRef } from './api';

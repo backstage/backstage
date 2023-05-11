@@ -173,7 +173,6 @@ const logger = getVoidLogger();
 let publisher: PublisherBase;
 
 beforeEach(() => {
-  mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
       publisher: {
@@ -192,6 +191,10 @@ beforeEach(() => {
   });
 
   publisher = OpenStackSwiftPublish.fromConfig(mockConfig, logger);
+});
+
+afterEach(() => {
+  mockFs.restore();
 });
 
 describe('OpenStackSwiftPublish', () => {
@@ -247,10 +250,6 @@ describe('OpenStackSwiftPublish', () => {
       });
     });
 
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     it('should publish a directory', async () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
@@ -301,8 +300,6 @@ describe('OpenStackSwiftPublish', () => {
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
-
-      mockFs.restore();
     });
   });
 
@@ -318,7 +315,6 @@ describe('OpenStackSwiftPublish', () => {
       });
 
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
-      mockFs.restore();
     });
 
     it('should return false if docs has not been generated', async () => {
@@ -350,7 +346,6 @@ describe('OpenStackSwiftPublish', () => {
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
       ).toStrictEqual(expectedMetadata);
-      mockFs.restore();
     });
 
     it('should return tech docs metadata when json encoded with single quotes', async () => {
@@ -373,7 +368,6 @@ describe('OpenStackSwiftPublish', () => {
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
       ).toStrictEqual(expectedMetadata);
-      mockFs.restore();
     });
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
@@ -399,8 +393,6 @@ describe('OpenStackSwiftPublish', () => {
 
     beforeEach(() => {
       app = express().use(publisher.docsRouter());
-
-      mockFs.restore();
       mockFs({
         [entityRootDir]: {
           html: {
@@ -415,10 +407,6 @@ describe('OpenStackSwiftPublish', () => {
           },
         },
       });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should pass expected object path to bucket', async () => {

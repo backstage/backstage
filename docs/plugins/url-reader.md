@@ -40,7 +40,7 @@ i.e.`packages/backend/src/index.ts`.
 ```ts
 // File: packages/backend/src/index.ts
 
-import { URLReaders } from '@backstage/backend-common';
+import { UrlReaders } from '@backstage/backend-common';
 
 function makeCreateEnv(config: Config) {
   // ....
@@ -60,15 +60,7 @@ The generic interface of a URL Reader instance looks like this.
 ```ts
 export type UrlReader = {
   /* Used to read a single file and return its content. */
-  read(url: string): Promise<Buffer>;
-  /**
-   * A replacement for the read method that supports options and complex responses.
-   *
-   * Use this whenever it is available, as the read method will be deprecated and
-   * eventually removed in the future.
-   */
-  readUrl?(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   /* Used to read a file tree and download as a directory. */
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   /* Used to search a file in a tree. */
@@ -102,8 +94,8 @@ backend plugins.
 Once the reader instance is available inside the plugin, one of its methods can
 directly be used with a URL. Some example usages -
 
-- [`read`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/plugins/catalog-backend/src/ingestion/processors/codeowners/read.ts#L24-L33) -
-  Catalog using the `read` method to read the CODEOWNERS file in a repository.
+- [`readUrl`](https://github.com/backstage/backstage/blob/a7607b5/plugins/catalog-backend/src/modules/codeowners/lib/read.ts#L24-L33) -
+  Catalog using the `readUrl` method to read the CODEOWNERS file in a repository.
 - [`readTree`](https://github.com/backstage/backstage/blob/84a8788/plugins/techdocs-node/src/helpers.ts#L146-L167) -
   TechDocs using the `readTree` method to download markdown files in order to
   generate the documentation site.
@@ -155,11 +147,9 @@ all the methods of the `UrlReader` interface should be implemented. However it
 is okay to start by implementing just one of them and create issues for the
 remaining.
 
-#### read
+#### `readUrl`
 
-NOTE: Use `readUrl` instead of `read`.
-
-`read` method expects a user-friendly URL, something which can be copied from
+`readUrl` method expects a user-friendly URL, something which can be copied from
 the browser naturally when a person is browsing the provider in their browser.
 
 - ✅ Valid URL :
@@ -168,20 +158,12 @@ the browser naturally when a person is browsing the provider in their browser.
   `https://raw.githubusercontent.com/backstage/backstage/master/ADOPTERS.md`
 - ❌ Not a valid URL : `https://github.com/backstage/backstage/ADOPTERS.md`
 
-Upon receiving the URL, `read` converts the user-friendly URL into an API URL
+Upon receiving the URL, `readUrl` converts the user-friendly URL into an API URL
 which can be used to request the provider's API.
 
-`read` then makes an authenticated request to the provider API and returns the
-file's content.
+`readUrl` then makes an authenticated request to the provider API and returns the response containing the file's contents and ETag(if the provider supports it).
 
-#### readUrl
-
-`readUrl` is a new interface that allows complex response objects and is
-intended to replace the `read` method. This new method is currently optional to
-implement which allows for a soft migration to `readUrl` instead of `read` in
-the future.
-
-#### readTree
+#### `readTree`
 
 `readTree` method also expects user-friendly URLs similar to `read` but the URL
 should point to a tree (could be the root of a repository or even a
@@ -241,8 +223,8 @@ without an `etag`, the response contains an ETag of the resource (should ideally
 forward the ETag returned by the provider). If the method is called with an
 `etag`, it first compares the ETag and returns a `NotModifiedError` in case the
 resource has not been modified. This approach is very similar to the actual
-[ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and
-[If-None-Match](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
+[`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and
+[`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
 HTTP headers.
 
 ### 6. Debugging
@@ -268,7 +250,7 @@ async function main() {
 ```
 
 This will be run every time you restart the backend. Note that after any change
-in the URL Reader code, you need to kill the backend and restart, since the
+in the URL Reader code, you need to stop the backend and restart, since the
 `reader` instance is memoized and does not update on hot module reloading. Also,
 there are a lot of unit tests written for the URL Readers, which you can make
 use of.

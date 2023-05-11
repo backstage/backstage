@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called Lunr,
-ElasticSearch and Postgres. You can configure your own search engines by
+Elasticsearch and Postgres. You can configure your own search engines by
 implementing the provided interface as mentioned in the
 [search backend documentation.](./getting-started.md#Backend)
 
@@ -34,11 +34,16 @@ const searchEngine = new LunrSearchEngine({ logger: env.logger });
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 ```
 
+> Note: Lunr is appropriate as a zero-config search engine when developing
+> other parts of Backstage locally, however its use is highly discouraged when
+> running Backstage in production. When deploying Backstage, use one of the
+> other search engines instead.
+
 ## Postgres
 
 The Postgres based search engine only requires that postgres being configured as
 the database engine for Backstage. Therefore it targets setups that want to
-avoid maintaining another external service like elastic search. The search
+avoid maintaining another external service like Elasticsearch. The search
 provides decent results and performs well with ten thousands of indexed
 documents. The connection to postgres is established via the database manager
 also used by other plugins.
@@ -91,13 +96,13 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## ElasticSearch
+## Elasticsearch
 
-Backstage supports ElasticSearch search engine connections, indexing and
-querying out of the box. Available configuration options enable usage of either
-AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
+Backstage supports Elasticsearch (and OpenSearch) search engine connections,
+indexing and querying out of the box. Available configuration options enable
+usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
 
-Similarly to Lunr above, ElasticSearch can be set up like this:
+Similarly to Lunr above, Elasticsearch can be set up like this:
 
 ```typescript
 // app/backend/src/plugins/search.ts
@@ -111,39 +116,48 @@ const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 For the engine to be available, your backend package needs a dependency on
 package `@backstage/plugin-search-backend-module-elasticsearch`.
 
-ElasticSearch needs some additional configuration before it is ready to use
+Elasticsearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality uses either the official ElasticSearch client
-version 7.x (meaning that ElasticSearch version 7 is the only one confirmed to
-be supported), or the OpenSearch client, when the `aws` provider is configured.
+The underlying functionality uses either the official Elasticsearch client
+version 7.x (meaning that Elasticsearch version 7 is the only one confirmed to
+be supported), or the OpenSearch client, when the `aws` or `opensearch `provider
+is configured.
 
 Should you need to create your own bespoke search experiences that require more
 than just a query translator (such as faceted search or Relay pagination), you
-can access the configuration of the search engine in order to create new elastic
-search clients. The version of the client need not be the same as one used
-internally by the elastic search engine plugin. For example:
+can access the configuration of the search engine in order to create new
+Elasticsearch clients. The version of the client need not be the same as one
+used internally by the Elasticsearch engine plugin. For example:
 
 ```typescript
 import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { Client as ElasticClient } from '@elastic/elastic-search';
+import { Client as ElasticClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 
-const client = searchEngine.newClient(options => {
-  // In reality, you would only import / instantiate one of the following, but
-  // for illustrative purposes, here are both:
-  if (isOpenSearchCompatible(options)) {
-    return new OpenSearchClient(options);
-  } else {
+// Return an Elasticsearch client
+const esClient = searchEngine.newClient<ElasticClient>(options => {
+  if (!isOpenSearchCompatible(options)) {
     return new ElasticClient(options);
   }
+
+  throw new Error('Incompatible options');
+});
+
+// Return an OpenSearch client
+const osClient = searchEngine.newClient<OpenSearchClient>(options => {
+  if (isOpenSearchCompatible(options)) {
+    return new OpenSearchClient(options);
+  }
+
+  throw new Error('Incompatible options');
 });
 ```
 
 #### Set custom index template
 
-The elasticsearch engine gives you the ability to set a custom index template if needed.
+The Elasticsearch engine gives you the ability to set a custom index template if needed.
 
 > Index templates define settings, mappings, and aliases that can be applied automatically to new indices.
 
@@ -170,8 +184,8 @@ searchEngine.setIndexTemplate({
 
 ### AWS
 
-Using AWS hosted ElasticSearch the only configuration option needed is the URL
-to the ElasticSearch service. The implementation assumes that environment
+Using AWS hosted Elasticsearch the only configuration option needed is the URL
+to the Elasticsearch service. The implementation assumes that environment
 variables for AWS access key id and secret access key are defined in accordance
 to the
 [default AWS credential chain.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
@@ -185,8 +199,8 @@ search:
 
 ### Elastic.co
 
-Elastic Cloud hosted ElasticSearch uses a Cloud ID to determine the instance of
-hosted ElasticSearch to connect to. Additionally, username and password needs to
+Elastic Cloud hosted Elasticsearch uses a Cloud ID to determine the instance of
+hosted Elasticsearch to connect to. Additionally, username and password needs to
 be provided either directly or using environment variables like defined in
 [Backstage documentation.](https://backstage.io/docs/conf/writing#includes-and-dynamic-data)
 
@@ -200,10 +214,24 @@ search:
       password: changeme
 ```
 
+### OpenSearch
+
+OpenSearch can be self hosted for example with the [official docker image](https://hub.docker.com/r/opensearchproject/opensearch). The configuration requires only the node and authentication.
+
+```yaml
+search:
+  elasticsearch:
+    provider: opensearch
+    node: http://0.0.0.0:9200
+    auth:
+      username: opensearch
+      password: changeme
+```
+
 ### Others
 
-Other ElasticSearch instances can be connected to by using standard
-ElasticSearch authentication methods and exposed URL, provided that the cluster
+Other Elasticsearch instances can be connected to by using standard
+Elasticsearch authentication methods and exposed URL, provided that the cluster
 supports that. The configuration options needed are the URL to the node and
 authentication information. Authentication can be handled by either providing
 username/password or an API key. For more information how to create an API key,
@@ -233,13 +261,13 @@ search:
       apiKey: base64EncodedKey
 ```
 
-### Elastic search batch size
+### Elasticsearch batch size
 
-Default batch size of the elastic search engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
+Default batch size of the Elasticsearch engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
 you may get an error caused by limited `thread_pool` configuration. ( `429 Too Many Requests /_bulk` )
 
 In this case you need to decrease the batch size to index the resources to prevent this kind of error. You can easily decrease
-or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for elasticsearch configuration.
+or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for Elasticsearch configuration.
 
 #### Configuration example
 

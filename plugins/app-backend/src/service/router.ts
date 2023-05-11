@@ -96,9 +96,11 @@ export async function createRouter(
   const staticDir = resolvePath(appDistDir, 'static');
 
   if (!(await fs.pathExists(staticDir))) {
-    logger.warn(
-      `Can't serve static app content from ${staticDir}, directory doesn't exist`,
-    );
+    if (process.env.NODE_ENV === 'production') {
+      logger.error(
+        `Can't serve static app content from ${staticDir}, directory doesn't exist`,
+      );
+    }
 
     return Router();
   }

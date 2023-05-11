@@ -18,7 +18,7 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import useAsync from 'react-use/lib/useAsync';
 import { useCostInsightsStyles } from '../../utils/styles';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 function useDisplayName(): string {
@@ -46,9 +46,9 @@ const CostInsightsHeaderNoData = ({
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="flushed-face">
+        <Typography component="span" role="img" aria-label="flushed-face">
           😳
-        </span>{' '}
+        </Typography>{' '}
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
@@ -76,9 +76,9 @@ const CostInsightsHeaderAlerts = ({
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="magnifying-glass">
+        <Typography component="span" role="img" aria-label="magnifying-glass">
           🔎
-        </span>{' '}
+        </Typography>{' '}
         You have {alerts} thing{alerts > 1 && 's'} to look into
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
@@ -101,9 +101,9 @@ const CostInsightsHeaderNoAlerts = ({
   return (
     <>
       <Typography variant="h4" gutterBottom align="center">
-        <span role="img" aria-label="thumbs-up">
+        <Typography component="span" role="img" aria-label="thumbs-up">
           👍
-        </span>{' '}
+        </Typography>{' '}
         Your team is doing great
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
@@ -120,9 +120,9 @@ export const CostInsightsHeaderNoGroups = () => {
   return (
     <>
       <Typography variant="h4" align="center" gutterBottom>
-        <span role="img" aria-label="flushed-face">
+        <Typography component="span" role="img" aria-label="flushed-face">
           😳
-        </span>{' '}
+        </Typography>{' '}
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>

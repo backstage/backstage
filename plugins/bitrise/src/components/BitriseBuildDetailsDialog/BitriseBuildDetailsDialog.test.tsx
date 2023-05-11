@@ -46,7 +46,7 @@ describe('BitriseArtifactsComponent', () => {
     const rendered = renderComponent();
     const btn = await rendered.findByTestId('btn');
 
-    expect(await rendered.queryByText('VISIBLE')).not.toBeInTheDocument();
+    expect(rendered.queryByText('VISIBLE')).not.toBeInTheDocument();
 
     btn.click();
 

@@ -36,6 +36,9 @@ export default async function createPlugin(
     config: env.config,
     discovery: env.discovery,
     badgeFactories: createDefaultBadgeFactories(),
+    tokenManager: env.tokenManager,
+    logger: env.logger,
+    identity: env.identity,
   });
 }
 ```
@@ -112,10 +115,28 @@ export const createMyCustomBadgeFactories = (): BadgeFactories => ({
 });
 ```
 
+### Badge obfuscation
+
+When you enable the obfuscation feature, the badges backend will obfuscate the entity names in the badge link. It's useful when you want your badges to be visible to the public, but you don't want to expose the entity names and also to protect your entity names from being enumerated.
+
+To enable the obfuscation you need to activate the `obfuscation` feature in the `app-config.yaml`:
+
+```yaml
+app:
+  badges:
+    obfuscate: true
+```
+
+:warning: **Warning**: The only endpoint to be publicly available is the `/entity/:entityUuid/:badgeId` endpoint. The other endpoints are meant for trusted internal users and should not be publicly exposed.
+
+> Note that you cannot use env vars to set the `obfuscate` value. It must be a boolean value and env vars are always strings.
+
 ## API
 
 The badges backend api exposes two main endpoints for entity badges. The
 `/badges` prefix is arbitrary, and the default for the example backend.
+
+### If obfuscation is disabled (default or apps.badges.obfuscate: false)
 
 - `/badges/entity/:namespace/:kind/:name/badge-specs` List all defined badges
   for a particular entity, in json format. See
@@ -125,6 +146,21 @@ The badges backend api exposes two main endpoints for entity badges. The
 - `/badges/entity/:namespace/:kind/:name/badge/:badgeId` Get the entity badge as
   an SVG image. If the `accept` request header prefers `application/json` the
   badge spec as JSON will be returned instead of the image.
+
+### If obfuscation is enabled (apps.badges.obfuscate: true)
+
+- `/badges/entity/:namespace/:kind/:name/obfuscated` Get the obfuscated `entity url`.
+
+> Note that endpoint have a embedded authMiddleware to authenticate the user requesting this endpoint. _It meant to be called from the frontend plugin._
+
+- `/badges/entity/:entityUuid/:badgeId` Get the entity badge as an SVG image. If
+  the `accept` request header prefers `application/json` the badge spec as JSON
+  will be returned instead of the image.
+
+- `/badge/entity/:entityUuid/badge-specs` List all defined badges for a
+  particular entity, in json format. See
+  [BadgeSpec](https://github.com/backstage/backstage/tree/master/plugins/badges/src/api/types.ts)
+  from the frontend plugin for a type declaration.
 
 ## Links
 

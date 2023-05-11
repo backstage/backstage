@@ -20,7 +20,7 @@ import { initRepoAndPush } from '../helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 
 /**
@@ -108,6 +108,10 @@ export function createPublishAzureAction(options: {
             title: 'The Id of the created repository',
             type: 'string',
           },
+          commitHash: {
+            title: 'The git commit hash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },
@@ -183,7 +187,7 @@ export function createPublishAzureAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         defaultBranch,
@@ -198,6 +202,7 @@ export function createPublishAzureAction(options: {
         gitAuthorInfo,
       });
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('repositoryId', repositoryId);

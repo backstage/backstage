@@ -16,7 +16,9 @@
 
 import fetch from 'cross-fetch';
 
-const VERSIONS_DOMAIN = 'https://versions.backstage.io';
+const VERSIONS_BASE_URL = 'https://versions.backstage.io';
+const GITHUB_RAW_BASE_URL =
+  'https://raw.githubusercontent.com/backstage/versions/main';
 
 /**
  * Contains mapping between Backstage release and package versions.
@@ -35,6 +37,45 @@ export type GetManifestByVersionOptions = {
   version: string;
 };
 
+// Wait for waitMs, or until signal is aborted.
+function wait(waitMs: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      if (!signal.aborted) {
+        resolve();
+      }
+    }, waitMs);
+    signal.addEventListener('abort', () => {
+      clearTimeout(timeout);
+      reject(new Error('Aborted'));
+    });
+  });
+}
+
+// Run fn1 and then fn2 after fallbackDelayMs. Whichever one finishes
+// first wins, and the other one is aborted through the provided signal.
+export async function withFallback<T>(
+  fn1: (signal: AbortSignal) => Promise<T>,
+  fn2: (signal: AbortSignal) => Promise<T>,
+  fallbackDelayMs: number,
+): Promise<T> {
+  const c1 = new AbortController();
+  const c2 = new AbortController();
+
+  const promise1 = fn1(c1.signal).then(res => {
+    c2.abort();
+    return res;
+  });
+  const promise2 = wait(fallbackDelayMs, c2.signal)
+    .then(() => fn2(c2.signal))
+    .then(res => {
+      c1.abort();
+      return res;
+    });
+
+  return Promise.any([promise1, promise2]).catch(() => promise1);
+}
+
 /**
  * Returns a release manifest based on supplied version.
  * @public
@@ -42,19 +83,27 @@ export type GetManifestByVersionOptions = {
 export async function getManifestByVersion(
   options: GetManifestByVersionOptions,
 ): Promise<ReleaseManifest> {
-  const url = `${VERSIONS_DOMAIN}/v1/releases/${encodeURIComponent(
-    options.version,
-  )}/manifest.json`;
-  const response = await fetch(url);
-  if (response.status === 404) {
+  const versionEnc = encodeURIComponent(options.version);
+  const res = await withFallback(
+    signal =>
+      fetch(`${VERSIONS_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
+        signal,
+      }),
+    signal =>
+      fetch(`${GITHUB_RAW_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
+        signal,
+      }),
+    500,
+  );
+  if (res.status === 404) {
     throw new Error(`No release found for ${options.version} version`);
   }
-  if (response.status !== 200) {
+  if (res.status !== 200) {
     throw new Error(
-      `Unexpected response status ${response.status} when fetching release from ${url}.`,
+      `Unexpected response status ${res.status} when fetching release from ${res.url}.`,
     );
   }
-  return await response.json();
+  return res.json();
 }
 
 /**
@@ -72,17 +121,31 @@ export type GetManifestByReleaseLineOptions = {
 export async function getManifestByReleaseLine(
   options: GetManifestByReleaseLineOptions,
 ): Promise<ReleaseManifest> {
-  const url = `${VERSIONS_DOMAIN}/v1/tags/${encodeURIComponent(
-    options.releaseLine,
-  )}/manifest.json`;
-  const response = await fetch(url);
-  if (response.status === 404) {
+  const releaseEnc = encodeURIComponent(options.releaseLine);
+  const res = await withFallback(
+    signal =>
+      fetch(`${VERSIONS_BASE_URL}/v1/tags/${releaseEnc}/manifest.json`, {
+        signal,
+      }),
+    async signal => {
+      // The release tags are symlinks, which we need to follow manually when fetching from GitHub.
+      const baseUrl = `${GITHUB_RAW_BASE_URL}/v1/tags/${releaseEnc}`;
+      const linkRes = await fetch(baseUrl, { signal });
+      if (!linkRes.ok) {
+        return linkRes;
+      }
+      const link = (await linkRes.text()).trim();
+      return fetch(new URL(`${link}/manifest.json`, baseUrl), { signal });
+    },
+    1000,
+  );
+  if (res.status === 404) {
     throw new Error(`No '${options.releaseLine}' release line found`);
   }
-  if (response.status !== 200) {
+  if (res.status !== 200) {
     throw new Error(
-      `Unexpected response status ${response.status} when fetching release from ${url}.`,
+      `Unexpected response status ${res.status} when fetching release from ${res.url}.`,
     );
   }
-  return await response.json();
+  return res.json();
 }

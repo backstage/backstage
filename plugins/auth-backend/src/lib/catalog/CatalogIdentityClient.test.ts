@@ -24,7 +24,7 @@ import {
 import { CatalogIdentityClient } from './CatalogIdentityClient';
 
 describe('CatalogIdentityClient', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
+  const catalogApi = {
     getLocationById: jest.fn(),
     getEntityByRef: jest.fn(),
     getEntities: jest.fn(),
@@ -48,7 +48,7 @@ describe('CatalogIdentityClient', () => {
     catalogApi.getEntities.mockResolvedValueOnce({ items: [{} as UserEntity] });
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
-      catalogApi,
+      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       tokenManager,
     });
 
@@ -106,7 +106,7 @@ describe('CatalogIdentityClient', () => {
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({
-      catalogApi,
+      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       tokenManager,
     });
 

@@ -60,6 +60,9 @@ export async function serveBundle(options: ServeOptions) {
         // Paths with dots should still use the history fallback.
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true,
+
+        // The index needs to be rewritten relative to the new public path, including subroutes.
+        index: `${config.output?.publicPath}index.html`,
       },
       https:
         url.protocol === 'https:'

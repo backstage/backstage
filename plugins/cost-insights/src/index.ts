@@ -24,6 +24,7 @@ export {
   costInsightsPlugin,
   costInsightsPlugin as plugin,
   CostInsightsPage,
+  EntityCostInsightsContent,
   CostInsightsProjectGrowthInstructionsPage,
   CostInsightsLabelDataflowInstructionsPage,
 } from './plugin';

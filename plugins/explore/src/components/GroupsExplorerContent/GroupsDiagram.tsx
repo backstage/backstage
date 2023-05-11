@@ -43,8 +43,12 @@ import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   graph: {
+    minHeight: '100%',
     flex: 1,
-    minHeight: 0,
+  },
+  graphWrapper: {
+    display: 'flex',
+    height: '100%',
   },
   organizationNode: {
     fill: theme.palette.secondary.light,
@@ -60,7 +64,16 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: 'black',
+    color: theme.palette.common.black,
+  },
+  legend: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    padding: theme.spacing(1),
+    '& .icon': {
+      verticalAlign: 'bottom',
+    },
   },
   textOrganization: {
     color: theme.palette.secondary.contrastText,
@@ -221,7 +234,7 @@ export function GroupsDiagram() {
   }
 
   return (
-    <>
+    <div className={classes.graphWrapper}>
       <DependencyGraph
         nodes={nodes}
         edges={edges}
@@ -229,14 +242,18 @@ export function GroupsDiagram() {
         direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
         className={classes.graph}
+        fit="contain"
       />
+
       <Typography
         variant="caption"
-        style={{ display: 'block', textAlign: 'right' }}
+        color="textSecondary"
+        display="block"
+        className={classes.legend}
       >
-        <ZoomOutMap style={{ verticalAlign: 'bottom' }} /> Use pinch &amp; zoom
-        to move around the diagram.
+        <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move around the
+        diagram.
       </Typography>
-    </>
+    </div>
   );
 }

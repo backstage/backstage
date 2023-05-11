@@ -34,5 +34,6 @@ export default async function createPlugin(
     reader: env.reader,
     identity: env.identity,
     scheduler: env.scheduler,
+    permissions: env.permissions,
   });
 }

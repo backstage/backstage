@@ -17,6 +17,7 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
 import {
+  MockFetchApi,
   setupRequestMockHandlers,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -33,40 +34,30 @@ describe('EntityVaultTable', () => {
   let apis: TestApiRegistry;
   const mockBaseUrl = 'https://api-vault.com/api/vault';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
+  const fetchApi = new MockFetchApi();
 
-  const entityOk: ComponentEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-      description: 'This is the description',
-      annotations: {
-        'vault.io/secrets-path': 'test/success',
+  const entity = (secretPath: string) => {
+    return {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        description: 'This is the description',
+        annotations: {
+          'vault.io/secrets-path': secretPath,
+        },
       },
-    },
-    spec: {
-      lifecycle: 'production',
-      owner: 'owner',
-      type: 'service',
-    },
+      spec: {
+        lifecycle: 'production',
+        owner: 'owner',
+        type: 'service',
+      },
+    } as ComponentEntity;
   };
 
-  const entityNotOk: ComponentEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-      description: 'This is the description',
-      annotations: {
-        'vault.io/secrets-path': 'test/error',
-      },
-    },
-    spec: {
-      lifecycle: 'production',
-      owner: 'owner',
-      type: 'service',
-    },
-  };
+  const entityOk = entity('test/success');
+  const entityEmpty = entity('test/empty');
+  const entityNotOk = entity('test/error');
 
   const mockSecretsResult: { items: VaultSecret[] } = {
     items: [
@@ -91,7 +82,7 @@ describe('EntityVaultTable', () => {
         const { path } = req.params;
         if (path === 'test/success') {
           return res(ctx.json(mockSecretsResult));
-        } else if (path === 'test/error') {
+        } else if (path === 'test/empty') {
           return res(ctx.json([]));
         }
         return res(ctx.status(400));
@@ -102,7 +93,7 @@ describe('EntityVaultTable', () => {
   beforeEach(() => {
     apis = TestApiRegistry.from([
       vaultApiRef,
-      new VaultClient({ discoveryApi }),
+      new VaultClient({ discoveryApi, fetchApi }),
     ]);
   });
 
@@ -122,10 +113,25 @@ describe('EntityVaultTable', () => {
     setupHandlers();
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <EntityVaultTable entity={entityNotOk} />
+        <EntityVaultTable entity={entityEmpty} />
       </ApiProvider>,
     );
 
     expect(rendered.getByText(/No secrets found/)).toBeInTheDocument();
+  });
+
+  it('should surface an appropriate error when the Vault API responds unsuccessfully', async () => {
+    setupHandlers();
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityVaultTable entity={entityNotOk} />
+      </ApiProvider>,
+    );
+
+    expect(
+      rendered.getByText(
+        /Unexpected error while fetching secrets from path \'test\/error\'\: Request failed with 400 Error/,
+      ),
+    ).toBeInTheDocument();
   });
 });

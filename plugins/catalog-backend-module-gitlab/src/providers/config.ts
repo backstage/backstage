@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
 
@@ -28,20 +29,37 @@ import { GitlabProviderConfig } from '../lib';
 function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const group = config.getOptionalString('group') ?? '';
   const host = config.getString('host');
-  const branch = config.getOptionalString('branch') ?? 'master';
+  const branch = config.getOptionalString('branch');
+  const fallbackBranch = config.getOptionalString('fallbackBranch') ?? 'master';
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
     config.getOptionalString('projectPattern') ?? /[\s\S]*/,
   );
+  const userPattern = new RegExp(
+    config.getOptionalString('userPattern') ?? /[\s\S]*/,
+  );
+  const groupPattern = new RegExp(
+    config.getOptionalString('groupPattern') ?? /[\s\S]*/,
+  );
+  const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
+
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
 
   return {
     id,
     group,
     branch,
+    fallbackBranch,
     host,
     catalogFile,
     projectPattern,
+    userPattern,
+    groupPattern,
+    schedule,
+    orgEnabled,
   };
 }
 

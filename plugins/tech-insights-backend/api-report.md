@@ -12,8 +12,8 @@ import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
 import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
-import { FactSchema } from '@backstage/plugin-tech-insights-node';
-import { HumanDuration } from '@backstage/backend-tasks';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
+import { HumanDuration } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -60,6 +60,7 @@ export type FactRetrieverRegistrationOptions = {
   factRetriever: FactRetriever;
   lifecycle?: FactLifecycle;
   timeout?: Duration | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
 };
 
 // @public (undocumented)
@@ -77,8 +78,19 @@ export interface FactRetrieverRegistry {
 }
 
 // @public
+export const initializePersistenceContext: (
+  database: PluginDatabaseManager,
+  options?: PersistenceContextOptions,
+) => Promise<PersistenceContext>;
+
+// @public
 export type PersistenceContext = {
   techInsightsStore: TechInsightsStore;
+};
+
+// @public
+export type PersistenceContextOptions = {
+  logger: Logger;
 };
 
 // @public
@@ -121,6 +133,7 @@ export interface TechInsightsOptions<
   factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  persistenceContext?: PersistenceContext;
   // (undocumented)
   scheduler: PluginTaskScheduler;
   // (undocumented)

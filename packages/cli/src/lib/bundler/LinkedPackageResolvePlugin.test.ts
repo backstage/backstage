@@ -80,7 +80,7 @@ describe('LinkedPackageResolvePlugin', () => {
     const callbackFalse = jest.fn();
     tap(
       {
-        request: 'dummy',
+        request: 'sample',
         path: false,
       },
       'some-context',

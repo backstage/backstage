@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import { parse as parseNdjson } from 'ndjson';
-import { Readable } from 'stream';
 import { Logger } from 'winston';
+import { Permission } from '@backstage/plugin-permission-common';
+import { Readable } from 'stream';
+import { UrlReader } from '@backstage/backend-common';
+import { parse as parseNdjson } from 'ndjson';
 
 /**
- * Options for instansiate NewlineDelimitedJsonCollatorFactory
+ * Options for instantiate NewlineDelimitedJsonCollatorFactory
  * @public
  */
 export type NewlineDelimitedJsonCollatorFactoryOptions = {

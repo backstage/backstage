@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
 
 describe('config', () => {
@@ -49,10 +50,15 @@ describe('config', () => {
       expect(r).toStrictEqual({
         id: 'test',
         group: 'group',
-        branch: 'master',
+        branch: undefined,
+        fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
         projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        schedule: undefined,
       }),
     );
   });
@@ -66,6 +72,7 @@ describe('config', () => {
               group: 'group',
               host: 'host',
               branch: 'not-master',
+              fallbackBranch: 'main',
               entityFilename: 'custom-file.yaml',
             },
           },
@@ -80,9 +87,60 @@ describe('config', () => {
         id: 'test',
         group: 'group',
         branch: 'not-master',
+        fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
         projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        schedule: undefined,
+      }),
+    );
+  });
+
+  it('valid config with schedule', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: undefined,
+        fallbackBranch: 'master',
+        host: 'host',
+        catalogFile: 'catalog-info.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        schedule: {
+          frequency: Duration.fromISO('PT30M'),
+          timeout: {
+            minutes: 3,
+          },
+          initialDelay: undefined,
+          scope: undefined,
+        },
       }),
     );
   });

@@ -15,9 +15,10 @@
  */
 
 /**
- * ADR backend plugin
+ * Architecture Decision Records backend plugin.
  *
  * @packageDocumentation
  */
 
 export * from './search';
+export * from './service';

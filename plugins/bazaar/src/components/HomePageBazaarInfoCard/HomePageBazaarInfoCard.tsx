@@ -22,6 +22,7 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
@@ -33,6 +34,7 @@ import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import CloseIcon from '@material-ui/icons/Close';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
+import Description from '@material-ui/icons/Description';
 import { EditProjectDialog } from '../EditProjectDialog';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {
@@ -196,6 +198,13 @@ export const HomePageBazaarInfoCard = ({
       href: bazaarProject.value?.community,
       disabled: !bazaarProject.value?.community || !isMember,
     },
+    {
+      label: 'Docs',
+      icon: <Description />,
+      href: bazaarProject.value?.docs,
+      disabled:
+        bazaarProject.value?.docs === null || bazaarProject.value?.docs === '',
+    },
   ];
 
   const handleUnlinkSubmit = async () => {
@@ -237,7 +246,7 @@ export const HomePageBazaarInfoCard = ({
               {parseEntityRef(bazaarProject.value?.entityRef!).name}
             </b>,
             ' from ',
-            <b className={classes.wordBreak}>{bazaarProject.value?.name}</b>,
+            <b className={classes.wordBreak}>{bazaarProject.value?.title}</b>,
             ' ?',
           ]}
           type="unlink"
@@ -256,9 +265,9 @@ export const HomePageBazaarInfoCard = ({
 
         <CardHeader
           title={
-            <p className={classes.wordBreak}>
-              {bazaarProject.value?.name || initProject.name}
-            </p>
+            <Typography paragraph className={classes.wordBreak}>
+              {bazaarProject.value?.title || initProject.title}
+            </Typography>
           }
           action={
             <div>

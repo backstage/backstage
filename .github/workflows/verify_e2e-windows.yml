@@ -1,8 +1,9 @@
 # Building on windows is really slow, so this workflow is separate from e2e.yml and only builds on changes
 # to the cli itself. They're more likely to introduce issues on windows, compared to changes to core and yarn.lock.
 
-name: E2E Test Windows
+name: E2E Windows
 on:
+  # NOTE: If you change these you must update verify_e2e-windows-noop.yml as well
   pull_request:
     paths:
       - 'yarn.lock'
@@ -17,18 +18,17 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2019
 
     strategy:
       matrix:
-        os: [windows-2019]
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x]
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
 
-    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    name: E2E Windows ${{ matrix.node-version }}
     steps:
       # In order to have the create-app template function as if it was downloaded from NPM
       # we need to make sure we checkout files with LF line endings only
@@ -49,7 +49,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.3
+        uses: microsoft/setup-msbuild@v1.3.1
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
       - name: yarn install

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "14 || 16"
+    "node": "16 || 18"
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace app start",
     "start-backend": "yarn workspace backend start",
-    "build": "backstage-cli repo build --all",
+    "build:backend": "yarn workspace backend build",
+    "build:all": "backstage-cli repo build --all",
     "build-image": "yarn workspace backend build-image",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
@@ -19,7 +20,6 @@
     "lint": "backstage-cli repo lint --since origin/{{defaultBranch}}",
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
-    "create-plugin": "backstage-cli create-plugin --scope internal",
     "new": "backstage-cli new --scope internal"
   },
   "workspaces": {
@@ -33,13 +33,16 @@
     "@spotify/prettier-config": "^12.0.0",
     "concurrently": "^6.0.0",
     "lerna": "^4.0.0",
+    "node-gyp": "^9.0.0",
     "prettier": "^2.3.2",
-    "typescript": "~4.6.4",
-    "node-gyp": "^9.0.0"
+    "typescript": "~5.0.0"
   },
   "resolutions": {
     "@types/react": "^17",
-    "@types/react-dom": "^17"
+    "@types/react-dom": "^17",
+    "@octokit/rest": "18.5.6",
+    "@octokit/plugin-rest-endpoint-methods": "5.16.2",
+    "@octokit/plugin-paginate-rest": "2.7.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

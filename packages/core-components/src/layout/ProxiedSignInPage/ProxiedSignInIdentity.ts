@@ -40,7 +40,7 @@ export function tokenToExpiry(jwtToken: string | undefined): Date {
   }
 
   const [_header, rawPayload, _signature] = jwtToken.split('.');
-  const payload = JSON.parse(atob(rawPayload));
+  const payload = JSON.parse(window.atob(rawPayload));
   if (typeof payload.exp !== 'number') {
     return fallback;
   }
@@ -51,6 +51,7 @@ export function tokenToExpiry(jwtToken: string | undefined): Date {
 type ProxiedSignInIdentityOptions = {
   provider: string;
   discoveryApi: typeof discoveryApiRef.T;
+  headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
 };
 
 type State =
@@ -193,6 +194,13 @@ export class ProxiedSignInIdentity implements IdentityApi {
   async fetchSession(): Promise<ProxiedSession> {
     const baseUrl = await this.options.discoveryApi.getBaseUrl('auth');
 
+    const headers =
+      typeof this.options.headers === 'function'
+        ? await this.options.headers()
+        : this.options.headers;
+    const mergedHeaders = new Headers(headers);
+    mergedHeaders.set('X-Requested-With', 'XMLHttpRequest');
+
     // Note that we do not use the fetchApi here, since this all happens before
     // sign-in completes so there can be no automatic token injection and
     // similar.
@@ -200,7 +208,7 @@ export class ProxiedSignInIdentity implements IdentityApi {
       `${baseUrl}/${this.options.provider}/refresh`,
       {
         signal: this.abortController.signal,
-        headers: { 'x-requested-with': 'XMLHttpRequest' },
+        headers: mergedHeaders,
         credentials: 'include',
       },
     );

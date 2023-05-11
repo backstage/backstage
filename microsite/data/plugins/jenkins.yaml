@@ -10,3 +10,4 @@ npmPackageName: '@backstage/plugin-jenkins'
 tags:
   - ci
   - cd
+addedDate: '2021-01-20'

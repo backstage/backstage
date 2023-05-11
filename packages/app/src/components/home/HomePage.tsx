@@ -16,19 +16,20 @@
 
 import {
   HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
   WelcomeTitle,
   HeaderWorldClock,
   ClockConfig,
   HomePageStarredEntities,
+  CustomHomepageGrid,
+  HomePageToolkit,
+  HomePageCompanyLogo,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
-import Grid from '@material-ui/core/Grid';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import React from 'react';
+import HomeIcon from '@material-ui/icons/Home';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -55,6 +56,30 @@ const timeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
+const defaultConfig = [
+  {
+    component: 'CompanyLogo',
+    x: 0,
+    y: 0,
+    width: 12,
+    height: 1,
+  },
+  {
+    component: 'WelcomeTitle',
+    x: 0,
+    y: 1,
+    width: 12,
+    height: 1,
+  },
+  {
+    component: 'HomePageSearchBar',
+    x: 0,
+    y: 2,
+    width: 12,
+    height: 1,
+  },
+];
+
 export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
@@ -64,60 +89,24 @@ export const homePage = (
       />
     </Header>
     <Content>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <HomePageSearchBar />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageRandomJoke />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageRandomJoke
-            defaultCategory="any"
-            Renderer={ComponentAccordion}
-          />
-          <HomePageRandomJoke
-            title="Another Random Joke"
-            Renderer={ComponentAccordion}
-          />
-          <HomePageRandomJoke
-            title="One More Random Joke"
-            defaultCategory="programming"
-            Renderer={ComponentAccordion}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <ComponentTabs
-            title="Random Jokes"
-            tabs={[
-              {
-                label: 'Programming',
-                Component: () => (
-                  <HomePageRandomJoke
-                    defaultCategory="programming"
-                    Renderer={ComponentTab}
-                  />
-                ),
-              },
-              {
-                label: 'Any',
-                Component: () => (
-                  <HomePageRandomJoke
-                    defaultCategory="any"
-                    Renderer={ComponentTab}
-                  />
-                ),
-              },
-            ]}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageCalendar />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageStarredEntities />
-        </Grid>
-      </Grid>
+      <CustomHomepageGrid config={defaultConfig}>
+        <HomePageSearchBar />
+        <HomePageRandomJoke />
+        <HomePageCalendar />
+        <MicrosoftCalendarCard />
+        <HomePageStarredEntities />
+        <HomePageCompanyLogo />
+        <WelcomeTitle />
+        <HomePageToolkit
+          tools={[
+            {
+              url: 'https://backstage.io',
+              label: 'Backstage Homepage',
+              icon: <HomeIcon />,
+            },
+          ]}
+        />
+      </CustomHomepageGrid>
     </Content>
   </Page>
 );

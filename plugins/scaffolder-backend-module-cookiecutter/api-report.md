@@ -8,20 +8,23 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '@backstage/plugin-scaffolder-backend';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public
 export function createFetchCookiecutterAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
-}): TemplateAction<{
-  url: string;
-  targetPath?: string | undefined;
-  values: JsonObject;
-  copyWithoutRender?: string[] | undefined;
-  extensions?: string[] | undefined;
-  imageName?: string | undefined;
-}>;
+  containerRunner?: ContainerRunner;
+}): TemplateAction<
+  {
+    url: string;
+    targetPath?: string | undefined;
+    values: JsonObject;
+    copyWithoutRender?: string[] | undefined;
+    extensions?: string[] | undefined;
+    imageName?: string | undefined;
+  },
+  JsonObject
+>;
 ```

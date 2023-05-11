@@ -26,7 +26,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 import useMountedState from 'react-use/lib/useMountedState';
@@ -172,8 +172,9 @@ export const PlaylistListProvider = <
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
-          const filter: PlaylistFilter | undefined =
-            requestedFilters[key as keyof PlaylistFilters];
+          const filter = requestedFilters[key as keyof PlaylistFilters] as
+            | PlaylistFilter
+            | undefined;
           if (filter?.toQueryValue) {
             params[key] = filter.toQueryValue();
           }

@@ -18,30 +18,33 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  Divider,
-  ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   IndexableDocument,
   ResultHighlight,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-const useStyles = makeStyles({
-  flexContainer: {
-    flexWrap: 'wrap',
+const useStyles = makeStyles(
+  {
+    item: {
+      display: 'flex',
+    },
+    flexContainer: {
+      flexWrap: 'wrap',
+    },
+    itemText: {
+      width: '100%',
+      wordBreak: 'break-all',
+      marginBottom: '1rem',
+    },
   },
-  itemText: {
-    width: '100%',
-    wordBreak: 'break-all',
-    marginBottom: '1rem',
-  },
-});
+  { name: 'CatalogSearchResultListItem' },
+);
 
 /**
  * Props for {@link CatalogSearchResultListItem}.
@@ -49,8 +52,8 @@ const useStyles = makeStyles({
  * @public
  */
 export interface CatalogSearchResultListItemProps {
-  icon?: ReactNode;
-  result: IndexableDocument;
+  icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
+  result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
 }
@@ -60,58 +63,55 @@ export function CatalogSearchResultListItem(
   props: CatalogSearchResultListItemProps,
 ) {
   const result = props.result as any;
+  const highlight = props.highlight as ResultHighlight;
 
   const classes = useStyles();
-  const analytics = useAnalytics();
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: props.rank,
-    });
-  };
+
+  if (!result) return null;
 
   return (
-    <Link noTrack to={result.location} onClick={handleClick}>
-      <ListItem alignItems="flex-start">
-        {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-        <div className={classes.flexContainer}>
-          <ListItemText
-            className={classes.itemText}
-            primaryTypographyProps={{ variant: 'h6' }}
-            primary={
-              props.highlight?.fields.title ? (
+    <div className={classes.item}>
+      {props.icon && (
+        <ListItemIcon>
+          {typeof props.icon === 'function' ? props.icon(result) : props.icon}
+        </ListItemIcon>
+      )}
+      <div className={classes.flexContainer}>
+        <ListItemText
+          className={classes.itemText}
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={
+            <Link noTrack to={result.location}>
+              {highlight?.fields.title ? (
                 <HighlightedSearchResultText
-                  text={props.highlight.fields.title}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
+                  text={highlight.fields.title}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
                 />
               ) : (
                 result.title
-              )
-            }
-            secondary={
-              props.highlight?.fields.text ? (
-                <HighlightedSearchResultText
-                  text={props.highlight.fields.text}
-                  preTag={props.highlight.preTag}
-                  postTag={props.highlight.postTag}
-                />
-              ) : (
-                result.text
-              )
-            }
-          />
-          <Box>
-            {result.kind && (
-              <Chip label={`Kind: ${result.kind}`} size="small" />
-            )}
-            {result.lifecycle && (
-              <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
-            )}
-          </Box>
-        </div>
-      </ListItem>
-      <Divider component="li" />
-    </Link>
+              )}
+            </Link>
+          }
+          secondary={
+            highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.text}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.text
+            )
+          }
+        />
+        <Box>
+          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
+          {result.lifecycle && (
+            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+          )}
+        </Box>
+      </div>
+    </div>
   );
 }

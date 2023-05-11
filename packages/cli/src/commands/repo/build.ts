@@ -18,11 +18,13 @@ import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { PackageGraph } from '../../lib/monorepo';
-import { ExtendedPackage } from '../../lib/monorepo/PackageGraph';
-import { runParallelWorkers } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
-import { detectRoleFromPackage } from '../../lib/role';
+import {
+  PackageGraph,
+  BackstagePackage,
+  PackageRoles,
+} from '@backstage/cli-node';
+import { runParallelWorkers } from '../../lib/parallel';
 import { buildFrontend } from '../build/buildFrontend';
 import { buildBackend } from '../build/buildBackend';
 
@@ -84,6 +86,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
       ref: opts.since,
+      analyzeLockfile: true,
     });
     const withDevDependents = graph.collectPackageNames(
       changedPackages.map(pkg => pkg.name),
@@ -92,14 +95,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     packages = Array.from(withDevDependents).map(name => graph.get(name)!);
   }
 
-  const apps = new Array<ExtendedPackage>();
-  const backends = new Array<ExtendedPackage>();
+  const apps = new Array<BackstagePackage>();
+  const backends = new Array<BackstagePackage>();
 
   const parseBuildScript = createScriptOptionsParser(cmd, ['package', 'build']);
 
   const options = packages.flatMap(pkg => {
     const role =
-      pkg.packageJson.backstage?.role ?? detectRoleFromPackage(pkg.packageJson);
+      pkg.packageJson.backstage?.role ??
+      PackageRoles.detectRoleFromPackage(pkg.packageJson);
     if (!role) {
       console.warn(`Ignored ${pkg.packageJson.name} because it has no role`);
       return [];
@@ -129,6 +133,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     return {
       targetDir: pkg.dir,
+      packageJson: pkg.packageJson,
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
       minify: buildOptions.minify,

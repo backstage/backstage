@@ -61,7 +61,7 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
   };
 };
 
-const Component: ProviderComponent = ({ onSignInSuccess }) => {
+const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
   const classes = useFormStyles();
   const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
@@ -69,10 +69,12 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
 
   const { errors } = formState;
 
-  const handleResult = ({ userId }: Data) => {
+  const handleResult = ({ userId, idToken }: Data) => {
+    onSignInStarted();
     onSignInSuccess(
       UserIdentity.fromLegacy({
         userId,
+        getIdToken: idToken !== undefined ? async () => idToken : undefined,
         profile: {
           email: `${userId}@example.com`,
         },

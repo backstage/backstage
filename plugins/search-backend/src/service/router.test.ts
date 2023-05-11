@@ -59,7 +59,10 @@ describe('createRouter', () => {
         'first-type': {},
         'second-type': {},
       },
-      config: new ConfigReader({ permissions: { enabled: false } }),
+      config: new ConfigReader({
+        permissions: { enabled: false },
+        search: { maxPageLimit: 200 },
+      }),
       permissions: mockPermissionEvaluator,
       logger,
     });
@@ -71,6 +74,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /query', () => {
+    it('throws meaningful query errors', async () => {
+      const error = new Error('Query error message');
+      mockSearchEngine.query.mockRejectedValueOnce(error);
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toMatchObject(
+        expect.objectContaining({
+          error: {
+            name: 'Error',
+            message: `There was a problem performing the search query: ${error.message}`,
+          },
+        }),
+      );
+    });
+
     it('returns empty results array', async () => {
       const response = await request(app).get('/query');
 
@@ -112,8 +132,8 @@ describe('createRouter', () => {
       });
     });
 
-    it('should accept per page value under or equal to 100', async () => {
-      const response = await request(app).get(`/query?pageLimit=30`);
+    it('should accept per page value under or equal to configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=200`);
 
       expect(response.status).toEqual(200);
       expect(response.body).toMatchObject({
@@ -121,13 +141,13 @@ describe('createRouter', () => {
       });
     });
 
-    it('should reject per page value over 100', async () => {
-      const response = await request(app).get(`/query?pageLimit=200`);
+    it('should reject per page value over configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=300`);
 
       expect(response.status).toEqual(400);
       expect(response.body).toMatchObject({
         error: {
-          message: /The page limit "200" is greater than "100"/i,
+          message: /The page limit "300" is greater than "200"/i,
         },
       });
     });

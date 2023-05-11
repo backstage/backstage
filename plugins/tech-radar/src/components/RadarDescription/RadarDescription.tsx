@@ -21,17 +21,28 @@ import { Button, DialogActions, DialogContent } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import { Link, MarkdownContent } from '@backstage/core-components';
 import { isValidUrl } from '../../utils/components';
+import type { EntrySnapshot } from '../../utils/types';
+import { RadarTimeline } from '../RadarTimeline';
 
 export type Props = {
   open: boolean;
   onClose: () => void;
   title: string;
   description: string;
+  timeline?: EntrySnapshot[];
   url?: string;
+  links?: Array<{ url: string; title: string }>;
 };
 
 const RadarDescription = (props: Props): JSX.Element => {
-  const { open, onClose, title, description, url } = props;
+  function showDialogActions(
+    url: string | undefined,
+    links: Array<{ url: string; title: string }> | undefined,
+  ): Boolean {
+    return isValidUrl(url) || Boolean(links && links.length > 0);
+  }
+
+  const { open, onClose, title, description, timeline, url, links } = props;
 
   return (
     <Dialog data-testid="radar-description" open={open} onClose={onClose}>
@@ -40,18 +51,34 @@ const RadarDescription = (props: Props): JSX.Element => {
       </DialogTitle>
       <DialogContent dividers>
         <MarkdownContent content={description} />
+        <RadarTimeline timeline={timeline} />
       </DialogContent>
-      {isValidUrl(url) && (
+      {showDialogActions(url, links) && (
         <DialogActions>
-          <Button
-            component={Link}
-            to={url}
-            onClick={onClose}
-            color="primary"
-            startIcon={<LinkIcon />}
-          >
-            LEARN MORE
-          </Button>
+          {links?.map(link => (
+            <Button
+              component={Link}
+              to={link.url}
+              onClick={onClose}
+              color="primary"
+              startIcon={<LinkIcon />}
+              key={link.url}
+            >
+              {link.title}
+            </Button>
+          ))}
+          {isValidUrl(url) && (
+            <Button
+              component={Link}
+              to={url}
+              onClick={onClose}
+              color="primary"
+              startIcon={<LinkIcon />}
+              key={url}
+            >
+              LEARN MORE
+            </Button>
+          )}
         </DialogActions>
       )}
     </Dialog>

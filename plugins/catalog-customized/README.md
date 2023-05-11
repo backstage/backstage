@@ -1,7 +1,7 @@
 # Backstage Catalog Frontend
 
 This is the React frontend to customize Backstage [software
-catalog](http://backstage.io/docs/features/software-catalog/software-catalog-overview).
+catalog](http://backstage.io/docs/features/software-catalog/).
 This package supplies the example how it can be achieved.
 
 ## Installation

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/version-bridge",
   "description": "Utilities used by @backstage packages to support multiple concurrent versions",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -31,9 +31,13 @@
     "clean": "backstage-cli package clean",
     "start": "backstage-cli package start"
   },
+  "dependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0"
+  },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

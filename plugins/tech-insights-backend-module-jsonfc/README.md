@@ -86,6 +86,11 @@ export const exampleCheck: TechInsightJsonRuleCheck = {
 };
 ```
 
+### More than one `factIds` for a check.
+
+When more than one is supplied, the requested fact **MUST** be present in at least one of the fact retrievers.
+The order of the fact retrievers defined in the `factIds` array has no bearing on the checks, the check will merge all facts from the various retrievers, and then check against latest fact .
+
 # Custom operators
 
 json-rules-engine supports a limited [number of built-in operators](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators) that can be used in conditions. You can add your own operators by adding them to the `operators` array in the `JsonRulesEngineFactCheckerFactory` constructor. For example:

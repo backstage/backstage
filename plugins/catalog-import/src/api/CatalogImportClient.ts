@@ -21,7 +21,7 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import {
-  GitHubIntegrationConfig,
+  GithubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
@@ -164,7 +164,7 @@ export class CatalogImportClient implements CatalogImportApi {
 to this repository so that the component can be added to the \
 [${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
 the component will become available.\n\nFor more information, read an \
-[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`,
+[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/).`,
     };
   }
 
@@ -239,7 +239,7 @@ the component will become available.\n\nFor more information, read an \
     body: string;
     fileContent: string;
     repositoryUrl: string;
-    githubIntegrationConfig: GitHubIntegrationConfig;
+    githubIntegrationConfig: GithubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
     const {
       owner,

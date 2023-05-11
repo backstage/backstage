@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
+import { metrics } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
@@ -28,34 +33,85 @@ import {
 } from './types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Config } from '@backstage/config';
 
 const CACHE_TTL = 5;
 
 export type ProgressTracker = ReturnType<typeof progressTracker>;
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
+  private readonly config: Config;
+  private readonly scheduler?: PluginTaskScheduler;
+  private readonly logger: Logger;
+  private readonly processingDatabase: ProcessingDatabase;
+  private readonly orchestrator: CatalogProcessingOrchestrator;
+  private readonly stitcher: Stitcher;
+  private readonly createHash: () => Hash;
+  private readonly pollingIntervalMs: number;
+  private readonly orphanCleanupIntervalMs: number;
+  private readonly onProcessingError?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
+  private readonly tracker: ProgressTracker;
+
   private stopFunc?: () => void;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly processingDatabase: ProcessingDatabase,
-    private readonly orchestrator: CatalogProcessingOrchestrator,
-    private readonly stitcher: Stitcher,
-    private readonly createHash: () => Hash,
-    private readonly pollingIntervalMs: number = 1000,
-    private readonly onProcessingError?: (event: {
+  constructor(options: {
+    config: Config;
+    scheduler?: PluginTaskScheduler;
+    logger: Logger;
+    processingDatabase: ProcessingDatabase;
+    orchestrator: CatalogProcessingOrchestrator;
+    stitcher: Stitcher;
+    createHash: () => Hash;
+    pollingIntervalMs?: number;
+    orphanCleanupIntervalMs?: number;
+    onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
-    }) => Promise<void> | void,
-    private readonly tracker: ProgressTracker = progressTracker(),
-  ) {}
+    }) => Promise<void> | void;
+    tracker?: ProgressTracker;
+  }) {
+    this.config = options.config;
+    this.scheduler = options.scheduler;
+    this.logger = options.logger;
+    this.processingDatabase = options.processingDatabase;
+    this.orchestrator = options.orchestrator;
+    this.stitcher = options.stitcher;
+    this.createHash = options.createHash;
+    this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
+    this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
+    this.onProcessingError = options.onProcessingError;
+    this.tracker = options.tracker ?? progressTracker();
+
+    this.stopFunc = undefined;
+  }
 
   async start() {
     if (this.stopFunc) {
       throw new Error('Processing engine is already started');
     }
 
-    this.stopFunc = startTaskPipeline<RefreshStateItem>({
+    const stopPipeline = this.startPipeline();
+    const stopCleanup = this.startOrphanCleanup();
+
+    this.stopFunc = () => {
+      stopPipeline();
+      stopCleanup();
+    };
+  }
+
+  async stop() {
+    if (this.stopFunc) {
+      this.stopFunc();
+      this.stopFunc = undefined;
+    }
+  }
+
+  private startPipeline(): () => void {
+    return startTaskPipeline<RefreshStateItem>({
       lowWatermark: 5,
       highWatermark: 10,
       pollingIntervalMs: this.pollingIntervalMs,
@@ -94,7 +150,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           track.markProcessorsCompleted(result);
 
           if (result.ok) {
-            if (stableStringify(state) !== stableStringify(result.state)) {
+            const { ttl: _, ...stateWithoutTtl } = state ?? {};
+            if (
+              stableStringify(stateWithoutTtl) !== stableStringify(result.state)
+            ) {
               await this.processingDatabase.transaction(async tx => {
                 await this.processingDatabase.updateEntityCache(tx, {
                   id,
@@ -116,11 +175,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             });
           }
 
+          const location =
+            unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
           for (const error of result.errors) {
-            // TODO(freben): Try to extract the location out of the unprocessed
-            // entity and add as meta to the log lines
             this.logger.warn(error.message, {
               entity: entityRef,
+              location,
             });
           }
           const errorsString = JSON.stringify(
@@ -193,7 +253,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           }
 
           result.completedEntity.metadata.uid = id;
-          let oldRelationSources: Set<string>;
+          let oldRelationSources: Map<string, string>;
           await this.processingDatabase.transaction(async tx => {
             const { previous } =
               await this.processingDatabase.updateProcessedEntity(tx, {
@@ -206,28 +266,32 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 locationKey,
                 refreshKeys: result.refreshKeys,
               });
-            oldRelationSources = new Set(
-              previous.relations.map(r => r.source_entity_ref),
+            oldRelationSources = new Map(
+              previous.relations.map(r => [
+                `${r.source_entity_ref}:${r.type}`,
+                r.source_entity_ref,
+              ]),
             );
           });
 
-          const newRelationSources = new Set<string>(
-            result.relations.map(relation =>
-              stringifyEntityRef(relation.source),
-            ),
+          const newRelationSources = new Map<string, string>(
+            result.relations.map(relation => {
+              const sourceEntityRef = stringifyEntityRef(relation.source);
+              return [`${sourceEntityRef}:${relation.type}`, sourceEntityRef];
+            }),
           );
 
           const setOfThingsToStitch = new Set<string>([
             stringifyEntityRef(result.completedEntity),
           ]);
-          newRelationSources.forEach(r => {
-            if (!oldRelationSources.has(r)) {
-              setOfThingsToStitch.add(r);
+          newRelationSources.forEach((sourceEntityRef, uniqueKey) => {
+            if (!oldRelationSources.has(uniqueKey)) {
+              setOfThingsToStitch.add(sourceEntityRef);
             }
           });
-          oldRelationSources!.forEach(r => {
-            if (!newRelationSources.has(r)) {
-              setOfThingsToStitch.add(r);
+          oldRelationSources!.forEach((sourceEntityRef, uniqueKey) => {
+            if (!newRelationSources.has(uniqueKey)) {
+              setOfThingsToStitch.add(sourceEntityRef);
             }
           });
 
@@ -242,72 +306,164 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     });
   }
 
-  async stop() {
-    if (this.stopFunc) {
-      this.stopFunc();
-      this.stopFunc = undefined;
+  private startOrphanCleanup(): () => void {
+    const strategy =
+      this.config.getOptionalString('catalog.orphanStrategy') ?? 'keep';
+    if (strategy !== 'delete') {
+      return () => {};
     }
+
+    const runOnce = async () => {
+      try {
+        await this.processingDatabase.transaction(async tx => {
+          const n = await this.processingDatabase.deleteOrphanedEntities(tx);
+          this.logger.info(`Deleted ${n} orphaned entities`);
+        });
+      } catch (error) {
+        this.logger.warn(`Failed to delete orphaned entities`, error);
+      }
+    };
+
+    if (this.scheduler) {
+      const abortController = new AbortController();
+
+      this.scheduler.scheduleTask({
+        id: 'catalog_orphan_cleanup',
+        frequency: { milliseconds: this.orphanCleanupIntervalMs },
+        timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
+        fn: runOnce,
+        signal: abortController.signal,
+      });
+
+      return () => {
+        abortController.abort();
+      };
+    }
+
+    const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
+    return () => {
+      clearInterval(intervalKey);
+    };
   }
 }
 
 // Helps wrap the timing and logging behaviors
 function progressTracker() {
-  const stitchedEntities = createCounterMetric({
+  // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
+  const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
-    help: 'Amount of entities stitched',
+    help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
   });
-  const processedEntities = createCounterMetric({
+  const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
-    help: 'Amount of entities processed',
+    help: 'Amount of entities processed, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processingDuration = createSummaryMetric({
+  const promProcessingDuration = createSummaryMetric({
     name: 'catalog_processing_duration_seconds',
-    help: 'Time spent executing the full processing flow',
+    help: 'Time spent executing the full processing flow, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processorsDuration = createSummaryMetric({
+  const promProcessorsDuration = createSummaryMetric({
     name: 'catalog_processors_duration_seconds',
-    help: 'Time spent executing catalog processors',
+    help: 'Time spent executing catalog processors, DEPRECATED, use OpenTelemetry metrics instead',
     labelNames: ['result'],
   });
-  const processingQueueDelay = createSummaryMetric({
+  const promProcessingQueueDelay = createSummaryMetric({
     name: 'catalog_processing_queue_delay_seconds',
-    help: 'The amount of delay between being scheduled for processing, and the start of actually being processed',
+    help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
+  const meter = metrics.getMeter('default');
+  const stitchedEntities = meter.createCounter(
+    'catalog.stitched.entities.count',
+    { description: 'Amount of entities stitched' },
+  );
+
+  const processedEntities = meter.createCounter(
+    'catalog.processed.entities.count',
+    { description: 'Amount of entities processed' },
+  );
+
+  const processingDuration = meter.createHistogram(
+    'catalog.processing.duration',
+    {
+      description: 'Time spent executing the full processing flow',
+      unit: 'seconds',
+    },
+  );
+
+  const processorsDuration = meter.createHistogram(
+    'catalog.processors.duration',
+    {
+      description: 'Time spent executing catalog processors',
+      unit: 'seconds',
+    },
+  );
+
+  const processingQueueDelay = meter.createHistogram(
+    'catalog.processing.queue.delay',
+    {
+      description:
+        'The amount of delay between being scheduled for processing, and the start of actually being processed',
+      unit: 'seconds',
+    },
+  );
+
   function processStart(item: RefreshStateItem, logger: Logger) {
+    const startTime = process.hrtime();
+    const endOverallTimer = promProcessingDuration.startTimer();
+    const endProcessorsTimer = promProcessorsDuration.startTimer();
+
     logger.debug(`Processing ${item.entityRef}`);
 
     if (item.nextUpdateAt) {
-      processingQueueDelay.observe(-item.nextUpdateAt.diffNow().as('seconds'));
+      const seconds = -item.nextUpdateAt.diffNow().as('seconds');
+      promProcessingQueueDelay.observe(seconds);
+      processingQueueDelay.record(seconds);
     }
 
-    const endOverallTimer = processingDuration.startTimer();
-    const endProcessorsTimer = processorsDuration.startTimer();
+    function endTime() {
+      const delta = process.hrtime(startTime);
+      return delta[0] + delta[1] / 1e9;
+    }
 
     function markProcessorsCompleted(result: EntityProcessingResult) {
       endProcessorsTimer({ result: result.ok ? 'ok' : 'failed' });
+      processorsDuration.record(endTime(), {
+        result: result.ok ? 'ok' : 'failed',
+      });
     }
 
     function markSuccessfulWithNoChanges() {
       endOverallTimer({ result: 'unchanged' });
-      processedEntities.inc({ result: 'unchanged' }, 1);
+      promProcessedEntities.inc({ result: 'unchanged' }, 1);
+
+      processingDuration.record(endTime(), { result: 'unchanged' });
+      processedEntities.add(1, { result: 'unchanged' });
     }
 
     function markSuccessfulWithErrors() {
       endOverallTimer({ result: 'errors' });
-      processedEntities.inc({ result: 'errors' }, 1);
+      promProcessedEntities.inc({ result: 'errors' }, 1);
+
+      processingDuration.record(endTime(), { result: 'errors' });
+      processedEntities.add(1, { result: 'errors' });
     }
 
     function markSuccessfulWithChanges(stitchedCount: number) {
       endOverallTimer({ result: 'changed' });
-      stitchedEntities.inc(stitchedCount);
-      processedEntities.inc({ result: 'changed' }, 1);
+      promStitchedEntities.inc(stitchedCount);
+      promProcessedEntities.inc({ result: 'changed' }, 1);
+
+      processingDuration.record(endTime(), { result: 'changed' });
+      stitchedEntities.add(stitchedCount);
+      processedEntities.add(1, { result: 'changed' });
     }
 
     function markFailed(error: Error) {
-      processedEntities.inc({ result: 'failed' }, 1);
+      promProcessedEntities.inc({ result: 'failed' }, 1);
+      processedEntities.add(1, { result: 'failed' });
       logger.warn(`Processing of ${item.entityRef} failed`, error);
     }
 

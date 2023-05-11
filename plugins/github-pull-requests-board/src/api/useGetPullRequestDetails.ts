@@ -33,6 +33,10 @@ export const useGetPullRequestDetails = () => {
                 id
                 repository {
                   name
+                  owner {
+                    login
+                  }
+                  isArchived
                 }
                 title
                 url
@@ -56,6 +60,12 @@ export const useGetPullRequestDetails = () => {
                 mergeable
                 state
                 reviewDecision
+                labels(first: 10) {
+                  nodes {
+                    id
+                    name
+                  }
+                }
                 isDraft
                 createdAt
                 author {

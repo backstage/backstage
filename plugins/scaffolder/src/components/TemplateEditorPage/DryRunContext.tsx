@@ -26,8 +26,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { scaffolderApiRef } from '../../api';
-import { ScaffolderDryRunResponse } from '../../types';
+import {
+  scaffolderApiRef,
+  ScaffolderDryRunResponse,
+} from '@backstage/plugin-scaffolder-react';
 
 const MAX_CONTENT_SIZE = 64 * 1024;
 const CHUNK_SIZE = 32 * 1024;
@@ -59,11 +61,11 @@ interface DryRunProviderProps {
 
 export function base64EncodeContent(content: string): string {
   if (content.length > MAX_CONTENT_SIZE) {
-    return btoa('<file too large>');
+    return window.btoa('<file too large>');
   }
 
   try {
-    return btoa(content);
+    return window.btoa(content);
   } catch {
     const decoder = new TextEncoder();
     const buffer = decoder.encode(content);
@@ -74,7 +76,7 @@ export function base64EncodeContent(content: string): string {
         String.fromCharCode(...buffer.slice(offset, offset + CHUNK_SIZE)),
       );
     }
-    return btoa(chunks.join(''));
+    return window.btoa(chunks.join(''));
   }
 }
 

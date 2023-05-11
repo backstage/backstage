@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import Typography from '@material-ui/core/Typography';
 import React, { ComponentClass, Component, ErrorInfo } from 'react';
-import { Button } from '../../components/Button';
+import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 
 type SlackChannel = {
@@ -40,15 +41,17 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   if (!slackChannel) {
     return null;
   } else if (typeof slackChannel === 'string') {
-    return <>Please contact {slackChannel} for help.</>;
+    return <Typography>Please contact {slackChannel} for help.</Typography>;
   } else if (!slackChannel.href) {
-    return <>Please contact {slackChannel.name} for help.</>;
+    return (
+      <Typography>Please contact {slackChannel.name} for help.</Typography>
+    );
   }
 
   return (
-    <Button to={slackChannel.href} variant="contained">
+    <LinkButton to={slackChannel.href} variant="contained">
       {slackChannel.name}
-    </Button>
+    </LinkButton>
   );
 };
 

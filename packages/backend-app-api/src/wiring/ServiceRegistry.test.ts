@@ -18,7 +18,7 @@ import {
   createServiceRef,
   createServiceFactory,
   ServiceRef,
-  pluginMetadataServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { ServiceRegistry } from './ServiceRegistry';
 
@@ -29,11 +29,9 @@ const sf1 = createServiceFactory({
   service: ref1,
   deps: {},
   async factory() {
-    return async () => {
-      return { x: 1 };
-    };
+    return { x: 1 };
   },
-});
+})();
 
 const ref2 = createServiceRef<{ x: number }>({
   scope: 'root',
@@ -45,7 +43,7 @@ const sf2 = createServiceFactory({
   async factory() {
     return { x: 2 };
   },
-});
+})();
 const sf2b = createServiceFactory({
   service: ref2,
   deps: {},
@@ -61,7 +59,7 @@ const refDefault1 = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 10 });
+        return { x: 10 };
       },
     })(),
 });
@@ -73,7 +71,7 @@ const refDefault2a = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 20 });
+        return { x: 20 };
       },
     }),
 });
@@ -85,7 +83,7 @@ const refDefault2b = createServiceRef<{ x: number }>({
       service,
       deps: {},
       async factory() {
-        return async () => ({ x: 220 });
+        return { x: 220 };
       },
     }),
 });
@@ -133,7 +131,7 @@ describe('ServiceRegistry', () => {
         return { x: 2 };
       },
     });
-    const registry = new ServiceRegistry([factory, sf1]);
+    const registry = new ServiceRegistry([factory(), sf1]);
     await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
       "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",
     );
@@ -143,11 +141,11 @@ describe('ServiceRegistry', () => {
     const factory = createServiceFactory({
       service: ref1,
       deps: { rootDep: ref2 },
-      async factory({ rootDep }) {
-        return async () => ({ x: rootDep.x });
+      factory: async ({ rootDep }) => {
+        return { x: rootDep.x };
       },
     });
-    const registry = new ServiceRegistry([factory, sf2]);
+    const registry = new ServiceRegistry([factory(), sf2]);
     await expect(registry.get(ref1, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -162,7 +160,7 @@ describe('ServiceRegistry', () => {
         return { x: rootDep.x };
       },
     });
-    const registry = new ServiceRegistry([factory, sf2]);
+    const registry = new ServiceRegistry([factory(), sf2]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       x: 2,
     });
@@ -172,12 +170,12 @@ describe('ServiceRegistry', () => {
     const ref = createServiceRef<{ pluginId: string }>({ id: 'x' });
     const factory = createServiceFactory({
       service: ref,
-      deps: { meta: pluginMetadataServiceRef },
-      async factory() {
-        return async ({ meta }) => ({ pluginId: meta.getId() });
+      deps: { meta: coreServices.pluginMetadata },
+      async factory({ meta }) {
+        return { pluginId: meta.getId() };
       },
     });
-    const registry = new ServiceRegistry([factory]);
+    const registry = new ServiceRegistry([factory()]);
     await expect(registry.get(ref, 'catalog')).resolves.toEqual({
       pluginId: 'catalog',
     });
@@ -224,13 +222,11 @@ describe('ServiceRegistry', () => {
   });
 
   it('should only call each default factory loader once', async () => {
-    const factoryLoader = jest.fn(async (service: ServiceRef<void>) =>
+    const factoryLoader = jest.fn(async (service: ServiceRef<void, 'plugin'>) =>
       createServiceFactory({
         service,
         deps: {},
-        async factory() {
-          return async () => {};
-        },
+        async factory() {},
       }),
     );
     const ref = createServiceRef<void>({
@@ -247,17 +243,16 @@ describe('ServiceRegistry', () => {
   });
 
   it('should not call factory functions more than once', async () => {
-    const innerFactory = jest.fn(async () => {
-      return { x: 1 };
-    });
-    const factory = jest.fn(async () => innerFactory);
+    const createRootContext = jest.fn(async () => ({ x: 1 }));
+    const factory = jest.fn(async () => ({ x: 1 }));
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},
+      createRootContext,
       factory,
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await Promise.all([
       registry.get(ref1, 'catalog')!,
@@ -267,8 +262,29 @@ describe('ServiceRegistry', () => {
       registry.get(ref1, 'scaffolder')!,
     ]);
 
-    expect(factory).toHaveBeenCalledTimes(1);
-    expect(innerFactory).toHaveBeenCalledTimes(2);
+    expect(createRootContext).toHaveBeenCalledTimes(1);
+    expect(factory).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not call factory functions more than once without root context', async () => {
+    const factory = jest.fn(async () => ({ x: 1 }));
+    const myFactory = createServiceFactory({
+      service: ref1,
+      deps: {},
+      factory,
+    });
+
+    const registry = new ServiceRegistry([myFactory()]);
+
+    await Promise.all([
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'catalog')!,
+      registry.get(ref1, 'scaffolder')!,
+      registry.get(ref1, 'scaffolder')!,
+    ]);
+
+    expect(factory).toHaveBeenCalledTimes(2);
   });
 
   it('should throw if dependencies are not available', async () => {
@@ -280,7 +296,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the following dependent services are missing: '2'",
@@ -296,9 +312,7 @@ describe('ServiceRegistry', () => {
     const factoryA = createServiceFactory({
       service: refA,
       deps: { b: refB },
-      async factory() {
-        return async ({ b }) => b;
-      },
+      factory: async ({ b }) => b,
     });
 
     const factoryB = createServiceFactory({
@@ -309,7 +323,7 @@ describe('ServiceRegistry', () => {
       },
     });
 
-    const registry = new ServiceRegistry([factoryA, factoryB]);
+    const registry = new ServiceRegistry([factoryA(), factoryB()]);
 
     await expect(registry.get(refA, 'catalog')).rejects.toThrow(
       "Failed to instantiate service 'a' for 'catalog' because the factory function threw an error, Error: Failed to instantiate service 'b' for 'catalog' because the following dependent services are missing: 'c', 'd'",
@@ -320,15 +334,18 @@ describe('ServiceRegistry', () => {
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},
-      factory() {
+      createRootContext() {
         throw new Error('top-level error');
+      },
+      factory() {
+        throw new Error(`error in plugin`);
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
-      "Failed to instantiate service '1' because the top-level factory function threw an error, Error: top-level error",
+      "Failed to instantiate service '1' because createRootContext threw an error, Error: top-level error",
     );
   });
 
@@ -337,13 +354,11 @@ describe('ServiceRegistry', () => {
       service: ref1,
       deps: {},
       async factory() {
-        return () => {
-          throw new Error(`error in plugin`);
-        };
+        throw new Error(`error in plugin`);
       },
     });
 
-    const registry = new ServiceRegistry([myFactory]);
+    const registry = new ServiceRegistry([myFactory()]);
 
     await expect(registry.get(ref1, 'catalog')).rejects.toThrow(
       "Failed to instantiate service '1' for 'catalog' because the factory function threw an error, Error: error in plugin",

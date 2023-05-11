@@ -26,7 +26,7 @@ export type EndpointConfig = {
   id: string;
   title: string;
   // Endpoint URL
-  url: string;
+  url: string | Promise<string>;
   // only supports POST right now
   method?: 'POST';
   // Defaults to setting Content-Type to application/json
@@ -66,7 +66,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
           ...config.headers,
           ...options.headers,
         };
-        const res = await fetch(url, {
+        const res = await fetch(await url, {
           method,
           headers,
           body,

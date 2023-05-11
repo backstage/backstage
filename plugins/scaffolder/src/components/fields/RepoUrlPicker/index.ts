@@ -13,5 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type { RepoUrlPickerUiOptions } from './RepoUrlPicker';
+export {
+  RepoUrlPickerFieldSchema,
+  type RepoUrlPickerUiOptions,
+} from './schema';
 export { repoPickerValidation } from './validation';

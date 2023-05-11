@@ -128,7 +128,13 @@ export class DocsSynchronizer {
         cache: this.cache,
       });
 
+      const interval = setInterval(() => {
+        taskLogger.info(
+          'The docs building process is taking a little bit longer to process this entity. Please bear with us.',
+        );
+      }, 10000);
       const updated = await this.buildLimiter(() => docsBuilder.build());
+      clearInterval(interval);
 
       if (!updated) {
         finish({ updated: false });
@@ -159,7 +165,7 @@ export class DocsSynchronizer {
       );
       error(
         new NotFoundError(
-          'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+          'Sorry! It took too long for the generated docs to show up in storage. Are you sure the docs project is generating an `index.html` file? Otherwise, check back later.',
         ),
       );
       return;

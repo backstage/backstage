@@ -18,6 +18,7 @@ import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
+import type { EntrySnapshot } from '../../utils/types';
 
 export type Props = {
   x: number;
@@ -25,20 +26,22 @@ export type Props = {
   value: number;
   color: string;
   url?: string;
+  links?: Array<{ title: string; url: string }>;
   moved?: number;
   description?: string;
+  timeline?: EntrySnapshot[];
   title?: string;
   onMouseEnter?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
   onMouseLeave?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '9px',
-    fill: '#fff',
+    fill: theme.palette.common.white,
     textAnchor: 'middle',
   },
 
@@ -67,9 +70,11 @@ const RadarEntry = (props: Props): JSX.Element => {
   const {
     moved,
     description,
+    timeline,
     title,
     color,
     url,
+    links,
     value,
     x,
     y,
@@ -107,7 +112,9 @@ const RadarEntry = (props: Props): JSX.Element => {
           onClose={handleClose}
           title={title ? title : 'no title'}
           description={description ? description : 'no description'}
+          timeline={timeline ? timeline : []}
           url={url}
+          links={links}
         />
       )}
       {description ? (

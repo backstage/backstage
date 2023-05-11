@@ -6,10 +6,11 @@
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-backend';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
 import { TaskRunner } from '@backstage/backend-tasks';
 
@@ -55,8 +56,9 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
       parser?: BitbucketServerLocationParser;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): BitbucketServerEntityProvider[];
   // (undocumented)

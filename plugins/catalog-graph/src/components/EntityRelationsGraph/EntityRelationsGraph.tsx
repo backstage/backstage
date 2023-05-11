@@ -32,43 +32,44 @@ import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
 import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
-const useStyles = makeStyles(theme => ({
-  progress: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    marginLeft: '-20px',
-    marginTop: '-20px',
-  },
-  container: {
-    position: 'relative',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  graph: {
-    width: '100%',
-    flex: 1,
-    // Right now there is no good way to style edges between nodes, we have to
-    // fallback to these hacks:
-    '& path[marker-end]': {
-      transition: 'filter 0.1s ease-in-out',
+const useStyles = makeStyles(
+  theme => ({
+    progress: {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      marginLeft: '-20px',
+      marginTop: '-20px',
     },
-    '& path[marker-end]:hover': {
-      filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+    container: {
+      position: 'relative',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
     },
-    '& g[data-testid=label]': {
-      transition: 'transform 0s',
+    graph: {
+      width: '100%',
+      flex: 1,
+      // Right now there is no good way to style edges between nodes, we have to
+      // fallback to these hacks:
+      '& path[marker-end]': {
+        transition: 'filter 0.1s ease-in-out',
+      },
+      '& path[marker-end]:hover': {
+        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+      },
+      '& g[data-testid=label]': {
+        transition: 'transform 0s',
+      },
     },
-  },
-}));
+  }),
+  { name: 'PluginCatalogGraphEntityRelationsGraph' },
+);
 
 /**
- * Core building block for custom entity relations diagrams.
- *
  * @public
  */
-export const EntityRelationsGraph = (props: {
+export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
   unidirectional?: boolean;
@@ -83,10 +84,17 @@ export const EntityRelationsGraph = (props: {
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
-}) => {
+};
+
+/**
+ * Core building block for custom entity relations diagrams.
+ *
+ * @public
+ */
+export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
   const {
     rootEntityNames,
-    maxDepth = Number.POSITIVE_INFINITY,
+    maxDepth = 2,
     unidirectional = true,
     mergeRelations = true,
     kinds,

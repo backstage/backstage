@@ -7,10 +7,40 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
+import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public
+export interface AdrApi {
+  listAdrs(url: string): Promise<AdrListResult>;
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export const adrApiRef: ApiRef<AdrApi>;
+
+// @public
+export class AdrClient implements AdrApi {
+  constructor(options: AdrClientOptions);
+  // (undocumented)
+  listAdrs(url: string): Promise<AdrListResult>;
+  // (undocumented)
+  readAdr(url: string): Promise<AdrReadResult>;
+}
+
+// @public
+export interface AdrClientOptions {
+  // (undocumented)
+  discoveryApi: DiscoveryApi;
+  // (undocumented)
+  fetchApi: FetchApi;
+}
 
 // @public
 export type AdrContentDecorator = (adrInfo: {
@@ -18,6 +48,21 @@ export type AdrContentDecorator = (adrInfo: {
   content: string;
 }) => {
   content: string;
+};
+
+// @public
+export type AdrFileInfo = {
+  type: string;
+  path: string;
+  name: string;
+  title?: string;
+  status?: string;
+  date?: string;
+};
+
+// @public
+export type AdrListResult = {
+  data: AdrFileInfo[];
 };
 
 // @public
@@ -39,12 +84,23 @@ export const AdrReader: {
 };
 
 // @public
-export function AdrSearchResultListItem(props: {
+export type AdrReadResult = {
+  data: string;
+};
+
+// @public
+export const AdrSearchResultListItem: (
+  props: AdrSearchResultListItemProps,
+) => JSX.Element | null;
+
+// @public (undocumented)
+export type AdrSearchResultListItemProps = {
   lineClamp?: number;
   highlight?: ResultHighlight;
+  icon?: ReactNode;
   rank?: number;
-  result: AdrDocument;
-}): JSX.Element;
+  result?: AdrDocument;
+};
 
 // @public
 export const EntityAdrContent: (props: {

@@ -170,6 +170,7 @@ its schema. There is a builtin processor that implements this for all known core
 kinds and matches the data against their fixed validation schema. This processor
 can be replaced when building the backend catalog using the `CatalogBuilder`,
 with a processor of your own that validates the data differently.
+This replacement processor must have a name that matches the builtin processor, `BuiltinKindsEntityProcessor`.
 
 This type of extension is high risk, and may have high impact across the
 ecosystem depending on the type of change that is made. It is therefore not
@@ -438,7 +439,7 @@ with a new Entity type.
 ### Creating a custom entity definition
 
 The first step of introducing a custom entity is to define what shape and schema
-it has. We do this both using a TypeScript type, along with a JSONSchema schema.
+it has. We do this using a TypeScript type, as well as a JSONSchema schema.
 
 Most of the time you will want to have at least the TypeScript type of your
 extension available in both frontend and backend code, which means you likely
@@ -474,23 +475,35 @@ entity might look like:
 import { CatalogProcessor, processingResult } from '@backstage/catalog-backend';
 import { entityKindSchemaValidator } from '@backstage/catalog-model';
 
+// For an example of the JSONSchema format and how to use $ref markers to the
+// base definitions, see:
+// https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema/kinds/Component.v1alpha1.schema.json
+import { foobarEntityV1alpha1Schema } from '@internal/catalog-model';
+
 export class FoobarEntitiesProcessor implements CatalogProcessor {
   // You often end up wanting to support multiple versions of your kind as you
-  // iterate on the definition, so we keep each version inside this array.
+  // iterate on the definition, so we keep each version inside this array as a
+  // convenient pattern.
   private readonly validators = [
-    // This is where we use the JSONSchema that we export from our isomorphic package
+    // This is where we use the JSONSchema that we export from our isomorphic
+    // package
     entityKindSchemaValidator(foobarEntityV1alpha1Schema),
   ];
 
-  // validateEntityKind is responsible for signaling to the catalog processing engine
-  // that this entity is valid and should therefore be submitted for further processing.
+  // validateEntityKind is responsible for signaling to the catalog processing
+  // engine that this entity is valid and should therefore be submitted for
+  // further processing.
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
+      // If the validator throws an exception, the entity will be marked as
+      // invalid.
       if (validator(entity)) {
         return true;
       }
     }
 
+    // Returning false signals that we don't know what this is, passing the
+    // responsibility to other processors to try to validate it instead.
     return false;
   }
 
@@ -505,8 +518,8 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
     ) {
       const foobarEntity = entity as FoobarEntityV1alpha1;
 
-      // Here we can modify the entity or emit results related to the entity
-      // Typically you will want to emit any relations associated with the entity here
+      // Typically you will want to emit any relations associated with the
+      // entity here.
       emit(processingResult.relation({ ... }))
     }
 
@@ -518,13 +531,17 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 Once the processor is created it can be wired up to the catalog via the
 `CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+ import { FoobarEntitiesProcessor implements CatalogProcessor {
- } from '@internal/plugin-foobar-backend';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FoobarEntitiesProcessor } from '@internal/plugin-foobar-backend';
 
- // ...
-
-     const builder = await CatalogBuilder.create(env);
-+    builder.addProcessor(new FoobarEntitiesProcessor());
-     const { processingEngine, router } = await builder.build();
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new FoobarEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
+  // ..
+}
 ```

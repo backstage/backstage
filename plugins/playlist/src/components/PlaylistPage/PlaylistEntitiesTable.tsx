@@ -32,6 +32,7 @@ import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
+import { useTitle } from '../../hooks';
 import { AddEntitiesDrawer } from './AddEntitiesDrawer';
 
 export const PlaylistEntitiesTable = ({
@@ -84,16 +85,21 @@ export const PlaylistEntitiesTable = ({
     [errorApi, loadEntities, playlistApi, playlistId],
   );
 
+  const singularTitleLowerCase = useTitle({
+    pluralize: false,
+    lowerCase: true,
+  });
+
   const actions = editAllowed
     ? [
         {
           icon: DeleteIcon,
-          tooltip: 'Remove from playlist',
+          tooltip: `Remove from ${singularTitleLowerCase}`,
           onClick: removeEntity,
         },
         {
           icon: AddBoxIcon,
-          tooltip: 'Add entities to playlist',
+          tooltip: `Add entities to ${singularTitleLowerCase}`,
           isFreeAction: true,
           onClick: () => setOpenAddEntitiesDrawer(true),
         },

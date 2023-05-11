@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Currency, CurrencyType, Duration } from '../types';
-import { assertNever } from '../utils/assert';
+import { assertNever } from './assert';
 
 export const rateOf = (cost: number, duration: Duration) => {
   switch (duration) {
@@ -61,3 +61,12 @@ export const defaultCurrencies: Currency[] = [
     rate: 5.5,
   },
 ];
+
+export const createCurrencyFormat = (
+  currency: string = 'USD',
+  locale: string = 'en-US',
+) =>
+  new Intl.NumberFormat(locale, {
+    currency,
+    style: 'currency',
+  });

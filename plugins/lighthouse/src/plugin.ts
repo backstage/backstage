@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { lighthouseApiRef, LighthouseRestApi } from './api';
+import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from './api';
 import {
   createPlugin,
   createRouteRef,

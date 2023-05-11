@@ -24,8 +24,8 @@ exports.up = async function up(knex) {
     .where({ namespace: null })
     .update({ namespace: 'default' });
   await knex('entities_search').update({
-    key: knex.raw('LOWER(key)'),
-    value: knex.raw('LOWER(value)'),
+    key: knex.raw('LOWER(??)', ['key']),
+    value: knex.raw('LOWER(??)', ['value']),
   });
 };
 

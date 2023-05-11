@@ -1,5 +1,35 @@
 # @backstage/version-bridge
 
+## 1.0.4
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+
+## 1.0.3
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+
+## 1.0.2
+
+### Patch Changes
+
+- e70984325d: Updated the value created by `createVersionedValueMap` to give it an extra hidden property that makes it easier to inspect during debugging.
+
 ## 1.0.1
 
 ### Patch Changes

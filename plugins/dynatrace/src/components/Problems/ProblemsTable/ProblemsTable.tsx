@@ -17,7 +17,7 @@ import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
 import { DynatraceProblem } from '../../../api/DynatraceApi';
 import { ProblemStatus } from '../ProblemStatus';
-import { Link } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 
 type ProblemsTableProps = {
   problems: DynatraceProblem[];
@@ -36,7 +36,7 @@ export const ProblemsTable = (props: ProblemsTableProps) => {
       field: 'title',
       render: (row: Partial<DynatraceProblem>) => (
         <Link
-          href={`${dynatraceBaseUrl}/#problems/problemdetails;pid=${row.problemId}`}
+          to={`${dynatraceBaseUrl}/#problems/problemdetails;pid=${row.problemId}`}
         >
           {row.title}
         </Link>

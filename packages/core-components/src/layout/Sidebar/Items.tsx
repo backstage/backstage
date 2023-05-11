@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { IconComponent, useElementFilter } from '@backstage/core-plugin-api';
+import {
+  IconComponent,
+  useAnalytics,
+  useElementFilter,
+} from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, styled, Theme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Badge from '@material-ui/core/Badge';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import { makeStyles, styled, Theme } from '@material-ui/core/styles';
 import {
   CreateCSSProperties,
   StyledComponentProps,
 } from '@material-ui/core/styles/withStyles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
+import { Location } from 'history';
 import React, {
   ComponentProps,
   ComponentType,
@@ -37,6 +42,7 @@ import React, {
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -48,21 +54,19 @@ import {
   useLocation,
   useResolvedPath,
 } from 'react-router-dom';
+
 import {
+  SidebarConfig,
   SidebarConfigContext,
   SidebarItemWithSubmenuContext,
-  SidebarConfig,
 } from './config';
-import {
-  SidebarSubmenuItemProps,
-  SidebarSubmenuProps,
-  SidebarSubmenu,
-} from '.';
 import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
-import { isLocationMatch } from './utils';
-import { Location } from 'history';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
+import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
+import { isLocationMatch } from './utils';
+import Button from '@material-ui/core/Button';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -104,6 +108,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         padding: 0,
         textAlign: 'inherit',
         font: 'inherit',
+        textTransform: 'none',
       },
       closed: {
         width: sidebarConfig.drawerWidthClosed,
@@ -142,13 +147,14 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        lineHeight: '0',
       },
       searchRoot: {
         marginBottom: 12,
       },
       searchField: {
         color: '#b5b5b5',
-        fontWeight: 'bold',
+        fontWeight: theme.typography.fontWeightBold,
         fontSize: theme.typography.fontSize,
       },
       searchFieldHTMLInput: {
@@ -214,7 +220,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
- * The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
+ * The reevaluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
  *
  * @param submenu SidebarSubmenu component
  * @param location Location
@@ -263,6 +269,8 @@ type SidebarItemBaseProps = {
   hasSubmenu?: boolean;
   disableHighlight?: boolean;
   className?: string;
+  noTrack?: boolean;
+  onClick?: (ev: React.MouseEvent) => void;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
@@ -361,6 +369,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     hasSubmenu = false,
     disableHighlight = false,
     onClick,
+    noTrack,
     children,
     className,
     ...navLinkProps
@@ -373,13 +382,15 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   const { isOpen } = useSidebarOpenState();
 
   const divStyle =
-    !isOpen && hasSubmenu ? { display: 'flex', marginLeft: '24px' } : {};
+    !isOpen && hasSubmenu
+      ? { display: 'flex', marginLeft: '20px' }
+      : { lineHeight: '0' };
 
   const displayItemIcon = (
-    <div style={divStyle}>
+    <Box style={divStyle}>
       <Icon fontSize="small" />
-      {!isOpen && hasSubmenu ? <ArrowRightIcon /> : <></>}
-    </div>
+      {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
+    </Box>
   );
 
   const itemIcon = (
@@ -396,9 +407,9 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
 
   const openContent = (
     <>
-      <div data-testid="login-button" className={classes.iconContainer}>
+      <Box data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
-      </div>
+      </Box>
       {text && (
         <Typography variant="subtitle2" className={classes.label}>
           {text}
@@ -421,11 +432,35 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     ),
   };
 
+  const analyticsApi = useAnalytics();
+  const { pathname: to } = useResolvedPath(
+    !isButtonItem(props) && props.to ? props.to : '',
+  );
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+      if (!noTrack) {
+        const action = 'click';
+        const subject = text ?? 'Sidebar Item';
+        const options = to ? { attributes: { to } } : undefined;
+        analyticsApi.captureEvent(action, subject, options);
+      }
+      onClick?.(event);
+    },
+    [analyticsApi, text, to, noTrack, onClick],
+  );
+
   if (isButtonItem(props)) {
     return (
-      <button aria-label={text} {...childProps} ref={ref}>
+      <Button
+        role="button"
+        aria-label={text}
+        {...childProps}
+        ref={ref}
+        onClick={handleClick}
+      >
         {content}
-      </button>
+      </Button>
     );
   }
 
@@ -437,6 +472,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
+      onClick={handleClick}
     >
       {content}
     </WorkaroundNavLink>
@@ -575,7 +611,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   };
 
   return (
-    <div className={classes.searchRoot}>
+    <Box className={classes.searchRoot}>
       <SidebarItem
         icon={Icon}
         to={props.to}
@@ -598,7 +634,7 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
           }}
         />
       </SidebarItem>
-    </div>
+    </Box>
   );
 }
 
@@ -623,13 +659,13 @@ export const SidebarSpacer = styled('div')(
 export type SidebarDividerClassKey = 'root';
 
 export const SidebarDivider = styled('hr')(
-  {
+  ({ theme }) => ({
     height: 1,
     width: '100%',
     background: '#383838',
     border: 'none',
-    margin: '12px 0px',
-  },
+    margin: theme.spacing(1.2, 0),
+  }),
   { name: 'BackstageSidebarDivider' },
 ) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
 
@@ -690,15 +726,16 @@ export const SidebarExpandButton = () => {
   };
 
   return (
-    <button
+    <Button
+      role="button"
       onClick={handleClick}
       className={classes.expandButton}
       aria-label="Expand Sidebar"
       data-testid="sidebar-expand-button"
     >
-      <div className={classes.arrows}>
+      <Box className={classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
-      </div>
-    </button>
+      </Box>
+    </Button>
   );
 };

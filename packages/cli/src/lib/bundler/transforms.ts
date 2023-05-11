@@ -62,14 +62,16 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
-                tsx: true,
+                tsx: !isBackend,
                 dynamicImport: true,
               },
               transform: {
-                react: {
-                  runtime: 'automatic',
-                  refresh: isDev,
-                },
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
               },
             },
           },
@@ -88,14 +90,16 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
-                jsx: true,
+                jsx: !isBackend,
                 dynamicImport: true,
               },
               transform: {
-                react: {
-                  runtime: 'automatic',
-                  refresh: isDev,
-                },
+                react: isBackend
+                  ? undefined
+                  : {
+                      runtime: 'automatic',
+                      refresh: isDev,
+                    },
               },
             },
           },
@@ -103,7 +107,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       ],
     },
     {
-      test: /\.(js|mjs|cjs)/,
+      test: /\.(js|mjs|cjs)$/,
       resolve: {
         fullySpecified: false,
       },
@@ -119,7 +123,7 @@ export const transforms = (options: TransformOptions): Transforms => {
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
-                jsx: true,
+                jsx: !isBackend,
                 dynamicImport: true,
               },
             },
@@ -137,9 +141,10 @@ export const transforms = (options: TransformOptions): Transforms => {
         /\.gif$/,
         /\.jpe?g$/,
         /\.png$/,
-        /\.frag/,
-        { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
-        /\.xml/,
+        /\.frag$/,
+        /\.vert$/,
+        { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
+        /\.xml$/,
       ],
       type: 'asset/resource',
       generator: {
@@ -188,11 +193,13 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(
-      new ReactRefreshPlugin({
-        overlay: { sockProtocol: 'ws' },
-      }),
-    );
+    if (!isBackend) {
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: { sockProtocol: 'ws' },
+        }),
+      );
+    }
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

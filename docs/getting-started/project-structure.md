@@ -101,7 +101,7 @@ are separated out into their own folder, see further down.
 
 - [`cli/`](https://github.com/backstage/backstage/tree/master/packages/cli) -
   One of the biggest packages in our project, the `cli` is used to build, serve,
-  diff, create-plugins and more. In the early days of this project, we started
+  diff, create plugins and more. In the early days of this project, we started
   out with calling tools directly - such as `eslint` - through `package.json`.
   But as it was tricky to have a good development experience around that when we
   change named tooling, we opted for wrapping those in our own CLI. That way

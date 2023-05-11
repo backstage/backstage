@@ -22,7 +22,6 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -34,12 +33,12 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import React, { ComponentType } from 'react';
-import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
+import { registerComponentRouteRef } from '../../routes';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
@@ -47,24 +46,32 @@ export type ScaffolderPageProps = {
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;
-    filter: (entity: Entity) => boolean;
+    filter: (entity: TemplateEntityV1beta3) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   contextMenu?: {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+  };
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
   };
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
+  headerOptions,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
     title: groups ? 'Other Templates' : 'Templates',
-    filter: (entity: Entity) => {
+    filter: (entity: TemplateEntityV1beta3) => {
       const filtered = (groups ?? []).map(group => group.filter(entity));
       return !filtered.some(result => result === true);
     },
@@ -80,6 +87,7 @@ export const ScaffolderPageContents = ({
         pageTitleOverride="Create a New Component"
         title="Create a New Component"
         subtitle="Create new software components using standard templates"
+        {...headerOptions}
       >
         <ScaffolderPageContextMenu {...contextMenu} />
       </Header>
@@ -116,11 +124,13 @@ export const ScaffolderPageContents = ({
                   key={index}
                   TemplateCardComponent={TemplateCardComponent}
                   group={group}
+                  templateFilter={templateFilter}
                 />
               ))}
             <TemplateList
               key="other"
               TemplateCardComponent={TemplateCardComponent}
+              templateFilter={templateFilter}
               group={otherTemplatesGroup}
             />
           </CatalogFilterLayout.Content>
@@ -133,13 +143,17 @@ export const ScaffolderPageContents = ({
 export const ScaffolderPage = ({
   TemplateCardComponent,
   groups,
+  templateFilter,
   contextMenu,
+  headerOptions,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
       TemplateCardComponent={TemplateCardComponent}
       groups={groups}
+      templateFilter={templateFilter}
       contextMenu={contextMenu}
+      headerOptions={headerOptions}
     />
   </EntityListProvider>
 );

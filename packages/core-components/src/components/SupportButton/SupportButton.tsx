@@ -16,8 +16,6 @@
 
 import { useApp } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,7 +25,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { HelpIcon } from '../../icons';
@@ -35,6 +35,7 @@ import { Link } from '../Link';
 
 type SupportButtonProps = {
   title?: string;
+  items?: SupportItem[];
   children?: React.ReactNode;
 };
 
@@ -68,7 +69,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
       </ListItemIcon>
       <ListItemText
         primary={item.title}
-        secondary={item.links?.reduce<React.ReactNodeArray>(
+        secondary={item.links?.reduce<React.ReactNode[]>(
           (prev, link, idx) => [
             ...prev,
             idx > 0 && <br key={idx} />,
@@ -82,8 +83,8 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 };
 
 export function SupportButton(props: SupportButtonProps) {
-  const { title, children } = props;
-  const { items } = useSupportConfig();
+  const { title, items, children } = props;
+  const { items: configItems } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -110,13 +111,14 @@ export function SupportButton(props: SupportButtonProps) {
             size="small"
             onClick={onClickHandler}
             data-testid="support-button"
+            aria-label="Support"
           >
             <HelpIcon />
           </IconButton>
         ) : (
           <Button
             data-testid="support-button"
-            aria-label="support"
+            aria-label="Support"
             color="primary"
             onClick={onClickHandler}
             startIcon={<HelpIcon />}
@@ -150,13 +152,16 @@ export function SupportButton(props: SupportButtonProps) {
               {child}
             </ListItem>
           ))}
-          {items &&
-            items.map((item, i) => (
-              <SupportListItem item={item} key={`item-${i}`} />
-            ))}
+          {(items ?? configItems).map((item, i) => (
+            <SupportListItem item={item} key={`item-${i}`} />
+          ))}
         </List>
         <DialogActions>
-          <Button color="primary" onClick={popoverCloseHandler}>
+          <Button
+            color="primary"
+            onClick={popoverCloseHandler}
+            aria-label="Close"
+          >
             Close
           </Button>
         </DialogActions>

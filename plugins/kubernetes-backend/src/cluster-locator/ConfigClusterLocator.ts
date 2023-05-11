@@ -37,6 +37,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
           caData: c.getOptionalString('caData'),
+          caFile: c.getOptionalString('caFile'),
           authProvider: authProvider,
         };
         const dashboardUrl = c.getOptionalString('dashboardUrl');
@@ -73,6 +74,9 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
             return clusterDetails;
           }
           case 'googleServiceAccount': {
+            return clusterDetails;
+          }
+          case 'aks': {
             return clusterDetails;
           }
           default: {

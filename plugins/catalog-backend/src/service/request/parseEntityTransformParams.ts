@@ -38,24 +38,28 @@ function getPathArrayAndValue(input: Entity, field: string) {
 
 export function parseEntityTransformParams(
   params: Record<string, unknown>,
+  extra?: string[],
 ): ((entity: Entity) => Entity) | undefined {
-  const fieldsStrings = parseStringsParam(params.fields, 'fields');
-  if (!fieldsStrings) {
-    return undefined;
-  }
+  const queryFields = parseStringsParam(params.fields, 'fields');
 
-  const fields = fieldsStrings
-    .map(s => s.split(','))
-    .flat()
-    .map(s => s.trim())
-    .filter(Boolean);
+  const fields = Array.from(
+    new Set(
+      [...(extra ?? []), ...(queryFields?.map(s => s.split(',')) ?? [])]
+        .flat()
+        .map(s => s.trim())
+        .filter(Boolean),
+    ),
+  );
 
   if (!fields.length) {
     return undefined;
   }
 
-  if (fields.some(f => f.includes('['))) {
-    throw new InputError('invalid fields, array type fields are not supported');
+  const arrayTypeField = fields.find(f => f.includes('['));
+  if (arrayTypeField) {
+    throw new InputError(
+      `Invalid field "${arrayTypeField}", array type fields are not supported`,
+    );
   }
 
   return input => {

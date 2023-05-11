@@ -15,7 +15,7 @@
  */
 
 import { Logger } from 'winston';
-import camelcaseKeys from 'camelcase-keys';
+import { camelCase } from 'lodash';
 import { buildQuery } from '../util';
 import {
   RollbarItemCount,
@@ -29,6 +29,18 @@ import fetch from 'node-fetch';
 const baseUrl = 'https://api.rollbar.com/api/1';
 
 const buildUrl = (url: string) => `${baseUrl}${url}`;
+
+function camelize<T extends unknown>(val: T): T {
+  if (Array.isArray(val)) {
+    return val.map(camelize) as T;
+  }
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(
+      Object.entries(val).map(([k, v]) => [camelCase(k), camelize(v)]),
+    ) as T;
+  }
+  return val;
+}
 
 /** @public */
 export class RollbarApi {
@@ -104,22 +116,25 @@ export class RollbarApi {
     );
   }
 
-  private async get<T>(url: string, accessToken?: string) {
+  private async get<T extends {}>(
+    url: string,
+    accessToken?: string,
+  ): Promise<T> {
     const fullUrl = buildUrl(url);
 
     if (this.logger) {
       this.logger.info(`Calling Rollbar REST API, ${fullUrl}`);
     }
 
-    return fetch(
+    const res = await fetch(
       fullUrl,
       getRequestHeaders(accessToken || this.accessToken || ''),
-    )
-      .then(response => response.json())
-      .then(json => camelcaseKeys<T>(json?.result, { deep: true }));
+    );
+    const data = await res.json();
+    return camelize(data?.result) as T;
   }
 
-  private async getForProject<T>(
+  private async getForProject<T extends {}>(
     url: string,
     projectName: string,
     useProjectToken = true,

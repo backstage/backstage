@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -20,7 +21,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
 import * as inputProps from './inputProperties';
@@ -49,10 +50,28 @@ export function createGithubRepoPushAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     requireCodeOwnerReviews?: boolean;
+    dismissStaleReviews?: boolean;
+    bypassPullRequestAllowances?:
+      | {
+          users?: string[];
+          teams?: string[];
+          apps?: string[];
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number;
+    restrictions?:
+      | {
+          users: string[];
+          teams: string[];
+          apps?: string[];
+        }
+      | undefined;
     requiredStatusCheckContexts?: string[];
     requireBranchesToBeUpToDate?: boolean;
+    requiredConversationResolution?: boolean;
     sourcePath?: string;
     token?: string;
+    requiredCommitSigning?: boolean;
   }>({
     id: 'github:repo:push',
     description:
@@ -64,8 +83,14 @@ export function createGithubRepoPushAction(options: {
         properties: {
           repoUrl: inputProps.repoUrl,
           requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+          dismissStaleReviews: inputProps.dismissStaleReviews,
           requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+          restrictions: inputProps.restrictions,
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+          requiredConversationResolution:
+            inputProps.requiredConversationResolution,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -74,6 +99,7 @@ export function createGithubRepoPushAction(options: {
           gitAuthorEmail: inputProps.gitAuthorEmail,
           sourcePath: inputProps.sourcePath,
           token: inputProps.token,
+          requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
       output: {
@@ -81,6 +107,7 @@ export function createGithubRepoPushAction(options: {
         properties: {
           remoteUrl: outputProps.remoteUrl,
           repoContentsUrl: outputProps.repoContentsUrl,
+          commitHash: outputProps.commitHash,
         },
       },
     },
@@ -94,9 +121,15 @@ export function createGithubRepoPushAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         requireCodeOwnerReviews = false,
+        dismissStaleReviews = false,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount = 1,
+        restrictions,
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
+        requiredConversationResolution = false,
         token: providedToken,
+        requiredCommitSigning = false,
       } = ctx.input;
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -119,7 +152,7 @@ export function createGithubRepoPushAction(options: {
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
-      await initRepoPushAndProtect(
+      const { commitHash } = await initRepoPushAndProtect(
         remoteUrl,
         octokitOptions.auth,
         ctx.workspacePath,
@@ -131,17 +164,24 @@ export function createGithubRepoPushAction(options: {
         client,
         repo,
         requireCodeOwnerReviews,
+        bypassPullRequestAllowances,
+        requiredApprovingReviewCount,
+        restrictions,
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
+        requiredConversationResolution,
         config,
         ctx.logger,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        dismissStaleReviews,
+        requiredCommitSigning,
       );
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
+      ctx.output('commitHash', commitHash);
     },
   });
 }

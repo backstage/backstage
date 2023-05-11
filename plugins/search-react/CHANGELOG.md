@@ -1,5 +1,639 @@
 # @backstage/plugin-search-react
 
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 1ce7f84b2e8: <SearchBar/> accepts InputProp property that can override keys from default
+
+### Patch Changes
+
+- adb31096bc2: Fix text-overflow UI issue for Lifecycle spans in SearchFilter checkbox labels.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 750e45539ad: Add close button & improve search input.
+
+  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+
+  SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.5.2
+
+### Patch Changes
+
+- b2e182cdfa4: Fixes a UI bug in search result item which rendered the item text with incorrect font size and color
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/version-bridge@1.0.4
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.5.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.5.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.5.2-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.5.2-next.0
+
+### Patch Changes
+
+- b2e182cdfa4: Fixes a UI bug in search result item which rendered the item text with incorrect font size and color
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.5.1
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 553f3c95011: Correctly disable next button in `SearchPagination` on last page
+- Updated dependencies
+  - @backstage/core-components@0.12.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.5.1-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 553f3c95011: Correctly disable next button in `SearchPagination` on last page
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.5.0
+
+### Minor Changes
+
+- 0eaa579f89: - Create the search results extensions, for more details see the documentation [here](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions);
+  - Update the `SearchResult`, `SearchResultList` and `SearchResultGroup` components to use extensions and default their props to optionally accept a query, when the query is not passed, the component tries to get it from the search context.
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- 66e2aab4c4: `ListItem` wrapper component moved to `SearchResultListItemExtension` for all `*SearchResultListItems` that are exported as extensions. This is to make sure the list only contains list elements.
+
+  Note: If you have implemented a custom result list item, we recommend you to remove the list item wrapper to avoid nested `<li>` elements.
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 0eaa579f89: - Create the search results extensions, for more details see the documentation [here](https://backstage.io/docs/features/search/how-to-guides#how-to-render-search-results-using-extensions);
+  - Update the `SearchResult`, `SearchResultList` and `SearchResultGroup` components to use extensions and default their props to optionally accept a query, when the query is not passed, the component tries to get it from the search context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 6d9a93def8: Allow customizing empty state component through `noResultsComponent` property.
+
+  Example:
+
+  ```jsx
+  <SearchResult noResultsComponent={<>No results were found</>}>
+    {({ results }) => (
+      <List>
+        {results.map(({ type, document }) => {
+          switch (type) {
+            case 'custom-result-item':
+              return (
+                <CustomResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+            default:
+              return (
+                <DefaultResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+          }
+        })}
+      </List>
+    )}
+  </SearchResult>
+  ```
+
+### Patch Changes
+
+- 80ce4e8c29: Small updates to some components to ensure theme typography properties are inherited correctly.
+- Updated dependencies
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.4.0-next.2
+
+### Minor Changes
+
+- 6d9a93def8: Allow customizing empty state component through `noResultsComponent` property.
+
+  Example:
+
+  ```jsx
+  <SearchResult noResultsComponent={<>No results were found</>}>
+    {({ results }) => (
+      <List>
+        {results.map(({ type, document }) => {
+          switch (type) {
+            case 'custom-result-item':
+              return (
+                <CustomResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+            default:
+              return (
+                <DefaultResultListItem
+                  key={document.location}
+                  result={document}
+                />
+              );
+          }
+        })}
+      </List>
+    )}
+  </SearchResult>
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
+## 1.3.0
+
+### Minor Changes
+
+- 29ebc43a0b: The `value` of a search analytics event is now set as the total number of search results (when available)
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- a19cffbeed: Update search links to only have header as linkable text
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/theme@0.2.16
+
+## 1.3.0-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 1.3.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-search-common@1.2.0-next.2
+
+## 1.3.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: The `value` of a search analytics event is now set as the total number of search results (when available)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.2.2-next.1
+
+### Patch Changes
+
+- a19cffbeed: Update search links to only have header as linkable text
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/types@1.0.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.1-next.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 4ed1fa2480: The search query state now has an optional `pageLimit` property that determines how many results will be requested per page, it defaults to 25.
+
+  Examples:
+  _Basic_
+
+  ```jsx
+  <SearchResults query={{ pageLimit: 30 }}>
+    {results => {
+      // Item rendering logic is omitted
+    }}
+  </SearchResults>
+  ```
+
+  _With context_
+
+  ```jsx
+  <SearchContextProvider initialState={{ pageLimit: 30 }}>
+    <SearchResults>
+      {results => {
+        // Item rendering logic is omitted
+      }}
+    </SearchResults>
+  </SearchContextProvider>
+  ```
+
+- bed5a1dc6e: The `<SearchResultList />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultList
+    query={query}
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultList query={query} disableRenderingWithNoResults />
+  ```
+
+- 3de4bd4f19: A `<SearchPagination />` component was created for limiting the number of results shown per search page. Use this new component to give users options to select how many search results they want to display per page. The default options are 10, 25, 50, 100.
+
+  See examples below:
+
+  _Basic_
+
+  ```jsx
+  import React, { useState } from 'react';
+  import { Grid } from '@material-ui/core';
+  import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
+  import {
+    SearchBarBase,
+    SearchPaginationBase,
+    SearchResultList,
+  } from '@backstage/plugin-search-react';
+
+  const SearchPage = () => {
+    const [term, setTerm] = useState('');
+    const [pageLimit, setPageLimit] = useState(25);
+    const [pageCursor, setPageCursor] = useState<string>();
+
+    return (
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchBarBase value={term} onChange={setTerm} />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchPaginationBase
+                limit={pageLimit}
+                onLimitChange={setPageLimit}
+                cursor={pageCursor}
+                onCursorChange={setPageCursor}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchResultList query={{ term, pageLimit }} />
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    );
+  };
+  ```
+
+  _With context_
+
+  ```jsx
+  import React from 'react';
+  import { Grid } from '@material-ui/core';
+  import { Page, Header, Content, Lifecycle } from '@backstage/core-components';
+  import {
+    SearchBar,
+    SearchResult,
+    SearchPagination,
+    SearchResultListLayout,
+    SearchContextProvider,
+    DefaultResultListItem,
+  } from '@backstage/plugin-search-react';
+
+  const SearchPage = () => (
+    <SearchContextProvider>
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchBar />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchPagination />
+            </Grid>
+            <Grid item xs={12}>
+              <SearchResult>
+                {({ results }) => (
+                  <SearchResultListLayout
+                    resultItems={results}
+                    renderResultItem={({ document }) => (
+                      <DefaultResultListItem
+                        key={document.location}
+                        result={document}
+                      />
+                    )}
+                  />
+                )}
+              </SearchResult>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    </SearchContextProvider>
+  );
+  ```
+
+- 6faaa05626: The `<SearchResultGroup />` component now accepts an optional property `disableRenderingWithNoResults` to disable rendering when no results are returned.
+  Possibility to provide a custom no results component if needed through the `noResultsComponent` property.
+
+  Examples:
+
+  _Rendering a custom no results component_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    noResultsComponent={<ListItemText primary="No results were found" />}
+  />
+  ```
+
+  _Disable rendering when there are no results_
+
+  ```jsx
+  <SearchResultGroup
+    query={query}
+    icon={<DocsIcon />}
+    title="Documentation"
+    disableRenderingWithNoResults
+  />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
 ## 1.2.0-next.2
 
 ### Patch Changes

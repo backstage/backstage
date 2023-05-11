@@ -2,6 +2,71 @@
 
 This is the backend part of the `code-coverage` plugin. It takes care of processing various coverage formats and standardizing them into a single json format, used by the frontend.
 
+## Installation
+
+```sh
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-code-coverage-backend
+```
+
+First create a `codecoverage.ts` file here: `packages/backend/src/plugins`. Now add the following as its content:
+
+```diff
+diff --git a/packages/backend/src/plugins/codecoverage.ts b/packages/backend/src/plugins/codecoverage.ts
+--- /dev/null
++++ b/packages/backend/src/plugins/codecoverage.ts
+@@ -0,0 +1,15 @@
++import { createRouter } from '@backstage/plugin-code-coverage-backend';
++import { Router } from 'express';
++import { PluginEnvironment } from '../types';
++
++export default async function createPlugin(
++  env: PluginEnvironment,
++): Promise<Router> {
++  return await createRouter({
++    config: env.config,
++    discovery: env.discovery,
++    database: env.database,
++    urlReader: env.reader,
++    logger: env.logger,
++  });
++}
+
+```
+
+Finally we need to load the plugin in `packages/backend/src/index.ts`, make the following edits:
+
+```diff
+diff --git a/packages/backend/src/index.ts b/packages/backend/src/index.ts
+--- a/packages/backend/src/index.ts
++++ b/packages/backend/src/index.ts
+@@ -28,6 +28,7 @@ import scaffolder from './plugins/scaffolder';
+ import proxy from './plugins/proxy';
+ import techdocs from './plugins/techdocs';
+ import search from './plugins/search';
++import codeCoverage from './plugins/codecoverage';
+ import { PluginEnvironment } from './types';
+ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+ import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+@@ -85,6 +86,9 @@ async function main() {
+   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+   const searchEnv = useHotMemoize(module, () => createEnv('search'));
+   const appEnv = useHotMemoize(module, () => createEnv('app'));
++  const codeCoverageEnv = useHotMemoize(module, () =>
++    createEnv('code-coverage'),
++  );
+
+   const apiRouter = Router();
+   apiRouter.use('/catalog', await catalog(catalogEnv));
+@@ -93,6 +97,7 @@ async function main() {
+   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+   apiRouter.use('/proxy', await proxy(proxyEnv));
+   apiRouter.use('/search', await search(searchEnv));
++  apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
+
+   apiRouter.use(notFoundHandler());
+```
+
 ## Configuring your entity
 
 In order to use this plugin, you must set the `backstage.io/code-coverage` annotation.

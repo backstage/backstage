@@ -75,6 +75,38 @@ describe('JenkinsApi', () => {
       },
     };
 
+    describe('standalone project', () => {
+      it('should return the only build', async () => {
+        mockedJenkinsClient.job.get
+          .mockResolvedValueOnce(project)
+          .mockResolvedValueOnce(project);
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledTimes(2);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toEqual({
+          actions: [],
+          displayName: 'Example Build',
+          fullDisplayName: 'Example jobName » Example Build',
+          fullName: 'example-jobName/exampleBuild',
+          inQueue: false,
+          lastBuild: {
+            actions: [],
+            timestamp: 1,
+            building: false,
+            duration: 10,
+            result: 'success',
+            displayName: '#7',
+            fullDisplayName: 'Example jobName » Example Build #7',
+            url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+            number: 7,
+            status: 'success',
+            source: {},
+          },
+          status: 'success',
+        });
+      });
+    });
+
     describe('unfiltered', () => {
       it('standard github layout', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce({ jobs: [project] });
@@ -141,6 +173,7 @@ describe('JenkinsApi', () => {
           'foo',
           'bar',
           'catpants',
+          'with-a/slash',
         ]);
 
         expect(mockedJenkins).toHaveBeenCalledWith({
@@ -158,6 +191,10 @@ describe('JenkinsApi', () => {
         });
         expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
           name: `${jenkinsInfo.jobFullName}/catpants`,
+          tree: expect.anything(),
+        });
+        expect(mockedJenkinsClient.job.get).toHaveBeenCalledWith({
+          name: `${jenkinsInfo.jobFullName}/with-a%2Fslash`,
           tree: expect.anything(),
         });
         expect(result).toHaveLength(1);

@@ -7,3 +7,4 @@ description: Access Airbrake error monitoring and other integrations from within
 documentation: https://github.com/backstage/backstage/blob/master/plugins/airbrake
 iconUrl: https://wp-assets.airbrake.io/wp-content/uploads/2020/10/05222904/Square-white-A-on-Orange.png
 npmPackageName: '@backstage/plugin-airbrake'
+addedDate: '2022-01-10'

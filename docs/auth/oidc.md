@@ -77,35 +77,35 @@ the instance is cached by the DI library, a singleton.
 
 Let's add our OIDC API factory to the APIs array in the `packages/app/src/apis.ts` file:
 
-```diff
-+ import { OAuth2 } from '@backstage/core-app-api';
+```ts title="packages/app/src/apis.ts"
+/* highlight-add-next-line */
+import { OAuth2 } from '@backstage/core-app-api';
 
 export const apis: AnyApiFactory[] = [
-+   createApiFactory({
-+    api: azureOIDCAuthApiRef,
-+    deps: {
-+      discoveryApi: discoveryApiRef,
-+      oauthRequestApi: oauthRequestApiRef,
-+      configApi: configApiRef,
-+    },
-+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-+      OAuth2.create({
-+        discoveryApi,
-+        oauthRequestApi,
-+        provider: {
-+          id: 'my-auth-provider',
-+          title: 'My custom auth provider',
-+          icon: () => null,
-+        },
-+        environment: configApi.getOptionalString('auth.environment'),
-+        defaultScopes: [
-+          'openid',
-+          'profile',
-+          'email',
-+        ],
-+      }),
-+  }),
-
+  /* highlight-add-start */
+  createApiFactory({
+    api: azureOIDCAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        provider: {
+          id: 'my-auth-provider',
+          title: 'My custom auth provider',
+          icon: () => null,
+        },
+        environment: configApi.getOptionalString('auth.environment'),
+        defaultScopes: ['openid', 'profile', 'email'],
+      }),
+  }),
+  /* highlight-add-end */
+  // ..
+];
 ```
 
 Please note we're importing the `OAuth2` class from `@backstage/core-app-api` effectively
@@ -125,7 +125,7 @@ the ID you picked to represent the Auth provider, this ID has to match with the 
 callback URI provider segment (you'll have to configure your IDP to handle the callback
 URI properly).
 
-```diff
+```ts
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
@@ -137,9 +137,11 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     providerFactories: {
       ...defaultAuthProviderFactories,
-+     'my-auth-provider': providers.oidc.create({
-+     }),
-    }
+      /* highlight-add-next-line */
+      'my-auth-provider': providers.oidc.create({}),
+    },
+  // ..
+})
 ```
 
 ### The Resolver
@@ -154,10 +156,11 @@ adding a resolver for a SignIn request.
 
 The OIDC provider doesn't provide any build-in resolvers, so we'll need to define our own:
 
-```diff
+```ts
 import {
   DEFAULT_NAMESPACE,
-+ stringifyEntityRef,
+  /* highlight-add-next-line */
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 
 export default async function createPlugin(
@@ -172,23 +175,27 @@ export default async function createPlugin(
     providerFactories: {
       ...defaultAuthProviderFactories,
      'my-auth-provider': providers.oidc.create({
-+       signIn: {
-+         resolver(info, ctx) {
-+           const userRef = stringifyEntityRef({
-+             kind: 'User',
-+             name: info.result.userinfo.sub,
-+             namespace: DEFAULT_NAMESPACE,
-+           });
-+           return ctx.issueToken({
-+             claims: {
-+               sub: userRef, // The user's own identity
-+               ent: [userRef], // A list of identities that the user claims ownership through
-+             },
-+           });
-+         },
-+       },
+        /* highlight-add-start */
+        signIn: {
+          resolver(info, ctx) {
+            const userRef = stringifyEntityRef({
+              kind: 'User',
+              name: info.result.userinfo.sub,
+              namespace: DEFAULT_NAMESPACE,
+            });
+            return ctx.issueToken({
+              claims: {
+                sub: userRef, // The user's own identity
+                ent: [userRef], // A list of identities that the user claims ownership through
+              },
+            });
+          },
+        },
+        /* highlight-add-end */
      }),
-    }
+    },
+    // ..
+  })
 ```
 
 ### The configuration
@@ -206,7 +213,7 @@ Then we need to configure the env variables for the provider, based on the provi
 in `plugins/auth-backend/src/providers/oidc/provider.ts` we need the following variables
 in the `app-config.yaml`:
 
-```yaml
+```yaml title="app-config.yaml"
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
@@ -243,8 +250,8 @@ need this as well) to support user sessions.
 ### The Sign In provider
 
 The last step is to add the provider to the `SignInPage` so users can sign in with your
-new provider, please follow the [Sing In Configuration][3] docs, here's where you import
-and use the API ref we defined earlier.
+new provider, please follow the [Sign In Configuration][3] docs, here's where you import
+and use the API reference we defined earlier.
 
 ## Note
 

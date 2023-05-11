@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
+
 import {
-  SidebarItemWithSubmenuContext,
   SidebarConfigContext,
+  SidebarItemWithSubmenuContext,
   SubmenuConfig,
 } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
-import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<
   BackstageTheme,
@@ -76,10 +78,10 @@ const useStyles = makeStyles<
       },
     }),
     title: {
-      fontSize: 24,
-      fontWeight: 500,
-      color: '#FFF',
-      padding: 20,
+      fontSize: theme.typography.h5.fontSize,
+      fontWeight: theme.typography.fontWeightMedium,
+      color: theme.palette.common.white,
+      padding: theme.spacing(2.5),
       [theme.breakpoints.down('xs')]: {
         display: 'none',
       },
@@ -120,7 +122,7 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   }, [isHoveredOn]);
 
   return (
-    <div
+    <Box
       className={classnames(classes.drawer, {
         [classes.drawerOpen]: isSubmenuOpen,
       })}
@@ -129,6 +131,6 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
         {props.title}
       </Typography>
       {props.children}
-    </div>
+    </Box>
   );
 };

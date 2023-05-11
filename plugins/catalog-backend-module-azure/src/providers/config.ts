@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { AzureDevOpsConfig } from './types';
 
@@ -40,7 +41,12 @@ function readAzureDevOpsConfig(id: string, config: Config): AzureDevOpsConfig {
   const project = config.getString('project');
   const host = config.getOptionalString('host') || 'dev.azure.com';
   const repository = config.getOptionalString('repository') || '*';
+  const branch = config.getOptionalString('branch');
   const path = config.getOptionalString('path') || '/catalog-info.yaml';
+
+  const schedule = config.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    : undefined;
 
   return {
     id,
@@ -48,6 +54,8 @@ function readAzureDevOpsConfig(id: string, config: Config): AzureDevOpsConfig {
     organization,
     project,
     repository,
+    branch,
     path,
+    schedule,
   };
 }

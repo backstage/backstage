@@ -17,13 +17,13 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { OpenApiRefProcessor } from './OpenApiRefProcessor';
-import { bundleOpenApiSpecification } from './lib';
+import { bundleFileWithRefs } from './lib';
 
 jest.mock('./lib', () => ({
-  bundleOpenApiSpecification: jest.fn(),
+  bundleFileWithRefs: jest.fn(),
 }));
 
-const bundledSpecification = '<bundled-specification>';
+const bundled = '<bundled-specification>';
 
 describe('OpenApiRefProcessor', () => {
   const mockLocation = (): LocationSpec => ({
@@ -32,7 +32,7 @@ describe('OpenApiRefProcessor', () => {
   });
 
   beforeEach(() => {
-    (bundleOpenApiSpecification as any).mockResolvedValue(bundledSpecification);
+    (bundleFileWithRefs as any).mockResolvedValue(bundled);
   });
 
   afterEach(() => {
@@ -48,6 +48,7 @@ describe('OpenApiRefProcessor', () => {
       const config = new ConfigReader({});
       const reader = {
         read: jest.fn(),
+        readUrl: jest.fn(),
         readTree: jest.fn(),
         search: jest.fn(),
       };
@@ -70,7 +71,7 @@ describe('OpenApiRefProcessor', () => {
         mockLocation(),
       );
 
-      expect(result.spec?.definition).toEqual(bundledSpecification);
+      expect(result.spec?.definition).toEqual(bundled);
     });
 
     it('should ignore other kinds', async () => {

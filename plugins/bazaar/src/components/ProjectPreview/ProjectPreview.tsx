@@ -15,9 +15,14 @@
  */
 
 import React, { ChangeEvent, useState } from 'react';
-import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
-import { makeStyles, Grid, TablePagination } from '@material-ui/core';
+import {
+  Box,
+  makeStyles,
+  Grid,
+  TablePagination,
+  GridSize,
+} from '@material-ui/core';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
 
@@ -26,8 +31,8 @@ type Props = {
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
   useTablePagination?: boolean;
-  fullHeight?: boolean;
-  fixedWidth?: boolean;
+  gridSize?: GridSize;
+  height: 'large' | 'small';
 };
 
 const useStyles = makeStyles({
@@ -55,8 +60,8 @@ export const ProjectPreview = ({
   fetchBazaarProjects,
   catalogEntities,
   useTablePagination = true,
-  fullHeight = true,
-  fixedWidth = false,
+  gridSize = 2,
+  height = 'large',
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -80,24 +85,19 @@ export const ProjectPreview = ({
   }
 
   return (
-    <Content className={classes.content} noPadding>
+    <Box className={classes.content}>
       <Grid wrap="wrap" container spacing={3}>
         {bazaarProjects
           .slice((page - 1) * rows, rows * page)
           .map((bazaarProject: BazaarProject, i: number) => {
             return (
-              <Grid
-                key={i}
-                item
-                xs={fixedWidth ? false : 2}
-                style={{ width: '16rem' }}
-              >
+              <Grid key={i} item xs={gridSize}>
                 <ProjectCard
                   project={bazaarProject}
                   key={i}
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
-                  fullHeight={fullHeight}
+                  height={height}
                 />
               </Grid>
             );
@@ -106,6 +106,7 @@ export const ProjectPreview = ({
 
       {useTablePagination && (
         <TablePagination
+          component="div"
           className={classes.pagination}
           rowsPerPageOptions={[12, 24, 48, 96]}
           count={bazaarProjects?.length}
@@ -119,6 +120,6 @@ export const ProjectPreview = ({
           }}
         />
       )}
-    </Content>
+    </Box>
   );
 };

@@ -43,7 +43,7 @@ describe('<ComponentContextMenu />', () => {
     await fireEvent.click(rendered.queryByText('Some label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
-    expect(rendered.queryByText('Some label')).toBeInTheDocument();
+    expect(rendered.getByText('Some label')).toBeInTheDocument();
   });
 
   it('Disabled', async () => {
@@ -80,7 +80,7 @@ describe('<ComponentContextMenu />', () => {
     await fireEvent.click(rendered.queryByText('Secondary label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
-    expect(rendered.queryByText('Some label')).toBeInTheDocument();
+    expect(rendered.getByText('Some label')).toBeInTheDocument();
   });
 
   it('should close when hitting escape', async () => {

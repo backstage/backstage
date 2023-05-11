@@ -17,8 +17,8 @@
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
-  GitHubIntegration,
-  readGitHubIntegrationConfig,
+  GithubIntegration,
+  readGithubIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -30,7 +30,7 @@ import path from 'path';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GhBlobResponse,
-  GhBranchResponse,
+  GhCombinedCommitStatusResponse,
   GhRepoResponse,
   GhTreeResponse,
   GithubUrlReader,
@@ -46,8 +46,8 @@ const mockCredentialsProvider = {
 } as unknown as GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
@@ -58,8 +58,8 @@ const githubProcessor = new GithubUrlReader(
 );
 
 const gheProcessor = new GithubUrlReader(
-  new GitHubIntegration(
-    readGitHubIntegrationConfig(
+  new GithubIntegration(
+    readGithubIntegrationConfig(
       new ConfigReader({
         host: 'ghe.github.com',
         apiBaseUrl: 'https://ghe.github.com/api/v3',
@@ -92,7 +92,7 @@ describe('GithubUrlReader', () => {
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        githubProcessor.read('https://not.github.com/apa'),
+        githubProcessor.readUrl('https://not.github.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
@@ -135,7 +135,7 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      await gheProcessor.read(
+      await gheProcessor.readUrl(
         'https://github.com/backstage/mock/tree/blob/main',
       );
     });
@@ -247,7 +247,7 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(/rate limit exceeded/);
     });
 
-    it('should return etag from the response', async () => {
+    it('should return etag and last-modified from the response', async () => {
       (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
         headers: {
           Authorization: 'bearer blah',
@@ -261,6 +261,11 @@ describe('GithubUrlReader', () => {
             return res(
               ctx.status(200),
               ctx.set('Etag', 'foo'),
+              ctx.set(
+                'Last-Modified',
+                new Date('2021-01-01T00:00:00Z').toUTCString(),
+              ),
+
               ctx.body('bar'),
             );
           },
@@ -271,6 +276,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/blob/main',
       );
       expect(response.etag).toBe('foo');
+      expect(response.lastModifiedAt).toEqual(new Date('2021-01-01T00:00:00Z'));
     });
   });
 
@@ -303,12 +309,15 @@ describe('GithubUrlReader', () => {
         'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
     } as Partial<GhRepoResponse>;
 
-    const branchesApiResponse = {
-      name: 'main',
-      commit: {
-        sha: 'etag123abc',
-      },
-    } as Partial<GhBranchResponse>;
+    const commitStatusGithubResponse = {
+      sha: 'etag123abc',
+      repository: reposGithubApiResponse,
+    } as Partial<GhCombinedCommitStatusResponse>;
+
+    const commitStatusGheResponse = {
+      sha: 'etag123abc',
+      repository: reposGheApiResponse,
+    } as Partial<GhCombinedCommitStatusResponse>;
 
     beforeEach(() => {
       worker.use(
@@ -320,13 +329,18 @@ describe('GithubUrlReader', () => {
           ),
         ),
         rest.get(
-          'https://api.github.com/repos/backstage/mock/branches/main',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(branchesApiResponse),
-            ),
+          'https://api.github.com/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('per_page') === '0') {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json(commitStatusGithubResponse),
+              );
+            }
+
+            return res(ctx.status(500));
+          },
         ),
         rest.get(
           'https://api.github.com/repos/backstage/mock/tarball/etag123abc',
@@ -342,7 +356,7 @@ describe('GithubUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.github.com/repos/backstage/mock/branches/branchDoesNotExist',
+          'https://api.github.com/repos/backstage/mock/commits/branchDoesNotExist/status',
           (_, res, ctx) => res(ctx.status(404)),
         ),
         rest.get(
@@ -368,13 +382,18 @@ describe('GithubUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/branches/main',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(branchesApiResponse),
-            ),
+          'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('per_page') === '0') {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json(commitStatusGheResponse),
+              );
+            }
+
+            return res(ctx.status(500));
+          },
         ),
       );
     });
@@ -539,8 +558,8 @@ describe('GithubUrlReader', () => {
       expect(() => {
         /* eslint-disable no-new */
         new GithubUrlReader(
-          new GitHubIntegration(
-            readGitHubIntegrationConfig(
+          new GithubIntegration(
+            readGithubIntegrationConfig(
               new ConfigReader({
                 host: 'ghe.mycompany.net',
               }),
@@ -678,36 +697,69 @@ describe('GithubUrlReader', () => {
       );
     });
 
-    // Branch details
+    // commit status for branch details
     beforeEach(() => {
-      const response = {
-        name: 'main',
-        commit: {
-          sha: 'etag123abc',
+      const githubResponse = {
+        sha: 'etag123abc',
+        repository: {
+          id: 123,
+          full_name: 'backstage/mock',
+          default_branch: 'main',
+          branches_url:
+            'https://api.github.com/repos/backstage/mock/branches{/branch}',
+          archive_url:
+            'https://api.github.com/repos/backstage/mock/{archive_format}{/ref}',
+          trees_url:
+            'https://api.github.com/repos/backstage/mock/git/trees{/sha}',
         },
-      } as Partial<GhBranchResponse>;
+      } as Partial<GhCombinedCommitStatusResponse>;
+
+      const gheResponse = {
+        sha: 'etag123abc',
+        repository: {
+          id: 123,
+          full_name: 'backstage/mock',
+          default_branch: 'main',
+          branches_url:
+            'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
+          archive_url:
+            'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
+          trees_url:
+            'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees{/sha}',
+        },
+      } as Partial<GhCombinedCommitStatusResponse>;
 
       worker.use(
         rest.get(
-          'https://api.github.com/repos/backstage/mock/branches/main',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(response),
-            ),
+          'https://api.github.com/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('per_page') === '0') {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json(githubResponse),
+              );
+            }
+
+            return res(ctx.status(500));
+          },
         ),
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/branches/main',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(response),
-            ),
+          'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('per_page') === '0') {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json(gheResponse),
+              );
+            }
+
+            return res(ctx.status(500));
+          },
         ),
         rest.get(
-          'https://api.github.com/repos/backstage/mock/branches/branchDoesNotExist',
+          'https://api.github.com/repos/backstage/mock/commits/branchDoesNotExist/status',
           (_, res, ctx) => res(ctx.status(404)),
         ),
       );

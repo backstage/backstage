@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('members', table => {
     table.string('user_ref').nullable();
   });
 };
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.down = async function down(knex) {
   return knex.schema.table('members', table => {
     table.dropColumn('user_ref');

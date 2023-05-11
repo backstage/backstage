@@ -59,9 +59,14 @@ export const LegendItem = (props: PropsWithChildren<LegendItemProps>) => {
             }
             placement="top-start"
           >
-            <span role="img" aria-label="help" className={classes.helpIcon}>
+            <Typography
+              component="span"
+              role="img"
+              aria-label="help"
+              className={classes.helpIcon}
+            >
               <HelpOutlineOutlinedIcon fontSize="small" />
-            </span>
+            </Typography>
           </Tooltip>
         )}
       </Box>

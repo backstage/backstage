@@ -20,13 +20,23 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import { Logger } from 'winston';
+import { GitLabGroup, GitLabGroupMembersResponse, GitLabUser } from './types';
 
-export type ListOptions = {
+export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
-  group?: string;
   per_page?: number | undefined;
   page?: number | undefined;
+  active?: boolean;
 };
+
+interface ListProjectOptions extends CommonListOptions {
+  group?: string;
+}
+
+interface UserListOptions extends CommonListOptions {
+  without_project_bots?: boolean | undefined;
+  exclude_internal?: boolean | undefined;
+}
 
 export type PagedResponse<T> = {
   items: T[];
@@ -49,7 +59,9 @@ export class GitLabClient {
     return this.config.host !== 'gitlab.com';
   }
 
-  async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
+  async listProjects(
+    options?: ListProjectOptions,
+  ): Promise<PagedResponse<any>> {
     if (options?.group) {
       return this.pagedRequest(
         `/groups/${encodeURIComponent(options?.group)}/projects`,
@@ -61,6 +73,69 @@ export class GitLabClient {
     }
 
     return this.pagedRequest(`/projects`, options);
+  }
+
+  async listUsers(
+    options?: UserListOptions,
+  ): Promise<PagedResponse<GitLabUser>> {
+    return this.pagedRequest(`/users?`, {
+      ...options,
+      without_project_bots: true,
+      exclude_internal: true,
+    });
+  }
+
+  async listGroups(
+    options?: CommonListOptions,
+  ): Promise<PagedResponse<GitLabGroup>> {
+    return this.pagedRequest(`/groups`, options);
+  }
+
+  async getGroupMembers(groupPath: string): Promise<number[]> {
+    const memberIds = [];
+    let hasNextPage: boolean = false;
+    let endCursor: string | null = null;
+    do {
+      const response: GitLabGroupMembersResponse = await fetch(
+        `${this.config.baseUrl}/api/graphql`,
+        {
+          method: 'POST',
+          headers: {
+            ...getGitLabRequestOptions(this.config).headers,
+            ['Content-Type']: 'application/json',
+          },
+          body: JSON.stringify({
+            variables: { group: groupPath, endCursor },
+            query: `query($group: ID!, $endCursor: String) {
+              group(fullPath: $group) {
+                groupMembers(first: 100, relations: [DIRECT], after: $endCursor) {
+                  nodes {
+                    user {
+                      id
+                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
+                }
+              }
+            }`,
+          }),
+        },
+      ).then(r => r.json());
+      if (response.errors) {
+        throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
+      }
+      memberIds.push(
+        ...response.data.group.groupMembers.nodes.map(
+          (node: { user: { id: string } }) =>
+            Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
+        ),
+      );
+      ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
+    } while (hasNextPage);
+    return memberIds;
   }
 
   /**
@@ -114,7 +189,7 @@ export class GitLabClient {
    */
   async pagedRequest<T = any>(
     endpoint: string,
-    options?: ListOptions,
+    options?: CommonListOptions,
   ): Promise<PagedResponse<T>> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     for (const key in options) {
@@ -159,8 +234,8 @@ export class GitLabClient {
  * @param options - Initial ListOptions for the request function.
  */
 export async function* paginated<T = any>(
-  request: (options: ListOptions) => Promise<PagedResponse<T>>,
-  options: ListOptions,
+  request: (options: CommonListOptions) => Promise<PagedResponse<T>>,
+  options: CommonListOptions,
 ) {
   let res;
   do {

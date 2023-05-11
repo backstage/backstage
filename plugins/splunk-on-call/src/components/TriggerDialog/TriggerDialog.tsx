@@ -35,11 +35,11 @@ import {
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import { TriggerAlarmRequest } from '../../api/types';
+import { TriggerAlarmRequest } from '../../api';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 
 type Props = {
-  team: string;
+  routingKey: string;
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated: () => void;
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const TriggerDialog = ({
-  team,
+  routingKey,
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
@@ -221,7 +221,7 @@ export const TriggerDialog = ({
           id="details"
           multiline
           fullWidth
-          rows="2"
+          minRows="2"
           margin="normal"
           label="Incident message"
           variant="outlined"
@@ -242,7 +242,7 @@ export const TriggerDialog = ({
           variant="contained"
           onClick={() =>
             handleTriggerAlarm({
-              routingKey: team,
+              routingKey,
               incidentType,
               incidentDisplayName,
               incidentMessage,

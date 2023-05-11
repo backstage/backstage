@@ -16,14 +16,11 @@
 
 import express from 'express';
 import {
-  configServiceRef,
+  coreServices,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
-  loggerToWinstonLogger,
-  httpRouterServiceRef,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /** @alpha */
 export type AppPluginOptions = {
@@ -73,15 +70,15 @@ export type AppPluginOptions = {
  * The App plugin is responsible for serving the frontend app bundle and static assets.
  * @alpha
  */
-export const appPlugin = createBackendPlugin({
-  id: 'app',
-  register(env, options: AppPluginOptions) {
+export const appPlugin = createBackendPlugin((options: AppPluginOptions) => ({
+  pluginId: 'app',
+  register(env) {
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
+        logger: coreServices.logger,
+        config: coreServices.config,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
       },
       async init({ logger, config, database, httpRouter }) {
         const {
@@ -104,4 +101,4 @@ export const appPlugin = createBackendPlugin({
       },
     });
   },
-});
+}));

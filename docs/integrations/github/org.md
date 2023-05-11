@@ -17,7 +17,7 @@ entities that mirror your org setup.
 > provide authentication. See the
 > [GitHub auth provider](../../auth/github/provider.md) for that.
 
-## Installation
+## Installation without Events Support
 
 This guide will use the Entity Provider method. If you for some reason prefer
 the Processor method (not recommended), it is described separately below.
@@ -36,29 +36,154 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 Update the catalog plugin initialization in your backend to add the provider and
 schedule it:
 
-```diff
- // packages/backend/src/plugins/catalog.ts
-+import { GitHubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
 
-+  // The org URL below needs to match a configured integrations.github entry
-+  // specified in your app-config.
-+  builder.addEntityProvider(
-+    GitHubOrgEntityProvider.fromConfig(env.config, {
-+      id: 'production',
-+      orgUrl: 'https://github.com/backstage',
-+      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 60 },
-+        timeout: { minutes: 15 },
-+      }),
-+    }),
-+  );
+  /* highlight-add-start */
+  // The org URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      orgUrl: 'https://github.com/backstage',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
+
+Alternatively, if you wish to ingest data from multiple GitHub organizations you can use
+the `GithubMultiOrgEntityProvider` instead. Note that by default, this provider will namespace
+groups according to the org they originate from to avoid potential name duplicates:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+
+  /* highlight-add-start */
+  // The GitHub URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      githubUrl: 'https://github.com',
+      // Set the following to list the GitHub orgs you wish to ingest from. You can
+      // also omit this option to ingest all orgs accessible by your GitHub integration
+      orgs: ['org-a', 'org-b'],
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
+```
+
+## Installation with Events Support
+
+Please follow the installation instructions at
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-next-line */
+import { GithubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      orgUrl: 'https://github.com/backstage',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+  env.eventBroker.subscribe(githubOrgProvider);
+  builder.addEntityProvider(githubOrgProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
+
+Or, alternatively, if using the `GithubMultiOrgEntityProvider`:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+
+  /* highlight-add-start */
+  // The GitHub URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      githubUrl: 'https://github.com',
+      // Set the following to list the GitHub orgs you wish to ingest from. You can
+      // also omit this option to ingest all orgs accessible by your GitHub integration
+      orgs: ['org-a', 'org-b'],
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+      // Pass in the eventBroker to allow this provider to subscribe to GitHub events
+      eventBroker: env.eventBroker,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
+```
+
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
+The webhook will need to be configured to forward `organization`,`team` and `membership` events.
 
 ## Configuration
 
@@ -97,6 +222,65 @@ that must be approved first before the changes are applied.**
 
 ![email](../../assets/integrations/github/email.png)
 
+### Custom Transformers
+
+You can inject your own transformation logic to help map from GH API responses
+into backstage entities. You can do this on the user and team requests to
+enable you to do further processing or updates to the entities.
+
+To enable this you pass a function into the `GitHubOrgEntityProvider`. You can
+pass a `UserTransformer`, `TeamTransformer` or both. The function is invoked
+for each item (user or team) that is returned from the API. You can either
+return an Entity (User or Group) or `undefined` if you do not want to import
+that item.
+
+There is also a `defaultUserTransformer` and `defaultOrganizationTeamTransformer`.
+You could use these and simply decorate the response from the default
+transformation if you only need to change a few properties.
+
+### Resolving GitHub users via organization email
+
+When you authenticate users you should resolve them to an entity within the
+catalog. Often the authentication you use could be a corporate SSO system that
+provides you with email as a key. To enable you to find and resolve GitHub users
+it's useful to also import the private domain verified emails into the User
+entity in backstage.
+
+The integration attempts to return `organizationVerifiedDomainEmails` from the
+GitHub API and makes this available as part of the object passed to
+`UserTransformer`. The GitHub API will only return emails that use a domain
+that's a verified domain for your GitHub Org. It also relies on the user having
+configured such an email in their own account. The API will only return these
+values when using GitHub App authentication and with the correct app permission
+allowing access to emails.
+
+You can decorate the `defaultUserTransformer` to replace the org email in the
+returned identity.
+
+```typescript
+async (user, ctx): Promise<UserEntity | undefined> => {
+  const entity = await defaultUserTransformer(user, ctx);
+
+  if (entity && user.organizationVerifiedDomainEmails) {
+    entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0] || '';
+  }
+
+  return entity;
+},
+```
+
+Once you have imported the emails you can resolve users in your sign-in in
+resolver using the catalog entity search via email
+
+```typescript title="packages/backend/src/plugins/auth.ts"
+ctx.signInWithCatalogUser({
+  filter: {
+    kind: ['User'],
+    'spec.profile.email': email as string,
+  },
+});
+```
+
 ## Using a Processor instead of a Provider
 
 An alternative to using the Provider for ingesting organizational entities is to
@@ -117,10 +301,9 @@ install and register it in the catalog plugin:
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 ```
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
+```typescript title="packages/backend/src/plugins/catalog.ts"
 import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-github';
-// ...
+
 builder.addProcessor(
   GithubOrgReaderProcessor.fromConfig(env.config, { logger: env.logger }),
 );

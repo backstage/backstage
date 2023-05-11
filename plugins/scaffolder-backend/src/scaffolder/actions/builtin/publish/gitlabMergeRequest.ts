@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTemplateAction } from '../../createTemplateAction';
+
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { Types } from '@gitbeaker/core';
 import path from 'path';
@@ -42,7 +43,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     targetPath?: string;
     token?: string;
     commitAction?: 'create' | 'delete' | 'update';
-    /** @deprecated Use projectPath instead */
+    /** @deprecated projectID passed as query parameters in the repoUrl */
     projectid?: string;
     removeSourceBranch?: boolean;
     assignee?: string;
@@ -58,7 +59,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Repository Location',
             description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
           },
-          /** @deprecated Use projectPath instead */
+          /** @deprecated projectID is passed as query parameters in the repoUrl */
           projectid: {
             type: 'string',
             title: 'projectid',
@@ -126,7 +127,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Gitlab Project path',
             type: 'string',
           },
-          mergeRequestURL: {
+          mergeRequestUrl: {
             title: 'MergeRequest(MR) URL',
             type: 'string',
             description: 'Link to the merge request in GitLab',
@@ -146,14 +147,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
         title,
         token: providedToken,
       } = ctx.input;
-      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
-      const projectPath = `${owner}/${repo}`;
 
-      if (ctx.input.projectid) {
-        const deprecationWarning = `Property "projectid" is deprecated and no longer to needed to create a MR`;
-        ctx.logger.warn(deprecationWarning);
-        console.warn(deprecationWarning);
-      }
+      const { host, owner, repo, project } = parseRepoUrl(
+        repoUrl,
+        integrations,
+      );
+      const repoID = project ? project : `${owner}/${repo}`;
 
       const integrationConfig = integrations.gitlab.byHost(host);
 
@@ -211,22 +210,19 @@ export const createPublishGitlabMergeRequestAction = (options: {
         content: file.content.toString('base64'),
         execute_filemode: file.executable,
       }));
-      const projects = await api.Projects.show(projectPath);
+
+      const projects = await api.Projects.show(repoID);
 
       const { default_branch: defaultBranch } = projects;
 
       try {
-        await api.Branches.create(
-          projectPath,
-          branchName,
-          String(defaultBranch),
-        );
+        await api.Branches.create(repoID, branchName, String(defaultBranch));
       } catch (e) {
         throw new InputError(`The branch creation failed ${e}`);
       }
 
       try {
-        await api.Commits.create(projectPath, branchName, title, actions);
+        await api.Commits.create(repoID, branchName, ctx.input.title, actions);
       } catch (e) {
         throw new InputError(
           `Committing the changes to ${branchName} failed ${e}`,
@@ -235,7 +231,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
 
       try {
         const mergeRequestUrl = await api.MergeRequests.create(
-          projectPath,
+          repoID,
           branchName,
           String(defaultBranch),
           title,
@@ -247,9 +243,8 @@ export const createPublishGitlabMergeRequestAction = (options: {
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
         });
-        /** @deprecated */
-        ctx.output('projectid', projectPath);
-        ctx.output('projectPath', projectPath);
+        ctx.output('projectid', repoID);
+        ctx.output('projectPath', repoID);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
         throw new InputError(`Merge request creation failed${e}`);

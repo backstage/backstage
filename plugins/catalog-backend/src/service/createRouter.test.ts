@@ -25,7 +25,7 @@ import {
 } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog } from '../catalog/types';
+import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
@@ -34,9 +34,10 @@ import {
   createPermissionIntegrationRouter,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
+import { encodeCursor } from './util';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -48,9 +49,11 @@ describe('createRouter readonly disabled', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -131,6 +134,118 @@ describe('createRouter readonly disabled', () => {
           ],
         },
       });
+    });
+  });
+
+  describe('GET /entities/by-query', () => {
+    it('happy path: lists entities', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: mockCursor() },
+      });
+
+      const response = await request(app).get('/entities/by-query');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 100,
+        pageInfo: {
+          nextCursor: expect.any(String),
+        },
+      });
+    });
+
+    it('parses initial request', async () => {
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
+      });
+      const response = await request(app).get(
+        '/entities/by-query?filter=a=1,a=2,b=3&filter=c=4&orderField=metadata.name,asc&orderField=metadata.uid,desc',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { allOf: [{ key: 'c', values: ['4'] }] },
+          ],
+        },
+        orderFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.uid', order: 'desc' },
+        ],
+        fullTextFilter: {
+          fields: undefined,
+          term: '',
+        },
+      });
+    });
+
+    it('parses cursor request', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: mockCursor() },
+      });
+
+      const cursor = mockCursor({ totalItems: 100, isPrevious: false });
+
+      const response = await request(app).get(
+        `/entities/by-query?cursor=${encodeCursor(cursor)}`,
+      );
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+        cursor,
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+    });
+
+    it('should throw in case of malformed cursor', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: mockCursor() },
+      });
+
+      let response = await request(app).get(
+        `/entities/by-query?cursor=${Buffer.from(
+          JSON.stringify({ bad: 'cursor' }),
+          'utf8',
+        ).toString('base64')}`,
+      );
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(/Malformed cursor/);
+
+      response = await request(app).get(`/entities/by-query?cursor=badcursor`);
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(/Malformed cursor/);
     });
   });
 
@@ -254,6 +369,44 @@ describe('createRouter readonly disabled', () => {
         authorizationToken: 'someauthtoken',
       });
       expect(response.status).toEqual(404);
+    });
+  });
+
+  describe('POST /entities/by-refs', () => {
+    it.each([
+      '',
+      'not json',
+      '[',
+      '[]',
+      '{}',
+      '{"unknown":7}',
+      '{"entityRefs":7}',
+      '{"entityRefs":[7]}',
+      '{"entityRefs":[7],"fields":7}',
+      '{"entityRefs":[7],"fields":[7]}',
+    ])('properly rejects malformed request body, %p', async p => {
+      await expect(
+        request(app)
+          .post('/entities/by-refs')
+          .set('Content-Type', 'application/json')
+          .send(p),
+      ).resolves.toMatchObject({ status: 400 });
+    });
+
+    it('can fetch entities by refs', async () => {
+      const entity: Entity = {} as any;
+      entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send('{"entityRefs":["a"],"fields":["b"]}');
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['a'],
+        fields: expect.any(Function),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ items: [entity] });
     });
   });
 
@@ -517,9 +670,11 @@ describe('createRouter readonly enabled', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -706,9 +861,11 @@ describe('NextRouter permissioning', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
       facets: jest.fn(),
+      queryEntities: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -779,3 +936,12 @@ describe('NextRouter permissioning', () => {
     });
   });
 });
+
+function mockCursor(partialCursor?: Partial<Cursor>): Cursor {
+  return {
+    orderFields: [],
+    orderFieldValues: [],
+    isPrevious: false,
+    ...partialCursor,
+  };
+}

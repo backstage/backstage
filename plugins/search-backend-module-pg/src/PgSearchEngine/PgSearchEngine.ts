@@ -28,6 +28,7 @@ import {
   PgSearchQuery,
 } from '../database';
 import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 
 /**
@@ -62,6 +63,7 @@ export type PgSearchQueryTranslator = (
  */
 export type PgSearchOptions = {
   database: PluginDatabaseManager;
+  logger?: Logger;
 };
 
 /**
@@ -82,12 +84,17 @@ export type PgSearchHighlightOptions = {
 
 /** @public */
 export class PgSearchEngine implements SearchEngine {
+  private readonly logger?: Logger;
   private readonly highlightOptions: PgSearchHighlightOptions;
 
   /**
    * @deprecated This will be marked as private in a future release, please us fromConfig instead
    */
-  constructor(private readonly databaseStore: DatabaseStore, config: Config) {
+  constructor(
+    private readonly databaseStore: DatabaseStore,
+    config: Config,
+    logger?: Logger,
+  ) {
     const uuidTag = uuid();
     const highlightConfig = config.getOptionalConfig(
       'search.pg.highlightOptions',
@@ -107,6 +114,7 @@ export class PgSearchEngine implements SearchEngine {
         highlightConfig?.getOptionalString('fragmentDelimiter') ?? ' ... ',
     };
     this.highlightOptions = highlightOptions;
+    this.logger = logger;
   }
 
   /**
@@ -115,10 +123,12 @@ export class PgSearchEngine implements SearchEngine {
   static async from(options: {
     database: PluginDatabaseManager;
     config: Config;
+    logger?: Logger;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
       await DatabaseDocumentStore.create(options.database),
       options.config,
+      options.logger,
     );
   }
 
@@ -126,6 +136,7 @@ export class PgSearchEngine implements SearchEngine {
     return new PgSearchEngine(
       await DatabaseDocumentStore.create(options.database),
       config,
+      options.logger,
     );
   }
 
@@ -170,6 +181,7 @@ export class PgSearchEngine implements SearchEngine {
       batchSize: 1000,
       type,
       databaseStore: this.databaseStore,
+      logger: this.logger?.child({ documentType: type }),
     });
   }
 

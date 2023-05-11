@@ -17,7 +17,6 @@
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 
 // Keep the IDs compatible with e.g. Prometheus labels
 export function validateId(id: string) {

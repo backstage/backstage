@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor, screen, within } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { default as React } from 'react';
 import { catalogApiRef } from '../../api';
@@ -75,7 +75,7 @@ describe('<EntityKindPicker/>', () => {
   );
 
   it('renders available entity kinds', async () => {
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{ filters: { kind: new EntityKindFilter('component') } }}
@@ -84,16 +84,16 @@ describe('<EntityKindPicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(rendered.getByText('Kind')).toBeInTheDocument();
+    expect(screen.getByText('Kind')).toBeInTheDocument();
 
-    const input = rendered.getByTestId('select');
-    fireEvent.click(input);
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
-    await waitFor(() => rendered.getByText('Domain'));
+    await waitFor(() => screen.getByText('Domain'));
 
     entities.forEach(entity => {
       expect(
-        rendered.getByRole('option', {
+        screen.getByRole('option', {
           name: capitalize(entity.kind as string),
         }),
       ).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('<EntityKindPicker/>', () => {
 
   it('sets the selected kind filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -114,11 +114,11 @@ describe('<EntityKindPicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = rendered.getByTestId('select');
-    fireEvent.click(input);
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
-    await waitFor(() => rendered.getByText('Domain'));
-    fireEvent.click(rendered.getByText('Domain'));
+    await waitFor(() => screen.getByText('Domain'));
+    fireEvent.click(screen.getByText('Domain'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({
       kind: new EntityKindFilter('domain'),
@@ -147,37 +147,56 @@ describe('<EntityKindPicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+  it('renders unknown kinds provided in query parameters', async () => {
+    await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'component' },
-          }}
+          value={{ queryParameters: { kind: 'FROb' } }}
         >
           <EntityKindPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('component'),
-    });
-    rendered.rerender(
+
+    expect(screen.getByText('FROb')).toBeInTheDocument();
+  });
+
+  it('limits kinds when allowedKinds is set', async () => {
+    await renderWithEffects(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { kind: 'domain' },
-          }}
-        >
-          <EntityKindPicker />
+        <MockEntityListContextProvider>
+          <EntityKindPicker allowedKinds={['component', 'domain']} />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('domain'),
-    });
+
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    expect(
+      screen.getByRole('option', { name: 'Component' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: 'Template' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders kind from the query parameter even when not in allowedKinds', async () => {
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'Frob' } }}
+        >
+          <EntityKindPicker allowedKinds={['domain']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(screen.getByText('Frob')).toBeInTheDocument();
+
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+    expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
 });

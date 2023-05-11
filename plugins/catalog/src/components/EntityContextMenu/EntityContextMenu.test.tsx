@@ -63,7 +63,7 @@ describe('ComponentContextMenu', () => {
   it('check Unregister entity button is disabled', async () => {
     const mockCallback = jest.fn();
 
-    const { getByText } = await render(
+    await render(
       <EntityContextMenu
         UNSTABLE_contextMenuOptions={{ disableUnregister: 'disable' }}
         onUnregisterEntity={mockCallback}
@@ -75,10 +75,10 @@ describe('ComponentContextMenu', () => {
     expect(button).toBeInTheDocument();
     fireEvent.click(button);
 
-    const unregister = await screen.getByText('Unregister entity');
+    const unregister = screen.getByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
 
-    const unregisterSpanItem = getByText(/Unregister entity/);
+    const unregisterSpanItem = screen.getByText(/Unregister entity/);
     const unregisterMenuListItem =
       unregisterSpanItem?.parentElement?.parentElement;
     expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');

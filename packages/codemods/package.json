@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.40-next.2",
+  "version": "0.1.44",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js"
@@ -35,14 +35,14 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "jscodeshift": "^0.13.0",
+    "commander": "^9.1.0",
+    "jscodeshift": "^0.14.0",
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.11.0",
     "@types/node": "^16.11.26",
-    "commander": "^9.1.0",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
 const capitalize = (str: string) =>
@@ -33,7 +33,7 @@ export const DefaultCustomResourceDrawer = ({
   const capitalizedName = capitalize(customResourceName);
 
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={customResource}
       expanded={expanded}
       kind={capitalizedName}
@@ -47,16 +47,16 @@ export const DefaultCustomResourceDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h5">
+          <Typography variant="body1">
             {customResource.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             {capitalizedName}
           </Typography>
         </Grid>
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

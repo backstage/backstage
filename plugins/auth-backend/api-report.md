@@ -7,7 +7,7 @@
 
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheClient } from '@backstage/backend-common';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
@@ -132,6 +132,19 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
+// @public (undocumented)
+export type BitbucketServerOAuthResult = {
+  fullProfile: Profile;
+  params: {
+    scope: string;
+    access_token?: string;
+    token_type?: string;
+    expires_in?: number;
+  };
+  accessToken: string;
+  refreshToken?: string;
+};
+
 // @public
 export class CatalogIdentityClient {
   constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
@@ -214,6 +227,12 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public
 export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory;
+};
+
+// @public (undocumented)
+export type EasyAuthResult = {
+  fullProfile: Profile;
+  accessToken?: string;
 };
 
 // @public (undocumented)
@@ -385,6 +404,8 @@ export type OAuthState = {
   env: string;
   origin?: string;
   scope?: string;
+  redirectUrl?: string;
+  flow?: string;
 };
 
 // @public
@@ -480,13 +501,30 @@ export const providers: Readonly<{
       userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
+  bitbucketServer: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<BitbucketServerOAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<BitbucketServerOAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<BitbucketServerOAuthResult>;
+    }>;
+  }>;
   cfAccess: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
       signIn: {
         resolver: SignInResolver<CloudflareAccessResult>;
       };
-      cache?: CacheClient | undefined;
+      cache?: CacheService | undefined;
     }) => AuthProviderFactory;
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
@@ -609,7 +647,10 @@ export const providers: Readonly<{
           }
         | undefined,
     ) => AuthProviderFactory;
-    resolvers: never;
+    resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
+    }>;
   }>;
   okta: Readonly<{
     create: (
@@ -662,6 +703,19 @@ export const providers: Readonly<{
       nameIdMatchingUserEntityName(): SignInResolver<SamlAuthResult>;
     }>;
   }>;
+  easyAuth: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<EasyAuthResult> | undefined;
+            signIn: {
+              resolver: SignInResolver<EasyAuthResult>;
+            };
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
 }>;
 
 // @public (undocumented)
@@ -669,6 +723,8 @@ export const readState: (stateString: string) => OAuthState;
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  catalogApi?: CatalogApi;
   // (undocumented)
   config: Config;
   // (undocumented)

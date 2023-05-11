@@ -15,10 +15,12 @@
  */
 
 export type { AwsAlbResult } from './aws-alb';
+export type { EasyAuthResult } from './azure-easyauth';
 export type {
   BitbucketOAuthResult,
   BitbucketPassportProfile,
 } from './bitbucket';
+export type { BitbucketServerOAuthResult } from './bitbucketServer';
 export type {
   CloudflareAccessClaims,
   CloudflareAccessGroup,

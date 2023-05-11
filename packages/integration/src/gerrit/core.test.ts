@@ -17,10 +17,10 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'cross-fetch';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
-  builldGerritGitilesUrl,
+  buildGerritGitilesUrl,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
   getGerritRequestOptions,
@@ -33,14 +33,14 @@ describe('gerrit core', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  describe('builldGerritGitilesUrl', () => {
+  describe('buildGerritGitilesUrl', () => {
     it('can create an url from arguments', () => {
       const config: GerritIntegrationConfig = {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
       expect(
-        builldGerritGitilesUrl(config, 'repo', 'dev', 'catalog-info.yaml'),
+        buildGerritGitilesUrl(config, 'repo', 'dev', 'catalog-info.yaml'),
       ).toEqual(
         'https://gerrit.com/gitiles/repo/+/refs/heads/dev/catalog-info.yaml',
       );

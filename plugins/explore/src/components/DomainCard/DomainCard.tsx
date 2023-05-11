@@ -31,7 +31,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 
-import { Button, ItemCardHeader } from '@backstage/core-components';
+import { LinkButton, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -53,7 +53,10 @@ export const DomainCard = (props: { entity: DomainEntity }) => {
   return (
     <Card>
       <CardMedia>
-        <ItemCardHeader title={entity.metadata.name} subtitle={owner} />
+        <ItemCardHeader
+          title={entity.metadata.title ?? entity.metadata.name}
+          subtitle={owner}
+        />
       </CardMedia>
       <CardContent>
         {entity.metadata.tags?.length ? (
@@ -66,9 +69,9 @@ export const DomainCard = (props: { entity: DomainEntity }) => {
         {entity.metadata.description}
       </CardContent>
       <CardActions>
-        <Button to={url} color="primary">
+        <LinkButton to={url} color="primary">
           Explore
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );

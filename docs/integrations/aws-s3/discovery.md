@@ -32,6 +32,11 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
 For simple setups, you can omit the provider ID at the config
@@ -47,13 +52,18 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
+      schedule: # optional; same options as in TaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
 ```
 
 As this provider is not one of the default providers, you will first need to install
 the AWS catalog plugin:
 
 ```bash
-# From the Backstage root directory
+# From your Backstage root directory
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-aws
 ```
 
@@ -69,10 +79,13 @@ const builder = await CatalogBuilder.create(env);
 builder.addEntityProvider(
   AwsS3EntityProvider.fromConfig(env.config, {
     logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },
       timeout: { minutes: 3 },
     }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
   }),
 );
 ```

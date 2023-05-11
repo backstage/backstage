@@ -22,7 +22,7 @@ import {
   PullRequestVoteStatus,
 } from '@backstage/plugin-azure-devops-common';
 
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { PullRequestCard } from './PullRequestCard';
 import React from 'react';
 

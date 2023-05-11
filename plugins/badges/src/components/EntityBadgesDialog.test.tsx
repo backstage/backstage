@@ -38,7 +38,10 @@ describe('EntityBadgesDialog', () => {
         },
       ]),
     };
-    const mockEntity = { metadata: { name: 'mock' } } as Entity;
+    const mockEntity = {
+      metadata: { name: 'mock' },
+      kind: 'MockKind',
+    } as Entity;
 
     const rendered = await renderWithEffects(
       <TestApiProvider

@@ -25,13 +25,17 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '../../lib/files';
-import { TemplateFilter, TemplateGlobal } from '../../lib/templating';
-import { createTemplateAction, TemplateActionRegistry } from '../actions';
+import { TemplateFilter, TemplateGlobal } from '../../lib';
+import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
-import { TaskSecrets } from '../tasks/types';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import {
+  createTemplateAction,
+  TaskSecrets,
+} from '@backstage/plugin-scaffolder-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -53,6 +57,7 @@ export type TemplateTesterCreateOptions = {
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
 };
 
 /**
@@ -91,6 +96,8 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
+      const abortSignal = new AbortController().signal;
+
       const result = await workflowRunner.execute({
         spec: {
           ...input.spec,
@@ -114,6 +121,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
         done: false,
         isDryRun: true,
         getWorkspaceName: async () => `dry-run-${dryRunId}`,
+        cancelSignal: abortSignal,
         async emitLog(message: string, logMetadata?: JsonObject) {
           if (logMetadata?.stepId === dryRunId) {
             return;
@@ -125,7 +133,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             },
           });
         },
-        async complete() {
+        complete: async () => {
           throw new Error('Not implemented');
         },
       });

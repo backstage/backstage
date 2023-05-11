@@ -51,6 +51,7 @@ export function createApp(
       ...options?.icons,
     },
     plugins: (options?.plugins as BackstagePlugin[]) ?? [],
+    featureFlags: options?.featureFlags ?? [],
     themes: options?.themes ?? themes,
   });
 }

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
@@ -28,16 +27,18 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { exploreApiRef } from '../../api';
 
 const Body = () => {
-  const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
+  const exploreApi = useApi(exploreApiRef);
+
   const {
     value: tools,
     loading,
     error,
   } = useAsync(async () => {
-    return await exploreToolsConfigApi.getTools();
-  }, [exploreToolsConfigApi]);
+    return (await exploreApi.getTools())?.tools;
+  }, [exploreApi]);
 
   if (loading) {
     return <Progress />;

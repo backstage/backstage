@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 interface AzureDevOpsConfig {
   /**
    * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
-   * @visibility backend
    */
   host: string;
   /**
    * (Required) Your organization slug.
-   * @visibility backend
    */
   organization: string;
   /**
    * (Required) Your project slug.
-   * @visibility backend
    */
   project: string;
   /**
    * (Optional) The repository name. Wildcards are supported as show on the examples above.
    * If not set, all repositories will be searched.
-   * @visibility backend
    */
   repository?: string;
   /**
    * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
    * If not set, defaults to /catalog-info.yaml.
-   * @visibility backend
    */
   path?: string;
+  /**
+   * (Optional) TaskScheduleDefinition for the refresh.
+   */
+  schedule?: TaskScheduleDefinitionConfig;
 }
 
 export interface Config {

@@ -39,9 +39,10 @@ import {
   UrlReader,
 } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 /**
- * Implements a {@link UrlReader} for files from Bitbucket Server APIs.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
  *
  * @public
  */
@@ -71,7 +72,7 @@ export class BitbucketServerUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const { etag, signal } = options ?? {};
+    const { etag, lastModifiedAfter, signal } = options ?? {};
     const bitbucketUrl = getBitbucketServerFileFetchUrl(
       url,
       this.integration.config,
@@ -86,6 +87,9 @@ export class BitbucketServerUrlReader implements UrlReader {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
+          ...(lastModifiedAfter && {
+            'If-Modified-Since': lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -106,6 +110,9 @@ export class BitbucketServerUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -175,6 +182,7 @@ export class BitbucketServerUrlReader implements UrlReader {
           base: url,
         }),
         content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
       })),
     };
   }
@@ -188,11 +196,13 @@ export class BitbucketServerUrlReader implements UrlReader {
   private async getLastCommitShortHash(url: string): Promise<string> {
     const { name: repoName, owner: project, ref: branch } = parseGitUrl(url);
 
-    const branchListUrl = `${
-      this.integration.config.apiBaseUrl
-    }/projects/${project}/repos/${repoName}/branches?filterText=${encodeURIComponent(
-      branch,
-    )}`;
+    // If a branch is provided use that otherwise fall back to the default branch
+    const branchParameter = branch
+      ? `?filterText=${encodeURIComponent(branch)}`
+      : '/default';
+
+    // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
+    const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
     const branchListResponse = await fetch(
       branchListUrl,
@@ -216,8 +226,15 @@ export class BitbucketServerUrlReader implements UrlReader {
       return exactBranchMatch.latestCommit.substring(0, 12);
     }
 
+    // Handle when no branch is provided using the default as the fallback
+    if (!branch && branchMatches) {
+      return branchMatches.latestCommit.substring(0, 12);
+    }
+
     throw new Error(
-      `Failed to find branch "${branch}" in property "displayId" of response to ${branchListUrl}`,
+      `Failed to find Last Commit using ${
+        branch ? `branch "${branch}"` : 'default branch'
+      } in response from ${branchListUrl}`,
     );
   }
 }

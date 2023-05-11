@@ -19,6 +19,7 @@ import { UnlabeledDataflowAlertCard } from './UnlabeledDataflowAlertCard';
 import {
   createMockUnlabeledDataflowData,
   createMockUnlabeledDataflowAlertProject,
+  MockConfigProvider,
 } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -40,15 +41,32 @@ const MockUnlabeledDataflowAlertSingleProject = createMockUnlabeledDataflowData(
 );
 
 describe('<UnlabeledDataflowAlertCard />', () => {
+  const { ResizeObserver } = window;
+  beforeEach(() => {
+    // @ts-expect-error
+    delete window.ResizeObserver;
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = ResizeObserver;
+    jest.restoreAllMocks();
+  });
   it('renders the correct subheader for multiple projects', async () => {
     const subheader = new RegExp(
       `Showing costs from ${MockUnlabeledDataflowAlertMultipleProjects.projects.length} ` +
         'projects with unlabeled Dataflow jobs in the last 30 days.',
     );
     const rendered = await renderInTestApp(
-      <UnlabeledDataflowAlertCard
-        alert={MockUnlabeledDataflowAlertMultipleProjects}
-      />,
+      <MockConfigProvider>
+        <UnlabeledDataflowAlertCard
+          alert={MockUnlabeledDataflowAlertMultipleProjects}
+        />
+      </MockConfigProvider>,
     );
     expect(rendered.getByText(subheader)).toBeInTheDocument();
   });
@@ -56,9 +74,11 @@ describe('<UnlabeledDataflowAlertCard />', () => {
   it('renders the correct subheader for a single project', async () => {
     const subheader = new RegExp('1 project');
     const rendered = await renderInTestApp(
-      <UnlabeledDataflowAlertCard
-        alert={MockUnlabeledDataflowAlertSingleProject}
-      />,
+      <MockConfigProvider>
+        <UnlabeledDataflowAlertCard
+          alert={MockUnlabeledDataflowAlertSingleProject}
+        />
+      </MockConfigProvider>,
     );
     expect(rendered.getByText(subheader)).toBeInTheDocument();
   });

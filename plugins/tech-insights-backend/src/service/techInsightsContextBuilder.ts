@@ -74,6 +74,12 @@ export interface TechInsightsOptions<
    */
   factRetrieverRegistry?: FactRetrieverRegistry;
 
+  /**
+   * Optional persistenceContext implementation that replaces the default one.
+   * This can be used to replace underlying database with a more suitable implementation if needed
+   */
+  persistenceContext?: PersistenceContext;
+
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -139,9 +145,11 @@ export const buildTechInsightsContext = async <
 
   const factRetrieverRegistry = buildFactRetrieverRegistry();
 
-  const persistenceContext = await initializePersistenceContext(database, {
-    logger,
-  });
+  const persistenceContext =
+    options.persistenceContext ??
+    (await initializePersistenceContext(database, {
+      logger,
+    }));
 
   const factRetrieverEngine = await DefaultFactRetrieverEngine.create({
     scheduler,

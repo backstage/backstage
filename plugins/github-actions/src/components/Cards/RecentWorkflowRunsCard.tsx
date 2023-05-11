@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -29,6 +29,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
+  ErrorPanel,
   InfoCard,
   InfoCardVariants,
   Link,
@@ -52,7 +53,7 @@ export const RecentWorkflowRunsCard = (props: {
   const errorApi = useApi(errorApiRef);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
 
@@ -76,6 +77,11 @@ export const RecentWorkflowRunsCard = (props: {
 
   const githubHost = hostname || 'github.com';
   const routeLink = useRouteRef(buildRouteRef);
+
+  if (error) {
+    return <ErrorPanel title={error.message} error={error} />;
+  }
+
   return (
     <InfoCard
       title="Recent Workflow Runs"

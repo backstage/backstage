@@ -1,6 +1,6 @@
 # Backstage Documentation
 
-This folder holds the service and configuration that runs Backstage's documentation hosted at https://backstage.io.
+This folder holds the service and configuration that runs Backstage's documentation hosted at <https://backstage.io>.
 
 It pulls content in from the [root `/docs`](../docs/) folder and builds it into the resulting HTML web site.
 
@@ -20,13 +20,13 @@ Testing the web site locally is a great way to see what final website will look 
 
 ## Installation
 
-```
+```bash
 $ yarn install
 ```
 
 ## Local Development
 
-```
+```bash
 $ yarn start
 ```
 
@@ -34,7 +34,7 @@ This command starts a local development server and opens up a browser window. Mo
 
 ## Build
 
-```
+```bash
 $ yarn build
 ```
 
@@ -107,30 +107,30 @@ For more information about blog posts, click [here](https://docusaurus.io/docs/e
 
 1. Create the doc as a new markdown file in `/docs`, example `docs/newly-created-doc.md`:
 
-```md
----
-id: newly-created-doc
-title: This Doc Needs To Be Edited
----
+   ```md
+   ---
+   id: newly-created-doc
+   title: This Doc Needs To Be Edited
+   ---
 
-My new content here..
-```
+   My new content here..
+   ```
 
-1. Refer to that doc's ID in an existing sidebar in `website/sidebars.json`:
+2. Refer to that doc's ID in an existing sidebar in `website/sidebars.json`:
 
-```javascript
-// Add newly-created-doc to the Getting Started category of docs
-{
-  "docs": {
-    "Getting Started": [
-      "quick-start",
-      "newly-created-doc" // new doc here
-    ],
-    ...
-  },
-  ...
-}
-```
+   ```javascript
+   // Add newly-created-doc to the Getting Started category of docs
+   {
+     "docs": {
+       "Getting Started": [
+         "quick-start",
+         "newly-created-doc" // new doc here
+       ],
+       ...
+     },
+     ...
+   }
+   ```
 
 For more information about adding new docs, click [here](https://docusaurus.io/docs/en/navigation)
 
@@ -138,74 +138,75 @@ For more information about adding new docs, click [here](https://docusaurus.io/d
 
 1. Make sure there is a header link to your blog in `website/siteConfig.js`:
 
-`website/siteConfig.js`
+   `website/siteConfig.js`
 
-```javascript
-headerLinks: [
-    ...
-    { blog: true, label: 'Blog' },
-    ...
-]
-```
+   ```javascript
+   headerLinks: [
+       ...
+       { blog: true, label: 'Blog' },
+       ...
+   ]
+   ```
 
 2. Create the blog post with the format `YYYY-MM-DD-My-Blog-Post-Title.md` in `website/blog`:
 
-`website/blog/2018-05-21-New-Blog-Post.md`
+   `website/blog/2018-05-21-New-Blog-Post.md`
 
-```markdown
----
-author: Frank Li
-authorURL: https://twitter.com/foobarbaz
-authorFBID: 503283835
-title: New Blog Post
----
+   ```markdown
+   ---
+   author: Frank Li
+   authorURL: https://twitter.com/foobarbaz
+   authorFBID: 503283835
+   title: New Blog Post
+   ---
 
-Lorem Ipsum...
-```
+   Lorem Ipsum...
+   ```
 
 For more information about blog posts, click [here](https://docusaurus.io/docs/en/adding-blog)
 
 ### Adding items to your site's top navigation bar
 
-1. Add links to docs, custom pages or external links by editing the headerLinks field of `website/siteConfig.js`:
+1. Add links to docs, custom pages or external links by editing the `headerLinks` field of `website/siteConfig.js`:
 
-`website/siteConfig.js`
+   `website/siteConfig.js`
 
-```javascript
-{
-  headerLinks: [
-    ...
-    /* you can add docs */
-    { doc: 'my-examples', label: 'Examples' },
-    /* you can add custom pages */
-    { page: 'help', label: 'Help' },
-    /* you can add external links */
-    { href: 'https://github.com/facebook/docusaurus', label: 'GitHub' },
-    ...
-  ],
-  ...
-}
-```
+   ```javascript
+   {
+     headerLinks: [
+       ...
+       /* you can add docs */
+       { doc: 'my-examples', label: 'Examples' },
+       /* you can add custom pages */
+       { page: 'help', label: 'Help' },
+       /* you can add external links */
+       { href: 'https://github.com/facebook/docusaurus', label: 'GitHub' },
+       ...
+     ],
+     ...
+   }
+   ```
 
 For more information about the navigation bar, click [here](https://docusaurus.io/docs/en/navigation)
 
 ### Adding custom pages
 
 1. Docusaurus uses React components to build pages. The components are saved as .js files in `website/pages/en`:
-1. If you want your page to show up in your navigation header, you will need to update `website/siteConfig.js` to add to the `headerLinks` element:
 
-`website/siteConfig.js`
+2. If you want your page to show up in your navigation header, you will need to update `website/siteConfig.js` to add to the `headerLinks` element:
 
-```javascript
-{
-  headerLinks: [
-    ...
-    { page: 'my-new-custom-page', label: 'My New Custom Page' },
-    ...
-  ],
-  ...
-}
-```
+   `website/siteConfig.js`
+
+   ```javascript
+   {
+     headerLinks: [
+       ...
+       { page: 'my-new-custom-page', label: 'My New Custom Page' },
+       ...
+     ],
+     ...
+   }
+   ```
 
 Learn more about [Docusaurus custom pages](https://docusaurus.io/docs/en/custom-pages).
 
@@ -216,4 +217,19 @@ Full documentation can be found on the [Docusaurus website](https://docusaurus.i
 ## Additional notes
 
 - If you want to make images zoomable on click, add the `data-zoomable` attribute to your `img` element.
+
   - In a docs or blog `.md` file, convert `![This is image](/microsite/static/img/code.png)` syntax to `<img data-zoomable src="/microsite/static/img/code.png" alt="This is image" />`
+
+- Code block line highlighting uses [custom magic comments](https://docusaurus.io/docs/markdown-features/code-blocks#custom-magic-comments). Currently, we have the following magic comments:
+  - Highlight line(s)
+    - `highlight-next-line`
+    - `highlight-start`
+    - `highlight-end`
+  - Add line(s)
+    - `highlight-add-next-line`
+    - `highlight-add-start`
+    - `highlight-add-end`
+  - Remove line(s)
+    - `highlight-remove-next-line`
+    - `highlight-remove-start`
+    - `highlight-remove-end`

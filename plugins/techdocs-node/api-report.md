@@ -19,10 +19,7 @@ import { Writable } from 'stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
-  static fromConfig(
-    config: Config,
-    { logger, reader }: PreparerConfig,
-  ): DirectoryPreparer;
+  static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 
@@ -54,6 +51,9 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
+  siteOptions?: {
+    name?: string;
+  };
 };
 
 // @public
@@ -84,6 +84,32 @@ export const getLocationForEntity: (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
 ) => ParsedLocationAnnotation;
+
+// @public @deprecated (undocumented)
+export const getMkDocsYml: (
+  inputDir: string,
+  siteOptions?:
+    | {
+        name?: string | undefined;
+      }
+    | undefined,
+) => Promise<{
+  path: string;
+  content: string;
+  configIsTemporary: boolean;
+}>;
+
+// @public
+export const getMkdocsYml: (
+  inputDir: string,
+  siteOptions?: {
+    name?: string;
+  },
+) => Promise<{
+  path: string;
+  content: string;
+  configIsTemporary: boolean;
+}>;
 
 // @public
 export type MigrateRequest = {
@@ -136,7 +162,7 @@ export type PreparerResponse = {
 export class Preparers implements PreparerBuilder {
   static fromConfig(
     backstageConfig: Config,
-    { logger, reader }: PreparerConfig,
+    options: PreparerConfig,
   ): Promise<PreparerBuilder>;
   get(entity: Entity): PreparerBase;
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
@@ -146,7 +172,7 @@ export class Preparers implements PreparerBuilder {
 export class Publisher {
   static fromConfig(
     config: Config,
-    { logger, discovery }: PublisherFactory,
+    options: PublisherFactory,
   ): Promise<PublisherBase>;
 }
 
@@ -217,7 +243,7 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.1.0';
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.0';
   static fromConfig(
     config: Config,
     options: GeneratorOptions,
@@ -246,7 +272,7 @@ export const transformDirLocation: (
 
 // @public
 export class UrlPreparer implements PreparerBase {
-  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
+  static fromConfig(options: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 ```

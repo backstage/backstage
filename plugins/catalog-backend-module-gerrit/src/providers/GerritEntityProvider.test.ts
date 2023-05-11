@@ -15,14 +15,18 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
-import path from 'path';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import path from 'path';
 import { GerritEntityProvider } from './GerritEntityProvider';
 
 const server = setupServer();
@@ -206,5 +210,94 @@ describe('GerritEntityProvider', () => {
         schedule,
       }),
     ).toThrow(/No gerrit integration/);
+  });
+
+  it('fail without schedule and scheduler', () => {
+    expect(() =>
+      GerritEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    expect(() =>
+      GerritEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for gerrit-provider:active-training',
+    );
+  });
+
+  it('discovers projects from the api with schedule in config', async () => {
+    const configWithSchedule = new ConfigReader({
+      catalog: {
+        providers: {
+          gerrit: {
+            'active-training': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+              branch: 'main',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
+          },
+        },
+      },
+      integrations: {
+        gerrit: [
+          {
+            host: 'g.com',
+            baseUrl: 'https://g.com/gerrit',
+            gitilesBaseUrl: 'https:/g.com/gitiles',
+          },
+        ],
+      },
+    });
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as PluginTaskScheduler;
+
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),
+    );
+    const expected = getJsonFixture('expectedProviderEntities.json');
+
+    server.use(
+      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.body(repoBuffer),
+        ),
+      ),
+    );
+
+    const provider = GerritEntityProvider.fromConfig(configWithSchedule, {
+      logger,
+      scheduler,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'gerrit-provider:active-training',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('gerrit-provider:active-training:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
   });
 });

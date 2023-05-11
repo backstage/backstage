@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  AuthenticationError,
-  ConflictError,
-  ErrorResponseBody,
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  NotModifiedError,
-  serializeError,
-} from '@backstage/errors';
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { Logger } from 'winston';
+import { ErrorRequestHandler } from 'express';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
+import { ConfigReader } from '@backstage/config';
+import { MiddlewareFactory } from '@backstage/backend-app-api';
 
 /**
  * Options passed to the {@link errorHandler} middleware.
@@ -46,7 +38,7 @@ export type ErrorHandlerOptions = {
    *
    * If not specified, the root logger will be used.
    */
-  logger?: Logger;
+  logger?: LoggerService;
 
   /**
    * Whether any 4xx errors should be logged or not.
@@ -73,69 +65,11 @@ export type ErrorHandlerOptions = {
 export function errorHandler(
   options: ErrorHandlerOptions = {},
 ): ErrorRequestHandler {
-  const showStackTraces =
-    options.showStackTraces ?? process.env.NODE_ENV === 'development';
-
-  const logger = (options.logger || getRootLogger()).child({
-    type: 'errorHandler',
+  return MiddlewareFactory.create({
+    config: new ConfigReader({}),
+    logger: options.logger ?? getRootLogger(),
+  }).error({
+    logAllErrors: options.logClientErrors,
+    showStackTraces: options.showStackTraces,
   });
-
-  return (error: Error, req: Request, res: Response, next: NextFunction) => {
-    const statusCode = getStatusCode(error);
-    if (options.logClientErrors || statusCode >= 500) {
-      logger.error(error);
-    }
-
-    if (res.headersSent) {
-      // If the headers have already been sent, do not send the response again
-      // as this will throw an error in the backend.
-      next(error);
-      return;
-    }
-
-    const body: ErrorResponseBody = {
-      error: serializeError(error, { includeStack: showStackTraces }),
-      request: { method: req.method, url: req.url },
-      response: { statusCode },
-    };
-
-    res.status(statusCode).json(body);
-  };
-}
-
-function getStatusCode(error: Error): number {
-  // Look for common http library status codes
-  const knownStatusCodeFields = ['statusCode', 'status'];
-  for (const field of knownStatusCodeFields) {
-    const statusCode = (error as any)[field];
-    if (
-      typeof statusCode === 'number' &&
-      (statusCode | 0) === statusCode && // is whole integer
-      statusCode >= 100 &&
-      statusCode <= 599
-    ) {
-      return statusCode;
-    }
-  }
-
-  // Handle well-known error types
-  switch (error.name) {
-    case NotModifiedError.name:
-      return 304;
-    case InputError.name:
-      return 400;
-    case AuthenticationError.name:
-      return 401;
-    case NotAllowedError.name:
-      return 403;
-    case NotFoundError.name:
-      return 404;
-    case ConflictError.name:
-      return 409;
-    default:
-      break;
-  }
-
-  // Fall back to internal server error
-  return 500;
 }

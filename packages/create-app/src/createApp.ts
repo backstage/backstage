@@ -28,7 +28,7 @@ import {
   createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
-  initGitRepository,
+  tryInitGitRepository,
   readGitConfig,
 } from './lib/tasks';
 
@@ -42,6 +42,7 @@ export default async (opts: OptionValues): Promise<void> => {
     {
       type: 'input',
       name: 'name',
+      default: 'backstage',
       message: chalk.blue('Enter a name for the app [required]'),
       validate: (value: any) => {
         if (!value) {
@@ -109,13 +110,16 @@ export default async (opts: OptionValues): Promise<void> => {
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
-    if (gitConfig?.name && gitConfig?.email) {
-      Task.section('Initializing git repository');
-      await initGitRepository(appDir);
+    if (gitConfig) {
+      if (await tryInitGitRepository(appDir)) {
+        // Since we don't know whether we were able to init git before we
+        // try, we can't track the actual task execution
+        Task.forItem('init', 'git repository', async () => {});
+      }
     }
 
     if (!opts.skipInstall) {
-      Task.section('Building the app');
+      Task.section('Installing dependencies');
       await buildAppTask(appDir);
     }
 

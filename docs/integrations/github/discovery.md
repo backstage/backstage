@@ -14,7 +14,7 @@ organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog. This is the preferred method for ingesting entities into the catalog.
 
-## Installation
+## Installation without Events Support
 
 You will have to add the provider in the catalog initialization code of your
 backend. They are not installed by default, therefore you have to add a
@@ -28,30 +28,81 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 
 And then add the entity provider to your catalog builder:
 
-```diff
-  // In packages/backend/src/plugins/catalog.ts
-+ import { GitHubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
 
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const builder = await CatalogBuilder.create(env);
-+   builder.addEntityProvider(
-+     GitHubEntityProvider.fromConfig(env.config, {
-+       logger: env.logger,
-+       // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-+       schedule: env.scheduler.createScheduledTaskRunner({
-+         frequency: { minutes: 30 },
-+         timeout: { minutes: 3 },
-+       }),
-+       // optional: alternatively, use schedule
-+       scheduler: env.scheduler,
-+     }),
-+   );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    GithubEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
 
-    // [...]
-  }
+  // ..
+}
 ```
+
+## Installation with Events Support
+
+Please follow the installation instructions at
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
+
+Additionally, you need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Set up your provider
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+/* highlight-add-next-line */
+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  builder.addProcessor(new ScaffolderEntitiesProcessor());
+  /* highlight-add-start */
+  const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
+  });
+  env.eventBroker.subscribe(githubProvider);
+  builder.addEntityProvider(demoProvider);
+  /* highlight-add-end */
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+  return router;
+}
+```
+
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
 
 ## Configuration
 
@@ -104,6 +155,20 @@ catalog:
           topic:
             include: ['backstage-include'] # optional array of strings
             exclude: ['experiments'] # optional array of strings
+      validateLocationsExist:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          branch: 'main' # string
+          repository: '.*' # Regex
+        validateLocationsExist: true # optional boolean
+      visibilityProviderId:
+        organization: 'backstage' # string
+        catalogPath: '/catalog-info.yaml' # string
+        filters:
+          visibility:
+            - public
+            - internal
       enterpriseProviderId:
         host: ghe.example.net
         organization: 'backstage' # string
@@ -118,7 +183,8 @@ This provider supports multiple organizations via unique provider IDs.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  You can use wildcards - `*` or `**` - to search the path and/or the filename
+  You can use wildcards - `*` or `**` - to search the path and/or the filename.
+  Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
@@ -134,11 +200,19 @@ This provider supports multiple organizations via unique provider IDs.
     - **`exclude`** _(optional)_:
       An array of strings used to filter out results based on their associated GitHub topics.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
+  - **`visibility`** _(optional)_:
+    An array of strings used to filter results based on their visibility. Available options are `private`, `internal`, `public`. If configured (non empty), only repositories with visibility present in the filter will be ingested
 - **`host`** _(optional)_:
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 - **`organization`**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+- **`validateLocationsExist`** _(optional)_:
+  Whether to validate locations that exist before emitting them.
+  This option avoids generating locations for catalog info files that do not exist in the source repository.
+  Defaults to `false`.
+  Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
+  conjunction with wildcards in the `catalogPath`.
 - **`schedule`** _(optional)_:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
@@ -195,34 +269,40 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 
 And then add the processors to your catalog builder:
 
-```diff
-// In packages/backend/src/plugins/catalog.ts
-+import {
-+  GithubDiscoveryProcessor,
-+  GithubOrgReaderProcessor,
-+} from '@backstage/plugin-catalog-backend-module-github';
-+import {
-+  ScmIntegrations,
-+  DefaultGithubCredentialsProvider
-+} from '@backstage/integration';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-start */
+import {
+  GithubDiscoveryProcessor,
+  GithubOrgReaderProcessor,
+} from '@backstage/plugin-catalog-backend-module-github';
+import {
+  ScmIntegrations,
+  DefaultGithubCredentialsProvider,
+} from '@backstage/integration';
+/* highlight-add-end */
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-+  const integrations = ScmIntegrations.fromConfig(env.config);
-+  const githubCredentialsProvider =
-+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-+  builder.addProcessor(
-+    GithubDiscoveryProcessor.fromConfig(env.config, {
-+      logger: env.logger,
-+      githubCredentialsProvider,
-+    }),
-+    GithubOrgReaderProcessor.fromConfig(env.config, {
-+      logger: env.logger,
-+      githubCredentialsProvider,
-+    }),
-+  );
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  const integrations = ScmIntegrations.fromConfig(env.config);
+  const githubCredentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+  builder.addProcessor(
+    GithubDiscoveryProcessor.fromConfig(env.config, {
+      logger: env.logger,
+      githubCredentialsProvider,
+    }),
+    GithubOrgReaderProcessor.fromConfig(env.config, {
+      logger: env.logger,
+      githubCredentialsProvider,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Configuration

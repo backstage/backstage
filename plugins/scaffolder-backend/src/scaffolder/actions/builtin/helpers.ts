@@ -91,7 +91,7 @@ export async function initRepoAndPush({
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
-}): Promise<void> {
+}): Promise<{ commitHash: string }> {
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -110,13 +110,12 @@ export async function initRepoAndPush({
     email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
   };
 
-  await git.commit({
+  const commitHash = await git.commit({
     dir,
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
   });
-
   await git.addRemote({
     dir,
     url: remoteUrl,
@@ -127,6 +126,8 @@ export async function initRepoAndPush({
     dir,
     remote: 'origin',
   });
+
+  return { commitHash };
 }
 
 export async function commitAndPushRepo({
@@ -148,7 +149,7 @@ export async function commitAndPushRepo({
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
-}): Promise<void> {
+}): Promise<{ commitHash: string }> {
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -164,7 +165,7 @@ export async function commitAndPushRepo({
     email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
   };
 
-  await git.commit({
+  const commitHash = await git.commit({
     dir,
     message: commitMessage,
     author: authorInfo,
@@ -176,6 +177,8 @@ export async function commitAndPushRepo({
     remote: 'origin',
     remoteRef: remoteRef ?? `refs/heads/${branch}`,
   });
+
+  return { commitHash };
 }
 
 type BranchProtectionOptions = {
@@ -185,9 +188,23 @@ type BranchProtectionOptions = {
   logger: Logger;
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
+  bypassPullRequestAllowances?: {
+    users?: string[];
+    teams?: string[];
+    apps?: string[];
+  };
+  requiredApprovingReviewCount?: number;
+  restrictions?: {
+    users: string[];
+    teams: string[];
+    apps?: string[];
+  };
   requireBranchesToBeUpToDate?: boolean;
+  requiredConversationResolution?: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
+  dismissStaleReviews?: boolean;
+  requiredCommitSigning?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -196,10 +213,16 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   owner,
   logger,
   requireCodeOwnerReviews,
+  bypassPullRequestAllowances,
+  requiredApprovingReviewCount,
+  restrictions,
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
+  requiredConversationResolution = false,
   defaultBranch = 'master',
   enforceAdmins = true,
+  dismissStaleReviews = false,
+  requiredCommitSigning = false,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -221,13 +244,24 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           strict: requireBranchesToBeUpToDate,
           contexts: requiredStatusCheckContexts,
         },
-        restrictions: null,
+        restrictions: restrictions ?? null,
         enforce_admins: enforceAdmins,
         required_pull_request_reviews: {
-          required_approving_review_count: 1,
+          required_approving_review_count: requiredApprovingReviewCount,
           require_code_owner_reviews: requireCodeOwnerReviews,
+          bypass_pull_request_allowances: bypassPullRequestAllowances,
+          dismiss_stale_reviews: dismissStaleReviews,
         },
+        required_conversation_resolution: requiredConversationResolution,
       });
+
+      if (requiredCommitSigning) {
+        await client.rest.repos.createCommitSignatureProtection({
+          owner,
+          repo: repoName,
+          branch: defaultBranch,
+        });
+      }
     } catch (e) {
       assertError(e);
       if (
@@ -264,4 +298,8 @@ export function getGitCommitMessage(
   return gitCommitMessage
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
+}
+
+export function entityRefToName(name: string): string {
+  return name.replace(/^.*[:/]/g, '');
 }

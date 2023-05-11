@@ -34,6 +34,7 @@ export class CloudbuildClient implements CloudbuildApi {
         options.projectId,
       )}/builds/${encodeURIComponent(options.runId)}:retry`,
       {
+        method: 'POST',
         headers: new Headers({
           Accept: '*/*',
           Authorization: `Bearer ${await this.getToken()}`,

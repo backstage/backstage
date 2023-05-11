@@ -33,7 +33,7 @@ export type NoInfer<T> = T extends infer S ? S : never;
 /**
  * Utility function used to parse a PermissionCriteria
  * @param criteria - a PermissionCriteria
- * @alpha
+ * @public
  *
  * @returns `true` if the permission criteria is of type allOf,
  * narrowing down `criteria` to the specific type.
@@ -46,7 +46,7 @@ export const isAndCriteria = <T>(
 /**
  * Utility function used to parse a PermissionCriteria of type
  * @param criteria - a PermissionCriteria
- * @alpha
+ * @public
  *
  * @returns `true` if the permission criteria is of type anyOf,
  * narrowing down `criteria` to the specific type.
@@ -59,7 +59,7 @@ export const isOrCriteria = <T>(
 /**
  * Utility function used to parse a PermissionCriteria
  * @param criteria - a PermissionCriteria
- * @alpha
+ * @public
  *
  * @returns `true` if the permission criteria is of type not,
  * narrowing down `criteria` to the specific type.

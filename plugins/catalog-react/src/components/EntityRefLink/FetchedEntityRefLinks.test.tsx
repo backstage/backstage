@@ -16,6 +16,7 @@
 import { FetchedEntityRefLinks } from './FetchedEntityRefLinks';
 import { entityRouteRef } from '../../routes';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import React from 'react';
 import { JsonObject } from '@backstage/types';
@@ -60,7 +61,7 @@ describe('<FetchedEntityRefLinks />', () => {
         }),
     };
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
       </TestApiProvider>,
@@ -71,12 +72,12 @@ describe('<FetchedEntityRefLinks />', () => {
       },
     );
 
-    expect(rendered.getByText('SOFTWARE')).toHaveAttribute(
+    expect(screen.getByText('SOFTWARE')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
 
-    expect(rendered.getByText('INTERFACE')).toHaveAttribute(
+    expect(screen.getByText('INTERFACE')).toHaveAttribute(
       'href',
       '/catalog/default/api/interface',
     );
@@ -111,7 +112,7 @@ describe('<FetchedEntityRefLinks />', () => {
 
     const catalogApi: Partial<CatalogApi> = {};
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
       </TestApiProvider>,
@@ -122,12 +123,12 @@ describe('<FetchedEntityRefLinks />', () => {
       },
     );
 
-    expect(rendered.getByText('TOOL')).toHaveAttribute(
+    expect(screen.getByText('TOOL')).toHaveAttribute(
       'href',
       '/catalog/default/component/tool',
     );
 
-    expect(rendered.getByText('IMPLEMENTATION')).toHaveAttribute(
+    expect(screen.getByText('IMPLEMENTATION')).toHaveAttribute(
       'href',
       '/catalog/default/api/implementation',
     );
@@ -189,7 +190,7 @@ describe('<FetchedEntityRefLinks />', () => {
         }),
     };
 
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <FetchedEntityRefLinks entityRefs={entityRefs} getTitle={getTitle} />
       </TestApiProvider>,
@@ -200,17 +201,17 @@ describe('<FetchedEntityRefLinks />', () => {
       },
     );
 
-    expect(rendered.getByText('TOOL')).toHaveAttribute(
+    expect(screen.getByText('TOOL')).toHaveAttribute(
       'href',
       '/catalog/default/component/tool',
     );
 
-    expect(rendered.getByText('IMPLEMENTATION')).toHaveAttribute(
+    expect(screen.getByText('IMPLEMENTATION')).toHaveAttribute(
       'href',
       '/catalog/default/api/implementation',
     );
 
-    expect(rendered.getByText('INTERFACE')).toHaveAttribute(
+    expect(screen.getByText('INTERFACE')).toHaveAttribute(
       'href',
       '/catalog/default/component/interface',
     );

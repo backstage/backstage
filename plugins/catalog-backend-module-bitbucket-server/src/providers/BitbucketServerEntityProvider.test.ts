@@ -15,14 +15,18 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+} from '@backstage/backend-tasks';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { BitbucketServerEntityProvider } from './BitbucketServerEntityProvider';
+import { ConfigReader } from '@backstage/config';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { BitbucketServerPagedResponse } from '../lib/BitbucketServerClient';
+import { BitbucketServerEntityProvider } from './BitbucketServerEntityProvider';
+import { BitbucketServerPagedResponse } from '../lib';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -302,6 +306,165 @@ describe('BitbucketServerEntityProvider', () => {
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
       schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'bitbucketServer-provider:mainProvider',
+    );
+
+    setupStubs(
+      [
+        { key: 'project-test', repos: ['repo-test'] },
+        { key: 'other-project', repos: ['other-repo'] },
+      ],
+      `https://${host}`,
+    );
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('bitbucketServer-provider:mainProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+              'backstage.io/managed-by-origin-location': `url:https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+            },
+            name: 'generated-77f4323822420990f8c3e3c981d38c2dec4ae3a6',
+          },
+          spec: {
+            presence: 'optional',
+            target: `https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketServer-provider:mainProvider',
+      },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+              'backstage.io/managed-by-origin-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+            },
+            name: 'generated-d8d4944c30c2906dfee172ddda9537f9893b2c0f',
+          },
+          spec: {
+            presence: 'optional',
+            target: `https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketServer-provider:mainProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('fail without schedule and scheduler', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            host: 'bitbucket.mycompany.com',
+          },
+        },
+      },
+      integrations: {
+        bitbucketServer: [
+          {
+            host: 'bitbucket.mycompany.com',
+          },
+        ],
+      },
+    });
+
+    expect(() =>
+      BitbucketServerEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            host: 'bitbucket.mycompany.com',
+          },
+        },
+      },
+      integrations: {
+        bitbucketServer: [
+          {
+            host: 'bitbucket.mycompany.com',
+          },
+        ],
+      },
+    });
+
+    expect(() =>
+      BitbucketServerEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for bitbucketServer-provider:default',
+    );
+  });
+
+  it('apply full update with schedule in config', async () => {
+    const host = 'bitbucket.mycompany.com';
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [
+          {
+            host: host,
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host: host,
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as PluginTaskScheduler;
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger,
+      scheduler,
     })[0];
     expect(provider.getProviderName()).toEqual(
       'bitbucketServer-provider:mainProvider',

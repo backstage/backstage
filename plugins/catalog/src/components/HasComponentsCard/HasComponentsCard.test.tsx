@@ -22,7 +22,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { HasComponentsCard } from './HasComponentsCard';
 
@@ -51,7 +51,7 @@ describe('<HasComponentsCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasComponentsCard />
@@ -64,9 +64,9 @@ describe('<HasComponentsCard />', () => {
       },
     );
 
-    expect(getByText('Has components')).toBeInTheDocument();
+    expect(screen.getByText('Has components')).toBeInTheDocument();
     expect(
-      getByText(/No component is part of this system/i),
+      screen.getByText(/No component is part of this system/i),
     ).toBeInTheDocument();
   });
 
@@ -99,7 +99,7 @@ describe('<HasComponentsCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasComponentsCard />
@@ -113,8 +113,8 @@ describe('<HasComponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Has components')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Has components')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

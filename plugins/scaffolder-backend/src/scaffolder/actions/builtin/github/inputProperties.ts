@@ -38,6 +38,12 @@ const requireCodeOwnerReviews = {
     'Require an approved review in PR including files with a designated Code Owner',
   type: 'boolean',
 };
+const dismissStaleReviews = {
+  title: 'Dismiss Stale Reviews',
+  description:
+    'New reviewable commits pushed to a matching branch will dismiss pull request review approvals.',
+  type: 'boolean',
+};
 const requiredStatusCheckContexts = {
   title: 'Required Status Check Contexts',
   description:
@@ -50,6 +56,12 @@ const requiredStatusCheckContexts = {
 const requireBranchesToBeUpToDate = {
   title: 'Require Branches To Be Up To Date?',
   description: `Require branches to be up to date before merging. The default value is 'true'`,
+  type: 'boolean',
+};
+const requiredConversationResolution = {
+  title: 'Required Conversation Resolution',
+  description:
+    'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
   type: 'boolean',
 };
 const repoVisibility = {
@@ -82,6 +94,17 @@ const allowSquashMerge = {
   type: 'boolean',
   description: `Allow squash merges. The default value is 'true'`,
 };
+const squashMergeCommitTitle = {
+  title: 'Default squash merge commit title',
+  enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
+  description: `Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'`,
+};
+const squashMergeCommitMessage = {
+  title: 'Default squash merge commit message',
+  enum: ['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'],
+  description: `Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'`,
+};
+
 const allowRebaseMerge = {
   title: 'Allow Rebase Merges',
   type: 'boolean',
@@ -104,7 +127,6 @@ const collaborators = {
       access: {
         type: 'string',
         description: 'The type of access for the user',
-        enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
       },
       user: {
         type: 'string',
@@ -119,6 +141,21 @@ const collaborators = {
     },
     oneOf: [{ required: ['user'] }, { required: ['team'] }],
   },
+};
+const hasProjects = {
+  title: 'Enable projects',
+  type: 'boolean',
+  description: `Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects`,
+};
+const hasWiki = {
+  title: 'Enable the wiki',
+  type: 'boolean',
+  description: `Enable the wiki for the repository. The default value is 'true'`,
+};
+const hasIssues = {
+  title: 'Enable issues',
+  type: 'boolean',
+  description: `Enable issues for the repository. The default value is 'true'`,
 };
 const token = {
   title: 'Authentication Token',
@@ -147,6 +184,35 @@ const protectEnforceAdmins = {
   type: 'boolean',
   description: `Enforce admins to adhere to default branch protection. The default value is 'true'`,
 };
+
+const bypassPullRequestAllowances = {
+  title: 'Bypass pull request requirements',
+  description:
+    'Allow specific users, teams, or apps to bypass pull request requirements.',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    apps: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    users: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    teams: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+};
+
 const gitCommitMessage = {
   title: 'Git Commit Message',
   type: 'string',
@@ -159,10 +225,52 @@ const sourcePath = {
   type: 'string',
 };
 
+const requiredApprovingReviewCount = {
+  title: 'Required approving review count',
+  type: 'number',
+  description: `Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1.`,
+};
+
+const restrictions = {
+  title: 'Restrict who can push to the protected branch',
+  description:
+    'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    apps: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    users: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    teams: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+};
+
+const requiredCommitSigning = {
+  title: 'Require commit signing',
+  type: 'boolean',
+  description: `Require commit signing so that you must sign commits on this branch.`,
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
 export { allowSquashMerge };
+export { squashMergeCommitTitle };
+export { squashMergeCommitMessage };
 export { allowAutoMerge };
 export { collaborators };
 export { defaultBranch };
@@ -174,11 +282,20 @@ export { gitCommitMessage };
 export { homepage };
 export { protectDefaultBranch };
 export { protectEnforceAdmins };
+export { bypassPullRequestAllowances };
+export { requiredApprovingReviewCount };
+export { restrictions };
 export { repoUrl };
 export { repoVisibility };
 export { requireCodeOwnerReviews };
+export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
+export { requiredConversationResolution };
+export { hasProjects };
+export { hasIssues };
+export { hasWiki };
 export { sourcePath };
 export { token };
 export { topics };
+export { requiredCommitSigning };

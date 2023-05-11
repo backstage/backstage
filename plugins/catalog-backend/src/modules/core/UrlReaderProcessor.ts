@@ -20,6 +20,7 @@ import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorCache,
@@ -27,7 +28,6 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorParser,
   CatalogProcessorResult,
-  LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
@@ -135,16 +135,10 @@ export class UrlReaderProcessor implements CatalogProcessor {
       return { response: await Promise.all(output), etag: response.etag };
     }
 
-    // Otherwise do a plain read, prioritizing readUrl if available
-    if (this.options.reader.readUrl) {
-      const data = await this.options.reader.readUrl(location, { etag });
-      return {
-        response: [{ url: location, data: await data.buffer() }],
-        etag: data.etag,
-      };
-    }
-
-    const data = await this.options.reader.read(location);
-    return { response: [{ url: location, data }] };
+    const data = await this.options.reader.readUrl(location, { etag });
+    return {
+      response: [{ url: location, data: await data.buffer() }],
+      etag: data.etag,
+    };
   }
 }

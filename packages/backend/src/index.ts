@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,9 @@ import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
+import entityFeedback from './plugins/entityFeedback';
+import events from './plugins/events';
+import explore from './plugins/explore';
 import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
@@ -58,9 +61,14 @@ import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
 import playlist from './plugins/playlist';
+import adr from './plugins/adr';
+import lighthouse from './plugins/lighthouse';
+import linguist from './plugins/linguist';
+import devTools from './plugins/devtools';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -78,6 +86,8 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
+  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
+
   root.info(`Created UrlReader ${reader}`);
 
   return (plugin: string): PluginEnvironment => {
@@ -92,6 +102,7 @@ function makeCreateEnv(config: Config) {
       database,
       config,
       reader,
+      eventBroker,
       discovery,
       tokenManager,
       permissions,
@@ -136,15 +147,25 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const adrEnv = useHotMemoize(module, () => createEnv('adr'));
   const techInsightsEnv = useHotMemoize(module, () =>
     createEnv('tech-insights'),
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
+  const entityFeedbackEnv = useHotMemoize(module, () =>
+    createEnv('entityFeedback'),
+  );
+  const eventsEnv = useHotMemoize(module, () => createEnv('events'));
+  const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
+  const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
+  const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
+  const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
+  apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
@@ -161,7 +182,14 @@ async function main() {
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use('/playlist', await playlist(playlistEnv));
+  apiRouter.use('/explore', await explore(exploreEnv));
+  apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
+  apiRouter.use('/adr', await adr(adrEnv));
+  apiRouter.use('/linguist', await linguist(linguistEnv));
+  apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use(notFoundHandler());
+
+  await lighthouse(lighthouseEnv);
 
   const service = createServiceBuilder(module)
     .loadConfig(config)

@@ -40,7 +40,7 @@ import {
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
- * Implements a {@link UrlReader} for Azure repos.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for Azure repos.
  *
  * @public
  */
@@ -192,6 +192,7 @@ export class AzureUrlReader implements UrlReader {
           base: url,
         }),
         content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
       })),
     };
   }

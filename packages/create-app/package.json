@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.32-next.2",
+  "version": "0.5.1-next.2",
   "publishConfig": {
     "access": "public"
   },
@@ -34,7 +34,6 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "command-exists": "^1.2.9",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",

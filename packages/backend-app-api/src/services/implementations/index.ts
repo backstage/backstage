@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-export { cacheFactory } from './cacheService';
-export { configFactory } from './configService';
-export { databaseFactory } from './databaseService';
-export { discoveryFactory } from './discoveryService';
-export { loggerFactory } from './loggerService';
-export { rootLoggerFactory } from './rootLoggerService';
-export { permissionsFactory } from './permissionsService';
-export { schedulerFactory } from './schedulerService';
-export { tokenManagerFactory } from './tokenManagerService';
-export { urlReaderFactory } from './urlReaderService';
-export { httpRouterFactory } from './httpRouterService';
-export type { HttpRouterFactoryOptions } from './httpRouterService';
+export * from './cache';
+export * from './config';
+export * from './database';
+export * from './discovery';
+export * from './httpRouter';
+export * from './identity';
+export * from './lifecycle';
+export * from './logger';
+export * from './permissions';
+export * from './rootHttpRouter';
+export * from './rootLifecycle';
+export * from './rootLogger';
+export * from './scheduler';
+export * from './tokenManager';
+export * from './urlReader';

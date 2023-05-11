@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityAirbrakeContent } from './extensions';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { airbrakeApiRef, MockAirbrakeApi } from './api';
 import { createEntity } from './api';

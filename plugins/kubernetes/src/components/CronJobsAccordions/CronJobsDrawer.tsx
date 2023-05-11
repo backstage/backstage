@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { V1CronJob } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { Typography, Grid, Chip } from '@material-ui/core';
 
 export const CronJobDrawer = ({
@@ -27,7 +27,7 @@ export const CronJobDrawer = ({
 }) => {
   const namespace = cronJob.metadata?.namespace;
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={cronJob}
       expanded={expanded}
       kind="CronJob"
@@ -47,12 +47,12 @@ export const CronJobDrawer = ({
         spacing={0}
       >
         <Grid item>
-          <Typography variant="h5">
+          <Typography variant="body1">
             {cronJob.metadata?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography color="textSecondary" variant="body1">
+          <Typography color="textSecondary" variant="subtitle1">
             CronJob
           </Typography>
         </Grid>
@@ -62,6 +62,6 @@ export const CronJobDrawer = ({
           </Grid>
         )}
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

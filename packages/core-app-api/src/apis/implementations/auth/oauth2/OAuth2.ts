@@ -72,6 +72,7 @@ export default class OAuth2
 {
   static create(options: OAuth2CreateOptions) {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
@@ -81,6 +82,7 @@ export default class OAuth2
     } = options;
 
     const connector = new DefaultAuthConnector({
+      configApi,
       discoveryApi,
       environment,
       provider,
@@ -153,7 +155,10 @@ export default class OAuth2
   }
 
   async getIdToken(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
+    const session = await this.sessionManager.getSession({
+      ...options,
+      scopes: new Set(['openid']),
+    });
     return session?.providerInfo.idToken ?? '';
   }
 

@@ -26,11 +26,17 @@ export {
   gitReleaseManagerApiRef,
 } from './plugin';
 
-import { components, constants, helpers, testHelpers } from './plugin';
+import * as internals from './internals';
 
-export const internals = {
-  components,
-  constants,
-  helpers,
-  testHelpers,
-};
+export { internals };
+
+export type {
+  ComponentConfig,
+  CreateRcOnSuccessArgs,
+  PatchOnSuccessArgs,
+  PromoteRcOnSuccessArgs,
+  ResponseStep,
+  AlertError,
+} from './types/types';
+
+export type { Project } from './contexts/ProjectContext';

@@ -23,6 +23,7 @@ import {
   Link,
 } from '@backstage/core-components';
 import { Grid, Input, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { RadarComponent, TechRadarComponentProps } from './RadarComponent';
 
@@ -79,7 +80,7 @@ export function RadarPage(props: TechRadarPageProps) {
             onChange={e => setSearchText(e.target.value)}
           />
           <SupportButton>
-            <p>
+            <Typography paragraph>
               This is used for visualizing the official guidelines of different
               areas of software development such as languages, frameworks,
               infrastructure and processes. You can find an explanation for the
@@ -88,7 +89,7 @@ export function RadarPage(props: TechRadarPageProps) {
                 Zalando Tech Radar
               </Link>
               .
-            </p>
+            </Typography>
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="row">

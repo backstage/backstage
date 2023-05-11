@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-jest.mock('../helpers');
+jest.mock('../helpers', () => {
+  return {
+    initRepoAndPush: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+    commitAndPushRepo: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+  };
+});
 
 import { createPublishBitbucketServerAction } from './bitbucketServer';
 import { rest } from 'msw';
@@ -375,7 +384,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'master',
       auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -429,7 +442,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'master',
       auth: { username: 'test-user', password: 'test-password' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -481,7 +498,11 @@ describe('publish:bitbucketServer', () => {
       defaultBranch: 'main',
       auth: { token: 'thing' },
       logger: mockContext.logger,
-      gitAuthorInfo: {},
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -555,6 +576,7 @@ describe('publish:bitbucketServer', () => {
       auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -574,7 +596,7 @@ describe('publish:bitbucketServer', () => {
         ],
       },
       scaffolder: {
-        defaultCommitMessage: 'Test commit message',
+        defaultCommitMessage: 'initial commit',
       },
     });
 
@@ -626,7 +648,7 @@ describe('publish:bitbucketServer', () => {
       auth: { token: 'thing' },
       logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });

@@ -18,7 +18,6 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Duration } from 'luxon';
-import { AbortSignal } from 'node-abort-controller';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import {
   parseDuration,
@@ -32,6 +31,8 @@ function defer() {
   });
   return { promise, resolve };
 }
+
+jest.setTimeout(60_000);
 
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
@@ -78,7 +79,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -99,7 +99,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
   });
 
@@ -126,7 +125,6 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -147,7 +145,6 @@ describe('PluginTaskManagerImpl', () => {
           NotFoundError,
         );
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -173,7 +170,6 @@ describe('PluginTaskManagerImpl', () => {
           ConflictError,
         );
       },
-      60_000,
     );
   });
 
@@ -301,7 +297,45 @@ describe('PluginTaskManagerImpl', () => {
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
-      60_000,
+    );
+  });
+
+  describe('can fetch task ids', () => {
+    it.each(databases.eachSupportedId())(
+      'can fetch both global and local task ids, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+        const fn = jest.fn();
+
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromMillis(5000),
+          fn,
+          scope: 'global',
+        });
+
+        await manager.scheduleTask({
+          id: 'task2',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromMillis(5000),
+          fn,
+          scope: 'local',
+        });
+
+        await expect(manager.getScheduledTasks()).resolves.toEqual([
+          {
+            id: 'task1',
+            scope: 'global',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+          {
+            id: 'task2',
+            scope: 'local',
+            settings: expect.objectContaining({ cadence: 'PT5S' }),
+          },
+        ]);
+      },
     );
   });
 

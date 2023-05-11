@@ -35,7 +35,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     preparePullRequest: jest.fn(),
   };
 
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
+  const catalogApi = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     getEntityByRef: jest.fn(),
@@ -102,7 +102,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
     await act(async () => {
-      const { findByText } = render(
+      render(
         <StepPrepareCreatePullRequest
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
@@ -122,8 +122,10 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      const title = await findByText('My title');
-      const description = await findByText('body', { selector: 'strong' });
+      const title = await screen.findByText('My title');
+      const description = await screen.findByText('body', {
+        selector: 'strong',
+      });
       expect(title).toBeInTheDocument();
       expect(title).toBeVisible();
       expect(description).toBeInTheDocument();

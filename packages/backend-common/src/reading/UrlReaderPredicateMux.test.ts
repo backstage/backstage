@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 
 describe('UrlReaderPredicateMux', () => {
@@ -32,7 +31,7 @@ describe('UrlReaderPredicateMux', () => {
       search: jest.fn(),
     };
 
-    const mux = new UrlReaderPredicateMux(getVoidLogger());
+    const mux = new UrlReaderPredicateMux();
     mux.register({
       predicate: url => url.hostname === 'foo',
       reader: fooReader,
@@ -42,8 +41,8 @@ describe('UrlReaderPredicateMux', () => {
       reader: barReader,
     });
 
-    await mux.read('http://foo/1');
-    expect(fooReader.read).toHaveBeenCalledWith('http://foo/1');
+    await mux.readUrl('http://foo/1');
+    expect(fooReader.readUrl).toHaveBeenCalledWith('http://foo/1', undefined);
     await mux.readUrl('http://foo/2');
     expect(fooReader.readUrl).toHaveBeenCalledWith('http://foo/2', undefined);
     await mux.readTree('http://foo/3');
@@ -51,8 +50,8 @@ describe('UrlReaderPredicateMux', () => {
     await mux.search('http://foo/4');
     expect(fooReader.search).toHaveBeenCalledWith('http://foo/4', undefined);
 
-    await mux.read('http://bar/1');
-    expect(barReader.read).toHaveBeenCalledWith('http://bar/1');
+    await mux.readUrl('http://bar/1');
+    expect(barReader.readUrl).toHaveBeenCalledWith('http://bar/1', undefined);
     await mux.readUrl('http://bar/2');
     expect(barReader.readUrl).toHaveBeenCalledWith('http://bar/2', undefined);
     await mux.readTree('http://bar/3');
@@ -62,7 +61,7 @@ describe('UrlReaderPredicateMux', () => {
   });
 
   it('throws an error if no predicate matches', async () => {
-    const mux = new UrlReaderPredicateMux(getVoidLogger());
+    const mux = new UrlReaderPredicateMux();
 
     await expect(mux.readUrl('http://foo/1')).rejects.toThrow(
       /^Reading from 'http:\/\/foo\/1' is not allowed. You may/,
@@ -71,7 +70,6 @@ describe('UrlReaderPredicateMux', () => {
     mux.register({
       predicate: url => url.hostname === 'foo',
       reader: {
-        read: jest.fn(),
         readUrl: jest.fn(),
         readTree: jest.fn(),
         search: jest.fn(),

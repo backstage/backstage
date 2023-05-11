@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import React from 'react';
 
 const useStyles = makeStyles({
   iconContainer: {
@@ -34,14 +34,14 @@ const DoubleArrowLeft = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.iconContainer}>
-      <div className={classes.arrow1}>
+    <Box className={classes.iconContainer}>
+      <Box className={classes.arrow1}>
         <ArrowBackIosIcon style={{ fontSize: '12px' }} />
-      </div>
-      <div>
+      </Box>
+      <Box>
         <ArrowBackIosIcon style={{ fontSize: '12px' }} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

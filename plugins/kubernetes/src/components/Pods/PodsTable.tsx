@@ -26,6 +26,7 @@ import {
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import { ClusterContext } from '../../hooks/Cluster';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
@@ -37,39 +38,50 @@ type PodsTablesProps = {
   children?: React.ReactNode;
 };
 
-const DEFAULT_COLUMNS: TableColumn<V1Pod>[] = [
-  {
-    title: 'name',
-    highlight: true,
-    render: (pod: V1Pod) => <PodDrawer pod={pod} />,
-  },
-  {
-    title: 'phase',
-    render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
-  },
-  {
-    title: 'status',
-    render: containerStatuses,
-  },
-];
-
 const READY: TableColumn<V1Pod>[] = [
   {
     title: 'containers ready',
     align: 'center',
     render: containersReady,
+    width: 'auto',
   },
   {
     title: 'total restarts',
     align: 'center',
     render: totalRestarts,
     type: 'numeric',
+    width: 'auto',
   },
 ];
 
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
-  const columns: TableColumn<V1Pod>[] = [...DEFAULT_COLUMNS];
+  const cluster = useContext(ClusterContext);
+  const defaultColumns: TableColumn<V1Pod>[] = [
+    {
+      title: 'name',
+      highlight: true,
+      render: (pod: V1Pod) => (
+        <PodDrawer
+          podAndErrors={{
+            pod: pod as any,
+            clusterName: cluster.name,
+            errors: [],
+          }}
+        />
+      ),
+    },
+    {
+      title: 'phase',
+      render: (pod: V1Pod) => pod.status?.phase ?? 'unknown',
+      width: 'auto',
+    },
+    {
+      title: 'status',
+      render: containerStatuses,
+    },
+  ];
+  const columns: TableColumn<V1Pod>[] = [...defaultColumns];
 
   if (extraColumns.includes(READY_COLUMNS)) {
     columns.push(...READY);
@@ -87,6 +99,7 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
 
           return podStatusToCpuUtil(metrics);
         },
+        width: 'auto',
       },
       {
         title: 'Memory usage %',
@@ -99,6 +112,7 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
 
           return podStatusToMemoryUtil(metrics);
         },
+        width: 'auto',
       },
     ];
     columns.push(...resourceColumns);
@@ -109,11 +123,13 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     width: '100%',
   };
 
+  const usePods = pods.map(p => ({ ...p, id: p.metadata?.uid }));
+
   return (
     <div style={tableStyle}>
       <Table
-        options={{ paging: true, search: false }}
-        data={pods}
+        options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
+        data={usePods}
         columns={columns}
       />
     </div>

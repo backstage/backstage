@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
-  OAuthRequester,
-  OAuthRequestApi,
   AuthProviderInfo,
+  ConfigApi,
   DiscoveryApi,
+  OAuthRequestApi,
+  OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions } from './types';
+
+let warned = false;
 
 type Options<AuthSession> = {
   /**
@@ -49,6 +51,10 @@ type Options<AuthSession> = {
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
+  /**
+   * ConfigApi instance used to configure authentication flow of pop-up or redirect.
+   */
+  configApi?: ConfigApi;
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -69,9 +75,10 @@ export class DefaultAuthConnector<AuthSession>
   private readonly joinScopesFunc: (scopes: Set<string>) => string;
   private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
-
+  private readonly enableExperimentalRedirectFlow: boolean;
   constructor(options: Options<AuthSession>) {
     const {
+      configApi,
       discoveryApi,
       environment,
       provider,
@@ -80,9 +87,26 @@ export class DefaultAuthConnector<AuthSession>
       sessionTransform = id => id,
     } = options;
 
+    if (!warned && !configApi) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'DEPRECATION WARNING: Authentication providers require a configApi instance to configure the authentication flow. Please provide one to the authentication provider constructor.',
+      );
+      warned = true;
+    }
+
+    this.enableExperimentalRedirectFlow = configApi
+      ? configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false
+      : false;
+
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: scopes => this.showPopup(scopes),
+      onAuthRequest: async scopes => {
+        if (!this.enableExperimentalRedirectFlow) {
+          return this.showPopup(scopes);
+        }
+        return this.executeRedirect(scopes);
+      },
     });
 
     this.discoveryApi = discoveryApi;
@@ -94,14 +118,20 @@ export class DefaultAuthConnector<AuthSession>
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
     if (options.instantPopup) {
+      if (this.enableExperimentalRedirectFlow) {
+        return this.executeRedirect(options.scopes);
+      }
       return this.showPopup(options.scopes);
     }
     return this.authRequester(options.scopes);
   }
 
-  async refreshSession(): Promise<any> {
+  async refreshSession(scopes?: Set<string>): Promise<any> {
     const res = await fetch(
-      await this.buildUrl('/refresh', { optional: true }),
+      await this.buildUrl('/refresh', {
+        optional: true,
+        ...(scopes && { scope: this.joinScopesFunc(scopes) }),
+      }),
       {
         headers: {
           'x-requested-with': 'XMLHttpRequest',
@@ -154,7 +184,8 @@ export class DefaultAuthConnector<AuthSession>
     const scope = this.joinScopesFunc(scopes);
     const popupUrl = await this.buildUrl('/start', {
       scope,
-      origin: location.origin,
+      origin: window.location.origin,
+      flow: 'popup',
     });
 
     const payload = await showLoginPopup({
@@ -166,6 +197,19 @@ export class DefaultAuthConnector<AuthSession>
     });
 
     return await this.sessionTransform(payload);
+  }
+
+  private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
+    const scope = this.joinScopesFunc(scopes);
+    // redirect to auth api
+    window.location.href = await this.buildUrl('/start', {
+      scope,
+      origin: window.location.origin,
+      redirectUrl: window.location.href,
+      flow: 'redirect',
+    });
+    // return a promise that never resolves
+    return new Promise(() => {});
   }
 
   private async buildUrl(

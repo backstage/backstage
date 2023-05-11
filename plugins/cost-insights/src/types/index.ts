@@ -27,6 +27,7 @@ export * from './Filters';
 export * from './Icon';
 export * from './Loading';
 export * from './Theme';
+export * from './Tooltip';
 
 /**
  * Deprecated types moved to `@backstage/plugin-cost-insights-common`

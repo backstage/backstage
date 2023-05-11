@@ -17,7 +17,6 @@
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
-import { AbortController, AbortSignal } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { TaskFunction, TaskSettingsV2 } from './types';
 import { delegateAbortController, sleep } from './util';
@@ -40,8 +39,9 @@ export class LocalTaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-    let attemptNum = 1;
+
     (async () => {
+      let attemptNum = 1;
       for (;;) {
         try {
           if (settings.initialDelayDuration) {
@@ -61,6 +61,7 @@ export class LocalTaskWorker {
               options?.signal,
             );
           }
+
           this.logger.info(`Task worker finished: ${this.taskId}`);
           attemptNum = 0;
           break;

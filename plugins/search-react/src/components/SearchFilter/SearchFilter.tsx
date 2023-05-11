@@ -24,6 +24,7 @@ import {
   Select,
   MenuItem,
   FormLabel,
+  Typography,
 } from '@material-ui/core';
 
 import { useSearch } from '../../context';
@@ -36,6 +37,16 @@ import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 const useStyles = makeStyles({
   label: {
     textTransform: 'capitalize',
+  },
+  checkboxWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+  },
+  textWrapper: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
 });
 
@@ -119,6 +130,11 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       {values.map((value: string) => (
         <FormControlLabel
           key={value}
+          classes={{
+            root: classes.checkboxWrapper,
+            label: classes.textWrapper,
+          }}
+          label={value}
           control={
             <Checkbox
               color="primary"
@@ -130,7 +146,6 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
               checked={((filters[name] as string[]) ?? []).includes(value)}
             />
           }
-          label={value}
         />
       ))}
     </FormControl>
@@ -197,7 +212,9 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         </MenuItem>
         {values.map((value: string) => (
           <MenuItem key={value} value={value}>
-            {value}
+            <Typography variant="inherit" noWrap>
+              {value}
+            </Typography>
           </MenuItem>
         ))}
       </Select>
@@ -208,10 +225,10 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
 /**
  * @public
  */
-const SearchFilter = ({
-  component: Element,
-  ...props
-}: SearchFilterWrapperProps) => <Element {...props} />;
+const SearchFilter = (props: SearchFilterWrapperProps) => {
+  const { component: Element, ...elementProps } = props;
+  return <Element {...elementProps} />;
+};
 
 SearchFilter.Checkbox = (
   props: Omit<SearchFilterWrapperProps, 'component'> &

@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import MTable, {
+  Column,
+  Icons,
+  MaterialTableProps,
+  MTableBody,
+  MTableHeader,
+  MTableToolbar,
+  Options,
+} from '@material-table/core';
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-// Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -34,15 +42,6 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
-import MTable, {
-  Column,
-  Icons,
-  MaterialTableProps,
-  MTableBody,
-  MTableHeader,
-  MTableToolbar,
-  Options,
-} from '@material-table/core';
 import React, {
   forwardRef,
   MutableRefObject,
@@ -51,9 +50,11 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
+// Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -104,7 +105,6 @@ const StyledMTableHeader = withStyles(
       borderTop: `1px solid ${theme.palette.grey.A100}`,
       borderBottom: `1px solid ${theme.palette.grey.A100}`,
       // withStyles hasn't a generic overload for theme
-      color: (theme as BackstageTheme).palette.textSubtle,
       fontWeight: theme.typography.fontWeightBold,
       position: 'static',
       wordBreak: 'normal',
@@ -122,7 +122,7 @@ const StyledMTableToolbar = withStyles(
     },
     title: {
       '& > h6': {
-        fontWeight: 'bold',
+        fontWeight: theme.typography.fontWeightBold,
       },
     },
     searchField: {
@@ -136,14 +136,14 @@ const StyledMTableToolbar = withStyles(
 export type FiltersContainerClassKey = 'root' | 'title';
 
 const useFilterStyles = makeStyles<BackstageTheme>(
-  () => ({
+  theme => ({
     root: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
     title: {
-      fontWeight: 'bold',
+      fontWeight: theme.typography.fontWeightBold,
       fontSize: 18,
       whiteSpace: 'nowrap',
     },
@@ -168,7 +168,7 @@ function convertColumns<T extends object>(
   theme: BackstageTheme,
 ): TableColumn<T>[] {
   return columns.map(column => {
-    const headerStyle: React.CSSProperties = {};
+    const headerStyle: React.CSSProperties = column.headerStyle ?? {};
 
     let cellStyle = column.cellStyle || {};
 
@@ -239,6 +239,8 @@ export interface TableProps<T extends object = {}>
   onStateChange?: (state: TableState) => any;
 }
 
+export interface TableOptions<T extends object = {}> extends Options<T> {}
+
 export function TableToolbar(toolbarProps: {
   toolbarRef: MutableRefObject<any>;
   setSearch: (value: string) => void;
@@ -265,21 +267,21 @@ export function TableToolbar(toolbarProps: {
 
   if (hasFilters) {
     return (
-      <div className={filtersClasses.root}>
-        <div className={filtersClasses.root}>
+      <Box className={filtersClasses.root}>
+        <Box className={filtersClasses.root}>
           <IconButton onClick={toggleFilters} aria-label="filter list">
             <FilterList />
           </IconButton>
           <Typography className={filtersClasses.title}>
             Filters ({selectedFiltersLength})
           </Typography>
-        </div>
+        </Box>
         <StyledMTableToolbar
           {...toolbarProps}
           ref={toolbarRef}
           onSearchChanged={onSearchChanged}
         />
-      </div>
+      </Box>
     );
   }
 
@@ -373,7 +375,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!value.length)
+            .filter(([, value]) => !!(value as { length?: number }).length)
             .every(([key, filterValue]) => {
               const fieldValue = extractValueByField(
                 el,
@@ -484,7 +486,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   );
 
   return (
-    <div className={tableClasses.root}>
+    <Box className={tableClasses.root}>
       {filtersOpen && data && typeof data !== 'function' && filters?.length && (
         <Filters
           filters={constructFilters(filters, data as any[])}
@@ -516,10 +518,12 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         }
         data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
-        localization={{ toolbar: { searchPlaceholder: 'Filter' } }}
+        localization={{
+          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+        }}
         {...restProps}
       />
-    </div>
+    </Box>
   );
 }
 

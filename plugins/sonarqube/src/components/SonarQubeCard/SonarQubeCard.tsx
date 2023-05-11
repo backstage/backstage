@@ -15,19 +15,21 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  sonarQubeApiRef,
+  useProjectInfo,
+} from '@backstage/plugin-sonarqube-react';
+import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
+import Lock from '@material-ui/icons/Lock';
 import LockOpen from '@material-ui/icons/LockOpen';
 import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
+import SentimentVerySatisfied from '@material-ui/icons/SentimentVerySatisfied';
 import React, { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { sonarQubeApiRef } from '../../api';
-import {
-  SONARQUBE_PROJECT_KEY_ANNOTATION,
-  useProjectInfo,
-} from '../useProjectKey';
 import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';
@@ -200,14 +202,26 @@ export const SonarQubeCard = (props: {
                 rightSlot={<Rating rating={value.metrics.reliability_rating} />}
               />
               <RatingCard
-                titleIcon={<LockOpen />}
+                titleIcon={
+                  value.metrics.vulnerabilities === '0' ? (
+                    <Lock />
+                  ) : (
+                    <LockOpen />
+                  )
+                }
                 title="Vulnerabilities"
                 link={value.getIssuesUrl('VULNERABILITY')}
                 leftSlot={<Value value={value.metrics.vulnerabilities} />}
                 rightSlot={<Rating rating={value.metrics.security_rating} />}
               />
               <RatingCard
-                titleIcon={<SentimentVeryDissatisfied />}
+                titleIcon={
+                  value.metrics.code_smells === '0' ? (
+                    <SentimentVerySatisfied />
+                  ) : (
+                    <SentimentVeryDissatisfied />
+                  )
+                }
                 title="Code Smells"
                 link={value.getIssuesUrl('CODE_SMELL')}
                 leftSlot={<Value value={value.metrics.code_smells} />}

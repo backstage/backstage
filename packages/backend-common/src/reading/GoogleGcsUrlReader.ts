@@ -51,7 +51,7 @@ const parseURL = (
 };
 
 /**
- * Implements a {@link UrlReader} for files on Google GCS.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on Google GCS.
  *
  * @public
  */

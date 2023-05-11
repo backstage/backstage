@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Menu, MenuItem, Tab, Tabs, Typography } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { mapLoadingToProps, mapFiltersToProps } from './selector';
-import { Group } from '../../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { useFilters, useLoading } from '../../hooks';
 import { useCostInsightsTabsStyles as useStyles } from '../../utils/styles';
 

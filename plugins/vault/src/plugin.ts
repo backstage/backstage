@@ -19,9 +19,11 @@ import {
   createPlugin,
   DiscoveryApi,
   discoveryApiRef,
+  FetchApi,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-import { VaultClient, vaultApiRef } from './api';
+import { vaultApiRef, VaultClient } from './api';
 
 /**
  * The vault plugin.
@@ -32,10 +34,17 @@ export const vaultPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: vaultApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }: { discoveryApi: DiscoveryApi }) =>
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({
+        discoveryApi,
+        fetchApi,
+      }: {
+        discoveryApi: DiscoveryApi;
+        fetchApi: FetchApi;
+      }) =>
         new VaultClient({
           discoveryApi,
+          fetchApi,
         }),
     }),
   ],

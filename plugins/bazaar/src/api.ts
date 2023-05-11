@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
+  ApiHolder,
   createApiRef,
   DiscoveryApi,
   FetchApi,
@@ -45,6 +47,25 @@ export interface BazaarApi {
 
   deleteProject(id: number): Promise<void>;
 }
+
+/** @public */
+export const isBazaarAvailable = async (
+  entity: Entity,
+  context: { apis: ApiHolder },
+): Promise<boolean> => {
+  const bazaarClient = context.apis.get(bazaarApiRef);
+  if (bazaarClient === undefined) {
+    return false;
+  }
+  const entityRef = stringifyEntityRef({
+    kind: entity.kind,
+    name: entity.metadata.name,
+    namespace: entity.metadata.namespace,
+  });
+  const response = await bazaarClient.getProjectByRef(entityRef);
+  const project = await response.json();
+  return project.data.length > 0;
+};
 
 export class BazaarClient implements BazaarApi {
   private readonly identityApi: IdentityApi;

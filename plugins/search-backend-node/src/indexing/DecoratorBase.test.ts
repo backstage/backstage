@@ -54,7 +54,7 @@ describe('DecoratorBase', () => {
     }));
 
     const decorator = new ConcreteDecorator();
-    const { documents } = await TestPipeline.withSubject(decorator)
+    const { documents } = await TestPipeline.fromDecorator(decorator)
       .withDocuments([document, document, document])
       .execute();
 
@@ -68,7 +68,7 @@ describe('DecoratorBase', () => {
     decorateSpy.mockResolvedValue(undefined);
 
     const decorator = new ConcreteDecorator();
-    const { documents } = await TestPipeline.withSubject(decorator)
+    const { documents } = await TestPipeline.fromDecorator(decorator)
       .withDocuments([document, document, document])
       .execute();
 
@@ -82,7 +82,7 @@ describe('DecoratorBase', () => {
     });
 
     const decorator = new ConcreteDecorator();
-    const { documents } = await TestPipeline.withSubject(decorator)
+    const { documents } = await TestPipeline.fromDecorator(decorator)
       .withDocuments([document, document, document])
       .execute();
 

@@ -21,6 +21,7 @@
  */
 
 export * from './BitbucketCloudClient';
+export * from './events';
 export * from './models';
 export * from './pagination';
 export * from './types';

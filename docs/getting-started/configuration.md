@@ -74,22 +74,26 @@ Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
 configuration. in the root directory of your Backstage app using the credentials
 from the previous steps.
 
-```diff
+```yaml title="app-config.yaml"
 backend:
   database:
--    client: better-sqlite3
--    connection: ':memory:'
-+    # config options: https://node-postgres.com/api/client
-+    client: pg
-+    connection:
-+      host: ${POSTGRES_HOST}
-+      port: ${POSTGRES_PORT}
-+      user: ${POSTGRES_USER}
-+      password: ${POSTGRES_PASSWORD}
-+      # https://node-postgres.com/features/ssl
-+      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-+        #ca: # if you have a CA file and want to verify it you can uncomment this section
-+        #$file: <file-path>/ca/server.crt
+    # highlight-remove-start
+    client: better-sqlite3
+    connection: ':memory:'
+    # highlight-remove-end
+    # highlight-add-start
+    # config options: https://node-postgres.com/apis/client
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      # https://node-postgres.com/features/ssl
+      # ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+        #ca: # if you have a CA file and want to verify it you can uncomment this section
+        #$file: <file-path>/ca/server.crt
+        # highlight-add-end
 ```
 
 You'll use the connection details from the previous step. You can either set the
@@ -136,15 +140,13 @@ frontend, in our tutorial it would be `http://localhost:3000`. The
 `Authorization callback URL` will point to the auth backend, which will most
 likely be `http://localhost:7007/api/auth/github/handler/frame`.
 
-<p align='center'>
-  <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
-</p>
+![Screenshot of the GitHub OAuth creation page](../assets/getting-started/gh-oauth.png)
 
 Take note of the `Client ID` and the `Client Secret`. Open `app-config.yaml`,
 and add your `clientId` and `clientSecret` to this file. It should end up
 looking like this:
 
-```yaml
+```yaml title="app-config.yaml"
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
   environment: development
@@ -163,14 +165,14 @@ change the sign-in page, this you actually need to add in the source code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
-```typescript
+```typescript title="packages/app/src/App.tsx"
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 ```
 
 Search for `const app = createApp({` in this file, and below `apis,` add:
 
-```typescript
+```tsx title="packages/app/src/App.tsx"
 components: {
   SignInPage: props => (
     <SignInPage
@@ -214,9 +216,7 @@ name to identify this token and put it in the notes field. Choose a number of
 days for expiration. If you have a hard time picking a number, we suggest to go
 for 7 days, it's a lucky number.
 
-<p align='center'>
-  <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
-</p>
+![Screenshot of the GitHub Personal Access Token creation page](../assets/getting-started/gh-pat.png)
 
 Set the scope to your likings. For this tutorial, selecting `repo` and `workflow` is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
 
@@ -225,7 +225,7 @@ This file should also be excluded in `.gitignore`, to avoid accidental committin
 
 In your `app-config.local.yaml` go ahead and add the following:
 
-```yaml
+```yaml title="app-config.local.yaml"
 integrations:
   github:
     - host: github.com
@@ -236,7 +236,7 @@ That's settled. This information will be leveraged by other plugins.
 
 If you're looking for a more production way to manage this secret, then you can do the following with the token being stored in an environment variable called `GITHUB_TOKEN`.
 
-```yaml
+```yaml title="app-config.local.yaml"
 integrations:
   github:
     - host: github.com
@@ -262,21 +262,18 @@ otherwise something went terribly wrong.
 - Register a new component, by going to `create` and choose
   `Register existing component`
 
-<p align='center'>
-  <img data-zoomable src='../assets/getting-started/b-existing-1.png' alt='Software template main screen, with a blue button to add an existing component' />
-</p>
+  <!-- todo: Needs zoomable plugin -->
+
+  ![Software template main screen, with a blue button to add an existing component](../assets/getting-started/b-existing-1.png)
 
 - As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
   This is used by our [demo site](https://demo.backstage.io).
 
-<p align='center'>
-  <img src='../assets/getting-started/b-existing-2.png' alt='Register a new component wizard, asking for an URL to the existing component YAML file' />
-</p>
-- Hit `Analyze` and review the changes. Apply them if correct
+  ![Register a new component wizard, asking for an URL to the existing component YAML file](../assets/getting-started/b-existing-2.png)
 
-<p align='center'>
-  <img src='../assets/getting-started/b-existing-3.png' alt='Register a new component wizard, showing the metadata for the component YAML we use in this tutorial' />
-</p>
+- Hit `Analyze` and review the changes. Apply them if correct.
+
+  ![Register a new component wizard, showing the metadata for the component YAML we use in this tutorial](../assets/getting-started/b-existing-3.png)
 
 - You should receive a message that your entities have been added.
 - If you go back to `Home`, you should be able to find `demo`. You should be
@@ -284,33 +281,29 @@ otherwise something went terribly wrong.
 
 ## Create a new component using a software template
 
-- Go to `create` and choose to create a website with the `React SSR Template`
-- Type in a name, let's use `tutorial`
-- Select the group `team-a` which will own this new website, and go to the next
-  step
+- Go to `create` and choose to create a website with the `Example Node.js Template`
+- Type in a name, let's use `tutorial` and click `Next Step`
 
-<p align='center'>
-  <img src='../assets/getting-started/b-scaffold-1.png' alt='Software template deployment input screen asking for a name, the group owning this, and a description' />
-</p>
+![Software template deployment input screen asking for a name](../assets/getting-started/b-scaffold-1.png)
 
-- For the location, we're going to use the default
+- You should see the following screen:
+
+![Software template deployment input screen asking for the GitHub username, and name of the new repo to create](../assets/getting-started/b-scaffold-2.png)
+
+- For host, it should default to github.com
 - As owner, type your GitHub username
 - For the repository name, type `tutorial`. Go to the next step
 
-<p align='center'>
-  <img src='../assets/getting-started/b-scaffold-2.png' alt='Software template deployment input screen asking for the GitHub username, and name of the new repo to create' />
-</p>
-
 - Review the details of this new service, and press `Create` if you want to
   deploy it like this.
-  - You can follow along with the progress, and as soon as every step is
-    finished, you can take a look at your new service
+- You can follow along with the progress, and as soon as every step is
+  finished, you can take a look at your new service
 
 Achievement unlocked. You've set up an installation of the core Backstage App,
 made it persistent, and configured it so you are now able to use software
 templates.
 
-Let us know how your experience was: [on discord](https://discord.gg/EBHEGzX),
+Let us know how your experience was: [on discord](https://discord.gg/backstage-687207715902193673),
 file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or

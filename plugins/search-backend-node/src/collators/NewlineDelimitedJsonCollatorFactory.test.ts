@@ -53,7 +53,6 @@ describe('DefaultCatalogCollatorFactory', () => {
       readable._read = () => {};
       reader = {
         search: jest.fn(),
-        read: jest.fn(),
         readTree: jest.fn(),
         readUrl: jest.fn(),
       };
@@ -142,7 +141,7 @@ describe('DefaultCatalogCollatorFactory', () => {
       });
 
       const collator = await factory.getCollator();
-      const pipeline = TestPipeline.withSubject(collator);
+      const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
       expect(documents).toHaveLength(2);

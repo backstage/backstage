@@ -205,6 +205,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
         (nextPageCursor || filteredResults.length > targetResults)
           ? encodePageCursor({ page: page + 1 })
           : undefined,
+      numberOfResults: undefined,
     };
   }
 

@@ -61,6 +61,15 @@ class MockKubernetesClient implements KubernetesApi {
         ({ type: type.toLocaleLowerCase('en-US'), resources } as FetchResponse),
     );
   }
+  async getPodLogs(_request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    token: string;
+  }): Promise<string> {
+    return await 'some logs';
+  }
   async getWorkloadsByEntity(
     _request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse> {
@@ -105,6 +114,16 @@ class MockKubernetesClient implements KubernetesApi {
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
     return [{ name: 'mock-cluster', authProvider: 'serviceAccount' }];
+  }
+
+  async proxy(_options: { clusterName: String; path: String }): Promise<any> {
+    return {
+      kind: 'Namespace',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'mock-ns',
+      },
+    };
   }
 }
 

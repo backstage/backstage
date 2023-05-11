@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 export interface Config {
   catalog?: {
-    /**
-     * List of processor-specific options and attributes
-     */
     processors?: {
       /**
        * AwsOrganizationCloudAccountProcessor configuration
@@ -32,9 +31,6 @@ export interface Config {
         };
       };
     };
-    /**
-     * List of provider-specific options and attributes
-     */
     providers?: {
       /**
        * AwsS3EntityProvider configuration
@@ -45,44 +41,46 @@ export interface Config {
         | {
             /**
              * (Required) AWS S3 Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
              * (Optional) AWS S3 Object key prefix
              * If not set, all keys will be accepted, no filtering will be applied.
-             * @visibility backend
              */
             prefix?: string;
             /**
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-             * @visibility backend
              */
             region?: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: TaskScheduleDefinitionConfig;
           }
         | Record<
             string,
             {
               /**
                * (Required) AWS S3 Bucket Name
-               * @visibility backend
                */
               bucketName: string;
               /**
                * (Optional) AWS S3 Object key prefix
                * If not set, all keys will be accepted, no filtering will be applied.
-               * @visibility backend
                */
               prefix?: string;
               /**
                * (Optional) AWS Region.
                * If not set, AWS_REGION environment variable or aws config file will be used.
                * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-               * @visibility backend
                */
               region?: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: TaskScheduleDefinitionConfig;
             }
           >;
     };

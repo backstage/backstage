@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ExampleFetchComponent } from './ExampleFetchComponent';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -19,7 +19,7 @@ describe('ExampleFetchComponent', () => {
     );
   });
   it('should render', async () => {
-    const rendered = render(<ExampleFetchComponent />);
-    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
+    await render(<ExampleFetchComponent />);
+    expect(await screen.findByTestId('progress')).toBeInTheDocument();
   });
 });

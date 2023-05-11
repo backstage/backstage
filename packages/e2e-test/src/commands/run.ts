@@ -57,13 +57,14 @@ export async function run() {
   const appDir = await createApp('test-app', workspaceDir, rootDir);
 
   print('Creating a Backstage Plugin');
-  const pluginName = await createPlugin('test-plugin', appDir);
+  const pluginId = 'test';
+  await createPlugin({ appDir, pluginId, select: 'plugin' });
 
   print('Creating a Backstage Backend Plugin');
-  await createPlugin('test-plugin', appDir, ['--backend']);
+  await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
 
   print('Starting the app');
-  await testAppServe(pluginName, appDir);
+  await testAppServe(pluginId, appDir);
 
   if (Boolean(process.env.POSTGRES_USER)) {
     print('Testing the PostgreSQL backend startup');
@@ -158,7 +159,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     appendDeps(pkg);
   }
 
-  // eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line @backstage/no-forbidden-package-imports
   appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
@@ -275,7 +276,7 @@ async function createApp(
     for (const cmd of [
       'install',
       'tsc:full',
-      'build',
+      'build:all',
       'lint:all',
       'prettier:check',
       'test:all',
@@ -328,14 +329,18 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
 /**
  * Uses create-plugin command to create a new plugin in the app
  */
-async function createPlugin(
-  pluginName: string,
-  appDir: string,
-  options: string[] = [],
-) {
-  const child = spawnPiped(['yarn', 'create-plugin', ...options], {
-    cwd: appDir,
-  });
+async function createPlugin(options: {
+  appDir: string;
+  pluginId: string;
+  select: string;
+}) {
+  const { appDir, pluginId, select } = options;
+  const child = spawnPiped(
+    ['yarn', 'new', '--select', select, '--option', `id=${pluginId}`],
+    {
+      cwd: appDir,
+    },
+  );
 
   try {
     let stdout = '';
@@ -343,20 +348,14 @@ async function createPlugin(
       stdout = stdout + data.toString('utf8');
     });
 
-    await waitFor(() => stdout.includes('Enter an ID for the plugin'));
-    child.stdin?.write(`${pluginName}\n`);
-
-    // await waitFor(() => stdout.includes('Enter the owner(s) of the plugin'));
-    // child.stdin.write('@someuser\n');
-
     print('Waiting for plugin create script to be done');
     await waitForExit(child);
 
-    const canonicalName = options.includes('--backend')
-      ? `${pluginName}-backend`
-      : pluginName;
-
-    const pluginDir = resolvePath(appDir, 'plugins', canonicalName);
+    const pluginDir = resolvePath(
+      appDir,
+      'plugins',
+      select === 'backend-plugin' ? `${pluginId}-backend` : pluginId,
+    );
 
     print(`Running 'yarn tsc' in root for newly created plugin`);
     await runPlain(['yarn', 'tsc'], { cwd: appDir });
@@ -365,8 +364,6 @@ async function createPlugin(
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
       await runPlain(['yarn', ...cmd], { cwd: pluginDir });
     }
-
-    return canonicalName;
   } finally {
     child.kill();
   }
@@ -375,7 +372,7 @@ async function createPlugin(
 /**
  * Start serving the newly created app and make sure that the create plugin is rendering correctly
  */
-async function testAppServe(pluginName: string, appDir: string) {
+async function testAppServe(pluginId: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
     env: {
@@ -398,8 +395,8 @@ async function testAppServe(pluginName: string, appDir: string) {
         await waitForPageWithText(page, '/', 'My Company Catalog');
         await waitForPageWithText(
           page,
-          `/${pluginName}`,
-          `Welcome to ${pluginName}!`,
+          `/${pluginId}`,
+          `Welcome to ${pluginId}!`,
         );
 
         print('Both App and Plugin loaded correctly');
@@ -493,6 +490,17 @@ async function testBackendStart(appDir: string, ...args: string[]) {
           !l.includes('Update this package.json to use a subpath') &&
           !l.includes(
             '(Use `node --trace-deprecation ...` to show where the warning was created)',
+          ) &&
+          // These 4 are all for the AWS SDK v2 deprecation
+          !l.includes(
+            'The AWS SDK for JavaScript (v2) will be put into maintenance mode',
+          ) &&
+          !l.includes(
+            'Please migrate your code to use AWS SDK for JavaScript',
+          ) &&
+          !l.includes('check the migration guide at https://a.co/7PzMCcy') &&
+          !l.includes(
+            '(Use `node --trace-warnings ...` to show where the warning was created)',
           ),
       ).length !== 0
     );
@@ -507,6 +515,7 @@ async function testBackendStart(appDir: string, ...args: string[]) {
       // Skipping the whole block
       throw new Error(stderr);
     }
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok

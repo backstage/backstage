@@ -17,7 +17,7 @@
 import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 
 export function getShortCommitHash(hash: string) {
-  const shortCommitHash = hash.substr(0, 7);
+  const shortCommitHash = hash.slice(0, 7);
 
   if (shortCommitHash.length < 7) {
     throw new GitReleaseManagerError(

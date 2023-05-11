@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
@@ -22,7 +23,6 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Link as MaterialLink,
   ListItemText,
   makeStyles,
   Paper,
@@ -44,7 +44,6 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { WorkflowRunLogs } from '../WorkflowRunLogs';
-
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Breadcrumbs, Link } from '@backstage/core-components';
 
@@ -117,8 +116,6 @@ const JobListItem = ({
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls={`panel-${name}-content`}
-        id={`panel-${name}-header`}
         IconButtonProps={{
           className: classes.button,
         }}
@@ -170,7 +167,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
-  const hostname = readGitHubIntegrationConfigs(
+  const hostname = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
   const [owner, repo] = (projectName && projectName.split('/')) || [];
@@ -246,10 +243,10 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 {details.value?.html_url && (
-                  <MaterialLink target="_blank" href={details.value.html_url}>
+                  <Link to={details.value.html_url}>
                     Workflow runs on GitHub{' '}
                     <ExternalLinkIcon className={classes.externalLinkIcon} />
-                  </MaterialLink>
+                  </Link>
                 )}
               </TableCell>
             </TableRow>

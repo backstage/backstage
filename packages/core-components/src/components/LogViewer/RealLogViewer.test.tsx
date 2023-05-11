@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { RealLogViewer } from './RealLogViewer';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import copyToClipboard from 'copy-to-clipboard';
 
 // Used by useCopyToClipboard
@@ -60,11 +60,11 @@ describe('RealLogViewer', () => {
     await userEvent.keyboard('{shift>}{enter}{/shift}');
     expect(rendered.getByText('3/3')).toBeInTheDocument();
 
-    expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
+    expect(rendered.getByText('Some Log Line')).toBeInTheDocument();
     await userEvent.keyboard('{meta>}{enter}{/meta}');
     expect(rendered.queryByText('Some Log Line')).not.toBeInTheDocument();
     await userEvent.keyboard('{meta>}{enter}{/meta}');
-    expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
+    expect(rendered.getByText('Some Log Line')).toBeInTheDocument();
 
     // Tab down to line #2 and click
     await userEvent.tab();

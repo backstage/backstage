@@ -36,7 +36,7 @@ export class BackstageBackend implements Backend {
     await this.#initializer.start();
   }
 
-  // async stop(): Promise<void> {
-  //   await this.#initializer.stop();
-  // }
+  async stop(): Promise<void> {
+    await this.#initializer.stop();
+  }
 }

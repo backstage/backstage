@@ -23,19 +23,18 @@ import {
 } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
-  createPlugin,
   IdentityApi,
   identityApiRef,
-  PluginProvider,
   ProfileInfo,
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityRouteRef,
-  starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { MockPluginProvider } from '@backstage/test-utils/alpha';
 import {
   mockBreakpoint,
   MockStorageApi,
@@ -120,6 +119,13 @@ describe('DefaultCatalogPage', () => {
         ],
       };
     },
+    /**
+     * For the purposes of this test case, use existing functionality. The picker
+     *  isn't being tested, just needs this method to render correctly.
+     */
+    getEntitiesByRefs: async refs => {
+      return { items: refs.entityRefs.map(() => undefined) };
+    },
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
@@ -135,22 +141,6 @@ describe('DefaultCatalogPage', () => {
   };
   const storageApi = MockStorageApi.create();
 
-  type TestInputPluginOptions = {
-    'key-1': string;
-  };
-
-  type TestPluginOptions = {
-    'key-1': string;
-    'key-2': string;
-  };
-
-  const plugin = createPlugin({
-    id: 'my-plugin',
-    __experimentalConfigure(_: TestInputPluginOptions): TestPluginOptions {
-      return { 'key-1': 'value-1', 'key-2': 'value-2' };
-    },
-  });
-
   const renderWrapped = (children: React.ReactNode) =>
     renderWithEffects(
       wrapInTestApp(
@@ -162,7 +152,7 @@ describe('DefaultCatalogPage', () => {
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           ]}
         >
-          <PluginProvider plugin={plugin}>{children}</PluginProvider>
+          <MockPluginProvider>{children}</MockPluginProvider>
         </TestApiProvider>,
         {
           mountedRoutes: {
@@ -178,11 +168,11 @@ describe('DefaultCatalogPage', () => {
   // limit. We should investigate why these timeouts happen.
 
   it('should render the default column of the grid', async () => {
-    const { getAllByRole } = await renderWrapped(<DefaultCatalogPage />);
+    await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     expect(columnHeaderLabels).toEqual([
@@ -203,26 +193,24 @@ describe('DefaultCatalogPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
-    const { getAllByRole } = await renderWrapped(
-      <DefaultCatalogPage columns={columns} />,
-    );
+    await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = getAllByRole('button').filter(
-      c => c.tagName === 'SPAN',
-    );
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
-    const { getByTestId, findByTitle, findByText } = await renderWrapped(
-      <DefaultCatalogPage />,
-    );
-    fireEvent.click(getByTestId('user-picker-owned'));
-    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
-    expect(await findByTitle(/View/)).toBeInTheDocument();
-    expect(await findByTitle(/Edit/)).toBeInTheDocument();
-    expect(await findByTitle(/Add to favorites/)).toBeInTheDocument();
+    await renderWrapped(<DefaultCatalogPage />);
+    fireEvent.click(screen.getByTestId('user-picker-owned'));
+    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
+    await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByTitle(/Add to favorites/),
+    ).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should render the custom actions of an item passed as prop', async () => {
@@ -245,45 +233,41 @@ describe('DefaultCatalogPage', () => {
       },
     ];
 
-    const { getByTestId, findByTitle, findByText } = await renderWrapped(
-      <DefaultCatalogPage actions={actions} />,
-    );
-    fireEvent.click(getByTestId('user-picker-owned'));
-    expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
-    expect(await findByTitle(/Foo Action/)).toBeInTheDocument();
-    expect(await findByTitle(/Bar Action/)).toBeInTheDocument();
-    expect((await findByTitle(/Bar Action/)).firstChild).toBeDisabled();
+    await renderWrapped(<DefaultCatalogPage actions={actions} />);
+    fireEvent.click(screen.getByTestId('user-picker-owned'));
+    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
+    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
+    ).resolves.toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { findByText, getByTestId } = await renderWrapped(
-      <DefaultCatalogPage />,
-    );
-    fireEvent.click(getByTestId('user-picker-owned'));
-    await expect(findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
-    fireEvent.click(getByTestId('user-picker-all'));
-    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await renderWrapped(<DefaultCatalogPage />);
+    fireEvent.click(screen.getByTestId('user-picker-owned'));
+    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('user-picker-all'));
+    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
   }, 20_000);
 
   it('should set initial filter correctly', async () => {
-    const { findByText } = await renderWrapped(
-      <DefaultCatalogPage initiallySelectedFilter="all" />,
-    );
-    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+    await renderWrapped(<DefaultCatalogPage initiallySelectedFilter="all" />);
+    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
   }, 20_000);
 
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
-    const { getByTestId } = await renderWrapped(<DefaultCatalogPage />);
-    fireEvent.click(getByTestId('user-picker-owned'));
+    await renderWrapped(<DefaultCatalogPage />);
+    fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
     // The "Starred" menu option should initially be disabled, since there
     // aren't any starred entities.
-    await expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
+    expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
       'aria-disabled',
       'true',
     );
@@ -296,7 +280,7 @@ describe('DefaultCatalogPage', () => {
 
     // Now that we've starred an entity, the "Starred" menu option should be
     // enabled.
-    await expect(screen.getByTestId('user-picker-starred')).not.toHaveAttribute(
+    expect(screen.getByTestId('user-picker-starred')).not.toHaveAttribute(
       'aria-disabled',
       'true',
     );
@@ -308,10 +292,12 @@ describe('DefaultCatalogPage', () => {
 
   it('should wrap filter in drawer on smaller screens', async () => {
     mockBreakpoint({ matches: true });
-    const { getByRole } = await renderWrapped(<DefaultCatalogPage />);
-    const button = getByRole('button', { name: 'Filters' });
-    expect(getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    await renderWrapped(<DefaultCatalogPage />);
+    const button = screen.getByRole('button', { name: 'Filters' });
+    expect(
+      screen.getByRole('presentation', { hidden: true }),
+    ).toBeInTheDocument();
     fireEvent.click(button);
-    expect(getByRole('presentation')).toBeVisible();
+    expect(screen.getByRole('presentation')).toBeVisible();
   }, 20_000);
 });

@@ -16,10 +16,10 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
 
 /**
@@ -44,6 +44,7 @@ export function createPublishGitlabAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     setUserAsOwner?: boolean;
+    topics?: string[];
   }>({
     id: 'publish:gitlab',
     description:
@@ -99,6 +100,14 @@ export function createPublishGitlabAction(options: {
             description:
               'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
           },
+          topics: {
+            title: 'Topic labels',
+            description: 'Topic labels to apply on the repository.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
       output: {
@@ -116,6 +125,10 @@ export function createPublishGitlabAction(options: {
             title: 'The ID of the project',
             type: 'string',
           },
+          commitHash: {
+            title: 'The git commit hash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },
@@ -128,6 +141,7 @@ export function createPublishGitlabAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         setUserAsOwner = false,
+        topics = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -173,6 +187,7 @@ export function createPublishGitlabAction(options: {
         namespace_id: targetNamespace,
         name: repo,
         visibility: repoVisibility,
+        ...(topics.length ? { topics } : {}),
       });
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
@@ -201,7 +216,7 @@ export function createPublishGitlabAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
         defaultBranch,
@@ -216,6 +231,7 @@ export function createPublishGitlabAction(options: {
         gitAuthorInfo,
       });
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('projectId', projectId);

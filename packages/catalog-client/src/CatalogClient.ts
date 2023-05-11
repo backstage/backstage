@@ -37,9 +37,15 @@ import {
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
   ValidateEntityResponse,
+  GetEntitiesByRefsRequest,
+  GetEntitiesByRefsResponse,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
+  EntityFilterQuery,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
+import { isQueryEntitiesInitialRequest } from './utils';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -97,34 +103,30 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    const { filter = [], fields = [], offset, limit, after } = request ?? {};
-    const params: string[] = [];
-
-    // filter param can occur multiple times, for example
-    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
-    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
-    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of [filter].flat()) {
-      const filterParts: string[] = [];
-      for (const [key, value] of Object.entries(filterItem)) {
-        for (const v of [value].flat()) {
-          if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
-          } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
-          }
-        }
-      }
-
-      if (filterParts.length) {
-        params.push(`filter=${filterParts.join(',')}`);
-      }
-    }
+    const {
+      filter = [],
+      fields = [],
+      order,
+      offset,
+      limit,
+      after,
+    } = request ?? {};
+    const params = this.getParams(filter);
 
     if (fields.length) {
       params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    if (order) {
+      for (const directive of [order].flat()) {
+        if (directive) {
+          params.push(
+            `order=${encodeURIComponent(directive.order)}:${encodeURIComponent(
+              directive.field,
+            )}`,
+          );
+        }
+      }
     }
 
     if (offset !== undefined) {
@@ -167,6 +169,99 @@ export class CatalogClient implements CatalogApi {
     };
 
     return { items: entities.sort(refCompare) };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getEntitiesByRefs}
+   */
+  async getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesByRefsResponse> {
+    const body: any = { entityRefs: request.entityRefs };
+    if (request.fields?.length) {
+      body.fields = request.fields;
+    }
+
+    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
+    const url = `${baseUrl}/entities/by-refs`;
+
+    const response = await this.fetchApi.fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const { items } = (await response.json()) as {
+      items: Array<Entity | null>;
+    };
+
+    return { items: items.map(i => i ?? undefined) };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.queryEntities}
+   */
+  async queryEntities(
+    request: QueryEntitiesRequest = {},
+    options?: CatalogRequestOptions,
+  ) {
+    const params: string[] = [];
+
+    if (isQueryEntitiesInitialRequest(request)) {
+      const {
+        fields = [],
+        filter,
+        limit,
+        orderFields,
+        fullTextFilter,
+      } = request;
+      params.push(...this.getParams(filter));
+
+      if (limit !== undefined) {
+        params.push(`limit=${limit}`);
+      }
+      if (orderFields !== undefined) {
+        (Array.isArray(orderFields) ? orderFields : [orderFields]).forEach(
+          ({ field, order }) => params.push(`orderField=${field},${order}`),
+        );
+      }
+      if (fields.length) {
+        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+      }
+
+      const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
+      if (normalizedFullTextFilterTerm) {
+        params.push(`fullTextFilterTerm=${normalizedFullTextFilterTerm}`);
+      }
+      if (fullTextFilter?.fields?.length) {
+        params.push(`fullTextFilterFields=${fullTextFilter.fields.join(',')}`);
+      }
+    } else {
+      const { fields = [], limit, cursor } = request;
+
+      params.push(`cursor=${cursor}`);
+      if (limit !== undefined) {
+        params.push(`limit=${limit}`);
+      }
+      if (fields.length) {
+        params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+      }
+    }
+
+    const query = params.length ? `?${params.join('&')}` : '';
+    return this.requestRequired<QueryEntitiesResponse>(
+      'GET',
+      `/entities/by-query${query}`,
+      options,
+    );
   }
 
   /**
@@ -236,30 +331,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse> {
     const { filter = [], facets } = request;
-    const params: string[] = [];
-
-    // filter param can occur multiple times, for example
-    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
-    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
-    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of [filter].flat()) {
-      const filterParts: string[] = [];
-      for (const [key, value] of Object.entries(filterItem)) {
-        for (const v of [value].flat()) {
-          if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
-          } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
-          }
-        }
-      }
-
-      if (filterParts.length) {
-        params.push(`filter=${filterParts.join(',')}`);
-      }
-    }
+    const params = this.getParams(filter);
 
     for (const facet of facets) {
       params.push(`facet=${encodeURIComponent(facet)}`);
@@ -412,11 +484,11 @@ export class CatalogClient implements CatalogApi {
     }
   }
 
-  private async requestRequired(
+  private async requestRequired<T = any>(
     method: string,
     path: string,
     options?: CatalogRequestOptions,
-  ): Promise<any> {
+  ): Promise<T> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const headers: Record<string, string> = options?.token
       ? { Authorization: `Bearer ${options.token}` }
@@ -427,7 +499,7 @@ export class CatalogClient implements CatalogApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return await response.json();
+    return response.json();
   }
 
   private async requestOptional(
@@ -449,5 +521,32 @@ export class CatalogClient implements CatalogApi {
     }
 
     return await response.json();
+  }
+
+  private getParams(filter: EntityFilterQuery = []) {
+    const params: string[] = [];
+    // filter param can occur multiple times, for example
+    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
+    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
+    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        params.push(`filter=${filterParts.join(',')}`);
+      }
+    }
+    return params;
   }
 }

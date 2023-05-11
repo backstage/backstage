@@ -29,7 +29,9 @@ describe('<Avatar />', () => {
   it('generates a background color', async () => {
     const bgcolor = stringToColor('John Doe');
     const { getByText } = render(<Avatar displayName="John Doe" />);
-    expect(getByText('JD')).toHaveStyle(`background-color: ${bgcolor}`);
+    expect(getByText('JD').parentElement).toHaveStyle(
+      `background-color: ${bgcolor}`,
+    );
   });
 
   it('does not generate a background color when a picture is given', async () => {

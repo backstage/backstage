@@ -17,18 +17,18 @@
 import { Config, ConfigReader } from '@backstage/config';
 import { loadConfigSchema } from '@backstage/config-loader';
 import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
+  GithubIntegrationConfig,
+  readGithubIntegrationConfig,
+  readGithubIntegrationConfigs,
 } from './config';
 
-describe('readGitHubIntegrationConfig', () => {
-  function buildConfig(provider: Partial<GitHubIntegrationConfig>) {
+describe('readGithubIntegrationConfig', () => {
+  function buildConfig(provider: Partial<GithubIntegrationConfig>) {
     return new ConfigReader(provider);
   }
 
   async function buildFrontendConfig(
-    data: Partial<GitHubIntegrationConfig>,
+    data: Partial<GithubIntegrationConfig>,
   ): Promise<Config> {
     const fullSchema = await loadConfigSchema({
       dependencies: ['@backstage/integration'],
@@ -52,7 +52,7 @@ describe('readGitHubIntegrationConfig', () => {
   }
 
   it('reads all values', () => {
-    const output = readGitHubIntegrationConfig(
+    const output = readGithubIntegrationConfig(
       buildConfig({
         host: 'a.com',
         apiBaseUrl: 'https://a.com/api',
@@ -69,7 +69,7 @@ describe('readGitHubIntegrationConfig', () => {
   });
 
   it('injects the correct GitHub API base URL when missing', () => {
-    const output = readGitHubIntegrationConfig(
+    const output = readGithubIntegrationConfig(
       buildConfig({ host: 'github.com' }),
     );
     expect(output).toEqual({
@@ -87,22 +87,22 @@ describe('readGitHubIntegrationConfig', () => {
       token: 't',
     };
     expect(() =>
-      readGitHubIntegrationConfig(buildConfig({ ...valid, host: 7 })),
+      readGithubIntegrationConfig(buildConfig({ ...valid, host: 7 })),
     ).toThrow(/host/);
     expect(() =>
-      readGitHubIntegrationConfig(buildConfig({ ...valid, apiBaseUrl: 7 })),
+      readGithubIntegrationConfig(buildConfig({ ...valid, apiBaseUrl: 7 })),
     ).toThrow(/apiBaseUrl/);
     expect(() =>
-      readGitHubIntegrationConfig(buildConfig({ ...valid, rawBaseUrl: 7 })),
+      readGithubIntegrationConfig(buildConfig({ ...valid, rawBaseUrl: 7 })),
     ).toThrow(/rawBaseUrl/);
     expect(() =>
-      readGitHubIntegrationConfig(buildConfig({ ...valid, token: 7 })),
+      readGithubIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
   });
 
   it('works on the frontend', async () => {
     expect(
-      readGitHubIntegrationConfig(
+      readGithubIntegrationConfig(
         await buildFrontendConfig({
           host: 'a.com',
           apiBaseUrl: 'https://a.com/api',
@@ -118,15 +118,15 @@ describe('readGitHubIntegrationConfig', () => {
   });
 });
 
-describe('readGitHubIntegrationConfigs', () => {
+describe('readGithubIntegrationConfigs', () => {
   function buildConfig(
-    providers: Partial<GitHubIntegrationConfig>[],
+    providers: Partial<GithubIntegrationConfig>[],
   ): Config[] {
     return providers.map(provider => new ConfigReader(provider));
   }
 
   it('reads all values', () => {
-    const output = readGitHubIntegrationConfigs(
+    const output = readGithubIntegrationConfigs(
       buildConfig([
         {
           host: 'a.com',
@@ -145,7 +145,7 @@ describe('readGitHubIntegrationConfigs', () => {
   });
 
   it('adds a default GitHub entry when missing', () => {
-    const output = readGitHubIntegrationConfigs(buildConfig([]));
+    const output = readGithubIntegrationConfigs(buildConfig([]));
     expect(output).toEqual([
       {
         host: 'github.com',

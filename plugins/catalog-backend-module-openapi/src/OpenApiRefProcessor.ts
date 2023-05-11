@@ -17,11 +17,9 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  CatalogProcessor,
-  LocationSpec,
-} from '@backstage/plugin-catalog-backend';
-import { bundleOpenApiSpecification } from './lib';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { bundleFileWithRefs } from './lib';
 import { Logger } from 'winston';
 
 /**
@@ -84,10 +82,14 @@ export class OpenApiRefProcessor implements CatalogProcessor {
 
     this.logger.debug(`Bundling OpenAPI specification from ${location.target}`);
     try {
-      const bundledSpec = await bundleOpenApiSpecification(
+      const read = async (url: string) => {
+        const { buffer } = await this.reader.readUrl(url);
+        return await buffer();
+      };
+      const bundledSpec = await bundleFileWithRefs(
         definition.toString(),
         location.target,
-        this.reader.read,
+        read,
         resolveUrl,
       );
 

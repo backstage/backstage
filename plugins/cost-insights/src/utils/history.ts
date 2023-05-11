@@ -16,7 +16,8 @@
 
 import qs from 'qs';
 import * as yup from 'yup';
-import { Duration, Group, PageFilters } from '../types';
+import { Duration, PageFilters } from '../types';
+import { Group } from '@backstage/plugin-cost-insights-common';
 import { getDefaultPageFilters } from '../utils/filters';
 import { ConfigContextProps } from '../hooks/useConfig';
 

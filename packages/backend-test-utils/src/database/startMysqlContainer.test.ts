@@ -20,21 +20,19 @@ import { startMysqlContainer } from './startMysqlContainer';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
+jest.setTimeout(60_000);
+
 describe('startMysqlContainer', () => {
-  itIfDocker(
-    'successfully launches the container',
-    async () => {
-      const { stop, ...connection } = await startMysqlContainer('mysql:8');
-      const db = createConnection({ client: 'mysql2', connection });
-      try {
-        const result = await db.select(db.raw('version() AS version'));
-        // eslint-disable-next-line jest/no-standalone-expect
-        expect(result[0]?.version).toContain('8.');
-      } finally {
-        await db.destroy();
-        await stop();
-      }
-    },
-    60_000,
-  );
+  itIfDocker('successfully launches the container', async () => {
+    const { stop, ...connection } = await startMysqlContainer('mysql:8');
+    const db = createConnection({ client: 'mysql2', connection });
+    try {
+      const result = await db.select(db.raw('version() AS version'));
+      // eslint-disable-next-line jest/no-standalone-expect
+      expect(result[0]?.version).toContain('8.');
+    } finally {
+      await db.destroy();
+      await stop();
+    }
+  });
 });

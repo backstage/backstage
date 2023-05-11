@@ -25,7 +25,7 @@ export interface Config {
      * An undefined list of matchers means match all, an empty list of
      * matchers means match none.
      *
-     * This is commonly used to put in what amounts to a whitelist of kinds
+     * This is commonly used to put in what amounts to an allowlist of kinds
      * that regular users of Backstage are permitted to register locations
      * for. This can be used to stop them from registering yaml files
      * describing for example a Group entity called "admin" that they make
@@ -38,6 +38,37 @@ export interface Config {
        * E.g. ["Component", "API", "Template", "Location"]
        */
       allow: Array<string>;
+      /**
+       * Limit this rule to a specific location
+       *
+       * Example with a fixed location
+       *  { "type": "url", "exact": "https://github.com/a/b/blob/file.yaml"}
+       *
+       * Example using a Regex
+       *  { "type": "url", "pattern": "https://github.com/org/*\/blob/master/*.yaml"}
+       *
+       * Using both exact and pattern will result in an error starting the application
+       */
+      locations?: Array<{
+        /**
+         * The type of location, e.g. "url".
+         */
+        type: string;
+        /**
+         * The exact location, e.g.
+         * "https://github.com/org/repo/blob/master/users.yaml".
+         *
+         * The exact location can also be used to match on locations
+         * that contain glob characters themselves, e.g.
+         * "https://github.com/org/*\/blob/master/*.yaml".
+         */
+        exact?: string;
+        /**
+         * The pattern allowed for the location, e.g.
+         * "https://github.com/org/*\/blob/master/*.yaml".
+         */
+        pattern?: string;
+      }>;
     }>;
 
     /**
@@ -50,7 +81,6 @@ export interface Config {
      * be used in combination with static locations to only serve operator
      * provided locations. Effectively this removes the ability to register new
      * components to a running backstage instance.
-     *
      */
     readonly?: boolean;
 
@@ -105,5 +135,12 @@ export interface Config {
         allow: Array<string>;
       }>;
     }>;
+
+    /**
+     * The strategy to use for entities that are orphaned, i.e. no longer have
+     * any other entities or providers referencing them. The default value is
+     * "keep".
+     */
+    orphanStrategy?: 'keep' | 'delete';
   };
 }

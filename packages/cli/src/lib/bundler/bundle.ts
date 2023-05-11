@@ -32,6 +32,10 @@ import chalk from 'chalk';
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
+function applyContextToError(error: string, moduleName: string): string {
+  return `Failed to compile '${moduleName}':\n  ${error}`;
+}
+
 export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled, schema: configSchema } = options;
 
@@ -42,7 +46,6 @@ export async function buildBundle(options: BuildOptions) {
     isDev: false,
     baseUrl: resolveBaseUrl(options.frontendConfig),
   });
-  const compiler = webpack(config);
 
   const isCi = yn(process.env.CI, { default: false });
 
@@ -64,10 +67,7 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
-  const { stats } = await build(compiler, isCi).catch(error => {
-    console.log(chalk.red('Failed to compile.\n'));
-    throw new Error(`Failed to compile.\n${error.message || error}`);
-  });
+  const { stats } = await build(config, isCi);
 
   if (!stats) {
     throw new Error('No stats returned');
@@ -90,10 +90,10 @@ export async function buildBundle(options: BuildOptions) {
   );
 }
 
-async function build(compiler: webpack.Compiler, isCi: boolean) {
+async function build(config: webpack.Configuration, isCi: boolean) {
   const stats = await new Promise<webpack.Stats | undefined>(
     (resolve, reject) => {
-      compiler.run((err, buildStats) => {
+      webpack(config, (err, buildStats) => {
         if (err) {
           if (err.message) {
             const { errors } = formatWebpackMessages({
@@ -115,7 +115,7 @@ async function build(compiler: webpack.Compiler, isCi: boolean) {
   );
 
   if (!stats) {
-    throw new Error('No stats provided');
+    throw new Error('Failed to compile: No stats provided');
   }
 
   const serializedStats = stats.toJson({
@@ -123,29 +123,33 @@ async function build(compiler: webpack.Compiler, isCi: boolean) {
     warnings: true,
     errors: true,
   });
-  // NOTE(freben): The code below that extracts the message part of the errors,
-  // is due to react-dev-utils not yet being compatible with webpack 5. This
-  // may be possible to remove (just passing the serialized stats object
-  // directly into the format function) after a new release of react-dev-utils
-  // has been made available.
-  // See https://github.com/facebook/create-react-app/issues/9880
   const { errors, warnings } = formatWebpackMessages({
-    errors: serializedStats.errors?.map(e => (e.message ? e.message : e)),
-    warnings: serializedStats.warnings?.map(e => (e.message ? e.message : e)),
+    errors: serializedStats.errors,
+    warnings: serializedStats.warnings,
   });
 
   if (errors.length) {
     // Only keep the first error. Others are often indicative
     // of the same problem, but confuse the reader with noise.
-    throw new Error(errors[0]);
+    const errorWithContext = applyContextToError(
+      errors[0],
+      serializedStats.errors?.[0]?.moduleName ?? '',
+    );
+    throw new Error(errorWithContext);
   }
   if (isCi && warnings.length) {
+    const warningsWithContext = warnings.map((warning, i) => {
+      return applyContextToError(
+        warning,
+        serializedStats.warnings?.[i]?.moduleName ?? '',
+      );
+    });
     console.log(
       chalk.yellow(
         '\nTreating warnings as errors because process.env.CI = true.\n',
       ),
     );
-    throw new Error(warnings.join('\n\n'));
+    throw new Error(warningsWithContext.join('\n\n'));
   }
 
   return { stats };

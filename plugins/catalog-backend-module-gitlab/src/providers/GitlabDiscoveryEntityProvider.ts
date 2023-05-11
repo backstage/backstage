@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+  LocationSpec,
+  locationSpecToLocationEntity,
+} from '@backstage/plugin-catalog-node';
+import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
   GitLabClient,
@@ -30,8 +32,6 @@ import {
   paginated,
   readGitlabConfigs,
 } from '../lib';
-import * as uuid from 'uuid';
-import { locationSpecToLocationEntity } from '@backstage/plugin-catalog-backend';
 
 type Result = {
   scanned: number;
@@ -51,8 +51,16 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; schedule: TaskRunner },
+    options: {
+      logger: Logger;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+    },
   ): GitlabDiscoveryEntityProvider[] {
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
     const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
@@ -64,11 +72,23 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           `No gitlab integration found that matches host ${providerConfig.host}`,
         );
       }
+
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       providers.push(
         new GitlabDiscoveryEntityProvider({
           ...options,
           config: providerConfig,
           integration,
+          taskRunner,
         }),
       );
     });
@@ -79,14 +99,14 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     config: GitlabProviderConfig;
     integration: GitLabIntegration;
     logger: Logger;
-    schedule: TaskRunner;
+    taskRunner: TaskRunner;
   }) {
     this.config = options.config;
     this.integration = options.integration;
     this.logger = options.logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(options.schedule);
+    this.scheduleFn = this.createScheduleFn(options.taskRunner);
   }
 
   getProviderName(): string {
@@ -98,10 +118,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -113,7 +133,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });
@@ -157,11 +177,18 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         continue;
       }
 
-      if (this.config.branch === '*' && project.default_branch === undefined) {
+      if (
+        !this.config.branch &&
+        this.config.fallbackBranch === '*' &&
+        project.default_branch === undefined
+      ) {
         continue;
       }
 
-      const project_branch = project.default_branch ?? this.config.branch;
+      const project_branch =
+        this.config.branch ??
+        project.default_branch ??
+        this.config.fallbackBranch;
 
       const projectHasFile: boolean = await client.hasFile(
         project.path_with_namespace ?? '',
@@ -184,7 +211,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   private createLocationSpec(project: GitLabProject): LocationSpec {
-    const project_branch = project.default_branch ?? this.config.branch;
+    const project_branch =
+      this.config.branch ??
+      project.default_branch ??
+      this.config.fallbackBranch;
     return {
       type: 'url',
       target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,

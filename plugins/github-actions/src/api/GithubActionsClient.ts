@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { GithubActionsApi } from './GithubActionsApi';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { ConfigApi, OAuthApi } from '@backstage/core-plugin-api';
@@ -36,7 +36,7 @@ export class GithubActionsClient implements GithubActionsApi {
   private async getOctokit(hostname?: string): Promise<Octokit> {
     // TODO: Get access token for the specified hostname
     const token = await this.githubAuthApi.getAccessToken(['repo']);
-    const configs = readGitHubIntegrationConfigs(
+    const configs = readGithubIntegrationConfigs(
       this.configApi.getOptionalConfigArray('integrations.github') ?? [],
     );
     const githubIntegrationConfig = configs.find(

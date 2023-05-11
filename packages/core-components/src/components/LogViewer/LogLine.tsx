@@ -19,6 +19,8 @@ import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import classnames from 'classnames';
 import { useStyles } from './styles';
+import Linkify from 'linkify-react';
+import { Link } from '../Link';
 
 export function getModifierClasses(
   classes: ReturnType<typeof useStyles>,
@@ -137,6 +139,21 @@ export function calculateHighlightedChunks(
   return chunks;
 }
 
+const renderLink = ({
+  attributes,
+  content,
+}: {
+  attributes: { [attr: string]: any };
+  content: string;
+}) => {
+  const { href, ...props } = attributes;
+  return (
+    <Link to={href} {...props}>
+      {content}
+    </Link>
+  );
+};
+
 export interface LogLineProps {
   line: AnsiLine;
   classes: ReturnType<typeof useStyles>;
@@ -158,6 +175,7 @@ export function LogLine({
   const elements = useMemo(
     () =>
       chunks.map(({ text, modifiers, highlight }, index) => (
+        // eslint-disable-next-line react/forbid-elements
         <span
           key={index}
           className={classnames(
@@ -168,7 +186,7 @@ export function LogLine({
                 : classes.textHighlight),
           )}
         >
-          {text}
+          <Linkify options={{ render: renderLink }}>{text}</Linkify>
         </span>
       )),
     [chunks, highlightResultIndex, classes],

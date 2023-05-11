@@ -16,17 +16,13 @@ integrations are used by many Backstage core features and other plugins.
 
 Each key under `integrations` is a separate configuration for a single external
 provider. Providers each have different configuration; here's an example of
-configuration to use both GitHub and Bitbucket:
+configuration to use GitHub:
 
 ```yaml
 integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}
-  bitbucket:
-    - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
-      appPassword: ${BITBUCKET_APP_PASSWORD}
 ```
 
 See documentation for each type of integration for full details on

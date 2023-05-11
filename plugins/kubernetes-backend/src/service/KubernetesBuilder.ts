@@ -13,60 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { Duration } from 'luxon';
+import { Logger } from 'winston';
+
 import { getCombinedClusterSupplier } from '../cluster-locator';
+import {
+  KubernetesAuthTranslator,
+  DispatchingKubernetesAuthTranslator,
+  GoogleKubernetesAuthTranslator,
+  NoopKubernetesAuthTranslator,
+  AwsIamKubernetesAuthTranslator,
+  GoogleServiceAccountAuthTranslator,
+  AzureIdentityKubernetesAuthTranslator,
+  OidcKubernetesAuthTranslator,
+  AksKubernetesAuthTranslator,
+} from '../kubernetes-auth-translator';
+
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
-  KubernetesObjectTypes,
-  ServiceLocatorMethod,
   CustomResource,
-  KubernetesObjectsProvider,
-  ObjectsByEntityRequest,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesServiceLocator,
+  KubernetesObjectsProvider,
   KubernetesObjectsProviderOptions,
+  KubernetesObjectTypes,
+  KubernetesServiceLocator,
+  ObjectsByEntityRequest,
+  ServiceLocatorMethod,
 } from '../types/types';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
-import { CatalogApi } from '@backstage/catalog-client';
+import { KubernetesProxy } from './KubernetesProxy';
 
 /**
  *
- * @alpha
+ * @public
  */
 export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
+  permissions: PermissionEvaluator;
 }
 
 /**
  * The return type of the `KubernetesBuilder.build` method
  *
- * @alpha
+ * @public
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
+  proxy: KubernetesProxy;
   objectsProvider: KubernetesObjectsProvider;
   serviceLocator: KubernetesServiceLocator;
+  authTranslatorMap: { [key: string]: KubernetesAuthTranslator };
 }>;
 
 /**
  *
- * @alpha
+ * @public
  */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
@@ -76,6 +95,8 @@ export class KubernetesBuilder {
   private objectsProvider?: KubernetesObjectsProvider;
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
+  private proxy?: KubernetesProxy;
+  private authTranslatorMap?: { [key: string]: KubernetesAuthTranslator };
 
   static createBuilder(env: KubernetesEnvironment) {
     return new KubernetesBuilder(env);
@@ -86,6 +107,7 @@ export class KubernetesBuilder {
   public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
     const config = this.env.config;
+    const permissions = this.env.permissions;
 
     logger.info('Initializing Kubernetes backend');
 
@@ -102,39 +124,42 @@ export class KubernetesBuilder {
     }
     const customResources = this.buildCustomResources();
 
-    const fetcher = this.fetcher ?? this.buildFetcher();
+    const fetcher = this.getFetcher();
 
-    const clusterSupplier =
-      this.clusterSupplier ??
-      this.buildClusterSupplier(this.defaultClusterRefreshInterval);
+    const clusterSupplier = this.getClusterSupplier();
 
-    const serviceLocator =
-      this.serviceLocator ??
-      this.buildServiceLocator(this.getServiceLocatorMethod(), clusterSupplier);
+    const authTranslatorMap = this.getAuthTranslatorMap();
 
-    const objectsProvider =
-      this.objectsProvider ??
-      this.buildObjectsProvider({
-        logger,
-        fetcher,
-        serviceLocator,
-        customResources,
-        objectTypesToFetch: this.getObjectTypesToFetch(),
-      });
+    const proxy = this.getProxy(logger, clusterSupplier);
+
+    const serviceLocator = this.getServiceLocator();
+
+    const objectsProvider = this.getObjectsProvider({
+      logger,
+      fetcher,
+      config,
+      serviceLocator,
+      customResources,
+      objectTypesToFetch: this.getObjectTypesToFetch(),
+    });
 
     const router = this.buildRouter(
       objectsProvider,
       clusterSupplier,
       this.env.catalogApi,
+      proxy,
+      permissions,
     );
 
     return {
       clusterSupplier,
       customResources,
       fetcher,
+      proxy,
       objectsProvider,
       router,
       serviceLocator,
+      authTranslatorMap,
     };
   }
 
@@ -163,6 +188,17 @@ export class KubernetesBuilder {
     return this;
   }
 
+  public setProxy(proxy?: KubernetesProxy) {
+    this.proxy = proxy;
+    return this;
+  }
+
+  public setAuthTranslatorMap(authTranslatorMap: {
+    [key: string]: KubernetesAuthTranslator;
+  }) {
+    this.authTranslatorMap = authTranslatorMap;
+  }
+
   protected buildCustomResources() {
     const customResources: CustomResource[] = (
       this.env.config.getOptionalConfigArray('kubernetes.customResources') ?? []
@@ -186,24 +222,35 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return getCombinedClusterSupplier(
+    this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
       refreshInterval,
     );
+
+    return this.clusterSupplier;
   }
 
   protected buildObjectsProvider(
     options: KubernetesObjectsProviderOptions,
   ): KubernetesObjectsProvider {
-    return new KubernetesFanOutHandler(options);
+    const authTranslatorMap = this.getAuthTranslatorMap();
+    this.objectsProvider = new KubernetesFanOutHandler({
+      ...options,
+      authTranslator: new DispatchingKubernetesAuthTranslator({
+        authTranslatorMap,
+      }),
+    });
+
+    return this.objectsProvider;
   }
 
   protected buildFetcher(): KubernetesFetcher {
-    return new KubernetesClientBasedFetcher({
-      kubernetesClientProvider: new KubernetesClientProvider(),
+    this.fetcher = new KubernetesClientBasedFetcher({
       logger: this.env.logger,
     });
+
+    return this.fetcher;
   }
 
   protected buildServiceLocator(
@@ -212,14 +259,19 @@ export class KubernetesBuilder {
   ): KubernetesServiceLocator {
     switch (method) {
       case 'multiTenant':
-        return this.buildMultiTenantServiceLocator(clusterSupplier);
+        this.serviceLocator =
+          this.buildMultiTenantServiceLocator(clusterSupplier);
+        break;
       case 'http':
-        return this.buildHttpServiceLocator(clusterSupplier);
+        this.serviceLocator = this.buildHttpServiceLocator(clusterSupplier);
+        break;
       default:
         throw new Error(
           `Unsupported kubernetes.clusterLocatorMethod "${method}"`,
         );
     }
+
+    return this.serviceLocator;
   }
 
   protected buildMultiTenantServiceLocator(
@@ -234,15 +286,38 @@ export class KubernetesBuilder {
     throw new Error('not implemented');
   }
 
+  protected buildProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesProxy {
+    const authTranslatorMap = this.getAuthTranslatorMap();
+    const authTranslator = new DispatchingKubernetesAuthTranslator({
+      authTranslatorMap,
+    });
+    this.proxy = new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authTranslator,
+    });
+    return this.proxy;
+  }
+
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
+    proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
+    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-
+    router.use(
+      createPermissionIntegrationRouter({
+        permissions: kubernetesPermissions,
+      }),
+    );
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
@@ -278,6 +353,20 @@ export class KubernetesBuilder {
     return router;
   }
 
+  protected buildAuthTranslatorMap() {
+    this.authTranslatorMap = {
+      google: new GoogleKubernetesAuthTranslator(),
+      aks: new AksKubernetesAuthTranslator(),
+      aws: new AwsIamKubernetesAuthTranslator({ config: this.env.config }),
+      azure: new AzureIdentityKubernetesAuthTranslator(this.env.logger),
+      serviceAccount: new NoopKubernetesAuthTranslator(),
+      googleServiceAccount: new GoogleServiceAccountAuthTranslator(),
+      oidc: new OidcKubernetesAuthTranslator(),
+      localKubectlProxy: new NoopKubernetesAuthTranslator(),
+    };
+    return this.authTranslatorMap;
+  }
+
   protected async fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
   ) {
@@ -294,6 +383,31 @@ export class KubernetesBuilder {
     return this.env.config.getString(
       'kubernetes.serviceLocatorMethod.type',
     ) as ServiceLocatorMethod;
+  }
+
+  protected getFetcher(): KubernetesFetcher {
+    return this.fetcher ?? this.buildFetcher();
+  }
+
+  protected getClusterSupplier() {
+    return (
+      this.clusterSupplier ??
+      this.buildClusterSupplier(this.defaultClusterRefreshInterval)
+    );
+  }
+
+  protected getServiceLocator(): KubernetesServiceLocator {
+    return (
+      this.serviceLocator ??
+      this.buildServiceLocator(
+        this.getServiceLocatorMethod(),
+        this.getClusterSupplier(),
+      )
+    );
+  }
+
+  protected getObjectsProvider(options: KubernetesObjectsProviderOptions) {
+    return this.objectsProvider ?? this.buildObjectsProvider(options);
   }
 
   protected getObjectTypesToFetch() {
@@ -324,5 +438,16 @@ export class KubernetesBuilder {
     }
 
     return objectTypesToFetch;
+  }
+
+  protected getProxy(
+    logger: Logger,
+    clusterSupplier: KubernetesClustersSupplier,
+  ) {
+    return this.proxy ?? this.buildProxy(logger, clusterSupplier);
+  }
+
+  protected getAuthTranslatorMap() {
+    return this.authTranslatorMap ?? this.buildAuthTranslatorMap();
   }
 }

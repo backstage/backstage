@@ -248,8 +248,6 @@ describe('resourcesRoutes', () => {
           error: {
             name: 'Error',
             message: 'some internal error',
-            level: 'error',
-            service: 'backstage',
           },
           request: { method: 'POST', url: '/resources/workloads/query' },
           response: { statusCode: 500 },
@@ -534,8 +532,6 @@ describe('resourcesRoutes', () => {
           error: {
             name: 'Error',
             message: 'some internal error',
-            level: 'error',
-            service: 'backstage',
           },
           request: { method: 'POST', url: '/resources/custom/query' },
           response: { statusCode: 500 },

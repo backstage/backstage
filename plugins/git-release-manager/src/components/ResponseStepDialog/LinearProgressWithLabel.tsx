@@ -50,8 +50,9 @@ export function LinearProgressWithLabel(props: {
 
   const CompletionEmoji = () => {
     if (status === STATUSES.ONGOING) return null;
-    if (status === STATUSES.FAILURE) return <span>{` ${ICONS.FAILURE} `}</span>;
-    return <span>{` ${ICONS.SUCCESS} `}</span>;
+    if (status === STATUSES.FAILURE)
+      return <Typography component="span">{` ${ICONS.FAILURE} `}</Typography>;
+    return <Typography component="span">{` ${ICONS.SUCCESS} `}</Typography>;
   };
 
   return (

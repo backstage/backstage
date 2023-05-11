@@ -19,11 +19,15 @@ import {
   Content,
   ErrorPage,
   Header,
-  Page,
   LogViewer,
+  Page,
   Progress,
 } from '@backstage/core-components';
-import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -45,17 +49,21 @@ import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import useInterval from 'react-use/lib/useInterval';
+import {
+  ScaffolderTaskStatus,
+  ScaffolderTaskOutput,
+  useTaskEventStream,
+} from '@backstage/plugin-scaffolder-react';
+import { TaskErrors } from './TaskErrors';
+import { TaskPageLinks } from './TaskPageLinks';
 import {
   rootRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
-import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
-import { useTaskEventStream } from '../hooks/useEventStream';
-import { TaskErrors } from './TaskErrors';
-import { TaskPageLinks } from './TaskPageLinks';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -185,9 +193,10 @@ export const TaskStatusStepper = memo(
           nonLinear
         >
           {steps.map((step, index) => {
+            const isCancelled = step.status === 'cancelled';
+            const isActive = step.status === 'processing';
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
-            const isActive = step.status === 'processing';
             const isSkipped = step.status === 'skipped';
 
             return (
@@ -196,7 +205,7 @@ export const TaskStatusStepper = memo(
                   <StepLabel
                     StepIconProps={{
                       completed: isCompleted,
-                      error: isFailed,
+                      error: isFailed || isCancelled,
                       active: isActive,
                     }}
                     StepIconComponent={TaskStepIconComponent}
@@ -236,24 +245,27 @@ export type TaskPageProps = {
 
 /**
  * TaskPage for showing the status of the taskId provided as a param
- * @param loadingText - Optional loading text shown before a task begins executing.
  *
  * @public
  */
-export const TaskPage = ({ loadingText }: TaskPageProps) => {
+export const TaskPage = (props: TaskPageProps) => {
+  const { loadingText } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);
+  const scaffolderApi = useApi(scaffolderApiRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
   >(undefined);
+  const [clickedToCancel, setClickedToCancel] = useState<boolean>(false);
   const [lastActiveStepId, setLastActiveStepId] = useState<string | undefined>(
     undefined,
   );
   const { taskId } = useRouteRefParams(scaffolderTaskRouteRef);
   const taskStream = useTaskEventStream(taskId);
   const completed = taskStream.completed;
+  const taskCancelled = taskStream.cancelled;
   const steps = useMemo(
     () =>
       taskStream.task?.spec.steps.map(step => ({
@@ -290,9 +302,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
-    taskStream.completed === true &&
-    taskStream.loading === false &&
-    !taskStream.task;
+    taskStream.completed && !taskStream.loading && !taskStream.task;
 
   const { output } = taskStream;
 
@@ -313,6 +323,11 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
         formData: JSON.stringify(formData),
       })}`,
     );
+  };
+
+  const handleCancel = async () => {
+    setClickedToCancel(true);
+    await scaffolderApi.cancelTask(taskId);
   };
 
   return (
@@ -350,6 +365,17 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                     color="primary"
                   >
                     Start Over
+                  </Button>
+                  <Button
+                    className={classes.button}
+                    onClick={handleCancel}
+                    disabled={completed || taskCancelled || clickedToCancel}
+                    variant="outlined"
+                    color="secondary"
+                  >
+                    {(taskCancelled || clickedToCancel) && !completed
+                      ? 'Cancelling...'
+                      : 'Cancel'}
                   </Button>
                 </Paper>
               </Grid>

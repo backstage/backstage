@@ -7,10 +7,12 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import express from 'express';
 import { Logger } from 'winston';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -41,8 +43,20 @@ export type AdrParserContext = {
   path: string;
 };
 
+// @public (undocumented)
+export type AdrRouterOptions = {
+  reader: UrlReader;
+  cacheClient: CacheClient;
+  logger: Logger;
+};
+
 // @public
 export const createMadrParser: (options?: MadrParserOptions) => AdrParser;
+
+// @public (undocumented)
+export function createRouter(
+  options: AdrRouterOptions,
+): Promise<express.Router>;
 
 // @public
 export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {

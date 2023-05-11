@@ -5,7 +5,7 @@
 #
 # yarn install
 # yarn tsc
-# yarn build
+# yarn build:backend
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 

@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
-  onSelect?: (option: 'local' | 'form') => void;
+  onSelect?: (option: 'local' | 'form' | 'field-explorer') => void;
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
@@ -59,7 +59,8 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
       >
         <CardContent>
           <Typography
-            variant="h5"
+            variant="h4"
+            component="h3"
             gutterBottom
             color={supportsLoad ? undefined : 'textSecondary'}
             style={{ display: 'flex', flexFlow: 'row nowrap' }}
@@ -92,7 +93,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     <Card className={classes.card} elevation={4}>
       <CardActionArea onClick={() => props.onSelect?.('form')}>
         <CardContent>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h4" component="h3" gutterBottom>
             Edit Template Form
           </Typography>
           <Typography variant="body1">
@@ -104,9 +105,25 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     </Card>
   );
 
+  const cardFieldExplorer = (
+    <Card className={classes.card} elevation={4}>
+      <CardActionArea onClick={() => props.onSelect?.('field-explorer')}>
+        <CardContent>
+          <Typography variant="h4" component="h3" gutterBottom>
+            Custom Field Explorer
+          </Typography>
+          <Typography variant="body1">
+            View and play around with available installed custom field
+            extensions.
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+
   return (
     <div style={props.style}>
-      <Typography variant="h6" className={classes.introText}>
+      <Typography variant="h4" component="h2" className={classes.introText}>
         Get started by choosing one of the options below
       </Typography>
       <div
@@ -121,6 +138,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
         {supportsLoad && cardLoadLocal}
         {cardFormEditor}
         {!supportsLoad && cardLoadLocal}
+        {cardFieldExplorer}
       </div>
     </div>
   );

@@ -16,50 +16,29 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import {
-  lighthouseApiRef,
   LighthouseRestApi,
   WebsiteListResponse,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
+import { lighthouseApiRef } from '../../api';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { AuditListForEntity } from './AuditListForEntity';
-
-import { ApiProvider } from '@backstage/core-app-api';
-import { errorApiRef } from '@backstage/core-plugin-api';
-import { TestApiRegistry } from '@backstage/test-utils';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),
 }));
 
+const useWebsiteForEntityMock = useWebsiteForEntity as jest.Mock;
+
 const websiteListResponse = data as WebsiteListResponse;
 const entityWebsite = websiteListResponse.items[0];
 
 describe('<AuditListTableForEntity />', () => {
-  let apis: TestApiRegistry;
-
-  const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
-    post: jest.fn(),
-    error$: jest.fn(),
-  };
-
-  beforeEach(() => {
-    apis = TestApiRegistry.from(
-      [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
-      [errorApiRef, mockErrorApi],
-    );
-
-    (useWebsiteForEntity as jest.Mock).mockReturnValue({
-      value: entityWebsite,
-      loading: false,
-      error: null,
-    });
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   const entity: Entity = {
@@ -78,66 +57,55 @@ describe('<AuditListTableForEntity />', () => {
     },
   };
 
-  const subject = () =>
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <MemoryRouter>
-          <ApiProvider apis={apis}>
-            <EntityProvider entity={entity}>
-              <AuditListForEntity />
-            </EntityProvider>
-          </ApiProvider>
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
+  const subject = () => (
+    <TestApiProvider
+      apis={[[lighthouseApiRef, new LighthouseRestApi('http://lighthouse')]]}
+    >
+      <EntityProvider entity={entity}>
+        <AuditListForEntity />
+      </EntityProvider>
+    </TestApiProvider>
+  );
 
   it('renders the audit list for the entity', async () => {
-    const { findByText } = subject();
+    useWebsiteForEntityMock.mockReturnValue({
+      value: entityWebsite,
+      loading: false,
+      error: null,
+    });
+    const { findByText } = await renderInTestApp(subject());
     expect(await findByText(entityWebsite.url)).toBeInTheDocument();
   });
 
-  describe('where the data is loading', () => {
-    beforeEach(() => {
-      (useWebsiteForEntity as jest.Mock).mockReturnValue({
-        value: null,
-        loading: true,
-        error: null,
-      });
+  it('renders a Progress element where the data is loading', async () => {
+    useWebsiteForEntityMock.mockReturnValue({
+      value: null,
+      loading: true,
+      error: null,
     });
 
-    it('renders a Progress element', async () => {
-      const { findByTestId } = subject();
-      expect(await findByTestId('progress')).toBeInTheDocument();
-    });
+    const { findByTestId } = await renderInTestApp(subject());
+    expect(await findByTestId('progress')).toBeInTheDocument();
   });
 
-  describe('where there is an error loading data', () => {
-    beforeEach(() => {
-      (useWebsiteForEntity as jest.Mock).mockReturnValue({
-        value: null,
-        loading: false,
-        error: 'error',
-      });
+  it('renders nothing where there is an error loading data', async () => {
+    useWebsiteForEntityMock.mockReturnValue({
+      value: null,
+      loading: false,
+      error: 'error',
     });
-
-    it('renders nothing', async () => {
-      const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
-    });
+    const { queryByTestId } = await renderInTestApp(subject());
+    expect(queryByTestId('AuditListTable')).toBeNull();
   });
 
-  describe('where there is not data', () => {
-    beforeEach(() => {
-      (useWebsiteForEntity as jest.Mock).mockReturnValue({
-        value: null,
-        loading: false,
-        error: null,
-      });
+  it('renders nothing where there is not data', async () => {
+    useWebsiteForEntityMock.mockReturnValue({
+      value: null,
+      loading: false,
+      error: null,
     });
 
-    it('renders nothing', async () => {
-      const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
-    });
+    const { queryByTestId } = await renderInTestApp(subject());
+    expect(queryByTestId('AuditListTable')).toBeNull();
   });
 });

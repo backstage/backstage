@@ -42,10 +42,10 @@ export const AddProjectDialog = ({
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
 
   const defaultValues = {
-    name: '',
-    title: 'Add project',
+    title: '',
     community: '',
     description: '',
+    docs: '',
     status: 'proposed' as Status,
     size: 'medium' as Size,
     responsible: '',
@@ -65,6 +65,7 @@ export const AddProjectDialog = ({
     reset: UseFormReset<FormValues>,
   ) => {
     const formValues = getValues();
+
     const response = await bazaarApi.addProject({
       ...formValues,
       entityRef: selectedEntity ? stringifyEntityRef(selectedEntity) : null,

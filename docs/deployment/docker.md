@@ -34,12 +34,8 @@ more efficient caching of dependencies on the host, where a single change won't
 bust the entire cache.
 
 The required steps in the host build are to install dependencies with
-`yarn install`, generate type definitions using `yarn tsc`, and build all
-packages with `yarn build`.
-
-> NOTE: If you created your app prior to 2021-02-18, follow the
-> [migration step](https://github.com/backstage/backstage/releases/tag/release-2021-02-18)
-> to move from `backend:build` to `backend:bundle`.
+`yarn install`, generate type definitions using `yarn tsc`, and build the backend
+package with `yarn build:backend`.
 
 In a CI workflow it might look something like this:
 
@@ -49,8 +45,9 @@ yarn install --frozen-lockfile
 # tsc outputs type definitions to dist-types/ in the repo root, which are then consumed by the build
 yarn tsc
 
-# Build all packages and in the end bundle them all up into the packages/backend/dist folder.
-yarn build
+# Build the backend, which bundles it all up into the packages/backend/dist folder.
+# The configuration files here should match the one you use inside the Dockerfile below.
+yarn build:backend --config app-config.yaml
 ```
 
 Once the host build is complete, we are ready to build our image. The following
@@ -69,6 +66,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
+
+# This should create the app dir as `node`.
+# If it is instead created as `root` then the `tar` command below will fail: `can't create directory 'packages/': Permission denied`.
+# If this occurs, then ensure BuildKit is enabled (`DOCKER_BUILDKIT=1`) so the app dir is correctly created as `node`.
 WORKDIR /app
 
 # This switches many Node.js dependencies to production mode.
@@ -104,10 +105,13 @@ root of the repo to speed up the build by reducing build context size:
 
 ```text
 .git
+.yarn/cache
+.yarn/install-state.gz
 node_modules
 packages/*/src
 packages/*/node_modules
 plugins
+*.local.yaml
 ```
 
 With the project built and the `.dockerignore` and `Dockerfile` in place, we are
@@ -206,6 +210,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
+
+# This should create the app dir as `node`.
+# If it is instead created as `root` then the `tar` command below will fail: `can't create directory 'packages/': Permission denied`.
+# If this occurs, then ensure BuildKit is enabled (`DOCKER_BUILDKIT=1`) so the app dir is correctly created as `node`.
 WORKDIR /app
 
 # Copy the install dependencies from the build stage and context
@@ -263,6 +271,11 @@ You should then start to get logs in your terminal, and then you can open your
 browser at `http://localhost:7007`
 
 ## Separate Frontend
+
+> NOTE: This is an optional step, and you will lose out on the features of the
+> `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
+> will no longer be injected by the backend, you will instead need to use the
+> correct configuration when building the frontend bundle.
 
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The

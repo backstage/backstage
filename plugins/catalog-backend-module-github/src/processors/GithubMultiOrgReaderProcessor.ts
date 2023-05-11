@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
-  GitHubIntegrationConfig,
+  GithubIntegrationConfig,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -28,15 +34,20 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import {
+  assignGroupsToUsers,
   buildOrgHierarchy,
+  defaultOrganizationTeamTransformer,
+  defaultUserTransformer,
   getOrganizationTeams,
   getOrganizationUsers,
   GithubMultiOrgConfig,
   readGithubMultiOrgConfig,
+  TeamTransformer,
+  UserTransformer,
 } from '../lib';
 
 /**
@@ -57,6 +68,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     options: {
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
     },
   ) {
     const c = config.getOptionalConfig('catalog.processors.githubMultiOrg');
@@ -69,12 +82,16 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    orgs: GithubMultiOrgConfig;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  }) {
+  constructor(
+    private options: {
+      integrations: ScmIntegrationRegistry;
+      logger: Logger;
+      orgs: GithubMultiOrgConfig;
+      githubCredentialsProvider?: GithubCredentialsProvider;
+      userTransformer?: UserTransformer;
+      teamTransformer?: TeamTransformer;
+    },
+  ) {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.orgs = options.orgs;
@@ -130,12 +147,40 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           client,
           orgConfig.name,
           tokenType,
-          orgConfig.userNamespace,
+          async (githubUser, ctx): Promise<UserEntity | undefined> => {
+            const result = this.options.userTransformer
+              ? await this.options.userTransformer(githubUser, ctx)
+              : await defaultUserTransformer(githubUser, ctx);
+
+            if (result) {
+              result.metadata.namespace = orgConfig.userNamespace;
+            }
+
+            return result;
+          },
         );
-        const { groups, groupMemberUsers } = await getOrganizationTeams(
+
+        const { groups } = await getOrganizationTeams(
           client,
           orgConfig.name,
-          orgConfig.groupNamespace,
+          async (team, ctx): Promise<GroupEntity | undefined> => {
+            const result = this.options.teamTransformer
+              ? await this.options.teamTransformer(team, ctx)
+              : await defaultOrganizationTeamTransformer(team, ctx);
+
+            if (result) {
+              result.metadata.namespace = orgConfig.groupNamespace;
+              // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
+              result.spec.members = team.members.map(
+                user =>
+                  `${orgConfig.userNamespace ?? DEFAULT_NAMESPACE}/${
+                    user.login
+                  }`,
+              );
+            }
+
+            return result;
+          },
         );
 
         const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
@@ -143,23 +188,18 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           `Read ${users.length} GitHub users and ${groups.length} GitHub teams from ${orgConfig.name} in ${duration} seconds`,
         );
 
-        let prefix: string = orgConfig.userNamespace ?? '';
-        if (prefix.length > 0) prefix += '/';
-
-        users.forEach(u => {
-          if (!allUsersMap.has(prefix + u.metadata.name)) {
-            allUsersMap.set(prefix + u.metadata.name, u);
+        // Grab current users from `allUsersMap` if they already exist in our
+        // pending users so we can append to their group membership relations
+        const pendingUsers = users.map(u => {
+          const userRef = stringifyEntityRef(u);
+          if (!allUsersMap.has(userRef)) {
+            allUsersMap.set(userRef, u);
           }
+
+          return allUsersMap.get(userRef);
         });
 
-        for (const [groupName, userNames] of groupMemberUsers.entries()) {
-          for (const userName of userNames) {
-            const user = allUsersMap.get(prefix + userName);
-            if (user && !user.spec.memberOf.includes(groupName)) {
-              user.spec.memberOf.push(groupName);
-            }
-          }
-        }
+        assignGroupsToUsers(pendingUsers, groups);
         buildOrgHierarchy(groups);
 
         for (const group of groups) {
@@ -172,6 +212,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       }
     }
 
+    // Emit all users at the end after all orgs have been processed
+    // so all memberships across org groups are accounted for
     const allUsers = Array.from(allUsersMap.values());
     for (const user of allUsers) {
       emit(processingResult.entity(location, user));
@@ -182,7 +224,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
   // Note: Does not support usage of PATs
   private async getAllOrgs(
-    gitHubConfig: GitHubIntegrationConfig,
+    gitHubConfig: GithubIntegrationConfig,
   ): Promise<GithubMultiOrgConfig> {
     const githubAppMux = new GithubAppCredentialsMux(gitHubConfig);
     const installs = await githubAppMux.getAllInstallations();

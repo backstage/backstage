@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -22,8 +23,9 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
-  Button,
   ItemCardHeader,
+  Link,
+  LinkButton,
   MarkdownContent,
 } from '@backstage/core-components';
 import {
@@ -52,7 +54,6 @@ import {
   CardMedia,
   Chip,
   IconButton,
-  Link,
   makeStyles,
   Tooltip,
   Typography,
@@ -63,12 +64,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<
+  BackstageTheme,
+  { fontColor: string; backgroundImage: string }
+>(theme => ({
   cardHeader: {
     position: 'relative',
   },
   title: {
-    backgroundImage: ({ backgroundImage }: any) => backgroundImage,
+    backgroundImage: ({ backgroundImage }) => backgroundImage,
+    color: ({ fontColor }) => fontColor,
   },
   box: {
     overflow: 'hidden',
@@ -102,7 +107,7 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(0.5),
     right: theme.spacing(0.5),
     padding: '0.25rem',
-    color: '#fff',
+    color: ({ fontColor }) => fontColor,
   },
 }));
 
@@ -162,7 +167,7 @@ const DeprecationWarning = () => {
     <div className={styles.deprecationIcon}>
       <Tooltip title={Title}>
         <Link
-          href="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
+          to="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
           className={styles.link}
         >
           <WarningIcon />
@@ -185,7 +190,10 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     ? templateProps.type
     : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
-  const classes = useStyles({ backgroundImage: theme.backgroundImage });
+  const classes = useStyles({
+    fontColor: theme.fontColor,
+    backgroundImage: theme.backgroundImage,
+  });
   const { name, namespace } = parseEntityRef(stringifyEntityRef(template));
   const href = templateRoute({ templateName: name, namespace });
 
@@ -291,13 +299,13 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
             </Tooltip>
           ))}
         </div>
-        <Button
+        <LinkButton
           color="primary"
           to={href}
           aria-label={`Choose ${templateProps.title}`}
         >
           Choose
-        </Button>
+        </LinkButton>
       </CardActions>
     </Card>
   );

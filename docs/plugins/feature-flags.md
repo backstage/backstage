@@ -1,16 +1,18 @@
 ---
 id: feature-flags
 title: Feature Flags
-description: Details the process of defining setting and reading a plugin feature flag.
+description: Details the process of defining setting and reading a feature flag.
 ---
 
-Backstage offers the ability to define feature flags inside a plugin. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
+Backstage offers the ability to define feature flags inside a plugin or during application creation. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
 
-This page describes the process of defining setting and reading a plugin feature flag. If you are looking for using feature flags with software templates that can be found under [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
+This page describes the process of defining setting and reading a feature flag. If you are looking for using feature flags with software templates that can be found under [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).
 
 ## Defining a Feature Flag
 
-Before using a feature flag we must first define it. This is done when we create the plugin by passing the name of the feature flag into the `featureFlags` array.
+### In a plugin
+
+Defining feature flag in a plugin is done by passing the name of the feature flag into the `featureFlags` array:
 
 ```ts
 /* src/plugin.ts */
@@ -23,6 +25,25 @@ export const examplePlugin = createPlugin({
     root: rootRouteRef,
   },
   featureFlags: [{ name: 'show-example-feature' }],
+});
+```
+
+### In the application
+
+Defining feature flag in the application is done by adding feature flags in`featureFlags` array in
+`createApp()` function call:
+
+```ts
+const app = createApp({
+  // ...
+  featureFlags: [
+    {
+      pluginId: '', // pluginId is required for feature flags in plugins. It can be left blank for a feature flag leveraged in the application.
+      name: 'tech-radar',
+      description: 'Enables the tech radar plugin',
+    },
+  ],
+  // ...
 });
 ```
 
@@ -39,7 +60,7 @@ The users selection is saved in the users browsers local storage. Once toggled i
 The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/docs/reference/core-app-api.featureflagged) component.
 
 ```ts
-import { FeatureFlagged } from '@backstage/core-app-api'
+import { FeatureFlagged } from '@backstage/core-app-api';
 
 ...
 

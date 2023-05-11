@@ -16,16 +16,13 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import {
   AuditCompleted,
   LighthouseCategoryId,
   WebsiteListResponse,
-} from '../../api';
+} from '@backstage/plugin-lighthouse-common';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import * as data from '../../__fixtures__/website-list-response.json';
 import { LastLighthouseAuditCard } from './LastLighthouseAuditCard';
@@ -64,22 +61,15 @@ describe('<LastLighthouseAuditCard />', () => {
     },
   };
 
-  const subject = () =>
-    render(
-      <ThemeProvider theme={lightTheme}>
-        <MemoryRouter>
-          <EntityProvider entity={entity}>
-            <LastLighthouseAuditCard />
-          </EntityProvider>
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
-
   describe('where the last audit completed successfully', () => {
     const audit = entityWebsite.lastAudit as AuditCompleted;
 
     it('renders the performance data for the audit', async () => {
-      const { findByText } = subject();
+      const { findByText } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
       expect(await findByText(audit.url)).toBeInTheDocument();
       expect(await findByText(audit.status)).toBeInTheDocument();
       for (const category of Object.keys(audit.categories)) {
@@ -101,7 +91,11 @@ describe('<LastLighthouseAuditCard />', () => {
       });
 
       it('renders the performance data for the audit', async () => {
-        const { findByText } = subject();
+        const { findByText } = await renderInTestApp(
+          <EntityProvider entity={entity}>
+            <LastLighthouseAuditCard />
+          </EntityProvider>,
+        );
         expect(await findByText('N/A')).toBeInTheDocument();
       });
     });
@@ -119,7 +113,11 @@ describe('<LastLighthouseAuditCard />', () => {
     });
 
     it('renders the url and status of the audit', async () => {
-      const { findByText } = subject();
+      const { findByText } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
       expect(await findByText(audit.url)).toBeInTheDocument();
       expect(await findByText(audit.status)).toBeInTheDocument();
     });
@@ -135,7 +133,11 @@ describe('<LastLighthouseAuditCard />', () => {
     });
 
     it('renders a Progress element', async () => {
-      const { findByTestId } = subject();
+      const { findByTestId } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
       expect(await findByTestId('progress')).toBeInTheDocument();
     });
   });
@@ -150,11 +152,15 @@ describe('<LastLighthouseAuditCard />', () => {
     });
 
     it('renders nothing', async () => {
-      const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      const { queryByTestId } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
-  //
+
   describe('where there is no data', () => {
     beforeEach(() => {
       (useWebsiteForEntity as jest.Mock).mockReturnValue({
@@ -165,8 +171,12 @@ describe('<LastLighthouseAuditCard />', () => {
     });
 
     it('renders nothing', async () => {
-      const { queryByTestId } = subject();
-      expect(await queryByTestId('AuditListTable')).toBeNull();
+      const { queryByTestId } = await renderInTestApp(
+        <EntityProvider entity={entity}>
+          <LastLighthouseAuditCard />
+        </EntityProvider>,
+      );
+      expect(queryByTestId('AuditListTable')).toBeNull();
     });
   });
 });

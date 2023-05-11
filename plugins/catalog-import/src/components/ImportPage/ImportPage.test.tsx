@@ -19,13 +19,14 @@ import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportPage } from './ImportPage';
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn(),
 }));
 
@@ -71,26 +72,26 @@ describe('<ImportPage />', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportPage />
       </ApiProvider>,
     );
 
     expect(
-      getByText('Start tracking your component in Backstage'),
+      screen.getByText('Start tracking your component in Backstage'),
     ).toBeInTheDocument();
   });
 
   it('renders with custom children', async () => {
     (useOutlet as jest.Mock).mockReturnValue(<div>Hello World</div>);
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportPage />
       </ApiProvider>,
     );
 
-    expect(getByText('Hello World')).toBeInTheDocument();
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
 });

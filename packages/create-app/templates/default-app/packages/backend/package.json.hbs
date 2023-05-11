@@ -16,11 +16,10 @@
     "build-image": "docker build ../.. -f Dockerfile --tag backstage"
   },
   "dependencies": {
-    "app": "link:../app",
     "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
     "@backstage/backend-tasks": "^{{version '@backstage/backend-tasks'}}",
-    "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
     "@backstage/catalog-client": "^{{version '@backstage/catalog-client'}}",
+    "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
     "@backstage/config": "^{{version '@backstage/config'}}",
     "@backstage/plugin-app-backend": "^{{version '@backstage/plugin-app-backend'}}",
     "@backstage/plugin-auth-backend": "^{{version '@backstage/plugin-auth-backend'}}",
@@ -34,7 +33,8 @@
     "@backstage/plugin-search-backend-module-pg": "^{{version '@backstage/plugin-search-backend-module-pg'}}",
     "@backstage/plugin-search-backend-node": "^{{version '@backstage/plugin-search-backend-node'}}",
     "@backstage/plugin-techdocs-backend": "^{{version '@backstage/plugin-techdocs-backend'}}",
-    "better-sqlite3": "^7.5.0",
+    "app": "link:../app",
+    "better-sqlite3": "^8.0.0",
     "dockerode": "^3.3.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -44,8 +44,8 @@
   "devDependencies": {
     "@backstage/cli": "^{{version '@backstage/cli'}}",
     "@types/dockerode": "^3.3.0",
-    "@types/express-serve-static-core": "^4.17.5",
     "@types/express": "^4.17.6",
+    "@types/express-serve-static-core": "^4.17.5",
     "@types/luxon": "^2.0.4"
   },
   "files": [

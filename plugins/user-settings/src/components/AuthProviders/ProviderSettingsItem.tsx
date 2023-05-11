@@ -89,32 +89,30 @@ export const ProviderSettingsItem = (props: {
         primary={title}
         secondary={
           <Tooltip placement="top" arrow title={description}>
-            <span>
-              <Grid container spacing={6}>
-                <Grid item>
-                  <ProviderSettingsAvatar size={48} picture={profile.picture} />
-                </Grid>
-                <Grid item xs={12} sm container>
-                  <Grid item xs container direction="column" spacing={2}>
-                    <Grid item xs>
-                      <Typography
-                        variant="subtitle1"
-                        color="textPrimary"
-                        gutterBottom
-                      >
-                        {profile.displayName}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {profile.email}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {description}
-                      </Typography>
-                    </Grid>
+            <Grid container spacing={6}>
+              <Grid item>
+                <ProviderSettingsAvatar size={48} picture={profile.picture} />
+              </Grid>
+              <Grid item xs={12} sm container>
+                <Grid item xs container direction="column" spacing={2}>
+                  <Grid item xs>
+                    <Typography
+                      variant="subtitle1"
+                      color="textPrimary"
+                      gutterBottom
+                    >
+                      {profile.displayName}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {profile.email}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {description}
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
-            </span>
+            </Grid>
           </Tooltip>
         }
         secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}

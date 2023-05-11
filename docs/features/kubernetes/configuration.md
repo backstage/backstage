@@ -31,6 +31,7 @@ kubernetes:
           dashboardUrl: http://127.0.0.1:64713 # url copied from running the command: minikube service kubernetes-dashboard -n kubernetes-dashboard
           dashboardApp: standard
           caData: ${K8S_CONFIG_CA_DATA}
+          caFile: '' # local path to CA file
           customResources:
             - group: 'argoproj.io'
               apiVersion: 'v1alpha1'
@@ -103,12 +104,13 @@ cluster. Valid values are:
 
 | Value                  | Description                                                                                                                                                                                                                                                                                                                               |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.                                                                                                         |
-| `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                                                                                                                                     |
+| `aks`                  | This will use a user's AKS access token from the [Microsoft auth provider](https://backstage.io/docs/auth/microsoft/provider) to access the Kubernetes API on AKS clusters.                                                                                                                                                               |
 | `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                                                                                                                         |
-| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                                                                                                                                |
 | `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                                                                                                                       |
+| `google`               | This will use a user's Google access token from the [Google auth provider](https://backstage.io/docs/auth/google/provider) to access the Kubernetes API on GKE clusters.                                                                                                                                                                  |
+| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                                                                                                                                |
 | `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. Please note the cluster must support OIDC, at the time of writing AKS clusters do not support OIDC. |
+| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.                                                                                                         |
 
 Check the [Kubernetes Authentication][4] section for additional explanation.
 
@@ -159,8 +161,9 @@ auth:
         audience: ${AUTH_OKTA_AUDIENCE}
 ```
 
-The following values are supported out-of-the-box by the frontend: `google`, `microsoft`,
-`okta`, `onelogin`.
+The following values are supported out-of-the-box by the frontend: `gitlab` (the
+application whose `clientId` is used by the auth provider should be granted the
+`openid` scope), `google`, `microsoft`, `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
 of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
@@ -217,11 +220,11 @@ for some dashboards, such as GKE.
 
 ###### required parameters for GKE
 
-| Name        | Description                                                              |
-| ----------- | ------------------------------------------------------------------------ |
-| projectId   | the ID of the GCP project containing your Kubernetes clusters            |
-| region      | the region of GCP containing your Kubernetes clusters                    |
-| clusterName | the name of your kubernetes cluster, within your `projectId` GCP project |
+| Name          | Description                                                              |
+| ------------- | ------------------------------------------------------------------------ |
+| `projectId`   | the ID of the GCP project containing your Kubernetes clusters            |
+| `region`      | the region of GCP containing your Kubernetes clusters                    |
+| `clusterName` | the name of your kubernetes cluster, within your `projectId` GCP project |
 
 Note that the GKE cluster locator can automatically provide the values for the
 `dashboardApp` and `dashboardParameters` options if you set the
@@ -248,8 +251,8 @@ kubernetes:
 ##### `clusters.\*.caData` (optional)
 
 Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
-will verify that TLS certificate presented by the API server is signed by this
-CA.
+will verify that the TLS certificate presented by the API server is signed by
+this CA.
 
 This value could be obtained via inspecting the kubeconfig file (usually
 at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
@@ -264,6 +267,14 @@ gcloud container clusters describe <YOUR_CLUSTER_NAME> \
 See also
 https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
 for complete docs about GKE without `gcloud`.
+
+##### `clusters.\*.caFile` (optional)
+
+Filesystem path (on the host where the Backstage process is running) to a
+certificate authority bundle in PEM format. The Kubernetes client will verify
+that the TLS certificate presented by the API server is signed by this CA. Note
+that only clusters defined in the app-config via the [`config`](#config)
+cluster locator method can be configured in this way.
 
 ##### `clusters.\*.customResources` (optional)
 
@@ -393,6 +404,41 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 [API Groups for v1.22](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#-strong-api-groups-strong-)
 )
 
+### `objectTypes` (optional)
+
+Overrides for the Kubernetes object types fetched from the cluster. The default object types are:
+
+- pods
+- services
+- configmaps
+- limitranges
+- deployments
+- replicasets
+- horizontalpodautoscalers
+- jobs
+- cronjobs
+- ingresses
+- statefulsets
+- daemonsets
+
+You may use this config to override the default object types if you only want a subset of
+the default ones. However, it's currently not supported to fetch object types other
+than the ones specified in the default types.
+
+Example:
+
+```yaml
+---
+kubernetes:
+  objectTypes:
+    - configmaps
+    - deployments
+    - limitranges
+    - pods
+    - services
+    - statefulsets
+```
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, the below
@@ -432,6 +478,13 @@ rules:
       - get
       - list
       - watch
+  - apiGroups:
+      - metrics.k8s.io
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
 ```
 
 ## Surfacing your Kubernetes components as part of an entity

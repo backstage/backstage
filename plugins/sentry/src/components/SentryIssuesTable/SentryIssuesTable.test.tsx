@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
 import SentryIssuesTable from './SentryIssuesTable';
 import { SentryIssue } from '../../api';
 import mockIssue from '../../api/mock/sentry-issue-mock.json';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { renderInTestApp } from '@backstage/test-utils';
+import { DateTime } from 'luxon';
 
 describe('SentryIssuesTable', () => {
   it('should render headers in a table', async () => {
@@ -35,19 +34,17 @@ describe('SentryIssuesTable', () => {
         userCount: 2,
       },
     ];
-    const table = await render(
-      <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable
-          sentryIssues={issues}
-          statsFor="24h"
-          tableOptions={{
-            padding: 'dense',
-            paging: true,
-            search: false,
-            pageSize: 5,
-          }}
-        />
-      </ThemeProvider>,
+    const table = await renderInTestApp(
+      <SentryIssuesTable
+        sentryIssues={issues}
+        statsFor="24h"
+        tableOptions={{
+          padding: 'dense',
+          paging: true,
+          search: false,
+          pageSize: 5,
+        }}
+      />,
     );
     expect(await table.findByText('Error')).toBeInTheDocument();
     expect(await table.findByText('Graph')).toBeInTheDocument();
@@ -66,21 +63,20 @@ describe('SentryIssuesTable', () => {
         },
         count: '101',
         userCount: 202,
+        lastSeen: DateTime.now().toISO(),
       },
     ];
-    const table = await render(
-      <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable
-          sentryIssues={issues}
-          statsFor="24h"
-          tableOptions={{
-            padding: 'dense',
-            paging: true,
-            search: false,
-            pageSize: 5,
-          }}
-        />
-      </ThemeProvider>,
+    const table = await renderInTestApp(
+      <SentryIssuesTable
+        sentryIssues={issues}
+        statsFor="24h"
+        tableOptions={{
+          padding: 'dense',
+          paging: true,
+          search: false,
+          pageSize: 5,
+        }}
+      />,
     );
     expect(await table.findByText('Exception')).toBeInTheDocument();
     expect(await table.findByText('exception was thrown')).toBeInTheDocument();
@@ -99,20 +95,18 @@ describe('SentryIssuesTable', () => {
         userCount: 202,
       },
     ];
-    const table = await render(
-      <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable
-          sentryIssues={issues}
-          statsFor="24h"
-          tableOptions={{
-            padding: 'dense',
-            paging: true,
-            search: false,
-            pageSize: 5,
-          }}
-        />
-      </ThemeProvider>,
+    const table = await renderInTestApp(
+      <SentryIssuesTable
+        sentryIssues={issues}
+        statsFor="24h"
+        tableOptions={{
+          padding: 'dense',
+          paging: true,
+          search: false,
+          pageSize: 5,
+        }}
+      />,
     );
-    expect(await table.findByText('Last 24h')).toBeInTheDocument();
+    expect(await table.findByText('Stats for 24h')).toBeInTheDocument();
   });
 });

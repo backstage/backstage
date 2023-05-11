@@ -58,6 +58,7 @@ Options:
   --lax
   --frontend
   --deprecated
+  --strict
   --config <path>
   -h, --help
 ```
@@ -127,9 +128,19 @@ Options:
 Commands:
   package-roles
   package-scripts
+  package-exports
   package-lint-configs
   react-router-deps
   help [command]
+```
+
+### `backstage-cli migrate package-exports`
+
+```
+Usage: backstage-cli migrate package-exports [options]
+
+Options:
+  -h, --help
 ```
 
 ### `backstage-cli migrate package-lint-configs`
@@ -345,11 +356,13 @@ Options:
   -i, --runInBand
   --runTestsByPath
   --runner
+  --seed
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
   --shard
   --showConfig
+  --showSeed
   --silent
   --skipFilter
   --snapshotSerializers
@@ -390,6 +403,7 @@ Commands:
   build [options]
   lint [options]
   clean
+  list-deprecations [options]
   test [options]
   help [command]
 ```
@@ -423,6 +437,16 @@ Options:
   --format <format>
   --since <ref>
   --fix
+  -h, --help
+```
+
+### `backstage-cli repo list-deprecations`
+
+```
+Usage: backstage-cli repo list-deprecations [options]
+
+Options:
+  --json
   -h, --help
 ```
 
@@ -513,11 +537,13 @@ Options:
   -i, --runInBand
   --runTestsByPath
   --runner
+  --seed
   --selectProjects
   --setupFiles
   --setupFilesAfterEnv
   --shard
   --showConfig
+  --showSeed
   --silent
   --skipFilter
   --snapshotSerializers
@@ -554,6 +580,7 @@ Usage: backstage-cli versions:bump [options]
 Options:
   --pattern <glob>
   --release <version|next|main>
+  --skip-install
   -h, --help
 ```
 

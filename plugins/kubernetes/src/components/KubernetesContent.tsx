@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Divider, Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
 import { ErrorPanel } from './ErrorPanel';
 import { ErrorReporting } from './ErrorReporting';
@@ -83,9 +83,6 @@ export const KubernetesContent = ({
               <ErrorReporting detectedErrors={detectedErrors} />
             </Grid>
             <Grid item>
-              <Divider />
-            </Grid>
-            <Grid item>
               <Typography variant="h3">Your Clusters</Typography>
             </Grid>
             <Grid item container>
@@ -117,9 +114,8 @@ export const KubernetesContent = ({
                   const podsWithErrors = new Set<string>(
                     detectedErrors
                       .get(item.cluster.name)
-                      ?.filter(de => de.kind === 'Pod')
-                      .map(de => de.names)
-                      .flat() ?? [],
+                      ?.filter(de => de.sourceRef.kind === 'Pod')
+                      .map(de => de.sourceRef.name),
                   );
 
                   return (

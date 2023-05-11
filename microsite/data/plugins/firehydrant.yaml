@@ -7,3 +7,4 @@ description: View service incidents information from FireHydrant, such as active
 documentation: https://github.com/backstage/backstage/blob/master/plugins/firehydrant/README.md
 iconUrl: https://raw.githubusercontent.com/backstage/backstage/master/plugins/firehydrant/doc/firehydrant_logo.png
 npmPackageName: '@backstage/plugin-firehydrant'
+addedDate: '2021-08-18'

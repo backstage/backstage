@@ -19,7 +19,7 @@ import {
   AsyncEntityProvider,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
@@ -46,39 +46,45 @@ describe('EntitySwitch', () => {
 
     const rendered = render(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'component' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'component' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
-    expect(rendered.queryByText('C')).not.toBeInTheDocument();
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
 
     rendered.rerender(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'template' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'template' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
-    expect(rendered.queryByText('B')).toBeInTheDocument();
-    expect(rendered.queryByText('C')).not.toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
 
     rendered.rerender(
       <Wrapper>
-        <EntityProvider entity={{ kind: 'derp' } as Entity}>
+        <EntityProvider
+          entity={{ metadata: { name: 'mock' }, kind: 'derp' } as Entity}
+        >
           {content}
         </EntityProvider>
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
-    expect(rendered.queryByText('C')).toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
 
     rendered.rerender(
       <Wrapper>
@@ -88,13 +94,13 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
-    expect(rendered.queryByText('C')).toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
   });
 
   it('should switch child when filters switch', () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const rendered = render(
       <Wrapper>
@@ -107,8 +113,8 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
 
     rendered.rerender(
       <Wrapper>
@@ -121,15 +127,93 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
-    expect(rendered.queryByText('B')).toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+  });
+
+  it('should render all elements that match the condition', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={isKind('component')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('component')} children={<p>B</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>C</p>} />
+            <EntitySwitch.Case children={<p>D</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
+    expect(screen.queryByText('D')).not.toBeInTheDocument();
+  });
+
+  it('should render default element if none of the cases match', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={isKind('system')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>B</p>} />
+            <EntitySwitch.Case children={<p>C</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+  });
+
+  it('should render nothing if no default case is set for multiple matches', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={isKind('system')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>B</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should render nothing if no default case is set for default', () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={isKind('system')} children={<p>A</p>} />
+            <EntitySwitch.Case if={isKind('system')} children={<p>B</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
 
   it('should switch with async condition that is true', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.resolve(true);
-    const rendered = render(
+    render(
       <Wrapper>
         <EntityProvider entity={entity}>
           <EntitySwitch>
@@ -140,15 +224,60 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    await expect(rendered.findByText('A')).resolves.toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+    await expect(screen.findByText('A')).resolves.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should render all elements with async result as true', async () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.resolve(true);
+    const shouldNotRender = () => Promise.resolve(false);
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={shouldRender} children={<p>A</p>} />
+            <EntitySwitch.Case if={shouldRender} children={<p>B</p>} />
+            <EntitySwitch.Case if={shouldNotRender} children={<p>C</p>} />
+            <EntitySwitch.Case children={<p>D</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(screen.findByText('A')).resolves.toBeInTheDocument();
+    await expect(screen.findByText('B')).resolves.toBeInTheDocument();
+    expect(screen.queryByText('C')).not.toBeInTheDocument();
+    expect(screen.queryByText('D')).not.toBeInTheDocument();
+  });
+
+  it('should render default element if none of the async cases match', async () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+
+    const shouldNotRender = () => Promise.resolve(false);
+    render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch renderMultipleMatches="all">
+            <EntitySwitch.Case if={shouldNotRender} children={<p>A</p>} />
+            <EntitySwitch.Case if={shouldNotRender} children={<p>B</p>} />
+            <EntitySwitch.Case children={<p>C</p>} />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(screen.findByText('C')).resolves.toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
 
   it('should switch with sync condition that is false', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.resolve(false);
-    const rendered = render(
+    render(
       <Wrapper>
         <EntityProvider entity={entity}>
           <EntitySwitch>
@@ -159,15 +288,15 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    await expect(rendered.findByText('B')).resolves.toBeInTheDocument();
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+    await expect(screen.findByText('B')).resolves.toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
   });
 
   it('should switch with sync condition that throws', async () => {
-    const entity = { kind: 'component' } as Entity;
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
     const shouldRender = () => Promise.reject();
-    const rendered = render(
+    render(
       <Wrapper>
         <EntityProvider entity={entity}>
           <EntitySwitch>
@@ -179,8 +308,8 @@ describe('EntitySwitch', () => {
       </Wrapper>,
     );
 
-    await expect(rendered.findByText('C')).resolves.toBeInTheDocument();
-    expect(rendered.queryByText('A')).not.toBeInTheDocument();
-    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+    await expect(screen.findByText('C')).resolves.toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
 });

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, waitFor } from '@testing-library/react';
+
+import { render, waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CurveFilter } from './CurveFilter';
@@ -21,26 +22,24 @@ import { CurveFilter } from './CurveFilter';
 describe('<CurveFilter/>', () => {
   test('should display current curve label', () => {
     const onChange = jest.fn();
-    const { getByText } = render(
-      <CurveFilter value="curveMonotoneX" onChange={onChange} />,
-    );
+    render(<CurveFilter value="curveMonotoneX" onChange={onChange} />);
 
-    expect(getByText('Monotone X')).toBeInTheDocument();
+    expect(screen.getByText('Monotone X')).toBeInTheDocument();
   });
 
   test('should select an alternative curve factory', async () => {
     const onChange = jest.fn();
-    const { getByText, getByTestId } = render(
-      <CurveFilter value="curveStepBefore" onChange={onChange} />,
+    render(<CurveFilter value="curveStepBefore" onChange={onChange} />);
+
+    expect(screen.getByText('Step Before')).toBeInTheDocument();
+
+    await userEvent.click(
+      within(screen.getByTestId('select')).getByRole('button'),
     );
-
-    expect(getByText('Step Before')).toBeInTheDocument();
-
-    await userEvent.click(getByTestId('select'));
-    await userEvent.click(getByText('Monotone X'));
+    await userEvent.click(screen.getByText('Monotone X'));
 
     await waitFor(() => {
-      expect(getByText('Monotone X')).toBeInTheDocument();
+      expect(screen.getByText('Monotone X')).toBeInTheDocument();
       expect(onChange).toHaveBeenCalledWith('curveMonotoneX');
     });
   });

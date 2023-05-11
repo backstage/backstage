@@ -2,13 +2,17 @@
 
 Welcome to the Dynatrace plugin!
 
+![Example of the Dynatrace plugin](./assets/plugin.png)
+
 ## Getting started
 
 This plugin uses the Backstage proxy to communicate with Dynatrace's REST APIs.
 
 ### Setup
 
-#### Dynatrace API Key
+#### Requirements
+
+##### Dynatrace API Key
 
 The Dynatrace plugin will require the following information, to be used in the configuration options detailed below:
 
@@ -16,6 +20,39 @@ The Dynatrace plugin will require the following information, to be used in the c
 - Dynatrace API access token (see [documentation](https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication)), with the following permissions:
   - `entities.read`
   - `problems.read`
+
+#### Install
+
+1. Install the plugin on your frontend:
+
+```
+yarn add --cwd packages/app @backstage/plugin-dynatrace
+```
+
+2. We created in our catalog the interface for using the integration with Dynatrace.
+
+```diff
+# packages/app/src/components/catalog/EntityPage.tsx
+
+[...]
++ import { DynatraceTab, isDynatraceAvailable } from '@backstage/plugin-dynatrace'
+
+[...]
+
+const serviceEntityPage = (
+  <EntityLayout>
+    [...]
++    <EntityLayout.Route
++      path="/dynatrace"
++      title="Dynatrace"
++      if={isDynatraceAvailable}
++    >
++      <DynatraceTab />
++    </EntityLayout.Route>
+  </EntityLayout>
+)
+
+```
 
 #### Plugin Configuration
 
@@ -29,7 +66,7 @@ proxy:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 ```
 
-It also requires a baseUrl for rendering links to problems in the table like so:
+It also requires a `baseUrl` for rendering links to problems in the table like so:
 
 ```yaml
 dynatrace:

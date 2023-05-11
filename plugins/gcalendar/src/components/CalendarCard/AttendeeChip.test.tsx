@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { screen } from '@testing-library/react';
 import React from 'react';
-
 import { renderInTestApp } from '@backstage/test-utils';
-
 import { AttendeeChip } from './AttendeeChip';
 import { EventAttendee, ResponseStatus } from '../../api';
 
@@ -27,8 +27,8 @@ describe('<AttendeeChip />', () => {
       email,
       responseStatus: ResponseStatus.needsAction,
     };
-    const { queryByText } = await renderInTestApp(<AttendeeChip user={user} />);
-    expect(queryByText(email)).toBeInTheDocument();
+    await renderInTestApp(<AttendeeChip user={user} />);
+    expect(screen.getByText(email)).toBeInTheDocument();
   });
 
   it('renders accepted icon', async () => {
@@ -37,8 +37,8 @@ describe('<AttendeeChip />', () => {
       email,
       responseStatus: ResponseStatus.accepted,
     };
-    const { getByTestId } = await renderInTestApp(<AttendeeChip user={user} />);
-    expect(getByTestId('accepted-icon')).toBeInTheDocument();
+    await renderInTestApp(<AttendeeChip user={user} />);
+    expect(screen.getByTestId('accepted-icon')).toBeInTheDocument();
   });
 
   it('renders declined icon', async () => {
@@ -47,7 +47,7 @@ describe('<AttendeeChip />', () => {
       email,
       responseStatus: ResponseStatus.declined,
     };
-    const { getByTestId } = await renderInTestApp(<AttendeeChip user={user} />);
-    expect(getByTestId('declined-icon')).toBeInTheDocument();
+    await renderInTestApp(<AttendeeChip user={user} />);
+    expect(screen.getByTestId('declined-icon')).toBeInTheDocument();
   });
 });

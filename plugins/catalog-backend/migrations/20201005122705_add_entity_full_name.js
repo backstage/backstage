@@ -21,19 +21,20 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('entities', table => {
-    table.text('full_name').nullable();
+    table.string('full_name').nullable();
   });
 
   await knex('entities').update({
     full_name: knex.raw(
-      "LOWER(kind) || ':' || LOWER(COALESCE(namespace, 'default')) || '/' || LOWER(name)",
+      "LOWER(??) || ':' || LOWER(COALESCE(??, 'default')) || '/' || LOWER(??)",
+      ['kind', 'namespace', 'name'],
     ),
   });
 
   // SQLite does not support alter column
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities', table => {
-      table.text('full_name').notNullable().alter({ alterNullable: true });
+      table.string('full_name').notNullable().alter({ alterNullable: true });
     });
   }
 

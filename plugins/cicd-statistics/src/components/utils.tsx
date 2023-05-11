@@ -18,6 +18,7 @@ import React, { CSSProperties } from 'react';
 import { DateTime, Duration } from 'luxon';
 import humanizeDuration from 'humanize-duration';
 import { capitalize } from 'lodash';
+import Typography from '@material-ui/core/Typography';
 
 const infoText: CSSProperties = { color: 'InfoText' };
 
@@ -60,11 +61,19 @@ function formatDateTimeShort(milliseconds: number) {
 }
 
 export function labelFormatter(epoch: number) {
-  return <span style={infoText}>{formatDateTimeShort(epoch)}</span>;
+  return (
+    <Typography component="span" style={infoText}>
+      {formatDateTimeShort(epoch)}
+    </Typography>
+  );
 }
 
 export function labelFormatterWithoutTime(epoch: number) {
-  return <span style={infoText}>{formatDateShort(epoch)}</span>;
+  return (
+    <Typography component="span" style={infoText}>
+      {formatDateShort(epoch)}
+    </Typography>
+  );
 }
 
 export function tickFormatterX(epoch: number) {
@@ -86,14 +95,18 @@ export function tickFormatterY(duration: number) {
     .replace(/year.*/, 'y');
 }
 
-export function tooltipValueFormatter(durationOrCount: number, name: string) {
+export function tooltipValueFormatter(
+  durationOrCount: number,
+  name: string,
+): [any, any] {
   return [
-    <span style={infoText}>
+    // TODO(Rugvip): Types don't allow returning elements, but it was here before so presumably works
+    <Typography component="span" style={infoText}>
       {capitalize(name)}:{' '}
       {name.endsWith(' count')
         ? durationOrCount
         : formatDuration(durationOrCount)}
-    </span>,
+    </Typography>,
     null,
   ];
 }

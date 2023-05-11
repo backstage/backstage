@@ -15,27 +15,24 @@
  */
 
 import React, { ComponentType, useEffect } from 'react';
-import { Routes, Route, useOutlet, Navigate } from 'react-router';
+import { Navigate, Route, Routes, useOutlet } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
-import { SecretsContextProvider } from './secrets/SecretsContext';
 import { TemplateEditorPage } from './TemplateEditorPage';
-
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../extensions/default';
+import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import {
   FieldExtensionOptions,
-  FIELD_EXTENSION_WRAPPER_KEY,
-  FIELD_EXTENSION_KEY,
-  DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
-} from '../extensions';
-import {
-  useElementFilter,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+  SecretsContextProvider,
+  useCustomFieldExtensions,
+  useCustomLayouts,
+} from '@backstage/plugin-scaffolder-react';
+import { ListTasksPage } from './ListTasksPage';
+import { ReviewStepProps } from './types';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -44,8 +41,6 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
-import { ListTasksPage } from './ListTasksPage';
-import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -53,6 +48,7 @@ import { LayoutOptions, LAYOUTS_KEY, LAYOUTS_WRAPPER_KEY } from '../layouts';
  */
 export type RouterProps = {
   components?: {
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
@@ -62,7 +58,13 @@ export type RouterProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   defaultPreviewTemplate?: string;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
   /**
    * Options for the context menu on the scaffolder page.
    */
@@ -80,23 +82,20 @@ export type RouterProps = {
  * @public
  */
 export const Router = (props: RouterProps) => {
-  const { groups, components = {}, defaultPreviewTemplate } = props;
+  const {
+    groups,
+    templateFilter,
+    components = {},
+    defaultPreviewTemplate,
+  } = props;
 
-  const { TemplateCardComponent, TaskPageComponent } = components;
+  const { ReviewStepComponent, TemplateCardComponent, TaskPageComponent } =
+    components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
 
-  const customFieldExtensions = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .findComponentData<FieldExtensionOptions>({
-        key: FIELD_EXTENSION_KEY,
-      }),
-  );
-
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
   const fieldExtensions = [
     ...customFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
@@ -105,17 +104,9 @@ export const Router = (props: RouterProps) => {
           customFieldExtension => customFieldExtension.name === name,
         ),
     ),
-  ];
+  ] as FieldExtensionOptions[];
 
-  const customLayouts = useElementFilter(outlet, elements =>
-    elements
-      .selectByComponentData({
-        key: LAYOUTS_WRAPPER_KEY,
-      })
-      .findComponentData<LayoutOptions>({
-        key: LAYOUTS_KEY,
-      }),
-  );
+  const customLayouts = useCustomLayouts(outlet);
 
   /**
    * This component can be deleted once the older routes have been deprecated.
@@ -141,8 +132,10 @@ export const Router = (props: RouterProps) => {
         element={
           <ScaffolderPage
             groups={groups}
+            templateFilter={templateFilter}
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
+            headerOptions={props.headerOptions}
           />
         }
       />
@@ -155,8 +148,10 @@ export const Router = (props: RouterProps) => {
         element={
           <SecretsContextProvider>
             <TemplatePage
+              ReviewStepComponent={ReviewStepComponent}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              headerOptions={props.headerOptions}
             />
           </SecretsContextProvider>
         }

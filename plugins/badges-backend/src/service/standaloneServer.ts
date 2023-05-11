@@ -19,9 +19,14 @@ import { Logger } from 'winston';
 import {
   createServiceBuilder,
   loadBackendConfig,
+  ServerTokenManager,
   SingleHostDiscovery,
+  useHotMemoize,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { DatabaseBadgesStore } from '../database/badgesStore';
+import Knex from 'knex';
 
 export interface ServerOptions {
   port: number;
@@ -35,10 +40,40 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'badges-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = SingleHostDiscovery.fromConfig(config);
+  const database = useHotMemoize(module, () => {
+    return Knex({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+  });
 
   logger.debug('Creating application...');
 
-  const router = await createRouter({ config, discovery });
+  const tokenManager = ServerTokenManager.noop();
+  const identity: IdentityApi = {
+    async getIdentity({ request }) {
+      const token = request.headers.authorization?.split(' ')[1];
+      return {
+        identity: {
+          type: 'user',
+          ownershipEntityRefs: [],
+          userEntityRef: token || 'user:default/john_doe',
+        },
+        token: token || 'no-token',
+      };
+    },
+  };
+  const router = await createRouter({
+    config,
+    discovery,
+    tokenManager,
+    logger,
+    identity,
+    badgeStore: await DatabaseBadgesStore.create({
+      database: { getClient: async () => database },
+    }),
+  });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)

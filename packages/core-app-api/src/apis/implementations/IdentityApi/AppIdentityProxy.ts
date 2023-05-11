@@ -124,6 +124,6 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
-    location.href = this.signOutTargetUrl;
+    window.location.href = this.signOutTargetUrl;
   }
 }

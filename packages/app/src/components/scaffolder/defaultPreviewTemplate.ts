@@ -31,8 +31,8 @@ parameters:
         description: Owner of the component
         ui:field: OwnerPicker
         ui:options:
-          allowedKinds:
-            - Group
+          catalogFilter:
+            kind: Group
   - title: Choose a location
     required:
       - repoUrl

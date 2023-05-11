@@ -10,16 +10,22 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule in `packages/backend/src/plugins/permission.ts`, but you can put it anywhere that's accessible by your `backend` package.
 
-```typescript
-import type { Entity } from '@backstage/plugin-catalog-model';
+```typescript title="packages/backend/src/plugins/permission.ts"
+import type { Entity } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
+import { z } from 'zod';
 
 export const isInSystemRule = createCatalogPermissionRule({
   name: 'IS_IN_SYSTEM',
   description: 'Checks if an entity is part of the system provided',
   resourceType: 'catalog-entity',
-  apply: (resource: Entity, systemRef: string) => {
+  paramsSchema: z.object({
+    systemRef: z
+      .string()
+      .describe('SystemRef to check the resource is part of'),
+  }),
+  apply: (resource: Entity, { systemRef }) => {
     if (!resource.relations) {
       return false;
     }
@@ -28,7 +34,7 @@ export const isInSystemRule = createCatalogPermissionRule({
       .filter(relation => relation.type === 'partOf')
       .some(relation => relation.targetRef === systemRef);
   },
-  toQuery: (systemRef: string) => ({
+  toQuery: ({ systemRef }) => ({
     key: 'relations.partOf',
     values: [systemRef],
   }),
@@ -45,9 +51,7 @@ Now that we have a custom rule defined, we need provide it to the catalog plugin
 
 The api for providing custom rules may differ between plugins, but there should typically be some integration point during the creation of the backend router. For the catalog, this integration point is exposed via `CatalogBuilder.addPermissionRules`.
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
-
+```typescript title="packages/backend/src/plugins/catalog.ts"
 import { isInSystemRule } from './permission';
 // The CatalogBuilder with the addPermissionRules function is in the alpha path
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend/alpha';
@@ -70,12 +74,9 @@ The new rule is now ready for use in a permission policy!
 
 Let's bring this all together by extending the example policy from the previous section.
 
-```diff
-// packages/backend/src/plugins/permission.ts
-
-+ import { isInSystem } from './catalog';
-
-...
+```ts title="packages/backend/src/plugins/permission.ts"
+/* highlight-add-next-line */
+import { isInSystem } from './catalog';
 
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
@@ -85,17 +86,21 @@ class TestPermissionPolicy implements PermissionPolicy {
     if (isResourcePermission(request.permission, 'catalog-entity')) {
       return createCatalogConditionalDecision(
         request.permission,
--       catalogConditions.isEntityOwner(
--         user?.identity.ownershipEntityRefs ?? [],
--       ),
-+       {
-+         anyOf: [
-+           catalogConditions.isEntityOwner(
-+             user?.identity.ownershipEntityRefs ?? []
-+           ),
-+           isInSystem('interviewing')
-+         ]
-+       }
+        /* highlight-remove-start */
+        catalogConditions.isEntityOwner({
+          claims: user?.identity.ownershipEntityRefs ?? [],
+        }),
+        /* highlight-remove-end */
+        /* highlight-add-start */
+        {
+          anyOf: [
+            catalogConditions.isEntityOwner({
+              claims: user?.identity.ownershipEntityRefs ?? []
+            }),
+            isInSystem('interviewing')
+          ]
+        }
+        /* highlight-add-end */
       );
     }
 

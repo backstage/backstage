@@ -17,7 +17,7 @@
 import {
   createServiceFactory,
   createServiceRef,
-  discoveryServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
@@ -31,12 +31,10 @@ export const catalogServiceRef = createServiceRef<CatalogApi>({
     createServiceFactory({
       service,
       deps: {
-        discoveryApi: discoveryServiceRef,
+        discoveryApi: coreServices.discovery,
       },
-      async factory() {
-        return async ({ discoveryApi }) => {
-          return new CatalogClient({ discoveryApi });
-        };
+      async factory({ discoveryApi }) {
+        return new CatalogClient({ discoveryApi });
       },
     }),
 });

@@ -1,5 +1,318 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.0-next.2
+
+### Minor Changes
+
+- 3d72bdb41c7: Upgrade to aws-sdk v3 and include OpenSearch Serverless support
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-search-backend-node@1.2.1-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.1-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.2.0
+
+### Minor Changes
+
+- 1469daa409e: Search backend modules migrated to the new backend system. For documentation on how to migrate, check out the [how to migrate to the new backend system guide](https://backstage.io/docs/features/search/how-to-guides/#how-to-migrate-your-backend-installation-to-use-search-together-with-the-new-backend-system).
+
+### Patch Changes
+
+- 104b6b19487: fix ElasticSearch throwing error when index is missing
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-search-backend-node@1.2.0
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.2.0-next.3
+
+### Patch Changes
+
+- 104b6b19487: fix ElasticSearch throwing error when index is missing
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.2.0-next.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.2.0-next.2
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 1469daa409e: Search backend modules migrated to the new backend system. For documentation on how to migrate, check out the [how to migrate to the new backend system guide](https://backstage.io/docs/features/search/how-to-guides/#how-to-migrate-your-backend-installation-to-use-search-together-with-the-new-backend-system).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.0-next.1
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-common@1.2.3-next.0
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.5-next.0
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.1.4
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/plugin-search-backend-node@1.1.4
+  - @backstage/plugin-search-common@1.2.2
+
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.4-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/plugin-search-backend-node@1.1.4-next.1
+  - @backstage/plugin-search-common@1.2.2-next.0
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.4-next.0
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.3
+
+### Patch Changes
+
+- 896566906b: Export `decodeElasticSearchPageCursor` utility function
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.3
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.3-next.2
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-backend-node@1.1.3-next.1
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.3-next.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- 1e1a9fe979: Fixed a bug that could cause an indexing process to silently fail, timeout, and accumulate stale indices.
+- 2a49ffbcb3: Improved documentation on the `ElasticSearchSearchEngine.newClient()` method.
+- 56633804dd: Fixed a bug that could cause the backstage backend to unexpectedly terminate when client errors were encountered during the indexing process.
+- aa33a06894: Improved index throughput by optimizing when and how many documents were made available to the bulk client.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1
+  - @backstage/config@1.0.6
+  - @backstage/plugin-search-common@1.2.1
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- 2a49ffbcb3: Improved documentation on the `ElasticSearchSearchEngine.newClient()` method.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.2
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-search-backend-node@1.1.1-next.1
+  - @backstage/plugin-search-common@1.2.1-next.0
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- 1e1a9fe979: Fixed a bug that could cause an indexing process to silently fail, timeout, and accumulate stale indices.
+- 56633804dd: Fixed a bug that could cause the backstage backend to unexpectedly terminate when client errors were encountered during the indexing process.
+- aa33a06894: Improved index throughput by optimizing when and how many documents were made available to the bulk client.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.1-next.0
+  - @backstage/config@1.0.5
+  - @backstage/plugin-search-common@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+- dff9843718: The search engine now better handles the case when it receives 0 documents at index-time. Prior to this change, the indexer would replace any existing index with an empty index, effectively deleting it. Now instead, a warning is logged, and any existing index is left alone (preserving the index from the last successful indexing attempt).
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- 45eb4d23cf: Fixed a bug that prevented indices from being cleaned up under some circumstances, which could have led to shard exhaustion.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0
+  - @backstage/plugin-search-common@1.2.0
+  - @backstage/config@1.0.5
+
+## 1.1.0-next.3
+
+### Minor Changes
+
+- d09485ea79: Added support for self hosted OpenSearch via new provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-search-backend-node@1.1.0-next.3
+  - @backstage/plugin-search-common@1.2.0-next.3
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- 29ebc43a0b: numberOfResults is now provided alongside the query result
+
+### Patch Changes
+
+- 45eb4d23cf: Fixed a bug that prevented indices from being cleaned up under some circumstances, which could have led to shard exhaustion.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.1.0-next.2
+  - @backstage/plugin-search-common@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+
+## 1.0.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.5-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-search-common@1.1.2-next.1
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.5-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/plugin-search-common@1.1.2-next.0
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.4
+  - @backstage/config@1.0.4
+  - @backstage/plugin-search-common@1.1.1
+
+## 1.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.4-next.1
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.0.4-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/plugin-search-common@1.1.1-next.0
+
+## 1.0.3
+
+### Patch Changes
+
+- a799972bb1: The search engine has been updated to take advantage of the `pageLimit` property on search queries. If none is provided, the search engine will continue to use its default value of 25 results per page.
+- 8006f8a602: In order to improve the debuggability of the search indexing process, messages logged during indexing are now tagged with a `documentType` whose value corresponds to the `type` being indexed.
+- Updated dependencies
+  - @backstage/plugin-search-common@1.1.0
+  - @backstage/plugin-search-backend-node@1.0.3
+  - @backstage/config@1.0.3
+
 ## 1.0.3-next.2
 
 ### Patch Changes

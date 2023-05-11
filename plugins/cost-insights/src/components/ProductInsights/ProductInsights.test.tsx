@@ -27,7 +27,7 @@ import {
   MockScrollProvider,
   MockLoadingProvider,
 } from '../../testUtils';
-import { Entity, Product } from '../../types';
+import { Entity, Product } from '@backstage/plugin-cost-insights-common';
 
 // suppress recharts componentDidUpdate warnings
 jest.spyOn(console, 'warn').mockImplementation(() => {});

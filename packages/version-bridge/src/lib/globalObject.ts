@@ -19,7 +19,9 @@ function getGlobalObject() {
   if (typeof window !== 'undefined' && window.Math === Math) {
     return window;
   }
+  // eslint-disable-next-line no-restricted-globals
   if (typeof self !== 'undefined' && self.Math === Math) {
+    // eslint-disable-next-line no-restricted-globals
     return self;
   }
   // eslint-disable-next-line no-new-func

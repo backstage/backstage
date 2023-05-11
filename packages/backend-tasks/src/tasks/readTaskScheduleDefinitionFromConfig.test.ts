@@ -15,9 +15,9 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { HumanDuration } from '@backstage/types';
 import { Duration } from 'luxon';
 import { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
-import { HumanDuration } from './types';
 
 describe('readTaskScheduleDefinitionFromConfig', () => {
   it('all valid values', () => {

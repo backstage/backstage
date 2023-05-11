@@ -16,8 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { PackageGraph } from '../../lib/monorepo';
-import { getRoleFromPackage } from '../../lib/role';
+import { PackageGraph, PackageRoles } from '@backstage/cli-node';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';
@@ -27,7 +26,7 @@ export async function command() {
 
   await Promise.all(
     packages.map(async ({ dir, packageJson }) => {
-      const role = getRoleFromPackage(packageJson);
+      const role = PackageRoles.getRoleFromPackage(packageJson);
       if (role === 'frontend') {
         console.log(`Skipping ${packageJson.name}`);
         return;

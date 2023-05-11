@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
+import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-
-import React, { useState, useContext, useRef } from 'react';
-import Button from '@material-ui/core/Button';
+import React, { useContext, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
   makeSidebarSubmenuConfig,
   SidebarConfig,
   SidebarConfigContext,
-  SubmenuConfig,
   SidebarOptions,
+  SubmenuConfig,
   SubmenuOptions,
 } from './config';
-import { BackstageTheme } from '@backstage/theme';
+import { MobileSidebar } from './MobileSidebar';
 import { useContent } from './Page';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
-import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
   theme => ({
-    drawer: props => ({
+    drawer: {
       display: 'flex',
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
@@ -53,7 +53,6 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
-      width: props.sidebarConfig.drawerWidthClosed,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.shortest,
@@ -64,6 +63,9 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       '&::-webkit-scrollbar': {
         display: 'none',
       },
+    },
+    drawerWidth: props => ({
+      width: props.sidebarConfig.drawerWidthClosed,
     }),
     drawerOpen: props => ({
       width: props.sidebarConfig.drawerWidthOpen,
@@ -175,7 +177,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   /**
-   * Close/Open Sidebar directily without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
+   * Close/Open Sidebar directly without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
    */
   const setOpen = (open: boolean) => {
     if (open) {
@@ -191,7 +193,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
       <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
-        <div
+        <Box
           className={classes.root}
           data-testid="sidebar-root"
           onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
@@ -199,14 +201,14 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
           onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
           onBlur={disableExpandOnHover ? () => {} : handleClose}
         >
-          <div
-            className={classnames(classes.drawer, {
+          <Box
+            className={classnames(classes.drawer, classes.drawerWidth, {
               [classes.drawerOpen]: isOpen,
             })}
           >
             {children}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </SidebarOpenStateProvider>
     </nav>
   );

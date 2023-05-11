@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ReaderFactory, UrlReader } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
@@ -29,9 +29,10 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { AwsS3UrlReader } from './AwsS3UrlReader';
+import { GiteaUrlReader } from './GiteaUrlReader';
 
 /**
- * Creation options for {@link UrlReaders}.
+ * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
  *
  * @public
  */
@@ -39,23 +40,23 @@ export type UrlReadersOptions = {
   /** Root config object */
   config: Config;
   /** Logger used by all the readers */
-  logger: Logger;
+  logger: LoggerService;
   /** A list of factories used to construct individual readers that match on URLs */
   factories?: ReaderFactory[];
 };
 
 /**
- * Helps construct {@link UrlReader}s.
+ * Helps construct {@link @backstage/backend-plugin-api#UrlReaderService}s.
  *
  * @public
  */
 export class UrlReaders {
   /**
-   * Creates a custom {@link UrlReader} wrapper for your own set of factories.
+   * Creates a custom {@link @backstage/backend-plugin-api#UrlReaderService} wrapper for your own set of factories.
    */
   static create(options: UrlReadersOptions): UrlReader {
     const { logger, config, factories } = options;
-    const mux = new UrlReaderPredicateMux(logger);
+    const mux = new UrlReaderPredicateMux();
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({
       config,
     });
@@ -72,7 +73,7 @@ export class UrlReaders {
   }
 
   /**
-   * Creates a {@link UrlReader} wrapper that includes all the default factories
+   * Creates a {@link @backstage/backend-plugin-api#UrlReaderService} wrapper that includes all the default factories
    * from this package.
    *
    * Any additional factories passed will be loaded before the default ones.
@@ -89,6 +90,7 @@ export class UrlReaders {
         BitbucketUrlReader.factory,
         GerritUrlReader.factory,
         GithubUrlReader.factory,
+        GiteaUrlReader.factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,
         AwsS3UrlReader.factory,

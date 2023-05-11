@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { Logger } from 'winston';
 import { TaskFunction, TaskRunner } from '@backstage/backend-tasks';
 
@@ -40,13 +39,13 @@ export type ScheduleTaskParameters = {
 export class Scheduler {
   private logger: Logger;
   private schedule: { [id: string]: TaskEnvelope };
-  private abortController: AbortController;
+  private abortControllers: AbortController[];
   private isRunning: boolean;
 
   constructor(options: { logger: Logger }) {
     this.logger = options.logger;
     this.schedule = {};
-    this.abortController = new AbortController();
+    this.abortControllers = [];
     this.isRunning = false;
   }
 
@@ -78,11 +77,13 @@ export class Scheduler {
     this.logger.info('Starting all scheduled search tasks.');
     this.isRunning = true;
     Object.keys(this.schedule).forEach(id => {
+      const abortController = new AbortController();
+      this.abortControllers.push(abortController);
       const { task, scheduledRunner } = this.schedule[id];
       scheduledRunner.run({
         id,
         fn: task,
-        signal: this.abortController.signal,
+        signal: abortController.signal,
       });
     });
   }
@@ -92,7 +93,10 @@ export class Scheduler {
    */
   stop() {
     this.logger.info('Stopping all scheduled search tasks.');
-    this.abortController.abort();
+    for (const abortController of this.abortControllers) {
+      abortController.abort();
+    }
+    this.abortControllers = [];
     this.isRunning = false;
   }
 }

@@ -21,7 +21,7 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 
 Next add the basic configuration to `app-config.yaml`
 
-```yaml
+```yaml title="app-config.yaml"
 catalog:
   providers:
     microsoftGraphOrg:
@@ -39,25 +39,30 @@ catalog:
 Finally, register the plugin in `catalog.ts`.
 For large organizations, this plugin can take a long time, so be careful setting low frequency / timeouts.
 
-```diff
- // packages/backend/src/plugins/catalog.ts
-+import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
 
-+  builder.addEntityProvider(
-+    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
-+      logger: env.logger,
-+      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { hours: 1 },
-+        timeout: { minutes: 50 },
-+        initialDelay: { seconds: 15}
-+      }),
-+    }),
-+  );
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { hours: 1 },
+        timeout: { minutes: 50 },
+        initialDelay: { seconds: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Authenticating with Microsoft Graph
@@ -71,7 +76,7 @@ If you can't do this, you'll have to create an App Registration.
 
 ### App Registration
 
-If none of the other authentication methods work, you can create an app registration in the azure portal.  
+If none of the other authentication methods work, you can create an app registration in the azure portal.
 By default the graph plugin requires the following Application permissions (not Delegated) for Microsoft Graph:
 
 - `GroupMember.Read.All`
@@ -101,7 +106,7 @@ To grant the managed identity the same permissions as mentioned in _App Registra
 ## Filtering imported Users and Groups
 
 By default, the plugin will import all users and groups from your directory.
-This can be customized through filters and search queries.
+This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries.
 
 ### Groups
 
@@ -150,15 +155,17 @@ Entities can also be excluded from backstage by returning `undefined`.
 
 These Transformers are be registered when configuring `MicrosoftGraphOrgEntityProvider`
 
-```diff
- builder.addEntityProvider(
-   MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
-     // ...
-+    groupTransformer: myGroupTransformer,
-+    userTransformer: myUserTransformer,
-+    organizationTransformer: myOrganizationTransformer,
-   }),
- );
+```ts
+builder.addEntityProvider(
+  MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+    // ...
+    /* highlight-add-start */
+    groupTransformer: myGroupTransformer,
+    userTransformer: myUserTransformer,
+    organizationTransformer: myOrganizationTransformer,
+    /* highlight-add-end */
+  }),
+);
 ```
 
 When using custom transformers, you may want to customize the data returned.
@@ -228,11 +235,22 @@ export async function myOrganizationTransformer(
 
 ## Troubleshooting
 
+### No data
+
+First check your logs for the message `Reading msgraph users and groups`.
+If you don't see this, check you've registered the provider, and that the schedule is valid
+
+If you see a log entry `Read 0 msgraph users and 0 msgraph groups`, check your search and filter arguments.
+
+If you see the start message (`Reading msgraph users and groups`) but no end message (`Read X msgraph users and Y msgraph groups`), then it is likely the job is taking a long time due to a large volume of data.
+The default behavior is to import all users and groups, which is often more data than needed.
+Try importing a smaller set of data (e.g. `filter: displayName eq 'John Smith'`).
+
 ### Authentication / Token Errors
 
 See [Troubleshooting Azure Identity Authentication Issues](https://aka.ms/azsdk/js/identity/troubleshoot)
 
-### Error while reading users from Microsoft Graph: Authorization_RequestDenied - Insufficient privileges to complete the operation.
+### Error while reading users from Microsoft Graph: Authorization_RequestDenied - Insufficient privileges to complete the operation
 
 - Make sure you've granted all the required permissions to your application registration or managed identity
 - Make sure the permissions are `Application` permissions rather than `Delegated`

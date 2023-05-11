@@ -7,3 +7,4 @@ description: Create and view AWS Proton services for your components in Backstag
 documentation: https://github.com/awslabs/aws-proton-plugins-for-backstage#readme
 iconUrl: https://github.com/awslabs/aws-proton-plugins-for-backstage/blob/main/docs/images/proton-logo.png?raw=true
 npmPackageName: '@aws/aws-proton-plugin-for-backstage'
+addedDate: '2022-06-21'

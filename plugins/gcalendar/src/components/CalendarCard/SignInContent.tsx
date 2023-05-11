@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-
 import { Box, Button, styled } from '@material-ui/core';
-
 import { CalendarEvent } from './CalendarEvent';
 import { eventsMock } from './signInEventMock';
-import { GCalendarEvent } from '../..';
+import { GCalendarEvent } from '../../api';
 
 type Props = {
   handleAuthClick: React.MouseEventHandler<HTMLElement>;

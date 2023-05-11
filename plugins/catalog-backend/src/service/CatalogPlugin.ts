@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 import {
-  configServiceRef,
   createBackendPlugin,
-  databaseServiceRef,
-  loggerServiceRef,
-  loggerToWinstonLogger,
-  permissionsServiceRef,
-  urlReaderServiceRef,
-  httpRouterServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
-  CatalogProcessor,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
+import {
+  CatalogProcessor,
   EntityProvider,
 } from '@backstage/plugin-catalog-node';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
   #processors = new Array<CatalogProcessor>();
@@ -61,7 +58,7 @@ class CatalogExtensionPointImpl implements CatalogProcessingExtensionPoint {
  * @alpha
  */
 export const catalogPlugin = createBackendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   register(env) {
     const processingExtensions = new CatalogExtensionPointImpl();
     // plugins depending on this API will be initialized before this plugins init method is executed.
@@ -72,12 +69,14 @@ export const catalogPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        logger: loggerServiceRef,
-        config: configServiceRef,
-        reader: urlReaderServiceRef,
-        permissions: permissionsServiceRef,
-        database: databaseServiceRef,
-        httpRouter: httpRouterServiceRef,
+        logger: coreServices.logger,
+        config: coreServices.config,
+        reader: coreServices.urlReader,
+        permissions: coreServices.permissions,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
+        lifecycle: coreServices.lifecycle,
+        scheduler: coreServices.scheduler,
       },
       async init({
         logger,
@@ -86,6 +85,8 @@ export const catalogPlugin = createBackendPlugin({
         database,
         permissions,
         httpRouter,
+        lifecycle,
+        scheduler,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -93,6 +94,7 @@ export const catalogPlugin = createBackendPlugin({
           reader,
           permissions,
           database,
+          scheduler,
           logger: winstonLogger,
         });
         builder.addProcessor(...processingExtensions.processors);
@@ -100,7 +102,7 @@ export const catalogPlugin = createBackendPlugin({
         const { processingEngine, router } = await builder.build();
 
         await processingEngine.start();
-
+        lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },
     });

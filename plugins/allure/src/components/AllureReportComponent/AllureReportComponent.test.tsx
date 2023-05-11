@@ -15,8 +15,6 @@
  */
 import React from 'react';
 import { AllureReportComponent } from './AllureReportComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -39,17 +37,15 @@ describe('ExampleComponent', () => {
 
   it('should render', async () => {
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <EntityProvider
-          entity={{
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: { name: 'test' },
-          }}
-        >
-          <AllureReportComponent />
-        </EntityProvider>
-      </ThemeProvider>,
+      <EntityProvider
+        entity={{
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'test' },
+        }}
+      >
+        <AllureReportComponent />
+      </EntityProvider>,
     );
     expect(rendered.getByText('Missing Annotation')).toBeInTheDocument();
   });

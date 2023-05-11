@@ -26,7 +26,7 @@ import {
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from '../lib';
@@ -46,7 +46,7 @@ import { getOrganizationRepositories } from '../lib';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  *
  * @public
- **/
+ */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
@@ -121,7 +121,11 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     const startTimestamp = Date.now();
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
-    const { repositories } = await getOrganizationRepositories(client, org);
+    const { repositories } = await getOrganizationRepositories(
+      client,
+      org,
+      catalogPath,
+    );
     const matching = repositories.filter(
       r => !r.isArchived && repoSearchPath.test(r.name),
     );
@@ -172,7 +176,7 @@ export function parseUrl(urlString: string): {
   host: string;
 } {
   const url = new URL(urlString);
-  const path = url.pathname.substr(1).split('/');
+  const path = url.pathname.slice(1).split('/');
 
   // /backstage/techdocs-*/blob/master/catalog-info.yaml
   // can also be

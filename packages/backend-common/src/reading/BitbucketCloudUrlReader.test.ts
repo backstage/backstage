@@ -156,12 +156,89 @@ describe('BitbucketCloudUrlReader', () => {
       expect(buffer.toString()).toBe('foo');
       expect(result.etag).toBe('new-etag-value');
     });
+
+    it('should be able to readUrl via buffer without If-Modified-Since', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+              ctx.set(
+                'Last-Modified',
+                new Date('2020-01-01T00:00:00Z').toUTCString(),
+              ),
+            );
+          },
+        ),
+      );
+
+      const result = await reader.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      const buffer = await result.buffer();
+      expect(result.lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
+      expect(buffer.toString()).toBe('foo');
+    });
+
+    it('should be throw not modified when If-Modified-Since returns a 304', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-Modified-Since')).toBe(
+              new Date('1999 12 31 23:59:59 GMT').toUTCString(),
+            );
+            return res(ctx.status(304));
+          },
+        ),
+      );
+
+      await expect(
+        reader.readUrl(
+          'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+          { lastModifiedAfter: new Date('1999 12 31 23:59:59 GMT') },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should be able to readUrl when If-Modified-Since is before Last-Modified', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-Modified-Since')).toBe(
+              new Date('1999 12 31 23:59:59 GMT').toUTCString(),
+            );
+            return res(
+              ctx.status(200),
+              ctx.set(
+                'Last-Modified',
+                new Date('2020-01-01T00:00:00Z').toUTCString(),
+              ),
+              ctx.body('foo'),
+            );
+          },
+        ),
+      );
+
+      const result = await reader.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        { lastModifiedAfter: new Date('1999 12 31 23:59:59 GMT') },
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe('foo');
+      expect(result.lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
+    });
   });
 
   describe('read', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        reader.read('https://not.bitbucket.com/apa'),
+        reader.readUrl('https://not.bitbucket.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket Cloud URL or file path',
       );

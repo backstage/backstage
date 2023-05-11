@@ -25,7 +25,7 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, InfoCard } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -41,6 +41,10 @@ import {
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
+import {
+  isOctopusDeployAvailable,
+  EntityOctopusDeployContent,
+} from '@backstage/plugin-octopus-deploy';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
@@ -52,6 +56,7 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
+  EntityLabelsCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
   EntitySwitch,
@@ -59,6 +64,7 @@ import {
   isComponentType,
   isKind,
   isOrphan,
+  hasLabels,
 } from '@internal/plugin-catalog-customized';
 import {
   Direction,
@@ -77,6 +83,11 @@ import {
   DynatraceTab,
   isDynatraceAvailable,
 } from '@backstage/plugin-dynatrace';
+import {
+  EntityFeedbackResponseContent,
+  EntityLikeDislikeRatingsCard,
+  LikeDislikeButtons,
+} from '@backstage/plugin-entity-feedback';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -109,6 +120,7 @@ import {
   EntityRollbarContent,
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
+import { PuppetDbPage, isPuppetDbAvailable } from '@backstage/plugin-puppetdb';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
@@ -152,7 +164,13 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   TextSize,
   ReportIssue,
+  LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { EntityCostInsightsContent } from '@backstage/plugin-cost-insights';
+import {
+  isLinguistAvailable,
+  EntityLinguistCard,
+} from '@backstage/plugin-linguist';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -202,6 +220,7 @@ const techdocsContent = (
     <TechDocsAddons>
       <TextSize />
       <ReportIssue />
+      <LightBox />
     </TechDocsAddons>
   </EntityTechdocsContent>
 );
@@ -209,7 +228,7 @@ const techdocsContent = (
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
  * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
- * since this does not default. If no breakpoints are used, the items will equitably share the asvailable space.
+ * since this does not default. If no breakpoints are used, the items will equitably share the available space.
  * https://material-ui.com/components/grid/#basic-grid.
  */
 
@@ -245,6 +264,10 @@ export const cicdContent = (
 
     <EntitySwitch.Case if={isAzurePipelinesAvailable}>
       <EntityAzurePipelinesContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isOctopusDeployAvailable}>
+      <EntityOctopusDeployContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>
@@ -363,6 +386,20 @@ const overviewContent = (
       <EntityLinksCard />
     </Grid>
 
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasLabels}>
+        <Grid item md={4} xs={12}>
+          <EntityLabelsCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <Grid item md={2}>
+      <InfoCard title="Rate this entity">
+        <LikeDislikeButtons />
+      </InfoCard>
+    </Grid>
+
     {cicdCard}
 
     <EntitySwitch>
@@ -389,6 +426,14 @@ const overviewContent = (
       <EntitySwitch.Case if={isGithubPullRequestsAvailable}>
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isLinguistAvailable}>
+        <Grid item md={6}>
+          <EntityLinguistCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -489,12 +534,20 @@ const serviceEntityPage = (
       <EntityTodoContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/costs" title="Costs">
+      <EntityCostInsightsContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route
       path="/dynatrace"
       title="Dynatrace"
       if={isDynatraceAvailable}
     >
       <DynatraceTab />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -575,6 +628,10 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -590,6 +647,10 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -627,6 +688,11 @@ const apiPage = (
             <Grid item xs={12} md={6}>
               <EntityConsumingComponentsCard />
             </Grid>
+            <Grid item md={2}>
+              <InfoCard title="Rate this entity">
+                <LikeDislikeButtons />
+              </InfoCard>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
@@ -638,6 +704,10 @@ const apiPage = (
           <EntityApiDefinitionCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -655,6 +725,9 @@ const userPage = (
             variant="gridItem"
             entityFilterKind={customEntityFilterKind}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -677,6 +750,9 @@ const groupPage = (
         </Grid>
         <Grid item xs={12}>
           <EntityMembersListCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -702,6 +778,11 @@ const systemPage = (
         </Grid>
         <Grid item md={6}>
           <EntityHasResourcesCard variant="gridItem" />
+        </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -731,6 +812,9 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -748,7 +832,44 @@ const domainPage = (
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />
         </Grid>
+        <Grid item md={2}>
+          <InfoCard title="Rate this entity">
+            <LikeDislikeButtons />
+          </InfoCard>
+        </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackResponseContent />
+    </EntityLayout.Route>
+  </EntityLayoutWrapper>
+);
+
+const resourcePage = (
+  <EntityLayoutWrapper>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
+        <Grid item md={6}>
+          <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
+        </Grid>
+        <Grid item md={6}>
+          <EntityHasSystemsCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route
+      path="/puppetdb"
+      title="Puppet"
+      if={isPuppetDbAvailable}
+    >
+      <PuppetDbPage />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/todos" title="TODOs">
+      <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -761,6 +882,7 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('user')} children={userPage} />
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
+    <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
 
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>

@@ -15,10 +15,12 @@
  */
 
 import React, { ReactNode, useCallback, useContext, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
+import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 
 /**
  * The state of the search modal, as well as functions for changing the modal's
@@ -84,22 +86,20 @@ export type SearchModalProviderProps = {
  *
  * @public
  */
-export const SearchModalProvider = ({
-  children,
-  showInitially,
-}: SearchModalProviderProps) => {
-  const value = useSearchModal(showInitially);
+export const SearchModalProvider = (props: SearchModalProviderProps) => {
+  const value = useSearchModal(props.showInitially);
   const versionedValue = createVersionedValueMap({ 1: value });
   return (
     <SearchModalContext.Provider value={versionedValue}>
-      {children}
+      {props.children}
     </SearchModalContext.Provider>
   );
 };
 
 /**
  * Use this hook to manage the state of {@link SearchModal}
- * and change its visibility.
+ * and change its visibility. Monitors route changes setting the hidden state
+ * to avoid having to call toggleModal on every result click.
  *
  * @public
  *
@@ -108,10 +108,6 @@ export const SearchModalProvider = ({
  * functions for changing the visibility of the modal.
  */
 export function useSearchModal(initialState = false) {
-  // Check for any existing parent context.
-  const parentContext = useContext(SearchModalContext);
-  const parentContextValue = parentContext?.atVersion(1);
-
   const [state, setState] = useState({
     hidden: !initialState,
     open: initialState,
@@ -135,8 +131,23 @@ export function useSearchModal(initialState = false) {
     [],
   );
 
+  // Check for any existing parent context.
+  const parentContext = useContext(SearchModalContext);
+  const parentContextValue = parentContext?.atVersion(1);
+  const isParentContextPresent = !!parentContextValue?.state;
+
+  // Monitor route changes to automatically hide the modal.
+  const location = useLocation();
+  const locationKey = `${location.pathname}${location.search}${location.hash}`;
+  useUpdateEffect(() => {
+    setState(prevState => ({
+      open: prevState.open,
+      hidden: true,
+    }));
+  }, [locationKey]);
+
   // Inherit from parent context, if set.
-  return parentContextValue?.state
+  return isParentContextPresent
     ? parentContextValue
     : { state, toggleModal, setOpen };
 }

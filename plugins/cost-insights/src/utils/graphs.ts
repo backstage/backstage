@@ -14,48 +14,53 @@
  * limitations under the License.
  */
 
-import { TooltipPayload, TooltipProps } from 'recharts';
-import { AlertCost, DataKey, Entity, ResourceData } from '../types';
+import { TooltipProps } from 'recharts';
+import { Payload } from 'recharts/types/component/DefaultTooltipContent';
+import { AlertCost, DataKey, ResourceData } from '../types';
+import { Entity } from '@backstage/plugin-cost-insights-common';
 import {
   currencyFormatter,
   dateFormatter,
   lengthyCurrencyFormatter,
 } from './formatters';
 
-export function formatGraphValue(value: number, format?: string) {
-  if (format === 'number') {
-    return value.toLocaleString();
-  }
+export const formatGraphValue =
+  (baseCurrency: Intl.NumberFormat) =>
+  (value: number, _index: number, format?: string) => {
+    if (format === 'number') {
+      return value.toLocaleString();
+    }
 
-  if (value < 1) {
-    return lengthyCurrencyFormatter.format(value);
-  }
+    if (value < 1) {
+      return lengthyCurrencyFormatter(baseCurrency).format(value);
+    }
 
-  return currencyFormatter.format(value);
-}
+    return currencyFormatter(baseCurrency).format(value);
+  };
 
 export const overviewGraphTickFormatter = (millis: string | number) =>
   typeof millis === 'number' ? dateFormatter.format(millis) : millis;
 
-export const tooltipItemOf = (payload: TooltipPayload) => {
-  const value =
-    typeof payload.value === 'number'
-      ? currencyFormatter.format(payload.value)
-      : (payload.value as string);
-  const fill = payload.fill as string;
+export const tooltipItemOf =
+  (baseCurrency: Intl.NumberFormat) => (payload: Payload<string, string>) => {
+    const value =
+      payload.value && !isNaN(Number(payload.value))
+        ? baseCurrency.format(Number(payload.value))
+        : payload.value;
+    const fill = payload.color as string;
 
-  switch (payload.dataKey) {
-    case DataKey.Current:
-    case DataKey.Previous:
-      return {
-        label: payload.name,
-        value: value,
-        fill: fill,
-      };
-    default:
-      return null;
-  }
-};
+    switch (payload.dataKey) {
+      case DataKey.Current:
+      case DataKey.Previous:
+        return {
+          label: payload.name,
+          value: value,
+          fill: fill,
+        };
+      default:
+        return null;
+    }
+  };
 
 export const resourceOf = (entity: Entity | AlertCost): ResourceData => ({
   name: entity.id,
@@ -67,7 +72,7 @@ export const titleOf = (label?: string | number) => {
   return label ? String(label) : 'Unlabeled';
 };
 
-export const isInvalid = ({ label, payload }: TooltipProps) => {
+export const isInvalid = ({ label, payload }: TooltipProps<string, string>) => {
   // null labels are empty strings, which are valid
   return label === undefined || !payload || !payload.length;
 };

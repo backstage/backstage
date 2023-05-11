@@ -408,14 +408,15 @@ export class AzureDevOpsApi {
     content: string;
   }> {
     const url = buildEncodedUrl(host, org, project, repo, 'README.md');
-    const response = await this.urlReader.read(url);
+    const response = await this.urlReader.readUrl(url);
+    const buffer = await response.buffer();
     const content = await replaceReadme(
       this.urlReader,
       host,
       org,
       project,
       repo,
-      response.toString(),
+      buffer.toString(),
     );
     return { url, content };
   }
@@ -433,7 +434,7 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }
@@ -488,7 +489,7 @@ export function mappedBuildRun(build: Build): BuildRun {
     queueTime: build.queueTime?.toISOString(),
     startTime: build.startTime?.toISOString(),
     finishTime: build.finishTime?.toISOString(),
-    source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
+    source: `${build.sourceBranch} (${build.sourceVersion?.slice(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
   };
 }

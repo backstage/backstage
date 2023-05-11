@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -67,7 +67,13 @@ export type MicrosoftGraphOrgEntityProviderOptions =
        * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
        * to enable automatic scheduling of tasks.
        */
-      schedule: 'manual' | TaskRunner;
+      schedule?: 'manual' | TaskRunner;
+
+      /**
+       * Scheduler used to schedule refreshes based on
+       * the schedule config.
+       */
+      scheduler?: PluginTaskScheduler;
 
       /**
        * The function that transforms a user entry in msgraph to an entity.
@@ -168,6 +174,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       ];
     }
 
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
     function getTransformer<T extends Function>(
       id: string,
       transformers?: T | Record<string, T>,
@@ -180,6 +190,16 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     }
 
     return readProviderConfigs(configRoot).map(providerConfig => {
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       const provider = new MicrosoftGraphOrgEntityProvider({
         id: providerConfig.id,
         provider: providerConfig,
@@ -197,7 +217,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           options.organizationTransformer,
         ),
       });
-      provider.schedule(options.schedule);
+
+      if (taskRunner !== 'manual') {
+        provider.schedule(taskRunner);
+      }
 
       return provider;
     });
@@ -238,7 +261,9 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       provider,
     });
 
-    result.schedule(options.schedule);
+    if (options.schedule !== 'manual') {
+      result.schedule(options.schedule);
+    }
 
     return result;
   }
@@ -283,10 +308,11 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       provider.tenantId,
       {
         userExpand: provider.userExpand,
-        groupExpand: provider.groupExpand,
         userFilter: provider.userFilter,
+        userSelect: provider.userSelect,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         groupSelect: provider.groupSelect,
@@ -311,16 +337,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  private schedule(
-    schedule: MicrosoftGraphOrgEntityProviderOptions['schedule'],
-  ) {
-    if (schedule === 'manual') {
-      return;
-    }
-
+  private schedule(taskRunner: TaskRunner) {
     this.scheduleFn = async () => {
       const id = `${this.getProviderName()}:refresh`;
-      await schedule.run({
+      await taskRunner.run({
         id,
         fn: async () => {
           const logger = this.options.logger.child({
@@ -332,7 +352,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           try {
             await this.read({ logger });
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

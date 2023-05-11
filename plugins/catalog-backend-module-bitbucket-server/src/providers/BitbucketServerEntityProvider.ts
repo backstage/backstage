@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
-import { Logger } from 'winston';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { TaskRunner } from '@backstage/backend-tasks';
-import * as uuid from 'uuid';
-import {
-  BitbucketServerLocationParser,
-  defaultBitbucketServerLocationParser,
-} from './BitbucketServerLocationParser';
+import { InputError } from '@backstage/errors';
 import {
   BitbucketServerIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-node';
+import { Logger } from 'winston';
+import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';
-import { InputError } from '@backstage/errors';
 import {
   BitbucketServerEntityProviderConfig,
   readProviderConfigs,
 } from './BitbucketServerEntityProviderConfig';
-import { Entity } from '@backstage/catalog-model';
+import {
+  BitbucketServerLocationParser,
+  defaultBitbucketServerLocationParser,
+} from './BitbucketServerLocationParser';
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -58,11 +58,16 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
-      schedule: TaskRunner;
       parser?: BitbucketServerLocationParser;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
     },
   ): BitbucketServerEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
+
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
 
     return readProviderConfigs(config).map(providerConfig => {
       const integration = integrations.bitbucketServer.byHost(
@@ -73,11 +78,22 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           `No BitbucketServer integration found that matches host ${providerConfig.host}`,
         );
       }
+
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for bitbucketServer-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       return new BitbucketServerEntityProvider(
         providerConfig,
         integration,
         options.logger,
-        options.schedule,
+        taskRunner,
         options.parser,
       );
     });
@@ -87,7 +103,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     config: BitbucketServerEntityProviderConfig,
     integration: BitbucketServerIntegration,
     logger: Logger,
-    schedule: TaskRunner,
+    taskRunner: TaskRunner,
     parser?: BitbucketServerLocationParser,
   ) {
     this.integration = integration;
@@ -96,13 +112,13 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     this.logger = logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -114,7 +130,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(`${this.getProviderName()} refresh failed`, error);
           }
         },
       });

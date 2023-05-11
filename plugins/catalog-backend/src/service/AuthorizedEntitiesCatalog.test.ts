@@ -20,13 +20,19 @@ import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { isEntityKind } from '../permissions/rules/isEntityKind';
 import { CatalogPermissionRule } from '../permissions/rules';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { Cursor, EntityFilter, QueryEntitiesResponse } from '../catalog/types';
+import { Entity } from '@backstage/catalog-model';
 
 describe('AuthorizedEntitiesCatalog', () => {
   const fakeCatalog = {
     entities: jest.fn(),
+    entitiesBatch: jest.fn(),
     removeEntityByUid: jest.fn(),
     entityAncestry: jest.fn(),
     facets: jest.fn(),
+    refresh: jest.fn(),
+    listAncestors: jest.fn(),
+    queryEntities: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
@@ -88,6 +94,214 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       expect(fakeCatalog.entities).toHaveBeenCalledWith({
         authorizationToken: 'abcd',
+      });
+    });
+  });
+
+  describe('entitiesBatch', () => {
+    it('returns empty response on DENY', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      await expect(
+        catalog.entitiesBatch({
+          entityRefs: ['component:default/component-a'],
+          authorizationToken: 'abcd',
+        }),
+      ).resolves.toEqual({
+        items: [null],
+      });
+
+      expect(fakeCatalog.entitiesBatch).not.toHaveBeenCalled();
+    });
+
+    it('calls underlying catalog method with correct filter on CONDITIONAL', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+      const catalog = createCatalog(isEntityKind);
+
+      await catalog.entitiesBatch({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+      });
+
+      expect(fakeCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+        filter: { key: 'kind', values: ['b'] },
+      });
+    });
+
+    it('calls underlying catalog method on ALLOW', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = createCatalog();
+
+      await catalog.entitiesBatch({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+      });
+
+      expect(fakeCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: ['component:default/component-a'],
+        authorizationToken: 'abcd',
+      });
+    });
+  });
+
+  describe('queryEntities', () => {
+    it('returns empty response on DENY', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      await expect(
+        catalog.queryEntities({
+          authorizationToken: 'abcd',
+          filter: { key: 'kind', values: ['b'] },
+        }),
+      ).resolves.toEqual({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
+      });
+
+      expect(fakeCatalog.queryEntities).not.toHaveBeenCalled();
+    });
+
+    it('calls underlying catalog method on ALLOW', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = createCatalog();
+
+      await catalog.queryEntities({
+        authorizationToken: 'abcd',
+        filter: { key: 'kind', values: ['b'] },
+      });
+
+      expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
+        authorizationToken: 'abcd',
+        filter: { key: 'kind', values: ['b'] },
+      });
+    });
+
+    it('calls underlying catalog method with correct filter on CONDITIONAL', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+
+      const requestFilter: EntityFilter = { key: 'name', values: ['name'] };
+
+      const entities = [
+        {
+          kind: 'component',
+          namespace: 'default',
+          name: 'a',
+        } as unknown as Entity,
+        {
+          kind: 'component',
+          namespace: 'default',
+          name: 'b1',
+        } as unknown as Entity,
+      ];
+
+      fakeCatalog.queryEntities.mockResolvedValue({
+        items: entities,
+        pageInfo: {
+          nextCursor: {
+            isPrevious: false,
+            orderFieldValues: ['xxx', null],
+            filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+          },
+          prevCursor: {
+            isPrevious: true,
+            orderFieldValues: ['a', null],
+            filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+          },
+        },
+        totalItems: 4,
+      } as QueryEntitiesResponse);
+      const catalog = createCatalog(isEntityKind);
+
+      let response = await catalog.queryEntities({
+        authorizationToken: 'abcd',
+        filter: { key: 'name', values: ['name'] },
+      });
+
+      expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
+        authorizationToken: 'abcd',
+        filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+      });
+
+      expect(response).toEqual({
+        items: entities,
+        totalItems: 4,
+        pageInfo: {
+          nextCursor: {
+            isPrevious: false,
+            filter: requestFilter,
+            orderFieldValues: ['xxx', null],
+          },
+          prevCursor: {
+            isPrevious: true,
+            filter: requestFilter,
+            orderFieldValues: ['a', null],
+          },
+        },
+      });
+
+      const cursor: Cursor = {
+        filter: requestFilter,
+        orderFields: [{ field: 'name', order: 'asc' }],
+        isPrevious: false,
+        orderFieldValues: ['a', null],
+      };
+      response = await catalog.queryEntities({
+        authorizationToken: 'abcd',
+        cursor,
+      });
+
+      expect(fakeCatalog.queryEntities).toHaveBeenNthCalledWith(2, {
+        authorizationToken: 'abcd',
+        cursor: {
+          ...cursor,
+          filter: { allOf: [{ key: 'kind', values: ['b'] }, requestFilter] },
+        },
+      });
+
+      expect(response).toEqual({
+        items: entities,
+        totalItems: 4,
+        pageInfo: {
+          nextCursor: {
+            isPrevious: false,
+            filter: requestFilter,
+            orderFieldValues: ['xxx', null],
+          },
+          prevCursor: {
+            isPrevious: true,
+            filter: requestFilter,
+            orderFieldValues: ['a', null],
+          },
+        },
       });
     });
   });

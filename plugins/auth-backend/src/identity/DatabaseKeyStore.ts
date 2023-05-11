@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-} from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { AnyJWK, KeyStore, StoredKey } from './types';
-
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-auth-backend',
-  'migrations',
-);
 
 const TABLE = 'signing_keys';
 
@@ -33,10 +24,6 @@ type Row = {
   created_at: Date; // row.created_at is a string after being returned from the database
   kid: string;
   key: string;
-};
-
-type Options = {
-  database: PluginDatabaseManager;
 };
 
 const parseDate = (date: string | Date) => {
@@ -55,24 +42,7 @@ const parseDate = (date: string | Date) => {
 };
 
 export class DatabaseKeyStore implements KeyStore {
-  static async create(options: Options): Promise<DatabaseKeyStore> {
-    const { database } = options;
-    const client = await database.getClient();
-
-    if (!database.migrations?.skip) {
-      await client.migrate.latest({
-        directory: migrationsDir,
-      });
-    }
-
-    return new DatabaseKeyStore(client);
-  }
-
-  private readonly client: Knex;
-
-  private constructor(client: Knex) {
-    this.client = client;
-  }
+  constructor(private readonly client: Knex) {}
 
   async addKey(key: AnyJWK): Promise<void> {
     await this.client<Row>(TABLE).insert({

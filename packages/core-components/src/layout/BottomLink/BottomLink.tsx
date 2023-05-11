@@ -61,7 +61,7 @@ export function BottomLink(props: BottomLinkProps) {
   const classes = useStyles();
 
   return (
-    <div>
+    <Box>
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
         <Box display="flex" alignItems="center" className={classes.root}>
@@ -73,6 +73,6 @@ export function BottomLink(props: BottomLinkProps) {
           <ArrowIcon className={classes.arrow} />
         </Box>
       </Link>
-    </div>
+    </Box>
   );
 }

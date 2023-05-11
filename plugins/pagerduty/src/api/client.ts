@@ -73,7 +73,7 @@ export class PagerDutyClient implements PagerDutyApi {
       url = `${await this.config.discoveryApi.getBaseUrl(
         'proxy',
       )}/pagerduty/services?${commonGetServiceParams}&query=${integrationKey}`;
-      const { services } = await this.getByUrl<PagerDutyServicesResponse>(url);
+      const { services } = await this.findByUrl<PagerDutyServicesResponse>(url);
       const service = services[0];
 
       if (!service) throw new NotFoundError();
@@ -84,7 +84,7 @@ export class PagerDutyClient implements PagerDutyApi {
         'proxy',
       )}/pagerduty/services/${serviceId}?${commonGetServiceParams}`;
 
-      response = await this.getByUrl<PagerDutyServiceResponse>(url);
+      response = await this.findByUrl<PagerDutyServiceResponse>(url);
     } else {
       throw new NotFoundError();
     }
@@ -100,7 +100,7 @@ export class PagerDutyClient implements PagerDutyApi {
       'proxy',
     )}/pagerduty/incidents?${params}`;
 
-    return await this.getByUrl<PagerDutyIncidentsResponse>(url);
+    return await this.findByUrl<PagerDutyIncidentsResponse>(url);
   }
 
   async getChangeEventsByServiceId(
@@ -111,7 +111,7 @@ export class PagerDutyClient implements PagerDutyApi {
       'proxy',
     )}/pagerduty/services/${serviceId}/change_events?${params}`;
 
-    return await this.getByUrl<PagerDutyChangeEventsResponse>(url);
+    return await this.findByUrl<PagerDutyChangeEventsResponse>(url);
   }
 
   async getOnCallByPolicyId(
@@ -122,7 +122,7 @@ export class PagerDutyClient implements PagerDutyApi {
       'proxy',
     )}/pagerduty/oncalls?${params}`;
 
-    return await this.getByUrl<PagerDutyOnCallsResponse>(url);
+    return await this.findByUrl<PagerDutyOnCallsResponse>(url);
   }
 
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response> {
@@ -158,7 +158,7 @@ export class PagerDutyClient implements PagerDutyApi {
     return this.request(`${url}/enqueue`, options);
   }
 
-  private async getByUrl<T>(url: string): Promise<T> {
+  private async findByUrl<T>(url: string): Promise<T> {
     const options = {
       method: 'GET',
       headers: {

@@ -87,7 +87,9 @@ export function useWorkflowRuns({
             runId: run.id,
           });
         } catch (e) {
-          errorApi.post(e);
+          errorApi.post(
+            new Error(`Failed to rerun the workflow: ${e.message}`),
+          );
         }
       },
       source: {

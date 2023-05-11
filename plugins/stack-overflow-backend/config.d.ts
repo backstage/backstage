@@ -21,14 +21,24 @@ export interface Config {
   stackoverflow?: {
     /**
      * The base url of the Stack Overflow API used for the plugin
-     * @visibility backend
      */
     baseUrl?: string;
 
     /**
-     * The api key to authenticate to Stack Overflow API
+     * The API key to authenticate to Stack Overflow API
      * @visibility secret
      */
     apiKey?: string;
+
+    /**
+     * The name of the team for a Stack Overflow for Teams account
+     */
+    teamName?: string;
+
+    /**
+     * The API Access Token to authenticate to Stack Overflow API
+     * @visibility secret
+     */
+    apiAccessToken?: string;
   };
 }

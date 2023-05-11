@@ -32,6 +32,7 @@ const DEFAULT_PROVIDER = {
 export default class GithubAuth {
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T {
     const {
+      configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
@@ -40,6 +41,7 @@ export default class GithubAuth {
     } = options;
 
     return OAuth2.create({
+      configApi,
       discoveryApi,
       oauthRequestApi,
       provider,

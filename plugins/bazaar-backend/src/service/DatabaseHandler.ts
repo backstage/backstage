@@ -52,7 +52,7 @@ export class DatabaseHandler {
   private columns = [
     'metadata.id',
     'metadata.entity_ref',
-    'metadata.name',
+    'metadata.title',
     'metadata.description',
     'metadata.status',
     'metadata.updated_at',
@@ -61,6 +61,7 @@ export class DatabaseHandler {
     'metadata.start_date',
     'metadata.end_date',
     'metadata.responsible',
+    'metadata.docs',
   ];
 
   async getMembers(id: string) {
@@ -116,10 +117,11 @@ export class DatabaseHandler {
 
   async insertMetadata(bazaarProject: any) {
     const {
-      name,
+      title,
       entityRef,
       community,
       description,
+      docs,
       status,
       size,
       startDate,
@@ -129,10 +131,11 @@ export class DatabaseHandler {
 
     await this.client
       .insert({
-        name,
+        title,
         entity_ref: entityRef,
         community,
         description,
+        docs,
         status,
         updated_at: new Date().toISOString(),
         size,
@@ -145,11 +148,12 @@ export class DatabaseHandler {
 
   async updateMetadata(bazaarProject: any) {
     const {
-      name,
+      title,
       id,
       entityRef,
       community,
       description,
+      docs,
       status,
       size,
       startDate,
@@ -158,10 +162,11 @@ export class DatabaseHandler {
     } = bazaarProject;
 
     return await this.client('metadata').where({ id: id }).update({
-      name,
+      title,
       entity_ref: entityRef,
       description,
       community,
+      docs,
       status,
       updated_at: new Date().toISOString(),
       size,

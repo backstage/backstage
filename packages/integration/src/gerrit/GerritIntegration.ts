@@ -20,7 +20,7 @@ import {
   GerritIntegrationConfig,
   readGerritIntegrationConfigs,
 } from './config';
-import { parseGerritGitilesUrl, builldGerritGitilesUrl } from './core';
+import { parseGerritGitilesUrl, buildGerritGitilesUrl } from './core';
 
 /**
  * A Gerrit based integration.
@@ -61,7 +61,7 @@ export class GerritIntegration implements ScmIntegration {
     let updated;
     if (url.startsWith('/')) {
       const { branch, project } = parseGerritGitilesUrl(this.config, base);
-      return builldGerritGitilesUrl(this.config, project, branch, url);
+      return buildGerritGitilesUrl(this.config, project, branch, url);
     }
     if (url) {
       updated = new URL(url, base);

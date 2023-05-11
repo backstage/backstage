@@ -24,6 +24,7 @@ import {
   ListItemSecondaryAction,
   ListItemIcon,
 } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import useAsync from 'react-use/lib/useAsync';
 import _unescape from 'lodash/unescape';
@@ -51,14 +52,14 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
   }, []);
 
   if (loading) {
-    return <p>loading...</p>;
+    return <Typography paragraph>loading...</Typography>;
   }
 
   if (error || !value || !value.length) {
-    return <p>could not load questions</p>;
+    return <Typography paragraph>could not load questions</Typography>;
   }
 
-  const getSecondaryText = (answer_count: Number) =>
+  const getSecondaryText = (answer_count: number) =>
     answer_count > 1 ? `${answer_count} answers` : `${answer_count} answer`;
 
   return (

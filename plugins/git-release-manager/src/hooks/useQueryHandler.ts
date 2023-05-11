@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import qs from 'qs';
 
 import { Project } from '../contexts/ProjectContext';

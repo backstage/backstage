@@ -34,7 +34,12 @@ import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { findAlways } from '../../utils/assert';
-import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
+import { CostInsightsTheme } from '../../types';
+import {
+  Cost,
+  Maybe,
+  MetricData,
+} from '@backstage/plugin-cost-insights-common';
 import { useOverviewTabsStyles } from '../../utils/styles';
 import { ScrollAnchor } from '../../utils/scroll';
 
@@ -103,7 +108,8 @@ export const CostOverviewCard = ({
   };
 
   // Metrics can only be selected on the total cost graph
-  const showMetricSelect = config.metrics.length && safeTabIndex === 0;
+  const showMetricSelect =
+    metricData && config.metrics.length && safeTabIndex === 0;
 
   return (
     <Card style={{ position: 'relative', overflow: 'visible' }}>

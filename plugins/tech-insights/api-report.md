@@ -11,17 +11,14 @@ import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const BooleanCheck: ({
-  checkResult,
-}: {
-  checkResult: CheckResult;
-}) => JSX.Element;
+export const BooleanCheck: (props: { checkResult: CheckResult }) => JSX.Element;
 
 // @public
 export type Check = {
@@ -30,12 +27,15 @@ export type Check = {
   name: string;
   description: string;
   factIds: string[];
+  successMetadata?: Record<string, unknown>;
+  failureMetadata?: Record<string, unknown>;
 };
 
 // @public
 export type CheckResultRenderer = {
   type: string;
   component: (check: CheckResult) => React_2.ReactElement;
+  description?: (check: CheckResult) => string | React_2.ReactElement;
 };
 
 // @public (undocumented)
@@ -74,6 +74,8 @@ export interface TechInsightsApi {
   // (undocumented)
   getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
   // (undocumented)
+  getFactSchemas(): Promise<FactSchema[]>;
+  // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],
     checks?: Check[],
@@ -101,6 +103,8 @@ export class TechInsightsClient implements TechInsightsApi {
   getCheckResultRenderers(types: string[]): CheckResultRenderer[];
   // (undocumented)
   getFacts(entity: CompoundEntityRef, facts: string[]): Promise<InsightFacts>;
+  // (undocumented)
+  getFactSchemas(): Promise<FactSchema[]>;
   // (undocumented)
   runBulkChecks(
     entities: CompoundEntityRef[],

@@ -21,7 +21,7 @@ import {
   withLogCollector,
 } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
   configApiRef,
@@ -34,9 +34,11 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
+import { FeatureFlagged } from '../routing/FeatureFlagged';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
@@ -164,19 +166,20 @@ describe('Integration Test', () => {
   };
 
   const icons = {} as AppIcons;
+  const themes = [
+    {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light' as const,
+      Provider: ({ children }: { children: ReactNode }) => <>{children}</>,
+    },
+  ];
 
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -224,14 +227,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -282,14 +278,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -345,14 +334,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -415,20 +397,103 @@ describe('Integration Test', () => {
     });
   });
 
+  it('feature flags should be available immediately', async () => {
+    const app = new AppManager({
+      apis: [
+        createApiFactory({
+          api: featureFlagsApiRef,
+          deps: { configApi: configApiRef },
+          factory() {
+            return new LocalStorageFeatureFlags();
+          },
+        }),
+      ],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [createPlugin({ id: 'test', featureFlags: [{ name: 'foo' }] })],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const FeatureFlags = () => {
+      const featureFlags = useApi(featureFlagsApiRef).getRegisteredFlags();
+      return <div>Flags: {featureFlags.map(f => f.name).join(',')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('Flags: foo')).toBeInTheDocument();
+  });
+
+  it('should prevent duplicate feature flags from being rendered', async () => {
+    const p1 = createPlugin({
+      id: 'p1',
+      featureFlags: [{ name: 'show-p1-feature' }],
+    });
+    const p2 = createPlugin({
+      id: 'p2',
+      featureFlags: [{ name: 'show-p2-feature' }],
+    });
+
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [p1, p2],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    function FeatureFlags() {
+      const featureFlags = useApi(featureFlagsApiRef);
+      return (
+        <div>{`Flags: ${featureFlags
+          .getRegisteredFlags()
+          .map(f => f.name)
+          .join(',')}`}</div>
+      );
+    }
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlagged with="show-p1-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlagged with="show-p2-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(
+      screen.getByText('Flags: show-p1-feature,show-p2-feature'),
+    ).toBeInTheDocument();
+  });
+
   it('should track route changes via analytics api', async () => {
     const mockAnalyticsApi = new MockAnalyticsApi();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -482,14 +547,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -532,14 +590,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -568,5 +619,130 @@ describe('Integration Test', () => {
         'The above error occurred in the <Provider> component',
       ),
     ]);
+  });
+
+  describe('relative url resolvers', () => {
+    it.each([
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost:8008',
+          },
+          app: {
+            baseUrl: 'http://localhost:8008',
+          },
+        },
+      ],
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost:80',
+          },
+          app: {
+            baseUrl: 'http://localhost:80',
+          },
+        },
+      ],
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost',
+          },
+          app: {
+            baseUrl: 'http://localhost',
+          },
+        },
+      ],
+      [
+        ['http://localhost/backstage', 'http://localhost/backstage'],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage',
+          },
+        },
+      ],
+      [
+        [
+          'http://localhost/backstage/instance',
+          'http://localhost/backstage/instance',
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+        },
+      ],
+      [
+        [
+          'http://localhost/backstage/instance',
+          'http://test.com/backstage/instance',
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test-front.com/backstage/instance',
+          },
+        },
+      ],
+    ])(
+      'should be %p when %p (%#)',
+      async ([expectedAppUrl, expectedBackendUrl], data) => {
+        const app = new AppManager({
+          apis: [],
+          defaultApis: [],
+          themes: [
+            {
+              id: 'light',
+              title: 'Light Theme',
+              variant: 'light',
+              Provider: ({ children }) => <>{children}</>,
+            },
+          ],
+          icons,
+          plugins: [],
+          components,
+          configLoader: async () => [
+            {
+              context: 'test',
+              data,
+            },
+          ],
+        });
+
+        const Provider = app.getProvider();
+        const ConfigDisplay = ({ configString }: { configString: string }) => {
+          const config = useApi(configApiRef);
+          return (
+            <span>
+              {configString}: {config?.getString(configString)}
+            </span>
+          );
+        };
+
+        const dom = await renderWithEffects(
+          <Provider>
+            <ConfigDisplay configString="app.baseUrl" />
+            <ConfigDisplay configString="backend.baseUrl" />
+          </Provider>,
+        );
+
+        expect(dom.getByText(`app.baseUrl: ${expectedAppUrl}`)).toBeTruthy();
+
+        expect(
+          dom.getByText(`backend.baseUrl: ${expectedBackendUrl}`),
+        ).toBeTruthy();
+      },
+    );
   });
 });

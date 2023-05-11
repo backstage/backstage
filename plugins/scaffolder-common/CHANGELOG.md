@@ -1,5 +1,174 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+
+## 1.2.7
+
+### Patch Changes
+
+- 65e989f4018: Added permissions for authorizing parameters and steps
+- 48da4c46e45: Export `typeguard` for `isTemplateEntityV1beta3`
+- bcae5aaf25c: Added permissions for authorizing actions
+- 65e989f4018: Define optional `backstage:permissions` property to parameters and steps used to authorize part of the template using the permission framework
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+  - @backstage/types@1.0.2
+
+## 1.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
+## 1.2.7-next.1
+
+### Patch Changes
+
+- 65e989f4018: Added permissions for authorizing parameters and steps
+- 65e989f4018: Define optional `backstage:permissions` property to parameters and steps used to authorize part of the template using the permission framework
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 1.2.7-next.0
+
+### Patch Changes
+
+- 48da4c46e45: Export `typeguard` for `isTemplateEntityV1beta3`
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 1.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1
+  - @backstage/types@1.0.2
+
+## 1.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+
+## 1.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0
+  - @backstage/types@1.0.2
+
+## 1.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/types@1.0.2
+
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+
+## 1.2.4
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/types@1.0.2
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 011bd518b7: Fixed spelling mistakes in documentation.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/types@1.0.2
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3
+  - @backstage/types@1.0.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/types@1.0.1-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/types@1.0.0
+
 ## 1.2.1-next.2
 
 ### Patch Changes

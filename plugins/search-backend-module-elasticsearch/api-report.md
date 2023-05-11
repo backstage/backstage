@@ -8,8 +8,8 @@
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { BulkHelper } from '@opensearch-project/opensearch/lib/Helpers';
-import { BulkStats } from '@opensearch-project/opensearch/lib/Helpers';
+import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
+import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -66,6 +66,11 @@ export interface BaseElasticSearchClientOptions {
   // (undocumented)
   Transport?: ElasticSearchTransportConstructor;
 }
+
+// @public (undocumented)
+export function decodeElasticSearchPageCursor(pageCursor?: string): {
+  page: number;
+};
 
 // @public (undocumented)
 export interface ElasticSearchAgentOptions {
@@ -322,12 +327,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     highlightOptions?: ElasticSearchHighlightOptions,
   );
   // (undocumented)
-  static fromConfig({
-    logger,
-    config,
-    aliasPostfix,
-    indexPrefix,
-  }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
+  static fromConfig(
+    options: ElasticSearchOptions,
+  ): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
   getIndexer(type: string): Promise<ElasticSearchSearchEngineIndexer>;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
@@ -421,7 +423,11 @@ export interface OpenSearchElasticSearchClientOptions
   // (undocumented)
   nodes?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];
   // (undocumented)
-  provider?: 'aws';
+  provider?: 'aws' | 'opensearch';
+  // (undocumented)
+  region?: string;
+  // (undocumented)
+  service?: 'es' | 'aoss';
 }
 
 // @public (undocumented)

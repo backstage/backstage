@@ -1,5 +1,6 @@
-name: Verify Storybook
+name: Storybook
 on:
+  # NOTE: If you change these you must update verify_storybook-noop.yml as well
   pull_request:
     paths:
       - '.github/workflows/verify_storybook.yml'
@@ -24,6 +25,7 @@ jobs:
         os: [ubuntu-latest]
         node-version: [16.x]
 
+    name: Storybook
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,7 +37,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.5.6
+        uses: backstage/actions/yarn-install@v0.6.3
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
       - name: storybook yarn install

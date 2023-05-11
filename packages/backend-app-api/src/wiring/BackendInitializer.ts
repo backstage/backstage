@@ -17,22 +17,27 @@
 import {
   BackendFeature,
   ExtensionPoint,
+  coreServices,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
+import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import {
   BackendRegisterInit,
-  ServiceHolder,
+  EnumerableServiceHolder,
   ServiceOrExtensionPoint,
 } from './types';
+// Direct internal import to avoid duplication
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 
 export class BackendInitializer {
-  #started = false;
-  #features = new Map<BackendFeature, unknown>();
+  #startPromise?: Promise<void>;
+  #features = new Array<InternalBackendFeature>();
   #registerInits = new Array<BackendRegisterInit>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
-  #serviceHolder: ServiceHolder;
+  #serviceHolder: EnumerableServiceHolder;
 
-  constructor(serviceHolder: ServiceHolder) {
+  constructor(serviceHolder: EnumerableServiceHolder) {
     this.#serviceHolder = serviceHolder;
   }
 
@@ -72,63 +77,112 @@ export class BackendInitializer {
     return Object.fromEntries(result);
   }
 
-  add<TOptions>(feature: BackendFeature, options?: TOptions) {
-    if (this.#started) {
+  add(feature: BackendFeature) {
+    if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
-    this.#features.set(feature, options);
+    if (feature.$$type !== '@backstage/BackendFeature') {
+      throw new Error(
+        `Failed to add feature, invalid type '${feature.$$type}'`,
+      );
+    }
+    const internalFeature = feature as InternalBackendFeature;
+    if (internalFeature.version !== 'v1') {
+      throw new Error(
+        `Failed to add feature, invalid version '${internalFeature.version}'`,
+      );
+    }
+    this.#features.push(internalFeature);
   }
 
   async start(): Promise<void> {
-    if (this.#started) {
+    if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
-    this.#started = true;
 
-    for (const [feature] of this.#features) {
-      const provides = new Set<ExtensionPoint<unknown>>();
+    const exitHandler = async () => {
+      process.removeListener('SIGTERM', exitHandler);
+      process.removeListener('SIGINT', exitHandler);
+      process.removeListener('beforeExit', exitHandler);
 
-      let registerInit: BackendRegisterInit | undefined = undefined;
-
-      feature.register({
-        registerExtensionPoint: (extensionPointRef, impl) => {
-          if (registerInit) {
-            throw new Error('registerExtensionPoint called after registerInit');
-          }
-          if (this.#extensionPoints.has(extensionPointRef)) {
-            throw new Error(`API ${extensionPointRef.id} already registered`);
-          }
-          this.#extensionPoints.set(extensionPointRef, impl);
-          provides.add(extensionPointRef);
-        },
-        registerInit: registerOptions => {
-          if (registerInit) {
-            throw new Error('registerInit must only be called once');
-          }
-          registerInit = {
-            id: feature.id,
-            provides,
-            consumes: new Set(Object.values(registerOptions.deps)),
-            deps: registerOptions.deps,
-            init: registerOptions.init as BackendRegisterInit['init'],
-          };
-        },
-      });
-
-      if (!registerInit) {
-        throw new Error(
-          `registerInit was not called by register in ${feature.id}`,
-        );
+      try {
+        await this.stop();
+        process.exit(0);
+      } catch (error) {
+        console.error(error);
+        process.exit(1);
       }
+    };
 
-      this.#registerInits.push(registerInit);
+    process.addListener('SIGTERM', exitHandler);
+    process.addListener('SIGINT', exitHandler);
+    process.addListener('beforeExit', exitHandler);
+
+    this.#startPromise = this.#doStart();
+    await this.#startPromise;
+  }
+
+  async #doStart(): Promise<void> {
+    // Initialize all root scoped services
+    for (const ref of this.#serviceHolder.getServiceRefs()) {
+      if (ref.scope === 'root') {
+        await this.#serviceHolder.get(ref, 'root');
+      }
+    }
+
+    // Initialize all features
+    for (const feature of this.#features) {
+      for (const r of feature.getRegistrations()) {
+        const provides = new Set<ExtensionPoint<unknown>>();
+
+        if (r.type === 'plugin') {
+          for (const [extRef, extImpl] of r.extensionPoints) {
+            if (this.#extensionPoints.has(extRef)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extRef.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extRef, extImpl);
+            provides.add(extRef);
+          }
+        }
+
+        this.#registerInits.push({
+          id: r.type === 'plugin' ? r.pluginId : `${r.pluginId}.${r.moduleId}`,
+          provides,
+          consumes: new Set(Object.values(r.init.deps)),
+          init: r.init,
+        });
+      }
     }
 
     const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
 
     for (const registerInit of orderedRegisterResults) {
-      const deps = await this.#getInitDeps(registerInit.deps, registerInit.id);
-      await registerInit.init(deps);
+      const deps = await this.#getInitDeps(
+        registerInit.init.deps,
+        registerInit.id,
+      );
+      await registerInit.init.func(deps);
+    }
+
+    // Once the backend is started, any uncaught errors or unhandled rejections are caught
+    // and logged, in order to avoid crashing the entire backend on local failures.
+    if (process.env.NODE_ENV !== 'test') {
+      const rootLogger = await this.#serviceHolder.get(
+        coreServices.rootLogger,
+        'root',
+      );
+      process.on('unhandledRejection', (reason: Error) => {
+        rootLogger
+          ?.child({ type: 'unhandledRejection' })
+          ?.error('Unhandled rejection', reason);
+      });
+      process.on('uncaughtException', error => {
+        rootLogger
+          ?.child({ type: 'uncaughtException' })
+          ?.error('Uncaught exception', error);
+      });
     }
   }
 
@@ -164,5 +218,24 @@ export class BackendInitializer {
     }
 
     return orderedRegisterInits;
+  }
+
+  async stop(): Promise<void> {
+    if (!this.#startPromise) {
+      return;
+    }
+    await this.#startPromise;
+
+    const lifecycleService = await this.#serviceHolder.get(
+      coreServices.rootLifecycle,
+      'root',
+    );
+
+    // TODO(Rugvip): Find a better way to do this
+    if (lifecycleService instanceof BackendLifecycleImpl) {
+      await lifecycleService.shutdown();
+    } else {
+      throw new Error('Unexpected lifecycle service implementation');
+    }
   }
 }

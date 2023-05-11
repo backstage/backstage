@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
 const useSubvalueCellStyles = makeStyles<BackstageTheme>(
   theme => ({
     value: {
-      marginBottom: '6px',
+      marginBottom: theme.spacing(0.75),
     },
     subvalue: {
       color: theme.palette.textSubtle,
@@ -44,8 +44,8 @@ export function SubvalueCell(props: SubvalueCellProps) {
 
   return (
     <>
-      <div className={classes.value}>{value}</div>
-      <div className={classes.subvalue}>{subvalue}</div>
+      <Box className={classes.value}>{value}</Box>
+      <Box className={classes.subvalue}>{subvalue}</Box>
     </>
   );
 }

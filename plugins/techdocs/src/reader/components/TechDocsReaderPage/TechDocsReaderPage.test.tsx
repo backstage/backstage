@@ -15,18 +15,27 @@
  */
 import React from 'react';
 import { act } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { lightTheme } from '@backstage/theme';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import { techdocsApiRef, techdocsStorageApiRef } from '../../../api';
 
 import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
+import { Route, useParams } from 'react-router-dom';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { FlatRoutes } from '@backstage/core-app-api';
+
+import { Page } from '@backstage/core-components';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -66,19 +75,34 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const PageMock = () => {
+  const { namespace, kind, name } = useParams();
+  return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
+};
+
+jest.mock('@backstage/core-components', () => ({
+  ...jest.requireActual('@backstage/core-components'),
+  Page: jest.fn(),
+}));
+
+const configApi = new MockConfigApi({
+  app: {
+    baseUrl: 'http://localhost:3000',
+  },
+});
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider theme={lightTheme}>
-      <TestApiProvider
-        apis={[
-          [scmIntegrationsApiRef, {}],
-          [techdocsApiRef, techdocsApiMock],
-          [techdocsStorageApiRef, techdocsStorageApiMock],
-        ]}
-      >
-        {children}
-      </TestApiProvider>
-    </ThemeProvider>
+    <TestApiProvider
+      apis={[
+        [scmIntegrationsApiRef, {}],
+        [configApiRef, configApi],
+        [techdocsApiRef, techdocsApiMock],
+        [techdocsStorageApiRef, techdocsStorageApiMock],
+      ]}
+    >
+      {children}
+    </TestApiProvider>
   );
 };
 
@@ -97,6 +121,12 @@ describe('<TechDocsReaderPage />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
+
+  beforeEach(() => {
+    const realPage = jest.requireActual('@backstage/core-components').Page;
+    (Page as jest.Mock).mockImplementation(realPage);
+  });
+
   it('should render a techdocs reader page without children', async () => {
     const rendered = await renderInTestApp(
       <Wrapper>
@@ -144,6 +174,65 @@ describe('<TechDocsReaderPage />', () => {
         rendered.container.querySelector('article'),
       ).not.toBeInTheDocument();
       expect(rendered.getByText('techdocs reader page')).toBeInTheDocument();
+    });
+  });
+
+  it('should render techdocs reader page with addons', async () => {
+    (Page as jest.Mock).mockImplementation(PageMock);
+    const name = 'test-name';
+    const namespace = 'test-namespace';
+    const kind = 'test';
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <FlatRoutes>
+            <Route
+              path="/docs/:namespace/:kind/:name/*"
+              element={<TechDocsReaderPage />}
+            >
+              <TechDocsAddons>
+                <ReportIssue />
+              </TechDocsAddons>
+            </Route>
+          </FlatRoutes>
+        </Wrapper>,
+        {
+          mountedRoutes,
+          routeEntries: ['/docs/test-namespace/test/test-name'],
+        },
+      );
+
+      expect(
+        rendered.getByText(`PageMock: ${namespace}#${kind}#${name}`),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should render techdocs reader page with addons and page', async () => {
+    (Page as jest.Mock).mockImplementation(PageMock);
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <FlatRoutes>
+            <Route
+              path="/docs/:namespace/:kind/:name/*"
+              element={<TechDocsReaderPage />}
+            >
+              <p>the page</p>
+              <TechDocsAddons>
+                <ReportIssue />
+              </TechDocsAddons>
+            </Route>
+          </FlatRoutes>
+        </Wrapper>,
+        {
+          mountedRoutes,
+          routeEntries: ['/docs/test-namespace/test/test-name'],
+        },
+      );
+
+      expect(rendered.getByText('the page')).toBeInTheDocument();
     });
   });
 });

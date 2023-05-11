@@ -24,7 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { MockStorageApi, TestApiRegistry } from '@backstage/test-utils';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
 import { MockPlaylistListProvider } from '../../testUtils';
@@ -94,7 +94,7 @@ describe('<PersonalListPicker />', () => {
   });
 
   it('renders filter groups', async () => {
-    const { queryByText } = render(
+    render(
       <ApiProvider apis={apis}>
         <MockPlaylistListProvider value={{ backendPlaylists }}>
           <PersonalListPicker />
@@ -103,8 +103,8 @@ describe('<PersonalListPicker />', () => {
     );
 
     await waitFor(() => {
-      expect(queryByText('Personal')).toBeInTheDocument();
-      expect(queryByText('Test Company')).toBeInTheDocument();
+      expect(screen.getByText('Personal')).toBeInTheDocument();
+      expect(screen.getByText('Test Company')).toBeInTheDocument();
     });
   });
 

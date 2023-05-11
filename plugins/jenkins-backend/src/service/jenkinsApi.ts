@@ -30,12 +30,6 @@ import {
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import { NotAllowedError } from '@backstage/errors';
 
-if (!Promise.any) {
-  (async () => {
-    await import('promise-any-polyfill');
-  })();
-}
-
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
                     number,
@@ -81,12 +75,12 @@ export class JenkinsApiImpl {
     const projects: BackstageProject[] = [];
 
     if (branches) {
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
+      // Assume jenkinsInfo.jobFullName is a MultiBranch Pipeline project which contains one job per branch.
       // TODO: extract a strategy interface for this
       const job = await Promise.any(
         branches.map(branch =>
           client.job.get({
-            name: `${jenkinsInfo.jobFullName}/${branch}`,
+            name: `${jenkinsInfo.jobFullName}/${encodeURIComponent(branch)}`,
             tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
           }),
         ),
@@ -94,8 +88,10 @@ export class JenkinsApiImpl {
       projects.push(this.augmentProject(job));
     } else {
       // We aren't filtering
-      // Assume jenkinsInfo.jobFullName is a folder which contains one job per branch.
-      const folder = await client.job.get({
+      // Assume jenkinsInfo.jobFullName is either
+      // a MultiBranch Pipeline (folder with one job per branch) project
+      // a Pipeline (standalone) project
+      const project = await client.job.get({
         name: jenkinsInfo.jobFullName,
         // Filter only be the information we need, instead of loading all fields.
         // Limit to only show the latest build for each job and only load 50 jobs
@@ -105,15 +101,18 @@ export class JenkinsApiImpl {
         tree: JenkinsApiImpl.jobsTreeSpec.replace(/\s/g, ''),
       });
 
-      // TODO: support this being a project itself.
-      for (const jobDetails of folder.jobs) {
+      const isStandaloneProject = !project.jobs;
+      if (isStandaloneProject) {
+        const standaloneProject = await client.job.get({
+          name: jenkinsInfo.jobFullName,
+          tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
+        });
+        projects.push(this.augmentProject(standaloneProject));
+        return projects;
+      }
+      for (const jobDetails of project.jobs) {
         // for each branch (we assume)
-        if (jobDetails?.jobs) {
-          // skipping folders inside folders for now
-          // TODO: recurse
-        } else {
-          projects.push(this.augmentProject(jobDetails));
-        }
+        projects.push(this.augmentProject(jobDetails));
       }
     }
     return projects;

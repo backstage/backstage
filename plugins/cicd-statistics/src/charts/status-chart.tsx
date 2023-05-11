@@ -109,7 +109,7 @@ export function StatusChart(props: StatusChartProps) {
   const tooltipFormatter = useMemo(() => {
     const reasonSet = new Set(analysis.daily.triggerReasons);
 
-    return (percentOrCount: number, name: string) => {
+    return (percentOrCount: number, name: string): [any, any] => {
       const label = reasonSet.has(name)
         ? humanTriggerReason(name)
         : capitalize(name);
@@ -118,9 +118,10 @@ export function StatusChart(props: StatusChartProps) {
         : percentOrCount;
 
       return [
-        <span>
+        // TODO(Rugvip): Types don't allow returning elements, but it was here before so presumably works
+        <Typography component="span">
           {label}: {valueText}
-        </span>,
+        </Typography>,
         null,
       ];
     };

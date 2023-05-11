@@ -20,7 +20,7 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from '../lib';
 
@@ -150,18 +150,24 @@ describe('GithubDiscoveryProcessor', () => {
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'master',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });
@@ -200,9 +206,12 @@ describe('GithubDiscoveryProcessor', () => {
             url: 'https://github.com/backstage/tech-docs',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });
@@ -233,7 +242,10 @@ describe('GithubDiscoveryProcessor', () => {
             url: 'https://github.com/backstage/tech-docs',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: null,
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });
@@ -256,9 +268,12 @@ describe('GithubDiscoveryProcessor', () => {
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'master',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });
@@ -290,34 +305,46 @@ describe('GithubDiscoveryProcessor', () => {
             url: 'https://github.com/backstage/backstage',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'techdocs-cli',
             url: 'https://github.com/backstage/techdocs-cli',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'techdocs-container',
             url: 'https://github.com/backstage/techdocs-container',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'techdocs-durp',
             url: 'https://github.com/backstage/techdocs-durp',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: null,
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });
@@ -356,37 +383,49 @@ describe('GithubDiscoveryProcessor', () => {
             name: 'abstest',
             url: 'https://github.com/backstage/abctest',
             isArchived: false,
+            isFork: false,
             repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'test',
             url: 'https://github.com/backstage/test',
             isArchived: false,
+            isFork: false,
             repositoryTopics: { nodes: [] },
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'test-archived',
             url: 'https://github.com/backstage/test',
             repositoryTopics: { nodes: [] },
             isArchived: true,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'testxyz',
             url: 'https://github.com/backstage/testxyz',
             repositoryTopics: { nodes: [] },
             isArchived: false,
+            isFork: false,
             defaultBranchRef: {
               name: 'main',
             },
+            catalogInfoFile: null,
+            visibility: 'public',
           },
         ],
       });

@@ -39,6 +39,14 @@ export type EntityPagination = {
 };
 
 /**
+ * A sorting rule for entities.
+ */
+export type EntityOrder = {
+  field: string;
+  order: 'asc' | 'desc';
+};
+
+/**
  * Matches rows in the search table.
  * @public
  */
@@ -71,6 +79,7 @@ export type PageInfo =
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
+  order?: EntityOrder[];
   pagination?: EntityPagination;
   authorizationToken?: string;
 };
@@ -79,6 +88,38 @@ export type EntitiesResponse = {
   entities: Entity[];
   pageInfo: PageInfo;
 };
+
+/**
+ * A request for a batch of entities.
+ */
+export interface EntitiesBatchRequest {
+  /**
+   * The refs for which to fetch entities.
+   */
+  entityRefs: string[];
+  /**
+   * Any additional filters to apply in the selection of the entities. Entities
+   * that do not match the filter result in a null entry in the response, as if
+   * they did not exist.
+   */
+  filter?: EntityFilter;
+  /**
+   * Strips out only the parts of the entity bodies to include in the response.
+   */
+  fields?: (entity: Entity) => Entity;
+  /**
+   * The optional token that authorizes the action.
+   */
+  authorizationToken?: string;
+}
+
+export interface EntitiesBatchResponse {
+  /**
+   * The list of entities, in the same order as the refs in the request. Entries
+   * that are null signify that no entity existed with that ref.
+   */
+  items: Array<Entity | null>;
+}
 
 export type EntityAncestryResponse = {
   rootEntityRef: string;
@@ -131,6 +172,18 @@ export interface EntitiesCatalog {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
 
   /**
+   * Fetches a batch of entities.
+   */
+  entitiesBatch(request: EntitiesBatchRequest): Promise<EntitiesBatchResponse>;
+
+  /**
+   * Fetch entities and scroll back and forth between entities.
+   *
+   * @param request
+   */
+  queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
+
+  /**
    * Removes a single entity.
    *
    * @param uid - The metadata.uid of the entity
@@ -158,3 +211,103 @@ export interface EntitiesCatalog {
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
 }
+
+/**
+ * The request shape for {@link EntitiesCatalog.queryEntities}.
+ */
+export type QueryEntitiesRequest =
+  | QueryEntitiesInitialRequest
+  | QueryEntitiesCursorRequest;
+
+/**
+ * The initial request for {@link EntitiesCatalog.queryEntities}.
+ * The request take immutable properties that are going to be bound
+ * for the current and the next pagination requests.
+ */
+export interface QueryEntitiesInitialRequest {
+  authorizationToken?: string;
+  fields?: (entity: Entity) => Entity;
+  limit?: number;
+  filter?: EntityFilter;
+  orderFields?: EntityOrder[];
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
+}
+
+/**
+ * Request for {@link EntitiesCatalog.queryEntities} used to
+ * move forward or backward on the data.
+ */
+export interface QueryEntitiesCursorRequest {
+  authorizationToken?: string;
+  fields?: (entity: Entity) => Entity;
+  limit?: number;
+  cursor: Cursor;
+}
+
+/**
+ * The response shape for {@link EntitiesCatalog.queryEntities}.
+ */
+export interface QueryEntitiesResponse {
+  /**
+   * The entities for the current pagination request
+   */
+  items: Entity[];
+
+  pageInfo: {
+    /**
+     * The cursor of the next pagination request.
+     */
+    nextCursor?: Cursor;
+    /**
+     * The cursor of the previous pagination request.
+     */
+    prevCursor?: Cursor;
+  };
+  /**
+   * the total number of entities matching the current filters.
+   */
+  totalItems: number;
+}
+
+/**
+ * The Cursor used internally by the catalog.
+ */
+export type Cursor = {
+  /**
+   * An array of fields used for sorting the data.
+   * For example, [ { field: 'metadata.name', order: 'asc' } ]
+   */
+  orderFields: EntityOrder[];
+  /**
+   * The values of the fields of a specific item used for paginating the data.
+   */
+  orderFieldValues: Array<string | null>;
+  /**
+   * A filter to be applied to the full list of entities.
+   */
+  filter?: EntityFilter;
+  /**
+   * true if the cursor is a previous cursor.
+   */
+  isPrevious: boolean;
+  /**
+   * Used for performing full text filtering on the given fields.
+   */
+  fullTextFilter?: {
+    term: string;
+    fields?: string[];
+  };
+  /**
+   * The value of the fields of the first returned item used for paginating the data.
+   * The catalog uses this field internally to understand if the beginning
+   * of the list has been reached when performing cursor based pagination.
+   */
+  firstSortFieldValues?: Array<string | null>;
+  /**
+   * The number of items that match the provided filters
+   */
+  totalItems?: number;
+};

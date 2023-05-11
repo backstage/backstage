@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import SwaggerParser from '@apidevtools/swagger-parser';
+import $RefParser from '@apidevtools/json-schema-ref-parser';
 import { parse, stringify } from 'yaml';
 import * as path from 'path';
 
@@ -30,13 +30,13 @@ export type BundlerRead = (url: string) => Promise<Buffer>;
 
 export type BundlerResolveUrl = (url: string, base: string) => string;
 
-export async function bundleOpenApiSpecification(
-  specification: string,
+export async function bundleFileWithRefs(
+  fileWithRefs: string,
   baseUrl: string,
   read: BundlerRead,
   resolveUrl: BundlerResolveUrl,
 ): Promise<string> {
-  const fileUrlReaderResolver: SwaggerParser.ResolverOptions = {
+  const fileUrlReaderResolver: $RefParser.ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
       return protocol === undefined || protocol === 'file';
@@ -47,14 +47,24 @@ export async function bundleOpenApiSpecification(
       return await read(url);
     },
   };
-
-  const options: SwaggerParser.Options = {
-    resolve: {
-      file: fileUrlReaderResolver,
-      http: true,
+  const httpUrlReaderResolver: $RefParser.ResolverOptions = {
+    canRead: ref => {
+      const protocol = getProtocol(ref.url);
+      return protocol === 'http' || protocol === 'https';
+    },
+    read: async ref => {
+      const url = resolveUrl(ref.url, baseUrl);
+      return await read(url);
     },
   };
-  const specObject = parse(specification);
-  const bundledSpec = await SwaggerParser.bundle(specObject, options);
-  return stringify(bundledSpec);
+
+  const options: $RefParser.Options = {
+    resolve: {
+      file: fileUrlReaderResolver,
+      http: httpUrlReaderResolver,
+    },
+  };
+  const fileObject = parse(fileWithRefs);
+  const bundledObject = await $RefParser.bundle(baseUrl, fileObject, options);
+  return stringify(bundledObject);
 }

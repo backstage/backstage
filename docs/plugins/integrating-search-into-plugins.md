@@ -142,11 +142,11 @@ export class FaqCollatorFactory implements DocumentCollatorFactory {
 
 To verify your implementation works as expected make sure to add tests for it. For your convenience, there is the [`TestPipeline`](https://backstage.io/docs/reference/plugin-search-backend-node.testpipeline) utility that emulates a pipeline into which you can integrate your custom collator.
 
-Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.test.ts), for an example.
+Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.test.ts), for an example.
 
 #### 6. Make your plugins collator discoverable for others
 
-If you want to make your collator discoverable for other adopters, add it to the list of [plugins integrated to search](https://backstage.io/docs/features/search/search-overview#plugins-integrated-with-backstage-search).
+If you want to make your collator discoverable for other adopters, add it to the list of [plugins integrated to search](https://backstage.io/docs/features/search/#plugins-integrated-with-backstage-search).
 
 ## Building a search experience into your plugin
 
@@ -333,3 +333,85 @@ reading the search context.
 If you produce something generic and reusable, consider contributing your
 component upstream so that all users of the Backstage Search Platform can
 benefit. Issues and pull requests welcome.
+
+#### Custom search results
+
+Search results throughout Backstage are rendered as lists so that list items can easily be customized; although a [default result list item](https://backstage.io/storybook/?path=/story/plugins-search-defaultresultlistitem--default) is available, plugins are in the best position to provide custom result list items that surface relevant information only known to the plugin.
+
+The example below imagines `YourCustomSearchResult` as a type of search result that contains associated `tags` which could be rendered as chips below the title/text.
+
+```tsx
+import { Link } from '@backstage/core-components';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+
+type CustomSearchResultListItemProps = {
+  result: YourCustomSearchResult;
+  rank?: number;
+  highlight?: ResultHighlight;
+};
+
+export const CustomSearchResultListItem = (
+  props: CustomSearchResultListItemProps,
+) => {
+  const { title, text, location, tags } = props.result;
+
+  const analytics = useAnalytics();
+  const handleClick = () => {
+    analytics.captureEvent('discover', title, {
+      attributes: { to: location },
+      value: props.rank,
+    });
+  };
+
+  return (
+    <Link noTrack to={location} onClick={handleClick}>
+      <ListItem alignItems="center">
+        <Box flexWrap="wrap">
+          <ListItemText
+            primaryTypographyProps={{ variant: 'h6' }}
+            primary={
+              highlight?.fields?.title ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.title}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                title
+              )
+            }
+            secondary={
+              highlight?.fields?.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                text
+              )
+            }
+          />
+          {tags &&
+            tags.map((tag: string) => (
+              <Chip key={tag} label={`Tag: ${tag}`} size="small" />
+            ))}
+        </Box>
+      </ListItem>
+      <Divider />
+    </Link>
+  );
+};
+```
+
+The optional use of the `<HighlightedSearchResultText>` component makes it possible to highlight relevant parts of the result based on the user's search query.
+
+**Note on Analytics**: In order for app integrators to track and improve search experiences across Backstage, it's important for them to understand when and what users search for, as well as what they click on after searching. When providing a custom result component, it's your responsibility as a plugin developer to instrument it according to search analytics conventions. In particular:
+
+- You must use the `analytics.captureEvent` method, from the `useAnalytics()` hook (detailed [plugin analytics docs are here](./analytics.md)).
+- You must ensure that the action of the event, representing a click on a search result item, is `discover`, and the subject is the `title` of the clicked result. In addition, the `to` attribute should be set to the result's `location`, and the `value` of the event must be set to the `rank` (passed in as a prop).
+- You must ensure that the aforementioned `captureEvent` method is called when a user clicks the link; you should further ensure that the `noTrack` prop is added to the link (which disables default link click tracking, in favor of this custom instrumentation).
+
+For other examples and inspiration on custom result list items, check out the [`<StackOverflowSearchResultListItem>`](https://github.com/backstage/backstage/blob/c981e83/plugins/stack-overflow/src/search/StackOverflowSearchResultListItem/StackOverflowSearchResultListItem.tsx) or [`<CatalogSearchResultListItem>`](https://github.com/backstage/backstage/blob/c981e83/plugins/catalog/src/components/CatalogSearchResultListItem/CatalogSearchResultListItem.tsx) components.

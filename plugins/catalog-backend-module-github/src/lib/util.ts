@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { GithubTopicFilters } from '../providers/GitHubEntityProviderConfig';
+import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
 
-export function parseGitHubOrgUrl(urlString: string): { org: string } {
-  const path = new URL(urlString).pathname.substr(1).split('/');
+export function parseGithubOrgUrl(urlString: string): { org: string } {
+  const path = new URL(urlString).pathname.slice(1).split('/');
 
   // /backstage
   if (path.length === 1 && path[0].length) {
@@ -76,4 +76,36 @@ export function satisfiesTopicFilter(
   // will fail "open" so that Backstage is still usable as if the filter was
   // not configured at all.
   return true;
+}
+
+export function satisfiesForkFilter(
+  allowForks: boolean | true,
+  isFork: boolean | false,
+): Boolean {
+  // we don't want to include forks if forks are not allowed
+  if (!allowForks && isFork) return false;
+
+  // if forks are allowed, allow all repos through
+  return true;
+}
+
+// Given the github organisation team slug, returns a tuple containing [organisation, team]
+export function splitTeamSlug(slug: string): [string, string] {
+  const parts = slug.split('/');
+  if (parts.length !== 2) {
+    throw new Error(
+      `Github team slug '${slug}' was not in the expected format <organisation>/<team>`,
+    );
+  }
+  return [parts[0], parts[1]];
+}
+
+export function satisfiesVisibilityFilter(
+  visibilities: string[],
+  visibility: string,
+): Boolean {
+  if (!visibilities.length) {
+    return true;
+  }
+  return visibilities.includes(visibility);
 }

@@ -19,7 +19,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -46,12 +45,8 @@ const IngressSummary = ({ ingress }: IngressSummaryProps) => {
       justifyContent="flex-start"
       alignItems="center"
     >
-      <Grid xs={3} item>
+      <Grid xs={12} item>
         <IngressDrawer ingress={ingress} />
-      </Grid>
-
-      <Grid item xs={1}>
-        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
     </Grid>
   );

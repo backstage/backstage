@@ -16,6 +16,7 @@
 
 import { Avatar, Link } from '@backstage/core-components';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 import { AutoCompleteIcon } from '../AutoCompleteIcon';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
@@ -78,9 +79,9 @@ export const PullRequestCard = ({
     : undefined;
 
   const subheader = (
-    <span>
+    <Typography component="span">
       {repoLink} · {creationDate}
-    </span>
+    </Typography>
   );
 
   const avatar = (

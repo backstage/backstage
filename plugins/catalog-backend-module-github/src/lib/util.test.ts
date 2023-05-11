@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { GithubTopicFilters } from '../providers/GitHubEntityProviderConfig';
-import { parseGitHubOrgUrl, satisfiesTopicFilter } from './util';
+import { GithubTopicFilters } from '../providers/GithubEntityProviderConfig';
+import {
+  parseGithubOrgUrl,
+  satisfiesTopicFilter,
+  satisfiesForkFilter,
+  satisfiesVisibilityFilter,
+} from './util';
 
-describe('parseGitHubOrgUrl', () => {
+describe('parseGithubOrgUrl', () => {
   it('only supports clean org urls, and decodes them', () => {
-    expect(() => parseGitHubOrgUrl('https://github.com')).toThrow();
-    expect(() => parseGitHubOrgUrl('https://github.com/org/foo')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com')).toThrow();
+    expect(() => parseGithubOrgUrl('https://github.com/org/foo')).toThrow();
     expect(() =>
-      parseGitHubOrgUrl('https://github.com/org/foo/teams'),
+      parseGithubOrgUrl('https://github.com/org/foo/teams'),
     ).toThrow();
-    expect(parseGitHubOrgUrl('https://github.com/foo%32')).toEqual({
+    expect(parseGithubOrgUrl('https://github.com/foo%32')).toEqual({
       org: 'foo2',
     });
   });
@@ -85,5 +90,34 @@ describe('satisfiesTopicFilter', () => {
     expect(
       satisfiesTopicFilter(['backstage-include', 'backstage-exclude'], filter),
     ).toEqual(false);
+  });
+});
+
+describe('satisfiesForkFilter', () => {
+  it('handles cases where forks are not allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(false, true)).toEqual(false);
+  });
+
+  it('handles cases where forks are not allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(false, false)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is evaluated', () => {
+    expect(satisfiesForkFilter(true, true)).toEqual(true);
+  });
+
+  it('handles cases where forks are allowed and a fork is not evaluated', () => {
+    expect(satisfiesForkFilter(true, false)).toEqual(true);
+  });
+});
+
+describe('satisfiesVisibilityFilter', () => {
+  it('satisfies if no visibilities are given', () => {
+    expect(satisfiesVisibilityFilter([], 'public')).toEqual(true);
+  });
+
+  it('handles visibility presence into the visibilities filter', () => {
+    expect(satisfiesVisibilityFilter(['public'], 'public')).toEqual(true);
+    expect(satisfiesVisibilityFilter(['private'], 'public')).toEqual(false);
   });
 });

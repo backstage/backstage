@@ -26,7 +26,6 @@ import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { stripFirstDirectoryFromPath } from './tree/util';
 import {
   ReadTreeResponseFactory,
   ReaderFactory,
@@ -40,9 +39,10 @@ import {
 } from './types';
 import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { parseLastModified } from './util';
 
 /**
- * Implements a {@link UrlReader} for files on GitLab.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
  *
  * @public
  */
@@ -72,8 +72,8 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const { etag, signal } = options ?? {};
-    const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
+    const { etag, lastModifiedAfter, signal } = options ?? {};
+    const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
     try {
@@ -81,6 +81,9 @@ export class GitlabUrlReader implements UrlReader {
         headers: {
           ...getGitLabRequestOptions(this.integration.config).headers,
           ...(etag && { 'If-None-Match': etag }),
+          ...(lastModifiedAfter && {
+            'If-Modified-Since': lastModifiedAfter.toUTCString(),
+          }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -101,6 +104,9 @@ export class GitlabUrlReader implements UrlReader {
     if (response.ok) {
       return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
+        lastModifiedAt: parseLastModified(
+          response.headers.get('Last-Modified'),
+        ),
       });
     }
 
@@ -156,7 +162,7 @@ export class GitlabUrlReader implements UrlReader {
     // ref is an empty string if no branch is set in provided url to readTree.
     const branch = ref || projectGitlabResponseJson.default_branch;
 
-    // Fetch the latest commit that modifies the the filepath in the provided or default branch
+    // Fetch the latest commit that modifies the filepath in the provided or default branch
     // to compare against the provided sha.
     const commitsReqParams = new URLSearchParams();
     commitsReqParams.set('ref_name', branch);
@@ -188,17 +194,21 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const commitSha = (await commitsGitlabResponse.json())[0].id;
-
+    const commitSha = (await commitsGitlabResponse.json())[0]?.id ?? '';
     if (etag && etag === commitSha) {
       throw new NotModifiedError();
     }
 
+    const archiveReqParams = new URLSearchParams();
+    archiveReqParams.set('sha', branch);
+    if (!!filepath) {
+      archiveReqParams.set('path', filepath);
+    }
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         repoFullName,
-      )}/repository/archive?sha=${branch}`,
+      )}/repository/archive?${archiveReqParams.toString()}`,
       {
         ...getGitLabRequestOptions(this.integration.config),
         // TODO(freben): The signal cast is there because pre-3.x versions of
@@ -228,32 +238,119 @@ export class GitlabUrlReader implements UrlReader {
 
   async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
     const { filepath } = parseGitUrl(url);
+    const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
-
-    // TODO(freben): For now, read the entire repo and filter through that. In
-    // a future improvement, we could be smart and try to deduce that non-glob
-    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
-    // to get just that part of the repo.
-    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
-
+    const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);
+    const pathPrefix = staticPart ? `${staticPart}/` : '';
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
       signal: options?.signal,
-      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+      filter: path => matcher.match(`${pathPrefix}${path}`),
     });
-    const files = await tree.files();
 
+    const files = await tree.files();
     return {
       etag: tree.etag,
       files: files.map(file => ({
-        url: this.integration.resolveUrl({ url: `/${file.path}`, base: url }),
+        url: this.integration.resolveUrl({
+          url: `/${pathPrefix}${file.path}`,
+          base: url,
+        }),
         content: file.content,
+        lastModifiedAt: file.lastModifiedAt,
       })),
     };
+  }
+
+  /**
+   * This function splits the input globPattern string into segments using the  path separator /. It then iterates over
+   * the segments from the end of the array towards the beginning, checking if the concatenated string up to that
+   * segment matches the original globPattern using the minimatch function. If a match is found, it continues iterating.
+   * If no match is found, it returns the concatenated string up to the current segment, which is the static part of the
+   * glob pattern.
+   *
+   * E.g. `catalog/foo/*.yaml` will return `catalog/foo`.
+   *
+   * @param globPattern the glob pattern
+   * @private
+   */
+  private getStaticPart(globPattern: string) {
+    const segments = globPattern.split('/');
+    let i = segments.length;
+    while (
+      i > 0 &&
+      new Minimatch(segments.slice(0, i).join('/')).match(globPattern)
+    ) {
+      i--;
+    }
+    return segments.slice(0, i).join('/');
   }
 
   toString() {
     const { host, token } = this.integration.config;
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
+  }
+
+  private async getGitlabFetchUrl(target: string): Promise<string> {
+    // If the target is for a job artifact then go down that path
+    const targetUrl = new URL(target);
+    if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
+      return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
+        value.toString(),
+      );
+    }
+    // Default to the old behavior of assuming the url is for a file
+    return getGitLabFileFetchUrl(target, this.integration.config);
+  }
+
+  // convert urls of the form:
+  //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
+  // to urls of the form:
+  //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
+  private async getGitlabArtifactFetchUrl(target: URL): Promise<URL> {
+    if (!target.pathname.includes('/-/jobs/artifacts/')) {
+      throw new Error('Unable to process url as an GitLab artifact');
+    }
+    try {
+      const [namespaceAndProject, ref] =
+        target.pathname.split('/-/jobs/artifacts/');
+      const projectPath = new URL(target);
+      projectPath.pathname = namespaceAndProject;
+      const projectId = await this.resolveProjectToId(projectPath);
+      const relativePath = getGitLabIntegrationRelativePath(
+        this.integration.config,
+      );
+      const newUrl = new URL(target);
+      newUrl.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
+      return newUrl;
+    } catch (e) {
+      throw new Error(
+        `Unable to translate GitLab artifact URL: ${target}, ${e}`,
+      );
+    }
+  }
+
+  private async resolveProjectToId(pathToProject: URL): Promise<number> {
+    let project = pathToProject.pathname;
+    // Check relative path exist and remove it if so
+    const relativePath = getGitLabIntegrationRelativePath(
+      this.integration.config,
+    );
+    if (relativePath) {
+      project = project.replace(relativePath, '');
+    }
+    // Trim an initial / if it exists
+    project = project.replace(/^\//, '');
+    const result = await fetch(
+      `${
+        pathToProject.origin
+      }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
+      getGitLabRequestOptions(this.integration.config),
+    );
+    const data = await result.json();
+    if (!result.ok) {
+      throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
+    }
+    return Number(data.id);
   }
 }

@@ -20,5 +20,4 @@
  * @packageDocumentation
  */
 
-export { BitbucketCloudEntityProvider } from './BitbucketCloudEntityProvider';
-export { bitbucketCloudEntityProviderCatalogModule } from './service/BitbucketCloudEntityProviderCatalogModule';
+export { BitbucketCloudEntityProvider } from './providers/BitbucketCloudEntityProvider';

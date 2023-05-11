@@ -19,7 +19,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode, useEffect } from 'react';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsView } from './DryRunResultsView';
 
@@ -58,7 +58,7 @@ describe('DryRunResultsView', () => {
                 directoryContents: [
                   {
                     path: 'foo.txt',
-                    base64Content: btoa('Foo Content'),
+                    base64Content: window.btoa('Foo Content'),
                     executable: false,
                   },
                 ],

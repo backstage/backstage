@@ -1,5 +1,74 @@
 # @backstage/codemods
 
+## 0.1.44
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.1.44-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12-next.0
+
+## 0.1.43
+
+### Patch Changes
+
+- 02f1316e57: Moved `commander` to being a regular dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.43-next.0
+
+### Patch Changes
+
+- 02f1316e57: Moved `commander` to being a regular dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
+## 0.1.41
+
+### Patch Changes
+
+- 58502ec285: Updated dependency `jscodeshift` to `^0.14.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.41-next.0
+
+### Patch Changes
+
+- 58502ec285: Updated dependency `jscodeshift` to `^0.14.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
 ## 0.1.40-next.2
 
 ### Patch Changes

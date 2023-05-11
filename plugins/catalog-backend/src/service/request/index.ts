@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+export { entitiesBatchRequest } from './entitiesBatchRequest';
 export { basicEntityFilter } from './basicEntityFilter';
 export { parseEntityFilterParams } from './parseEntityFilterParams';
 export { parseEntityPaginationParams } from './parseEntityPaginationParams';
 export { parseEntityTransformParams } from './parseEntityTransformParams';
+export { parseQueryEntitiesParams } from './parseQueryEntitiesParams';

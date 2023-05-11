@@ -19,7 +19,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { createApplication } from 'graphql-modules';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import { createModule as createCatalogModule } from '@backstage/plugin-catalog-graphql';
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
@@ -61,8 +62,6 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  const apolloMiddleware = server.getMiddleware({ path: '/' });
-
   if (process.env.NODE_ENV === 'development')
     router.use(
       helmet.contentSecurityPolicy({
@@ -72,7 +71,7 @@ export async function createRouter(
       }),
     );
 
-  router.use(apolloMiddleware);
+  router.use(expressMiddleware(server));
   router.use(errorHandler());
 
   return router;

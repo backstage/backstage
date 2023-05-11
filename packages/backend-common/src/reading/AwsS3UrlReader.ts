@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// note: We do the import like this so that we don't get issues destructuring
-// and it not being mocked by the aws-sdk-mock package which is unfortunate.
-import aws from 'aws-sdk';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -29,15 +25,29 @@ import {
   UrlReader,
 } from './types';
 import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import {
   AwsS3Integration,
   ScmIntegrations,
   AwsS3IntegrationConfig,
 } from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
-import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
+import {
+  S3Client,
+  ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
+  GetObjectCommand,
+  GetObjectCommandInput,
+} from '@aws-sdk/client-s3';
+import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { Readable } from 'stream';
 
-const DEFAULT_REGION = 'us-east-1';
+export const DEFAULT_REGION = 'us-east-1';
 
 /**
  * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
@@ -105,37 +115,29 @@ export function parseUrl(
     return {
       path: pathname.substring(slashIndex + 1),
       bucket: pathname.substring(0, slashIndex),
-      region: '',
+      region: DEFAULT_REGION,
     };
   }
 
   return {
     path: pathname,
     bucket: host.substring(0, host.length - config.host.length - 1),
-    region: '',
+    region: DEFAULT_REGION,
   };
 }
 
 /**
- * Implements a {@link UrlReader} for AWS S3 buckets.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS S3 buckets.
  *
  * @public
  */
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
 
     return integrations.awsS3.list().map(integration => {
-      const credentials = AwsS3UrlReader.buildCredentials(integration);
-
-      const s3 = new aws.S3({
-        apiVersion: '2006-03-01',
-        credentials,
-        endpoint: integration.config.endpoint,
-        s3ForcePathStyle: integration.config.s3ForcePathStyle,
-      });
-      const reader = new AwsS3UrlReader(integration, {
-        s3,
+      const reader = new AwsS3UrlReader(credsManager, integration, {
         treeResponseFactory,
       });
       const predicate = (url: URL) =>
@@ -145,9 +147,9 @@ export class AwsS3UrlReader implements UrlReader {
   };
 
   constructor(
+    private readonly credsManager: AwsCredentialsManager,
     private readonly integration: AwsS3Integration,
     private readonly deps: {
-      s3: aws.S3;
       treeResponseFactory: ReadTreeResponseFactory;
     },
   ) {}
@@ -156,37 +158,91 @@ export class AwsS3UrlReader implements UrlReader {
    * If accessKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:
    * https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/DefaultAWSCredentialsProviderChain.html
    */
-  private static buildCredentials(
+  private static buildStaticCredentials(
+    accessKeyId: string,
+    secretAccessKey: string,
+  ): AwsCredentialIdentityProvider {
+    return async () => {
+      return {
+        accessKeyId,
+        secretAccessKey,
+      };
+    };
+  }
+
+  private static async buildCredentials(
+    credsManager: AwsCredentialsManager,
+    region: string,
     integration?: AwsS3Integration,
-  ): aws.Credentials | CredentialsOptions | undefined {
+  ): Promise<AwsCredentialIdentityProvider> {
+    // Fall back to the default credential chain if neither account ID
+    // nor explicit credentials are provided
     if (!integration) {
-      return undefined;
+      return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
     }
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: aws.Credentials | undefined;
-
+    let explicitCredentials: AwsCredentialIdentityProvider;
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new aws.Credentials({
+      explicitCredentials = AwsS3UrlReader.buildStaticCredentials(
         accessKeyId,
         secretAccessKey,
-      });
+      );
+    } else {
+      explicitCredentials = (await credsManager.getCredentialProvider())
+        .sdkCredentialProvider;
     }
 
     const roleArn = integration.config.roleArn;
     if (roleArn) {
-      return new aws.ChainableTemporaryCredentials({
+      return fromTemporaryCredentials({
         masterCredentials: explicitCredentials,
         params: {
           RoleSessionName: 'backstage-aws-s3-url-reader',
           RoleArn: roleArn,
           ExternalId: integration.config.externalId,
         },
+        clientConfig: { region },
       });
     }
 
     return explicitCredentials;
+  }
+
+  private async buildS3Client(
+    credsManager: AwsCredentialsManager,
+    region: string,
+    integration: AwsS3Integration,
+  ): Promise<S3Client> {
+    const credentials = await AwsS3UrlReader.buildCredentials(
+      credsManager,
+      region,
+      integration,
+    );
+
+    const s3 = new S3Client({
+      region: region,
+      credentials: credentials,
+      endpoint: integration.config.endpoint,
+      forcePathStyle: integration.config.s3ForcePathStyle,
+    });
+    return s3;
+  }
+
+  private async retrieveS3ObjectData(stream: Readable): Promise<Readable> {
+    return new Promise((resolve, reject) => {
+      try {
+        const chunks: any[] = [];
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('error', (e: Error) =>
+          reject(new ForwardedError('Unable to read stream', e)),
+        );
+        stream.on('end', () => resolve(Readable.from(Buffer.concat(chunks))));
+      } catch (e) {
+        throw new ForwardedError('Unable to parse the response data', e);
+      }
+    });
   }
 
   async read(url: string): Promise<Buffer> {
@@ -198,61 +254,42 @@ export class AwsS3UrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
+    const { etag, lastModifiedAfter } = options ?? {};
+
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
-      aws.config.update({ region: region });
+      const s3Client = await this.buildS3Client(
+        this.credsManager,
+        region,
+        this.integration,
+      );
+      const abortController = new AbortController();
 
-      let params;
-      if (options?.etag) {
-        params = {
-          Bucket: bucket,
-          Key: path,
-          IfNoneMatch: options.etag,
-        };
-      } else {
-        params = {
-          Bucket: bucket,
-          Key: path,
-        };
-      }
+      const params: GetObjectCommandInput = {
+        Bucket: bucket,
+        Key: path,
+        ...(etag && { IfNoneMatch: etag }),
+        ...(lastModifiedAfter && {
+          IfModifiedSince: lastModifiedAfter,
+        }),
+      };
 
-      const request = this.deps.s3.getObject(params);
-      options?.signal?.addEventListener('abort', () => request.abort());
-
-      // Since we're consuming the read stream we need to consume headers and errors via events.
-      const etagPromise = new Promise<string | undefined>((resolve, reject) => {
-        request.on('httpHeaders', (status, headers) => {
-          if (status < 400) {
-            if (status === 200) {
-              resolve(headers.etag);
-            } else if (status !== 304 /* not modified */) {
-              reject(
-                new Error(
-                  `S3 readUrl request received unexpected status '${status}' in response`,
-                ),
-              );
-            }
-          }
-        });
-        request.on('error', error => reject(error));
-        request.on('complete', () =>
-          reject(
-            new Error('S3 readUrl request completed without receiving headers'),
-          ),
-        );
+      options?.signal?.addEventListener('abort', () => abortController.abort());
+      const getObjectCommand = new GetObjectCommand(params);
+      const response = await s3Client.send(getObjectCommand, {
+        abortSignal: abortController.signal,
       });
 
-      const stream = request.createReadStream();
-      stream.on('error', () => {
-        // The AWS SDK forwards request errors to the stream, so we need to
-        // ignore those errors here or the process will crash.
-      });
+      const s3ObjectData = await this.retrieveS3ObjectData(
+        response.Body as Readable,
+      );
 
-      return ReadUrlResponseFactory.fromReadable(stream, {
-        etag: await etagPromise,
+      return ReadUrlResponseFactory.fromReadable(s3ObjectData, {
+        etag: response.ETag,
+        lastModifiedAt: response.LastModified,
       });
     } catch (e) {
-      if (e.statusCode === 304) {
+      if (e.$metadata && e.$metadata.httpStatusCode === 304) {
         throw new NotModifiedError();
       }
 
@@ -266,35 +303,50 @@ export class AwsS3UrlReader implements UrlReader {
   ): Promise<ReadTreeResponse> {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
-      const allObjects: ObjectList = [];
+      const s3Client = await this.buildS3Client(
+        this.credsManager,
+        region,
+        this.integration,
+      );
+      const abortController = new AbortController();
+      const allObjects: String[] = [];
       const responses = [];
       let continuationToken: string | undefined;
-      let output: ListObjectsV2Output;
+      let output: ListObjectsV2CommandOutput;
       do {
-        aws.config.update({ region: region });
-        const request = this.deps.s3.listObjectsV2({
+        const listObjectsV2Command = new ListObjectsV2Command({
           Bucket: bucket,
           ContinuationToken: continuationToken,
           Prefix: path,
         });
-        options?.signal?.addEventListener('abort', () => request.abort());
-        output = await request.promise();
+        options?.signal?.addEventListener('abort', () =>
+          abortController.abort(),
+        );
+        output = await s3Client.send(listObjectsV2Command, {
+          abortSignal: abortController.signal,
+        });
         if (output.Contents) {
           output.Contents.forEach(contents => {
-            allObjects.push(contents);
+            allObjects.push(contents.Key!);
           });
         }
         continuationToken = output.NextContinuationToken;
       } while (continuationToken);
 
       for (let i = 0; i < allObjects.length; i++) {
-        const object = this.deps.s3.getObject({
+        const getObjectCommand = new GetObjectCommand({
           Bucket: bucket,
-          Key: String(allObjects[i].Key),
+          Key: String(allObjects[i]),
         });
+        const response = await s3Client.send(getObjectCommand);
+        const s3ObjectData = await this.retrieveS3ObjectData(
+          response.Body as Readable,
+        );
+
         responses.push({
-          data: object.createReadStream(),
-          path: String(allObjects[i].Key),
+          data: s3ObjectData,
+          path: String(allObjects[i]),
+          lastModifiedAt: response?.LastModified ?? undefined,
         });
       }
 

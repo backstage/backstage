@@ -16,9 +16,9 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
-import { createTemplateAction } from '../../createTemplateAction';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 
@@ -182,6 +182,10 @@ export function createPublishBitbucketCloudAction(options: {
             title: 'A URL to the root of the repository',
             type: 'string',
           },
+          commitHash: {
+            title: 'The git commit hash of the initial commit',
+            type: 'string',
+          },
         },
       },
     },
@@ -262,7 +266,7 @@ export function createPublishBitbucketCloudAction(options: {
         };
       }
 
-      await initRepoAndPush({
+      const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth,
@@ -274,6 +278,7 @@ export function createPublishBitbucketCloudAction(options: {
         gitAuthorInfo,
       });
 
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

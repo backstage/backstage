@@ -15,8 +15,7 @@
  */
 
 import { JsonPrimitive } from '@backstage/types';
-import { ResourcePermission } from '.';
-import { Permission } from './permission';
+import { Permission, ResourcePermission } from './permission';
 
 /**
  * A request with a UUID identifier, so that batched responses can be matched up with the original

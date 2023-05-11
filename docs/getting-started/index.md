@@ -14,15 +14,16 @@ This guide assumes a basic understanding of working on a Linux based operating
 system using tools like apt-get, npm, yarn, curl. Docker knowledge is also
 helpful for making the best use of your Backstage installation.
 
-If you are planning to contribute plugins or the project in general, we advise
-you to use the
-[Getting Started for Contributors](https://backstage.io/docs/getting-started/running-backstage-locally)
-guide to do a repository-based installation.
+If you are planning to contribute plugins or to the project in general, we advise
+you to use the [Contributors](contributors.md) guide to do a repository-based installation.
 
 ### Prerequisites
 
 - Access to a Unix-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- A GNU-like build environment available at the command line.
+  For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
+  On MacOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these
@@ -34,6 +35,7 @@ guide to do a repository-based installation.
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
 - `yarn` [Installation](https://classic.yarnpkg.com/en/docs/install)
+  - You will need to use Yarn classic to create a new project, but it can then be [migrated to Yarn 3](../tutorials/yarn-migration.md)
 - `docker` [installation](https://docs.docker.com/engine/install/)
 - `git` [installation](https://github.com/git-guides/install-git)
 - If the system is not directly accessible over your network the following ports
@@ -48,14 +50,12 @@ installation. Running the command below will install Backstage. The wizard will
 create a subdirectory inside your current working directory.
 
 ```bash
-npx @backstage/create-app
+npx @backstage/create-app@latest
 ```
 
 The wizard will ask you for the name of the app, which will also be the name of the directory
 
-<p align='center'>
-  <img src='../assets/getting-started/wizard.png' alt='Screenshot of the wizard asking for a name for the app.' />
-</p>
+![Screenshot of the wizard asking for a name for the app.](../assets/getting-started/wizard.png)
 
 ### Run the Backstage app
 
@@ -68,9 +68,7 @@ cd my-backstage-app
 yarn dev
 ```
 
-<p align='center'>
-  <img src='../assets/getting-started/startup.png' alt='Screenshot of the command output, with the message web pack compiled successfully.'/>
-</p>
+![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)
 
 It might take a little while, but as soon as the message
 `[0] webpack compiled successfully` appears, you can open a browser and directly
@@ -79,16 +77,14 @@ You can start exploring the demo immediately. Please note that the in-memory
 database will be cleared when you restart the app, so you'll most likely want to
 carry on with the database steps.
 
-<p align='center'>
-  <img src='../assets/getting-started/portal.png' alt='Screenshot of the Backstage portal.'/>
-</p>
+![Screenshot of the Backstage portal.](../assets/getting-started/portal.png)
 
 In the next part of this tutorial, you'll learn how to change to a persistent
 database, configure authentication, and add your first integration. Continue
 with [getting started: Configuring Backstage](configuration.md).
 
 Share your experiences, comments, or suggestions with us:
-[on discord](https://discord.gg/EBHEGzX), file issues for any
+[on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
 [plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
