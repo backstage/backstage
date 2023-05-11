@@ -24,8 +24,14 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
-import { Credentials, EKS } from 'aws-sdk';
+import { EKS } from '@aws-sdk/client-eks';
 import { AWSCredentialFactory } from '../types';
+import { AwsCredentialIdentity, Provider } from '@aws-sdk/types';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import { Config } from '@backstage/config';
 
 const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
 const ARN_ANNOTATION: string = 'amazonaws.com/arn';
@@ -39,9 +45,22 @@ const ARN_ANNOTATION: string = 'amazonaws.com/arn';
  */
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
+  private credentialsManager?: AwsCredentialsManager;
 
-  constructor(options: { credentialsFactory?: AWSCredentialFactory }) {
+  static fromConfig(configRoot: Config): AwsEKSClusterProcessor {
+    const awsCredentaislManager =
+      DefaultAwsCredentialsManager.fromConfig(configRoot);
+    return new AwsEKSClusterProcessor({
+      credentialsManager: awsCredentaislManager,
+    });
+  }
+
+  constructor(options: {
+    credentialsFactory?: AWSCredentialFactory;
+    credentialsManager?: AwsCredentialsManager;
+  }) {
     this.credentialsFactory = options.credentialsFactory;
+    this.credentialsManager = options.credentialsManager;
   }
 
   getProcessorName(): string {
@@ -73,20 +92,30 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
       );
     }
 
-    let credentials: Credentials | undefined;
+    let credentials: AwsCredentialIdentity | undefined;
 
     if (this.credentialsFactory) {
       credentials = await this.credentialsFactory(accountId);
     }
 
-    const eksClient = new EKS({ credentials, region });
-    const clusters = await eksClient.listClusters({}).promise();
+    let providerFunction: (() => Provider<AwsCredentialIdentity>) | undefined;
+    if (this.credentialsManager) {
+      const credentialsProvider =
+        await this.credentialsManager.getCredentialProvider({ accountId });
+      providerFunction = () => credentialsProvider.sdkCredentialProvider;
+    }
+
+    const eksClient = new EKS({
+      credentials,
+      credentialDefaultProvider: providerFunction,
+    });
+    const clusters = await eksClient.listClusters({});
     if (clusters.clusters === undefined) {
       return true;
     }
 
     const results = clusters.clusters
-      .map(cluster => eksClient.describeCluster({ name: cluster }).promise())
+      .map(cluster => eksClient.describeCluster({ name: cluster }))
       .map(async describedClusterPromise => {
         const describedCluster = await describedClusterPromise;
         if (describedCluster.cluster) {
