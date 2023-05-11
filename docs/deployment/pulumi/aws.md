@@ -92,7 +92,7 @@ AWS Lightsail offers a simple way to run containers in the cloud. To learn more 
 }
 ```
 
-Then click on `Next` and give the policy an name and a description of your liking. Afterwards, click on `Create policy`.
+Then click on `Next` and give the policy a name and a description of your liking. Afterwards, click on `Create policy`.
 
 - Navigate back to the user creation window and press on the refresh button and search for the policy you just created. Now, create the user.
 - Now you will be redirected to all users, click on the user you just created and click on `Security credentials`
@@ -122,7 +122,7 @@ By using `pulumi login --local` we are making sure that Pulumi stores our state 
 
 :::warning
 
-Make sure that Docker is running before you start with this section.
+Make sure that [Docker](https://docs.docker.com/) is running before you start with this section.
 
 :::
 
@@ -166,7 +166,7 @@ Now we can deploy our instance!
 $ npx @backstage/deploy aws --stack backstage-poc --create-dockerfile
 ```
 
-In the first part of the command, we are specifying that we want to deploy our instance on AWS. With the [`--stack`](https://www.pulumi.com/docs/reference/cli/pulumi_stack/) option, we are supplying Pulumi a reference to our container deployment. Furthermore, with the `--create-dockerfile` option, there will be a `Dockerfile` and `.dockerignore` created in the root of the project.
+In the first part of the command, we are specifying that we want to deploy our instance on AWS. With the [`--stack`](https://www.pulumi.com/docs/reference/cli/pulumi_stack/) option, we are providing Pulumi a reference to our container deployment. Furthermore, with the `--create-dockerfile` option, there will be a `Dockerfile` and `.dockerignore` created in the root of the project.
 
 After running the command, Pulumi will start creating the following resources for you in AWS:
 
