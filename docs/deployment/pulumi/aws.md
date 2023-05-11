@@ -23,7 +23,7 @@ AWS Lightsail offers a simple way to run containers in the cloud. To learn more 
 
 - Open the AWS console and navigate to the IAM section
 - In the left side menu click on `Users` and then click on `Add users`
-- Specify an username and then click on `Next`
+- Specify a username and then click on `Next`
 - Afterwards you can assign permissions, select `Attach policies directly` and then click on `Create policy`.
   This should take you to a new window in which you can create a new policy based on `JSON`.
   Copy over the following `JSON`:
