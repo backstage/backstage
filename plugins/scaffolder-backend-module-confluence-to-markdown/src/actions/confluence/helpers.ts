@@ -55,7 +55,7 @@ export type ConfluenceConfig = {
 export const getConfluenceConfig = (config: Config) => {
   const confluenceConfig: ConfluenceConfig = {
     baseUrl: config.getString('confluence.baseUrl'),
-    auth: config.getOptionalString('confluence.auth') ?? 'basic',
+    auth: config.getOptionalString('confluence.auth') ?? 'bearer',
     token: config.getOptionalString('confluence.token'),
     email: config.getOptionalString('confluence.email'),
     username: config.getOptionalString('confluence.username'),
@@ -71,7 +71,7 @@ export const getConfluenceConfig = (config: Config) => {
     );
   }
 
-  if (confluenceConfig.auth === 'bearer' && !confluenceConfig.email) {
+  if (confluenceConfig.auth === 'basic' && !confluenceConfig.email) {
     throw new Error(
       `No email provided for the configured '${confluenceConfig.auth}' auth method`,
     );
@@ -92,12 +92,12 @@ export const getConfluenceConfig = (config: Config) => {
 export const getAuthorizationHeaderValue = (config: ConfluenceConfig) => {
   let authHeaderValue: string = '';
   switch (config.auth) {
-    case 'basic':
-      authHeaderValue = `Basic ${config.token}`;
+    case 'bearer':
+      authHeaderValue = `Bearer ${config.token}`;
       break;
-    case 'bearer': {
+    case 'basic': {
       const buffer = Buffer.from(`${config.email}:${config.token}`, 'utf8');
-      authHeaderValue = `Bearer ${buffer.toString('base64')}`;
+      authHeaderValue = `Basic ${buffer.toString('base64')}`;
       break;
     }
     case 'userpass': {

@@ -1,0 +1,44 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: confluence-to-markdown
+  title: Confluence to Markdown
+  description: This template converts a single confluence document to Markdown for Techdocs and adds it to a given GitHub repo.
+  tags:
+    - do-not-use
+    - poc
+spec:
+  owner: team-d
+  type: service
+  parameters:
+    - title: Confluence and Github Repo Information
+      properties:
+        confluenceUrls:
+          type: array
+          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE> or <CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE> for Confluence cloud
+          items:
+            type: string
+            default: confluence url
+          ui:options:
+            addable: true
+          minItems: 1
+          maxItems: 5
+        repoUrl:
+          type: string
+          title: GitHub URL mkdocs.yaml link
+          description: The GitHub repo URL to your mkdocs.yaml file. Example <https://github.com/blob/master/mkdocs.yml>
+  steps:
+    - id: create-docs
+      name: Get markdown file created and update markdown.yaml file
+      action: confluence:transform:markdown
+      input:
+        confluenceUrls: ${{ parameters.confluenceUrls }}
+        repoUrl: ${{ parameters.repoUrl }}
+    - id: publish
+      name: Publish PR to GitHub
+      action: publish:github:pull-request
+      input:
+        repoUrl: <GITHUB_BASE_URL>?repo=${{ steps['create-docs'].output.repo }}&owner=${{ steps['create-docs'].output.owner }}
+        branchName: confluence-to-markdown
+        title: Confluence to Markdown
+        description: PR for converting confluence page to mkdocs

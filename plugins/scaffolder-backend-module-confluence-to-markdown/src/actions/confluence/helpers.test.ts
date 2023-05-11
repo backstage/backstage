@@ -53,11 +53,11 @@ describe('createConfluenceVariables', () => {
 });
 
 describe('getConfluenceConfig', () => {
-  it('should return validate basic Confluence config', async () => {
+  it('should return validate bearer Confluence config', async () => {
     const config = new ConfigReader({
       confluence: {
         baseUrl: 'https://example.atlassian.net',
-        auth: 'basic',
+        auth: 'bearer',
         token: 'fake_token',
       },
     });
@@ -66,7 +66,7 @@ describe('getConfluenceConfig', () => {
 
     expect(validated).toEqual({
       baseUrl: 'https://example.atlassian.net',
-      auth: 'basic',
+      auth: 'bearer',
       token: 'fake_token',
       email: undefined,
       username: undefined,
@@ -74,11 +74,11 @@ describe('getConfluenceConfig', () => {
     });
   });
 
-  it('should return validate bearer Confluence config', async () => {
+  it('should return validate basic Confluence config', async () => {
     const config = new ConfigReader({
       confluence: {
         baseUrl: 'https://example.atlassian.net',
-        auth: 'bearer',
+        auth: 'basic',
         token: 'fake_token',
         email: 'example@example.atlassian.net',
       },
@@ -88,7 +88,7 @@ describe('getConfluenceConfig', () => {
 
     expect(validated).toEqual({
       baseUrl: 'https://example.atlassian.net',
-      auth: 'bearer',
+      auth: 'basic',
       token: 'fake_token',
       email: 'example@example.atlassian.net',
       username: undefined,
@@ -120,22 +120,22 @@ describe('getConfluenceConfig', () => {
 });
 
 describe('getAuthorizationHeaderValue', () => {
-  it('should return basic auth header value', async () => {
+  it('should return bearer auth header value', async () => {
     const config = {
       baseUrl: 'https://example.atlassian.net',
-      auth: 'basic',
+      auth: 'bearer',
       token: 'fake_token',
     };
 
     const authHeaderValue = getAuthorizationHeaderValue(config);
 
-    expect(authHeaderValue).toEqual('Basic fake_token');
+    expect(authHeaderValue).toEqual('Bearer fake_token');
   });
 
-  it('should return bearer auth header value', async () => {
+  it('should return basic auth header value', async () => {
     const config = {
       baseUrl: 'https://example.atlassian.net',
-      auth: 'bearer',
+      auth: 'basic',
       token: 'fake_token',
       email: 'example@example.atlassian.net',
     };
@@ -144,7 +144,7 @@ describe('getAuthorizationHeaderValue', () => {
 
     // Note: this is fake and just the encoded result
     expect(authHeaderValue).toEqual(
-      'Bearer ZXhhbXBsZUBleGFtcGxlLmF0bGFzc2lhbi5uZXQ6ZmFrZV90b2tlbg==',
+      'Basic ZXhhbXBsZUBleGFtcGxlLmF0bGFzc2lhbi5uZXQ6ZmFrZV90b2tlbg==',
     );
   });
 

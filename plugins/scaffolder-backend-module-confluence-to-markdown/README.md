@@ -65,7 +65,7 @@ There is some configuration that needs to be setup to use this action, here are 
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  auth: 'basic'
+  auth: 'bearer'
   token: '${CONFLUENCE_TOKEN}'
   email: 'example@company.org'
   username: 'your-username'
@@ -80,16 +80,7 @@ If you are using a self-hosted Confluence instance this does not apply to you. Y
 
 #### Auth Methods
 
-The default authorization method is `basic` but `bearer` and `userpass` are also supported. Here's how you would configure each of these:
-
-For `basic`:
-
-```yaml
-confluence:
-  baseUrl: 'https://confluence.example.com'
-  auth: 'basic'
-  token: '${CONFLUENCE_TOKEN}'
-```
+The default authorization method is `bearer` but `basic` and `userpass` are also supported. Here's how you would configure each of these:
 
 For `bearer`:
 
@@ -97,6 +88,15 @@ For `bearer`:
 confluence:
   baseUrl: 'https://confluence.example.com'
   auth: 'bearer'
+  token: '${CONFLUENCE_TOKEN}'
+```
+
+For `basic`:
+
+```yaml
+confluence:
+  baseUrl: 'https://confluence.example.com'
+  auth: 'basic'
   token: '${CONFLUENCE_TOKEN}'
   email: 'example@company.org'
 ```
