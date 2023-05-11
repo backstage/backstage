@@ -30,6 +30,16 @@ describe('createConfluenceVariables', () => {
     expect(titleWithSpaces).toEqual('Page Title');
   });
 
+  it('should return values for Confluence Url with prefix', () => {
+    const url =
+      'https://confluence.example.com/prefix/display/PREFIXSPACEKEY/Prefix+Page+Title';
+    const { spacekey, title, titleWithSpaces } = createConfluenceVariables(url);
+
+    expect(spacekey).toEqual('PREFIXSPACEKEY');
+    expect(title).toEqual('Prefix+Page+Title');
+    expect(titleWithSpaces).toEqual('Prefix Page Title');
+  });
+
   it('should return values for Confluence Cloud Url', () => {
     const url =
       'https://example.atlassian.net/wiki/spaces/CLOUDSPACEKEY/pages/1234567/Cloud+Page+Title';

@@ -197,6 +197,12 @@ export const createConfluenceVariables = (url: string) => {
     title = params.pathname.split('/')[3];
     titleWithSpaces = title?.replace(/\+/g, ' ');
     return { spacekey, title, titleWithSpaces };
+  } else if (params.pathname.split('/')[2] === 'display') {
+    // https://confluence.example.com/prefix/display/SPACEKEY/Page+Title
+    spacekey = params.pathname.split('/')[3];
+    title = params.pathname.split('/')[4];
+    titleWithSpaces = title?.replace(/\+/g, ' ');
+    return { spacekey, title, titleWithSpaces };
   } else if (params.pathname.split('/')[2] === 'spaces') {
     // https://example.atlassian.net/wiki/spaces/SPACEKEY/pages/1234567/Page+Title
     spacekey = params.pathname.split('/')[3];
