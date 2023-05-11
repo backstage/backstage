@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export {
-  OwnedGroupsPickerFieldSchema,
-  type OwnedGroupsPickerUiOptions,
-} from './schema';
+import { z } from 'zod';
+import { makeFieldSchemaFromZod } from '../utils';
+
+export const GroupsImPartOfPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
+  z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+  }),
+);
+
+export type GroupsImPartOfPickerUiOptions =
+  typeof GroupsImPartOfPickerFieldSchema.uiOptionsType;
+export type GroupsImPartOfPickerProps =
+  typeof GroupsImPartOfPickerFieldSchema.type;
+export const GroupsImPartOfPickerSchema =
+  GroupsImPartOfPickerFieldSchema.schema;

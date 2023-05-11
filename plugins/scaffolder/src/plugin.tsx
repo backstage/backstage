@@ -65,9 +65,9 @@ import {
   editRouteRef,
 } from './routes';
 import {
-  OwnedGroupsPicker,
-  OwnedGroupsPickerSchema,
-} from './components/fields/OwnedGroupsPicker/OwnedGroupsPicker';
+  GroupsImPartOfPicker,
+  GroupsImPartOfPickerSchema,
+} from './components/fields/GroupsImPartOfPicker/GroupsImPartOfPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -169,9 +169,9 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
  */
 export const OwnedGroupsFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    component: OwnedGroupsPicker,
-    name: 'OwnedGroupsPicker',
-    schema: OwnedGroupsPickerSchema,
+    component: GroupsImPartOfPicker,
+    name: 'GroupsImPartOfPicker',
+    schema: GroupsImPartOfPickerSchema,
   }),
 );
 
