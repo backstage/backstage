@@ -35,6 +35,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
   return createTemplateAction({
     id: 'gitlab:group:ensureExists',
     description: 'Ensures a Gitlab group exists',
+    supportsDryRun: true,
     schema: {
       input: commonGitlabConfig.and(
         z.object({
@@ -52,6 +53,11 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       }),
     },
     async handler(ctx) {
+      if (ctx.isDryRun) {
+        ctx.output('groupId', 42);
+        return;
+      }
+
       const { path } = ctx.input;
       const { token, integrationConfig } = getToken(ctx.input, integrations);
 
@@ -66,7 +72,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         const fullPath = `${currentPath}/${pathElement}`;
         const result = (await api.Groups.search(
           fullPath,
-        )) as any as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
+        )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
         const subGroup = result.find(
           searchPathElem => searchPathElem.full_path === fullPath,
         );
