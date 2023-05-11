@@ -17,11 +17,7 @@
 import { CatalogApi, Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
-import {
-  act,
-  renderHook,
-  RenderHookResult,
-} from '@testing-library/react-hooks';
+import { renderHook, RenderHookResult, act } from '@testing-library/react';
 import React from 'react';
 import {
   UseUnregisterEntityDialogState,

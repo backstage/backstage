@@ -95,7 +95,7 @@
     "@testing-library/cypress": "^9.0.0",
     "@testing-library/dom": "^8.0.0",
     "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^12.1.3",
+    "@testing-library/react": "^13.1",
     "@testing-library/user-event": "^14.0.0",
     "@types/jquery": "^3.3.34",
     "@types/node": "^16.11.26",
