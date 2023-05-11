@@ -32,6 +32,30 @@ interface StartAppOptions {
   configPaths: string[];
 }
 
+function checkReactVersion() {
+  try {
+    // Make sure we're looking at the root of the target repo
+    const reactPkgPath = require.resolve('react/package.json', {
+      paths: [paths.targetRoot],
+    });
+    const reactPkg = require(reactPkgPath);
+    if (reactPkg.version.startsWith('16.')) {
+      console.log(
+        chalk.yellow(
+          `
+⚠️                                                                           ⚠️
+⚠️ You are using React version 16, which is deprecated for use in Backstage. ⚠️
+⚠️ Please upgrade to at React 17 by updating your packages/app dependencies. ⚠️
+⚠️                                                                           ⚠️
+`,
+        ),
+      );
+    }
+  } catch {
+    /* ignored */
+  }
+}
+
 export async function startFrontend(options: StartAppOptions) {
   if (options.verifyVersions) {
     const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
@@ -64,6 +88,8 @@ export async function startFrontend(options: StartAppOptions) {
       );
     }
   }
+
+  checkReactVersion();
 
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   const config = await loadCliConfig({
