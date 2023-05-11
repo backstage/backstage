@@ -39,6 +39,7 @@ import {
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
 import { FeatureFlagged } from '../routing/FeatureFlagged';
+import { AppRouter } from '@backstage/core-app-api';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
@@ -162,7 +163,7 @@ describe('Integration Test', () => {
     Progress: () => null,
     Router: BrowserRouter,
     ErrorBoundaryFallback: () => null,
-    ThemeProvider: ({ children }) => <>{children}</>,
+    ThemeProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
   };
 
   const icons = {} as AppIcons;
@@ -195,16 +196,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <Routes>
             <Route path="/" element={<ExposedComponent />} />
             <Route path="/foo/:x" element={<HiddenComponent />} />
           </Routes>
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -241,16 +241,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <Routes>
             <Route path="/" element={<ExposedComponent />} />
             <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -297,16 +296,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <Routes>
             <Route path="/" element={<ExposedComponent />} />
             <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -374,16 +372,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <Routes>
             <Route path="/" element={<ExposedComponent />} />
             <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -417,7 +414,6 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     const FeatureFlags = () => {
       const featureFlags = useApi(featureFlagsApiRef).getRegisteredFlags();
@@ -426,9 +422,9 @@ describe('Integration Test', () => {
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <FeatureFlags />
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -456,7 +452,6 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     function FeatureFlags() {
       const featureFlags = useApi(featureFlagsApiRef);
@@ -470,7 +465,7 @@ describe('Integration Test', () => {
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <FeatureFlagged with="show-p1-feature">
             <div>My feature behind a flag</div>
           </FeatureFlagged>
@@ -478,7 +473,7 @@ describe('Integration Test', () => {
             <div>My feature behind a flag</div>
           </FeatureFlagged>
           <FeatureFlags />
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -507,16 +502,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
 
     await renderWithEffects(
       <Provider>
-        <Router>
+        <AppRouter>
           <Routes>
             <Route path="/" element={<NavigateComponent />} />
             <Route path="/foo" element={<HiddenComponent />} />
           </Routes>
-        </Router>
+        </AppRouter>
       </Provider>,
     );
 
@@ -561,18 +555,17 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
       expect(() =>
         render(
           <Provider>
-            <Router>
+            <AppRouter>
               <Routes>
                 <Route path="/test/:thing" element={<ExposedComponent />}>
                   <Route path="/some/:thing" element={<HiddenComponent />} />
                 </Route>
               </Routes>
-            </Router>
+            </AppRouter>
           </Provider>,
         ),
       ).toThrow(
@@ -598,16 +591,15 @@ describe('Integration Test', () => {
     });
 
     const Provider = app.getProvider();
-    const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
       expect(() =>
         render(
           <Provider>
-            <Router>
+            <AppRouter>
               <Routes>
                 <Route path="/test/:thing" element={<ExposedComponent />} />
               </Routes>
-            </Router>
+            </AppRouter>
           </Provider>,
         ),
       ).toThrow(

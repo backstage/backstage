@@ -404,7 +404,7 @@ export class AppManager implements BackstageApp {
     return Provider;
   }
 
-  getRouter(): ComponentType<{}> {
+  getRouter(): ComponentType<PropsWithChildren<{}>> {
     return AppRouter;
   }
 

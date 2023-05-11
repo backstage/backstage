@@ -16,7 +16,7 @@
 
 import { useKubernetesObjects } from './useKubernetesObjects';
 import { Entity } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { generateAuth } from './auth';
 

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { usePluginOptions, PluginProvider } from './usePluginOptions';
 import { createPlugin } from '../plugin';
 

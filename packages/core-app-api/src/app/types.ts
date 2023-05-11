@@ -327,7 +327,7 @@ export type BackstageApp = {
    * );
    * ```
    */
-  createRoot(element: JSX.Element): ComponentType<PropsWithChildren>;
+  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -343,7 +343,7 @@ export type BackstageApp = {
    *
    * @deprecated Import and use the {@link AppRouter} component from `@backstage/core-app-api` instead
    */
-  getRouter(): ComponentType<{}>;
+  getRouter(): ComponentType<PropsWithChildren<{}>>;
 };
 
 /**

@@ -15,11 +15,13 @@
  */
 
 import { render } from '@testing-library/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { MemoryRouter, Navigate, Route } from 'react-router-dom';
 import { FlatRoutes } from '../routing';
 import { AppManager } from './AppManager';
 import { AppOptions } from './types';
+
+import { AppRouter } from '@backstage/core-app-api';
 
 jest.mock('react-router', () => jest.requireActual('react-router-stable'));
 jest.mock('react-router-dom', () =>
@@ -45,7 +47,7 @@ const mockAppOptions: AppOptions = {
     Progress: () => null,
     Router: props => <MemoryRouter {...props} />,
     ErrorBoundaryFallback: () => null,
-    ThemeProvider: ({ children }) => <>{children}</>,
+    ThemeProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
   },
   configLoader: async () => [],
   bindRoutes: () => {},
@@ -70,7 +72,6 @@ describe('AppManager', () => {
     });
 
     const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
 
     const rendered = render(
       <AppProvider>
@@ -104,7 +105,6 @@ describe('AppManager', () => {
     });
 
     const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
 
     const rendered = render(
       <AppProvider>

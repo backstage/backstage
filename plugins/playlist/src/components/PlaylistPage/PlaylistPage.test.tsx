@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, getByText, waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 

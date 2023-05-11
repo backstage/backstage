@@ -15,8 +15,9 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
+import {} from 'react-dom/client';
 import { WebsiteListResponse } from '@backstage/plugin-lighthouse-common';
 import { lighthouseApiRef } from '../api';
 import * as data from '../__fixtures__/website-list-response.json';

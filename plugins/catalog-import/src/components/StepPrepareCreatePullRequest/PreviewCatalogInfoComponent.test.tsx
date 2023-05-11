@@ -19,7 +19,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import { makeStyles } from '@material-ui/core';
 import { render, screen } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import React from 'react';
 import { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
 

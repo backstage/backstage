@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { AnsiLine } from './AnsiProcessor';

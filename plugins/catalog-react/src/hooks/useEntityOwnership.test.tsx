@@ -18,7 +18,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import React from 'react';
 import { catalogApiRef } from '../api';
 import { useEntityOwnership } from './useEntityOwnership';
