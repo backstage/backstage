@@ -242,7 +242,8 @@ integrations:
     - host: github.com
       token: ${GITHUB_TOKEN} # this will use the environment variable GITHUB_TOKEN
 ```
-> If you encounter the error `No token available for host: github.com, with owner , and repo from-backstage`, try resolving it by restarting Backstage. First, stop the running instance by pressing `Control-C` in the terminal. Then, restart it by running the command `yarn dev`. Once Backstage is up and running, click the **START OVER** button."
+
+> Note: If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn dev`. Once the backend has restarted, retry the operation.
 
 Some helpful links, for if you want to learn more about:
 
