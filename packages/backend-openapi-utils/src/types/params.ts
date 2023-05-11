@@ -35,6 +35,7 @@ import {
   PathTemplate,
   RequiredDoc,
   SchemaRef,
+  ValueOf,
 } from './common';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 
@@ -61,21 +62,32 @@ export type DocParameter<
   : DocOperation<Doc, Path, Method>['parameters'][Parameter];
 
 /**
+ * Helper to convert from string to number, used to index arrays and pull out just the indices in the array.
+ * @public
+ */
+export type FromNumberStringToNumber<
+  NumberString extends string | number | symbol,
+> = NumberString extends `${infer R extends number}` ? R : never;
+
+/**
  * @public
  */
 export type DocParameters<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = DocOperation<Doc, Path, Method>['parameters'] extends ReadonlyArray<any>
-  ? {
-      [Index in keyof DocOperation<
-        Doc,
-        Path,
-        Method
-      >['parameters']]: DocParameter<Doc, Path, Method, Index>;
-    }
-  : never;
+> = {
+  [Index in keyof DocOperation<
+    Doc,
+    Path,
+    Method
+  >['parameters'] as FromNumberStringToNumber<Index>]: DocParameter<
+    Doc,
+    Path,
+    Method,
+    Index
+  >;
+};
 
 /**
  * @public
@@ -111,17 +123,15 @@ export type ParametersSchema<
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
   FilterType extends ImmutableParameterObject,
-> = number extends keyof DocParameters<Doc, Path, Method>
-  ? MapToSchema<
-      Doc,
-      FullMap<
-        MapDiscriminatedUnion<
-          Filter<DocParameters<Doc, Path, Method>[number], FilterType>,
-          'name'
-        >
-      >
+> = MapToSchema<
+  Doc,
+  FullMap<
+    MapDiscriminatedUnion<
+      Filter<ValueOf<DocParameters<Doc, Path, Method>>, FilterType>,
+      'name'
     >
-  : never;
+  >
+>;
 
 /**
  * @public

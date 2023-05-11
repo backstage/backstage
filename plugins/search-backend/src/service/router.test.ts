@@ -21,7 +21,6 @@ import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
