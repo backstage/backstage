@@ -18,6 +18,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 import { z } from 'zod';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 
 const id = 'catalog:fetch';
 
@@ -69,6 +70,7 @@ export function createFetchCatalogEntityAction(options: {
     description:
       'Returns entity or entities from the catalog by entity reference(s)',
     examples,
+    supportsDryRun: true,
     schema: {
       input: z.object({
         entityRef: z
@@ -86,6 +88,10 @@ export function createFetchCatalogEntityAction(options: {
             description:
               'Allow the entity or entities to optionally exist. Default: false',
           })
+          .optional(),
+        defaultKind: z.string({ description: 'The default kind' }).optional(),
+        defaultNamespace: z
+          .string({ description: 'The default namespace' })
           .optional(),
       }),
       output: z.object({
@@ -106,7 +112,8 @@ export function createFetchCatalogEntityAction(options: {
       }),
     },
     async handler(ctx) {
-      const { entityRef, entityRefs, optional } = ctx.input;
+      const { entityRef, entityRefs, optional, defaultKind, defaultNamespace } =
+        ctx.input;
       if (!entityRef && !entityRefs) {
         if (optional) {
           return;
@@ -115,9 +122,14 @@ export function createFetchCatalogEntityAction(options: {
       }
 
       if (entityRef) {
-        const entity = await catalogClient.getEntityByRef(entityRef, {
-          token: ctx.secrets?.backstageToken,
-        });
+        const entity = await catalogClient.getEntityByRef(
+          stringifyEntityRef(
+            parseEntityRef(entityRef, { defaultKind, defaultNamespace }),
+          ),
+          {
+            token: ctx.secrets?.backstageToken,
+          },
+        );
 
         if (!entity && !optional) {
           throw new Error(`Entity ${entityRef} not found`);
@@ -127,7 +139,13 @@ export function createFetchCatalogEntityAction(options: {
 
       if (entityRefs) {
         const entities = await catalogClient.getEntitiesByRefs(
-          { entityRefs },
+          {
+            entityRefs: entityRefs.map(ref =>
+              stringifyEntityRef(
+                parseEntityRef(ref, { defaultKind, defaultNamespace }),
+              ),
+            ),
+          },
           {
             token: ctx.secrets?.backstageToken,
           },
