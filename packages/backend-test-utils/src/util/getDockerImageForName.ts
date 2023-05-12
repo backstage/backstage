@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/** @public */
 export const getDockerImageForName = (name: string) => {
   return process.env.BACKSTAGE_TEST_DOCKER_REGISTRY
     ? `${process.env.BACKSTAGE_TEST_DOCKER_REGISTRY}/${name}`

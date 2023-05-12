@@ -16,7 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import { getDockerImageForName } from '../util';
+import { getDockerImageForName } from '../util/getDockerImageForName';
 
 /**
  * The possible databases to test against.
