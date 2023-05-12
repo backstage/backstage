@@ -247,13 +247,11 @@ semantic implication later.
 For now, it is recommended to not specify a namespace unless you have specific
 need to do so. This means the entity belongs to the `"default"` namespace.
 
-Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
-i.e. not Backstage specific but the same as in Kubernetes.
 
 Namespaces must be sequences of `[a-zA-Z0-9]`, possibly separated by `-`, at
-most 63 characters in total.
+most 63 characters in total. Namespace names are case insensitive and will be rendered as lower case in most places.
 
-Example: `tracking-services`, `CircleciV2-Entities`
+Example: `tracking-services`, `payment`
 
 ### `uid` [output]
 
