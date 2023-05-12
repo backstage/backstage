@@ -18,12 +18,45 @@ import { createDevApp } from '@backstage/dev-utils';
 import {
   techInsightsPlugin,
   EntityTechInsightsScorecardContent,
-} from '../src/plugin';
+  techInsightsApiRef,
+  TechInsightsApi,
+  Check,
+} from '../src';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { checkResultRenderers, runChecksResponse } from './mocks';
+
+const entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'random-name',
+  },
+} as Entity;
 
 createDevApp()
   .registerPlugin(techInsightsPlugin)
+  .registerApi({
+    api: techInsightsApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        getCheckResultRenderers: (_: string[]) => checkResultRenderers,
+        getAllChecks: async () => [],
+        runChecks: async (_: CompoundEntityRef, __?: string[]) =>
+          runChecksResponse,
+        runBulkChecks: async (_: CompoundEntityRef[], __?: Check[]) =>
+          '' as any,
+        getFacts: async (_: CompoundEntityRef, __: string[]) => '' as any,
+        getFactSchemas: async () => [],
+      } as TechInsightsApi),
+  })
   .addPage({
-    element: <EntityTechInsightsScorecardContent title="Test scorecard" />,
+    element: (
+      <EntityProvider entity={entity}>
+        <EntityTechInsightsScorecardContent title="Test scorecard" />
+      </EntityProvider>
+    ),
     title: 'Root Page',
     path: '/tech-insight-scorecard',
   })
