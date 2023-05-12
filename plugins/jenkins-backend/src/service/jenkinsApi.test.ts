@@ -20,7 +20,6 @@ import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import fetch, { Response } from 'node-fetch';
-import { ResponseError } from '@backstage/errors';
 
 jest.mock('jenkins');
 jest.mock('node-fetch');
@@ -52,17 +51,6 @@ const fakePermissionApi = {
     },
   ]),
   authorizeConditional: jest.fn(),
-};
-
-class NoErrorThrownError extends Error {}
-
-const getError = async <TError>(call: () => unknown): Promise<TError> => {
-  try {
-    await call();
-    throw new NoErrorThrownError();
-  } catch (error: unknown) {
-    return error as TError;
-  }
 };
 
 describe('JenkinsApi', () => {
@@ -722,30 +710,6 @@ describe('JenkinsApi', () => {
       'https://jenkins.example.com/job/example-jobName/job/foo/job/bar/19',
     );
   });
-  describe('getHeaders', () => {
-    const crumb = { crumb: 'foobar', crumbRequestField: '.crumb' };
-    const json = jest.fn() as jest.MockedFunction<any>;
-    json.mockResolvedValue(crumb);
-    const jenkinsInfoCrumb: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
-    const jenkinsApiProto = Object.getPrototypeOf(jenkinsApi);
-
-    it('adds crumb', async () => {
-      mockFetch.mockResolvedValueOnce({ ok: true, json } as Response);
-      const response = await jenkinsApiProto.getHeaders(jenkinsInfoCrumb);
-      expect(response).toEqual({ ...jenkinsInfo.headers, '.crumb': 'foobar' });
-    });
-    it('does not add crumb', async () => {
-      const response = await jenkinsApiProto.getHeaders(jenkinsInfo);
-      expect(response).toEqual(jenkinsInfo.headers);
-    });
-    it('fails to get crumb', async () => {
-      mockFetch.mockResolvedValueOnce({ ok: false } as Response);
-      const error = await getError(async () =>
-        jenkinsApiProto.getHeaders(jenkinsInfoCrumb),
-      );
-      expect(error).toBeInstanceOf(ResponseError);
-    });
-  });
   describe('rebuildProject', () => {
     it('successfully rebuilds', async () => {
       mockFetch.mockResolvedValueOnce({ status: 200 } as Response);
@@ -783,39 +747,6 @@ describe('JenkinsApi', () => {
         resourceRef,
       );
       expect(status).toEqual(401);
-    });
-
-    it('with crumbIssuer option', async () => {
-      const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
-      mockFetch.mockResolvedValueOnce({ status: 200 } as Response);
-      const crumbHeaders = { headerName: 'headerValue', '.crumb': 'bar' };
-
-      const privateGetHeaders = jest.spyOn(
-        JenkinsApiImpl.prototype as any,
-        'getHeaders',
-      );
-      privateGetHeaders.mockImplementation(() => {
-        return crumbHeaders;
-      });
-
-      const status = await jenkinsApi.rebuildProject(
-        info,
-        jobFullName,
-        buildNumber,
-        resourceRef,
-      );
-      expect(status).toEqual(200);
-
-      type HeaderResponse = {
-        headerName: string;
-        '.crumb': string;
-      };
-      type OptionResponse = {
-        headers: HeaderResponse;
-        method: string;
-      };
-      const requestOptions: OptionResponse = mockFetch.mock.calls[0][1] as any;
-      expect(requestOptions.headers).toStrictEqual(crumbHeaders);
     });
   });
 });

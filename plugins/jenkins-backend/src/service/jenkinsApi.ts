@@ -28,7 +28,6 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-import { ResponseError } from '@backstage/errors';
 import fetch, { HeaderInit } from 'node-fetch';
 
 export class JenkinsApiImpl {
@@ -165,13 +164,12 @@ export class JenkinsApiImpl {
     }
 
     const buildUrl = this.getBuildUrl(jenkinsInfo, jobFullName, buildNumber);
-    const headers = await this.getHeaders(jenkinsInfo);
 
     // the current SDK only supports triggering a new build
     // replay the job by triggering request directly from Jenkins api
     const response = await fetch(`${buildUrl}/replay/rebuild`, {
       method: 'post',
-      headers: headers,
+      headers: jenkinsInfo.headers as HeaderInit,
     });
     return response.status;
   }
@@ -330,37 +328,5 @@ export class JenkinsApiImpl {
   ): string {
     const jobs = jobFullName.split('/');
     return `${jenkinsInfo.baseUrl}/job/${jobs.join('/job/')}/${buildId}`;
-  }
-
-  private async getHeaders(jenkinsInfo: JenkinsInfo): Promise<HeaderInit> {
-    let headers = jenkinsInfo.headers as HeaderInit;
-    if (!jenkinsInfo.crumbIssuer) {
-      return headers;
-    }
-    const response = await fetch(
-      `${jenkinsInfo.baseUrl}/crumbIssuer/api/json`,
-      {
-        method: 'get',
-        headers: headers,
-      },
-    );
-    if (!response.ok) {
-      throw ResponseError.fromResponse(response);
-    }
-    type CrumbResponse = {
-      crumb: string;
-      crumbRequestField: string;
-    };
-
-    const crumbJson: CrumbResponse = await response.json();
-    if ('crumb' in crumbJson && 'crumbRequestField' in crumbJson) {
-      const headerObject = {
-        ...jenkinsInfo.headers,
-        [crumbJson.crumbRequestField]: crumbJson.crumb,
-      };
-      headers = headerObject as HeaderInit;
-    }
-
-    return headers;
   }
 }
