@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { DependencyGraph } from './DependencyGraph';
-import { Direction, LabelPosition } from './types';
+import { DependencyGraphTypes as Types } from './types';
 
 export default {
   title: 'Data Display/DependencyGraph',
@@ -82,7 +82,7 @@ export const BottomToTop = () => (
     <DependencyGraph
       nodes={exampleNodes}
       edges={exampleEdges}
-      direction={Direction.BOTTOM_TOP}
+      direction={Types.Direction.BOTTOM_TOP}
       style={graphStyle}
       paddingX={50}
       paddingY={50}
@@ -95,7 +95,7 @@ export const LeftToRight = () => (
     <DependencyGraph
       nodes={exampleNodes}
       edges={exampleEdges}
-      direction={Direction.LEFT_RIGHT}
+      direction={Types.Direction.LEFT_RIGHT}
       style={graphStyle}
       paddingX={50}
       paddingY={50}
@@ -108,7 +108,7 @@ export const RightToLeft = () => (
     <DependencyGraph
       nodes={exampleNodes}
       edges={exampleEdges}
-      direction={Direction.RIGHT_LEFT}
+      direction={Types.Direction.RIGHT_LEFT}
       style={graphStyle}
       paddingX={50}
       paddingY={50}
@@ -123,7 +123,7 @@ export const WithLabels = () => {
       <DependencyGraph
         nodes={exampleNodes}
         edges={edges}
-        direction={Direction.LEFT_RIGHT}
+        direction={Types.Direction.LEFT_RIGHT}
         style={graphStyle}
         paddingX={50}
         paddingY={50}
@@ -186,7 +186,7 @@ export const CustomLabels = () => {
       <DependencyGraph
         nodes={exampleNodes}
         edges={edges}
-        labelPosition={LabelPosition.CENTER}
+        labelPosition={Types.LabelPosition.CENTER}
         style={graphStyle}
         paddingX={50}
         paddingY={50}

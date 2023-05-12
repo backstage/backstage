@@ -35,6 +35,7 @@ import { Entity } from '@backstage/catalog-model';
 /** @public */
 export interface KubernetesRequestAuth {
   google?: string;
+  aks?: string;
   oidc?: {
     [key: string]: string;
   };

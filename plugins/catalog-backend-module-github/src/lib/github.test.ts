@@ -21,6 +21,7 @@ import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
+  getOrganizationsFromUser,
   getOrganizationTeams,
   getOrganizationUsers,
   getTeamMembers,
@@ -448,6 +449,37 @@ describe('github', () => {
     });
   });
 
+  describe('getOrganizationsFromUser', () => {
+    it('reads orgs from user', async () => {
+      const input: QueryResponse = {
+        user: {
+          organizations: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+              },
+              {
+                login: 'b',
+              },
+              {
+                login: 'c',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('orgs', (_req, res, ctx) => res(ctx.data(input))),
+      );
+
+      await expect(getOrganizationsFromUser(graphql, 'foo')).resolves.toEqual({
+        orgs: ['a', 'b', 'c'],
+      });
+    });
+  });
+
   describe('getTeamMembers', () => {
     it('reads team members', async () => {
       const input: QueryResponse = {
@@ -493,6 +525,7 @@ describe('github', () => {
                   name: 'main',
                 },
                 catalogInfoFile: null,
+                visibility: 'public',
               },
               {
                 name: 'demo',
@@ -508,6 +541,7 @@ describe('github', () => {
                   id: 'acb123',
                   text: 'some yaml',
                 },
+                visibility: 'private',
               },
             ],
             pageInfo: {
@@ -531,6 +565,7 @@ describe('github', () => {
               name: 'main',
             },
             catalogInfoFile: null,
+            visibility: 'public',
           },
           {
             name: 'demo',
@@ -546,6 +581,7 @@ describe('github', () => {
               id: 'acb123',
               text: 'some yaml',
             },
+            visibility: 'private',
           },
         ],
       };

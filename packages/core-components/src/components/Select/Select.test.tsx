@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, within } from '@testing-library/react';
 import React from 'react';
 import { SelectComponent as Select } from './Select';
 
@@ -45,7 +45,7 @@ describe('<Select />', () => {
     expect(input.textContent).toBe('All results');
 
     // Simulate click on input
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
     expect(getByText('test 1')).toBeInTheDocument();
     const option = getByText('test 1');
@@ -53,5 +53,17 @@ describe('<Select />', () => {
     // Simulate click on option
     fireEvent.click(option);
     expect(input.textContent).toBe('test 1');
+  });
+
+  it('display the placeholder value when selected props updated to undefined', async () => {
+    const { getByTestId, rerender } = render(
+      <Select {...minProps} selected="test_1" />,
+    );
+
+    expect(getByTestId('select').textContent).toBe('test 1');
+
+    rerender(<Select {...minProps} selected={undefined} />);
+
+    expect(getByTestId('select').textContent).toBe('All results');
   });
 });

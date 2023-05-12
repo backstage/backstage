@@ -247,6 +247,7 @@ Olausson
 Oldsberg
 onboarding
 Onboarding
+OpenSearch
 OpenShift
 orgs
 padding

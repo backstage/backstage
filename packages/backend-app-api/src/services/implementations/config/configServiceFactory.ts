@@ -18,8 +18,10 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import { loadBackendConfig } from '../../../config';
+import {
+  ConfigSources,
+  RemoteConfigSourceOptions,
+} from '@backstage/config-loader';
 
 /** @public */
 export interface ConfigFactoryOptions {
@@ -31,7 +33,7 @@ export interface ConfigFactoryOptions {
   /**
    * Enables and sets options for remote configuration loading.
    */
-  remote?: LoadConfigOptionsRemote;
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
 }
 
 /** @public */
@@ -39,10 +41,13 @@ export const configServiceFactory = createServiceFactory(
   (options?: ConfigFactoryOptions) => ({
     service: coreServices.config,
     deps: {},
-    async factory({}) {
-      const { argv = process.argv, remote } = options ?? {};
-      const { config } = await loadBackendConfig({ argv, remote });
-      return config;
+    async factory() {
+      const source = ConfigSources.default({
+        argv: options?.argv,
+        remote: options?.remote,
+      });
+      console.log(`Loading config from ${source}`);
+      return await ConfigSources.toConfig(source);
     },
   }),
 );

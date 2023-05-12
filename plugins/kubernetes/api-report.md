@@ -15,11 +15,13 @@ import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { Pod } from 'kubernetes-models/v1';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -104,17 +106,21 @@ export interface DeploymentResources {
 // @public
 export interface DetectedError {
   // (undocumented)
-  cluster: string;
+  message: string;
   // (undocumented)
-  kind: ErrorDetectableKind;
+  occuranceCount: number;
+  // Warning: (ae-forgotten-export) The symbol "ProposedFix" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  message: string[];
-  // (undocumented)
-  names: string[];
-  // (undocumented)
-  namespace: string;
+  proposedFix: ProposedFix[];
   // (undocumented)
   severity: ErrorSeverity;
+  // Warning: (ae-forgotten-export) The symbol "ResourceRef" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  sourceRef: ResourceRef;
+  // (undocumented)
+  type: string;
 }
 
 // @public
@@ -136,12 +142,6 @@ export const EntityKubernetesContent: (
 export type EntityKubernetesContentProps = {
   refreshIntervalMs?: number;
 };
-
-// @public
-export type ErrorDetectableKind =
-  | 'Pod'
-  | 'Deployment'
-  | 'HorizontalPodAutoscaler';
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -184,6 +184,10 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getCredentials(): Promise<{
+    token: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "GroupedResponses" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -259,6 +263,12 @@ export interface KubernetesApi {
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -271,6 +281,7 @@ export const kubernetesApiRef: ApiRef<KubernetesApi>;
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: {
+    microsoftAuthApi: OAuthApi;
     googleAuthApi: OAuthApi;
     oidcProviders?: {
       [key: string]: OpenIdConnectApi;
@@ -281,6 +292,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getCredentials(authProvider: string): Promise<{
+    token?: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesAuthProvidersApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -292,6 +307,10 @@ export interface KubernetesAuthProvidersApi {
     authProvider: string,
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getCredentials(authProvider: string): Promise<{
+    token?: string;
+  }>;
 }
 
 // Warning: (ae-missing-release-tag) "kubernetesAuthProvidersApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -306,6 +325,7 @@ export class KubernetesBackendClient implements KubernetesApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   });
   // (undocumented)
   getClusters(): Promise<
@@ -326,6 +346,12 @@ export class KubernetesBackendClient implements KubernetesApi {
   getWorkloadsByEntity(
     request: WorkloadsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  // (undocumented)
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesContentProps" needs to be exported by the entry point index.d.ts
@@ -337,19 +363,28 @@ export const KubernetesContent: ({
   refreshIntervalMs,
 }: KubernetesContentProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "KubernetesDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const KubernetesDrawer: <T extends KubernetesDrawerable>({
-  object,
-  renderObject,
-  kind,
-  buttonVariant,
-  expanded,
+export const KubernetesDrawer: ({
+  open,
+  label,
+  drawerContentsHeader,
+  kubernetesObject,
   children,
-}: KubernetesDrawerProps<T>) => JSX.Element;
+}: KubernetesDrawerProps) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerContentProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesDrawerContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const KubernetesDrawerContent: ({
+  children,
+  header,
+  kubernetesObject,
+  close,
+}: KubernetesDrawerContentProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "KubernetesObjects" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -376,11 +411,75 @@ const kubernetesPlugin: BackstagePlugin<
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "KubernetesProxyApi" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public (undocumented)
-export const PodDrawer: (props: {
-  pod: V1Pod;
-  expanded?: boolean;
-}) => JSX.Element;
+export interface KubernetesProxyApi {
+  // (undocumented)
+  getPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<{
+    text: string;
+  }>;
+}
+
+// Warning: (ae-missing-release-tag) "kubernetesProxyApiRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
+
+// @public
+export class KubernetesProxyClient {
+  constructor(options: { kubernetesApi: KubernetesApi });
+  // (undocumented)
+  getPodLogs({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<{
+    text: string;
+  }>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KubernetesStructuredMetadataTableDrawerProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesStructuredMetadataTableDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const KubernetesStructuredMetadataTableDrawer: <
+  T extends KubernetesDrawerable,
+>({
+  object,
+  renderObject,
+  kind,
+  buttonVariant,
+  expanded,
+  children,
+}: KubernetesStructuredMetadataTableDrawerProps<T>) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "ErrorPanelProps_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "LinkErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const LinkErrorPanel: ({
+  cluster,
+  errorMessage,
+}: ErrorPanelProps_2) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "PodDrawerProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "PodDrawer" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PodDrawer: ({ podAndErrors, open }: PodDrawerProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "PodNamesWithErrorsContext" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -416,6 +515,8 @@ export class ServerSideKubernetesAuthProvider
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody>;
+  // (undocumented)
+  getCredentials(): Promise<{}>;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ServicesAccordionsProps" needs to be exported by the entry point index.d.ts

@@ -1,0 +1,25 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Accessibility
+on:
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - 'lighthouserc.js'
+      - '.github/workflows/verify_accessibility_core.yml'
+      - 'plugins/catalog/src/**'
+      - 'plugins/catalog-react/src/**'
+      - 'plugins/techdocs/src/**'
+      - 'plugins/techdocs-react/src/**'
+      - 'plugins/scaffolder/src/**'
+      - 'plugins/scaffolder-react/src/**'
+      - 'plugins/search/src/**'
+      - 'plugins/search-react/src/**'
+
+jobs:
+  noop:
+    name: Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo NOOP

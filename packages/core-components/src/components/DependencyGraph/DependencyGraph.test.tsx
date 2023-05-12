@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { DependencyGraph } from './DependencyGraph';
-import { RenderLabelProps, RenderNodeProps } from './types';
+import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID, NODE_TEST_ID } from './constants';
 
 describe('<DependencyGraph />', () => {
@@ -89,7 +89,7 @@ describe('<DependencyGraph />', () => {
   it('renders nodes according to renderNode prop', async () => {
     const singleNode = [nodes[0]];
 
-    const renderNode = (props: RenderNodeProps) => (
+    const renderNode = (props: Types.RenderNodeProps) => (
       <g>
         <text>{props.node.id}</text>
         <circle data-testid={CUSTOM_TEST_ID} r={100} />
@@ -107,7 +107,7 @@ describe('<DependencyGraph />', () => {
   it('renders labels according to renderLabel prop', async () => {
     const labeledEdge = [{ ...edges[0], label: 'label' }];
 
-    const renderLabel = (props: RenderLabelProps) => (
+    const renderLabel = (props: Types.RenderLabelProps) => (
       <g>
         <text>{props.edge.label}</text>
         <circle data-testid={CUSTOM_TEST_ID} r={100} />

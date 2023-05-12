@@ -70,7 +70,7 @@ export async function findCodeOwnerByTarget(
     return undefined;
   }
 
-  const owner = resolveCodeOwner(contents);
+  const owner = resolveCodeOwner(contents, targetUrl);
 
   return owner;
 }

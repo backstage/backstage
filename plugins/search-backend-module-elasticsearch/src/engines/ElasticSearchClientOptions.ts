@@ -51,6 +51,8 @@ export type ElasticSearchClientOptions =
 export interface OpenSearchElasticSearchClientOptions
   extends BaseElasticSearchClientOptions {
   provider?: 'aws' | 'opensearch';
+  region?: string;
+  service?: 'es' | 'aoss';
   auth?: OpenSearchAuth;
   connection?: OpenSearchConnectionConstructor;
   node?: string | string[] | OpenSearchNodeOptions | OpenSearchNodeOptions[];

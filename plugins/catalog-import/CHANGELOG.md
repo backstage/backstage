@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-import
 
+## 0.9.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/integration-react@1.1.13-next.2
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.9.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+  - @backstage/integration-react@1.1.13-next.1
+  - @backstage/config@1.0.7
+
+## 0.9.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/integration-react@1.1.13-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.9.7
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/integration-react@1.1.12
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.9.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/integration-react@1.1.12-next.3
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+
 ## 0.9.7-next.2
 
 ### Patch Changes

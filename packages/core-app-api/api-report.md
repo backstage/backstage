@@ -411,6 +411,18 @@ export type FlatRoutesProps = {
 };
 
 // @public
+export class FrontendHostDiscovery implements DiscoveryApi {
+  static fromConfig(
+    config: Config,
+    options?: {
+      pathPattern?: string;
+    },
+  ): FrontendHostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
 export class GithubAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;
@@ -443,7 +455,26 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 // @public
 export class MicrosoftAuth {
   // (undocumented)
-  static create(options: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T;
+  static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
+  // (undocumented)
+  getAccessToken(
+    scope?: string | string[],
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  // (undocumented)
+  getIdToken(options?: AuthRequestOptions): Promise<string>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
 }
 
 // @public

@@ -66,16 +66,12 @@ export const todoListReadPermission = createPermission({
 });
 /* highlight-add-end */
 
-/* highlight-add-next-line */
 export const todoListPermissions = [
   todoListCreatePermission,
   todoListUpdatePermission,
-];
-/* highlight-add-next-line */
-export const todoListPermissions = [
-  todoListCreatePermission,
-  todoListUpdatePermission,
+  /* highlight-add-start */
   todoListReadPermission,
+  /* highlight-add-end */
 ];
 ```
 
@@ -98,12 +94,28 @@ import { add, getAll, getTodo, update } from './todos';
 /* highlight-add-next-line */
 import { add, getAll, getTodo, TodoFilter, update } from './todos';
 import {
-  todosListCreate,
-  todosListUpdate,
+  TODO_LIST_RESOURCE_TYPE,
+  todoListCreatePermission,
+  todoListUpdatePermission,
   /* highlight-add-next-line */
   todoListReadPermission,
-  TODO_LIST_RESOURCE_TYPE,
 } from './permissions';
+
+// ...
+
+const permissionIntegrationRouter = createPermissionIntegrationRouter({
+  /* highlight-remove-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission],
+  /* highlight-add-next-line */
+  permissions: [todoListCreatePermission, todoListUpdatePermission, todoListReadPermission],
+  getResources: async resourceRefs => {
+    return resourceRefs.map(getTodo);
+  },
+  resourceType: TODO_LIST_RESOURCE_TYPE,
+  rules: Object.values(rules),
+});
+
+// ...
 
 /* highlight-add-next-line */
 const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));

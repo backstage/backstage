@@ -130,6 +130,7 @@ export function useGetEntities(
   relationsType: string,
   isGroup: boolean,
   entityFilterKind?: string[],
+  entityLimit = 6,
 ): {
   componentsWithCounters:
     | {
@@ -189,8 +190,8 @@ export function useGetEntities(
       [],
     );
 
-    // Return top N (six) entities to be displayed in ownership boxes
-    const topN = counts.sort((a, b) => b.count - a.count).slice(0, 6);
+    // Return top N (entityLimit) entities to be displayed in ownership boxes
+    const topN = counts.sort((a, b) => b.count - a.count).slice(0, entityLimit);
 
     return topN.map(topOwnedEntity => ({
       counter: topOwnedEntity.count,

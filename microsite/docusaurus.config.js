@@ -68,6 +68,12 @@ module.exports = {
       },
     ],
   ],
+  markdown: {
+    preprocessor({ filePath, fileContent }) {
+      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+      return fileContent.replace(/<!--.*?-->/gs, '');
+    },
+  },
   webpack: {
     jsLoader: isServer => ({
       loader: require.resolve('swc-loader'),
@@ -124,6 +130,10 @@ module.exports = {
           {
             from: '/docs/features/search/search-overview',
             to: '/docs/features/search/',
+          },
+          {
+            from: '/docs/getting-started/running-backstage-locally',
+            to: '/docs/getting-started/',
           },
         ],
       },
@@ -231,7 +241,7 @@ module.exports = {
               },
               {
                 label: 'Subscribe to our newsletter',
-                to: 'https://mailchi.mp/spotify/backstage-community',
+                to: 'https://info.backstage.spotify.com/newsletter_subscribe',
               },
               {
                 label: 'CNCF Incubation',

@@ -33,6 +33,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 export type QueryResponse = {
   organization?: OrganizationResponse;
   repositoryOwner?: RepositoryOwnerResponse;
+  user?: UserResponse;
 };
 
 type RepositoryOwnerResponse = {
@@ -46,9 +47,17 @@ export type OrganizationResponse = {
   repositories?: Connection<RepositoryResponse>;
 };
 
+export type UserResponse = {
+  organizations?: Connection<GithubOrg>;
+};
+
 export type PageInfo = {
   hasNextPage: boolean;
   endCursor?: string;
+};
+
+export type GithubOrg = {
+  login: string;
 };
 
 /**
@@ -99,6 +108,7 @@ export type RepositoryResponse = {
     id: string;
     text: string;
   } | null;
+  visibility: string;
 };
 
 type RepositoryTopics = {
@@ -333,6 +343,34 @@ export async function getOrganizationTeamsFromUsers(
   return { groups };
 }
 
+export async function getOrganizationsFromUser(
+  client: typeof graphql,
+  user: string,
+): Promise<{
+  orgs: string[];
+}> {
+  const query = `
+  query orgs($user: String!) {
+    user(login: $user) {
+      organizations(first: 100) {
+        nodes { login }
+        pageInfo { hasNextPage, endCursor }
+      }
+    }
+  }`;
+
+  const orgs = await queryWithPaging(
+    client,
+    query,
+    '',
+    r => r.user?.organizations,
+    async o => o.login,
+    { user },
+  );
+
+  return { orgs };
+}
+
 export async function getOrganizationTeam(
   client: typeof graphql,
   org: string,
@@ -437,6 +475,7 @@ export async function getOrganizationRepositories(
             url
             isArchived
             isFork
+            visibility
             repositoryTopics(first: 100) {
               nodes {
                 ... on RepositoryTopic {
@@ -543,6 +582,7 @@ export async function queryWithPaging<
   variables: Variables,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
   let cursor: string | undefined = undefined;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
@@ -571,6 +611,7 @@ export async function queryWithPaging<
     if (!conn.pageInfo.hasNextPage) {
       break;
     } else {
+      await sleep(1000);
       cursor = conn.pageInfo.endCursor;
     }
   }

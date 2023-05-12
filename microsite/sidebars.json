@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.13.0",
       "releases/v1.12.0",
       "releases/v1.11.0",
       "releases/v1.10.0",
@@ -34,7 +35,6 @@
       "getting-started/index",
       "getting-started/configuration",
       "getting-started/create-an-app",
-      "getting-started/running-backstage-locally",
       {
         "type": "category",
         "label": "App configuration",
@@ -60,7 +60,8 @@
           "local-dev/cli-commands"
         ]
       },
-      "local-dev/linking-local-packages"
+      "local-dev/linking-local-packages",
+      "local-dev/debugging"
     ],
     "Core Features": [
       {
@@ -107,6 +108,7 @@
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
+          "features/software-templates/authorizing-parameters-steps-and-actions",
           "features/software-templates/testing-scaffolder-alpha",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
@@ -277,15 +279,16 @@
         "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
-          "auth/bitbucket/provider",
           "auth/microsoft/provider",
+          "auth/microsoft/easy-auth",
+          "auth/bitbucket/provider",
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/google/gcp-iap-auth",
           "auth/okta/provider",
-          "auth/onelogin/provider",
-          "auth/oauth2-proxy/provider"
+          "auth/oauth2-proxy/provider",
+          "auth/onelogin/provider"
         ]
       },
       "auth/identity-resolver",
@@ -405,6 +408,7 @@
         "label": "Core Services",
         "items": ["backend-system/core-services/index"]
       }
-    ]
+    ],
+    "Accessibility": ["accessibility/index"]
   }
 }

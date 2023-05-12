@@ -19,11 +19,22 @@ import { screen } from '@testing-library/react';
 
 import { Props, RadarDescription } from './RadarDescription';
 import { renderInTestApp } from '@backstage/test-utils';
+import { Ring } from '../../utils/types';
+
+const ring: Ring = {
+  id: 'example-ring',
+  name: 'example-ring',
+  color: 'red',
+};
 
 const minProps: Props = {
   open: true,
   title: 'example-title',
   description: 'example-description',
+  timeline: [
+    { date: new Date(), ring: ring, description: 'test timeline 1' },
+    { date: new Date(), ring: ring, description: 'test timeline 2' },
+  ],
   links: [{ url: 'https://example.com/docs', title: 'example-link' }],
   onClose: () => {},
 };

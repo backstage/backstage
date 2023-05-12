@@ -91,7 +91,7 @@ export async function initRepoAndPush({
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
-}): Promise<void> {
+}): Promise<{ commitHash: string }> {
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -110,13 +110,12 @@ export async function initRepoAndPush({
     email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
   };
 
-  await git.commit({
+  const commitHash = await git.commit({
     dir,
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
   });
-
   await git.addRemote({
     dir,
     url: remoteUrl,
@@ -127,6 +126,8 @@ export async function initRepoAndPush({
     dir,
     remote: 'origin',
   });
+
+  return { commitHash };
 }
 
 export async function commitAndPushRepo({
@@ -148,7 +149,7 @@ export async function commitAndPushRepo({
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
-}): Promise<void> {
+}): Promise<{ commitHash: string }> {
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -164,7 +165,7 @@ export async function commitAndPushRepo({
     email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
   };
 
-  await git.commit({
+  const commitHash = await git.commit({
     dir,
     message: commitMessage,
     author: authorInfo,
@@ -176,6 +177,8 @@ export async function commitAndPushRepo({
     remote: 'origin',
     remoteRef: remoteRef ?? `refs/heads/${branch}`,
   });
+
+  return { commitHash };
 }
 
 type BranchProtectionOptions = {
@@ -295,4 +298,8 @@ export function getGitCommitMessage(
   return gitCommitMessage
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
+}
+
+export function entityRefToName(name: string): string {
+  return name.replace(/^.*[:/]/g, '');
 }

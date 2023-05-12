@@ -205,16 +205,19 @@ const generatedColumns: TableColumn[] = [
   {
     title: 'Time',
     field: 'startTime',
-    render: (row: Partial<CITableBuildInfo>) => (
-      <>
-        <Typography variant="body2">
-          run {relativeTimeTo(row?.startTime)}
-        </Typography>
-        <Typography variant="body2">
-          took {durationHumanized(row?.startTime, row?.stopTime)}
-        </Typography>
-      </>
-    ),
+    render: (row: Partial<CITableBuildInfo>) =>
+      row?.startTime ? (
+        <>
+          <Typography variant="body2">
+            run {relativeTimeTo(row?.startTime)}
+          </Typography>
+          <Typography variant="body2">
+            {row?.stopTime
+              ? `took ${durationHumanized(row?.startTime, row?.stopTime)}`
+              : ''}
+          </Typography>
+        </>
+      ) : null,
   },
   {
     title: 'Workflow',

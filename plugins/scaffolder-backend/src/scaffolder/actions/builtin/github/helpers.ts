@@ -29,6 +29,7 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
+import { entityRefToName } from '../../builtin/helpers';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -218,13 +219,13 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           await client.rest.repos.addCollaborator({
             owner,
             repo,
-            username: collaborator.user,
+            username: entityRefToName(collaborator.user),
             permission: collaborator.access,
           });
         } else if ('team' in collaborator) {
           await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
             org: owner,
-            team_slug: collaborator.team,
+            team_slug: entityRefToName(collaborator.team),
             owner,
             repo,
             permission: collaborator.access,
@@ -293,7 +294,7 @@ export async function initRepoPushAndProtect(
   gitAuthorEmail?: string,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
-) {
+): Promise<{ commitHash: string }> {
   const gitAuthorInfo = {
     name: gitAuthorName
       ? gitAuthorName
@@ -307,7 +308,7 @@ export async function initRepoPushAndProtect(
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
 
-  await initRepoAndPush({
+  const commitResult = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
     defaultBranch,
@@ -346,6 +347,8 @@ export async function initRepoPushAndProtect(
       );
     }
   }
+
+  return { commitHash: commitResult.commitHash };
 }
 
 function extractCollaboratorName(

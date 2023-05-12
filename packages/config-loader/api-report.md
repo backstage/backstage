@@ -4,8 +4,35 @@
 
 ```ts
 import { AppConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
+import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
+import { Observable } from '@backstage/types';
+
+// @public
+export type AsyncConfigSourceGenerator = AsyncGenerator<
+  {
+    configs: ConfigSourceData[];
+  },
+  void,
+  void
+>;
+
+// @public
+export interface BaseConfigSourcesOptions {
+  // (undocumented)
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+  // (undocumented)
+  rootDir?: string;
+  // (undocumented)
+  substitutionFunc?: EnvFunc;
+}
+
+// @public
+export interface ClosableConfig extends Config {
+  close(): void;
+}
 
 // @public
 export type ConfigSchema = {
@@ -25,7 +52,55 @@ export type ConfigSchemaProcessingOptions = {
   withDeprecatedKeys?: boolean;
 };
 
-// @public (undocumented)
+// @public
+export interface ConfigSource {
+  // (undocumented)
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceGenerator;
+}
+
+// @public
+export interface ConfigSourceData extends AppConfig {
+  path?: string;
+}
+
+// @public
+export class ConfigSources {
+  static default(options: ConfigSourcesDefaultOptions): ConfigSource;
+  static defaultForTargets(
+    options: ConfigSourcesDefaultForTargetsOptions,
+  ): ConfigSource;
+  static merge(sources: ConfigSource[]): ConfigSource;
+  static parseArgs(argv?: string[]): ConfigSourceTarget[];
+  static toConfig(source: ConfigSource): Promise<ClosableConfig>;
+}
+
+// @public
+export interface ConfigSourcesDefaultForTargetsOptions
+  extends BaseConfigSourcesOptions {
+  // (undocumented)
+  targets: ConfigSourceTarget[];
+}
+
+// @public
+export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
+  // (undocumented)
+  argv?: string[];
+  // (undocumented)
+  env?: Record<string, string>;
+}
+
+// @public
+export type ConfigSourceTarget =
+  | {
+      type: 'path';
+      target: string;
+    }
+  | {
+      type: 'url';
+      target: string;
+    };
+
+// @public @deprecated (undocumented)
 export type ConfigTarget =
   | {
       path: string;
@@ -38,11 +113,43 @@ export type ConfigTarget =
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 // @public
+export class EnvConfigSource implements ConfigSource {
+  static create(options: EnvConfigSourceOptions): ConfigSource;
+  // (undocumented)
+  readConfigData(): AsyncConfigSourceGenerator;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export interface EnvConfigSourceOptions {
+  env?: Record<string, string | undefined>;
+}
+
+// @public
+export type EnvFunc = (name: string) => Promise<string | undefined>;
+
+// @public
+export class FileConfigSource implements ConfigSource {
+  static create(options: FileConfigSourceOptions): ConfigSource;
+  // (undocumented)
+  readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceGenerator;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export interface FileConfigSourceOptions {
+  path: string;
+  substitutionFunc?: EnvFunc;
+}
+
+// @public @deprecated
 export function loadConfig(
   options: LoadConfigOptions,
 ): Promise<LoadConfigResult>;
 
-// @public
+// @public @deprecated
 export type LoadConfigOptions = {
   configRoot: string;
   configTargets: ConfigTarget[];
@@ -51,18 +158,18 @@ export type LoadConfigOptions = {
   watch?: LoadConfigOptionsWatch;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LoadConfigOptionsRemote = {
   reloadIntervalSeconds: number;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LoadConfigOptionsWatch = {
   onChange: (configs: AppConfig[]) => void;
   stopSignal?: Promise<void>;
 };
 
-// @public
+// @public @deprecated
 export type LoadConfigResult = {
   appConfigs: AppConfig[];
 };
@@ -73,22 +180,91 @@ export function loadConfigSchema(
 ): Promise<ConfigSchema>;
 
 // @public
-export type LoadConfigSchemaOptions =
+export type LoadConfigSchemaOptions = (
   | {
       dependencies: string[];
       packagePaths?: string[];
     }
   | {
       serialized: JsonObject;
-    };
+    }
+) & {
+  noUndeclaredProperties?: boolean;
+};
 
 // @public
 export function mergeConfigSchemas(schemas: JSONSchema7[]): JSONSchema7;
 
 // @public
+export class MutableConfigSource implements ConfigSource {
+  close(): void;
+  static create(options?: MutableConfigSourceOptions): MutableConfigSource;
+  // (undocumented)
+  readConfigData(
+    options?: ReadConfigDataOptions | undefined,
+  ): AsyncConfigSourceGenerator;
+  setData(data: JsonObject): void;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export interface MutableConfigSourceOptions {
+  // (undocumented)
+  context?: string;
+  // (undocumented)
+  data?: JsonObject;
+}
+
+// @public
+export interface ReadConfigDataOptions {
+  // (undocumented)
+  signal?: AbortSignal;
+}
+
+// @public @deprecated
 export function readEnvConfig(env: {
   [name: string]: string | undefined;
 }): AppConfig[];
+
+// @public
+export class RemoteConfigSource implements ConfigSource {
+  static create(options: RemoteConfigSourceOptions): ConfigSource;
+  // (undocumented)
+  readConfigData(
+    options?: ReadConfigDataOptions | undefined,
+  ): AsyncConfigSourceGenerator;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export interface RemoteConfigSourceOptions {
+  reloadInterval?: HumanDuration;
+  substitutionFunc?: EnvFunc;
+  url: string;
+}
+
+// @public
+export class StaticConfigSource implements ConfigSource {
+  static create(options: StaticConfigSourceOptions): ConfigSource;
+  // (undocumented)
+  readConfigData(): AsyncConfigSourceGenerator;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export interface StaticConfigSourceOptions {
+  // (undocumented)
+  context?: string;
+  // (undocumented)
+  data:
+    | JsonObject
+    | Observable<JsonObject>
+    | PromiseLike<JsonObject>
+    | AsyncIterable<JsonObject>;
+}
 
 // @public
 export type TransformFunc<T extends number | string | boolean> = (

@@ -14,6 +14,7 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
+  schema [command]
   help [command]
 ```
 
@@ -26,10 +27,57 @@ Options:
   --ci
   --tsc
   --docs
+  --include <pattern>
+  --exclude <pattern>
   -a, --allow-warnings <allowWarningsPaths>
   --allow-all-warnings
   -o, --omit-messages <messageCodes>
   --validate-release-tags
+  -h, --help
+```
+
+### `backstage-repo-tools schema`
+
+```
+Usage: backstage-repo-tools schema [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  openapi [command]
+  help [command]
+```
+
+### `backstage-repo-tools schema openapi`
+
+```
+Usage: backstage-repo-tools schema openapi [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  verify [paths...]
+  generate [paths...]
+  help [command]
+```
+
+### `backstage-repo-tools schema openapi generate`
+
+```
+Usage: backstage-repo-tools schema openapi generate [options] [paths...]
+
+Options:
+  -h, --help
+```
+
+### `backstage-repo-tools schema openapi verify`
+
+```
+Usage: backstage-repo-tools schema openapi verify [options] [paths...]
+
+Options:
   -h, --help
 ```
 

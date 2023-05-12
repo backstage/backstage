@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.20
+
+### Patch Changes
+
+- e47e69eadf0: Updated dependency `@apollo/server` to `^4.0.0`.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.3.20-next.1
 
 ### Patch Changes

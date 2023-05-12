@@ -1,5 +1,78 @@
 # @backstage/plugin-home
 
+## 0.5.2-next.2
+
+### Patch Changes
+
+- acca8966465: Remove object-hash dependency
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 0e19e7b0f3a: Bump to using the later v5 versions of `@rjsf/*`
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+  - @backstage/config@1.0.7
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- 5272cfabc3b: Add missing @rjsf/core dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.2.19
+
+## 0.5.0
+
+### Minor Changes
+
+- 760f521b979: Add support for customizable homepage.
+
+  Allows customizing homepage components, their placement, size and
+  individual settings. For maximum size and settings, the existing home
+  components should add necessary data attributes to their components.
+
+  See `plugins/home/README.md` for more information how to configure
+  the customizable homepage.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+
+## 0.4.33-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/theme@0.2.19-next.0
+
 ## 0.4.33-next.2
 
 ### Patch Changes

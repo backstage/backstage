@@ -18,12 +18,46 @@ import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
+function registerSchemaCommand(program: Command) {
+  const command = program
+    .command('schema [command]')
+    .description('Various tools for working with API schema');
+
+  const openApiCommand = command
+    .command('openapi [command]')
+    .description('Tooling for OpenApi schema');
+
+  openApiCommand
+    .command('verify [paths...]')
+    .description(
+      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
+    )
+    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('generate [paths...]')
+    .description(
+      'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
+    )
+    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+}
+
 export function registerCommands(program: Command) {
   program
     .command('api-reports [paths...]')
     .option('--ci', 'CI run checks that there is no changes on API reports')
     .option('--tsc', 'executes the tsc compilation before extracting the APIs')
     .option('--docs', 'generates the api documentation')
+    .option(
+      '--include <pattern>',
+      'Only include packages matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
+    .option(
+      '--exclude <pattern>',
+      'Exclude package matching the provided patterns',
+      (opt: string, opts: string[] = []) => [...opts, ...opt.split(',')],
+    )
     .option(
       '-a, --allow-warnings <allowWarningsPaths>',
       'continue processing packages after getting errors on selected packages Allows glob patterns and comma separated values (i.e. packages/core,plugins/core-*)',
@@ -52,6 +86,8 @@ export function registerCommands(program: Command) {
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
+
+  registerSchemaCommand(program);
 }
 
 // Wraps an action function so that it always exits and handles errors

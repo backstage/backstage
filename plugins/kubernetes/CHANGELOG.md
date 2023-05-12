@@ -1,5 +1,123 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.0-next.2
+
+### Patch Changes
+
+- c7bad1005ba: The Kubernetes plugin now requests AKS access tokens from Azure when retrieving
+  objects from clusters configured with `authProvider: aks` and sets `auth.aks` in
+  its request bodies appropriately.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-kubernetes-common@0.6.3-next.0
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.9.0-next.1
+
+### Minor Changes
+
+- 280ec10c18e: Added Pod logs components for Kubernetes plugin
+
+  **BREAKING**: `kubernetesProxyApi` for custom plugins built with components from the Kubernetes plugin apis, `kubernetesProxyApi` should be added to the plugin's API list.
+
+  ```
+  ...
+  export const kubernetesPlugin = createPlugin({
+    id: 'kubernetes',
+    apis: [
+  ...
+      createApiFactory({
+          api: kubernetesProxyApiRef,
+          deps: {
+          kubernetesApi: kubernetesApiRef,
+          },
+          factory: ({ kubernetesApi }) =>
+          new KubernetesProxyClient({
+              kubernetesApi,
+          }),
+      }),
+  ```
+
+  **BREAKING**: `KubernetesDrawer` is now called `KubernetesStructuredMetadataTableDrawer` so that we can do more than just show `StructuredMetadataTable`
+
+  `import { KubernetesDrawer } from "@backstage/plugin-kubernetes"`
+
+  should now be:
+
+  `import { KubernetesStructuredMetadataTableDrawer } from "@backstage/plugin-kubernetes"`
+
+### Patch Changes
+
+- a160e02c3d7: Omit managed fields in the Kubernetes resource YAML display.
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+  - @backstage/config@1.0.7
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.6.0-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/plugin-kubernetes-common@0.6.2
+
+## 0.8.0
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/plugin-catalog-react@1.5.0
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-kubernetes-common@0.6.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.8.0-next.3
+
+### Minor Changes
+
+- 754be7c5106: refactor kubernetes error detection to make way for proposed solutions
+
+  **BREAKING**: `DetectedError` now appears once per Kubernetes resource per error instead of for all resources which have that error, `namespace` and `name` fields are now in `sourceRef` object `message` is now a `string` instead of a `string[]`. `ErrorDetectableKind` has been removed.
+
+### Patch Changes
+
+- e7fb0117485: fixes a bug where an empty authorization header was provided to the proxy endpoint when a cluster had a server-side auth provider
+- c159ab64a60: `KubernetesBackendClient` now requires a `kubernetesAuthProvidersApi` value to be provided. `KubernetesApi` interface now has a proxy method requirement.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.5.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/plugin-kubernetes-common@0.6.2-next.2
+
 ## 0.7.10-next.2
 
 ### Patch Changes

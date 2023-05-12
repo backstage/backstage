@@ -6,6 +6,7 @@ edit_uri: edit/master/docs
 plugins:
   - techdocs-core
 
+# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.json`
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -22,7 +23,6 @@ nav:
   - Getting Started:
       - Getting Started: 'getting-started/index.md'
       - Create an App: 'getting-started/create-an-app.md'
-      - Running Backstage locally: 'getting-started/running-backstage-locally.md'
       - App configuration:
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'

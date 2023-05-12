@@ -20,9 +20,14 @@ These are the separate project areas of Backstage, each with their own project a
 
 Team: @backstage/catalog-maintainers
 
-| Name | Organization | Team      | GitHub                       | Discord |
-| ---- | ------------ | --------- | ---------------------------- | ------- |
-| TBD  | Spotify      | Chipmunks | [TBD](http://github.com/TBD) | -       |
+Scope: The catalog plugin and catalog model
+
+| Name           | Organization | Team      | GitHub                                   | Discord          |
+| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
+| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
+| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
+| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
+| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
 
 ### Discoverability
 
@@ -72,6 +77,20 @@ Scope: The TechDocs plugin and related tooling
 | Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
 | Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
 
+## Incubating Project Areas
+
+These incubating project areas have shared ownership with @backstage/maintainers.
+
+### OpenAPI Tooling
+
+Team: @backstage/openapi-tooling-maintainers
+
+Scope: Tooling for frontend and backend schema-first OpenAPI development.
+
+| Name           | Organization | GitHub                                  | Discord       |
+| -------------- | ------------ | --------------------------------------- | ------------- |
+| Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+
 ## Sponsors
 
 | Name              | Organization | GitHub                                      | Email             |
@@ -82,21 +101,25 @@ Scope: The TechDocs plugin and related tooling
 
 ## Organization Members
 
-| Name                           | Organization              | GitHub                                          | Discord                        |
-| ------------------------------ | ------------------------- | ----------------------------------------------- | ------------------------------ |
-| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey) | `adamharvey#3739`              |
-| Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)           | `Ahhhndre#3095`                |
-| Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer) | `andrewthauer#3060`            |
-| Brian Fletcher                 | RoadieHQ                  | [punkle](https://github.com/punkle)             | `Brian Fletcher#7051`          |
-| Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)     | `luchillo17#8777`              |
-| David Tuite                    | Roadie                    | [dtuite](https://github.com/dtuite)             | `David Tuite (roadie.io)#1010` |
-| Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)     | `OrkoHunter#1520`              |
-| Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047`            |
-| Jussi Hallila                  | Roadie                    | [Xantier](https://github.com/Xantier)           | `Xantier#0086`                 |
-| Mark Avery                     | Cvent                     | [webark](https://github.com/webark)             | `webark#8471`                  |
-| Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)   | `pjungermann#6933`             |
-| Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)             | `pkuang#3202`                  |
-| Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)               | `tarasm#1256`                  |
+| Name                           | Organization              | GitHub                                                | Discord                        |
+| ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
+| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey#3739`              |
+| Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)                 | `Ahhhndre#3095`                |
+| Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
+| Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
+| Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
+| Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
+| David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
+| Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
+| Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
+| Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen)       | `jamieklassen#3047`            |
+| Jorge Lainfiesta               | Roadie.io                 | [jorgelainfiesta](https://github.com/jorgelainfiesta) | `jorgel#8733`                  |
+| Jussi Hallila                  | Roadie.io                 | [Xantier](https://github.com/Xantier)                 | `Xantier#0086`                 |
+| Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
+| Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
+| Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
+| Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
+| Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |
 
 ## Emeritus Core Maintainers
 

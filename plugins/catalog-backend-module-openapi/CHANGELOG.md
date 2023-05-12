@@ -1,5 +1,67 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.11-next.2
+
+### Patch Changes
+
+- accaceadffa: Fixed bug in `jsonSchemaRefPlaceholderResolver` where relative $ref files were resolved through file system instead of base URL of file
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/config@1.0.7
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-catalog-backend@1.9.1-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/config@1.0.7
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/plugin-catalog-backend@1.9.1-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.10
+
+### Patch Changes
+
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-catalog-backend@1.9.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-catalog-node@1.3.5-next.3
+
 ## 0.1.10-next.2
 
 ### Patch Changes

@@ -123,6 +123,9 @@ proxy:
     headers:
       St2-Api-Key: ${ST2_API_KEY}
 
+  '/puppetdb':
+    target: https://your.puppetdb.instance.com
+
 organization:
   name: My Company
 

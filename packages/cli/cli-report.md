@@ -58,6 +58,7 @@ Options:
   --lax
   --frontend
   --deprecated
+  --strict
   --config <path>
   -h, --help
 ```

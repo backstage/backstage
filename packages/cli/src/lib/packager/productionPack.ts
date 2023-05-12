@@ -17,8 +17,8 @@
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'path';
-import { ExtendedPackageJSON } from '../monorepo';
-import { readEntryPoints } from '../monorepo/entryPoints';
+import { BackstagePackageJson } from '@backstage/cli-node';
+import { readEntryPoints } from '../entryPoints';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -35,7 +35,7 @@ export async function productionPack(options: ProductionPackOptions) {
   const { packageDir, targetDir } = options;
   const pkgPath = resolvePath(packageDir, PKG_PATH);
   const pkgContent = await fs.readFile(pkgPath, 'utf8');
-  const pkg = JSON.parse(pkgContent) as ExtendedPackageJSON;
+  const pkg = JSON.parse(pkgContent) as BackstagePackageJson;
 
   // If we're making the update in-line, back up the package.json
   if (!targetDir) {
@@ -147,7 +147,7 @@ function resolveEntrypoint(pkg: any, name: string) {
 
 // Writes e.g. alpha/package.json
 async function writeReleaseStageEntrypoint(
-  pkg: ExtendedPackageJSON,
+  pkg: BackstagePackageJson,
   stage: 'alpha' | 'beta',
   targetDir: string,
 ) {
@@ -178,7 +178,7 @@ const EXPORT_MAP = {
  * entry points for importers that don't support exports.
  */
 async function prepareExportsEntryPoints(
-  pkg: ExtendedPackageJSON,
+  pkg: BackstagePackageJson,
   packageDir: string,
 ) {
   const distPath = resolvePath(packageDir, 'dist');

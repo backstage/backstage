@@ -70,7 +70,7 @@ export const createTemplateAction: <
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
-  addActions(...actions: TemplateAction<any>[]): void;
+  addActions(...actions: TemplateAction<any, any>[]): void;
 }
 
 // @alpha

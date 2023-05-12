@@ -37,8 +37,8 @@ export class SearchClient implements SearchApi {
     const { token } = await this.identityApi.getCredentials();
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
-      'search/query',
-    )}?${queryString}`;
+      'search',
+    )}/query?${queryString}`;
     const response = await fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });

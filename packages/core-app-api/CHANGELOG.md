@@ -1,5 +1,67 @@
 # @backstage/core-app-api
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.7.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/version-bridge@1.0.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.7.0-next.3
+
+### Minor Changes
+
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
 ## 1.7.0-next.2
 
 ### Patch Changes

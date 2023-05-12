@@ -1,5 +1,6 @@
-name: Verify Microsite Next
+name: Microsite
 on:
+  # NOTE: If you change these you must update verify_microsite-noop.yml as well
   pull_request:
     paths:
       - '.github/workflows/verify_microsite-next.yml'
@@ -10,22 +11,19 @@ jobs:
   build-microsite:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
       DOCUSAURUS_SSR_CONCURRENCY: 5
 
+    name: Microsite
     steps:
       - uses: actions/checkout@v3
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: use node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
 
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.

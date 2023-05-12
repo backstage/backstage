@@ -41,6 +41,10 @@ import {
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
 } from '@backstage/plugin-azure-devops';
+import {
+  isOctopusDeployAvailable,
+  EntityOctopusDeployContent,
+} from '@backstage/plugin-octopus-deploy';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
@@ -116,6 +120,7 @@ import {
   EntityRollbarContent,
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
+import { PuppetDbPage, isPuppetDbAvailable } from '@backstage/plugin-puppetdb';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
@@ -259,6 +264,10 @@ export const cicdContent = (
 
     <EntitySwitch.Case if={isAzurePipelinesAvailable}>
       <EntityAzurePipelinesContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isOctopusDeployAvailable}>
+      <EntityOctopusDeployContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>
@@ -836,6 +845,35 @@ const domainPage = (
   </EntityLayoutWrapper>
 );
 
+const resourcePage = (
+  <EntityLayoutWrapper>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
+        <Grid item md={6}>
+          <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
+        </Grid>
+        <Grid item md={6}>
+          <EntityHasSystemsCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route
+      path="/puppetdb"
+      title="Puppet"
+      if={isPuppetDbAvailable}
+    >
+      <PuppetDbPage />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/todos" title="TODOs">
+      <EntityTodoContent />
+    </EntityLayout.Route>
+  </EntityLayoutWrapper>
+);
+
 export const entityPage = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
@@ -844,6 +882,7 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('user')} children={userPage} />
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
+    <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
 
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>

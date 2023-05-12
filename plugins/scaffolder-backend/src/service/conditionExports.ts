@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+} from '@backstage/plugin-scaffolder-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules } from './rules';
+import { scaffolderTemplateRules, scaffolderActionRules } from './rules';
 
-const { conditions, createConditionalDecision } = createConditionExports({
+const templateConditionExports = createConditionExports({
   pluginId: 'scaffolder',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   rules: scaffolderTemplateRules,
 });
 
-/**
- * These conditions are used when creating conditional decisions for scaffolder
- * templates that are returned by authorization policies.
- *
- * @alpha
- */
-export const scaffolderConditions = conditions;
+const actionsConditionExports = createConditionExports({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  rules: scaffolderActionRules,
+});
 
 /**
- * `createScaffolderConditionalDecision` can be used when authoring policies to
+ * `createScaffolderTemplateConditionalDecision` can be used when authoring policies to
  * create conditional decisions. It requires a permission of type
  * `ResourcePermission<'scaffolder-template'>` to be passed as the first parameter.
  * It's recommended that you use the provided `isResourcePermission` and
@@ -64,4 +65,28 @@ export const scaffolderConditions = conditions;
  *
  * @alpha
  */
-export const createScaffolderConditionalDecision = createConditionalDecision;
+export const createScaffolderTemplateConditionalDecision =
+  templateConditionExports.createConditionalDecision;
+
+/**
+ * These conditions are used when creating conditional decisions for scaffolder
+ * templates that are returned by authorization policies.
+ *
+ * @alpha
+ */
+export const scaffolderTemplateConditions = templateConditionExports.conditions;
+
+/**
+ * @alpha
+ */
+export const createScaffolderActionConditionalDecision =
+  actionsConditionExports.createConditionalDecision;
+
+/**
+ *
+ * These conditions are used when creating conditional decisions for scaffolder
+ * actions that are returned by authorization policies.
+ *
+ * @alpha
+ */
+export const scaffolderActionConditions = actionsConditionExports.conditions;

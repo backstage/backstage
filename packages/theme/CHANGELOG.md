@@ -1,5 +1,22 @@
 # @backstage/theme
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 98c0c199b15: Updates light theme's primary foreground and `running` status indicator colours to meet WCAG. Previously #2E77D0 changed to #1F5493.
+
+### Patch Changes
+
+- 83b45f9df50: Fix accessibility issue with Backstage Table's header style
+
+## 0.2.19
+
+### Patch Changes
+
+- 303c2c3ce51: Allow `closeButton` color in `DismissableBanner` to be configurable (via. `theme.palette.banner.closeButtonColor`)
+- e0c6e8b9c3c: Update peer dependencies
+
 ## 0.2.19-next.0
 
 ### Patch Changes

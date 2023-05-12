@@ -1,5 +1,48 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 1.1.5
+
+### Patch Changes
+
+- 7e0c7b09a47: Fix a bug that caused the header to not render when generating a document for the first time
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/config@1.0.7
+
+## 1.1.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/version-bridge@1.0.4-next.0
+
 ## 1.1.5-next.2
 
 ### Patch Changes

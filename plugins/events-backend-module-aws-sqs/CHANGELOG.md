@@ -1,5 +1,51 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 2c5661f3899: Allow endpoint configuration for sqs, enabling use of localstack for testing.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/backend-tasks@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.6-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.6-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-events-node@0.2.5
+
 ## 0.1.6-next.2
 
 ### Patch Changes

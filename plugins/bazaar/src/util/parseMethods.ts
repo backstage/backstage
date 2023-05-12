@@ -30,6 +30,7 @@ export const parseBazaarProject = (metadata: any): BazaarProject => {
     startDate: metadata.start_date,
     endDate: metadata.end_date,
     responsible: metadata.responsible,
+    docs: metadata.docs,
   } as BazaarProject;
 };
 

@@ -38,21 +38,29 @@ export const ScorecardsList = (props: { checkResults: CheckResult[] }) => {
 
   return (
     <List>
-      {checkResults.map((result, index) => (
-        <ListItem key={result.check.id}>
-          <ListItemText
-            key={index}
-            primary={result.check.name}
-            secondary={result.check.description}
-            className={classes.listItemText}
-          />
-          {checkResultRenderers
-            .find(({ type }) => type === result.check.type)
-            ?.component(result) ?? (
-            <Alert severity="error">Unknown type.</Alert>
-          )}
-        </ListItem>
-      ))}
+      {checkResults.map((result, index) => {
+        const description = checkResultRenderers.find(
+          renderer => renderer.type === result.check.type,
+        )?.description;
+
+        return (
+          <ListItem key={result.check.id}>
+            <ListItemText
+              key={index}
+              primary={result.check.name}
+              secondary={
+                description ? description(result) : result.check.description
+              }
+              className={classes.listItemText}
+            />
+            {checkResultRenderers
+              .find(({ type }) => type === result.check.type)
+              ?.component(result) ?? (
+              <Alert severity="error">Unknown type.</Alert>
+            )}
+          </ListItem>
+        );
+      })}
     </List>
   );
 };

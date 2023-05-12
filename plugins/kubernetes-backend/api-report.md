@@ -5,7 +5,6 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { Credentials } from 'aws-sdk';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
@@ -23,6 +22,15 @@ import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
+export class AksKubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    auth: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @public (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
@@ -34,25 +42,11 @@ export interface AWSClusterDetails extends ClusterDetails {
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  // (undocumented)
-  awsGetCredentials: () => Promise<Credentials>;
+  constructor(opts: { config: Config });
   // (undocumented)
   decorateClusterDetailsWithAuth(
     clusterDetails: AWSClusterDetails,
   ): Promise<AWSClusterDetails>;
-  // (undocumented)
-  getBearerToken(
-    clusterName: string,
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<string>;
-  // (undocumented)
-  getCredentials(
-    assumeRole?: string,
-    externalId?: string,
-  ): Promise<SigningCreds>;
-  // (undocumented)
-  validCredentials(creds: SigningCreds): boolean;
 }
 
 // @public (undocumented)
@@ -313,6 +307,7 @@ export interface KubernetesFetcher {
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     namespaces: Set<string>,
+    labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
 }
 
@@ -338,6 +333,8 @@ export interface KubernetesObjectsProvider {
 
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
+  // (undocumented)
+  config: Config;
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)

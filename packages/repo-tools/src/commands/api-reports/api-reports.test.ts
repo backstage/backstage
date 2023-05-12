@@ -27,6 +27,7 @@ import {
 
 import { buildApiReports } from './api-reports';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
+import { PackageGraph } from '@backstage/cli-node';
 
 jest.mock('./generateTypeDeclarations');
 // create mocks for the dependencies of the `buildApiReports` function
@@ -52,6 +53,28 @@ jest
 jest.spyOn(projectPaths, 'resolveTargetRoot').mockImplementation((...path) => {
   return resolvePath(normalize('/root'), ...path);
 });
+jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+  {
+    dir: '/root/packages/package-a',
+    packageJson: { name: 'package-a', version: '0.0.0' },
+  },
+  {
+    dir: '/root/packages/package-b',
+    packageJson: { name: 'package-b', version: '0.0.0' },
+  },
+  {
+    dir: '/root/plugins/plugin-a',
+    packageJson: { name: 'plugin-a', version: '0.0.0' },
+  },
+  {
+    dir: '/root/plugins/plugin-b',
+    packageJson: { name: 'plugin-b', version: '0.0.0' },
+  },
+  {
+    dir: '/root/plugins/plugin-c',
+    packageJson: { name: 'plugin-c', version: '0.0.0' },
+  },
+]);
 
 describe('buildApiReports', () => {
   beforeEach(() => {

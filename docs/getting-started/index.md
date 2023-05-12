@@ -14,15 +14,16 @@ This guide assumes a basic understanding of working on a Linux based operating
 system using tools like apt-get, npm, yarn, curl. Docker knowledge is also
 helpful for making the best use of your Backstage installation.
 
-If you are planning to contribute plugins or the project in general, we advise
-you to use the
-[Getting Started for Contributors](https://backstage.io/docs/getting-started/running-backstage-locally)
-guide to do a repository-based installation.
+If you are planning to contribute plugins or to the project in general, we advise
+you to use the [Contributors](contributors.md) guide to do a repository-based installation.
 
 ### Prerequisites
 
 - Access to a Unix-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- A GNU-like build environment available at the command line.
+  For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
+  On MacOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these

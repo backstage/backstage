@@ -1,5 +1,57 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.35-next.1
+
+### Patch Changes
+
+- 670a2dd6f4e: Fix handling of slashes in branch names
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/config@1.0.7
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-jenkins-common@0.1.15
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-jenkins-common@0.1.15
+
+## 0.1.34-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-jenkins-common@0.1.15-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
 ## 0.1.34-next.2
 
 ### Patch Changes

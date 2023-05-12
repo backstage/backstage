@@ -1,5 +1,28 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 05f1d74539d: AKS access tokens can now be sent over the wire to the Kubernetes backend.
+
+## 0.6.2
+
+### Patch Changes
+
+- 804f6d16b0c: Introduced proxy permission types to be used with the kubernetes proxy endpoint's permission framework integration.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/catalog-model@1.3.0
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
 ## 0.6.2-next.1
 
 ### Patch Changes

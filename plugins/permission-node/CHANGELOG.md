@@ -1,5 +1,61 @@
 # @backstage/plugin-permission-node
 
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- a788e715cfc: `createPermissionIntegrationRouter` now accepts rules and permissions for multiple resource types. Example:
+
+  ```typescript
+  createPermissionIntegrationRouter({
+    resources: [
+      {
+        resourceType: 'resourceType-1',
+        permissions: permissionsResourceType1,
+        rules: rulesResourceType1,
+      },
+      {
+        resourceType: 'resourceType-2',
+        permissions: permissionsResourceType2,
+        rules: rulesResourceType2,
+      },
+    ],
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.7.7
+
+### Patch Changes
+
+- 788f0f5a152: Introduced alpha export of the `policyExtensionPoint` for use in the new backend system.
+- 71fd0966d10: Added createConditionAuthorizer utility function, which takes some permission conditions and returns a function that returns a definitive authorization result given a decision and a resource.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.7.7-next.2
 
 ### Patch Changes

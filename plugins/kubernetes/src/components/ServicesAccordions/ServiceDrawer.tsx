@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { V1Service } from '@kubernetes/client-node';
-import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
+import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
 export const ServiceDrawer = ({
@@ -27,7 +27,7 @@ export const ServiceDrawer = ({
   expanded?: boolean;
 }) => {
   return (
-    <KubernetesDrawer
+    <KubernetesStructuredMetadataTableDrawer
       object={service}
       expanded={expanded}
       kind="Service"
@@ -53,6 +53,6 @@ export const ServiceDrawer = ({
           </Typography>
         </Grid>
       </Grid>
-    </KubernetesDrawer>
+    </KubernetesStructuredMetadataTableDrawer>
   );
 };

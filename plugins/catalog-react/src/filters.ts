@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
-import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
 
@@ -113,18 +117,37 @@ export class EntityTextFilter implements EntityFilter {
 /**
  * Filter matching entities that are owned by group.
  * @public
+ *
+ * CAUTION: This class may contain both full and partial entity refs.
  */
 export class EntityOwnerFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  readonly values: string[];
+  constructor(values: string[]) {
+    this.values = values.reduce((fullRefs, ref) => {
+      // Attempt to remove bad entity references here.
+      try {
+        fullRefs.push(
+          stringifyEntityRef(parseEntityRef(ref, { defaultKind: 'Group' })),
+        );
+        return fullRefs;
+      } catch (err) {
+        return fullRefs;
+      }
+    }, [] as string[]);
+  }
 
   filterEntity(entity: Entity): boolean {
     return this.values.some(v =>
       getEntityRelations(entity, RELATION_OWNED_BY).some(
-        o => humanizeEntityRef(o, { defaultKind: 'group' }) === v,
+        o => stringifyEntityRef(o) === v,
       ),
     );
   }
 
+  /**
+   * Get the URL query parameter value. May be a mix of full and humanized entity refs.
+   * @returns list of entity refs.
+   */
   toQueryValue(): string[] {
     return this.values;
   }
@@ -139,6 +162,22 @@ export class EntityLifecycleFilter implements EntityFilter {
 
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.spec?.lifecycle === v);
+  }
+
+  toQueryValue(): string[] {
+    return this.values;
+  }
+}
+
+/**
+ * Filters entities to those within the given namespace(s).
+ * @public
+ */
+export class EntityNamespaceFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v => entity.metadata.namespace === v);
   }
 
   toQueryValue(): string[] {

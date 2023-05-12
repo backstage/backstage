@@ -44,7 +44,7 @@ export default {
 
 export const Default = () => {
   return (
-    <Paper style={{ padding: '8px 0' }}>
+    <Paper style={{ padding: '8px' }}>
       <SearchBar />
     </Paper>
   );
@@ -52,15 +52,23 @@ export const Default = () => {
 
 export const CustomPlaceholder = () => {
   return (
-    <Paper style={{ padding: '8px 0' }}>
+    <Paper style={{ padding: '8px' }}>
       <SearchBar placeholder="This is a custom placeholder" />
+    </Paper>
+  );
+};
+
+export const CustomLabel = () => {
+  return (
+    <Paper style={{ padding: '8px' }}>
+      <SearchBar label="This is a custom label" />
     </Paper>
   );
 };
 
 export const Focused = () => {
   return (
-    <Paper style={{ padding: '8px 0' }}>
+    <Paper style={{ padding: '8px' }}>
       {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
       {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
       <SearchBar autoFocus />
@@ -70,7 +78,7 @@ export const Focused = () => {
 
 export const WithoutClearButton = () => {
   return (
-    <Paper style={{ padding: '8px 0' }}>
+    <Paper style={{ padding: '8px' }}>
       <SearchBar clearButton={false} />
     </Paper>
   );
@@ -80,9 +88,12 @@ const useStyles = makeStyles({
   search: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '8px 0',
+    padding: '8px 16px',
     borderRadius: '50px',
     margin: 'auto',
+  },
+  notchedOutline: {
+    borderStyle: 'none',
   },
 });
 
@@ -90,7 +101,9 @@ export const CustomStyles = () => {
   const classes = useStyles();
   return (
     <Paper className={classes.search}>
-      <SearchBar />
+      <SearchBar
+        InputProps={{ classes: { notchedOutline: classes.notchedOutline } }}
+      />
     </Paper>
   );
 };

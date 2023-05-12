@@ -1,5 +1,140 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.13.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/plugin-scaffolder-common@1.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.1.3-next.2
+  - @backstage/config@1.0.7
+
+## 1.13.2-next.1
+
+### Patch Changes
+
+- 6d954de4b06: Update typing for `RouterOptions::actions` and `ScaffolderActionsExtensionPoint::addActions` to allow any kind of action being assigned to it.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-catalog-backend@1.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.1.3-next.1
+  - @backstage/backend-tasks@0.5.2-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/plugin-permission-node@0.7.8-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+
+## 1.13.2-next.0
+
+### Patch Changes
+
+- d20c87966a4: Bump minimum required version of `vm2` to be 3.9.17
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/plugin-catalog-backend@1.9.1-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/plugin-scaffolder-node@0.1.3-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 2b15cb4aa0a: The non-PR/MR Git Actions now return the commit hash of the commit pushed as a new output called `commitHash`, isomorphic-git is now on version 1.23.0
+- 30ffdae70f9: Added `fetch:plain:file` action to fetch a single file, this action is also added to the list of built-in actions.
+- 65e989f4018: Added the possibility to authorize parameters and steps of a template
+
+  The scaffolder plugin is now integrated with the permission framework.
+  It is possible to toggle parameters or actions within templates by marking each section with specific `tags`, inside a `backstage:permissions` property under each parameter or action. Each parameter or action can then be permissioned by using a conditional decision containing the `scaffolderTemplateRules.hasTag` rule.
+
+- 3b68b09fc2d: Renamed permissionApi router option to permissions
+- bcae5aaf25c: Added the possibility to authorize actions
+
+  It is now possible to decide who should be able to execute certain actions or who should be able to pass specific input to specified actions.
+
+  Some of the existing utility functions for creating conditional decisions have been renamed:
+
+  - `createScaffolderConditionalDecision` has been renamed to `createScaffolderActionConditionalDecision`
+  - `scaffolderConditions` has been renamed to `scaffolderTemplateConditions`
+
+- d7c8c222e25: Allow for a commit message to differ from the PR title when publishing a GitHub pull request.
+- 95ea9f69b6f: Provide some more default filters out of the box and refactoring how the filters are applied to the `SecureTemplater`.
+
+  - `parseEntityRef` will take an string entity triplet and return a parsed object.
+  - `pick` will allow you to reference a specific property in the piped object.
+
+  So you can now combine things like this: `${{ parameters.entity | parseEntityRef | pick('name') }}` to get the name of a specific entity, or `${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}` to get the owner of a repo.
+
+### Patch Changes
+
+- e23abb37ec1: Rename output parameter `mergeRequestURL` of `publish:gitlab:merge-request` action to `mergeRequestUrl`.
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- a7eb36c6e38: Improve type-check for scaffolder output parameters
+- c9a0fdcd2c8: Fix deprecated types.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 9c26e6d8ed3: Updated the alpha `scaffolderPlugin` to not require options.
+- f37a95adcd8: Stripped entity types and namespace before passing to GitHub API
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-catalog-backend@1.9.0
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/plugin-scaffolder-node@0.1.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 1.13.0-next.3
+
+### Minor Changes
+
+- d7c8c222e25: Allow for a commit message to differ from the PR title when publishing a GitHub pull request.
+
+### Patch Changes
+
+- f37a95adcd8: Stripped entity types and namespace before passing to GitHub API
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-catalog-node@1.3.5-next.3
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/plugin-scaffolder-common@1.2.7-next.2
+  - @backstage/plugin-scaffolder-node@0.1.2-next.3
+
 ## 1.13.0-next.2
 
 ### Patch Changes

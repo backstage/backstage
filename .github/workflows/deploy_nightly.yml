@@ -9,10 +9,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
@@ -20,15 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: use node.js ${{ matrix.node-version }}
+      - name: use node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.6.3
         with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+          cache-prefix: ${{ runner.os }}-v18.x
 
       # No verification done here, only build & publish. If the master branch
       # is broken we will see that from those builds, but we still want to push nightly

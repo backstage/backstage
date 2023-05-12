@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -116,6 +117,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  scheduler?: PluginTaskScheduler;
 };
 
 /**
@@ -434,7 +436,7 @@ export class CatalogBuilder {
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
-    const { config, database, logger, permissions } = this.env;
+    const { config, database, logger, permissions, scheduler } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -528,17 +530,19 @@ export class CatalogBuilder {
       provider => provider.getProviderName(),
     );
 
-    const processingEngine = new DefaultCatalogProcessingEngine(
+    const processingEngine = new DefaultCatalogProcessingEngine({
+      config,
+      scheduler,
       logger,
       processingDatabase,
       orchestrator,
       stitcher,
-      () => createHash('sha1'),
-      1000,
-      event => {
+      createHash: () => createHash('sha1'),
+      pollingIntervalMs: 1000,
+      onProcessingError: event => {
         this.onProcessingError?.(event);
       },
-    );
+    });
 
     const locationAnalyzer =
       this.locationAnalyzer ??

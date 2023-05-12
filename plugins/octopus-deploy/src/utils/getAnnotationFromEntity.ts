@@ -17,7 +17,12 @@ import { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from '../constants';
 
 import { Entity } from '@backstage/catalog-model';
 
-export function getAnnotationFromEntity(entity: Entity): string {
+/** @public */
+export type ProjectReference = { projectId: string; spaceId?: string };
+
+export function getProjectReferenceAnnotationFromEntity(
+  entity: Entity,
+): ProjectReference {
   const annotation =
     entity.metadata.annotations?.[OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION];
   if (!annotation) {
@@ -26,5 +31,9 @@ export function getAnnotationFromEntity(entity: Entity): string {
     );
   }
 
-  return annotation;
+  const referencedProject = annotation.split('/', 2);
+  if (referencedProject.length === 2) {
+    return { projectId: referencedProject[1], spaceId: referencedProject[0] };
+  }
+  return { projectId: referencedProject[0] };
 }

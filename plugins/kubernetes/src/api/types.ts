@@ -26,6 +26,10 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
 });
 
+export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
+  id: 'plugin.kubernetes.proxy-service',
+});
+
 export interface KubernetesApi {
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
@@ -43,4 +47,18 @@ export interface KubernetesApi {
   getCustomObjectsByEntity(
     request: CustomObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
+  proxy(options: {
+    clusterName: string;
+    path: string;
+    init?: RequestInit;
+  }): Promise<Response>;
+}
+
+export interface KubernetesProxyApi {
+  getPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+  }): Promise<{ text: string }>;
 }
