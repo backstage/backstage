@@ -15,4 +15,4 @@
  */
 
 /** @public */
-export const CATALOG_CONFLICTS_TOPIC = 'catalog.conflict';
+export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';

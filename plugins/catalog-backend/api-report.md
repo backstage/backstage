@@ -115,7 +115,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
 }
 
 // @public (undocumented)
-export const CATALOG_CONFLICTS_TOPIC = 'catalog.conflict';
+export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
 // @public
 export class CatalogBuilder {
