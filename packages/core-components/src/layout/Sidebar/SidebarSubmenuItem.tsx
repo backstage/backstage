@@ -52,7 +52,8 @@ const useStyles = makeStyles<BackstageTheme>(
       width: '100%',
     },
     selected: {
-      theme.palette.navigation.navItem?.selectedBackground || '#6f6f6f',
+      background:
+          theme.palette.navigation.navItem?.selectedBackground || '#6f6f6f',
       color: theme.palette.common.white,
     },
     label: {
