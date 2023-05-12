@@ -33,13 +33,16 @@ export async function deleteOrphanedEntities(options: {
   // Limit iterations for sanity
   for (let i = 0; i < 100; ++i) {
     const candidates = await tx
-      .with('orphans', orphans =>
+      .with('orphans', ['entity_id', 'entity_ref'], orphans =>
         orphans
-          .from<DbRefreshStateRow>('refresh_state')
-          .select('entity_id', 'entity_ref')
-          .whereNotIn('entity_ref', keep =>
-            keep.distinct('target_entity_ref').from('refresh_state_references'),
-          ),
+          .from('refresh_state')
+          .select('refresh_state.entity_id', 'refresh_state.entity_ref')
+          .leftOuterJoin(
+            'refresh_state_references',
+            'refresh_state_references.target_entity_ref',
+            'refresh_state.entity_ref',
+          )
+          .whereNull('refresh_state_references.target_entity_ref'),
       )
       .select({
         entityId: 'orphans.entity_id',
