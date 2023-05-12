@@ -36,8 +36,10 @@ import {
   TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  scaffolderPermissions,
+  scaffolderActionPermissions,
+  scaffolderTemplatePermissions,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -71,7 +73,7 @@ import {
   createPermissionIntegrationRouter,
   PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderTemplateRules } from './rules';
+import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 
 /**
  *
@@ -85,6 +87,29 @@ export type TemplatePermissionRuleInput<
   typeof RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   TParams
 >;
+function isTemplatePermissionRuleInput(
+  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+): permissionRule is TemplatePermissionRuleInput {
+  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
+}
+
+/**
+ *
+ * @public
+ */
+export type ActionPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  TParams
+>;
+function isActionPermissionRuleInput(
+  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+): permissionRule is ActionPermissionRuleInput {
+  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
+}
 
 /**
  * RouterOptions
@@ -113,7 +138,9 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
-  permissionRules?: TemplatePermissionRuleInput[];
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   identity?: IdentityApi;
 }
 
@@ -290,17 +317,32 @@ export async function createRouter(
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
     scaffolderTemplateRules,
   );
+  const actionRules: ActionPermissionRuleInput[] = Object.values(
+    scaffolderActionRules,
+  );
 
   if (permissionRules) {
-    templateRules.push(...permissionRules);
+    templateRules.push(
+      ...permissionRules.filter(isTemplatePermissionRuleInput),
+    );
+    actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
   }
 
   const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-    permissions: scaffolderPermissions,
-    rules: templateRules,
+    resources: [
+      {
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+        permissions: scaffolderTemplatePermissions,
+        rules: templateRules,
+      },
+      {
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+        permissions: scaffolderActionPermissions,
+        rules: actionRules,
+      },
+    ],
   });
 
   router.use(permissionIntegrationRouter);

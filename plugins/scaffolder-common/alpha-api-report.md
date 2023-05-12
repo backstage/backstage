@@ -15,10 +15,16 @@ export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
 // @alpha
+export const scaffolderActionPermissions: ResourcePermission<'scaffolder-action'>[];
+
+// @alpha
 export const scaffolderPermissions: (
   | ResourcePermission<'scaffolder-action'>
   | ResourcePermission<'scaffolder-template'>
 )[];
+
+// @alpha
+export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @alpha
 export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
