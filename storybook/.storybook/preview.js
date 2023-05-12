@@ -33,4 +33,10 @@ export const parameters = {
       order: ['Plugins', 'Layout', 'Navigation'],
     },
   },
+  // addon-a11y automatic execution timing is not consistent for all components
+  // to avoid catching an interim rendering state resulting in false positives
+  // this is is set to true.
+  a11y: {
+    manual: true,
+  },
 };
