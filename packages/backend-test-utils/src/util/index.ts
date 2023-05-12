@@ -15,4 +15,3 @@
  */
 
 export { isDockerDisabledForTests } from './isDockerDisabledForTests';
-export { getDockerImageForName } from './getDockerImageForName';
