@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { isDockerDisabledForTests } from './isDockerDisabledForTests';
-export { getDockerImageForName } from './getDockerImageForName';
+/** @public */
+export const getDockerImageForName = (name: string) => {
+  return process.env.BACKSTAGE_TEST_DOCKER_REGISTRY
+    ? `${process.env.BACKSTAGE_TEST_DOCKER_REGISTRY}/${name}`
+    : name;
+};
