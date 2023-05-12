@@ -3,4 +3,4 @@
 '@backstage/plugin-events-backend': patch
 ---
 
-Adds an optional `EventBroker` for sending an event when there are conflicts.
+Adds an optional `EventBroker` that is used for sending an event when there are conflicts, with details of the conflict so that it can be handled elsewhere.
