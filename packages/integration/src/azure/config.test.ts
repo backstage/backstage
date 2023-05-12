@@ -51,16 +51,39 @@ describe('readAzureIntegrationConfig', () => {
     return new ConfigReader((processed[0].data as any).integrations.azure[0]);
   }
 
-  it('reads all values', () => {
+  it('reads all values when using a token', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'a.com',
         token: 't',
       }),
     );
+
     expect(output).toEqual({
       host: 'a.com',
       token: 't',
+    });
+  });
+
+  it('reads all values when using a credential', () => {
+    const output = readAzureIntegrationConfig(
+      buildConfig({
+        host: 'dev.azure.com',
+        credential: {
+          clientId: 'id',
+          clientSecret: 'secret',
+          tenantId: 'tenant',
+        },
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'dev.azure.com',
+      credential: {
+        clientId: 'id',
+        clientSecret: 'secret',
+        tenantId: 'tenant',
+      },
     });
   });
 
@@ -71,15 +94,86 @@ describe('readAzureIntegrationConfig', () => {
 
   it('rejects funky configs', () => {
     const valid: any = {
-      host: 'a.com',
-      token: 't',
+      host: 'dev.azure.com',
     };
+
     expect(() =>
       readAzureIntegrationConfig(buildConfig({ ...valid, host: 7 })),
     ).toThrow(/host/);
+
     expect(() =>
       readAzureIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
+
+    expect(() =>
+      readAzureIntegrationConfig(buildConfig({ ...valid, credential: 7 })),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, credential: { clientId: 7 } }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, credential: { clientSecret: 7 } }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, credential: { tenantId: 7 } }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(buildConfig({ ...valid, credential: {} })),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, credential: { clientSecret: 'secret' } }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, credential: { tenantId: 'tenant' } }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({
+          ...valid,
+          credential: { clientId: 'id', clientSecret: 'secret' },
+        }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({
+          ...valid,
+          credential: { clientId: 'id', tenantId: 'tenant' },
+        }),
+      ),
+    ).toThrow(/credential/);
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({
+          ...valid,
+          host: 'a.com',
+          credential: {
+            clientId: 'id',
+            tenantId: 'tenant',
+            clientSecret: 'secret',
+          },
+        }),
+      ),
+    ).toThrow(/credential/);
   });
 
   it('works on the frontend', async () => {
@@ -101,7 +195,7 @@ describe('readAzureIntegrationConfigs', () => {
     return data.map(item => new ConfigReader(item));
   }
 
-  it('reads all values', () => {
+  it('reads all values when using a token', () => {
     const output = readAzureIntegrationConfigs(
       buildConfig([
         {
@@ -113,6 +207,29 @@ describe('readAzureIntegrationConfigs', () => {
     expect(output).toContainEqual({
       host: 'a.com',
       token: 't',
+    });
+  });
+
+  it('reads all values when using a credential', () => {
+    const output = readAzureIntegrationConfigs(
+      buildConfig([
+        {
+          host: 'dev.azure.com',
+          credential: {
+            clientId: 'id',
+            clientSecret: 'secret',
+            tenantId: 'tenant',
+          },
+        },
+      ]),
+    );
+    expect(output).toContainEqual({
+      host: 'dev.azure.com',
+      credential: {
+        clientId: 'id',
+        clientSecret: 'secret',
+        tenantId: 'tenant',
+      },
     });
   });
 

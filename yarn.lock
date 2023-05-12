@@ -1978,6 +1978,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/identity@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@azure/identity@npm:3.2.1"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    "@azure/core-auth": ^1.3.0
+    "@azure/core-client": ^1.4.0
+    "@azure/core-rest-pipeline": ^1.1.0
+    "@azure/core-tracing": ^1.0.0
+    "@azure/core-util": ^1.0.0
+    "@azure/logger": ^1.0.0
+    "@azure/msal-browser": ^2.32.2
+    "@azure/msal-common": ^9.0.2
+    "@azure/msal-node": ^1.14.6
+    events: ^3.0.0
+    jws: ^4.0.0
+    open: ^8.0.0
+    stoppable: ^1.1.0
+    tslib: ^2.2.0
+    uuid: ^8.3.0
+  checksum: c66405cd84c22e16031e1b6aeb09eacbabeeb9d73090f67ed770337e3cc7abe87950cf5c2f6dc7a1d354fa1676fed72fc2142916c4929699534e7ad37d7b1dd1
+  languageName: node
+  linkType: hard
+
 "@azure/logger@npm:^1.0.0":
   version: 1.0.1
   resolution: "@azure/logger@npm:1.0.1"
@@ -2015,16 +2039,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-browser@npm:^2.26.0":
-  version: 2.27.0
-  resolution: "@azure/msal-browser@npm:2.27.0"
+"@azure/msal-browser@npm:^2.26.0, @azure/msal-browser@npm:^2.32.2":
+  version: 2.37.0
+  resolution: "@azure/msal-browser@npm:2.37.0"
   dependencies:
-    "@azure/msal-common": ^7.1.0
-  checksum: 6cafb4d41a92f1bbb82e7128f64ccd6538ec116a2521f412108d94c4173601d31ea62febb7b22206dcae691e6a01cf7f9ce92793420599437b50a24c7e6ab851
+    "@azure/msal-common": 13.0.0
+  checksum: e57d04517d51db4b608da6ca127c89e5c134b42743b00e95d8f1aae011d1cc6d5c02fb4f72cd0f96636e500a3eeee7c4884cd537ac8796bbd50f0ff9ac983b4e
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:^7.0.0, @azure/msal-common@npm:^7.1.0":
+"@azure/msal-common@npm:13.0.0":
+  version: 13.0.0
+  resolution: "@azure/msal-common@npm:13.0.0"
+  checksum: 89f56f9fbf0edffa6023d46c6970dd37a9ad571b7d2952fdef41950ec2f3b4b3fd22d9841e2caaf52619ad97ab415ed22c30797cdb896f459eb665d3d97f778a
+  languageName: node
+  linkType: hard
+
+"@azure/msal-common@npm:^7.0.0":
   version: 7.1.0
   resolution: "@azure/msal-common@npm:7.1.0"
   checksum: 761a8b9363c7b620d831aba7d7e7a66e341685e306034b027b57dc31dae11abdf86c3187c08fc8008448c845ffdcbbc42c767c75355625cf87aba25ba7e2832e
@@ -2038,14 +2069,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-node@npm:^1.10.0":
-  version: 1.14.6
-  resolution: "@azure/msal-node@npm:1.14.6"
+"@azure/msal-node@npm:^1.10.0, @azure/msal-node@npm:^1.14.6":
+  version: 1.17.2
+  resolution: "@azure/msal-node@npm:1.17.2"
   dependencies:
-    "@azure/msal-common": ^9.0.2
+    "@azure/msal-common": 13.0.0
     jsonwebtoken: ^9.0.0
     uuid: ^8.3.0
-  checksum: 7fb2085fe772474bb4c6c1e0a2467da6b2380dfa66f7c67f63d4a8774f591744dc64a6f3337d43c810ff433bc327be470ece59dcd0fa7aff4459e32beb4c738b
+  checksum: 5ac809dae6b02ab7de2aafb85733501ba6c3268f1d9371bc857215dad9d47e4f6e10b3e58ebda49504b375c96934761e9734acc241d3bc34d3b4cdeaabdf102e
   languageName: node
   linkType: hard
 
@@ -4467,6 +4498,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
+    "@azure/identity": ^3.2.1
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
