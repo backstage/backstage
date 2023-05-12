@@ -50,7 +50,9 @@
   "version": "1.15.0-next.0",
   "dependencies": {
     "@backstage/errors": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3"
+    "@manypkg/get-packages": "^1.1.3",
+    "i18next": "^22.4.15",
+    "react-i18next": "^12.2.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:*",

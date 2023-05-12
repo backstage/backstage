@@ -27,7 +27,6 @@ import {
   AppThemeSelector,
   ConfigReader,
   LocalStorageFeatureFlags,
-  AppTranslation,
 } from '../apis';
 import {
   AnyApiFactory,
@@ -42,8 +41,8 @@ import {
   identityApiRef,
   BackstagePlugin,
   FeatureFlag,
-  appTranslationApiRef,
   AppTranslationApi,
+  appTranslationApiRef,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -78,6 +77,8 @@ import { resolveRouteBindings } from './resolveRouteBindings';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
+import { AppTranslationProvider } from './AppTranslationProvider';
+import { createAppTranslation } from './createAppTranslation';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -201,7 +202,6 @@ class AppContextImpl implements AppContext {
 export class AppManager implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
-  private translationApi: AppTranslationApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: NonNullable<AppOptions['icons']>;
@@ -213,6 +213,7 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
+  private readonly appTranslationApi: AppTranslationApi;
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -228,9 +229,7 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.translationApi = AppTranslation.createWithStorage(
-      options.localeConfig,
-    );
+    this.appTranslationApi = createAppTranslation(options.initI18next);
   }
 
   getPlugins(): BackstagePlugin[] {
@@ -297,9 +296,6 @@ export class AppManager implements BackstageApp {
         //               collection and then make sure we initialize things afterwards.
         result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
         this.verifyPlugins(this.plugins);
-
-        // Initialize translates in plugins
-        this.registryPluginsTranslation(this.plugins);
 
         // Initialize APIs once all plugins are available
         this.getApiHolder();
@@ -384,29 +380,34 @@ export class AppManager implements BackstageApp {
         }
       }
 
-      const { ThemeProvider = AppThemeProvider } = this.components;
+      const {
+        ThemeProvider = AppThemeProvider,
+        TranslationProvider = AppTranslationProvider,
+      } = this.components;
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
-            <ThemeProvider>
-              <RoutingProvider
-                routePaths={routing.paths}
-                routeParents={routing.parents}
-                routeObjects={routing.objects}
-                routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
-              >
-                <InternalAppContext.Provider
-                  value={{
-                    routeObjects: routing.objects,
-                    appIdentityProxy: this.appIdentityProxy,
-                  }}
+            <TranslationProvider>
+              <ThemeProvider>
+                <RoutingProvider
+                  routePaths={routing.paths}
+                  routeParents={routing.parents}
+                  routeObjects={routing.objects}
+                  routeBindings={routeBindings}
+                  basePath={getBasePath(loadedConfig.api)}
                 >
-                  {children}
-                </InternalAppContext.Provider>
-              </RoutingProvider>
-            </ThemeProvider>
+                  <InternalAppContext.Provider
+                    value={{
+                      routeObjects: routing.objects,
+                      appIdentityProxy: this.appIdentityProxy,
+                    }}
+                  >
+                    {children}
+                  </InternalAppContext.Provider>
+                </RoutingProvider>
+              </ThemeProvider>
+            </TranslationProvider>
           </AppContextProvider>
         </ApiProvider>
       );
@@ -441,11 +442,6 @@ export class AppManager implements BackstageApp {
       factory: () => AppThemeSelector.createWithStorage(this.themes),
     });
     this.apiFactoryRegistry.register('static', {
-      api: appTranslationApiRef,
-      deps: {},
-      factory: () => this.translationApi,
-    });
-    this.apiFactoryRegistry.register('static', {
       api: configApiRef,
       deps: {},
       factory: () => {
@@ -461,6 +457,11 @@ export class AppManager implements BackstageApp {
       api: identityApiRef,
       deps: {},
       factory: () => this.appIdentityProxy,
+    });
+    this.apiFactoryRegistry.register('static', {
+      api: appTranslationApiRef,
+      deps: {},
+      factory: () => this.appTranslationApi,
     });
 
     // It's possible to replace the feature flag API, but since we must have at least
@@ -512,24 +513,6 @@ export class AppManager implements BackstageApp {
         throw new Error(`Duplicate plugin found '${id}'`);
       }
       pluginIds.add(id);
-    }
-  }
-
-  private registryPluginsTranslation(plugins: Iterable<CompatiblePlugin>) {
-    const translationIds = new Set<string>();
-
-    for (const plugin of plugins) {
-      const translationRef = plugin.getTranslationRef();
-      if (translationRef?.id) {
-        // id is the namespace in i18next resource
-        const id = translationRef.id;
-        if (translationIds.has(id)) {
-          throw new Error(`Duplicate translation id found '${id}'`);
-        }
-        translationIds.add(id);
-
-        this.translationApi.addResources(translationRef.resources, id);
-      }
     }
   }
 }

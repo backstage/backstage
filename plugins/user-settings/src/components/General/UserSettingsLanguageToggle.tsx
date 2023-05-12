@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import React, { useMemo } from 'react';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -25,12 +24,8 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core';
-import {
-  appTranslationApiRef,
-  useApi,
-  usePluginTranslation,
-} from '@backstage/core-plugin-api';
-import { settingTranslationRef } from '../../translation';
+import { useTranslation } from 'react-i18next';
+import { TRANSLATION_NS } from '../../translation';
 
 type TooltipToggleButtonProps = {
   children: JSX.Element;
@@ -89,33 +84,28 @@ const TooltipToggleButton = ({
 /** @public */
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
-  const translationApi = useApi(appTranslationApiRef);
-  const { t } = usePluginTranslation(settingTranslationRef);
 
-  const activeLanguage = useObservable(
-    translationApi.activeLanguage$(),
-    translationApi.getActiveLanguage(),
+  const { t, i18n } = useTranslation(TRANSLATION_NS);
+
+  const supportedLngs = useMemo(
+    () => (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode'),
+    [i18n],
   );
 
-  const languages = translationApi.getLanguages();
+  if (supportedLngs.length <= 1) {
+    return null;
+  }
 
   const handleSetLanguage = (
     _event: React.MouseEvent<HTMLElement>,
-    newValue: string,
+    newLanguage: string | undefined,
   ) => {
-    if (!newValue || newValue === activeLanguage) {
-      return;
-    }
-    if (languages.some(l => l === newValue)) {
-      translationApi.setActiveLanguage(newValue);
+    if (supportedLngs.some(it => it === newLanguage)) {
+      i18n.changeLanguage(newLanguage);
     } else {
-      translationApi.setActiveLanguage(undefined);
+      i18n.changeLanguage(undefined);
     }
   };
-
-  if (!languages?.length) {
-    return <></>;
-  }
 
   return (
     <ListItem
@@ -131,17 +121,26 @@ export const UserSettingsLanguageToggle = () => {
         <ToggleButtonGroup
           exclusive
           size="small"
-          value={activeLanguage}
+          value={i18n.language}
           onChange={handleSetLanguage}
         >
-          {languages.map(language => {
+          {supportedLngs.map(lng => {
+            const isEn = lng === 'en';
             return (
               <TooltipToggleButton
-                key={language}
-                title={`${t('select', 'Select')} ${language}`}
-                value={language}
+                key={lng}
+                title={t('select_lng', {
+                  defaultValue: isEn ? 'Select English' : undefined,
+                  lng,
+                })}
+                value={lng}
               >
-                <>{t(language)}</>
+                <>
+                  {t('lng', {
+                    defaultValue: isEn ? 'English' : undefined,
+                    lng,
+                  })}
+                </>
               </TooltipToggleButton>
             );
           })}

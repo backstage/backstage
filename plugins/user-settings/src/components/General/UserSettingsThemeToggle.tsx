@@ -27,6 +27,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslation } from 'react-i18next';
+import { TRANSLATION_NS } from '../../translation';
 
 type ThemeIconProps = {
   id: string;
@@ -108,11 +110,13 @@ export const UserSettingsThemeToggle = () => {
 
   const themeIds = appThemeApi.getInstalledThemes();
 
+  const { t } = useTranslation(TRANSLATION_NS);
+
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
     newThemeId: string | undefined,
   ) => {
-    if (themeIds.some(t => t.id === newThemeId)) {
+    if (themeIds.some(it => it.id === newThemeId)) {
       appThemeApi.setActiveThemeId(newThemeId);
     } else {
       appThemeApi.setActiveThemeId(undefined);
@@ -126,8 +130,8 @@ export const UserSettingsThemeToggle = () => {
     >
       <ListItemText
         className={classes.listItemText}
-        primary="Theme"
-        secondary="Change the theme mode"
+        primary={t('theme', 'Theme')}
+        secondary={t('change_the_theme_mode', 'Change the theme mode')}
       />
       <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
         <ToggleButtonGroup
@@ -137,15 +141,15 @@ export const UserSettingsThemeToggle = () => {
           onChange={handleSetTheme}
         >
           {themeIds.map(theme => {
-            const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+            const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
             return (
               <TooltipToggleButton
                 key={theme.id}
-                title={`Select ${theme.title}`}
+                title={t(`select_theme_${theme.id}`, `Select ${theme.title}`)}
                 value={theme.id}
               >
                 <>
-                  {theme.title}&nbsp;
+                  {t(`theme_${theme.id}`, theme.title)}&nbsp;
                   <ThemeIcon
                     id={theme.id}
                     icon={themeIcon}
@@ -155,9 +159,13 @@ export const UserSettingsThemeToggle = () => {
               </TooltipToggleButton>
             );
           })}
-          <Tooltip placement="top" arrow title="Select auto theme">
+          <Tooltip
+            placement="top"
+            arrow
+            title={t('select_theme_auto', 'Select Auto Theme')!}
+          >
             <ToggleButton value="auto" selected={themeId === undefined}>
-              Auto&nbsp;
+              {t('theme_auto', 'Auto')}&nbsp;
               <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </ToggleButton>
           </Tooltip>

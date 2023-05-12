@@ -111,12 +111,33 @@ import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-http-backend';
 
 const app = createApp({
-  localeConfig: {
-    lng: 'zh',
-    languageOptions: ['en', 'zh'],
-    lazyResources: () => import('./i18nRemoteLocales').then(m => m.locales),
+  initI18next: {
+    modules: [LanguageDetector, Backend],
+    options: {
+      supportedLngs: ['zh-Hans', 'zh', 'en'],
+      fallbackLng: {
+        'zh-Hans': ['zh', 'en'],
+        default: ['en'],
+      },
+      resources: {
+        zh: {
+          'plugin__user-settings': {
+            lng: '中文',
+            select_lng: '选择中文',
+          },
+        },
+        'zh-Hans': {
+          'plugin__user-settings': {
+            lng: '简体中文',
+            select_lng: '选择简体中文',
+          },
+        },
+      },
+    },
   },
   apis,
   plugins: Object.values(plugins),

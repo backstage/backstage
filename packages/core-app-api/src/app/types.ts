@@ -25,9 +25,9 @@ import {
   ExternalRouteRef,
   IdentityApi,
   FeatureFlag,
-  LocalConfig,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
+import { Module, InitOptions, NewableModule, Newable } from 'i18next';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -74,6 +74,7 @@ export type AppComponents = {
   Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
+  TranslationProvider?: ComponentType<PropsWithChildren<{}>>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.
@@ -280,10 +281,10 @@ export type AppOptions = {
    */
   bindRoutes?(context: { bind: AppRouteBinder }): void;
 
-  /**
-   * local config i18n init function params
-   */
-  localeConfig?: LocalConfig;
+  initI18next?: {
+    modules?: Array<Module | Newable<Module> | NewableModule<Module>>;
+    options?: InitOptions;
+  };
 };
 
 /**

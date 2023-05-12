@@ -3480,7 +3480,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.6, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.0, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.6, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.0, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+  version: 7.21.0
+  resolution: "@babel/runtime@npm:7.21.0"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 7b33e25bfa9e0e1b9e8828bb61b2d32bdd46b41b07ba7cb43319ad08efc6fda8eb89445193e67d6541814627df0ca59122c0ea795e412b99c5183a0540d338ab
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6":
   version: 7.21.5
   resolution: "@babel/runtime@npm:7.21.5"
   dependencies:
@@ -4091,10 +4100,10 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
-    i18next: ^22.4.14
+    i18next: ^22.4.15
     msw: ^1.0.0
     prop-types: ^15.7.2
-    react-i18next: ^12.2.0
+    react-i18next: ^12.2.2
     react-router-beta: "npm:react-router@6.0.0-beta.0"
     react-router-dom-beta: "npm:react-router-dom@6.0.0-beta.0"
     react-router-dom-stable: "npm:react-router-dom@^6.3.0"
@@ -4308,10 +4317,9 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     cross-fetch: ^3.1.5
     history: ^5.0.0
-    i18next: ^22.4.14
+    i18next: ^22.4.15
     msw: ^1.0.0
     prop-types: ^15.7.2
-    react-i18next: ^12.2.2
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
@@ -9589,6 +9597,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
     msw: ^1.0.0
+    react-i18next: ^12.2.2
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
@@ -21517,7 +21526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.3, cross-fetch@npm:^3.1.5":
+"cross-fetch@npm:3.1.6, cross-fetch@npm:^3.1.3, cross-fetch@npm:^3.1.5":
   version: 3.1.6
   resolution: "cross-fetch@npm:3.1.6"
   dependencies:
@@ -24341,6 +24350,8 @@ __metadata:
     cypress: ^10.0.0
     eslint-plugin-cypress: ^2.10.3
     history: ^5.0.0
+    i18next-browser-languagedetector: ^7.0.1
+    i18next-http-backend: ^2.2.0
     prop-types: ^15.7.2
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -26867,12 +26878,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^22.4.14":
-  version: 22.4.14
-  resolution: "i18next@npm:22.4.14"
+"i18next-browser-languagedetector@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "i18next-browser-languagedetector@npm:7.0.1"
+  dependencies:
+    "@babel/runtime": ^7.19.4
+  checksum: 03129614be8761988df59b630359ded4f7c989eec4553781b5968139fd898de1eb09128c4c69c1365b547649ad829ff9abe1f60161658f8789668bcc623adcf0
+  languageName: node
+  linkType: hard
+
+"i18next-http-backend@npm:^2.2.0":
+  version: 2.2.1
+  resolution: "i18next-http-backend@npm:2.2.1"
+  dependencies:
+    cross-fetch: 3.1.6
+  checksum: a3f33b455555587ac1a5db94119bd944dca1ce7b685161d487dd0bd50342f4ed060dd263bf1adacd14cb0c0a58f695befb9a22ea1eb87f19be98ef7bbac91349
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^22.4.15":
+  version: 22.5.0
+  resolution: "i18next@npm:22.5.0"
   dependencies:
     "@babel/runtime": ^7.20.6
-  checksum: 963b70c7e1fee9666ef4d9ea87a63d0c9483007e2a0ea9520356e43a2cd550f3eb1cab24c57a102f3e84fd737fdff41bafc953dafc3bd6589dc9ea52ddb49905
+  checksum: 291c0e02fda20bd1827b6529dad74c01867892c7ac000befe0f69e10ad97ab074a2ae5b4ce1e0638c28ae1a6f59d1ed8503ea05bd1c324d731a44dd94c43a49a
   languageName: node
   linkType: hard
 
@@ -35454,9 +35483,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^12.2.0, react-i18next@npm:^12.2.2":
-  version: 12.2.2
-  resolution: "react-i18next@npm:12.2.2"
+"react-i18next@npm:^12.2.2":
+  version: 12.3.1
+  resolution: "react-i18next@npm:12.3.1"
   dependencies:
     "@babel/runtime": ^7.20.6
     html-parse-stringify: ^3.0.1
@@ -35468,7 +35497,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 460e32779f6abba287d63be6054f855202c2e365cbceca36673c8f37a497c2ac5a21a8577d20fcc0b3fcd4825f89427dc4fdf00136365963d27dac7d997c3c74
+  checksum: fe3f360e5184bc63861734e94bf625a09b9ec0d28fab41779a68758af258fd1737dde25ff7a88ddb66c1571a3e3de5b3403825a91b4949bf9832a00615acb87a
   languageName: node
   linkType: hard
 
@@ -36972,10 +37001,12 @@ __metadata:
     eslint-plugin-testing-library: ^5.9.1
     fs-extra: 10.1.0
     husky: ^8.0.0
+    i18next: ^22.4.15
     lint-staged: ^13.0.0
     minimist: ^1.2.5
     node-gyp: ^9.1.0
     prettier: ^2.2.1
+    react-i18next: ^12.2.2
     semver: ^7.3.2
     shx: ^0.3.2
     ts-node: ^10.4.0

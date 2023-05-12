@@ -50,9 +50,8 @@
     "@backstage/version-bridge": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0",
     "history": "^5.0.0",
-    "i18next": "^22.4.14",
+    "i18next": "^22.4.15",
     "prop-types": "^15.7.2",
-    "react-i18next": "^12.2.2",
     "zen-observable": "^0.10.0"
   },
   "peerDependencies": {

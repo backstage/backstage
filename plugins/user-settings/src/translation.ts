@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import { createTranslationRef } from '@backstage/core-plugin-api';
-
-export const settingTranslationRef = createTranslationRef({
-  id: 'setting',
-  resources: {
-    en: {
-      zh: '中文',
-      en: 'English',
-      select: 'Select',
-      language: 'Language',
-      change_the_language: 'Change the language',
-    },
-    zh: {
-      zh: '中文',
-      en: 'English',
-      select: '选择',
-      language: '语言',
-      change_the_language: '选择语言',
-    },
-  },
-});
+export const TRANSLATION_NS = 'plugin__user-settings';

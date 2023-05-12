@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
-import { type i18n } from 'i18next';
+import React, { PropsWithChildren } from 'react';
+import { useApi } from '@backstage/core-plugin-api';
+import { appTranslationApiRef } from '@backstage/core-plugin-api';
+import { I18nextProvider } from 'react-i18next';
 
-export type AppTranslationApi = {
-  getI18n(): i18n;
-};
-
-/**
- * The {@link ApiRef} of {@link AppTranslationApi}.
- *
- * @public
- */
-export const appTranslationApiRef: ApiRef<AppTranslationApi> = createApiRef({
-  id: 'core.apptranslation',
-});
+export function AppTranslationProvider({ children }: PropsWithChildren<{}>) {
+  const appTranslationAPi = useApi(appTranslationApiRef);
+  const i18n = appTranslationAPi.getI18n();
+  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+}
