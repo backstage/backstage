@@ -55,6 +55,7 @@ export type BackstagePaletteAdditions = {
     selectedColor: string;
     navItem?: {
       hoverBackground: string;
+      selectBackground: string;
     };
     submenu?: {
       background: string;
