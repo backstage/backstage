@@ -188,6 +188,7 @@ learnings
 Leasot
 lerna
 Lerna
+lightbox
 limitranges
 LocalStack
 lockdown
