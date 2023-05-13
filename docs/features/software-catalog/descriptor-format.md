@@ -247,7 +247,6 @@ semantic implication later.
 For now, it is recommended to not specify a namespace unless you have specific
 need to do so. This means the entity belongs to the `"default"` namespace.
 
-
 Namespaces must be sequences of `[a-zA-Z0-9]`, possibly separated by `-`, at
 most 63 characters in total. Namespace names are case insensitive and will be rendered as lower case in most places.
 
