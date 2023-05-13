@@ -71,6 +71,7 @@ const useStyles = makeStyles(
  */
 export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
+  rootEntityRefs?: string[];
   maxDepth?: number;
   unidirectional?: boolean;
   mergeRelations?: boolean;
@@ -84,6 +85,7 @@ export type EntityRelationsGraphProps = {
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
+  showFilters?: boolean;
 };
 
 /**

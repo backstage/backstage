@@ -53,15 +53,15 @@ describe('useCatalogGraphPage', () => {
     const { result } = renderHook(() =>
       useCatalogGraphPage({
         initialState: {
-          rootEntityRefs: ['b:d/c'],
-          maxDepth: 2,
-          direction: Direction.RIGHT_LEFT,
-          mergeRelations: false,
-          unidirectional: false,
-          showFilters: false,
           selectedKinds: ['API'],
           selectedRelations: [RELATION_MEMBER_OF],
         },
+        rootEntityRefs: ['b:d/c'],
+        maxDepth: 2,
+        direction: Direction.RIGHT_LEFT,
+        mergeRelations: false,
+        unidirectional: false,
+        showFilters: false,
       }),
     );
 
@@ -124,9 +124,7 @@ describe('useCatalogGraphPage', () => {
   test('should update state in url (only push if different root entity)', () => {
     const { result, rerender } = renderHook(() =>
       useCatalogGraphPage({
-        initialState: {
-          rootEntityRefs: ['component:default/first'],
-        },
+        rootEntityRefs: ['component:default/first'],
       }),
     );
 

@@ -29,7 +29,7 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import usePrevious from 'react-use/lib/usePrevious';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction, EntityRelationsGraphProps } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
@@ -56,19 +56,13 @@ export type CatalogGraphPageValue = {
 
 export function useCatalogGraphPage({
   initialState = {},
+  ...props
 }: {
   initialState?: {
     selectedRelations?: string[] | undefined;
     selectedKinds?: string[] | undefined;
-    rootEntityRefs?: string[];
-    maxDepth?: number;
-    unidirectional?: boolean;
-    mergeRelations?: boolean;
-    direction?: Direction;
-    showFilters?: boolean;
-    curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
-}): CatalogGraphPageValue {
+} & Partial<EntityRelationsGraphProps>): CatalogGraphPageValue {
   const location = useLocation();
   const query = useMemo(
     () =>
@@ -92,13 +86,13 @@ export function useCatalogGraphPage({
     () =>
       (Array.isArray(query.rootEntityRefs)
         ? query.rootEntityRefs
-        : initialState?.rootEntityRefs ?? []
+        : props?.rootEntityRefs ?? []
       ).map(r => parseEntityRef(r)),
   );
   const [maxDepth, setMaxDepth] = useState<number>(() =>
     typeof query.maxDepth === 'string'
       ? parseMaxDepth(query.maxDepth)
-      : initialState?.maxDepth ?? Number.POSITIVE_INFINITY,
+      : props?.maxDepth ?? Number.POSITIVE_INFINITY,
   );
   const [selectedRelations, setSelectedRelations] = useState<
     string[] | undefined
@@ -116,27 +110,27 @@ export function useCatalogGraphPage({
   const [unidirectional, setUnidirectional] = useState<boolean>(() =>
     typeof query.unidirectional === 'string'
       ? query.unidirectional === 'true'
-      : initialState?.unidirectional ?? true,
+      : props?.unidirectional ?? true,
   );
   const [mergeRelations, setMergeRelations] = useState<boolean>(() =>
     typeof query.mergeRelations === 'string'
       ? query.mergeRelations === 'true'
-      : initialState?.mergeRelations ?? true,
+      : props?.mergeRelations ?? true,
   );
   const [direction, setDirection] = useState<Direction>(() =>
     typeof query.direction === 'string'
       ? query.direction
-      : initialState?.direction ?? Direction.LEFT_RIGHT,
+      : props?.direction ?? Direction.LEFT_RIGHT,
   );
   const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(() =>
     typeof query.curve === 'string'
       ? query.curve
-      : initialState?.curve ?? 'curveMonotoneX',
+      : props?.curve ?? 'curveMonotoneX',
   );
   const [showFilters, setShowFilters] = useState<boolean>(() =>
     typeof query.showFilters === 'string'
       ? query.showFilters === 'true'
-      : initialState?.showFilters ?? true,
+      : props?.showFilters ?? true,
   );
   const toggleShowFilters = useCallback(
     () => setShowFilters(s => !s),

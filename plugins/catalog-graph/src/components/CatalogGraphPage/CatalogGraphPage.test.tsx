@@ -93,10 +93,10 @@ describe('<CatalogGraphPage/>', () => {
       <TestApiProvider apis={[[catalogApiRef, catalog]]}>
         <CatalogGraphPage
           initialState={{
-            showFilters: false,
-            rootEntityRefs: ['b:d/c'],
             selectedKinds: ['b'],
           }}
+          rootEntityRefs={['b:d/c']}
+          showFilters={false}
         />
       </TestApiProvider>
     );

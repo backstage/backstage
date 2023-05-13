@@ -35,7 +35,6 @@ import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ALL_RELATION_PAIRS,
-  Direction,
   EntityNode,
   EntityRelationsGraph,
   EntityRelationsGraphProps,
@@ -108,17 +107,10 @@ export const CatalogGraphPage = (
     initialState?: {
       selectedRelations?: string[];
       selectedKinds?: string[];
-      rootEntityRefs?: string[];
-      maxDepth?: number;
-      unidirectional?: boolean;
-      mergeRelations?: boolean;
-      direction?: Direction;
-      showFilters?: boolean;
-      curve?: 'curveStepBefore' | 'curveMonotoneX';
     };
   } & Partial<EntityRelationsGraphProps>,
 ) => {
-  const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
+  const { relationPairs = ALL_RELATION_PAIRS } = props;
 
   const navigate = useNavigate();
   const classes = useStyles();
@@ -142,7 +134,7 @@ export const CatalogGraphPage = (
     setRootEntityNames,
     showFilters,
     toggleShowFilters,
-  } = useCatalogGraphPage({ initialState });
+  } = useCatalogGraphPage({ ...props });
   const analytics = useAnalytics();
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {

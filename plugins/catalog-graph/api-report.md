@@ -24,13 +24,6 @@ export const CatalogGraphPage: (
       | {
           selectedRelations?: string[] | undefined;
           selectedKinds?: string[] | undefined;
-          rootEntityRefs?: string[] | undefined;
-          maxDepth?: number | undefined;
-          unidirectional?: boolean | undefined;
-          mergeRelations?: boolean | undefined;
-          direction?: Direction | undefined;
-          showFilters?: boolean | undefined;
-          curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         }
       | undefined;
   } & Partial<EntityRelationsGraphProps>,
@@ -105,6 +98,7 @@ export const EntityRelationsGraph: (
 // @public (undocumented)
 export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
+  rootEntityRefs?: string[];
   maxDepth?: number;
   unidirectional?: boolean;
   mergeRelations?: boolean;
@@ -118,6 +112,7 @@ export type EntityRelationsGraphProps = {
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
+  showFilters?: boolean;
 };
 
 // @public
