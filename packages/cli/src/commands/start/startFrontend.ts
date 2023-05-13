@@ -45,7 +45,7 @@ function checkReactVersion() {
           `
 ⚠️                                                                           ⚠️
 ⚠️ You are using React version 16, which is deprecated for use in Backstage. ⚠️
-⚠️ Please upgrade to at React 17 by updating your packages/app dependencies. ⚠️
+⚠️ Please upgrade to React 17 by updating your packages/app dependencies.    ⚠️
 ⚠️                                                                           ⚠️
 `,
         ),
