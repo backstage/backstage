@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   DocumentData,
   Firestore,
@@ -57,7 +57,7 @@ export class FirestoreKeyStore implements KeyStore {
 
   static async verifyConnection(
     keyStore: FirestoreKeyStore,
-    logger?: Logger,
+    logger?: LoggerService,
   ): Promise<void> {
     try {
       await keyStore.verify();

@@ -24,7 +24,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenIssuer, TokenParams } from '../../identity/types';
 import { AuthResolverContext } from '../../providers';
 import { AuthResolverCatalogUserQuery } from '../../providers/types';
@@ -54,7 +54,7 @@ export function getDefaultOwnershipEntityRefs(entity: Entity) {
  */
 export class CatalogAuthResolverContext implements AuthResolverContext {
   static create(options: {
-    logger: Logger;
+    logger: LoggerService;
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
     tokenManager: TokenManager;
@@ -73,7 +73,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   }
 
   private constructor(
-    public readonly logger: Logger,
+    public readonly logger: LoggerService,
     public readonly tokenIssuer: TokenIssuer,
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,

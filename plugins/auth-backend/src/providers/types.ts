@@ -22,7 +22,7 @@ import {
   BackstageSignInResult,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenParams } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
 
@@ -207,7 +207,7 @@ export type AuthProviderFactory = (options: {
   providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   resolverContext: AuthResolverContext;
 }) => AuthProviderRouteHandlers;
 
