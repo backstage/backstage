@@ -21,6 +21,7 @@ import {
   FormControlLabel,
   TextField,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -41,11 +42,21 @@ import { humanizeEntity } from '../EntityRefLink/humanize';
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityOwnerPicker',
+  },
+);
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @public */
 export const EntityOwnerPicker = () => {
+  const classes = useStyles();
   const {
     updateFilters,
     filters,
@@ -201,6 +212,7 @@ export const EntityOwnerPicker = () => {
           renderInput={params => (
             <TextField
               {...params}
+              className={classes.input}
               onChange={e => {
                 setText(e.currentTarget.value);
               }}
