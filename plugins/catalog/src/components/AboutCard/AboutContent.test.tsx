@@ -716,7 +716,7 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
-      expect(screen.queryByText('Labels')).not.toBeInTheDocument();  
+      expect(screen.queryByText('Labels')).not.toBeInTheDocument();
     });
   });
 });
