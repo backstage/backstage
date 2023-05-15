@@ -1,9 +1,8 @@
 ---
-'@backstage/plugin-catalog-react': minor
+'@backstage/plugin-catalog-react': patch
 ---
 
-`EntityOwnerPicker` now loads entities asynchronously
+The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
 
-**BREAKING**: In order to improve the performance of the component, the users and groups displayed by `EntityOwnerPicker` aren't inferred
-anymore by the entities available in the `EntityListContext` and will no longer react to changes in the filters of `EntityListContext`.
-Instead, the entities are displayed in batches, loaded asynchronously on scroll and filtered server side.
+The component now loads entities asynchronously, resulting in improved performance and responsiveness. Instead of loading all entities upfront, they are now loaded in batches as the user scrolls.
+The previous implementation inferred users and groups displayed by the `EntityOwnerPicker` component based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling and improved performance.
