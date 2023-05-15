@@ -33,25 +33,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.61",
-    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0",
-    "@rjsf/material-ui": "5.6.0",
     "@rjsf/utils": "5.6.0",
-    "@rjsf/validator-ajv8": "5.6.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "lodash": "^4.17.21",
-    "react-grid-layout": "^1.3.4",
-    "react-resizable": "^3.0.4",
-    "react-use": "^17.2.4",
-    "zod": "~3.21.4"
+    "@types/react": "^16.13.1 || ^17.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",

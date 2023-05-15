@@ -24,6 +24,7 @@ import { RJSFSchema } from '@rjsf/utils';
 
 /**
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
@@ -31,6 +32,7 @@ export type ComponentRenderer = {
 
 /**
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export type ComponentParts = {
   Content: (props?: any) => JSX.Element;
@@ -41,16 +43,19 @@ export type ComponentParts = {
 
 /**
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export type RendererProps = { title: string } & ComponentParts;
 
 /**
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
 
 /**
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export type CardLayout = {
   width?: { minColumns?: number; maxColumns?: number; defaultColumns?: number };
@@ -76,6 +81,7 @@ export type CardConfig = {
  * An extension creator to create card based components for the homepage
  *
  * @public
+ * @deprecated Please use the same type from `@backstage/plugin-home-react` instead
  */
 export function createCardExtension<T>(options: {
   title: string;

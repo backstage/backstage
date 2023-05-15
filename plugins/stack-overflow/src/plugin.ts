@@ -20,7 +20,7 @@ import {
   createApiFactory,
   configApiRef,
 } from '@backstage/core-plugin-api';
-import { createCardExtension } from '@backstage/plugin-home';
+import { createCardExtension } from '@backstage/plugin-home-react';
 import { StackOverflowQuestionsContentProps } from './types';
 import { stackOverflowApiRef, StackOverflowClient } from './api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
