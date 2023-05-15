@@ -63,7 +63,7 @@ module.exports = {
           customCss: 'src/theme/customTheme.scss',
         },
         gtag: {
-          trackingID: 'G-KSEVGGNCJW',
+          trackingID: ['G-KSEVGGNCJW', 'UA-163836834-5'],
         },
       },
     ],
