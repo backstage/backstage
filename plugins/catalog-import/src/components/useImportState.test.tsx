@@ -15,8 +15,7 @@
  */
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { cleanup } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, cleanup } from '@testing-library/react';
 import { AnalyzeResult } from '../api';
 
 import {
@@ -57,7 +56,7 @@ describe('useImportState', () => {
     const { result } = renderHook(() =>
       useImportState({ initialUrl: 'http://my-url' }),
     );
-    await cleanup();
+    cleanup();
 
     expect(result.current).toMatchObject({
       activeFlow: 'unknown',
@@ -73,7 +72,6 @@ describe('useImportState', () => {
   describe('onAnalysis & onPrepare & onReview & onReset', () => {
     it('should work', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current).toMatchObject({
         activeFlow: 'unknown',
@@ -148,7 +146,6 @@ describe('useImportState', () => {
 
     it('should work skipped', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current).toMatchObject({
         activeFlow: 'unknown',
@@ -198,7 +195,6 @@ describe('useImportState', () => {
 
     it('should ignore on invalid state', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       // state 'analyze'
       act(() => {
@@ -264,11 +260,8 @@ describe('useImportState', () => {
   describe('onGoBack', () => {
     it('should work', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
-
       expect(result.current.activeStepNumber).toBe(0);
       expect(result.current.onGoBack).toBeUndefined();
-
       act(() =>
         as(result.current, 'analyze').onAnalysis(
           'single-location',
@@ -277,11 +270,9 @@ describe('useImportState', () => {
         ),
       );
       expect(result.current.activeStepNumber).toBe(1);
-
       expect(result.current.onGoBack).not.toBeUndefined();
       act(() => result.current.onGoBack!());
       expect(result.current.activeStepNumber).toBe(0);
-
       act(() =>
         as(result.current, 'analyze').onAnalysis(
           'single-location',
@@ -291,23 +282,17 @@ describe('useImportState', () => {
       );
       act(() => as(result.current, 'prepare').onPrepare(locationAP));
       expect(result.current.activeStepNumber).toBe(2);
-
       expect(result.current.onGoBack).not.toBeUndefined();
       act(() => result.current.onGoBack!());
       expect(result.current.activeStepNumber).toBe(1);
-
       act(() => as(result.current, 'prepare').onPrepare(locationAP));
       act(() => as(result.current, 'review').onReview(locationR));
       expect(result.current.activeStepNumber).toBe(3);
     });
-
     it('should work for skipped', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
-
       expect(result.current.activeStepNumber).toBe(0);
       expect(result.current.onGoBack).toBeUndefined();
-
       act(() =>
         as(result.current, 'analyze').onAnalysis(
           'single-location',
@@ -320,19 +305,14 @@ describe('useImportState', () => {
       );
       expect(result.current.activeStepNumber).toBe(2);
       expect(result.current.onGoBack).not.toBeUndefined();
-
       act(() => result.current.onGoBack!());
       expect(result.current.activeStepNumber).toBe(0);
       expect(result.current.onGoBack).toBeUndefined();
     });
-
     describe('should consider prepareNotRepeatable', () => {
       it('as true', async () => {
         const { result } = renderHook(() => useImportState());
-        await cleanup();
-
         expect(result.current.onGoBack).toBeUndefined();
-
         act(() =>
           as(result.current, 'analyze').onAnalysis(
             'multiple-locations',
@@ -345,16 +325,11 @@ describe('useImportState', () => {
             notRepeatable: true,
           }),
         );
-
         expect(result.current.onGoBack).toBeUndefined();
       });
-
       it('as false', async () => {
         const { result } = renderHook(() => useImportState());
-        await cleanup();
-
         expect(result.current.onGoBack).toBeUndefined();
-
         act(() =>
           as(result.current, 'analyze').onAnalysis(
             'multiple-locations',
@@ -367,7 +342,6 @@ describe('useImportState', () => {
             notRepeatable: false,
           }),
         );
-
         expect(result.current.onGoBack).not.toBeUndefined();
       });
     });
