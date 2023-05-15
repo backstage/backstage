@@ -26,11 +26,12 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useDebouncedEffect } from '@react-hookz/web';
 import PersonIcon from '@material-ui/icons/Person';
@@ -102,6 +103,8 @@ export const EntityOwnerPicker = () => {
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
+  const { getEntity, setEntity } = useSelectedOwners(selectedOwners);
+
   // Set selected owners on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
@@ -143,12 +146,26 @@ export const EntityOwnerPicker = () => {
             }
             return o === v;
           }}
+          getOptionLabel={o => {
+            const entity = typeof o === 'string' ? getEntity(o) || o : o;
+
+            return typeof entity === 'string'
+              ? entity
+              : humanizeEntity(entity, entity.metadata.name);
+          }}
           onChange={(_: object, owners) => {
             setText('');
             setSelectedOwners(
-              owners.map(e =>
-                typeof e === 'string' ? e : stringifyEntityRef(e),
-              ),
+              owners.map(e => {
+                const entityRef =
+                  typeof e === 'string' ? e : stringifyEntityRef(e);
+
+                if (typeof e !== 'string') {
+                  setEntity(e);
+                }
+
+                return entityRef;
+              }),
             );
           }}
           filterOptions={x => x}
@@ -214,3 +231,36 @@ export const EntityOwnerPicker = () => {
     </Box>
   );
 };
+
+/**
+ * Hook used for storing the full entity of the specified owners
+ * in order to display users and group using the information contained on each entity.
+ * When a component is rendered for the first time, it loads the content of the entities
+ * specified by `initialSelectedOwnersRefs` and export the `getEntity` and `setEntity`
+ * utilities, used to retrieve and modify the owners.
+ */
+function useSelectedOwners(initialSelectedOwnersRefs: string[]) {
+  const allEntities = useRef<Record<string, Entity>>({});
+  const catalogApi = useApi(catalogApiRef);
+
+  useAsync(async () => {
+    if (initialSelectedOwnersRefs.length === 0) {
+      return;
+    }
+    const initialSelectedEntities = await catalogApi.getEntitiesByRefs({
+      entityRefs: initialSelectedOwnersRefs,
+    });
+    initialSelectedEntities.items.forEach(e => {
+      if (e) {
+        allEntities.current[stringifyEntityRef(e)] = e;
+      }
+    });
+  }, []);
+
+  return {
+    getEntity: (entityRef: string) => allEntities.current[entityRef],
+    setEntity: (entity: Entity) => {
+      allEntities.current[stringifyEntityRef(entity)] = entity;
+    },
+  };
+}
