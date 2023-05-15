@@ -13,12 +13,12 @@ import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
 } & T;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CardLayout = {
   width?: {
     minColumns?: number;
@@ -53,7 +53,7 @@ export const ComponentAccordion: (props: {
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ComponentParts = {
   Content: (props?: any) => JSX.Element;
   Actions?: () => JSX.Element;
@@ -61,7 +61,7 @@ export type ComponentParts = {
   ContextProvider?: (props: any) => JSX.Element;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
 };
@@ -82,7 +82,7 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX.Element;
 
-// @public
+// @public @deprecated
 export function createCardExtension<T>(options: {
   title: string;
   components: () => Promise<ComponentParts>;
@@ -157,7 +157,7 @@ export type LayoutConfiguration = {
   height: number;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type RendererProps = {
   title: string;
 } & ComponentParts;
