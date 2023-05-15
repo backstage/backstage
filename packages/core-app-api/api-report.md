@@ -445,8 +445,6 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
   getRegisteredFlags(): FeatureFlag[];
   // (undocumented)
-  getSortedFlags(): FeatureFlag[];
-  // (undocumented)
   isActive(name: string): boolean;
   // (undocumented)
   registerFlag(flag: FeatureFlag): void;
