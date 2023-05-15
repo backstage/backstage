@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   List,
   TextField,
@@ -36,14 +36,21 @@ import ClearIcon from '@material-ui/icons/Clear';
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
 
-  const featureFlags = featureFlagsApi.getSortedFlags();
+  const inputRef = React.useRef<HTMLElement>();
+  const [isFirstLoad, setIsFirstLoad] = React.useState<boolean>(true);
+  useEffect(() => {
+    if (isFirstLoad) setIsFirstLoad(false);
+  }, [isFirstLoad]);
+
+  const featureFlags = isFirstLoad
+    ? featureFlagsApi.getSortedFlags()
+    : featureFlagsApi.getRegisteredFlags();
   const initialFlagState = Object.fromEntries(
     featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
   );
 
   const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
   const [filterInput, setFilterInput] = useState<string>('');
-  const inputRef = React.useRef<HTMLElement>();
 
   const toggleFlag = useCallback(
     (flagName: string) => {
