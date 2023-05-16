@@ -361,6 +361,7 @@ SVGs
 talkdesk
 Talkdesk
 Tanzu
+targetRef
 tasklist
 techdocs
 Telenor
