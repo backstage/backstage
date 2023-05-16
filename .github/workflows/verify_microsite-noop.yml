@@ -6,7 +6,9 @@ on:
   pull_request:
     paths-ignore:
       - '.github/workflows/verify_microsite-next.yml'
+      - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
+      - 'mkdocs.yml'
       - 'docs/**'
 
 jobs:

@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - '.github/workflows/verify_microsite-next.yml'
+      - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
+      - 'mkdocs.yml'
       - 'docs/**'
 
 jobs:
