@@ -28,11 +28,15 @@ export class SingleInstanceGitlabCredentialsProvider
 
   constructor(private readonly token?: string) {}
 
-  async getCredentials(): Promise<GitlabCredentials> {
+  async getCredentials(_opts: { url: string }): Promise<GitlabCredentials> {
+    if (!this.token) {
+      return {};
+    }
+
     return {
-      headers: this.token
-        ? { Authorization: `Bearer ${this.token}` }
-        : undefined,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
       token: this.token,
     };
   }

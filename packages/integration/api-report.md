@@ -501,7 +501,7 @@ export type GitlabCredentials = {
 // @public (undocumented)
 export interface GitlabCredentialsProvider {
   // (undocumented)
-  getCredentials(opts?: { url: string }): Promise<GitlabCredentials>;
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
 }
 
 // @public

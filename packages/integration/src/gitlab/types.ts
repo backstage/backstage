@@ -26,5 +26,5 @@ export type GitlabCredentials = {
  * @public
  */
 export interface GitlabCredentialsProvider {
-  getCredentials(opts?: { url: string }): Promise<GitlabCredentials>;
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
 }
