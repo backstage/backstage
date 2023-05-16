@@ -64,9 +64,10 @@ describe('FileConfigSource', () => {
 
     const source = FileConfigSource.create({ path: tmp.resolve('a.yaml') });
 
-    setTimeout(() => {
-      tmp.write('a.yaml', 'a: 2');
-    }, 10);
+    source
+      .readConfigData()
+      .next()
+      .then(() => tmp.write('a.yaml', 'a: 2'));
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: 1 }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
@@ -130,9 +131,10 @@ describe('FileConfigSource', () => {
       substitutionFunc: async name => (name === 'MY_VALUE' ? '6' : '7'),
     });
 
-    setTimeout(() => {
-      tmp.write('x.yaml', '${MY_OTHER_VALUE}');
-    }, 10);
+    source
+      .readConfigData()
+      .next()
+      .then(() => tmp.write('x.yaml', '${MY_OTHER_VALUE}'));
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: '6' }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
@@ -150,9 +152,10 @@ describe('FileConfigSource', () => {
       path: tmp.resolve('a.yaml'),
     });
 
-    setTimeout(() => {
-      tmp.write('x.txt', '9');
-    }, 10);
+    source
+      .readConfigData()
+      .next()
+      .then(() => tmp.write('x.txt', '9'));
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: '8' }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
