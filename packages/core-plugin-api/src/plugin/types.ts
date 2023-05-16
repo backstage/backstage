@@ -16,6 +16,7 @@
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
+import { TranslationRef } from '../translation';
 
 /**
  * Plugin extension type.
@@ -64,6 +65,7 @@ export type BackstagePlugin<
   routes: Routes;
   externalRoutes: ExternalRoutes;
   __experimentalReconfigure(options: PluginInputOptions): void;
+  getTranslationRef(): TranslationRef | undefined;
 };
 
 /**
@@ -92,6 +94,7 @@ export type PluginConfig<
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   __experimentalConfigure?(options?: PluginInputOptions): {};
+  translationRef?: TranslationRef;
 };
 
 /**

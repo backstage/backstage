@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
-export * from './auth';
-
-export * from './AlertApi';
-export * from './AnalyticsApi';
-export * from './AppThemeApi';
-export * from './ConfigApi';
-export * from './DiscoveryApi';
-export * from './ErrorApi';
-export * from './FeatureFlagsApi';
-export * from './FetchApi';
-export * from './OAuthRequestApi';
-export * from './StorageApi';
-export * from './AppTranslationApi';
+export const locales = {
+  en: {
+    catalog: {
+      owned: 'owned',
+      starred: 'starred',
+    },
+  },
+  zh: {
+    catalog: {
+      owned: '拥有1',
+      starred: '关注1',
+    },
+  },
+};
