@@ -73,8 +73,10 @@ const useStyles = makeStyles(
         color: theme.palette.banner.link,
       },
     },
-    button: {
-      color: theme.palette.banner.closeButtonColor ?? 'inherit',
+    button_info: { color: theme.palette.banner.closeButtonColor ?? 'inherit' },
+    button_error: { color: theme.palette.banner.closeButtonColor ?? 'inherit' },
+    button_warning: {
+      color: theme.palette.banner.closeButtonColorDark ?? 'inherit',
     },
     info: {
       backgroundColor: theme.palette.banner.info,
@@ -85,6 +87,7 @@ const useStyles = makeStyles(
     warning: {
       backgroundColor:
         theme.palette.banner.warning ?? theme.palette.banner.error,
+      color: theme.palette.banner.textDark ?? theme.palette.banner.text,
     },
   }),
   { name: 'BackstageDismissableBanner' },
@@ -147,7 +150,7 @@ export const DismissableBanner = (props: Props) => {
           <IconButton
             key="dismiss"
             title="Permanently dismiss this message"
-            className={classes.button}
+            className={classes[`button_${variant}`]}
             onClick={handleClick}
           >
             <Close className={classes.icon} />
