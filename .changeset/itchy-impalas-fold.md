@@ -6,4 +6,4 @@
 '@backstage/plugin-techdocs-node': patch
 ---
 
-Standardize @aws-sdk v3 versions
+Standardize `@aws-sdk` v3 versions
