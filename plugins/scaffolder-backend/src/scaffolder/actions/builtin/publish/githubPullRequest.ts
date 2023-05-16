@@ -137,6 +137,8 @@ export const createPublishGithubPullRequestAction = (
     reviewers?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -208,6 +210,16 @@ export const createPublishGithubPullRequestAction = (
             title: 'Commit Message',
             description: 'The commit message for the pull request commit',
           },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
+          },
         },
       },
       output: {
@@ -240,6 +252,8 @@ export const createPublishGithubPullRequestAction = (
         reviewers,
         teamReviewers,
         commitMessage,
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -306,6 +320,17 @@ export const createPublishGithubPullRequestAction = (
             {
               files,
               commit: commitMessage ?? title,
+              author:
+                gitAuthorEmail && gitAuthorName
+                  ? { email: gitAuthorEmail, name: gitAuthorName }
+                  : undefined,
+              committer:
+                gitAuthorEmail || gitAuthorName
+                  ? {
+                      email: gitAuthorEmail ?? gitAuthorEmail,
+                      name: gitAuthorName ?? gitAuthorName,
+                    }
+                  : undefined,
             },
           ],
           body: description,

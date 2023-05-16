@@ -597,4 +597,170 @@ describe('createPublishGithubPullRequestAction', () => {
       });
     });
   });
+
+  describe('with email and name', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        commitMessage: 'Create my new app, but in the commit message',
+        gitAuthorName: 'author',
+        gitAuthorEmail: 'authoremail@email.com',
+      };
+
+      mockFs({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request with both name and email existing', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app, but in the commit message',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            author: {
+              name: 'author',
+              email: 'authoremail@email.com',
+            },
+            committer: {
+              name: 'author',
+              email: 'authoremail@email.com',
+            },
+          },
+        ],
+      });
+    });
+
+    it('creates a pull request with only name and no email existing', async () => {
+      ctx.input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        commitMessage: 'Create my new app, but in the commit message',
+        gitAuthorName: 'author',
+      };
+
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app, but in the commit message',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            committer: {
+              name: 'author',
+            },
+          },
+        ],
+      });
+    });
+
+    it('creates a pull request with no name and email existing', async () => {
+      ctx.input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        commitMessage: 'Create my new app, but in the commit message',
+        gitAuthorEmail: 'authoremail@email.com',
+      };
+
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app, but in the commit message',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            committer: {
+              email: 'authoremail@email.com',
+            },
+          },
+        ],
+      });
+    });
+
+    it('creates a pull request with no name and no email existing', async () => {
+      ctx.input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        commitMessage: 'Create my new app, but in the commit message',
+      };
+
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app, but in the commit message',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+      });
+    });
+  });
 });
