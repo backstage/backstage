@@ -42,7 +42,7 @@ backend.start();
 
 ### Using Auth Middleware
 
-If your Backstage instance uses service-to-service authentication you can pass an optional tokenManager to the collator factory. This will ensure that the collator makes authenticated requests to the explore backend.
+If your Backstage instance uses service-to-service authentication you can pass an optional `tokenManager` to the collator factory. This will ensure that the collator makes authenticated requests to the explore backend.
 
 ```tsx
 indexBuilder.addCollator({
