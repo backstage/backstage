@@ -37,6 +37,9 @@ jobs:
       - name: build API reference
         run: yarn build:api-docs
 
+      - name: Build MkDocs for TechDocs
+        run: mkdocs build --strict
+
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
 
