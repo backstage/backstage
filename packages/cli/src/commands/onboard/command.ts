@@ -51,6 +51,15 @@ export async function command(): Promise<void> {
   const { shouldSetupAuth, shouldSetupScaffolder, shouldDiscoverEntities } =
     answers;
 
+  if (!shouldSetupAuth && !shouldSetupScaffolder && !shouldDiscoverEntities) {
+    Task.log(
+      chalk.yellow(
+        'If you change your mind, feel free to re-run this command.',
+      ),
+    );
+    return;
+  }
+
   let providerInfo;
   if (shouldSetupAuth) {
     providerInfo = await auth();
@@ -62,15 +71,6 @@ export async function command(): Promise<void> {
 
   if (shouldDiscoverEntities) {
     await discover(providerInfo);
-  }
-
-  if (!shouldSetupAuth && !shouldSetupScaffolder && !shouldDiscoverEntities) {
-    Task.log(
-      chalk.yellow(
-        'If you change your mind, feel free to re-run this command.',
-      ),
-    );
-    return;
   }
 
   Task.log();
