@@ -21,8 +21,9 @@ Configure the action:
 
 import {
   createGitlabProjectAccessTokenAction,
-  createGitlabProjectAccessTokenAction,
   createGitlabProjectDeployTokenAction,
+  createGitlabProjectVariableAction,
+  createGitlabGroupEnsureExistsAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -36,18 +37,10 @@ const builtInActions = createBuiltinActions({
 // Add Gitlab Actions
 const actions = [
   ...builtInActions,
-  createGitlabProjectAccessTokenAction({
-    integrations: integrations,
-  }),
-  createGitlabProjectAccessTokenAction({
-    integrations: integrations,
-  }),
-  createGitlabProjectDeployTokenAction({
-    integrations: integrations,
-  }),
-  createGitlabGroupEnsureExistsAction({
-    integrations: integrations,
-  }),
+  createGitlabProjectAccessTokenAction({ integrations: integrations }),
+  createGitlabProjectDeployTokenAction({ integrations: integrations }),
+  createGitlabProjectVariableAction({ integrations: integrations }),
+  createGitlabGroupEnsureExistsAction({ integrations: integrations }),
 ];
 
 // Create Scaffolder Router
