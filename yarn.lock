@@ -3564,7 +3564,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4097,10 +4097,10 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4141,10 +4141,10 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
-    "@testing-library/react": ^12.1.3
+    "@testing-library/jest-dom": ^5.16.5
+    "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/ansi-regex": ^5.0.0
     "@types/classnames": ^2.2.9
     "@types/d3-selection": ^3.0.1
@@ -4190,8 +4190,8 @@ __metadata:
     zen-observable: ^0.10.0
     zod: ^3.21.4
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^17.0.0 || ^18.2.0
+    react-dom: ^17.0.0 || ^18.2.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -4257,10 +4257,10 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/prop-types": ^15.7.3
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4319,9 +4319,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
@@ -4390,9 +4390,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -4485,9 +4485,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/git-url-parse": ^9.0.0
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4541,9 +4541,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -4572,9 +4572,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -4599,9 +4599,9 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/jest": ^28.1.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4631,9 +4631,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -4661,9 +4661,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -4711,9 +4711,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.18.0
@@ -4747,9 +4747,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -4927,9 +4927,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     humanize-duration: ^3.27.0
@@ -4991,9 +4991,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
@@ -5100,8 +5100,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@types/react": ^16.13.1 || ^17.0.0
+    cross-fetch: ^3.1.5
     luxon: ^3.0.0
     material-ui-search-bar: ^1.0.0
     react-hook-form: ^7.13.0
@@ -5143,9 +5144,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
@@ -5605,10 +5606,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     lodash: ^4.17.15
@@ -5676,11 +5677,12 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/react": ^16.13.1 || ^17.0.0
+    cross-fetch: ^3.1.5
     git-url-parse: ^13.0.0
     js-base64: ^3.6.0
     lodash: ^4.17.21
@@ -5736,10 +5738,10 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^23.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/jwt-decode": ^3.1.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.0
@@ -5812,10 +5814,11 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/react": ^16.13.1 || ^17.0.0
+    cross-fetch: ^3.1.5
     history: ^5.0.0
     lodash: ^4.17.21
     pluralize: ^8.0.0
@@ -5895,9 +5898,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/humanize-duration": ^3.25.1
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -5932,9 +5935,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -5965,9 +5968,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
@@ -6030,9 +6033,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.11.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/highlightjs": ^10.1.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6066,9 +6069,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -6099,9 +6102,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     jsonschema: ^1.2.6
@@ -6143,9 +6146,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.9.6
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/pluralize": ^0.0.29
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6267,9 +6270,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     express: ^4.18.1
@@ -6335,10 +6338,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -6374,9 +6377,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
@@ -6564,9 +6567,9 @@ __metadata:
     "@backstage/plugin-explore-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -6601,9 +6604,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
@@ -6635,9 +6638,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
@@ -6668,9 +6671,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -6703,9 +6706,9 @@ __metadata:
     "@maxim_mazurok/gapi.client.calendar": ^3.0.20220408
     "@tanstack/react-query": ^4.1.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/dompurify": ^2.3.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -6741,9 +6744,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -6772,10 +6775,10 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
@@ -6811,9 +6814,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -6849,9 +6852,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/graphql": ^5.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
@@ -6883,9 +6886,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
@@ -6917,9 +6920,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
@@ -6949,9 +6952,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -6982,9 +6985,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/lodash": ^4.14.173
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
@@ -7016,9 +7019,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/codemirror": ^5.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7075,9 +7078,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     graphql-voyager: ^1.0.0-rc.31
@@ -7142,9 +7145,9 @@ __metadata:
     "@rjsf/utils": 5.7.3
     "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-grid-layout": ^1.3.2
@@ -7181,9 +7184,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     humanize-duration: ^3.26.0
@@ -7255,9 +7258,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/testing-library__jest-dom": ^5.9.1
@@ -7313,10 +7316,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     jest-when: ^3.1.0
@@ -7412,10 +7415,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cronstrue: ^2.2.0
@@ -7476,10 +7479,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -7550,9 +7553,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^2.0.2
@@ -7583,9 +7586,9 @@ __metadata:
     "@microsoft/microsoft-graph-types": ^2.25.0
     "@tanstack/react-query": ^4.1.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
@@ -7616,8 +7619,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@types/react": ^16.13.1 || ^17.0.0
+    cross-fetch: ^3.1.5
     react-use: ^17.2.4
   peerDependencies:
     react: ^17.0.0 || ^18.2.0
@@ -7641,9 +7645,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -7724,9 +7728,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -7756,9 +7760,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -7791,9 +7795,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -7827,9 +7831,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
@@ -7881,9 +7885,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -7972,7 +7976,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -8047,10 +8051,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
@@ -8111,9 +8115,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.1
@@ -8166,10 +8170,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -8427,10 +8431,10 @@ __metadata:
     "@rjsf/utils": 5.7.3
     "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/luxon": ^3.0.0
@@ -8491,10 +8495,10 @@ __metadata:
     "@rjsf/utils": 5.7.3
     "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/node": ^16.11.26
@@ -8708,10 +8712,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     qs: ^6.9.4
@@ -8746,10 +8750,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     history: ^5.0.0
@@ -8782,9 +8786,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8816,9 +8820,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.2
@@ -8889,9 +8893,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -8923,9 +8927,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -8975,9 +8979,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -9007,9 +9011,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -9119,9 +9123,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -9149,9 +9153,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/color": ^3.0.1
     "@types/d3-force": ^3.0.0
     "@types/node": ^16.11.26
@@ -9189,9 +9193,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -9259,9 +9263,9 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     git-url-parse: ^13.0.0
@@ -9334,7 +9338,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.11.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9375,10 +9379,10 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
     "@types/node": ^16.11.26
@@ -9444,9 +9448,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -9499,9 +9503,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -9560,9 +9564,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": "*"
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -9590,9 +9594,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/luxon": ^3.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9684,9 +9688,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
@@ -9734,7 +9738,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     "@material-ui/core": ^4.12.2
-    "@types/react": ^17.0.0 || ^18.2.0 
+    "@types/react": ^17.0.0 || ^18.2.0
     react: ^17.0.0 || ^18.2.0
     react-dom: ^17.0.0 || ^18.2.0
   languageName: unknown
@@ -9756,7 +9760,7 @@ __metadata:
   resolution: "@backstage/version-bridge@workspace:packages/version-bridge"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
     "@testing-library/react-hooks": ^8.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -11965,9 +11969,9 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
@@ -15896,6 +15900,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@testing-library/react@npm:^12.1.3":
+  version: 12.1.5
+  resolution: "@testing-library/react@npm:12.1.5"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@testing-library/dom": ^8.0.0
+    "@types/react-dom": <18.0.0
+  peerDependencies:
+    react: <18.0.0
+    react-dom: <18.0.0
+  checksum: 4abd0490405e709a7df584a0db604e508a4612398bb1326e8fa32dd9393b15badc826dcf6d2f7525437886d507871f719f127b9860ed69ddd204d1fa834f576a
+  languageName: node
+  linkType: hard
+
 "@testing-library/react@npm:^13.1":
   version: 13.4.0
   resolution: "@testing-library/react@npm:13.4.0"
@@ -15910,12 +15928,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.0.0":
-  version: 14.3.0
-  resolution: "@testing-library/user-event@npm:14.3.0"
+"@testing-library/user-event@npm:^14.0.0, @testing-library/user-event@npm:^14.4.3":
+  version: 14.4.3
+  resolution: "@testing-library/user-event@npm:14.4.3"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: cbd5954460496519cb2ff3fa506ca598d7e4c2e3d2f2e129b21909758f5ec87573aad7d6c79aebffd4bd0ea843315b3064a2a76e545f196bd4c82489cb3afc1d
+  checksum: 852c48ea6db1c9471b18276617c84fec4320771e466cd58339a732ca3fd73ad35e5a43ae14f51af51a8d0a150dcf60fcaab049ef367871207bea8f92c4b8195e
   languageName: node
   linkType: hard
 
@@ -24625,9 +24643,9 @@ __metadata:
     "@roadiehq/backstage-plugin-travis-ci": ^2.0.5
     "@testing-library/cypress": ^9.0.0
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/jquery": ^3.3.34
     "@types/node": ^16.11.26
     "@types/react": "*"
@@ -39529,9 +39547,9 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^8.0.0
-    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.1
-    "@testing-library/user-event": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
     "@types/node": ^16.11.26
     "@types/react": "*"
     "@types/react-dom": "*"

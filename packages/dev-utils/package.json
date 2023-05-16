@@ -44,9 +44,9 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/dom": "^8.0.0",
-    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1",
-    "@testing-library/user-event": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/react": "^16.13.1 || ^17.0.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0"

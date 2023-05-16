@@ -47,7 +47,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1"
   },
   "files": [
