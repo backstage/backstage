@@ -66,7 +66,7 @@ describe('FileConfigSource', () => {
 
     setTimeout(() => {
       tmp.write('a.yaml', 'a: 2');
-    }, 10);
+    }, 100);
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: 1 }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
@@ -132,7 +132,7 @@ describe('FileConfigSource', () => {
 
     setTimeout(() => {
       tmp.write('x.yaml', '${MY_OTHER_VALUE}');
-    }, 10);
+    }, 100);
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: '6' }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
@@ -152,7 +152,7 @@ describe('FileConfigSource', () => {
 
     setTimeout(() => {
       tmp.write('x.txt', '9');
-    }, 10);
+    }, 100);
 
     await expect(readN(source, 2)).resolves.toEqual([
       [{ data: { a: '8' }, context: 'a.yaml', path: tmp.resolve('a.yaml') }],
