@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.11-next.2
+
+### Patch Changes
+
+- accaceadffa: Fixed bug in `jsonSchemaRefPlaceholderResolver` where relative $ref files were resolved through file system instead of base URL of file
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/config@1.0.7
+
 ## 0.1.11-next.1
 
 ### Patch Changes

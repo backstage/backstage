@@ -32,12 +32,16 @@ import {
  * @public
  */
 export type LoadConfigSchemaOptions =
-  | {
-      dependencies: string[];
-      packagePaths?: string[];
-    }
-  | {
-      serialized: JsonObject;
+  | (
+      | {
+          dependencies: string[];
+          packagePaths?: string[];
+        }
+      | {
+          serialized: JsonObject;
+        }
+    ) & {
+      noUndeclaredProperties?: boolean;
     };
 
 function errorsToError(errors: ValidationError[]): Error {
@@ -77,7 +81,9 @@ export async function loadConfigSchema(
     schemas = serialized.schemas as ConfigSchemaPackageEntry[];
   }
 
-  const validate = compileConfigSchemas(schemas);
+  const validate = compileConfigSchemas(schemas, {
+    noUndeclaredProperties: options.noUndeclaredProperties,
+  });
 
   return {
     process(

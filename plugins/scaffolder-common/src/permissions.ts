@@ -87,3 +87,18 @@ export const scaffolderPermissions = [
   templateParameterReadPermission,
   templateStepReadPermission,
 ];
+
+/**
+ * List of the scaffolder permissions that are associated with template steps and parameters.
+ * @alpha
+ */
+export const scaffolderTemplatePermissions = [
+  templateParameterReadPermission,
+  templateStepReadPermission,
+];
+
+/**
+ * List of the scaffolder permissions that are associated with scaffolder actions.
+ * @alpha
+ */
+export const scaffolderActionPermissions = [actionExecutePermission];

@@ -15,9 +15,14 @@
  */
 
 import React, { ChangeEvent, useState } from 'react';
-import { Content } from '@backstage/core-components';
 import { ProjectCard } from '../ProjectCard/ProjectCard';
-import { makeStyles, Grid, TablePagination, GridSize } from '@material-ui/core';
+import {
+  Box,
+  makeStyles,
+  Grid,
+  TablePagination,
+  GridSize,
+} from '@material-ui/core';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
 
@@ -80,7 +85,7 @@ export const ProjectPreview = ({
   }
 
   return (
-    <Content className={classes.content} noPadding>
+    <Box className={classes.content}>
       <Grid wrap="wrap" container spacing={3}>
         {bazaarProjects
           .slice((page - 1) * rows, rows * page)
@@ -101,6 +106,7 @@ export const ProjectPreview = ({
 
       {useTablePagination && (
         <TablePagination
+          component="div"
           className={classes.pagination}
           rowsPerPageOptions={[12, 24, 48, 96]}
           count={bazaarProjects?.length}
@@ -114,6 +120,6 @@ export const ProjectPreview = ({
           }}
         />
       )}
-    </Content>
+    </Box>
   );
 };

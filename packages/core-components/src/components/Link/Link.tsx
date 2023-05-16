@@ -188,6 +188,9 @@ export const Link = React.forwardRef<any, LinkProps>(
       <MaterialLink
         {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
         {...props}
+        {...(props['aria-label']
+          ? { 'aria-label': `${props['aria-label']}, Opens in a new window` }
+          : {})}
         ref={ref}
         href={to}
         onClick={handleClick}

@@ -1,5 +1,17 @@
 # @backstage/plugin-home
 
+## 0.5.2-next.2
+
+### Patch Changes
+
+- acca8966465: Remove object-hash dependency
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.5.2-next.1
 
 ### Patch Changes

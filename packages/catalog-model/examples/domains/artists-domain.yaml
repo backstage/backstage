@@ -3,6 +3,7 @@ kind: Domain
 metadata:
   name: artists
   description: Everything related to artists
+  title: Artists
   links:
     - url: http://example.com/domain/artists/
       title: Domain Readme

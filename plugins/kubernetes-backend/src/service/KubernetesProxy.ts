@@ -98,26 +98,29 @@ export class KubernetesProxy {
         req.header('authorization'),
       );
 
-      const authorizeResponse = (
-        await permissionApi.authorize(
-          [{ permission: kubernetesProxyPermission }],
-          {
-            token,
-          },
-        )
-      )[0];
+      const authorizeResponse = await permissionApi.authorize(
+        [{ permission: kubernetesProxyPermission }],
+        {
+          token,
+        },
+      );
+      const auth = authorizeResponse[0];
 
-      if (authorizeResponse.result === AuthorizeResult.DENY) {
+      if (auth.result === AuthorizeResult.DENY) {
         res.status(403).json({ error: new NotAllowedError('Unauthorized') });
         return;
       }
 
-      const cluster = await this.getClusterForRequest(req).then(cd =>
-        this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
-      );
-      if (!req.headers.authorization) {
-        req.headers.authorization = `Bearer ${cluster.serviceAccountToken}`;
-      }
+      req.headers.authorization =
+        req.header(HEADER_KUBERNETES_AUTH) ??
+        `Bearer ${
+          (
+            await this.getClusterForRequest(req).then(cd =>
+              this.authTranslator.decorateClusterDetailsWithAuth(cd, {}),
+            )
+          ).serviceAccountToken
+        }`;
+
       const middleware = await this.getMiddleware(req);
       middleware(req, res, next);
     };
@@ -162,13 +165,6 @@ export class KubernetesProxy {
             response: { statusCode: 500 },
           };
           res.status(500).json(body);
-        },
-        onProxyReq: (proxyReq, req) => {
-          // the kubernetes proxy endpoint expects a header field labeled `Backstage-Kubernetes-Authorization` that will be used to authenticate with the Kubernetes Api. The token provided as a value should be an bearer token for the target cluster.
-          if (req.header(HEADER_KUBERNETES_AUTH)) {
-            const token = req.header(HEADER_KUBERNETES_AUTH) ?? '';
-            proxyReq.setHeader('Authorization', token);
-          }
         },
       });
       this.middlewareForClusterName.set(originalCluster.name, middleware);

@@ -1,5 +1,22 @@
 # example-backend
 
+## 0.2.83-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-devtools-backend@0.1.0-next.0
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/plugin-badges-backend@0.2.0-next.2
+  - @backstage/plugin-search-backend-module-elasticsearch@1.3.0-next.2
+  - @backstage/plugin-kubernetes-backend@0.11.0-next.2
+  - @backstage/plugin-auth-backend@0.18.3-next.2
+  - @backstage/plugin-search-backend@1.3.1-next.2
+  - example-app@0.2.83-next.2
+  - @backstage/plugin-scaffolder-backend@1.13.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.14-next.2
+  - @backstage/config@1.0.7
+
 ## 0.2.83-next.1
 
 ### Patch Changes

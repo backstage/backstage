@@ -8,7 +8,7 @@ This package is meant to provide a typed Express router for an OpenAPI spec. Bas
 
 ### Configuration
 
-1. Run `yarn --cwd <package-dir> backstage-cli package schema:openapi:generate` to translate your `src/schema/openapi.yaml` to a new Typescript file in `src/schema/openapi.generated.ts`. The command will try to execute both a lint and prettier step on the generated file, where applicable.
+1. Run `yarn --cwd <package-dir> backstage-cli package schema openapi generate` to translate your `src/schema/openapi.yaml` to a new Typescript file in `src/schema/openapi.generated.ts`. The command will try to execute both a lint and prettier step on the generated file, where applicable.
 
 2. In your plugin's `src/service/createRouter.ts`,
 
@@ -42,4 +42,4 @@ Router() as ApiRouter<DeepWriteable<typeof spec>>
 
 ### Runtime validation
 
-Using a package like [`express-openapi-validator`](https://www.npmjs.com/package/express-openapi-validator), would allow us to remove [validation of request bodies with `AJV`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/service/util.ts#L58). However, `AJV` currently doesn't have support for OpenAPI 3.1 and `express-openapi-validator` enforces full URL matching for paths, meaning it cannot be mounted at the router level.
+Using a package like [`express-openapi-validator`](https://www.npmjs.com/package/express-openapi-validator), would allow us to remove [validation of request bodies with `AJV`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/catalog-backend/src/service/util.ts#L58). However, `AJV` currently doesn't have support for OpenAPI 3.1 and `express-openapi-validator` enforces full URL matching for paths, meaning it cannot be mounted at the router level.

@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend
 
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 021cfbb5152: Added an OpenAPI 3.0 spec and enforced schema-first model on the router.
+- Updated dependencies
+  - @backstage/config@1.0.7
+
 ## 1.3.1-next.1
 
 ### Patch Changes

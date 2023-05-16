@@ -24,5 +24,6 @@ export default async (opts: OptionValues) => {
     mockEnv: opts.lax,
     fullVisibility: !opts.frontend,
     withDeprecatedKeys: opts.deprecated,
+    strict: opts.strict,
   });
 };

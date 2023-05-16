@@ -66,6 +66,7 @@ as `401` or similar.
 
 The providers available as client side are:
 
+- `aks`
 - `google`
 - `oidc`
 

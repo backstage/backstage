@@ -28,7 +28,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   ResourceEntity,
-} from '@backstage/catalog-model/';
+} from '@backstage/catalog-model';
 import { DEFAULT_ENTITY_OWNER, ENDPOINT_NODES } from '../puppet/constants';
 
 jest.mock('../puppet/read', () => {

@@ -18,6 +18,7 @@ import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import { default as React, useState } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
@@ -203,16 +204,23 @@ const generatedColumns: TableColumn[] = [
         };
 
         return (
-          <Tooltip title="Rerun build">
-            <>
-              {isLoadingRebuild && <Progress />}
-              {!isLoadingRebuild && (
+          <div style={{ width: '98px' }}>
+            {row.lastBuild?.url && (
+              <Tooltip title="View build">
+                <IconButton href={row.lastBuild.url} target="_blank">
+                  <VisibilityIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {isLoadingRebuild && <Progress />}
+            {!isLoadingRebuild && (
+              <Tooltip title="Rerun build">
                 <IconButton onClick={onRebuild} disabled={loading || !allowed}>
                   <RetryIcon />
                 </IconButton>
-              )}
-            </>
-          </Tooltip>
+              </Tooltip>
+            )}
+          </div>
         );
       };
       return <ActionWrapper />;

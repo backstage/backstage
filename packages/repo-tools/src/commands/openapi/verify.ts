@@ -47,7 +47,7 @@ async function verify(directoryPath: string) {
   if (!isEqual(schema.default, yaml)) {
     const path = relativePath(cliPaths.targetRoot, directoryPath);
     throw new Error(
-      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools schema:openapi:generate ${path}\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
+      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools schema openapi generate ${path}\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
 }

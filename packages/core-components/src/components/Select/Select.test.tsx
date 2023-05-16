@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, within } from '@testing-library/react';
 import React from 'react';
 import { SelectComponent as Select } from './Select';
 
@@ -45,7 +45,7 @@ describe('<Select />', () => {
     expect(input.textContent).toBe('All results');
 
     // Simulate click on input
-    fireEvent.click(input);
+    fireEvent.mouseDown(within(input).getByRole('button'));
 
     expect(getByText('test 1')).toBeInTheDocument();
     const option = getByText('test 1');

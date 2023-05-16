@@ -15,7 +15,7 @@
  */
 
 import 'buffer';
-import { getVoidLogger } from '@backstage/backend-common';
+import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import type { Request } from 'express';
@@ -35,7 +35,12 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { KubernetesAuthTranslator } from '../kubernetes-auth-translator';
+import {
+  KubernetesAuthTranslator,
+  NoopKubernetesAuthTranslator,
+} from '../kubernetes-auth-translator';
+import Router from 'express-promise-router';
+import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
@@ -131,10 +136,9 @@ describe('KubernetesProxy', () => {
       authProvider: 'serviceAccount',
     } as ClusterDetails);
 
-    const app = express().use(
-      '/mountpath',
-      proxy.createRequestHandler({ permissionApi }),
-    );
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
     const requestPromise = request(app)
       .get('/mountpath/api')
       .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
@@ -151,7 +155,7 @@ describe('KubernetesProxy', () => {
     expect(response.body).toStrictEqual(apiResponse);
   });
 
-  it('should default to using a provided authorization header', async () => {
+  it('should default to using a authTranslator provided serviceAccountToken as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
     worker.use(
       rest.get(
         'https://localhost:9999/api/v1/namespaces',
@@ -160,7 +164,10 @@ describe('KubernetesProxy', () => {
             return res(ctx.status(401));
           }
 
-          if (req.headers.get('Authorization') !== 'my-token') {
+          if (
+            req.headers.get('Authorization') !==
+            'Bearer translator-provided-token'
+          ) {
             return res(ctx.status(403));
           }
 
@@ -192,18 +199,17 @@ describe('KubernetesProxy', () => {
     authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
       name: 'cluster1',
       url: 'https://localhost:9999',
-      serviceAccountToken: 'random-token',
+      serviceAccountToken: 'translator-provided-token',
       authProvider: 'serviceAccount',
     } as ClusterDetails);
 
-    const app = express().use(
-      '/mountpath',
-      proxy.createRequestHandler({ permissionApi }),
-    );
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
+
     const requestPromise = request(app)
       .get('/mountpath/api/v1/namespaces')
-      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1')
-      .set('Authorization', 'my-token');
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
 
     worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
 
@@ -212,7 +218,7 @@ describe('KubernetesProxy', () => {
     expect(response.status).toEqual(200);
   });
 
-  it('should add a serviceAccountToken to the request headers if one isnt provided in request and one isnt set up in cluster details', async () => {
+  it('should add a authTranslator provided serviceAccountToken as authorization headers to kubeapi if one isnt provided in request and one isnt set up in cluster details', async () => {
     worker.use(
       rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
         if (!req.headers.get('Authorization')) {
@@ -253,10 +259,10 @@ describe('KubernetesProxy', () => {
       authProvider: 'googleServiceAccount',
     } as ClusterDetails);
 
-    const app = express().use(
-      '/mountpath',
-      proxy.createRequestHandler({ permissionApi }),
-    );
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
+
     const requestPromise = request(app)
       .get('/mountpath/api/v1/namespaces')
       .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
@@ -314,10 +320,10 @@ describe('KubernetesProxy', () => {
       authProvider: 'googleServiceAccount',
     } as ClusterDetails);
 
-    const app = express().use(
-      '/mountpath',
-      proxy.createRequestHandler({ permissionApi }),
-    );
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
+
     const requestPromise = request(app)
       .get('/mountpath/api/v1/namespaces')
       .set(HEADER_KUBERNETES_CLUSTER, 'cluster1')
@@ -333,5 +339,211 @@ describe('KubernetesProxy', () => {
       apiVersion: 'v1',
       items: [],
     });
+  });
+
+  it('should not invoke authTranslator if Backstage-Kubernetes-Authorization field is provided', async () => {
+    worker.use(
+      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
+        if (!req.headers.get('Authorization')) {
+          return res(ctx.status(401));
+        }
+
+        if (req.headers.get('Authorization') !== 'tokenB') {
+          return res(ctx.status(403));
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    permissionApi.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authProvider: 'googleServiceAccount',
+      },
+    ] as ClusterDetails[]);
+
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1')
+      .set(HEADER_KUBERNETES_AUTH, 'tokenB');
+
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+
+    const response = await requestPromise;
+
+    expect(authTranslator.decorateClusterDetailsWithAuth).toHaveBeenCalledTimes(
+      0,
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toStrictEqual({
+      kind: 'NamespaceList',
+      apiVersion: 'v1',
+      items: [],
+    });
+  });
+
+  it('returns a response with a localKubectlProxy auth provider configuration', async () => {
+    proxy = new KubernetesProxy({
+      logger: getVoidLogger(),
+      clusterSupplier: new LocalKubectlProxyClusterLocator(),
+      authTranslator: new NoopKubernetesAuthTranslator(),
+    });
+
+    worker.use(
+      rest.get('http://localhost:8001/api/v1/namespaces', (_req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    permissionApi.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
+
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    const app = express().use(router);
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_CLUSTER, 'local');
+
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toStrictEqual({
+      kind: 'NamespaceList',
+      apiVersion: 'v1',
+      items: [],
+    });
+  });
+
+  it('should return a 400 error if Backstage-Kubernetes-Cluster field isnt provided in request', async () => {
+    worker.use(
+      rest.get('https://localhost:9999/api/v1/namespaces', (_req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    permissionApi.authorize.mockReturnValue(
+      Promise.resolve([{ result: AuthorizeResult.ALLOW }]),
+    );
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authProvider: 'googleServiceAccount',
+      },
+    ] as ClusterDetails[]);
+
+    authTranslator.decorateClusterDetailsWithAuth.mockResolvedValue({
+      name: 'cluster1',
+      url: 'https://localhost:9999',
+      serviceAccountToken: 'tokenA',
+      authProvider: 'googleServiceAccount',
+    } as ClusterDetails);
+
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    router.use(errorHandler());
+    const app = express().use(router);
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_AUTH, 'tokenB');
+
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(400);
+  });
+
+  it('returns a 500 error if authTranslator errors out and Backstage-Kubernetes-Authorization field is not provided', async () => {
+    worker.use(
+      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
+        if (!req.headers.get('Authorization')) {
+          return res(ctx.status(401));
+        }
+
+        if (req.headers.get('Authorization') !== 'tokenB') {
+          return res(ctx.status(403));
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          }),
+        );
+      }),
+    );
+
+    permissionApi.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authProvider: 'google',
+        serviceAccountToken: 'client-side-token',
+      },
+    ] as ClusterDetails[]);
+
+    authTranslator.decorateClusterDetailsWithAuth.mockRejectedValue(
+      Error('some internal error'),
+    );
+
+    const router = Router();
+    router.use('/mountpath', proxy.createRequestHandler({ permissionApi }));
+    router.use(errorHandler());
+    const app = express().use(router);
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
+
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(500);
   });
 });

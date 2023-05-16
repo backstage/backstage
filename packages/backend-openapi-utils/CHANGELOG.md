@@ -1,5 +1,12 @@
 # @backstage/backend-openapi-utils
 
+## 0.0.2-next.1
+
+### Patch Changes
+
+- fe16bd39e83: Use permalinks for links including a line number reference
+- 021cfbb5152: Corrected resolution of parameter nested schema to use central schemas.
+
 ## 0.0.2-next.0
 
 ### Patch Changes

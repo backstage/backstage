@@ -188,6 +188,7 @@ learnings
 Leasot
 lerna
 Lerna
+lightbox
 limitranges
 LocalStack
 lockdown
@@ -247,6 +248,7 @@ Olausson
 Oldsberg
 onboarding
 Onboarding
+OpenSearch
 OpenShift
 orgs
 padding
@@ -389,6 +391,7 @@ transpilers
 truthy
 TSDoc
 typeahead
+Uffizzi
 ui
 unbreak
 Unconference

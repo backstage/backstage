@@ -33,6 +33,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 export type QueryResponse = {
   organization?: OrganizationResponse;
   repositoryOwner?: RepositoryOwnerResponse;
+  user?: UserResponse;
 };
 
 type RepositoryOwnerResponse = {
@@ -46,9 +47,17 @@ export type OrganizationResponse = {
   repositories?: Connection<RepositoryResponse>;
 };
 
+export type UserResponse = {
+  organizations?: Connection<GithubOrg>;
+};
+
 export type PageInfo = {
   hasNextPage: boolean;
   endCursor?: string;
+};
+
+export type GithubOrg = {
+  login: string;
 };
 
 /**
@@ -332,6 +341,34 @@ export async function getOrganizationTeamsFromUsers(
   );
 
   return { groups };
+}
+
+export async function getOrganizationsFromUser(
+  client: typeof graphql,
+  user: string,
+): Promise<{
+  orgs: string[];
+}> {
+  const query = `
+  query orgs($user: String!) {
+    user(login: $user) {
+      organizations(first: 100) {
+        nodes { login }
+        pageInfo { hasNextPage, endCursor }
+      }
+    }
+  }`;
+
+  const orgs = await queryWithPaging(
+    client,
+    query,
+    '',
+    r => r.user?.organizations,
+    async o => o.login,
+    { user },
+  );
+
+  return { orgs };
 }
 
 export async function getOrganizationTeam(
