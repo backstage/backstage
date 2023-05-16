@@ -1,5 +1,21 @@
 # @backstage/core-app-api
 
+## 1.8.0
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- b645d70034a: Fixed a bug in the Azure auth provider which prevented getting access tokens with multiple scopes for one resource
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
 ## 1.8.0-next.1
 
 ### Minor Changes
