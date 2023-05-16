@@ -39,7 +39,7 @@ export async function discover(providerInfo?: {
     You will need to select which SCM (Source Code Management) provider you are using, 
     and then which repository or organization you want to scan.
 
-    This will generate a new file in the root of your project containing discovered entities,
+    This will generate a new file in the root of your app containing discovered entities,
     which will be included in the Software Catalog when you start up Backstage next time.
 
     Note that this command requires an access token, which can be either added through the integration config or
