@@ -25,21 +25,20 @@ Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.
 /* highlight-add-next-line */
 import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
-
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 /* highlight-add-start */
-  builder.addEntityProvider(
-    ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
+builder.addEntityProvider(
+  ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
     }),
-  );
-  /* highlight-add-end */
+  }),
+);
+/* highlight-add-end */
 ```
 
 ## Configuration
