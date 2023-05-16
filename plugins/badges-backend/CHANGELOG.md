@@ -8,7 +8,7 @@
 
   Implementing an obfuscation feature to protect an open badges endpoint from being enumerated. The feature is disabled by default and the change is compatible with the previous version.
 
-  **BREAKING**: `createRouter` now require that `tokenManager`, `logger`, `identityApi` and `database`, are passed in as options.
+  **BREAKING**: `createRouter` now require that `tokenManager`, `logger`, and `identityApi`, are passed in as options.
 
 ### Patch Changes
 

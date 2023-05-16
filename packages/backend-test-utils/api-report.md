@@ -26,9 +26,6 @@ import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export const getDockerImageForName: (name: string) => string;
-
-// @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)

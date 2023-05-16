@@ -119,6 +119,8 @@ export function createFetchCatalogEntityAction(options: {
     entityRef?: string | undefined;
     entityRefs?: string[] | undefined;
     optional?: boolean | undefined;
+    defaultKind?: string | undefined;
+    defaultNamespace?: string | undefined;
   },
   {
     entity?: any;

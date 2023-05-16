@@ -103,6 +103,6 @@ describe('HeaderWorldClock with custom Time Format', () => {
       />,
     );
 
-    expect(rendered.getByText('09:10')).toBeInTheDocument();
+    expect(rendered.getByText('09:10')).toHaveAttribute('datetime', '09:10');
   });
 });

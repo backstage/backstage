@@ -46,179 +46,249 @@ describe('catalog:fetch', () => {
     jest.resetAllMocks();
   });
 
-  it('should return entity from catalog', async () => {
-    getEntityByRef.mockReturnValueOnce({
-      metadata: {
-        namespace: 'default',
-        name: 'test',
-      },
-      kind: 'Component',
-    } as Entity);
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        entityRef: 'component:default/test',
-      },
-    });
-
-    expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-      token: 'secret',
-    });
-    expect(mockContext.output).toHaveBeenCalledWith('entity', {
-      metadata: {
-        namespace: 'default',
-        name: 'test',
-      },
-      kind: 'Component',
-    });
-  });
-
-  it('should throw error if entity fetch fails from catalog and optional is false', async () => {
-    getEntityByRef.mockImplementationOnce(() => {
-      throw new Error('Not found');
-    });
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          entityRef: 'component:default/test',
-        },
-      }),
-    ).rejects.toThrow('Not found');
-
-    expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-      token: 'secret',
-    });
-    expect(mockContext.output).not.toHaveBeenCalled();
-  });
-
-  it('should throw error if entity not in catalog and optional is false', async () => {
-    getEntityByRef.mockReturnValueOnce(null);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          entityRef: 'component:default/test',
-        },
-      }),
-    ).rejects.toThrow('Entity component:default/test not found');
-
-    expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-      token: 'secret',
-    });
-    expect(mockContext.output).not.toHaveBeenCalled();
-  });
-
-  it('should return entities from catalog', async () => {
-    getEntitiesByRefs.mockReturnValueOnce({
-      items: [
-        {
-          metadata: {
-            namespace: 'default',
-            name: 'test',
-          },
-          kind: 'Component',
-        } as Entity,
-      ],
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        entityRefs: ['component:default/test'],
-      },
-    });
-
-    expect(getEntitiesByRefs).toHaveBeenCalledWith(
-      { entityRefs: ['component:default/test'] },
-      {
-        token: 'secret',
-      },
-    );
-    expect(mockContext.output).toHaveBeenCalledWith('entities', [
-      {
+  describe('fetch single entity', () => {
+    it('should return entity from catalog', async () => {
+      getEntityByRef.mockReturnValueOnce({
         metadata: {
           namespace: 'default',
           name: 'test',
         },
         kind: 'Component',
-      },
-    ]);
+      } as Entity);
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          entityRef: 'component:default/test',
+        },
+      });
+
+      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
+        token: 'secret',
+      });
+      expect(mockContext.output).toHaveBeenCalledWith('entity', {
+        metadata: {
+          namespace: 'default',
+          name: 'test',
+        },
+        kind: 'Component',
+      });
+    });
+
+    it('should throw error if entity fetch fails from catalog and optional is false', async () => {
+      getEntityByRef.mockImplementationOnce(() => {
+        throw new Error('Not found');
+      });
+
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            entityRef: 'component:default/test',
+          },
+        }),
+      ).rejects.toThrow('Not found');
+
+      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
+        token: 'secret',
+      });
+      expect(mockContext.output).not.toHaveBeenCalled();
+    });
+
+    it('should throw error if entity not in catalog and optional is false', async () => {
+      getEntityByRef.mockReturnValueOnce(null);
+
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            entityRef: 'component:default/test',
+          },
+        }),
+      ).rejects.toThrow('Entity component:default/test not found');
+
+      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
+        token: 'secret',
+      });
+      expect(mockContext.output).not.toHaveBeenCalled();
+    });
+
+    it('should use defaultKind and defaultNamespace if provided', async () => {
+      const entity: Entity = {
+        metadata: {
+          namespace: 'ns',
+          name: 'test',
+        },
+        kind: 'Group',
+      } as Entity;
+      getEntityByRef.mockReturnValueOnce(entity);
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          entityRef: 'test',
+          defaultKind: 'Group',
+          defaultNamespace: 'ns',
+        },
+      });
+
+      expect(getEntityByRef).toHaveBeenCalledWith('group:ns/test', {
+        token: 'secret',
+      });
+      expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
+    });
   });
 
-  it('should throw error if undefined is returned for some entity', async () => {
-    getEntitiesByRefs.mockReturnValueOnce({
-      items: [
+  describe('fetch multiple entities', () => {
+    it('should return entities from catalog', async () => {
+      getEntitiesByRefs.mockReturnValueOnce({
+        items: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Component',
+          } as Entity,
+        ],
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          entityRefs: ['component:default/test'],
+        },
+      });
+
+      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+        { entityRefs: ['component:default/test'] },
+        {
+          token: 'secret',
+        },
+      );
+      expect(mockContext.output).toHaveBeenCalledWith('entities', [
         {
           metadata: {
             namespace: 'default',
             name: 'test',
           },
           kind: 'Component',
-        } as Entity,
-        undefined,
-      ],
+        },
+      ]);
     });
 
-    await expect(
-      action.handler({
+    it('should throw error if undefined is returned for some entity', async () => {
+      getEntitiesByRefs.mockReturnValueOnce({
+        items: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Component',
+          } as Entity,
+          undefined,
+        ],
+      });
+
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            entityRefs: ['component:default/test', 'component:default/test2'],
+            optional: false,
+          },
+        }),
+      ).rejects.toThrow('Entity component:default/test2 not found');
+
+      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+        { entityRefs: ['component:default/test', 'component:default/test2'] },
+        {
+          token: 'secret',
+        },
+      );
+      expect(mockContext.output).not.toHaveBeenCalled();
+    });
+
+    it('should return null in case some of the entities not found and optional is true', async () => {
+      getEntitiesByRefs.mockReturnValueOnce({
+        items: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Component',
+          } as Entity,
+          undefined,
+        ],
+      });
+
+      await action.handler({
         ...mockContext,
         input: {
           entityRefs: ['component:default/test', 'component:default/test2'],
-          optional: false,
+          optional: true,
         },
-      }),
-    ).rejects.toThrow('Entity component:default/test2 not found');
+      });
 
-    expect(getEntitiesByRefs).toHaveBeenCalledWith(
-      { entityRefs: ['component:default/test', 'component:default/test2'] },
-      {
-        token: 'secret',
-      },
-    );
-    expect(mockContext.output).not.toHaveBeenCalled();
-  });
-
-  it('should return null in case some of the entities not found and optional is true', async () => {
-    getEntitiesByRefs.mockReturnValueOnce({
-      items: [
+      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+        { entityRefs: ['component:default/test', 'component:default/test2'] },
+        {
+          token: 'secret',
+        },
+      );
+      expect(mockContext.output).toHaveBeenCalledWith('entities', [
         {
           metadata: {
             namespace: 'default',
             name: 'test',
           },
           kind: 'Component',
-        } as Entity,
-        undefined,
-      ],
+        },
+        null,
+      ]);
     });
 
-    await action.handler({
-      ...mockContext,
-      input: {
-        entityRefs: ['component:default/test', 'component:default/test2'],
-        optional: true,
-      },
-    });
-
-    expect(getEntitiesByRefs).toHaveBeenCalledWith(
-      { entityRefs: ['component:default/test', 'component:default/test2'] },
-      {
-        token: 'secret',
-      },
-    );
-    expect(mockContext.output).toHaveBeenCalledWith('entities', [
-      {
+    it('should use defaultKind and defaultNamespace if provided', async () => {
+      const entity1: Entity = {
+        metadata: {
+          namespace: 'ns',
+          name: 'test',
+        },
+        kind: 'Group',
+      } as Entity;
+      const entity2: Entity = {
         metadata: {
           namespace: 'default',
           name: 'test',
         },
-        kind: 'Component',
-      },
-      null,
-    ]);
+        kind: 'User',
+      } as Entity;
+      getEntitiesByRefs.mockReturnValueOnce({
+        items: [entity1, entity2],
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          entityRefs: ['test', 'user:default/test'],
+          defaultKind: 'Group',
+          defaultNamespace: 'ns',
+        },
+      });
+
+      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+        { entityRefs: ['group:ns/test', 'user:default/test'] },
+        {
+          token: 'secret',
+        },
+      );
+
+      expect(mockContext.output).toHaveBeenCalledWith('entities', [
+        entity1,
+        entity2,
+      ]);
+    });
   });
 });

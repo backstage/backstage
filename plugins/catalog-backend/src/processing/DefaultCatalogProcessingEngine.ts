@@ -317,7 +317,9 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       try {
         await this.processingDatabase.transaction(async tx => {
           const n = await this.processingDatabase.deleteOrphanedEntities(tx);
-          this.logger.info(`Deleted ${n} orphaned entities`);
+          if (n > 0) {
+            this.logger.info(`Deleted ${n} orphaned entities`);
+          }
         });
       } catch (error) {
         this.logger.warn(`Failed to delete orphaned entities`, error);
