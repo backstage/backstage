@@ -31,9 +31,9 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/dom": "^8.0.0",
-    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1",
-    "@testing-library/user-event": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/node": "^16.11.26",
     "@types/react": "*",
     "@types/react-dom": "*",
