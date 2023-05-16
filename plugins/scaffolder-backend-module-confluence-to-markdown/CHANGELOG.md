@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.1.2
+
+### Patch Changes
+
+- 7c116bcac7f: Fixed the way that some request errors are thrown
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.14.0
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/plugin-scaffolder-node@0.1.3
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.1.2-next.2
 
 ### Patch Changes

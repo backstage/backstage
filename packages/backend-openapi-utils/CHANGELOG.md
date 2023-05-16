@@ -1,5 +1,14 @@
 # @backstage/backend-openapi-utils
 
+## 0.0.2
+
+### Patch Changes
+
+- fe16bd39e83: Use permalinks for links including a line number reference
+- 27956d78671: Adjusted README accordingly after the generated output now has a `.generated.ts` extension
+- 021cfbb5152: Corrected resolution of parameter nested schema to use central schemas.
+- 799c33047ed: Updated README to reflect changes in `@backstage/repo-tools`.
+
 ## 0.0.2-next.1
 
 ### Patch Changes

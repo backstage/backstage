@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.6.3
+
+### Patch Changes
+
+- 05f1d74539d: AKS access tokens can now be sent over the wire to the Kubernetes backend.
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 0.6.3-next.0
 
 ### Patch Changes

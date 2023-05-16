@@ -1,5 +1,15 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- d66d4f916aa: Updated URL to `/health` and corrected typos in the `README.md`
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/config@1.0.7
+  - @backstage/plugin-azure-sites-common@0.1.0
+
 ## 0.1.7-next.1
 
 ### Patch Changes

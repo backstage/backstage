@@ -1,5 +1,23 @@
 # @backstage/plugin-badges
 
+## 0.2.42
+
+### Patch Changes
+
+- a0108c49774: Fixing badges-backend plugin to get a token from the TokenManager instead of parsing the request header. Hence, it's now possible to disable the authMiddleware for the badges-backend plugin to expose publicly the badges.
+
+  Implementing an obfuscation feature to protect an open badges endpoint from being enumerated. The feature is disabled by default and the change is compatible with the previous version.
+
+  **BREAKING**: `createRouter` now require that `tokenManager`, `logger`, and `identityApi`, are passed in as options.
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
 ## 0.2.42-next.2
 
 ### Patch Changes

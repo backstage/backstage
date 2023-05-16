@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.3.0
+
+### Minor Changes
+
+- 799c33047ed: **BREAKING**: The OpenAPI commands are now found within the `schema openapi` sub-command. For example `yarn backstage-repo-tools schema:openapi:verify` is now `yarn backstage-repo-tools schema openapi verify`.
+- 27956d78671: Generated OpenAPI files now have a `.generated.ts` file name and a warning header at the top, to highlight that they should not be edited by hand.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.0
+  - @backstage/errors@1.1.5
+
 ## 0.3.0-next.0
 
 ### Minor Changes
