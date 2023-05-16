@@ -39,3 +39,18 @@ backend.add(searchPlugin());
 backend.add(searchModuleExploreCollator({ schedule }));
 backend.start();
 ```
+
+### Using Auth Middleware
+
+If your Backstage instance uses service-to-service authentication you can pass an optional tokenManager to the collator factory. This will ensure that the collator makes authenticated requests to the explore backend.
+
+```tsx
+indexBuilder.addCollator({
+  schedule: every10MinutesSchedule,
+  factory: ToolDocumentCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    logger: env.logger,
+    tokenManager: env.tokenManager,
+  }),
+});
+```
