@@ -325,7 +325,14 @@
       "deployment/scaling",
       "deployment/docker",
       "deployment/k8s",
-      "deployment/heroku"
+      "deployment/heroku",
+      {
+        "type": "category",
+        "label": "Deploying on a cloud provider with Backstage Deploy",
+        "items": [
+          "deployment/backstage-deploy/aws"
+        ]
+      }
     ],
     "Designing for Backstage": [
       "dls/design",
