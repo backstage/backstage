@@ -84,8 +84,10 @@ export type BackstagePaletteAdditions = {
     info: string;
     error: string;
     text: string;
+    textDark?: string;
     link: string;
     closeButtonColor?: string;
+    closeButtonColorDark?: string;
     warning?: string;
   };
 };
