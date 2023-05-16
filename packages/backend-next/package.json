@@ -29,6 +29,7 @@
     "@backstage/plugin-app-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",

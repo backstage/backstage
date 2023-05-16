@@ -26,6 +26,7 @@
     "@backstage/plugin-catalog-graph": "workspace:^",
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
     "@backstage/plugin-circleci": "workspace:^",
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
