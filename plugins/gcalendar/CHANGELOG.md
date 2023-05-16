@@ -1,5 +1,16 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.14
+
+### Patch Changes
+
+- f493ccb9589: Pass user info email scope on auth refresh to resolve invalid credentials error
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
 ## 0.3.14-next.1
 
 ### Patch Changes

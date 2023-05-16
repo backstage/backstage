@@ -1,5 +1,18 @@
 # @backstage/plugin-circleci
 
+## 0.3.18
+
+### Patch Changes
+
+- 451b3cadb3d: Fixes row display for in progress jobs to not display trailing "took"
+- 1c4958d905f: Hide empty time field data for queued builds which haven't started yet
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.3.18-next.2
 
 ### Patch Changes

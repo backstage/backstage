@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.4.5
+
+### Patch Changes
+
+- b026275bcc8: Fixed a bug where the wrong credentials would be selected when using multiple GitHub app integrations.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 1.4.5-next.0
 
 ### Patch Changes
