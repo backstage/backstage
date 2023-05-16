@@ -128,10 +128,11 @@ export class GitLabClient {
         throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
       memberIds.push(
-        ...response.data.group.groupMembers.nodes.map(
-          (node: { user: { id: string } }) =>
+        ...response.data.group.groupMembers.nodes
+          .filter(n => n.user)
+          .map(node =>
             Number(node.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
-        ),
+          ),
       );
       ({ hasNextPage, endCursor } = response.data.group.groupMembers.pageInfo);
     } while (hasNextPage);
