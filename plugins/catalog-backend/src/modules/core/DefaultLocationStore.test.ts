@@ -120,8 +120,6 @@ describe('DefaultLocationStore', () => {
                   type: 'url',
                 },
               }),
-              locationKey:
-                'url:https://github.com/backstage/demo/blob/master/catalog-info.yml',
             },
           ]),
         });

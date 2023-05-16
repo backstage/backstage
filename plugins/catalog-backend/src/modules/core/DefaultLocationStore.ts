@@ -64,7 +64,13 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const entity = locationSpecToLocationEntity({ location });
     await this.connection.applyMutation({
       type: 'delta',
-      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
+      added: [
+        {
+          entity,
+          // do not set any 'locationKey' here, as it will result in conflict warnings if this location is discovered
+          // via EntityProvider as well (https://github.com/backstage/backstage/issues/17818)
+        },
+      ],
       removed: [],
     });
 
