@@ -13,6 +13,12 @@ import { ReactNode } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// @public (undocumented)
+export type CardConfig = {
+  layout?: CardLayout;
+  settings?: CardSettings;
+};
+
 // @public @deprecated (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
