@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { kindOrDefault } from './LinguistBackendApi';
 
-describe('kindOrDefault', () => {
-  it('should return default kind when undefined', () => {
-    expect(kindOrDefault()).toEqual(['API', 'Component', 'Template']);
-  });
-  it('should return the default kind when empty', () => {
-    expect(kindOrDefault([])).toEqual(['API', 'Component', 'Template']);
-  });
-  it('should return provided kind when not empty', () => {
-    expect(kindOrDefault(['API'])).toEqual(['API']);
-  });
-});
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  // Sqlite does not support this raw SQL
+  if (!knex.client.config.client.includes('sqlite3')) {
+    await knex.raw(
+      'ALTER TABLE entity_result ALTER COLUMN processed_date DROP DEFAULT;',
+    );
+  }
+};
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
+  // Sqlite does not support this raw SQL
+  if (!knex.client.config.client.includes('sqlite3')) {
+    await knex.raw(
+      'ALTER TABLE entity_result ALTER COLUMN processed_date SET DEFAULT now();',
+    );
+  }
+};
