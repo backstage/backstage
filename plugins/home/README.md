@@ -51,6 +51,8 @@ The Home Page can be composed with regular React components, so there's no magic
 Finally, the `createCardExtension` also accepts a generic, such that Component Developers can indicate to App Integrators what custom props their component will accept, such as the example below where the default category of the random jokes can be set.
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const RandomJokeHomePageComponent = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
     title: 'Random Joke',
@@ -121,6 +123,8 @@ want to add additional configuration like component size or settings, you can de
 property:
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const RandomJokeHomePageComponent = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
@@ -178,6 +182,8 @@ properties. The `settings.schema` object should follow
 must be `object`.
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
