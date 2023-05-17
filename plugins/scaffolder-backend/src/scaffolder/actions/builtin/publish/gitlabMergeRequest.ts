@@ -218,14 +218,16 @@ export const createPublishGitlabMergeRequestAction = (options: {
       try {
         await api.Branches.create(repoID, branchName, String(defaultBranch));
       } catch (e) {
-        throw new InputError(`The branch creation failed ${e}`);
+        throw new InputError(
+          `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
+        );
       }
 
       try {
         await api.Commits.create(repoID, branchName, ctx.input.title, actions);
       } catch (e) {
         throw new InputError(
-          `Committing the changes to ${branchName} failed ${e}`,
+          `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${e}`,
         );
       }
 
