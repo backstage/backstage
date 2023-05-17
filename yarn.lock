@@ -7161,6 +7161,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-jenkins-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/jenkins": ^0.23.1
     "@types/supertest": ^2.0.8
