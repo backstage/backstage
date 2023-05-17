@@ -25,7 +25,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
 import { DefaultCacheClient } from './CacheClient';
-import { NoStore } from './NoStore';
 import { CacheManagerOptions, PluginCacheManager } from './types';
 
 /**
@@ -44,7 +43,6 @@ export class CacheManager {
     redis: this.getRedisClient,
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
-    none: this.getNoneClient,
   };
 
   /**
@@ -70,8 +68,8 @@ export class CacheManager {
     options: CacheManagerOptions = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
-    // with a "NoStore" cache client.
-    const store = config.getOptionalString('backend.cache.store') || 'none';
+    // with an in-memory cache client.
+    const store = config.getOptionalString('backend.cache.store') || 'memory';
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
     const logger = (options.logger || getRootLogger()).child({
@@ -167,13 +165,6 @@ export class CacheManager {
       namespace: pluginId,
       ttl: defaultTtl,
       store: this.memoryStore,
-    });
-  }
-
-  private getNoneClient(pluginId: string): Keyv {
-    return new Keyv({
-      namespace: pluginId,
-      store: new NoStore(),
     });
   }
 }
