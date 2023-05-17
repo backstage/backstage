@@ -1,5 +1,4 @@
 ---
-'@backstage/integration': patch
 '@backstage/cli': patch
 ---
 
