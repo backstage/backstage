@@ -82,10 +82,20 @@ export const createAuthMiddleware = async (
 };
 ```
 
+Install cookie-parser:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend cookie-parser
+```
+
+Update routes in `packages/backend/src/index.ts`:
+
 ```typescript
 // packages/backend/src/index.ts from a create-app deployment
 
 import { createAuthMiddleware } from './authMiddleware';
+import cookieParser from 'cookie-parser';
 
 // ...
 
