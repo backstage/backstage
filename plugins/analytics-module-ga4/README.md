@@ -9,7 +9,11 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @backstage/plugin-analytics-module-ga4`
+
+```sh
+yarn add --cwd packages/app @backstage/@backstage/plugin-analytics-module-ga4
+```
+
 2. Wire up the API implementation to your App:
 
 ```tsx
