@@ -31,34 +31,29 @@ plugins.corePlugins.sort((a, b) => a.order - b.order);
 plugins.otherPlugins.sort((a, b) => a.order - b.order);
 
 const Plugins = () => {
-  const allCategories: ChipCategory[] = [];
-  plugins.corePlugins.concat(plugins.otherPlugins).forEach(pluginData => {
-    const index = allCategories.findIndex(
-      chip => chip.name === pluginData.category,
-    );
-    if (index === -1) {
-      allCategories.push({
-        name: pluginData.category,
-        isSelected: false,
-      });
-    }
-  });
-
-  const [categories, setCategories] = useState(allCategories);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const allCategoriesSet = new Set(
+    [...plugins.corePlugins, ...plugins.otherPlugins].map(
+      ({ category }) => category,
+    ),
+  );
+  const allCategoriesArray = Array.from(allCategoriesSet).map(category => ({
+    name: category,
+    isSelected: false,
+  }));
+  const [categories, setCategories] =
+    useState<ChipCategory[]>(allCategoriesArray);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showCoreFeaturesHeader, setShowCoreFeaturesHeader] = useState(true);
   const [showOtherPluginsHeader, setShowOtherPluginsHeader] = useState(true);
 
   const handleChipClick = (categoryName: string) => {
-    console.log(categoryName);
-    const category = categories.find(
-      category => category.name === categoryName,
-    );
-    const isSelected = category?.isSelected || false;
+    const isSelected =
+      categories.find(category => category.name === categoryName)?.isSelected ||
+      false;
 
-    const newSelectedCategories = isSelected ? selectedCategories.filter(
-        c => c !== categoryName,
-      ) : selectedCategories.push(categoryName);
+    const newSelectedCategories = isSelected
+      ? selectedCategories.filter(c => c !== categoryName)
+      : [...selectedCategories, categoryName];
 
     setSelectedCategories(newSelectedCategories);
 
