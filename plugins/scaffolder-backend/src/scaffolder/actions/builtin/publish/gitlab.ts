@@ -57,6 +57,7 @@ export function createPublishGitlabAction(options: {
           repoUrl: {
             title: 'Repository Location',
             type: 'string',
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
           },
           repoVisibility: {
             title: 'Repository Visibility',
