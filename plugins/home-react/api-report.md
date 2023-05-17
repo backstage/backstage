@@ -9,6 +9,12 @@ import { Extension } from '@backstage/core-plugin-api';
 import { RJSFSchema } from '@rjsf/utils';
 
 // @public (undocumented)
+export type CardConfig = {
+  layout?: CardLayout;
+  settings?: CardSettings;
+};
+
+// @public (undocumented)
 export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
 } & T;

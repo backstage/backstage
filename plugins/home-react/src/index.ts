@@ -28,4 +28,5 @@ export type {
   RendererProps,
   CardLayout,
   CardSettings,
+  CardConfig,
 } from './extensions';

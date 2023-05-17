@@ -6,42 +6,38 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { Extension } from '@backstage/core-plugin-api';
+import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
+import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
+import { CardLayout as CardLayout_2 } from '@backstage/plugin-home-react';
+import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
+import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
+import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
+import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { RJSFSchema } from '@rjsf/utils';
+import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// @public (undocumented)
-export type CardConfig = {
-  layout?: CardLayout;
-  settings?: CardSettings;
-};
-
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
 // @public @deprecated (undocumented)
-export type CardExtensionProps<T> = ComponentRenderer & {
-  title?: string;
-} & T;
+export type CardConfig = CardConfig_2;
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
 // @public @deprecated (undocumented)
-export type CardLayout = {
-  width?: {
-    minColumns?: number;
-    maxColumns?: number;
-    defaultColumns?: number;
-  };
-  height?: {
-    minRows?: number;
-    maxRows?: number;
-    defaultRows?: number;
-  };
-};
+export type CardExtensionProps<T> = CardExtensionProps_2<T>;
 
-// @public (undocumented)
-export type CardSettings = {
-  schema?: RJSFSchema;
-};
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
+// @public @deprecated (undocumented)
+export type CardLayout = CardLayout_2;
+
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
+// @public @deprecated (undocumented)
+export type CardSettings = CardSettings_2;
 
 // @public (undocumented)
 export type ClockConfig = {
@@ -59,18 +55,15 @@ export const ComponentAccordion: (props: {
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
 // @public @deprecated (undocumented)
-export type ComponentParts = {
-  Content: (props?: any) => JSX.Element;
-  Actions?: () => JSX.Element;
-  Settings?: () => JSX.Element;
-  ContextProvider?: (props: any) => JSX.Element;
-};
+export type ComponentParts = ComponentParts_2;
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
 // @public @deprecated (undocumented)
-export type ComponentRenderer = {
-  Renderer?: (props: RendererProps) => JSX.Element;
-};
+export type ComponentRenderer = ComponentRenderer_2;
 
 // @public (undocumented)
 export const ComponentTab: (props: {
@@ -88,15 +81,10 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX.Element;
 
-// @public @deprecated
-export function createCardExtension<T>(options: {
-  title: string;
-  components: () => Promise<ComponentParts>;
-  name?: string;
-  description?: string;
-  layout?: CardLayout;
-  settings?: CardSettings;
-}): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
+// @public @deprecated (undocumented)
+export const createCardExtension: typeof createCardExtension_2;
 
 // @public
 export const CustomHomepageGrid: (
@@ -130,19 +118,19 @@ export const HomepageCompositionRoot: (props: {
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
-  props: CardExtensionProps<{
+  props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming' | undefined;
   }>,
 ) => JSX.Element;
 
 // @public
 export const HomePageStarredEntities: (
-  props: CardExtensionProps<unknown>,
+  props: CardExtensionProps_2<unknown>,
 ) => JSX.Element;
 
 // @public
 export const HomePageToolkit: (
-  props: CardExtensionProps<ToolkitContentProps>,
+  props: CardExtensionProps_2<ToolkitContentProps>,
 ) => JSX.Element;
 
 // @public (undocumented)
@@ -163,12 +151,14 @@ export type LayoutConfiguration = {
   height: number;
 };
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
 // @public @deprecated (undocumented)
-export type RendererProps = {
-  title: string;
-} & ComponentParts;
+export type RendererProps = RendererProps_2;
 
-// @public (undocumented)
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
+//
+// @public @deprecated (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;

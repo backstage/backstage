@@ -42,7 +42,7 @@ import {
   LayoutConfigurationSchema,
   WidgetSchema,
 } from './types';
-import { CardConfig } from '../../extensions';
+import { CardConfig } from '@backstage/plugin-home-react';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);

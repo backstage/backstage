@@ -14,8 +14,60 @@
  * limitations under the License.
  */
 
-// import { createCardExtension } from './extensions';
+import {
+  createCardExtension as homeReactCreateCardExtension,
+  CardConfig as homeReactCardConfig,
+  CardExtensionProps as homeReactCardExtensionProps,
+  CardLayout as homeReactCardLayout,
+  CardSettings as homeReactCardSettings,
+  ComponentParts as homeReactComponentParts,
+  ComponentRenderer as homeReactComponentRenderer,
+  RendererProps as homeReactRendererProps,
+  SettingsModal as homeReactSettingsModal,
+} from '@backstage/plugin-home-react';
 
-// export { createCardExtension };
-
-export * from './extensions';
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export const createCardExtension = homeReactCreateCardExtension;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type CardExtensionProps<T> = homeReactCardExtensionProps<T>;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type CardLayout = homeReactCardLayout;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type CardSettings = homeReactCardSettings;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type CardConfig = homeReactCardConfig;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type ComponentParts = homeReactComponentParts;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type ComponentRenderer = homeReactComponentRenderer;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export type RendererProps = homeReactRendererProps;
+/**
+ * @public
+ * @deprecated Import from '@backstage/plugin-home-react' instead
+ */
+export const SettingsModal = homeReactSettingsModal;
