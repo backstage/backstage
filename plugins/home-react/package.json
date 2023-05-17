@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "web-library"
   },
   "homepage": "https://github.com/backstage/backstage/tree/master/plugins/home-react#readme",
   "repository": {
