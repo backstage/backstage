@@ -26,7 +26,7 @@ export const getHostnameFromEntity = (entity: Entity) => {
     entity?.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION] ??
     entity?.metadata.annotations?.[ANNOTATION_LOCATION];
 
-  return location && location.startsWith('url:')
+  return location?.startsWith('url:')
     ? gitUrlParse(location.slice(4)).resource
-    : '';
+    : undefined;
 };

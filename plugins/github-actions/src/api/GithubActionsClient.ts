@@ -46,9 +46,7 @@ export class GithubActionsClient implements GithubActionsApi {
     const configs = readGithubIntegrationConfigs(
       this.configApi.getOptionalConfigArray('integrations.github') ?? [],
     );
-    const githubIntegrationConfig = configs.find(
-      v => v.host === hostname ?? 'github.com',
-    );
+    const githubIntegrationConfig = configs.find(v => v.host === hostname);
     const baseUrl = githubIntegrationConfig?.apiBaseUrl;
     return new Octokit({ auth: token, baseUrl });
   }
