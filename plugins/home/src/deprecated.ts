@@ -28,46 +28,46 @@ import {
 
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export const createCardExtension = homeReactCreateCardExtension;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type CardExtensionProps<T> = homeReactCardExtensionProps<T>;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type CardLayout = homeReactCardLayout;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type CardSettings = homeReactCardSettings;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type CardConfig = homeReactCardConfig;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type ComponentParts = homeReactComponentParts;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type ComponentRenderer = homeReactComponentRenderer;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export type RendererProps = homeReactRendererProps;
 /**
  * @public
- * @deprecated Import from '@backstage/plugin-home-react' instead
+ * @deprecated Import from `@backstage/plugin-home-react` instead
  */
 export const SettingsModal = homeReactSettingsModal;

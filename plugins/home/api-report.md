@@ -19,23 +19,15 @@ import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type CardConfig = CardConfig_2;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type CardExtensionProps<T> = CardExtensionProps_2<T>;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type CardLayout = CardLayout_2;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type CardSettings = CardSettings_2;
 
@@ -55,13 +47,9 @@ export const ComponentAccordion: (props: {
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type ComponentParts = ComponentParts_2;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type ComponentRenderer = ComponentRenderer_2;
 
@@ -81,8 +69,6 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX.Element;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
 
@@ -151,13 +137,9 @@ export type LayoutConfiguration = {
   height: number;
 };
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export type RendererProps = RendererProps_2;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-//
 // @public @deprecated (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
