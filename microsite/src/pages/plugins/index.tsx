@@ -56,15 +56,9 @@ const Plugins = () => {
     );
     const isSelected = category?.isSelected || false;
 
-    let newSelectedCategories = selectedCategories;
-
-    if (isSelected) {
-      newSelectedCategories = selectedCategories.filter(
+    const newSelectedCategories = isSelected ? selectedCategories.filter(
         c => c !== categoryName,
-      );
-    } else {
-      newSelectedCategories.push(categoryName);
-    }
+      ) : selectedCategories.push(categoryName);
 
     setSelectedCategories(newSelectedCategories);
 
