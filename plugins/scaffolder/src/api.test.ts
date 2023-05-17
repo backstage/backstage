@@ -20,10 +20,13 @@ import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
-const MockedEventSource = global.EventSource as jest.MockedClass<
-  typeof EventSource
+const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
+  typeof EventSourcePolyfill
 >;
+
+jest.mock('event-source-polyfill');
 
 const server = setupServer();
 
@@ -102,6 +105,9 @@ describe('api', () => {
           },
         );
 
+        const token = 'fake-token';
+        identityApi.getCredentials.mockResolvedValue({ token: token });
+
         const next = jest.fn();
 
         await new Promise<void>(complete => {
@@ -112,7 +118,10 @@ describe('api', () => {
 
         expect(MockedEventSource).toHaveBeenCalledWith(
           'http://backstage/api/v2/tasks/a-random-task-id/eventstream',
-          { withCredentials: true },
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          },
         );
         expect(MockedEventSource.prototype.close).toHaveBeenCalled();
 
