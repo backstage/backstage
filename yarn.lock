@@ -8230,7 +8230,7 @@ __metadata:
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
     octokit: ^2.0.0
-    octokit-plugin-create-pull-request: 4.1.1
+    octokit-plugin-create-pull-request: ^4.2.2
     p-limit: ^3.1.0
     p-queue: ^6.6.2
     prom-client: ^14.0.1
@@ -32164,12 +32164,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit-plugin-create-pull-request@npm:4.1.1":
-  version: 4.1.1
-  resolution: "octokit-plugin-create-pull-request@npm:4.1.1"
+"octokit-plugin-create-pull-request@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "octokit-plugin-create-pull-request@npm:4.2.2"
   dependencies:
     "@octokit/types": ^8.0.0
-  checksum: 889d578b43befcc46c6bfb774a87e12b99d70fa798764346587995257e2e5404b9fbb25a267708982ce9559abd80b9ecbf9537b973b081281ecc6171624e0130
+  checksum: 030a23ce837e16701e424f1d867ef9e5eb7138d420df694a635aa6a2923e955fb94382c5bff639037f6592ccf65acb4e75a5f0f5200ed26406ed049595b09033
   languageName: node
   linkType: hard
 
