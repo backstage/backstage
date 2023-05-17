@@ -29,7 +29,7 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { stringifyError } from '@backstage/errors';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
+import { jenkinsPermissions } from '@backstage/plugin-jenkins-common';
 
 /** @public */
 export interface RouterOptions {
@@ -62,7 +62,7 @@ export async function createRouter(
   router.use(express.json());
   router.use(
     createPermissionIntegrationRouter({
-      permissions: [jenkinsExecutePermission],
+      permissions: jenkinsPermissions,
     }),
   );
 
