@@ -226,7 +226,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
     typeColumn.hidden = !showTypeColumn;
   }
   const showPagination = rows.length > 20;
-
+  const currentKind = filters.kind?.value || '';
+  const currentType = filters.type?.value || '';
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
@@ -241,7 +242,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSizeOptions: [20, 50, 100],
         ...tableOptions,
       }}
-      title={`${titlePreamble} (${entities.length})`}
+      title={`${titlePreamble} ${currentType} ${currentKind}${
+        currentKind ? 's' : ''
+      } (${entities.length})`}
       data={rows}
       actions={actions || defaultActions}
       subtitle={subtitle}
