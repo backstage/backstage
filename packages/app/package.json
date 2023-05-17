@@ -39,6 +39,7 @@
     "@backstage/plugin-gocd": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
+    "@backstage/plugin-incident": "^0.0.0",
     "@backstage/plugin-jenkins": "workspace:^",
     "@backstage/plugin-kafka": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",

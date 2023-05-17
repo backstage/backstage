@@ -115,6 +115,7 @@ import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
 } from '@backstage/plugin-pagerduty';
+import { EntityIncidentCard } from '@backstage/plugin-incident';
 import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
@@ -370,6 +371,14 @@ const overviewContent = (
       <EntitySwitch.Case if={isPagerDutyAvailable}>
         <Grid item md={6}>
           <EntityPagerDutyCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case>
+        <Grid item md={6}>
+          <EntityIncidentCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>

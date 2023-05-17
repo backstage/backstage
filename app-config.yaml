@@ -83,6 +83,11 @@ proxy:
     headers:
       Authorization: Token token=${PAGERDUTY_TOKEN}
 
+  '/incident/api':
+    target: '${INCIDENT_ENDPOINT}' # https://api.incident.io
+    headers:
+      Authorization: Bearer ${INCIDENT_API_KEY}
+
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
@@ -454,3 +459,18 @@ stackstorm:
 
 permission:
   enabled: true
+
+# See plugins/incident/README.md for how to configure this.
+#
+# If you don't like reading manuals, the tl;dr is you fill in the gaps with
+# the ID of the custom fields that represent Backstage API/Component/System/etc,
+# or set the appropriate environment variables.
+incident:
+  apiKey: ${INCIDENT_API_KEY}
+  baseUrl: ${INCIDENT_BASE_URL}
+  endpoint: ${INCIDENT_ENDPOINT}
+  fields:
+    api: ${INCIDENT_API_FIELD}
+    component: ${INCIDENT_COMPONENT_FIELD}
+    domain: ${INCIDENT_DOMAIN_FIELD}
+    system: ${INCIDENT_SYSTEM_FIELD}
