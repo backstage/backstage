@@ -158,6 +158,48 @@ To try out SAML, you can use the mock identity provider:
 
 [How to add an auth provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
 
+## Key Stores
+The authentication backend plugin supports 4 types of key stores:
+* database - for database key storage (default)
+* memory - for in-memory key storage
+* firestore - for key store hosted in Firestore
+* redis - for redis key storage
+
+Each Key Store type is enabled depending on the configuration provided under '**auth.keyStore.provider**'. 
+If no configuration is provided, database keys store will be used.
+
+## Redis Configuration
+To use Redis KeyStore you must configure an integration for a redis server/cluster to be used.
+
+```yaml
+#app-config.yaml
+integrations:
+  redis:
+    url: redis://localhost:6379 #`redis[s]://[[username][:password]@][host][:port][/db-number]`
+    username: string #(optional) ACL username ([see ACL guide](https://redis.io/topics/acl))
+    password: string #(optional) ACL password or the old "--requirepass" password
+    name: string #(optional) Client name ([see `CLIENT SETNAME`](https://redis.io/commands/client-setname))
+    database: number #(optional) Redis database number (see [`SELECT`](https://redis.io/commands/select) command)
+    commandsQueueMaxLength: number #(optional) Maximum length of the client's internal command queue
+    disableOfflineQueue: boolean #(optional)
+    readonly: boolean #(optional) Connect in [`READONLY`](https://redis.io/commands/readonly) mode
+    legacyMode: boolean #(optional)
+    isolationPoolOptions: PoolOptions #(optional)
+    pingInterval: number #(optional) Send `PING` command at interval (in ms).
+    socket: RedisSocketOptions # (optional) Socket connection properties
+```
+
+## Session Stores
+In order to store user sessions, Backstage supports 3 types of Session Stores:
+* database - for database session storage (default)
+* redis - for redis session storage
+* memory - for in-memory session storage
+
+Each Session Store type is enabled depending on the configuration provided under '**auth.session.store.provider**'.
+If no configuration is provided, database session store will be used.
+
+> A redis integration config under 'integrations.redis' is required for Redis Session storage.
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)

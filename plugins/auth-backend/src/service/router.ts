@@ -17,7 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { Logger } from 'winston';
+import {Logger} from 'winston';
 import {
   defaultAuthProviderFactories,
   AuthProviderFactory,
@@ -27,16 +27,16 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { assertError, NotFoundError } from '@backstage/errors';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
-import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
+import {assertError, NotFoundError} from '@backstage/errors';
+import {CatalogApi, CatalogClient} from '@backstage/catalog-client';
+import {Config} from '@backstage/config';
+import {createOidcRouter, TokenFactory, KeyStores} from '../identity';
 import session from 'express-session';
-import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
+import {SessionStores} from "../session/SessionStores";
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -73,17 +73,17 @@ export async function createRouter(
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
   const authDb = AuthDatabase.create(database);
-  const keyStore = await KeyStores.fromConfig(config, {
-    logger,
-    database: authDb,
+  const keyStore = await KeyStores.fromConfig(config, {logger, database: authDb,
   });
+  const sessionStore = await SessionStores.fromConfig(config, {logger,database:authDb});
+
   const keyDurationSeconds = 3600;
 
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
     keyDurationSeconds,
-    logger: logger.child({ component: 'token-factory' }),
+    logger: logger.child({component: 'token-factory'}),
     algorithm: tokenFactoryAlgorithm,
   });
 
@@ -91,17 +91,13 @@ export async function createRouter(
   if (secret) {
     router.use(cookieParser(secret));
     const enforceCookieSSL = authUrl.startsWith('https');
-    const KnexSessionStore = connectSessionKnex(session);
     router.use(
       session({
         secret,
+        store: sessionStore,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: enforceCookieSSL ? 'auto' : false },
-        store: new KnexSessionStore({
-          createtable: false,
-          knex: await authDb.get(),
-        }),
+        cookie: {secure: enforceCookieSSL ? 'auto' : false}
       }),
     );
     router.use(passport.initialize());
@@ -109,7 +105,7 @@ export async function createRouter(
   } else {
     router.use(cookieParser());
   }
-  router.use(express.urlencoded({ extended: false }));
+  router.use(express.urlencoded({extended: false}));
   router.use(express.json());
 
   const allProviderFactories = {
@@ -139,7 +135,7 @@ export async function createRouter(
           resolverContext: CatalogAuthResolverContext.create({
             logger,
             catalogApi:
-              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
+              catalogApi ?? new CatalogClient({discoveryApi: discovery}),
             tokenIssuer,
             tokenManager,
           }),
@@ -173,8 +169,8 @@ export async function createRouter(
           // If the user added the provider under auth.providers but the clientId and clientSecret etc. were not found.
           throw new NotFoundError(
             `Auth provider registered for '${providerId}' is misconfigured. This could mean the configs under ` +
-              `auth.providers.${providerId} are missing or the environment variables used are not defined. ` +
-              `Check the auth backend plugin logs when the backend starts to see more details.`,
+            `auth.providers.${providerId} are missing or the environment variables used are not defined. ` +
+            `Check the auth backend plugin logs when the backend starts to see more details.`,
           );
         });
       }
@@ -195,7 +191,7 @@ export async function createRouter(
   );
 
   router.use('/:provider/', req => {
-    const { provider } = req.params;
+    const {provider} = req.params;
     throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
 
@@ -207,7 +203,7 @@ export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {
   const appUrl = config.getString('app.baseUrl');
-  const { origin: appOrigin } = new URL(appUrl);
+  const {origin: appOrigin} = new URL(appUrl);
 
   const allowedOrigins = config.getOptionalStringArray(
     'auth.experimentalExtraAllowedOrigins',
@@ -215,7 +211,7 @@ export function createOriginFilter(
 
   const allowedOriginPatterns =
     allowedOrigins?.map(
-      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
+      pattern => new Minimatch(pattern, {nocase: true, noglobstar: true}),
     ) ?? [];
 
   return origin => {
