@@ -344,65 +344,81 @@ export class DefaultCatalogProcessingOrchestrator
     entity: LocationEntity,
     context: Context,
   ): Promise<void> {
-    const { type = context.location.type, presence = 'required' } = entity.spec;
-    const targets = new Array<string>();
-    if (entity.spec.target) {
-      targets.push(entity.spec.target);
-    }
-    if (entity.spec.targets) {
-      targets.push(...entity.spec.targets);
-    }
-
-    for (const maybeRelativeTarget of targets) {
-      if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
-        context.collector.generic()(
-          processingResult.inputError(
-            context.location,
-            `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
-          ),
-        );
-        continue;
-      }
-      const target = toAbsoluteUrl(
-        this.options.integrations,
-        context.location,
-        type,
-        maybeRelativeTarget,
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, context.entityRef);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'readLocationEntity',
       );
+      const { type = context.location.type, presence = 'required' } =
+        entity.spec;
+      const targets = new Array<string>();
+      if (entity.spec.target) {
+        targets.push(entity.spec.target);
+      }
+      if (entity.spec.targets) {
+        targets.push(...entity.spec.targets);
+      }
 
-      let didRead = false;
-      for (const processor of this.options.processors) {
-        if (processor.readLocation) {
-          try {
-            const read = await processor.readLocation(
-              {
-                type,
-                target,
-                presence,
-              },
-              presence === 'optional',
-              context.collector.forProcessor(processor),
-              this.options.parser,
-              context.cache.forProcessor(processor, target),
-            );
-            if (read) {
-              didRead = true;
-              break;
+      for (const maybeRelativeTarget of targets) {
+        if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
+          context.collector.generic()(
+            processingResult.inputError(
+              context.location,
+              `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
+            ),
+          );
+          continue;
+        }
+        const target = toAbsoluteUrl(
+          this.options.integrations,
+          context.location,
+          type,
+          maybeRelativeTarget,
+        );
+
+        let didRead = false;
+        for (const processor of this.options.processors) {
+          if (processor.readLocation) {
+            try {
+              const read = await withActiveSpan(
+                tracer,
+                'ProcessingStep',
+                async span => {
+                  addEntityAttributes(span, context.entityRef);
+                  addProcessorAttributes(span, 'readLocationEntity', processor);
+                  return await processor.readLocation(
+                    {
+                      type,
+                      target,
+                      presence,
+                    },
+                    presence === 'optional',
+                    context.collector.forProcessor(processor),
+                    this.options.parser,
+                    context.cache.forProcessor(processor, target),
+                  );
+                },
+              );
+              if (read) {
+                didRead = true;
+                break;
+              }
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                e,
+              );
             }
-          } catch (e) {
-            throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
-              e,
-            );
           }
         }
+        if (!didRead) {
+          throw new InputError(
+            `No processor was able to handle reading of ${type}:${target}`,
+          );
+        }
       }
-      if (!didRead) {
-        throw new InputError(
-          `No processor was able to handle reading of ${type}:${target}`,
-        );
-      }
-    }
+    });
   }
 
   /**
