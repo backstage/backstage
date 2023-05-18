@@ -11,6 +11,7 @@ This plugin contains no other functionality.
 1. Install the plugin package in your Backstage app:
 
 ```sh
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-analytics-module-ga4
 ```
 
