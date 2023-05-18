@@ -92,7 +92,7 @@ const useStyles = makeStyles({
     borderRadius: '50px',
     margin: 'auto',
   },
-  notchedOutline: {
+  searchBarOutline: {
     borderStyle: 'none',
   },
 });
@@ -102,7 +102,7 @@ export const CustomStyles = () => {
   return (
     <Paper className={classes.search}>
       <SearchBar
-        InputProps={{ classes: { notchedOutline: classes.notchedOutline } }}
+        InputProps={{ classes: { notchedOutline: classes.searchBarOutline } }}
       />
     </Paper>
   );

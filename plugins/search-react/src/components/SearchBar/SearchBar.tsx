@@ -178,6 +178,7 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
             fullWidth={fullWidth}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            style={{ margin: 0 }}
             {...rest}
           />
         </TrackSearch>
