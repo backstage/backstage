@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-import {AuthDatabase} from '../database/AuthDatabase';
-import {getVoidLogger} from '@backstage/backend-common';
-import {SessionStores} from "./SessionStores";
-import {MemoryStore} from "express-session";
-import {MockConfigApi} from "@backstage/test-utils";
-import {RedisMemoryServer} from "redis-memory-server";
+import { AuthDatabase } from '../database/AuthDatabase';
+import { getVoidLogger } from '@backstage/backend-common';
+import { SessionStores } from './SessionStores';
+import { MemoryStore } from 'express-session';
+import { MockConfigApi } from '@backstage/test-utils';
+import { RedisMemoryServer } from 'redis-memory-server';
 
 describe('SessionStores', () => {
-
   it('test session store config load', async () => {
-
     const mockConfig = new MockConfigApi({
       auth: {
         session: {
           store: {
-            provider: 'memory'
-          }
+            provider: 'memory',
+          },
         },
       },
     });
 
     const configSpy = jest.spyOn(mockConfig, 'getOptionalConfig');
     await SessionStores.fromConfig(mockConfig, {
-      logger: getVoidLogger()
+      logger: getVoidLogger(),
     });
     expect(configSpy).toHaveBeenCalledWith('auth.session.store');
     expect(
@@ -57,34 +55,31 @@ describe('SessionStores', () => {
   });
 
   describe('database session store', () => {
-
     it('fail if database instance is not provided', async () => {
-
       const mockConfig = new MockConfigApi({
         auth: {
           session: {
             store: {
-              provider: 'database'
-            }
+              provider: 'database',
+            },
           },
         },
       });
 
       await expect(
         SessionStores.fromConfig(mockConfig, {
-          logger: getVoidLogger()
-        })
-      ).rejects.toThrow("Database is required for Database session store.");
+          logger: getVoidLogger(),
+        }),
+      ).rejects.toThrow('Database is required for Database session store.');
     });
 
     it('creates database session store from configs', async () => {
-
       const mockConfig = new MockConfigApi({
         auth: {
           session: {
             store: {
-              provider: 'database'
-            }
+              provider: 'database',
+            },
           },
         },
       });
@@ -98,7 +93,6 @@ describe('SessionStores', () => {
   });
 
   describe('redis session store', () => {
-
     let redisServer: RedisMemoryServer;
 
     beforeAll(async () => {
@@ -112,65 +106,64 @@ describe('SessionStores', () => {
     });
 
     it('creates redis session store from configs: no redis integration configured', async () => {
-
       const mockConfig = new MockConfigApi({
         auth: {
           session: {
             store: {
-              provider: 'redis'
-            }
+              provider: 'redis',
+            },
           },
         },
       });
 
       await expect(
         SessionStores.fromConfig(mockConfig, {
-          logger: getVoidLogger()
-        })
-      ).rejects.toThrow("Unable to create RedisSessionStore. Please provide Redis integration config under 'integrations.redis'.");
+          logger: getVoidLogger(),
+        }),
+      ).rejects.toThrow(
+        "Unable to create RedisSessionStore. Please provide Redis integration config under 'integrations.redis'.",
+      );
     });
 
     it('should create redis session store', async () => {
       const mockConfig = new MockConfigApi({
         integrations: {
           redis: {
-            url: `redis://${await redisServer.getHost()}:${await redisServer.getPort()}`
-          }
+            url: `redis://${await redisServer.getHost()}:${await redisServer.getPort()}`,
+          },
         },
         auth: {
           session: {
             store: {
-              provider: 'redis'
-            }
+              provider: 'redis',
+            },
           },
         },
       });
 
       const sessionStore = await SessionStores.fromConfig(mockConfig, {
-        logger: getVoidLogger()
+        logger: getVoidLogger(),
       });
       expect(sessionStore.constructor.name).toEqual('RedisStore');
     });
   });
 
   describe('memory session store', () => {
-
     it('creates memory session store from configs', async () => {
-
       const mockConfig = new MockConfigApi({
         auth: {
           session: {
             store: {
-              provider: 'memory'
-            }
+              provider: 'memory',
+            },
           },
         },
       });
 
       const sessionStore = await SessionStores.fromConfig(mockConfig, {
-        logger: getVoidLogger()
+        logger: getVoidLogger(),
       });
       expect(sessionStore).toBeInstanceOf(MemoryStore);
     });
-  })
+  });
 });

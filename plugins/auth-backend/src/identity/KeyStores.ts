@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {pickBy} from 'lodash';
-import {Logger} from 'winston';
+import { pickBy } from 'lodash';
+import { Logger } from 'winston';
 
+import { Config } from '@backstage/config';
 
-import {Config} from '@backstage/config';
-
-import { AuthDatabase } from '../database/AuthDatabase';import {DatabaseKeyStore} from './DatabaseKeyStore';
-import {FirestoreKeyStore} from './FirestoreKeyStore';
-import {MemoryKeyStore} from './MemoryKeyStore';
-import {KeyStore} from './types';
-import {RedisKeyStore} from "./RedisKeyStore";
+import { AuthDatabase } from '../database/AuthDatabase';
+import { DatabaseKeyStore } from './DatabaseKeyStore';
+import { FirestoreKeyStore } from './FirestoreKeyStore';
+import { MemoryKeyStore } from './MemoryKeyStore';
+import { KeyStore } from './types';
+import { RedisKeyStore } from './RedisKeyStore';
 
 type Options = {
   logger: Logger;
@@ -39,7 +39,7 @@ export class KeyStores {
    * @returns a KeyStore store
    */
   static async fromConfig(config: Config, options: Options): Promise<KeyStore> {
-    const {logger, database} = options;
+    const { logger, database } = options;
 
     const ks = config.getOptionalConfig('auth.keyStore');
     const provider = ks?.getOptionalString('provider') ?? 'database';
@@ -55,7 +55,7 @@ export class KeyStores {
     }
 
     if (provider === 'redis') {
-      return RedisKeyStore.create({config, logger});
+      return RedisKeyStore.create({ config, logger });
     }
 
     if (provider === 'firestore') {

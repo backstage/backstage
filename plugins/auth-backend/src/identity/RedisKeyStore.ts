@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import {AnyJWK, KeyStore, StoredKey} from './types';
-import {Config} from "@backstage/config";
-import {RedisFunctions, RedisModules, RedisScripts} from '@redis/client';
-import {createClient, RedisClientOptions, RedisClientType} from 'redis';
-import {DateTime} from "luxon";
-import {Logger} from "winston";
+import { AnyJWK, KeyStore, StoredKey } from './types';
+import { Config } from '@backstage/config';
+import { RedisFunctions, RedisModules, RedisScripts } from '@redis/client';
+import { createClient, RedisClientOptions, RedisClientType } from 'redis';
+import { DateTime } from 'luxon';
+import { Logger } from 'winston';
 
 type Options = {
   config: Config;
   logger?: Logger;
 };
 
-const REDIS_JWT_KEYSTORE_PREFIX = "JWT_KEY";
+const REDIS_JWT_KEYSTORE_PREFIX = 'JWT_KEY';
 
 export class RedisKeyStore implements KeyStore {
   static async create(options: Options): Promise<RedisKeyStore> {
-    const {config, logger} = options;
+    const { config, logger } = options;
 
     const redisClientConfig =
       config.getOptional<RedisClientOptions>('integrations.redis');
@@ -54,16 +54,16 @@ export class RedisKeyStore implements KeyStore {
 
       return new RedisKeyStore(client);
     }
-    throw new Error("Unable to create RedisKeyStore. Please provide Redis integration config under 'integrations.redis'.");
+    throw new Error(
+      "Unable to create RedisKeyStore. Please provide Redis integration config under 'integrations.redis'.",
+    );
   }
 
   private readonly redisClient;
 
-  private constructor(client: RedisClientType<
-    RedisModules,
-    RedisFunctions,
-    RedisScripts
-  >) {
+  private constructor(
+    client: RedisClientType<RedisModules, RedisFunctions, RedisScripts>,
+  ) {
     this.redisClient = client;
   }
 
@@ -75,7 +75,7 @@ export class RedisKeyStore implements KeyStore {
     const key = this.compoundKey(jwk.kid);
     const entry = {
       key: jwk,
-      createdAt: DateTime.utc().toJSDate()
+      createdAt: DateTime.utc().toJSDate(),
     };
     await this.redisClient.set(key, JSON.stringify(entry));
   }
@@ -90,11 +90,11 @@ export class RedisKeyStore implements KeyStore {
           return {
             key: entry.key,
             createdAt: new Date(entry.createdAt),
-          }
+          };
         }),
       };
     }
-    return {items: []}
+    return { items: [] };
   }
 
   async removeKeys(kids: string[]): Promise<void> {

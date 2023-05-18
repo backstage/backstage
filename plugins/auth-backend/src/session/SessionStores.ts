@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import {Logger} from 'winston';
-import {Config} from '@backstage/config';
-import {AuthDatabase} from '../database/AuthDatabase';
-import session, {MemoryStore, Store} from "express-session";
-import connectSessionKnex from "connect-session-knex";
-import {RedisFunctions, RedisModules, RedisScripts} from '@redis/client';
-import {createClient, RedisClientOptions} from 'redis';
-import RedisStore from "connect-redis";
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+import { AuthDatabase } from '../database/AuthDatabase';
+import session, { MemoryStore, Store } from 'express-session';
+import connectSessionKnex from 'connect-session-knex';
+import { RedisFunctions, RedisModules, RedisScripts } from '@redis/client';
+import { createClient, RedisClientOptions } from 'redis';
+import RedisStore from 'connect-redis';
 
 type Options = {
   logger: Logger;
   database?: AuthDatabase;
 };
 
-const REDIS_SESSION_STORE_PREFIX = "SESSION";
+const REDIS_SESSION_STORE_PREFIX = 'SESSION';
 
 export class SessionStores {
   /**
@@ -38,10 +38,11 @@ export class SessionStores {
    * @returns a session store
    */
   static async fromConfig(config: Config, options: Options): Promise<Store> {
-    const {logger, database} = options;
+    const { logger, database } = options;
 
     const sessionStoreConfig = config.getOptionalConfig('auth.session.store');
-    const provider = sessionStoreConfig?.getOptionalString('provider') ?? 'database';
+    const provider =
+      sessionStoreConfig?.getOptionalString('provider') ?? 'database';
 
     logger.info(`Configuring "${provider}" as SessionStore provider`);
 
@@ -64,7 +65,9 @@ export class SessionStores {
     throw new Error(`Unknown SessionStore provider: ${provider}`);
   }
 
-  private static async createDatabaseSessionStore(database?: AuthDatabase): Promise<Store> {
+  private static async createDatabaseSessionStore(
+    database?: AuthDatabase,
+  ): Promise<Store> {
     if (database) {
       const KnexSessionStore = connectSessionKnex(session);
       return new KnexSessionStore({
@@ -75,11 +78,15 @@ export class SessionStores {
     throw new Error('Database is required for Database session store.');
   }
 
-  private static async createRedisSessionStore(config: Config, options: Options): Promise<RedisStore> {
-    const {logger} = options;
+  private static async createRedisSessionStore(
+    config: Config,
+    options: Options,
+  ): Promise<RedisStore> {
+    const { logger } = options;
 
     // Expect Redis server to be provided as an integration
-    const redisClientConfig = config.getOptional<RedisClientOptions>('integrations.redis');
+    const redisClientConfig =
+      config.getOptional<RedisClientOptions>('integrations.redis');
 
     if (redisClientConfig) {
       const client = createClient<RedisModules, RedisFunctions, RedisScripts>(
@@ -100,9 +107,11 @@ export class SessionStores {
 
       return new RedisStore({
         client,
-        prefix: REDIS_SESSION_STORE_PREFIX
+        prefix: REDIS_SESSION_STORE_PREFIX,
       });
     }
-    throw new Error("Unable to create RedisSessionStore. Please provide Redis integration config under 'integrations.redis'.")
+    throw new Error(
+      "Unable to create RedisSessionStore. Please provide Redis integration config under 'integrations.redis'.",
+    );
   }
 }

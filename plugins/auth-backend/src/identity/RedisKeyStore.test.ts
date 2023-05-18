@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {getVoidLogger} from '@backstage/backend-common';
-import {Config} from '@backstage/config';
-import {MockConfigApi} from '@backstage/test-utils';
-import {RedisMemoryServer} from 'redis-memory-server';
-import {RedisKeyStore} from "./RedisKeyStore";
-import {DateTime} from "luxon";
-import {StoredKey} from "./types";
+import { getVoidLogger } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { MockConfigApi } from '@backstage/test-utils';
+import { RedisMemoryServer } from 'redis-memory-server';
+import { RedisKeyStore } from './RedisKeyStore';
+import { DateTime } from 'luxon';
+import { StoredKey } from './types';
 
 // First time this test runs it requires more time in order to download redis binaries
 jest.setTimeout(20000);
@@ -58,8 +58,10 @@ describe('RedisKeyStore', () => {
         RedisKeyStore.create({
           config: mockConfig,
           logger: getVoidLogger(),
-        })
-      ).rejects.toThrow("Unable to create RedisKeyStore. Please provide Redis integration config under 'integrations.redis'.");
+        }),
+      ).rejects.toThrow(
+        "Unable to create RedisKeyStore. Please provide Redis integration config under 'integrations.redis'.",
+      );
     });
 
     it('should connect to redis and return a RedisKeyStore instance', async () => {
@@ -84,9 +86,9 @@ describe('RedisKeyStore', () => {
     let mockConfig: Config;
     let keyStore: RedisKeyStore;
 
-    const key1 = {kid: '1', ...keyBase};
-    const key2 = {kid: '2', ...keyBase};
-    const key3 = {kid: '3', ...keyBase};
+    const key1 = { kid: '1', ...keyBase };
+    const key2 = { kid: '2', ...keyBase };
+    const key3 = { kid: '3', ...keyBase };
 
     beforeAll(async () => {
       mockConfig = new MockConfigApi({
@@ -104,23 +106,21 @@ describe('RedisKeyStore', () => {
     });
 
     it('should store a key', async () => {
-
       const keys = await keyStore.listKeys();
-      expect(keys).toEqual({items: []});
+      expect(keys).toEqual({ items: [] });
 
       await keyStore.addKey(key1);
 
-      const {items} = await keyStore.listKeys();
-      expect(items).toEqual([{createdAt: expect.anything(), key: key1}]);
+      const { items } = await keyStore.listKeys();
+      expect(items).toEqual([{ createdAt: expect.anything(), key: key1 }]);
       expect(
         Math.abs(
-          DateTime.fromJSDate(items[ 0 ].createdAt).diffNow('seconds').seconds,
+          DateTime.fromJSDate(items[0].createdAt).diffNow('seconds').seconds,
         ),
       ).toBeLessThan(10);
     });
 
     it('should remove stored keys', async () => {
-
       await keyStore.addKey(key1);
       await keyStore.addKey(key2);
       await keyStore.addKey(key3);
@@ -129,9 +129,9 @@ describe('RedisKeyStore', () => {
       sortKeys(keys);
       expect(keys).toEqual({
         items: [
-          {key: key1, createdAt: expect.anything()},
-          {key: key2, createdAt: expect.anything()},
-          {key: key3, createdAt: expect.anything()},
+          { key: key1, createdAt: expect.anything() },
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
         ],
       });
 
@@ -141,8 +141,8 @@ describe('RedisKeyStore', () => {
       sortKeys(keys);
       expect(keys).toEqual({
         items: [
-          {key: key2, createdAt: expect.anything()},
-          {key: key3, createdAt: expect.anything()},
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
         ],
       });
 
@@ -151,7 +151,7 @@ describe('RedisKeyStore', () => {
       keys = await keyStore.listKeys();
       sortKeys(keys);
       expect(keys).toEqual({
-        items: [{key: key3, createdAt: expect.anything()}],
+        items: [{ key: key3, createdAt: expect.anything() }],
       });
 
       await keyStore.removeKeys([]);
@@ -159,7 +159,7 @@ describe('RedisKeyStore', () => {
       keys = await keyStore.listKeys();
       sortKeys(keys);
       expect(keys).toEqual({
-        items: [{key: key3, createdAt: expect.anything()}],
+        items: [{ key: key3, createdAt: expect.anything() }],
       });
 
       await keyStore.removeKeys(['3', '4']);
@@ -177,9 +177,9 @@ describe('RedisKeyStore', () => {
       sortKeys(keys);
       expect(keys).toEqual({
         items: [
-          {key: key1, createdAt: expect.anything()},
-          {key: key2, createdAt: expect.anything()},
-          {key: key3, createdAt: expect.anything()},
+          { key: key1, createdAt: expect.anything() },
+          { key: key2, createdAt: expect.anything() },
+          { key: key3, createdAt: expect.anything() },
         ],
       });
 
