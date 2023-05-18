@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
+import { Span, trace } from '@opentelemetry/api';
 import {
   Entity,
   EntityPolicy,
@@ -311,7 +311,7 @@ export class DefaultCatalogProcessingOrchestrator
               async span => {
                 addEntityAttributes(span, context.entityRef);
                 addProcessorAttributes(span, 'postProcessEntity', processor);
-                return await processor.validateEntityKind(entity);
+                return await processor.validateEntityKind!(entity);
               },
             );
             if (thisValid) {
@@ -387,7 +387,7 @@ export class DefaultCatalogProcessingOrchestrator
                 async span => {
                   addEntityAttributes(span, context.entityRef);
                   addProcessorAttributes(span, 'readLocationEntity', processor);
-                  return await processor.readLocation(
+                  return await processor.readLocation!(
                     {
                       type,
                       target,
