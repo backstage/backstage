@@ -199,34 +199,41 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let res = entity;
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, context.entityRef);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'preProcessEntity',
+      );
+      let res = entity;
 
-    for (const processor of this.options.processors) {
-      if (processor.preProcessEntity) {
-        let innerRes = res;
-        res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
-          addEntityAttributes(span, context.entityRef);
-          addProcessorAttributes(span, 'preProcessEntity', processor);
-          try {
-            innerRes = await processor.preProcessEntity!(
-              innerRes,
-              context.location,
-              context.collector.forProcessor(processor),
-              context.originLocation,
-              context.cache.forProcessor(processor),
-            );
-          } catch (e) {
-            throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while preprocessing`,
-              e,
-            );
-          }
-          return innerRes;
-        });
+      for (const processor of this.options.processors) {
+        if (processor.preProcessEntity) {
+          let innerRes = res;
+          res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
+            addEntityAttributes(span, context.entityRef);
+            addProcessorAttributes(span, 'preProcessEntity', processor);
+            try {
+              innerRes = await processor.preProcessEntity!(
+                innerRes,
+                context.location,
+                context.collector.forProcessor(processor),
+                context.originLocation,
+                context.cache.forProcessor(processor),
+              );
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while preprocessing`,
+                e,
+              );
+            }
+            return innerRes;
+          });
+        }
       }
-    }
 
-    return res;
+      return res;
+    });
   }
 
   /**
@@ -383,32 +390,39 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let res = entity;
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, context.entityRef);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'postProcessEntity',
+      );
+      let res = entity;
 
-    for (const processor of this.options.processors) {
-      if (processor.postProcessEntity) {
-        let innerRes = res;
-        res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
-          addEntityAttributes(span, context.entityRef);
-          addProcessorAttributes(span, 'postProcessEntity', processor);
-          try {
-            innerRes = await processor.postProcessEntity!(
-              innerRes,
-              context.location,
-              context.collector.forProcessor(processor),
-              context.cache.forProcessor(processor),
-            );
-          } catch (e) {
-            throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while postprocessing`,
-              e,
-            );
-          }
-          return innerRes;
-        });
+      for (const processor of this.options.processors) {
+        if (processor.postProcessEntity) {
+          let innerRes = res;
+          res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
+            addEntityAttributes(span, context.entityRef);
+            addProcessorAttributes(span, 'postProcessEntity', processor);
+            try {
+              innerRes = await processor.postProcessEntity!(
+                innerRes,
+                context.location,
+                context.collector.forProcessor(processor),
+                context.cache.forProcessor(processor),
+              );
+            } catch (e) {
+              throw new InputError(
+                `Processor ${processor.constructor.name} threw an error while postprocessing`,
+                e,
+              );
+            }
+            return innerRes;
+          });
+        }
       }
-    }
 
-    return res;
+      return res;
+    });
   }
 }
