@@ -269,50 +269,65 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<void> {
-    // Double check that none of the previous steps tried to change something
-    // related to the entity ref, which would break downstream
-    if (stringifyEntityRef(entity) !== context.entityRef) {
-      throw new ConflictError(
-        'Fatal: The entity kind, namespace, or name changed during processing',
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, context.entityRef);
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'validateEntity',
       );
-    }
+      // Double check that none of the previous steps tried to change something
+      // related to the entity ref, which would break downstream
+      if (stringifyEntityRef(entity) !== context.entityRef) {
+        throw new ConflictError(
+          'Fatal: The entity kind, namespace, or name changed during processing',
+        );
+      }
 
-    // Validate that the end result is a valid Entity at all
-    try {
-      validateEntity(entity);
-    } catch (e) {
-      throw new ConflictError(
-        `Entity envelope for ${context.entityRef} failed validation after preprocessing`,
-        e,
-      );
-    }
+      // Validate that the end result is a valid Entity at all
+      try {
+        validateEntity(entity);
+      } catch (e) {
+        throw new ConflictError(
+          `Entity envelope for ${context.entityRef} failed validation after preprocessing`,
+          e,
+        );
+      }
 
-    let valid = false;
+      let valid = false;
 
-    for (const processor of this.options.processors) {
-      if (processor.validateEntityKind) {
-        try {
-          const thisValid = await processor.validateEntityKind(entity);
-          if (thisValid) {
-            valid = true;
-            if (this.options.legacySingleProcessorValidation) {
-              break;
+      for (const processor of this.options.processors) {
+        if (processor.validateEntityKind) {
+          try {
+            const thisValid = await withActiveSpan(
+              tracer,
+              'ProcessingStep',
+              async span => {
+                addEntityAttributes(span, context.entityRef);
+                addProcessorAttributes(span, 'postProcessEntity', processor);
+                return await processor.validateEntityKind(entity);
+              },
+            );
+            if (thisValid) {
+              valid = true;
+              if (this.options.legacySingleProcessorValidation) {
+                break;
+              }
             }
+          } catch (e) {
+            throw new InputError(
+              `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
+              e,
+            );
           }
-        } catch (e) {
-          throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
-            e,
-          );
         }
       }
-    }
 
-    if (!valid) {
-      throw new InputError(
-        `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
-      );
-    }
+      if (!valid) {
+        throw new InputError(
+          `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
+        );
+      }
+    });
   }
 
   /**
