@@ -43,8 +43,8 @@ const Plugins = () => {
   const [categories, setCategories] =
     useState<ChipCategory[]>(allCategoriesArray);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [showCoreFeaturesHeader, setShowCoreFeaturesHeader] = useState(true);
-  const [showOtherPluginsHeader, setShowOtherPluginsHeader] = useState(true);
+  const [showCoreFeatures, setShowCoreFeatures] = useState(true);
+  const [showOtherPlugins, setShowOtherPlugins] = useState(true);
 
   const handleChipClick = (categoryName: string) => {
     const isSelected =
@@ -67,23 +67,23 @@ const Plugins = () => {
     setCategories(newCategories);
 
     if (!newSelectedCategories.includes('Core Feature')) {
-      setShowCoreFeaturesHeader(false);
+      setShowCoreFeatures(false);
     } else {
-      setShowCoreFeaturesHeader(true);
+      setShowCoreFeatures(true);
     }
 
     if (
       newSelectedCategories.length === 1 &&
       newSelectedCategories[0] === 'Core Feature'
     ) {
-      setShowOtherPluginsHeader(false);
+      setShowOtherPlugins(false);
     } else {
-      setShowOtherPluginsHeader(true);
+      setShowOtherPlugins(true);
     }
 
     if (newSelectedCategories.length === 0) {
-      setShowOtherPluginsHeader(true);
-      setShowCoreFeaturesHeader(true);
+      setShowOtherPlugins(true);
+      setShowCoreFeatures(true);
     }
   };
 
@@ -118,33 +118,45 @@ const Plugins = () => {
           />
         </div>
 
-        {showCoreFeaturesHeader && <h2>Core Features</h2>}
+        {showCoreFeatures && (
+          <div>
+            <h2>Core Features</h2>
+            <div className="pluginsContainer margin-bottom--lg">
+              {plugins.corePlugins
+                .filter(
+                  pluginData =>
+                    !selectedCategories.length ||
+                    selectedCategories.includes(pluginData.category),
+                )
+                .map(pluginData => (
+                  <PluginCard
+                    key={pluginData.title}
+                    {...pluginData}
+                  ></PluginCard>
+                ))}
+            </div>
+          </div>
+        )}
 
-        <div className="pluginsContainer margin-bottom--lg">
-          {plugins.corePlugins
-            .filter(
-              pluginData =>
-                !selectedCategories.length ||
-                selectedCategories.includes(pluginData.category),
-            )
-            .map(pluginData => (
-              <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
-            ))}
-        </div>
-
-        {showOtherPluginsHeader && <h2>All Plugins</h2>}
-
-        <div className="pluginsContainer margin-bottom--lg">
-          {plugins.otherPlugins
-            .filter(
-              pluginData =>
-                !selectedCategories.length ||
-                selectedCategories.includes(pluginData.category),
-            )
-            .map(pluginData => (
-              <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
-            ))}
-        </div>
+        {showOtherPlugins && (
+          <div>
+            <h2>All Plugins</h2>
+            <div className="pluginsContainer margin-bottom--lg">
+              {plugins.otherPlugins
+                .filter(
+                  pluginData =>
+                    !selectedCategories.length ||
+                    selectedCategories.includes(pluginData.category),
+                )
+                .map(pluginData => (
+                  <PluginCard
+                    key={pluginData.title}
+                    {...pluginData}
+                  ></PluginCard>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

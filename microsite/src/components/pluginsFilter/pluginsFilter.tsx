@@ -15,7 +15,7 @@ const PluginsFilter = ({ categories, handleChipClick }: Props) => {
       <ul className="dropdown__menu">
         {categories.map(chip => {
           return (
-            <li key={chip.name}>
+            <li key={chip.name} onClick={() => handleChipClick(chip.name)}>
               <div className="dropdown__item">
                 <input
                   type="checkbox"

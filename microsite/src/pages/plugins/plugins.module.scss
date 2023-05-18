@@ -37,6 +37,10 @@
     }
   }
 
+  :global(.hidePluginsHeader) {
+    display: none;
+  }
+
   :global(.fit-content) {
     width: fit-content;
   }
