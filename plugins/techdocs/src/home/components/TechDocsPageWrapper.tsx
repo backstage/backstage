@@ -29,7 +29,7 @@ export type TechDocsPageWrapperProps = {
 };
 
 /**
- * Component wrapping a techdocs page with Page and Header components
+ * Component wrapping a TechDocs page with Page and Header components
  *
  * @public
  */
