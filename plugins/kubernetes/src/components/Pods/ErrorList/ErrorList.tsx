@@ -60,8 +60,8 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                   {i > 0 && <Divider key={`error-divider${i}`} />}
                   <ListItem>
                     <ListItemText
-                      primary={onlyPodWithErrors.pod.metadata?.name}
-                      secondary={error.message}
+                      primary={error.message}
+                      secondary={onlyPodWithErrors.pod.metadata?.name}
                     />
                   </ListItem>
                 </React.Fragment>
