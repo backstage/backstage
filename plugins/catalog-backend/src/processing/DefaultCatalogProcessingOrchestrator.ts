@@ -240,26 +240,33 @@ export class DefaultCatalogProcessingOrchestrator
    * Enforce entity policies making sure that entities conform to a general schema
    */
   private async runPolicyStep(entity: Entity): Promise<Entity> {
-    let policyEnforcedEntity: Entity | undefined;
-
-    try {
-      policyEnforcedEntity = await this.options.policy.enforce(entity);
-    } catch (e) {
-      throw new InputError(
-        `Policy check failed for ${stringifyEntityRef(entity)}`,
-        e,
+    return await withActiveSpan(tracer, 'ProcessingStage', async stageSpan => {
+      addEntityAttributes(stageSpan, stringifyEntityRef(entity));
+      stageSpan.setAttribute(
+        'backstage.catalog.processor.stage',
+        'enforcePolicyEntity',
       );
-    }
+      let policyEnforcedEntity: Entity | undefined;
 
-    if (!policyEnforcedEntity) {
-      throw new Error(
-        `Policy unexpectedly returned no data for ${stringifyEntityRef(
-          entity,
-        )}`,
-      );
-    }
+      try {
+        policyEnforcedEntity = await this.options.policy.enforce(entity);
+      } catch (e) {
+        throw new InputError(
+          `Policy check failed for ${stringifyEntityRef(entity)}`,
+          e,
+        );
+      }
 
-    return policyEnforcedEntity;
+      if (!policyEnforcedEntity) {
+        throw new Error(
+          `Policy unexpectedly returned no data for ${stringifyEntityRef(
+            entity,
+          )}`,
+        );
+      }
+
+      return policyEnforcedEntity;
+    });
   }
 
   /**
