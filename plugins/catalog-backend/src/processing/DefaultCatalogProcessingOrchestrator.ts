@@ -56,7 +56,11 @@ import {
 } from './util';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
-import { addEntityAttributes, TRACER_ID } from '../util/opentelemetry';
+import {
+  addEntityAttributes,
+  TRACER_ID,
+  withActiveSpan,
+} from '../util/opentelemetry';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -200,7 +204,7 @@ export class DefaultCatalogProcessingOrchestrator
     for (const processor of this.options.processors) {
       if (processor.preProcessEntity) {
         let innerRes = res;
-        res = await tracer.startActiveSpan('ProcessingStep', async span => {
+        res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
           addEntityAttributes(span, context.entityRef);
           addProcessorAttributes(span, 'preProcessEntity', processor);
           try {
@@ -212,15 +216,11 @@ export class DefaultCatalogProcessingOrchestrator
               context.cache.forProcessor(processor),
             );
           } catch (e) {
-            span.recordException(e);
-            span.setStatus({ code: SpanStatusCode.ERROR });
-            span.end();
             throw new InputError(
               `Processor ${processor.constructor.name} threw an error while preprocessing`,
               e,
             );
           }
-          span.end();
           return innerRes;
         });
       }
@@ -388,7 +388,7 @@ export class DefaultCatalogProcessingOrchestrator
     for (const processor of this.options.processors) {
       if (processor.postProcessEntity) {
         let innerRes = res;
-        res = await tracer.startActiveSpan('ProcessingStep', async span => {
+        res = await withActiveSpan(tracer, 'ProcessingStep', async span => {
           addEntityAttributes(span, context.entityRef);
           addProcessorAttributes(span, 'postProcessEntity', processor);
           try {
@@ -399,15 +399,11 @@ export class DefaultCatalogProcessingOrchestrator
               context.cache.forProcessor(processor),
             );
           } catch (e) {
-            span.recordException(e);
-            span.setStatus({ code: SpanStatusCode.ERROR });
-            span.end();
             throw new InputError(
               `Processor ${processor.constructor.name} threw an error while postprocessing`,
               e,
             );
           }
-          span.end();
           return innerRes;
         });
       }
