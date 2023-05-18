@@ -23,7 +23,7 @@ import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Logger } from 'winston';
-import { metrics, SpanStatusCode, trace } from '@opentelemetry/api';
+import { metrics, trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
@@ -35,7 +35,11 @@ import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { addEntityAttributes, TRACER_ID } from '../util/opentelemetry';
+import {
+  addEntityAttributes,
+  TRACER_ID,
+  withActiveSpan,
+} from '../util/opentelemetry';
 
 const CACHE_TTL = 5;
 
@@ -134,7 +138,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         }
       },
       processTask: async item => {
-        await tracer.startActiveSpan('ProcessingRun', async span => {
+        await withActiveSpan(tracer, 'ProcessingRun', async span => {
           const track = this.tracker.processStart(item, this.logger);
           addEntityAttributes(span, item.entityRef);
 
@@ -157,7 +161,8 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             if (result.ok) {
               const { ttl: _, ...stateWithoutTtl } = state ?? {};
               if (
-                stableStringify(stateWithoutTtl) !== stableStringify(result.state)
+                stableStringify(stateWithoutTtl) !==
+                stableStringify(result.state)
               ) {
                 await this.processingDatabase.transaction(async tx => {
                   await this.processingDatabase.updateEntityCache(tx, {
@@ -216,7 +221,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               // significant effect on our surroundings; therefore, we just abort
               // without any updates / stitching.
               track.markSuccessfulWithNoChanges();
-              span.end();
               return;
             }
 
@@ -255,8 +259,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
                 new Set([stringifyEntityRef(unprocessedEntity)]),
               );
               track.markSuccessfulWithErrors();
-              span.setStatus({ code: SpanStatusCode.ERROR });
-              span.end();
               return;
             }
 
@@ -309,10 +311,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           } catch (error) {
             assertError(error);
             track.markFailed(error);
-            span.recordException(error);
-            span.setStatus({ code: SpanStatusCode.ERROR });
           }
-          span.end();
         });
       },
     });
