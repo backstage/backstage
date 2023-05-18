@@ -31,12 +31,25 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
   }
 
+  @media (max-width: 768px) {
+    :global(.pluginsContainer) {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  }
+
   :global(.fit-content) {
     width: fit-content;
   }
 
+  :global(.pluginsFilterBox) {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 1rem;
+  }
+
   :global(.dropdown) {
     float: right;
+    margin-bottom: 1rem;
   }
 
   :global(.button--info) {

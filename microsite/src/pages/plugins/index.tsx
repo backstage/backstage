@@ -111,11 +111,12 @@ const Plugins = () => {
         </div>
 
         <div className="bulletLine margin-bottom--lg"></div>
-
-        <PluginsFilter
-          categories={categories}
-          handleChipClick={handleChipClick}
-        />
+        <div className="pluginsFilterBox">
+          <PluginsFilter
+            categories={categories}
+            handleChipClick={handleChipClick}
+          />
+        </div>
 
         {showCoreFeaturesHeader && <h2>Core Features</h2>}
 
