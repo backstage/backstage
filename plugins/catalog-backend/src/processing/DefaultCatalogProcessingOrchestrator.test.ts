@@ -194,10 +194,12 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
 
     it('runs all processor validations when asked to', async () => {
       const validate = jest.fn(async () => true);
-      const processor1: Partial<CatalogProcessor> = {
+      const processor1: CatalogProcessor = {
+        getProcessorName: () => 'processor1',
         validateEntityKind: validate,
       };
-      const processor2: Partial<CatalogProcessor> = {
+      const processor2: CatalogProcessor = {
+        getProcessorName: () => 'processor2',
         validateEntityKind: validate,
       };
 
