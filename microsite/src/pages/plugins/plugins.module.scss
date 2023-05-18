@@ -28,10 +28,60 @@
   :global(.pluginsContainer) {
     gap: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 300px));
+  }
+
+  @media (max-width: 768px) {
+    :global(.pluginsContainer) {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  }
+
+  :global(.hidePluginsHeader) {
+    display: none;
   }
 
   :global(.fit-content) {
     width: fit-content;
+  }
+
+  :global(.pluginsFilterBox) {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 1rem;
+  }
+
+  :global(.dropdown) {
+    float: right;
+    margin-bottom: 1rem;
+  }
+
+  :global(.button--info) {
+    background-color: transparent;
+    border-color: var(--ifm-color-primary);
+    color: var(--ifm-color-primary);
+    min-width: 250px;
+  }
+
+  :global(label.dropdown__item) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 5px;
+
+    &:hover {
+      background-color: var(--ifm-color-primary);
+      color: black;
+    }
+  }
+
+  :global(.dropdown__label) {
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  :global(.dropdown__checkbox) {
+    margin-right: 10px;
+    cursor: pointer;
   }
 }
