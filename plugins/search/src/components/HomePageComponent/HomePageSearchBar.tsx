@@ -66,12 +66,12 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
       onSubmit={handleSubmit}
       onChange={handleChange}
       InputProps={{
+        ...props.InputProps,
         classes: {
           root: classes.searchBarRoot,
           notchedOutline: classes.searchBarOutline,
           ...props.InputProps?.classes,
         },
-        ...props.InputProps,
       }}
       {...props}
     />
