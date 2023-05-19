@@ -30,6 +30,12 @@ export const viewTechDocRouteRef = createExternalRouteRef({
   params: ['namespace', 'kind', 'name'],
 });
 
+export const selectedTemplateRouteRef = createExternalRouteRef({
+  id: 'selected-template',
+  optional: true,
+  params: ['namespace', 'templateName'],
+});
+
 export const rootRouteRef = createRouteRef({
   id: 'catalog',
 });

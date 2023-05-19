@@ -49,12 +49,14 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
-import { viewTechDocRouteRef } from '../../routes';
+import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -97,6 +99,7 @@ export function AboutCard(props: AboutCardProps) {
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -125,6 +128,23 @@ export function AboutCard(props: AboutCardProps) {
         name: entity.metadata.name,
       }),
   };
+
+  const subHeaderLinks = [viewInSource, viewInTechDocs];
+
+  if (isTemplateEntityV1beta3(entity)) {
+    const launchTemplate: IconLinkVerticalProps = {
+      label: 'Launch Template',
+      icon: <AddIcon />,
+      href:
+        templateRoute &&
+        templateRoute({
+          templateName: entity.metadata.name,
+          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+        }),
+    };
+
+    subHeaderLinks.push(launchTemplate);
+  }
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -179,7 +199,7 @@ export function AboutCard(props: AboutCardProps) {
             </IconButton>
           </>
         }
-        subheader={<HeaderIconLinkRow links={[viewInSource, viewInTechDocs]} />}
+        subheader={<HeaderIconLinkRow links={subHeaderLinks} />}
       />
       <Divider />
       <CardContent className={cardContentClass}>
