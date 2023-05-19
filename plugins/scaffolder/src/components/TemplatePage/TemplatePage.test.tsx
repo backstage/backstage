@@ -62,7 +62,6 @@ const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
   registerFlag: jest.fn(),
   getRegisteredFlags: jest.fn(),
   save: jest.fn(),
-  getSortedFlags: jest.fn(),
 };
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };

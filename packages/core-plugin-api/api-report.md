@@ -436,7 +436,6 @@ export type FeatureFlag = {
 // @public
 export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlag[];
-  getSortedFlags(): FeatureFlag[];
   isActive(name: string): boolean;
   registerFlag(flag: FeatureFlag): void;
   save(options: FeatureFlagsSaveOptions): void;

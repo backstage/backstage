@@ -85,11 +85,6 @@ export interface FeatureFlagsApi {
   registerFlag(flag: FeatureFlag): void;
 
   /**
-   * Get a list of all registered flags sorted.
-   */
-  getSortedFlags(): FeatureFlag[];
-
-  /**
    * Get a list of all registered flags.
    */
   getRegisteredFlags(): FeatureFlag[];

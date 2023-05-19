@@ -57,14 +57,6 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
     this.registeredFeatureFlags.push(flag);
   }
 
-  getSortedFlags(): FeatureFlag[] {
-    const flags = this.registeredFeatureFlags;
-    const activeFlags = flags.filter(flag => this.isActive(flag.name));
-    const idleFlags = flags.filter(flag => !this.isActive(flag.name));
-    this.registeredFeatureFlags = [...activeFlags, ...idleFlags];
-    return this.registeredFeatureFlags.slice();
-  }
-
   getRegisteredFlags(): FeatureFlag[] {
     return this.registeredFeatureFlags.slice();
   }

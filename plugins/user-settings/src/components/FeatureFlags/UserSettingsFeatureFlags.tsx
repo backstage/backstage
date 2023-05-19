@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   List,
   TextField,
@@ -25,6 +25,8 @@ import {
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 import {
+  FeatureFlag,
+  FeatureFlagsApi,
   featureFlagsApiRef,
   FeatureFlagState,
   useApi,
@@ -32,19 +34,27 @@ import {
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
 
+export const sortFlags = (
+  flags: FeatureFlag[],
+  featureFlagsApi: FeatureFlagsApi,
+): FeatureFlag[] => {
+  const activeFlags = flags.filter(flag => featureFlagsApi.isActive(flag.name));
+  const idleFlags = flags.filter(flag => !featureFlagsApi.isActive(flag.name));
+  return [...activeFlags, ...idleFlags];
+};
+
 /** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-
   const inputRef = React.useRef<HTMLElement>();
-  const [isFirstLoad, setIsFirstLoad] = React.useState<boolean>(true);
-  useEffect(() => {
-    if (isFirstLoad) setIsFirstLoad(false);
-  }, [isFirstLoad]);
 
-  const featureFlags = isFirstLoad
-    ? featureFlagsApi.getSortedFlags()
-    : featureFlagsApi.getRegisteredFlags();
+  const initialFeatureFlags = featureFlagsApi.getRegisteredFlags();
+  const initialFeatureFlagsSorted = sortFlags(
+    initialFeatureFlags,
+    featureFlagsApi,
+  );
+  const [featureFlags] = useState(initialFeatureFlagsSorted);
+
   const initialFlagState = Object.fromEntries(
     featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
   );
