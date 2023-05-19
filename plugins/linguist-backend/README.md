@@ -57,7 +57,11 @@ Here's how to get the backend up and running:
 4. Now run `yarn start-backend` from the repo root
 5. Finally open `http://localhost:7007/api/linguist/health` in a browser and it should return `{"status":"ok"}`
 
-## Batch Size
+## Plugin Option
+
+The Linguist backend has various plugin options that you can provide to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` file that will allow you to configure various aspects of how it works. The following sections go into the details of these options
+
+### Batch Size
 
 The Linguist backend is setup to process entities by acting as a queue where it will pull down all the applicable entities from the Catalog and add them to it's database (saving just the `entityRef`). Then it will grab the `n` oldest entities that have not been processed to determine their languages and process them. To control the batch size simply provide that to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` like this:
 
@@ -67,7 +71,7 @@ return createRouter({ schedule: schedule, batchSize: 40 }, { ...env });
 
 **Note:** The default batch size is 20
 
-## Kind
+### Kind
 
 The default setup only processes entities of kind `['API', 'Component', 'Template']`. To control the `kind` that are processed provide that to the `createRouter` function in your `packages/backend/src/plugins/linguist.ts` like this:
 
@@ -75,7 +79,7 @@ The default setup only processes entities of kind `['API', 'Component', 'Templat
 return createRouter({ schedule: schedule, kind: ['Component'] }, { ...env });
 ```
 
-## Refresh
+### Refresh
 
 The default setup will only generate the language breakdown for entities with the linguist annotation that have not been generated yet. If you want this process to also refresh the data you can do so by adding the `age` (as a `HumanDuration`) in your `packages/backend/src/plugins/linguist.ts` when you call `createRouter`:
 
@@ -85,7 +89,7 @@ return createRouter({ schedule: schedule, age: { days: 30 } }, { ...env });
 
 With the `age` setup like this if the language breakdown is older than 15 days it will get regenerated. It's recommended that if you choose to use this configuration to set it to a large value - 30, 90, or 180 - as this data generally does not change drastically.
 
-## Linguist JS options
+### Linguist JS options
 
 The default setup will use the default [linguist-js](https://www.npmjs.com/package/linguist-js) options, a full list of the available options can be found [here](https://www.npmjs.com/package/linguist-js#API).
 
@@ -96,7 +100,7 @@ return createRouter(
 );
 ```
 
-## Use Source Location
+### Use Source Location
 
 You may wish to use the `backstage.io/source-location` annotation over using the `backstage.io/linguist` as you may not be able to quickly add that annotation to your Entities. To do this you'll just need to set the `useSourceLocation` boolean to `true` in your `packages/backend/src/plugins/linguist.ts` when you call `createRouter`:
 

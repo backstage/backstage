@@ -21,6 +21,9 @@ you to use the [Contributors](contributors.md) guide to do a repository-based in
 
 - Access to a Unix-based operating system, such as Linux, MacOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+- A GNU-like build environment available at the command line.
+  For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
+  On MacOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these

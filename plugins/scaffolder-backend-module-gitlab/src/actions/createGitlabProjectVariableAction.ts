@@ -34,7 +34,7 @@ export const createGitlabProjectVariableAction = (options: {
   return createTemplateAction({
     id: 'gitlab:projectVariable:create',
     schema: {
-      input: commonGitlabConfig.and(
+      input: commonGitlabConfig.merge(
         z.object({
           projectId: z.union([z.number(), z.string()], {
             description: 'Project ID',

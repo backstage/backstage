@@ -88,7 +88,7 @@ export const getAndWriteAttachments = async (
         },
       });
       if (!res.ok) {
-        throw ResponseError.fromResponse(res);
+        throw await ResponseError.fromResponse(res);
       } else if (res.body !== null) {
         fs.openSync(`${workspace}/${mkdocsDir}docs/img/${downloadTitle}`, 'w');
         const writeStream = fs.createWriteStream(

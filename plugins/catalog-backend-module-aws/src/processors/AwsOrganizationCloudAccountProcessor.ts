@@ -22,13 +22,17 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import AWS, { Credentials, Organizations } from 'aws-sdk';
-import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
-import { Logger } from 'winston';
 import {
-  AwsOrganizationProviderConfig,
-  readAwsOrganizationConfig,
-} from '../awsOrganization/config';
+  Account,
+  ListAccountsResponse,
+  Organizations,
+} from '@aws-sdk/client-organizations';
+import { Logger } from 'winston';
+import { readAwsOrganizationConfig } from '../awsOrganization/config';
+import {
+  AwsCredentialProvider,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
 
 const AWS_ORGANIZATION_REGION = 'us-east-1';
 const LOCATION_TYPE = 'aws-cloud-accounts';
@@ -47,39 +51,31 @@ const ORGANIZATION_ANNOTATION = 'amazonaws.com/organization-id';
  */
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   private readonly organizations: Organizations;
-  private readonly provider: AwsOrganizationProviderConfig;
+  private readonly logger: Logger;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static async fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
-    return new AwsOrganizationCloudAccountProcessor({
-      ...options,
-      provider: c ? readAwsOrganizationConfig(c) : {},
+    const orgConfig = c ? readAwsOrganizationConfig(c) : undefined;
+    const awsCredentialsManager =
+      DefaultAwsCredentialsManager.fromConfig(config);
+    const credProvider = await awsCredentialsManager.getCredentialProvider({
+      arn: orgConfig?.roleArn,
     });
-  }
-
-  private static buildCredentials(
-    config: AwsOrganizationProviderConfig,
-  ): Credentials | undefined {
-    const roleArn = config.roleArn;
-    if (!roleArn) {
-      return undefined;
-    }
-
-    return new AWS.ChainableTemporaryCredentials({
-      params: {
-        RoleSessionName: 'backstage-aws-organization-processor',
-        RoleArn: roleArn,
-      },
-    });
-  }
-
-  private constructor(options: { provider: AwsOrganizationProviderConfig }) {
-    this.provider = options.provider;
-    const credentials = AwsOrganizationCloudAccountProcessor.buildCredentials(
-      this.provider,
+    return new AwsOrganizationCloudAccountProcessor(
+      credProvider,
+      options.logger,
     );
-    this.organizations = new AWS.Organizations({
-      credentials,
+  }
+
+  private constructor(
+    private readonly credProvider: AwsCredentialProvider,
+    logger: Logger,
+  ) {
+    this.logger = logger?.child({
+      target: this.getProcessorName(),
+    });
+    this.organizations = new Organizations({
+      credentialDefaultProvider: () => this.credProvider.sdkCredentialProvider,
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
@@ -96,6 +92,8 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     if (location.type !== LOCATION_TYPE) {
       return false;
     }
+
+    this.logger?.info('Discovering AWS Organization Account objects');
 
     (await this.getAwsAccounts())
       .map(account => this.mapAccountToComponent(account))
@@ -143,9 +141,8 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     let nextToken = undefined;
     while (isInitialAttempt || nextToken) {
       isInitialAttempt = false;
-      const orgAccounts: ListAccountsResponse = await this.organizations
-        .listAccounts({ NextToken: nextToken })
-        .promise();
+      const orgAccounts: ListAccountsResponse =
+        await this.organizations.listAccounts({ NextToken: nextToken });
       if (orgAccounts.Accounts) {
         awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
       }

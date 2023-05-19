@@ -1,5 +1,70 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.0
+
+### Minor Changes
+
+- 280ec10c18e: Added Pod logs components for Kubernetes plugin
+
+  **BREAKING**: `kubernetesProxyApi` for custom plugins built with components from the Kubernetes plugin apis, `kubernetesProxyApi` should be added to the plugin's API list.
+
+  ```
+  ...
+  export const kubernetesPlugin = createPlugin({
+    id: 'kubernetes',
+    apis: [
+  ...
+      createApiFactory({
+          api: kubernetesProxyApiRef,
+          deps: {
+          kubernetesApi: kubernetesApiRef,
+          },
+          factory: ({ kubernetesApi }) =>
+          new KubernetesProxyClient({
+              kubernetesApi,
+          }),
+      }),
+  ```
+
+  **BREAKING**: `KubernetesDrawer` is now called `KubernetesStructuredMetadataTableDrawer` so that we can do more than just show `StructuredMetadataTable`
+
+  `import { KubernetesDrawer } from "@backstage/plugin-kubernetes"`
+
+  should now be:
+
+  `import { KubernetesStructuredMetadataTableDrawer } from "@backstage/plugin-kubernetes"`
+
+### Patch Changes
+
+- c7bad1005ba: The Kubernetes plugin now requests AKS access tokens from Azure when retrieving
+  objects from clusters configured with `authProvider: aks` and sets `auth.aks` in
+  its request bodies appropriately.
+- a160e02c3d7: Omit managed fields in the Kubernetes resource YAML display.
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/plugin-kubernetes-common@0.6.3
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
+## 0.9.0-next.2
+
+### Patch Changes
+
+- c7bad1005ba: The Kubernetes plugin now requests AKS access tokens from Azure when retrieving
+  objects from clusters configured with `authProvider: aks` and sets `auth.aks` in
+  its request bodies appropriately.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-kubernetes-common@0.6.3-next.0
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.9.0-next.1
 
 ### Minor Changes

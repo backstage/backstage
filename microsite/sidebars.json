@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.14.0",
       "releases/v1.13.0",
       "releases/v1.12.0",
       "releases/v1.11.0",
@@ -408,6 +409,7 @@
         "label": "Core Services",
         "items": ["backend-system/core-services/index"]
       }
-    ]
+    ],
+    "Accessibility": ["accessibility/index"]
   }
 }

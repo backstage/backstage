@@ -105,7 +105,6 @@ const StyledMTableHeader = withStyles(
       borderTop: `1px solid ${theme.palette.grey.A100}`,
       borderBottom: `1px solid ${theme.palette.grey.A100}`,
       // withStyles hasn't a generic overload for theme
-      color: (theme as BackstageTheme).palette.textSubtle,
       fontWeight: theme.typography.fontWeightBold,
       position: 'static',
       wordBreak: 'normal',

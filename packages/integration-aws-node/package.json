@@ -1,7 +1,7 @@
 {
   "name": "@backstage/integration-aws-node",
   "description": "Helpers for fetching AWS account credentials",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -32,11 +32,11 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@aws-sdk/client-sts": "^3.208.0",
-    "@aws-sdk/credential-provider-node": "^3.208.0",
-    "@aws-sdk/credential-providers": "^3.208.0",
-    "@aws-sdk/types": "^3.208.0",
-    "@aws-sdk/util-arn-parser": "^3.208.0",
+    "@aws-sdk/client-sts": "^3.310.0",
+    "@aws-sdk/credential-provider-node": "^3.310.0",
+    "@aws-sdk/credential-providers": "^3.310.0",
+    "@aws-sdk/types": "^3.310.0",
+    "@aws-sdk/util-arn-parser": "^3.310.0",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^"
   },

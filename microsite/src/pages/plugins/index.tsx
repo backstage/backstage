@@ -1,13 +1,13 @@
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import React from 'react';
-
+import React, { useState } from 'react';
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
+import { ChipCategory } from '@site/src/util/types';
 import { truncateDescription } from '@site/src/util/truncateDescription';
+import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
 
-//#region Plugin data import
 const pluginsContext = require.context(
   '../../../data/plugins',
   false,
@@ -29,50 +29,137 @@ const plugins = pluginsContext.keys().reduce(
 
 plugins.corePlugins.sort((a, b) => a.order - b.order);
 plugins.otherPlugins.sort((a, b) => a.order - b.order);
-//#endregion
 
-const Plugins = () => (
-  <Layout>
-    <div
-      className={clsx('container', 'padding--lg', pluginsStyles.pluginsPage)}
-    >
-      <div className="marketplaceBanner">
-        <div className="marketplaceContent">
-          <h2>Plugin Marketplace</h2>
+const Plugins = () => {
+  const allCategoriesSet = new Set(
+    [...plugins.corePlugins, ...plugins.otherPlugins].map(
+      ({ category }) => category,
+    ),
+  );
+  const allCategoriesArray = Array.from(allCategoriesSet).map(category => ({
+    name: category,
+    isSelected: false,
+  }));
+  const [categories, setCategories] =
+    useState<ChipCategory[]>(allCategoriesArray);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [showCoreFeatures, setShowCoreFeatures] = useState(true);
+  const [showOtherPlugins, setShowOtherPlugins] = useState(true);
 
-          <p>
-            Open source plugins that you can add to your Backstage deployment.
-            Learn how to build a <Link to="/docs/plugins">plugin</Link>.
-          </p>
+  const handleChipClick = (categoryName: string) => {
+    const isSelected =
+      categories.find(category => category.name === categoryName)?.isSelected ||
+      false;
+
+    const newSelectedCategories = isSelected
+      ? selectedCategories.filter(c => c !== categoryName)
+      : [...selectedCategories, categoryName];
+
+    setSelectedCategories(newSelectedCategories);
+
+    const newCategories = categories.map(category => {
+      if (category.name === categoryName) {
+        return { ...category, isSelected: !isSelected };
+      }
+      return category;
+    });
+
+    setCategories(newCategories);
+
+    if (!newSelectedCategories.includes('Core Feature')) {
+      setShowCoreFeatures(false);
+    } else {
+      setShowCoreFeatures(true);
+    }
+
+    if (
+      newSelectedCategories.length === 1 &&
+      newSelectedCategories[0] === 'Core Feature'
+    ) {
+      setShowOtherPlugins(false);
+    } else {
+      setShowOtherPlugins(true);
+    }
+
+    if (newSelectedCategories.length === 0) {
+      setShowOtherPlugins(true);
+      setShowCoreFeatures(true);
+    }
+  };
+
+  return (
+    <Layout>
+      <div
+        className={clsx('container', 'padding--lg', pluginsStyles.pluginsPage)}
+      >
+        <div className="marketplaceBanner">
+          <div className="marketplaceContent">
+            <h2>Plugin Marketplace</h2>
+
+            <p>
+              Open source plugins that you can add to your Backstage deployment.
+              Learn how to build a <Link to="/docs/plugins">plugin</Link>.
+            </p>
+          </div>
+
+          <Link
+            to="/docs/plugins/add-to-marketplace"
+            className="button button--outline button--primary"
+          >
+            Add to Marketplace
+          </Link>
         </div>
 
-        <Link
-          to="/docs/plugins/add-to-marketplace"
-          className="button button--outline button--primary"
-        >
-          Add to Marketplace
-        </Link>
+        <div className="bulletLine margin-bottom--lg"></div>
+        <div className="pluginsFilterBox">
+          <PluginsFilter
+            categories={categories}
+            handleChipClick={handleChipClick}
+          />
+        </div>
+
+        {showCoreFeatures && (
+          <div>
+            <h2>Core Features</h2>
+            <div className="pluginsContainer margin-bottom--lg">
+              {plugins.corePlugins
+                .filter(
+                  pluginData =>
+                    !selectedCategories.length ||
+                    selectedCategories.includes(pluginData.category),
+                )
+                .map(pluginData => (
+                  <PluginCard
+                    key={pluginData.title}
+                    {...pluginData}
+                  ></PluginCard>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {showOtherPlugins && (
+          <div>
+            <h2>All Plugins</h2>
+            <div className="pluginsContainer margin-bottom--lg">
+              {plugins.otherPlugins
+                .filter(
+                  pluginData =>
+                    !selectedCategories.length ||
+                    selectedCategories.includes(pluginData.category),
+                )
+                .map(pluginData => (
+                  <PluginCard
+                    key={pluginData.title}
+                    {...pluginData}
+                  ></PluginCard>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
-
-      <div className="bulletLine margin-bottom--lg"></div>
-
-      <h2>Core Features</h2>
-
-      <div className="pluginsContainer margin-bottom--lg">
-        {plugins.corePlugins.map(pluginData => (
-          <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
-        ))}
-      </div>
-
-      <h2>All Plugins</h2>
-
-      <div className="pluginsContainer margin-bottom--lg">
-        {plugins.otherPlugins.map(pluginData => (
-          <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
-        ))}
-      </div>
-    </div>
-  </Layout>
-);
+    </Layout>
+  );
+};
 
 export default Plugins;

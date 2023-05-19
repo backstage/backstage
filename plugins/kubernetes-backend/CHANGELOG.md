@@ -1,5 +1,50 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.11.0
+
+### Minor Changes
+
+- f4114f02d49: Allow fetching pod metrics limited by a `labelSelector`.
+
+  This is used by the Kubernetes tab on a components' page and leads to much smaller responses being received from Kubernetes, especially with larger Kubernetes clusters.
+
+- 890988341e9: Update `aws-sdk` client from v2 to v3.
+
+  **BREAKING**: The `AwsIamKubernetesAuthTranslator` class no longer exposes the following methods `awsGetCredentials`, `getBearerToken`, `getCredentials` and `validCredentials`. There is no replacement for these methods.
+
+### Patch Changes
+
+- 05f1d74539d: Kubernetes clusters now support `authProvider: aks`. When configured this way,
+  the `retrieveObjectsByServiceId` action will use the `auth.aks` value in the
+  request body as a bearer token to authenticate with Kubernetes.
+- 3659c71c5d9: Standardize `@aws-sdk` v3 versions
+- a341129b754: Fixed a bug in the Kubernetes proxy endpoint where requests to clusters configured with client-side auth providers would always fail with a 500 status.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration-aws-node@0.1.3
+  - @backstage/plugin-permission-node@0.7.8
+  - @backstage/plugin-kubernetes-common@0.6.3
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-permission-common@0.7.5
+
+## 0.11.0-next.2
+
+### Patch Changes
+
+- 05f1d74539d: Kubernetes clusters now support `authProvider: aks`. When configured this way,
+  the `retrieveObjectsByServiceId` action will use the `auth.aks` value in the
+  request body as a bearer token to authenticate with Kubernetes.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.6.3-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration-aws-node@0.1.2
+
 ## 0.11.0-next.1
 
 ### Minor Changes

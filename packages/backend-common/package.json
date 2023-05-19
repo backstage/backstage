@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.18.5-next.1",
+  "version": "0.18.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -46,10 +46,10 @@
     "test:kubernetes": "backstage-cli package test -t KubernetesContainerRunner --no-watch"
   },
   "dependencies": {
-    "@aws-sdk/abort-controller": "^3.208.0",
-    "@aws-sdk/client-s3": "^3.208.0",
-    "@aws-sdk/credential-providers": "^3.208.0",
-    "@aws-sdk/types": "^3.208.0",
+    "@aws-sdk/abort-controller": "^3.310.0",
+    "@aws-sdk/client-s3": "^3.310.0",
+    "@aws-sdk/credential-providers": "^3.310.0",
+    "@aws-sdk/types": "^3.310.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -114,7 +114,7 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/util-stream-node": "^3.208.0",
+    "@aws-sdk/util-stream-node": "^3.310.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/archiver": "^5.1.0",

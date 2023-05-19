@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-react
 
+## 1.6.0
+
+### Minor Changes
+
+- 2258dcae970: Added an entity namespace filter and column on the default catalog page.
+
+  If you have a custom version of the catalog page, you can add this filter in your CatalogPage code:
+
+  ```ts
+  <CatalogFilterLayout>
+    <CatalogFilterLayout.Filters>
+      <EntityTypePicker />
+      <UserListPicker initialFilter={initiallySelectedFilter} />
+      <EntityTagPicker />
+      /* if you want namespace picker */
+      <EntityNamespacePicker />
+    </CatalogFilterLayout.Filters>
+    <CatalogFilterLayout.Content>
+      <CatalogTable columns={columns} actions={actions} />
+    </CatalogFilterLayout.Content>
+  </CatalogFilterLayout>
+  ```
+
+  The namespace column can be added using `createNamespaceColumn();`. This is only needed if you customized the columns for CatalogTable.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+
 ## 1.6.0-next.1
 
 ### Patch Changes

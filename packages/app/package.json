@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.83-next.1",
+  "version": "0.2.83",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -29,6 +29,7 @@
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
+    "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",
     "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
