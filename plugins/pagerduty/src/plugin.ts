@@ -75,7 +75,7 @@ export const HomePagePagerDutyCard = homePlugin.provide(
     components: () => import('./components/HomePagePagerDutyCard'),
     settings: {
       schema: {
-        title: 'Pagerduty',
+        title: 'PagerDuty',
         type: 'object',
         properties: {
           integrationKey: {
