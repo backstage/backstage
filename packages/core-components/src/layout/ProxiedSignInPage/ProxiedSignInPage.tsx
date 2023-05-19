@@ -21,8 +21,7 @@ import {
 } from '@backstage/core-plugin-api';
 import React from 'react';
 import { useAsync, useMountEffect } from '@react-hookz/web';
-import { ErrorPanel } from '../../components/ErrorPanel';
-import { Progress } from '../../components/Progress';
+import { ErrorPanel, Progress } from '@backstage/core-components';
 import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
 
 /**
