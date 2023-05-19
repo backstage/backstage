@@ -573,6 +573,8 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
   JsonObject
 >;
