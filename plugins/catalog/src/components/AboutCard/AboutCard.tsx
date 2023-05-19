@@ -30,6 +30,7 @@ import {
   alertApiRef,
   errorApiRef,
   useApi,
+  useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -90,8 +91,8 @@ export interface AboutCardProps {
 /**
  * Exported publicly via the EntityAboutCard
  */
-export function AboutCard(props: AboutCardProps) {
-  const { variant } = props;
+export function AboutCard({ variant }: AboutCardProps) {
+  const app = useApp();
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -132,9 +133,12 @@ export function AboutCard(props: AboutCardProps) {
   const subHeaderLinks = [viewInSource, viewInTechDocs];
 
   if (isTemplateEntityV1beta3(entity)) {
+    const Icon = app.getSystemIcon('scaffolder') ?? AddIcon;
+
     const launchTemplate: IconLinkVerticalProps = {
       label: 'Launch Template',
-      icon: <AddIcon />,
+      icon: <Icon />,
+      disabled: !templateRoute,
       href:
         templateRoute &&
         templateRoute({

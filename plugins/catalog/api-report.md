@@ -105,6 +105,13 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
+    selectedTemplateRoute: ExternalRouteRef<
+      {
+        namespace: string;
+        templateName: string;
+      },
+      true
+    >;
   },
   CatalogInputPluginOptions
 >;

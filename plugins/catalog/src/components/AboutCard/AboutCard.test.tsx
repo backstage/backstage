@@ -30,7 +30,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { viewTechDocRouteRef } from '../../routes';
+import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutCard } from './AboutCard';
 
 describe('<AboutCard />', () => {
@@ -504,5 +504,166 @@ describe('<AboutCard />', () => {
 
     expect(screen.getByText('View TechDocs')).toBeVisible();
     expect(screen.getByText('View TechDocs').closest('a')).toBeNull();
+  });
+
+  it('renders launch template link', async () => {
+    const entity = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: {
+        name: 'create-react-app-template',
+        namespace: 'default',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/create/templates/:namespace/:templateName':
+            selectedTemplateRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Launch Template')).toBeVisible();
+    expect(screen.getByText('Launch Template').closest('a')).toHaveAttribute(
+      'href',
+      '/create/templates/default/create-react-app-template',
+    );
+  });
+
+  it.each([
+    {
+      testName: 'entity is not a template',
+      entity: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Component',
+        metadata: {
+          name: 'create-react-app-template',
+          namespace: 'default',
+        },
+      },
+    },
+    {
+      testName: 'apiVersion is not scaffolder.backstage.io/v1beta3',
+      entity: {
+        apiVersion: 'v1',
+        kind: 'Template',
+        metadata: {
+          name: 'create-react-app-template',
+          namespace: 'default',
+        },
+      },
+    },
+  ])(
+    'should not render launch template link when $testName',
+    async ({ entity }) => {
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [
+              scmIntegrationsApiRef,
+              ScmIntegrationsApi.fromConfig(
+                new ConfigReader({
+                  integrations: {
+                    github: [
+                      {
+                        host: 'github.com',
+                        token: '...',
+                      },
+                    ],
+                  },
+                }),
+              ),
+            ],
+            [catalogApiRef, catalogApi],
+          ]}
+        >
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/create/templates/:namespace/:templateName':
+              selectedTemplateRouteRef,
+          },
+        },
+      );
+
+      expect(screen.queryByText('Launch Template')).toBeNull();
+    },
+  );
+
+  it('renders disabled launch template link when route is not bound', async () => {
+    const entity = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: {
+        name: 'create-react-app-template',
+        namespace: 'default',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Launch Template')).toBeVisible();
+    expect(screen.getByText('Launch Template').closest('a')).toBeNull();
   });
 });
