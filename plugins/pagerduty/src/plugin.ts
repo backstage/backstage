@@ -24,7 +24,7 @@ import {
   createComponentExtension,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home';
-import { PagerDutyHomepageCardProps } from './components/PagerDutyHomepageCard/Content';
+import { HomePagePagerDutyCardProps } from './components/HomePagePagerDutyCard/Content';
 
 export const rootRouteRef = createRouteRef({
   id: 'pagerduty',
@@ -68,26 +68,26 @@ export const homePlugin = createPlugin({
 });
 
 /** @public */
-export const PagerDutyHomepageCard = homePlugin.provide(
-  createCardExtension<PagerDutyHomepageCardProps>({
-    name: 'PagerDutyHomepageCard',
-    title: 'Pager Duty Homepage Card',
-    components: () => import('./components/PagerDutyHomepageCard'),
+export const HomePagePagerDutyCard = homePlugin.provide(
+  createCardExtension<HomePagePagerDutyCardProps>({
+    name: 'HomePagePagerDutyCard',
+    title: 'PagerDuty Homepage Card',
+    components: () => import('./components/HomePagePagerDutyCard'),
     settings: {
       schema: {
         title: 'Pagerduty',
         type: 'object',
         properties: {
           integrationKey: {
-            title: 'Pager duty integration key',
+            title: 'PagerDuty integration key',
             type: 'string',
           },
           serviceId: {
-            title: 'Pager duty service id',
+            title: 'PagerDuty service id',
             type: 'string',
           },
           name: {
-            title: 'Pager duty service name',
+            title: 'PagerDuty service name',
             type: 'string',
           },
         },

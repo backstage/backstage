@@ -24,7 +24,7 @@ export type {
 } from './types';
 
 export type { EntityPagerDutyCardProps } from './EntityPagerDutyCard';
-export type { PagerDutyHomepageCardProps } from './PagerDutyHomepageCard';
+export type { HomePagePagerDutyCardProps } from './HomePagePagerDutyCard';
 
 export {
   isPluginApplicableToEntity,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A Backstage plugin that integrates towards PagerDuty
- *
- * @packageDocumentation
- */
-
-export {
-  pagerDutyPlugin,
-  pagerDutyPlugin as plugin,
-  EntityPagerDutyCard,
-  HomePagePagerDutyCard,
-} from './plugin';
-
-export * from './components';
-
-// @deprecated Please use EntityPagerDutyCard
-export { EntityPagerDutyCard as PagerDutyCard } from './components';
-export type { EntityPagerDutyCardProps as PagerDutyCardProps } from './components';
-
-export * from './api';
-
-export type { PagerDutyEntity } from './types';
+export { Content } from './Content';
+export type { HomePagePagerDutyCardProps } from './Content';

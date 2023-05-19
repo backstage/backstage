@@ -20,7 +20,19 @@ export const EntityPagerDutyCard: (
 ) => JSX.Element;
 
 // @public (undocumented)
-export type EntityPagerDutyCardProps = {
+type EntityPagerDutyCardProps = {
+  readOnly?: boolean;
+};
+export { EntityPagerDutyCardProps };
+export { EntityPagerDutyCardProps as PagerDutyCardProps };
+
+// @public (undocumented)
+export const HomePagePagerDutyCard: (
+  props: CardExtensionProps<HomePagePagerDutyCardProps>,
+) => JSX.Element;
+
+// @public (undocumented)
+export type HomePagePagerDutyCardProps = PagerDutyEntity & {
   readOnly?: boolean;
 };
 
@@ -54,6 +66,9 @@ export type PagerDutyAssignee = {
   summary: string;
   html_url: string;
 };
+
+// @public (undocumented)
+export const PagerDutyCard: (props: EntityPagerDutyCardProps) => JSX.Element;
 
 // @public (undocumented)
 export type PagerDutyChangeEvent = {
@@ -124,16 +139,6 @@ export type PagerDutyEntity = {
   integrationKey?: string;
   serviceId?: string;
   name: string;
-};
-
-// @public (undocumented)
-export const PagerDutyHomepageCard: (
-  props: CardExtensionProps<PagerDutyHomepageCardProps>,
-) => JSX.Element;
-
-// @public (undocumented)
-export type PagerDutyHomepageCardProps = PagerDutyEntity & {
-  readOnly?: boolean;
 };
 
 // @public (undocumented)

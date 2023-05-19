@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Content } from './Content';
-export type { PagerDutyHomepageCardProps } from './Content';
+import React from 'react';
+
+import { PagerDutyEntity } from '../../types';
+import { PagerDutyCard } from '../PagerDutyCard';
+
+/** @public */
+export type HomePagePagerDutyCardProps = PagerDutyEntity & {
+  readOnly?: boolean;
+};
+
+/** @public */
+export const Content = (props: HomePagePagerDutyCardProps) => {
+  return <PagerDutyCard {...props} />;
+};

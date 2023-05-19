@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Entity } from '@backstage/catalog-model';
 
-import { PagerDutyEntity } from '../../types';
-import { PagerDutyCard } from '../PagerDutyCard';
-
-/** @public */
-export type PagerDutyHomepageCardProps = PagerDutyEntity & {
-  readOnly?: boolean;
-};
-
-/** @public */
-export const Content = (props: PagerDutyHomepageCardProps) => {
-  return <PagerDutyCard {...props} />;
+export const mockEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'backstage',
+    description: 'backstage.io',
+    annotations: {
+      'github.com/project-slug': 'backstage/backstage',
+      'pagerduty.com/service-id': 'foo',
+      'pagerduty.com/integration-key': 'foo',
+    },
+  },
+  spec: {
+    lifecycle: 'production',
+    type: 'website',
+    owner: 'user:guest',
+  },
 };
