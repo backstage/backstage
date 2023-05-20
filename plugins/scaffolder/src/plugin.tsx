@@ -99,7 +99,7 @@ export const scaffolderPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
       },
-      factory: config => new ProxyAzureDevOpsPluginApiClient(config),
+      factory: deps => new ProxyAzureDevOpsPluginApiClient(deps),
     }),
   ],
   routes: {
