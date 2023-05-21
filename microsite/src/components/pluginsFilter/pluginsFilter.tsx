@@ -7,8 +7,9 @@ type Props = {
 };
 
 const PluginsFilter = ({ categories, handleChipClick }: Props) => {
-  const alphaCategories = categories.sort((a,b) => a.name.localeCompare(b.name))
-
+  const alphaCategories = categories.sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   return (
     <div className="dropdown dropdown--hoverable">
       <button className="button button--info dropdown__toggle">
