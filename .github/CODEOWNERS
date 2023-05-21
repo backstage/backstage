@@ -37,7 +37,7 @@ yarn.lock                                           @backstage/maintainers @back
 /plugins/cloudbuild                                 @backstage/maintainers @trivago/ebarrios
 /plugins/code-coverage                              @backstage/maintainers @alde @nissayeva
 /plugins/code-coverage-backend                      @backstage/maintainers @alde @nissayeva
-/plugins/cortex                                     @viliusgec
+/plugins/cortex                                     @backstage/maintainers @viliusgec
 /plugins/cost-insights                              @backstage/maintainers @backstage/silver-lining
 /plugins/cost-insights-*                            @backstage/maintainers @backstage/silver-lining
 /plugins/entity-feedback                            @backstage/maintainers @kuangp
