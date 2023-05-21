@@ -170,4 +170,64 @@ describe('compileConfigSchemas', () => {
       visibilityBySchemaPath: new Map(),
     });
   });
+
+  it('should handle slashes correctly', () => {
+    const validate = compileConfigSchemas([
+      {
+        path: 'a1',
+        value: {
+          type: 'object',
+          properties: {
+            '/circleci/api': {
+              type: 'object',
+              properties: {
+                target: {
+                  type: 'string',
+                },
+                headers: {
+                  type: 'object',
+                  properties: {
+                    'Circle-Token': {
+                      type: 'string',
+                      visibility: 'secret',
+                    },
+                  },
+                },
+              },
+            },
+            '/gocd': { type: 'string', visibility: 'backend' },
+          },
+        },
+      },
+    ]);
+    expect(
+      validate([
+        {
+          data: {
+            '/circleci/api': {
+              target: 'test',
+              headers: {
+                'Circle-Token': 'my-token',
+              },
+            },
+            '/gocd': 'test',
+          },
+          context: 'test',
+        },
+      ]),
+    ).toEqual({
+      visibilityByDataPath: new Map(
+        Object.entries({
+          '//circleci/api/headers/Circle-Token': 'secret',
+        }),
+      ),
+      visibilityBySchemaPath: new Map(
+        Object.entries({
+          '/properties//circleci/api/properties/headers/properties/Circle-Token':
+            'secret',
+        }),
+      ),
+      deprecationByDataPath: new Map(),
+    });
+  });
 });

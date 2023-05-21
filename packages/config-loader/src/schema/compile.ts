@@ -26,6 +26,7 @@ import {
   ConfigVisibility,
 } from './types';
 import { SchemaObject } from 'json-schema-traverse';
+import { normalizeAjvPath } from './utils';
 
 /**
  * This takes a collection of Backstage configuration schemas from various
@@ -66,10 +67,7 @@ export function compileConfigSchemas(
             return false;
           }
           if (visibility && visibility !== 'backend') {
-            const normalizedPath = context.instancePath.replace(
-              /\['?(.*?)'?\]/g,
-              (_, segment) => `/${segment}`,
-            );
+            const normalizedPath = normalizeAjvPath(context.instancePath);
             visibilityByDataPath.set(normalizedPath, visibility);
           }
           return true;
@@ -85,10 +83,7 @@ export function compileConfigSchemas(
           if (context?.instancePath === undefined) {
             return false;
           }
-          const normalizedPath = context.instancePath.replace(
-            /\['?(.*?)'?\]/g,
-            (_, segment) => `/${segment}`,
-          );
+          const normalizedPath = normalizeAjvPath(context.instancePath);
           // create mapping of deprecation description and data path of property
           deprecationByDataPath.set(normalizedPath, deprecationDescription);
           return true;
@@ -123,7 +118,7 @@ export function compileConfigSchemas(
   const visibilityBySchemaPath = new Map<string, ConfigVisibility>();
   traverse(merged, (schema, path) => {
     if (schema.visibility && schema.visibility !== 'backend') {
-      visibilityBySchemaPath.set(path, schema.visibility);
+      visibilityBySchemaPath.set(normalizeAjvPath(path), schema.visibility);
     }
   });
 
