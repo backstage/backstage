@@ -7,13 +7,15 @@ type Props = {
 };
 
 const PluginsFilter = ({ categories, handleChipClick }: Props) => {
+  const alphaCategories = categories.sort((a,b) => a.name.localeCompare(b.name))
+
   return (
     <div className="dropdown dropdown--hoverable">
       <button className="button button--info dropdown__toggle">
         Categories Filter
       </button>
       <ul className="dropdown__menu">
-        {categories.map(chip => {
+        {alphaCategories.map(chip => {
           return (
             <li key={chip.name} onClick={() => handleChipClick(chip.name)}>
               <div className="dropdown__item">
