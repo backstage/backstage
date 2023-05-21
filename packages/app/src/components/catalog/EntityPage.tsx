@@ -155,6 +155,7 @@ import {
   EntityNewRelicDashboardContent,
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
+import { isCortexAvailable, CortexPage } from '@backstage/plugin-cortex';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 import { EntityScoreCardContent } from '@oriflame/backstage-plugin-score-card';
 
@@ -307,6 +308,33 @@ const cicdCard = (
       <Grid item sm={6}>
         <EntityRecentGithubActionsRunsCard limit={4} variant="gridItem" />
       </Grid>
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
+const cortexContent = (
+  // This is an example of how you can implement your company's logic in entity page.
+  // You can for example enforce that all components of type 'service' should use GitHubActions
+  <EntitySwitch>
+    <EntitySwitch.Case if={isCortexAvailable}>
+      <CortexPage />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case>
+      <EmptyState
+        title="Cortex is not available for this entity"
+        missing="info"
+        description="You need to add an annotation to your component if you want to enable Cortex visibility for it. You can read more about annotations in Backstage by clicking the button below."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+          >
+            Read more
+          </Button>
+        }
+      />
     </EntitySwitch.Case>
   </EntitySwitch>
 );
@@ -870,6 +898,9 @@ const resourcePage = (
     </EntityLayout.Route>
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/cortex" title="Cortex XDR">
+      {cortexContent}
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );

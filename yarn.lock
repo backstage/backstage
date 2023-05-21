@@ -3843,7 +3843,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
+"@backstage/cli@^0.22.1, @backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
   dependencies:
@@ -4051,7 +4051,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-app-api@workspace:^, @backstage/core-app-api@workspace:packages/core-app-api":
+"@backstage/core-app-api@^1.4.0, @backstage/core-app-api@workspace:^, @backstage/core-app-api@workspace:packages/core-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-app-api@workspace:packages/core-app-api"
   dependencies:
@@ -4270,7 +4270,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/dev-utils@workspace:^, @backstage/dev-utils@workspace:packages/dev-utils":
+"@backstage/dev-utils@^1.0.11, @backstage/dev-utils@workspace:^, @backstage/dev-utils@workspace:packages/dev-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/dev-utils@workspace:packages/dev-utils"
   dependencies:
@@ -6052,6 +6052,32 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-cortex@workspace:^, @backstage/plugin-cortex@workspace:plugins/cortex":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-cortex@workspace:plugins/cortex"
+  dependencies:
+    "@backstage/cli": ^0.22.1
+    "@backstage/core-app-api": ^1.4.0
+    "@backstage/core-components": ^0.12.3
+    "@backstage/core-plugin-api": ^1.3.0
+    "@backstage/dev-utils": ^1.0.11
+    "@backstage/test-utils": ^1.2.4
+    "@backstage/theme": ^0.2.16
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.57
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    cross-fetch: ^3.1.5
+    msw: ^0.49.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -9545,7 +9571,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
+"@backstage/test-utils@^1.2.4, @backstage/test-utils@workspace:^, @backstage/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/test-utils@workspace:packages/test-utils"
   dependencies:
@@ -23679,6 +23705,7 @@ __metadata:
     "@backstage/plugin-circleci": "workspace:^"
     "@backstage/plugin-cloudbuild": "workspace:^"
     "@backstage/plugin-code-coverage": "workspace:^"
+    "@backstage/plugin-cortex": "workspace:^"
     "@backstage/plugin-cost-insights": "workspace:^"
     "@backstage/plugin-devtools": "workspace:^"
     "@backstage/plugin-dynatrace": "workspace:^"

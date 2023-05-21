@@ -1,0 +1,1 @@
+export { CortexDetailsPage } from './CortexDetailsPage';

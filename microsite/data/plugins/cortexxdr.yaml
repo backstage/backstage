@@ -1,0 +1,13 @@
+---
+title: CortexXDR
+author: viliusgec
+authorUrl: https://github.com/viliusgec
+category: Configuration Management
+description: Visualize Cortex XDR information and statuses.
+documentation: https://github.com/backstage/backstage/blob/master/plugins/cortex/README.md
+iconUrl: /img/cortex.png
+npmPackageName: '@backstage/plugin-cortex'
+tags:
+  - cortex
+  - cortexxdr
+addedDate: '2023-05-21'

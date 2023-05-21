@@ -28,6 +28,7 @@
     "@backstage/plugin-circleci": "workspace:^",
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
+    "@backstage/plugin-cortex": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
     "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",

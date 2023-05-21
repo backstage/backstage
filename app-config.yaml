@@ -61,6 +61,12 @@ proxy:
     headers:
       Authorization: ${JENKINS_BASIC_AUTH_HEADER}
 
+  '/cortex':
+    target: https://api.xdr.eu.paloaltonetworks.com/public_api/v1
+    headers: 
+      Authorization: ${CORTEX_API_KEY}
+      x-xdr-auth-id: ${CORTEX_API_ID}
+
   '/travisci/api':
     target: https://api.travis-ci.com
     changeOrigin: true
@@ -149,6 +155,9 @@ dynatrace:
 scorecards:
   jsonDataUrl: https://raw.githubusercontent.com/Oriflame/backstage-plugins/main/plugins/score-card/sample-data/
   wikiLinkTemplate: https://link-to-wiki/{id}
+
+cortex: 
+  allowedTypes: []
 
 sentry:
   organization: my-company

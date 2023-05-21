@@ -111,6 +111,7 @@ import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
+import { CortexPage } from '@backstage/plugin-cortex';
 
 const app = createApp({
   apis,
@@ -296,6 +297,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/cortex" element={<CortexPage />} />
   </FlatRoutes>
 );
 
