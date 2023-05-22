@@ -35319,12 +35319,12 @@ __metadata:
   linkType: hard
 
 "react-virtualized-auto-sizer@npm:^1.0.11, react-virtualized-auto-sizer@npm:^1.0.6":
-  version: 1.0.16
-  resolution: "react-virtualized-auto-sizer@npm:1.0.16"
+  version: 1.0.17
+  resolution: "react-virtualized-auto-sizer@npm:1.0.17"
   peerDependencies:
     react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0-rc
     react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0-rc
-  checksum: 68319e26b162dd3f5186ed88f3977658a9da5963a250567d7fe0cd44671a87b765652248d3c39e1f02aa46c22df51a34748e11f436a70296b37ee509be89dab6
+  checksum: a9fc3db981e34e95fa1baf278e0fb5be9c31ae34092b4d3059cb55478a4652efca3f1b0f4253d62d099594173e1c1f45a724730b5eecde34a9fc23fbc70c215c
   languageName: node
   linkType: hard
 
