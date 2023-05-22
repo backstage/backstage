@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Table } from '@backstage/core-components';
+import React from 'react';
 
-/** @public */
-export const NOMAD_JOB_ANNOTATION = 'nomad.io/job';
-
-/** @public */
-export const NOMAD_GROUP_ANNOTATION = 'nomad.io/group';
-
-/** @public */
-export const NOMAD_TASK_ANNOTATION = 'nomad.io/task';
-
-/** @public */
-export const isNomadAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[NOMAD_JOB_ANNOTATION]) ||
-  Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]) ||
-  Boolean(entity.metadata.annotations?.[NOMAD_TASK_ANNOTATION]);
+export const GroupListForEntity = () => {
+  return (
+    <Table
+      options={{
+        paging: false,
+        toolbar: false,
+      }}
+      columns={[]}
+      data={[]}
+    />
+  );
+};

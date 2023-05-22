@@ -14,24 +14,50 @@
  * limitations under the License.
  */
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  createRouteRef,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
+import { NomadHttpApi, nomadApiRef } from './api';
+
+export const entityContentRouteRef = createRouteRef({
+  id: 'nomad:entity-content',
+});
 
 export const nomadPlugin = createPlugin({
   id: 'nomad',
+  apis: [
+    createApiFactory({
+      api: nomadApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => NomadHttpApi.fromConfig(configApi),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
+    entityContent: entityContentRouteRef,
   },
 });
 
+/** @public */
 export const NomadPage = nomadPlugin.provide(
   createRoutableExtension({
     name: 'NomadPage',
     component: () =>
       import('./components/NomadComponent').then(m => m.NomadComponent),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/** @public */
+export const EntityNomadContent = nomadPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityNomadContent',
+    component: () => import('./Router').then(m => m.EmbeddedRouter),
+    mountPoint: entityContentRouteRef,
   }),
 );

@@ -7932,10 +7932,12 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
@@ -7950,6 +7952,7 @@ __metadata:
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-router-dom: "*"
   languageName: unknown
   linkType: soft
 
