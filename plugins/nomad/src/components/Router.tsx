@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
+import { Entity } from '@backstage/catalog-model';
 
-export const nomadPlugin = createPlugin({
-  id: 'nomad',
-  routes: {
-    root: rootRouteRef,
-  },
-});
+/** @public */
+export const NOMAD_JOB_ANNOTATION = 'nomad.io/job';
 
-export const NomadPage = nomadPlugin.provide(
-  createRoutableExtension({
-    name: 'NomadPage',
-    component: () =>
-      import('./components/NomadComponent').then(m => m.NomadComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
+/** @public */
+export const NOMAD_GROUP_ANNOTATION = 'nomad.io/group';
+
+/** @public */
+export const NOMAD_TASK_ANNOTATION = 'nomad.io/task';
+
+/** @public */
+export const isNomadAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[NOMAD_JOB_ANNOTATION]) ||
+  Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]) ||
+  Boolean(entity.metadata.annotations?.[NOMAD_TASK_ANNOTATION]);
