@@ -353,6 +353,10 @@ export type Location = {
 export type AddLocationRequest = {
   type?: string;
   target: string;
+  /**
+   * If set to true, the location will not be added, but the response will
+   * contain the entities that match the given location.
+   */
   dryRun?: boolean;
 };
 
@@ -363,8 +367,13 @@ export type AddLocationRequest = {
  */
 export type AddLocationResponse = {
   location: Location;
+  /**
+   * The entities matching this location. Will only be filled in dryRun mode
+   */
   entities: Entity[];
-  // Only set in dryRun mode.
+  /**
+   * True, if the location exists. Will only be filled in dryRun mode
+   */
   exists?: boolean;
 };
 
