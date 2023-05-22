@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  nomadPlugin,
-  entityContentRouteRef,
-  EntityNomadContent,
-} from './plugin';
 
-describe('nomad', () => {
-  it('should export plugin', () => {
-    expect(nomadPlugin).toBeDefined();
-  });
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { NOMAD_GROUP_ANNOTATION } from '../Router';
 
-  it('should export Nomad entity ref', () => {
-    expect(entityContentRouteRef).toBeDefined();
-  });
-
-  it('should export Nomad entity', () => {
-    expect(EntityNomadContent).toBeDefined();
-  });
-});
+/**
+ * Get the entity's group and query it from the Nomad API.
+ */
+export const useGroupForEntity = () => {
+  const { entity } = useEntity();
+  const group = entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION] ?? '';
+};
