@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.14.0",
       "releases/v1.13.0",
       "releases/v1.12.0",
       "releases/v1.11.0",
@@ -80,7 +81,8 @@
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/catalog-customization",
-          "features/software-catalog/software-catalog-api"
+          "features/software-catalog/software-catalog-api",
+          "features/software-catalog/creating-the-catalog-graph"
         ]
       },
       {
@@ -108,6 +110,7 @@
           "features/software-templates/writing-custom-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
+          "features/software-templates/authorizing-parameters-steps-and-actions",
           "features/software-templates/testing-scaffolder-alpha",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
@@ -407,6 +410,7 @@
         "label": "Core Services",
         "items": ["backend-system/core-services/index"]
       }
-    ]
+    ],
+    "Accessibility": ["accessibility/index"]
   }
 }

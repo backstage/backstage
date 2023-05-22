@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.83-next.0",
+  "version": "0.2.83",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -43,6 +43,7 @@
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-code-coverage-backend": "workspace:^",
+    "@backstage/plugin-devtools-backend": "workspace:^",
     "@backstage/plugin-entity-feedback-backend": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",

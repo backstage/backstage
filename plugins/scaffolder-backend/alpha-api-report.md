@@ -91,7 +91,7 @@ export const scaffolderPlugin: (
 
 // @alpha
 export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any>[];
+  actions?: TemplateAction<any, any>[];
   taskWorkers?: number;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;

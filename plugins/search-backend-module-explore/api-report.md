@@ -12,6 +12,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
@@ -35,5 +36,6 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
 export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager?: TokenManager;
 };
 ```

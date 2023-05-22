@@ -263,8 +263,7 @@ package, plus `@backstage/integration` for the basic credentials management:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/integration
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn add --cwd packages/backend @backstage/integration @backstage/plugin-catalog-backend-module-github
 ```
 
 And then add the processors to your catalog builder:

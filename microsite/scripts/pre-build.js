@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const replace = require('replace');
 const { existsSync, writeFileSync, mkdirSync } = require('fs');
 const path = require('path');
 
@@ -28,16 +27,7 @@ Run \`yarn build:api-docs\` to generate the API docs.
 
 async function main() {
   const referencesDir = '../docs/reference';
-  if (existsSync(referencesDir)) {
-    console.log('Removing HTML comments from docs/reference folder');
-    replace({
-      regex: '<!--(.*?)-->',
-      replacement: '',
-      paths: [referencesDir],
-      recursive: true,
-      silent: false,
-    });
-  } else {
+  if (!existsSync(referencesDir)) {
     mkdirSync(referencesDir);
     writeFileSync(path.join(referencesDir, 'index.md'), PLACEHOLDER);
   }

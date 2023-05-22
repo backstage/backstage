@@ -25,7 +25,10 @@ export const useSignIn = () => {
   const signIn = useCallback(
     async (optional = false) => {
       const token = await authApi.getAccessToken(
-        'https://www.googleapis.com/auth/calendar.readonly',
+        [
+          'https://www.googleapis.com/auth/calendar.readonly',
+          'https://www.googleapis.com/auth/userinfo.email',
+        ],
         {
           optional,
           instantPopup: !optional,

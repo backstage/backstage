@@ -28,7 +28,7 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-import { NotAllowedError } from '@backstage/errors';
+import fetch, { HeaderInit } from 'node-fetch';
 
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
@@ -80,7 +80,7 @@ export class JenkinsApiImpl {
       const job = await Promise.any(
         branches.map(branch =>
           client.job.get({
-            name: `${jenkinsInfo.jobFullName}/${branch}`,
+            name: `${jenkinsInfo.jobFullName}/${encodeURIComponent(branch)}`,
             tree: JenkinsApiImpl.jobTreeSpec.replace(/\s/g, ''),
           }),
         ),
@@ -144,14 +144,13 @@ export class JenkinsApiImpl {
    * Trigger a build of a project
    * @see ../../../jenkins/src/api/JenkinsApi.ts#retry
    */
-  async buildProject(
+  async rebuildProject(
     jenkinsInfo: JenkinsInfo,
     jobFullName: string,
+    buildNumber: number,
     resourceRef: string,
     options?: { token?: string },
-  ) {
-    const client = await JenkinsApiImpl.getClient(jenkinsInfo);
-
+  ): Promise<number> {
     if (this.permissionApi) {
       const response = await this.permissionApi.authorize(
         [{ permission: jenkinsExecutePermission, resourceRef }],
@@ -160,16 +159,19 @@ export class JenkinsApiImpl {
       // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
       const { result } = response[0];
       if (result === AuthorizeResult.DENY) {
-        throw new NotAllowedError();
+        return 401;
       }
     }
 
-    // looks like the current SDK only supports triggering a new build
-    // can't see any support for replay (re-running the specific build with the same SCM info)
+    const buildUrl = this.getBuildUrl(jenkinsInfo, jobFullName, buildNumber);
 
-    // Note Jenkins itself has concepts of rebuild and replay on a job.
-    // The latter should be possible to trigger with a POST to /replay/rebuild
-    await client.job.build(jobFullName);
+    // the current SDK only supports triggering a new build
+    // replay the job by triggering request directly from Jenkins api
+    const response = await fetch(`${buildUrl}/replay/rebuild`, {
+      method: 'post',
+      headers: jenkinsInfo.headers as HeaderInit,
+    });
+    return response.status;
   }
 
   // private helper methods
@@ -317,5 +319,14 @@ export class JenkinsApiImpl {
         };
       })
       .pop();
+  }
+
+  private getBuildUrl(
+    jenkinsInfo: JenkinsInfo,
+    jobFullName: string,
+    buildId: number,
+  ): string {
+    const jobs = jobFullName.split('/');
+    return `${jenkinsInfo.baseUrl}/job/${jobs.join('/job/')}/${buildId}`;
   }
 }

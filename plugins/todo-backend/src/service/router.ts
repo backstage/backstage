@@ -25,6 +25,8 @@ import {
   parseIntegerParam,
   parseOrderByParam,
 } from '../lib/utils';
+import spec from '../schema/openapi.generated';
+import type { ApiRouter } from '@backstage/backend-openapi-utils';
 
 /** @public */
 export interface RouterOptions {
@@ -37,7 +39,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { todoService } = options;
 
-  const router = Router();
+  const router = Router() as ApiRouter<typeof spec>;
   router.use(express.json());
 
   router.get('/v1/todos', async (req, res) => {

@@ -14,6 +14,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: kiTMoTsiEuyQ43GrL4Hv
+      REF_NAME: ${GITHUB_SHA}
       NODE_ENV: production
     deploy:
       resources:

@@ -22,6 +22,15 @@ import type { RequestHandler } from 'express';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
+export class AksKubernetesAuthTranslator {
+  // (undocumented)
+  decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    auth: KubernetesRequestAuth,
+  ): Promise<ClusterDetails>;
+}
+
+// @public (undocumented)
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
@@ -298,6 +307,7 @@ export interface KubernetesFetcher {
   fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     namespaces: Set<string>,
+    labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
 }
 

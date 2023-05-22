@@ -1,5 +1,60 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.0
+
+### Minor Changes
+
+- 970678adbe2: Implement events support for `GithubMultiOrgEntityProvider`
+
+  **BREAKING:** Passing in a custom `teamTransformer` will now correctly completely override the default transformer behavior
+
+### Patch Changes
+
+- 78bb674a713: Fixed bug in queryWithPaging that caused secondary rate limit errors in GitHub with organizations having more than 1000 repositories. This change makes one request per second to avoid concurrency issues.
+- bd101cefd37: Updated the `team.edited` event emitted from `GithubOrgEntityProvider` to also include teams description.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-events-node@0.2.6
+
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 970678adbe2: Implement events support for `GithubMultiOrgEntityProvider`
+
+  **BREAKING:** Passing in a custom `teamTransformer` will now correctly completely override the default transformer behavior
+
+### Patch Changes
+
+- bd101cefd37: Updated the `team.edited` event emitted from `GithubOrgEntityProvider` to also include teams description.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/config@1.0.7
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-catalog-backend@1.9.1-next.1
+  - @backstage/backend-tasks@0.5.2-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-events-node@0.2.6-next.1
+
 ## 0.2.8-next.0
 
 ### Patch Changes

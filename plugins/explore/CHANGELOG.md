@@ -1,5 +1,50 @@
 # @backstage/plugin-explore
 
+## 0.4.3
+
+### Patch Changes
+
+- 1996920782b: Make sure that the first support button row does not break across lines
+- 4851581deb6: Display the title of the entity on the explore card if present, otherwise stick to the name
+- a6025e25d99: Updated the example code in the "Customization" section of the README to make the imports match the components used.
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/plugin-search-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-explore-common@0.0.1
+  - @backstage/plugin-explore-react@0.0.28
+  - @backstage/plugin-search-common@1.2.3
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- 4851581deb6: Display the title of the entity on the explore card if present, otherwise stick to the name
+- a6025e25d99: Updated the example code in the "Customization" section of the README to make the imports match the components used.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-search-react@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/plugin-explore-react@0.0.28
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 1996920782b: Make sure that the first support button row does not break across lines
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+  - @backstage/plugin-search-react@1.6.0-next.1
+  - @backstage/plugin-explore-react@0.0.28
+
 ## 0.4.3-next.0
 
 ### Patch Changes

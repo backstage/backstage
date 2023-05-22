@@ -23,8 +23,9 @@ const timeFormat: Intl.DateTimeFormatOptions = {
 };
 
 type TimeObj = {
-  time: string;
   label: string;
+  value: string;
+  dateTime: string;
 };
 
 /** @public */
@@ -65,8 +66,14 @@ function getTimes(
       label = 'GMT';
     }
 
-    const time = d.toLocaleTimeString(lang, options);
-    clocks.push({ time, label });
+    const value = d.toLocaleTimeString(lang, options);
+    const dateTime = d.toLocaleTimeString(lang, {
+      timeZone: options.timeZone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    clocks.push({ label, value, dateTime });
   }
 
   return clocks;
@@ -129,9 +136,9 @@ export const HeaderWorldClock = (props: {
       <>
         {clocks.map(clock => (
           <HeaderLabel
-            label={clock.label}
-            value={clock.time}
             key={clock.label}
+            label={clock.label}
+            value={<time dateTime={clock.dateTime}>{clock.value}</time>}
           />
         ))}
       </>

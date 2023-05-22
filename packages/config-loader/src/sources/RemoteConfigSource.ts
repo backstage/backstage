@@ -149,7 +149,7 @@ export class RemoteConfigSource implements ConfigSource {
       signal: signal as import('node-fetch').RequestInit['signal'],
     });
     if (!res.ok) {
-      throw ResponseError.fromResponse(res);
+      throw await ResponseError.fromResponse(res);
     }
 
     const content = await res.text();

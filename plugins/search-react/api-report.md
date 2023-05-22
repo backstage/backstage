@@ -260,7 +260,7 @@ export type SearchPaginationLimitText = (params: {
 export type SearchPaginationProps = Omit<
   SearchPaginationBaseProps,
   | 'pageLimit'
-  | 'onPageLimitChange'
+  | 'onLimitChange'
   | 'pageCursor'
   | 'onPageCursorChange'
   | 'hasNextPage'

@@ -19,7 +19,7 @@ import {
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import { createCardExtension } from './extensions';
+import { createCardExtension } from '@backstage/plugin-home-react';
 import { ToolkitContentProps } from './homePageComponents';
 import { rootRouteRef } from './routes';
 

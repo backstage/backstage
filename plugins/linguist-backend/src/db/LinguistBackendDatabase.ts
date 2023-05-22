@@ -26,8 +26,8 @@ import {
 export type RawDbEntityResultRow = {
   id: string;
   entity_ref: string;
-  languages: string;
-  processed_date: Date;
+  languages?: string;
+  processed_date?: Date;
 };
 
 /** @public */
@@ -35,8 +35,10 @@ export interface LinguistBackendStore {
   insertEntityResults(entityLanguages: EntityResults): Promise<string>;
   insertNewEntity(entityRef: string): Promise<void>;
   getEntityResults(entityRef: string): Promise<Languages>;
-  getProcessedEntities(): Promise<ProcessedEntity[] | []>;
-  getUnprocessedEntities(): Promise<string[] | []>;
+  getProcessedEntities(): Promise<ProcessedEntity[]>;
+  getUnprocessedEntities(): Promise<string[]>;
+  getAllEntities(): Promise<string[]>;
+  deleteEntity(entityRef: string): Promise<void>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -91,7 +93,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
       .where({ entity_ref: entityRef })
       .first();
 
-    if (!entityResults) {
+    if (!entityResults || !entityResults.languages) {
       const emptyResults: Languages = {
         languageCount: 0,
         totalBytes: 0,
@@ -108,7 +110,7 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     }
   }
 
-  async getProcessedEntities(): Promise<ProcessedEntity[] | []> {
+  async getProcessedEntities(): Promise<ProcessedEntity[]> {
     const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
       .whereNotNull('processed_date')
       .whereNotNull('languages');
@@ -118,9 +120,20 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     }
 
     const processedEntities = rawEntities.map(rawEntity => {
+      // Note: processed_date should never be null, this is handled by the DB query above
+      let processedDate = new Date();
+      if (rawEntity.processed_date) {
+        // SQLite will return a Timestamp whereas Postgres will return a proper Date
+        // This tests to see if we are getting a timestamp and convert if needed
+        processedDate = new Date(+rawEntity.processed_date.toString());
+        if (isNaN(+rawEntity.processed_date.toString())) {
+          processedDate = rawEntity.processed_date;
+        }
+      }
+
       const processEntity = {
         entityRef: rawEntity.entity_ref,
-        processedDate: rawEntity.processed_date,
+        processedDate,
       };
 
       return processEntity;
@@ -129,8 +142,11 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     return processedEntities;
   }
 
-  async getUnprocessedEntities(): Promise<string[] | []> {
+  async getUnprocessedEntities(): Promise<string[]> {
     const rawEntities = await this.db<RawDbEntityResultRow>('entity_result')
+      // TODO(ahhhndre) processed_date should always be null as well but it had a default to the current date
+      // once the default has been removed and released, we can then come back an enable this check
+      // .whereNull('processed_date')
       .whereNull('languages')
       .orderBy('created_at', 'asc');
 
@@ -143,5 +159,25 @@ export class LinguistBackendDatabase implements LinguistBackendStore {
     });
 
     return unprocessedEntities;
+  }
+
+  async getAllEntities(): Promise<string[]> {
+    const rawEntities = await this.db<RawDbEntityResultRow>('entity_result');
+
+    if (!rawEntities) {
+      return [];
+    }
+
+    const allEntities = rawEntities.map(rawEntity => {
+      return rawEntity.entity_ref;
+    });
+
+    return allEntities;
+  }
+
+  async deleteEntity(entityRef: string): Promise<void> {
+    await this.db<RawDbEntityResultRow>('entity_result')
+      .where('entity_ref', entityRef)
+      .delete();
   }
 }

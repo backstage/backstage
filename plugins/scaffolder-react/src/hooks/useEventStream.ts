@@ -169,67 +169,85 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let didCancel = false;
     let subscription: Subscription | undefined;
     let logPusher: NodeJS.Timeout | undefined;
-
-    scaffolderApi.getTask(taskId).then(
-      task => {
-        if (didCancel) {
-          return;
-        }
-        dispatch({ type: 'INIT', data: task });
-
-        // TODO(blam): Use a normal fetch to fetch the current log for the event stream
-        // and use that for an INIT_EVENTs dispatch event, and then
-        // use the last event ID to subscribe using after option to
-        // stream logs. Without this, if you have a lot of logs, it can look like the
-        // task is being rebuilt on load as it progresses through the steps at a slower
-        // rate whilst it builds the status from the event logs
-        const observable = scaffolderApi.streamLogs({ taskId });
-
-        const collectedLogEvents = new Array<LogEvent>();
-
-        function emitLogs() {
-          if (collectedLogEvents.length) {
-            const logs = collectedLogEvents.splice(
-              0,
-              collectedLogEvents.length,
-            );
-            dispatch({ type: 'LOGS', data: logs });
+    let retryCount = 1;
+    const startStreamLogProcess = () =>
+      scaffolderApi.getTask(taskId).then(
+        task => {
+          if (didCancel) {
+            return;
           }
-        }
+          dispatch({ type: 'INIT', data: task });
 
-        logPusher = setInterval(emitLogs, 500);
+          // TODO(blam): Use a normal fetch to fetch the current log for the event stream
+          // and use that for an INIT_EVENTs dispatch event, and then
+          // use the last event ID to subscribe using after option to
+          // stream logs. Without this, if you have a lot of logs, it can look like the
+          // task is being rebuilt on load as it progresses through the steps at a slower
+          // rate whilst it builds the status from the event logs
+          const observable = scaffolderApi.streamLogs({ taskId });
 
-        subscription = observable.subscribe({
-          next: event => {
-            switch (event.type) {
-              case 'log':
-                return collectedLogEvents.push(event);
-              case 'cancelled':
-                dispatch({ type: 'CANCELLED' });
-                return undefined;
-              case 'completion':
-                emitLogs();
-                dispatch({ type: 'COMPLETED', data: event });
-                return undefined;
-              default:
-                throw new Error(
-                  `Unhandled event type ${event.type} in observer`,
-                );
+          const collectedLogEvents = new Array<LogEvent>();
+
+          function emitLogs() {
+            if (collectedLogEvents.length) {
+              const logs = collectedLogEvents.splice(
+                0,
+                collectedLogEvents.length,
+              );
+              dispatch({ type: 'LOGS', data: logs });
             }
-          },
-          error: error => {
-            emitLogs();
-            dispatch({ type: 'ERROR', data: error });
-          },
-        });
-      },
-      error => {
-        if (!didCancel) {
-          dispatch({ type: 'ERROR', data: error });
-        }
-      },
-    );
+          }
 
+          logPusher = setInterval(emitLogs, 500);
+
+          subscription = observable.subscribe({
+            next: event => {
+              switch (event.type) {
+                case 'log':
+                  return collectedLogEvents.push(event);
+                case 'cancelled':
+                  dispatch({ type: 'CANCELLED' });
+                  return undefined;
+                case 'completion':
+                  emitLogs();
+                  dispatch({ type: 'COMPLETED', data: event });
+                  return undefined;
+                default:
+                  throw new Error(
+                    `Unhandled event type ${event.type} in observer`,
+                  );
+              }
+            },
+            error: error => {
+              emitLogs();
+              // in some cases the error is a refused connection from backend
+              // this can happen from internet issues or proxy problems
+              // so we try to reconnect again after some time
+              // just to restart the fetch process
+              // details here https://github.com/backstage/backstage/issues/15002
+
+              if (!error.message) {
+                error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${retryCount}/3 retries)`;
+              }
+
+              if (retryCount <= 3) {
+                setTimeout(() => {
+                  retryCount += 1;
+                  startStreamLogProcess();
+                }, 15000);
+              }
+
+              dispatch({ type: 'ERROR', data: error });
+            },
+          });
+        },
+        error => {
+          if (!didCancel) {
+            dispatch({ type: 'ERROR', data: error });
+          }
+        },
+      );
+    startStreamLogProcess();
     return () => {
       didCancel = true;
       if (subscription) {

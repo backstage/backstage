@@ -25,10 +25,10 @@ export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
 // @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
-  getReleaseProgression(
-    projectId: string,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression>;
+  getReleaseProgression(opts: {
+    projectReference: ProjectReference;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression>;
 }
 
 // @public (undocumented)
@@ -42,10 +42,10 @@ export class OctopusDeployClient implements OctopusDeployApi {
     proxyPathBase?: string;
   });
   // (undocumented)
-  getReleaseProgression(
-    projectId: string,
-    releaseHistoryCount: number,
-  ): Promise<OctopusProgression>;
+  getReleaseProgression(opts: {
+    projectReference: ProjectReference;
+    releaseHistoryCount: number;
+  }): Promise<OctopusProgression>;
 }
 
 // @public (undocumented)
@@ -80,6 +80,12 @@ export type OctopusReleaseProgression = {
   Deployments: {
     [key: string]: OctopusDeployment[];
   };
+};
+
+// @public (undocumented)
+export type ProjectReference = {
+  projectId: string;
+  spaceId?: string;
 };
 
 // (No @packageDocumentation comment for this package)

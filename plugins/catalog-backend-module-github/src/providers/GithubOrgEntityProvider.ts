@@ -370,14 +370,21 @@ export class GithubOrgEntityProvider
     assignGroupsToUsers(usersToRebuild, groups);
     buildOrgHierarchy(groups);
 
-    const oldName = event.changes.name?.from || '';
+    const oldName = event.changes.name?.from || event.team.name;
     const oldSlug = oldName.toLowerCase().replaceAll(/\s/gi, '-');
+
+    const oldDescription =
+      event.changes.description?.from || event.team.description;
+    const oldDescriptionSlug = oldDescription
+      ?.toLowerCase()
+      .replaceAll(/\s/gi, '-');
 
     const { removed } = createDeltaOperation(org, [
       {
         ...group,
         metadata: {
           name: oldSlug,
+          description: oldDescriptionSlug,
         },
       },
     ]);

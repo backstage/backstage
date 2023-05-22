@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { EventBroker } from '@backstage/events';
 import { EventParams } from '@backstage/events';
 import { EventSubscriber } from '@backstage/events';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -158,6 +159,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
 // @public
 export interface GithubMultiOrgEntityProviderOptions {
+  eventBroker?: EventBroker;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;

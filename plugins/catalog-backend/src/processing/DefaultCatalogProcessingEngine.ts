@@ -150,7 +150,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           track.markProcessorsCompleted(result);
 
           if (result.ok) {
-            if (stableStringify(state) !== stableStringify(result.state)) {
+            const { ttl: _, ...stateWithoutTtl } = state ?? {};
+            if (
+              stableStringify(stateWithoutTtl) !== stableStringify(result.state)
+            ) {
               await this.processingDatabase.transaction(async tx => {
                 await this.processingDatabase.updateEntityCache(tx, {
                   id,
@@ -314,7 +317,9 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       try {
         await this.processingDatabase.transaction(async tx => {
           const n = await this.processingDatabase.deleteOrphanedEntities(tx);
-          this.logger.info(`Deleted ${n} orphaned entities`);
+          if (n > 0) {
+            this.logger.info(`Deleted ${n} orphaned entities`);
+          }
         });
       } catch (error) {
         this.logger.warn(`Failed to delete orphaned entities`, error);

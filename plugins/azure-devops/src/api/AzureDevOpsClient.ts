@@ -120,7 +120,23 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
       queryString.append('repoName', repoName);
     }
     if (definitionName) {
-      queryString.append('definitionName', definitionName);
+      const definitionNames = definitionName.split(',');
+      if (definitionNames.length > 1) {
+        const buildRuns: BuildRun[] = [];
+        for (const name of definitionNames) {
+          queryString.set('definitionName', name.trim());
+          if (options?.top) {
+            queryString.set('top', options.top.toString());
+          }
+          const urlSegment = `builds/${encodeURIComponent(
+            projectName,
+          )}?${queryString}`;
+          const items = await this.get<BuildRun[]>(urlSegment);
+          buildRuns.push(...items);
+        }
+        return { items: buildRuns };
+      }
+      queryString.append('definitionName', definitionName.trim());
     }
     if (options?.top) {
       queryString.append('top', options.top.toString());

@@ -31,9 +31,9 @@ Update the catalog plugin initialization in your backend to add the provider and
 +      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: { minutes: 10 },
 +        timeout: { minutes: 50 },
-+        initialDelay: { seconds: 15}
++        initialDelay: { seconds: 15 }
 +      }),
-+    });
++    })
 +  );
 ```
 
@@ -67,7 +67,7 @@ of overriding the default transformer.
 export const customResourceTransformer: ResourceTransformer = async (
   node,
   config,
-): Promise<GroupEntity | undefined> => {
+): Promise<ResourceEntity | undefined> => {
   // Transformations may change namespace, owner, change entity naming pattern, add labels, annotations, etc.
 
   // Create the Resource Entity on your own, or wrap the default transformer
@@ -77,14 +77,16 @@ export const customResourceTransformer: ResourceTransformer = async (
 
 2. Configure the provider with the transformer:
 
-```ts
-const puppetDbEntityProvider = PuppetDbEntityProvider.fromConfig(env.config, {
-  logger: env.logger,
-  schedule: env.scheduler.createScheduledTaskRunner({
-    frequency: { minutes: 10 },
-    timeout: { minutes: 50 },
-    initialDelay: { seconds: 15 },
-  }),
-  transformer: customResourceTransformer,
-});
+```diff
+  builder.addEntityProvider(
+    PuppetDbEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
++     transformer: customResourceTransformer,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 10 },
+        timeout: { minutes: 50 },
+        initialDelay: { seconds: 15 }
+      }),
+    })
+  );
 ```

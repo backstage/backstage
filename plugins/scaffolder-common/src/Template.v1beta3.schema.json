@@ -218,6 +218,33 @@
                       }
                     }
                   }
+                },
+                "text": {
+                  "type": "array",
+                  "description": "A list of Markdown text blobs, like output data from the template.",
+                  "items": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "A user friendly display name for the text.",
+                        "examples": ["Output Content"],
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "type": "string",
+                        "description": "A key representing a visual icon to be displayed in the UI.",
+                        "examples": ["dashboard"],
+                        "minLength": 1
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "The text blob to display in the UI, rendered as Markdown.",
+                        "examples": ["**hey** _I'm_ Markdown"]
+                      }
+                    }
+                  }
                 }
               },
               "additionalProperties": {

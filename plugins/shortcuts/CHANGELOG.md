@@ -1,5 +1,33 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.10
+
+### Patch Changes
+
+- 8a7174e297c: Marked `LocalStoredShortcuts` as deprecated, replacing it with `DefaultShortcutsApi` whose naming more clearly suggests that the shortcuts aren't necessarily stored locally (it depends on the storage implementation).
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+
+## 0.3.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.3.10-next.0
 
 ### Patch Changes

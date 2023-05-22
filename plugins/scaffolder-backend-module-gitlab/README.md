@@ -21,8 +21,9 @@ Configure the action:
 
 import {
   createGitlabProjectAccessTokenAction,
-  createGitlabProjectAccessTokenAction,
   createGitlabProjectDeployTokenAction,
+  createGitlabProjectVariableAction,
+  createGitlabGroupEnsureExistsAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -36,15 +37,10 @@ const builtInActions = createBuiltinActions({
 // Add Gitlab Actions
 const actions = [
   ...builtInActions,
-  createGitlabProjectAccessTokenAction({
-    integrations: integrations,
-  }),
-  createGitlabProjectAccessTokenAction({
-    integrations: integrations,
-  }),
-  createGitlabProjectDeployTokenAction({
-    integrations: integrations,
-  }),
+  createGitlabProjectAccessTokenAction({ integrations: integrations }),
+  createGitlabProjectDeployTokenAction({ integrations: integrations }),
+  createGitlabProjectVariableAction({ integrations: integrations }),
+  createGitlabGroupEnsureExistsAction({ integrations: integrations }),
 ];
 
 // Create Scaffolder Router
@@ -104,13 +100,22 @@ spec:
         url: https://github.com/TEMPLATE
         values:
           name: ${{ parameters.name }}
+    - id: createGitlabGroup
+      name: Ensure Gitlab group exists
+      action: gitlab:group:ensureExists
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        path:
+          - path
+          - to
+          - group
 
     - id: publish
       name: Publish
       action: publish:gitlab
       input:
         description: This is ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: ${{ parameters.repoUrl }}?owner=${{ steps.createGitlabGroup.output.groupId }}
         sourcePath: pimcore
         defaultBranch: main
 

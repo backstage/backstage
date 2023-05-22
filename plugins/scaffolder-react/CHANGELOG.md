@@ -1,5 +1,55 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.4.0
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+
+### Patch Changes
+
+- ad1a1429de4: Improvements to the `scaffolder/next` buttons UX:
+
+  - Added padding around the "Create" button in the `Stepper` component
+  - Added a button bar that includes the "Cancel" and "Start Over" buttons to the `OngoingTask` component. The state of these buttons match their existing counter parts in the Context Menu
+  - Added a "Show Button Bar"/"Hide Button Bar" item to the `ContextMenu` component
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/plugin-scaffolder-common@1.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.4.0-next.2
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/plugin-scaffolder-common@1.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-catalog-react@1.6.0-next.1
+
 ## 1.3.1-next.0
 
 ### Patch Changes

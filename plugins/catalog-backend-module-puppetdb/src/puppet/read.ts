@@ -16,7 +16,7 @@
 
 import { PuppetDbEntityProviderConfig } from '../providers';
 import { PuppetNode, ResourceTransformer } from './types';
-import { ResourceEntity } from '@backstage/catalog-model/';
+import { ResourceEntity } from '@backstage/catalog-model';
 import { defaultResourceTransformer } from './transformers';
 import fetch from 'node-fetch';
 import { ResponseError } from '@backstage/errors';

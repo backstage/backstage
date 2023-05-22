@@ -27,7 +27,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { Widget } from './types';
-import Form from '@rjsf/material-ui';
+import { withTheme } from '@rjsf/core-v5';
+import validator from '@rjsf/validator-ajv8';
+
+const Form = withTheme(require('@rjsf/material-ui').Theme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,6 +75,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
         >
           <DialogContent>
             <Form
+              validator={validator}
               showErrorList={false}
               schema={widget.settingsSchema}
               noHtml5Validate

@@ -18,7 +18,7 @@ To use it, you will need to generate an [API Key](https://octopus.com/docs/octop
 // app-config.yaml
 proxy:
   '/octopus-deploy':
-    target: '<your-octopus-server-url>'
+    target: 'https://<your-octopus-server-instance>/api'
     headers:
       X-Octopus-ApiKey: ${OCTOPUS_API_KEY}
 ```
@@ -42,7 +42,7 @@ const cicdContent = (
 )
 ```
 
-3. Add `octopus.com/project-id` annotation in catalog descriptor file
+3. Add `octopus.com/project-id` annotation in the catalog descriptor file.
 
 To obtain a projects ID you will have to query the Octopus API. In the future we'll add support for using a projects slug as well.
 
@@ -58,4 +58,20 @@ spec:
   type: service
 ```
 
-All set , you will be able to see the plugin in action!
+If your project is not part of the default space you can add the space ID to the annotation as a prefix. For example:
+
+```
+// catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    octopus.com/project-id: Spaces-2/Projects-102
+spec:
+  type: service
+```
+
+You can get the ID of the space from the URL in the Octopus Deploy UI.
+
+All set, you will be able to see the plugin in action!

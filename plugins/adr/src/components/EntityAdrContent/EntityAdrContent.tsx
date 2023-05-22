@@ -29,7 +29,7 @@ import {
   SupportButton,
   WarningPanel,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   AdrFilePathFilterFn,
@@ -170,6 +170,9 @@ export const EntityAdrContent = (props: {
   const adrApi = useApi(adrApiRef);
   const entityHasAdrs = isAdrAvailable(entity);
 
+  const config = useApi(configApiRef);
+  const appSupportConfigured = config?.getOptionalConfig('app.support');
+
   const { value, loading, error } = useAsync(async () => {
     const url = getAdrLocationUrl(entity, scmIntegrations);
     return adrApi.listAdrs(url);
@@ -212,7 +215,7 @@ export const EntityAdrContent = (props: {
   return (
     <Content>
       <ContentHeader title="Architecture Decision Records">
-        <SupportButton />
+        {appSupportConfigured && <SupportButton />}
       </ContentHeader>
 
       {!entityHasAdrs && (

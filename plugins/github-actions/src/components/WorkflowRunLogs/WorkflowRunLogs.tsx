@@ -16,8 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { LogViewer } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { readGithubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionSummary,
@@ -35,6 +33,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
 import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
+import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
 const useStyles = makeStyles<Theme>(theme => ({
   button: {
@@ -75,14 +74,10 @@ export const WorkflowRunLogs = ({
   runId: number;
   inProgress: boolean;
 }) => {
-  const config = useApi(configApiRef);
   const classes = useStyles();
   const projectName = getProjectNameFromEntity(entity);
 
-  // TODO: Get github hostname from metadata annotation
-  const hostname = readGithubIntegrationConfigs(
-    config.getOptionalConfigArray('integrations.github') ?? [],
-  )[0].host;
+  const hostname = getHostnameFromEntity(entity);
   const [owner, repo] = (projectName && projectName.split('/')) || [];
   const jobLogs = useDownloadWorkflowRunLogs({
     hostname,

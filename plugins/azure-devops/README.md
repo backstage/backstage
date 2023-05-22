@@ -70,7 +70,7 @@ dev.azure.com/project: <project-name>
 dev.azure.com/build-definition: <build-definition-name>
 ```
 
-In this case `<project-name>` will be the name of your Team Project and `<build-definition-name>` will be the name of the Build Definition you would like to see Builds for. If the Build Definition name has spaces in it make sure to put quotes around it
+In this case `<project-name>` will be the name of your Team Project and `<build-definition-name>` will be the name of the Build Definition you would like to see Builds for, and it's possible to add more Builds separated by a comma. If the Build Definition name has spaces in it make sure to put quotes around it.
 
 ### Azure Pipelines Component
 

@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.83-next.0",
+  "version": "0.2.83",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -29,6 +29,7 @@
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
+    "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-dynatrace": "workspace:^",
     "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
@@ -47,6 +48,7 @@
     "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
+    "@backstage/plugin-octopus-deploy": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-pagerduty": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",

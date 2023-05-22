@@ -16,10 +16,30 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { bazaarPlugin, BazaarPage } from '../src/plugin';
+import { bazaarApiRef } from '../src/api';
+
+import getProjectsData from './__fixtures__/get-projects-response.json';
 
 createDevApp()
   .registerPlugin(bazaarPlugin)
+  .registerApi({
+    api: bazaarApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        getProjects: async () => getProjectsData,
+      } as any),
+  })
+  .registerApi({
+    api: catalogApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        getEntities: () => ({}),
+      } as CatalogApi),
+  })
   .addPage({
     element: <BazaarPage />,
     title: 'Root Page',

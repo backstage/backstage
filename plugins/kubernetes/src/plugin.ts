@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { KubernetesBackendClient } from './api/KubernetesBackendClient';
-import { kubernetesApiRef } from './api/types';
+import { kubernetesApiRef, kubernetesProxyApiRef } from './api/types';
 import { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
 import { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
 import {
@@ -30,6 +30,7 @@ import {
   oneloginAuthApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { KubernetesProxyClient } from './api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   id: 'kubernetes',
@@ -50,6 +51,16 @@ export const kubernetesPlugin = createPlugin({
           discoveryApi,
           identityApi,
           kubernetesAuthProvidersApi,
+        }),
+    }),
+    createApiFactory({
+      api: kubernetesProxyApiRef,
+      deps: {
+        kubernetesApi: kubernetesApiRef,
+      },
+      factory: ({ kubernetesApi }) =>
+        new KubernetesProxyClient({
+          kubernetesApi,
         }),
     }),
     createApiFactory({
@@ -76,7 +87,11 @@ export const kubernetesPlugin = createPlugin({
           onelogin: oneloginAuthApi,
         };
 
-        return new KubernetesAuthProviders({ googleAuthApi, oidcProviders });
+        return new KubernetesAuthProviders({
+          microsoftAuthApi,
+          googleAuthApi,
+          oidcProviders,
+        });
       },
     }),
   ],

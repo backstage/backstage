@@ -1,5 +1,51 @@
 # @backstage/plugin-search-react
 
+## 1.6.0
+
+### Minor Changes
+
+- 750e45539ad: Add close button & improve search input.
+
+  MUI's Paper wrapping the SearchBar in the SearchPage was removed, we recommend users update their apps accordingly.
+
+  SearchBarBase's TextField's label support added & aria-label uses label string if present, tests relying on the default placeholder value should still work unless custom placeholder was given.
+
+- 1ce7f84b2e8: <SearchBar/> accepts InputProp property that can override keys from default
+
+### Patch Changes
+
+- f785f0804cd: `SearchPagination` now automatically resets the page cursor when the page limit is changed
+- adb31096bc2: Fix text-overflow UI issue for Lifecycle spans in SearchFilter checkbox labels.
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-search-common@1.2.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 1ce7f84b2e8: <SearchBar/> accepts InputProp property that can override keys from default
+
+### Patch Changes
+
+- adb31096bc2: Fix text-overflow UI issue for Lifecycle spans in SearchFilter checkbox labels.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+
 ## 1.6.0-next.0
 
 ### Minor Changes

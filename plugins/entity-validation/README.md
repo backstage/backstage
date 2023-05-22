@@ -9,6 +9,7 @@ This plugin creates a new page in Backstage where the user can validate the enti
 First of all, install the package in the `app` package by running the following command:
 
 ```bash
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-entity-validation
 ```
 

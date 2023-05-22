@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
+import { screen } from '@testing-library/react';
 import { EntityCard } from './EntityCard';
 
 describe('<EntityCard />', () => {
@@ -50,5 +51,30 @@ describe('<EntityCard />', () => {
       'href',
       '/catalog/default/domain/artists',
     );
+  });
+
+  it('renders an entity card with display title', async () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Domain',
+      metadata: {
+        name: 'artists',
+        title: 'New Title',
+      },
+      spec: {
+        owner: 'guest',
+      },
+    };
+    const { getByText } = await renderInTestApp(
+      <EntityCard entity={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(getByText('New Title')).toBeInTheDocument();
+    expect(screen.queryByText('artists')).not.toBeInTheDocument();
   });
 });
