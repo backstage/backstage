@@ -14,6 +14,7 @@ import { default as React_2 } from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react/alpha';
+import { WorkflowProps } from '@backstage/plugin-scaffolder-react/alpha';
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -33,7 +34,7 @@ export type NextRouterProps = {
     }>;
     TemplateListPageComponent?: React_2.ComponentType<TemplateListPageProps>;
     TemplateWizardPageComponent?: React_2.ComponentType<TemplateWizardPageProps>;
-  };
+  } & Pick<WorkflowProps, 'components'>['components'];
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   FormProps?: FormProps_2;
@@ -68,7 +69,7 @@ export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   FormProps?: FormProps_2;
-};
+} & Pick<WorkflowProps, 'components'>;
 
 // (No @packageDocumentation comment for this package)
 ```
