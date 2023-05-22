@@ -22,7 +22,7 @@ import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
-import { setupServer } from 'msw';
+import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
 
