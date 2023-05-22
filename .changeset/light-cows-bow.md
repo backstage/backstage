@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': minor
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
-Clearer error messages for action publish:gitlab:merge-request
+Clearer error messages for action `publish:gitlab:merge-request`
