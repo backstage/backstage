@@ -34,7 +34,7 @@ jobs:
       - name: find location of global yarn cache
         id: yarn-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "name=dir::$(yarn cache dir)" >> $GITHUB_OUTPUT
       - name: cache global yarn cache
         uses: actions/cache@v2
         if: steps.cache-modules.outputs.cache-hit != 'true'
