@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-react': patch
+'@backstage/plugin-catalog-react': minor
 ---
 
 The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
