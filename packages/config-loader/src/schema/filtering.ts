@@ -21,6 +21,7 @@ import {
   TransformFunc,
   ValidationError,
 } from './types';
+import { normalizeAjvPath } from './utils';
 
 /**
  * This filters data by visibility by discovering the visibility of each
@@ -163,7 +164,10 @@ export function filterErrorsByVisibility(
     // We don't use this method for all the errors as the data path is more robust
     // and doesn't require us to properly trim the schema path.
     if (error.keyword === 'required') {
-      const trimmedPath = error.schemaPath.slice(1, -'/required'.length);
+      const trimmedPath = normalizeAjvPath(error.schemaPath).slice(
+        1,
+        -'/required'.length,
+      );
       const fullPath = `${trimmedPath}/properties/${error.params.missingProperty}`;
       if (
         visibleSchemaPaths.some(visiblePath => visiblePath.startsWith(fullPath))
@@ -173,7 +177,8 @@ export function filterErrorsByVisibility(
     }
 
     const vis =
-      visibilityByDataPath.get(error.instancePath) ?? DEFAULT_CONFIG_VISIBILITY;
+      visibilityByDataPath.get(normalizeAjvPath(error.instancePath)) ??
+      DEFAULT_CONFIG_VISIBILITY;
     return vis && includeVisibilities.includes(vis);
   });
 }
