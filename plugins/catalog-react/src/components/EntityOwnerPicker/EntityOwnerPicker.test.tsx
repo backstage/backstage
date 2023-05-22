@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { fireEvent, screen } from '@testing-library/react';
+import { Entity } from '@backstage/catalog-model';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityOwnerFilter } from '../../filters';
@@ -28,8 +28,9 @@ import {
 } from '@backstage/test-utils';
 import { catalogApiRef, CatalogApi } from '../..';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
-const ownerEntities: Entity[] = [
+const ownerEntitiesBatch1: Entity[] = [
   {
     apiVersion: '1',
     kind: 'Group',
@@ -68,64 +69,56 @@ const ownerEntities: Entity[] = [
   },
 ];
 
-const sampleEntities: Entity[] = [
+const ownerEntitiesBatch2: Entity[] = [
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Group',
     metadata: {
-      name: 'component-1',
+      name: 'some-owner-batch-2',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner',
-      },
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner-2',
-      },
-    ],
   },
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Group',
     metadata: {
-      name: 'component-2',
+      name: 'some-owner-2-batch-2',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/another-owner',
+    spec: {
+      profile: {
+        displayName: 'Some Owner Batch 2',
       },
-      {
-        type: 'ownedBy',
-        targetRef: 'group:test-namespace/another-owner-2',
-      },
-    ],
+    },
   },
   {
     apiVersion: '1',
-    kind: 'Component',
+    kind: 'Group',
     metadata: {
-      name: 'component-3',
+      name: 'another-owner-batch-2',
+      title: 'Another Owner Batch 2',
     },
-    relations: [
-      {
-        type: 'ownedBy',
-        targetRef: 'group:default/some-owner',
-      },
-    ],
+  },
+  {
+    apiVersion: '1',
+    kind: 'Group',
+    metadata: {
+      namespace: 'test-namespace',
+      name: 'another-owner-2-batch-2',
+      title: 'Another Owner in Another Namespace Batch 2',
+    },
   },
 ];
 
-const getEntitiesByRefs = jest.fn(async ({ entityRefs }) => ({
-  items: entityRefs.map((e: string) =>
-    ownerEntities.find(f => stringifyEntityRef(f) === e),
-  ),
-}));
+const mockedQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> =
+  jest.fn();
+
+const mockedGetEntitiesByRef: jest.MockedFn<CatalogApi['getEntitiesByRefs']> =
+  jest.fn();
+
 const mockCatalogApi: Partial<CatalogApi> = {
-  getEntitiesByRefs,
+  queryEntities: mockedQueryEntities,
+  getEntitiesByRefs: mockedGetEntitiesByRef,
 };
+
 const mockErrorApi = new MockErrorApi();
 
 describe('<EntityOwnerPicker/>', () => {
@@ -134,12 +127,33 @@ describe('<EntityOwnerPicker/>', () => {
     [errorApiRef, mockErrorApi],
   );
 
-  it('renders all owners', async () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    mockedQueryEntities.mockImplementation(async request => {
+      const totalItems =
+        ownerEntitiesBatch1.length + ownerEntitiesBatch2.length;
+      if ((request as QueryEntitiesCursorRequest).cursor) {
+        return {
+          items: ownerEntitiesBatch2,
+          pageInfo: {},
+          totalItems,
+        };
+      }
+      return {
+        items: ownerEntitiesBatch1,
+        pageInfo: {
+          nextCursor: 'nextCursor',
+        },
+        totalItems,
+      };
+    });
+  });
+
+  it('renders all users and groups', async () => {
     await renderWithEffects(
       <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider
-          value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-        >
+        <MockEntityListContextProvider value={{}}>
           <EntityOwnerPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
@@ -147,36 +161,37 @@ describe('<EntityOwnerPicker/>', () => {
     expect(screen.getByText('Owner')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Another Owner')).toBeInTheDocument(),
+    );
+
     [
-      'Another Owner',
       'some-owner',
       'Some Owner 2',
       'Another Owner in Another Namespace',
     ].forEach(owner => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
-  });
 
-  it('renders unique owners in alphabetical order', async () => {
-    await renderWithEffects(
-      <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider
-          value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-        >
-          <EntityOwnerPicker />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
+    expect(mockedQueryEntities).toHaveBeenCalledTimes(1);
+    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
+
+    fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
+
+    await waitFor(() =>
+      expect(screen.getByText('some-owner-batch-2')).toBeInTheDocument(),
     );
-    expect(screen.getByText('Owner')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    [
+      'some-owner-batch-2',
+      'Some Owner Batch 2',
+      'Another Owner in Another Namespace Batch 2',
+    ].forEach(owner => {
+      expect(screen.getByText(owner)).toBeInTheDocument();
+    });
 
-    expect(screen.getAllByRole('option').map(o => o.textContent)).toEqual([
-      'Another Owner',
-      'Another Owner in Another Namespace',
-      'some-owner',
-      'Some Owner 2',
-    ]);
+    expect(mockedQueryEntities).toHaveBeenCalledTimes(2);
   });
 
   it('respects the query parameter filter value', async () => {
@@ -186,8 +201,6 @@ describe('<EntityOwnerPicker/>', () => {
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
-            entities: sampleEntities,
-            backendEntities: sampleEntities,
             updateFilters,
             queryParameters,
           }}
@@ -197,9 +210,69 @@ describe('<EntityOwnerPicker/>', () => {
       </ApiProvider>,
     );
 
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+      entityRefs: ['another-owner'],
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/another-owner']),
     });
+  });
+
+  it('should display the selected owners as humanized entities', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { owners: ['another-owner'] };
+
+    mockedGetEntitiesByRef.mockResolvedValue({
+      items: [
+        {
+          metadata: {
+            name: 'another-owner',
+            title: 'Beautiful display name',
+            namespace: 'default',
+          },
+          apiVersion: '1',
+          kind: 'group',
+        },
+      ],
+    });
+    await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityOwnerPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: 'Beautiful display name',
+        }),
+      ).toBeInTheDocument(),
+    );
+
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+      entityRefs: ['another-owner'],
+    });
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() => screen.getByText('Some Owner 2'));
+    fireEvent.click(screen.getByText('Some Owner 2'));
+
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledTimes(1);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: 'Some Owner 2',
+        }),
+      ).toBeInTheDocument(),
+    );
   });
 
   it('adds owners to filters', async () => {
@@ -208,8 +281,6 @@ describe('<EntityOwnerPicker/>', () => {
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
-            entities: sampleEntities,
-            backendEntities: sampleEntities,
             updateFilters,
           }}
         >
@@ -217,11 +288,14 @@ describe('<EntityOwnerPicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
+    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,
     });
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() => screen.getByText('some-owner'));
+
     fireEvent.click(screen.getByText('some-owner'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
@@ -234,8 +308,6 @@ describe('<EntityOwnerPicker/>', () => {
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
-            entities: sampleEntities,
-            backendEntities: sampleEntities,
             updateFilters,
             filters: { owners: new EntityOwnerFilter(['some-owner']) },
           }}
@@ -244,12 +316,17 @@ describe('<EntityOwnerPicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+      entityRefs: ['group:default/some-owner'],
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
-    expect(screen.getByLabelText('some-owner')).toBeChecked();
+    await waitFor(() =>
+      expect(screen.getByLabelText('some-owner')).toBeChecked(),
+    );
 
     fireEvent.click(screen.getByLabelText('some-owner'));
     expect(updateFilters).toHaveBeenLastCalledWith({
@@ -265,13 +342,15 @@ describe('<EntityOwnerPicker/>', () => {
           value={{
             updateFilters,
             queryParameters: { owners: ['team-a'] },
-            backendEntities: sampleEntities,
           }}
         >
           <EntityOwnerPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+      entityRefs: ['team-a'],
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-a']),
     });
@@ -281,7 +360,6 @@ describe('<EntityOwnerPicker/>', () => {
           value={{
             updateFilters,
             queryParameters: { owners: ['team-b'] },
-            backendEntities: sampleEntities,
           }}
         >
           <EntityOwnerPicker />
@@ -290,25 +368,6 @@ describe('<EntityOwnerPicker/>', () => {
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-b']),
-    });
-  });
-  it('removes owners from filters if there are none available', async () => {
-    const updateFilters = jest.fn();
-    await renderWithEffects(
-      <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider
-          value={{
-            updateFilters,
-            queryParameters: { owners: ['team-a'] },
-            backendEntities: [],
-          }}
-        >
-          <EntityOwnerPicker />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-    );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      owners: undefined,
     });
   });
 });
