@@ -8263,7 +8263,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
-    octokit: ^2.0.3
+    octokit: ^2.0.5
     octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
     p-queue: ^6.6.2
@@ -32189,9 +32189,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit@npm:^2.0.3, octokit@npm:^2.0.4":
-  version: 2.0.16
-  resolution: "octokit@npm:2.0.16"
+"octokit@npm:^2.0.4, octokit@npm:^2.0.5":
+  version: 2.0.18
+  resolution: "octokit@npm:2.0.18"
   dependencies:
     "@octokit/app": ^13.1.3
     "@octokit/core": ^4.2.1
@@ -32201,7 +32201,7 @@ __metadata:
     "@octokit/plugin-retry": ^4.1.3
     "@octokit/plugin-throttling": ^5.2.2
     "@octokit/types": ^9.2.2
-  checksum: 975e636bc99c4965c65ad4bb17e6f6bdc7b3ab911f8b0273f149ad3f2c80982f0a382015255869d9a2ca85ab6d4d2b1e491d29084fff9c0b75e89ec77dfafdd8
+  checksum: 7693c94ff41cb78e9ec9bb84476c0282219fa3ca9afd8a09d1a06b9361144c0aec4e01663bf860ceac152a0b1fadfcf590e7c0f06ce52230376dbc66d3cead37
   languageName: node
   linkType: hard
 
