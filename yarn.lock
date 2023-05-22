@@ -7930,6 +7930,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-nomad@workspace:plugins/nomad"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"

@@ -24,9 +24,9 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
-import { ExampleFetchComponent } from '../ExampleFetchComponent';
+import { NomadFetchComponent } from '../NomadFetchComponent';
 
-export const ExampleComponent = () => (
+export const NomadComponent = () => (
   <Page themeId="tool">
     <Header title="Welcome to nomad!" subtitle="Optional subtitle">
       <HeaderLabel label="Owner" value="Team X" />
@@ -45,7 +45,7 @@ export const ExampleComponent = () => (
           </InfoCard>
         </Grid>
         <Grid item>
-          <ExampleFetchComponent />
+          <NomadFetchComponent />
         </Grid>
       </Grid>
     </Content>
