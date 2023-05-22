@@ -29,6 +29,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
+import { ReviewStateProps } from '@backstage/plugin-scaffolder-react/alpha';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -101,6 +102,82 @@ describe('TemplateWizardPage', () => {
     // Create the software
     await act(async () => {
       fireEvent.click(await findByRole('button', { name: 'Create' }));
+    });
+
+    // The "Next Step" button should have fired an event
+    expect(analyticsMock.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'Next Step (1)',
+      context: { entityRef: 'template:default/test' },
+    });
+
+    // And the "Create" button should have fired an event
+    expect(analyticsMock.getEvents()[1]).toMatchObject({
+      action: 'create',
+      subject: 'expected-name',
+      context: { entityRef: 'template:default/test' },
+    });
+  });
+
+  it('overrides default components', async () => {
+    const ReviewStateOverride = (_props: ReviewStateProps) => (
+      <h6>Different ReviewState</h6>
+    );
+    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    });
+
+    const { findByRole, getByRole } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SecretsContextProvider>
+          <TemplateWizardPage
+            customFieldExtensions={[]}
+            components={{
+              ReviewStateComponent: ReviewStateOverride,
+              createButtonText: 'override create',
+              reviewButtonText: 'override review',
+            }}
+          />
+          ,
+        </SecretsContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
+    );
+
+    // Fill out the name field
+    fireEvent.change(getByRole('textbox', { name: 'name' }), {
+      target: { value: 'expected-name' },
+    });
+
+    // Go to the final page
+    await act(async () => {
+      fireEvent.click(await findByRole('button', { name: 'override review' }));
+    });
+
+    expect(getByRole('heading', { level: 6 })).toHaveTextContent(
+      'Different ReviewState',
+    );
+
+    // Create the software
+    await act(async () => {
+      fireEvent.click(await findByRole('button', { name: 'override create' }));
     });
 
     // The "Next Step" button should have fired an event

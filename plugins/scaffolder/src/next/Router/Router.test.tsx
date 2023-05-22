@@ -88,14 +88,21 @@ describe('Router', () => {
       expect(TemplateWizardPage).not.toHaveBeenCalled();
     });
 
-    it('should pass through the FormProps property', async () => {
+    it('should pass through the FormProps and components properties', async () => {
       const transformErrorsMock = jest.fn();
+
+      const MockReviewComponent = jest.fn();
 
       await renderInTestApp(
         <Router
           FormProps={{
             transformErrors: transformErrorsMock,
             noHtml5Validate: true,
+          }}
+          components={{
+            ReviewStateComponent: MockReviewComponent,
+            createButtonText: 'new create',
+            reviewButtonText: 'new review',
           }}
         />,
         {
@@ -105,11 +112,17 @@ describe('Router', () => {
 
       const mock = TemplateWizardPage as jest.Mock;
 
-      const [{ FormProps }] = mock.mock.calls[0];
+      const [{ FormProps, components }] = mock.mock.calls[0];
 
       expect(FormProps).toEqual({
         transformErrors: transformErrorsMock,
         noHtml5Validate: true,
+      });
+
+      expect(components).toEqual({
+        ReviewStateComponent: MockReviewComponent,
+        createButtonText: 'new create',
+        reviewButtonText: 'new review',
       });
     });
 

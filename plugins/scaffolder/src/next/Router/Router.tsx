@@ -21,9 +21,11 @@ import {
   TemplateWizardPageProps,
 } from '../TemplateWizardPage';
 import {
-  NextFieldExtensionOptions,
-  FormProps,
+  type NextFieldExtensionOptions,
+  type FormProps,
   TemplateGroupFilter,
+  type WorkflowProps,
+  ReviewState,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   ScaffolderTaskOutput,
@@ -64,7 +66,7 @@ export type NextRouterProps = {
     }>;
     TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
     TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
-  };
+  } & Pick<WorkflowProps, 'components'>['components'];
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
   // todo(blam): rename this to formProps
@@ -92,6 +94,9 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       TaskPageComponent = OngoingTask,
       TemplateListPageComponent = TemplateListPage,
       TemplateWizardPageComponent = TemplateWizardPage,
+      ReviewStateComponent = ReviewState,
+      createButtonText = 'Create',
+      reviewButtonText = 'Review',
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
@@ -131,6 +136,11 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               FormProps={props.FormProps}
+              components={{
+                ReviewStateComponent: ReviewStateComponent,
+                createButtonText: createButtonText,
+                reviewButtonText: reviewButtonText,
+              }}
             />
           </SecretsContextProvider>
         }

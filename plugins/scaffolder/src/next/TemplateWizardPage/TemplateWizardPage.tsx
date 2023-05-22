@@ -31,6 +31,7 @@ import {
   FormProps,
   Workflow,
   NextFieldExtensionOptions,
+  type WorkflowProps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
@@ -48,7 +49,7 @@ export type TemplateWizardPageProps = {
   customFieldExtensions: NextFieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   FormProps?: FormProps;
-};
+} & Pick<WorkflowProps, 'components'>;
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(rootRouteRef);
@@ -78,6 +79,8 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const onError = () => <Navigate to={rootRef()} />;
 
+  const { customFieldExtensions, ...rest } = props;
+
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
@@ -91,9 +94,8 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           templateName={templateName}
           onCreate={onCreate}
           onError={onError}
-          extensions={props.customFieldExtensions}
-          FormProps={props.FormProps}
-          layouts={props.layouts}
+          extensions={customFieldExtensions}
+          {...rest}
         />
       </Page>
     </AnalyticsContext>
