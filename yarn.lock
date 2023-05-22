@@ -10634,27 +10634,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frsource/base64@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@frsource/base64@npm:1.0.5"
-  checksum: ba526dd81df4e91b0abbcc34fc6818c8ff132e5230c23a4448a365ba934f782a86abb2a8566050f9450905851e467a7160f01f3d321fbb0fa3c8c516c5a82b9b
+"@frsource/base64@npm:1.0.14":
+  version: 1.0.14
+  resolution: "@frsource/base64@npm:1.0.14"
+  checksum: 9a5b718e4ac12fd1b5bfdefcdf669fb0a125599fb6cd55564da3beeccd7a5707f58bc41f572268a8120af15ccca32355e8384341561f738397521020e0c2564c
   languageName: node
   linkType: hard
 
 "@frsource/cypress-plugin-visual-regression-diff@npm:^3.2.8":
-  version: 3.2.14
-  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.2.14"
+  version: 3.3.1
+  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.3.1"
   dependencies:
-    "@frsource/base64": 1.0.5
+    "@frsource/base64": 1.0.14
     glob: 8.0.3
-    meta-png: 1.0.5
+    meta-png: 1.0.6
     move-file: 2.1.0
     pixelmatch: 5.3.0
-    pngjs: 6.0.0
+    pngjs: 7.0.0
     sharp: 0.31.2
   peerDependencies:
     cypress: ">=4.5.0"
-  checksum: 1650eded6db559ef13d0d8b3aba8b19e703dc103a9e806c87cb49ce495a37e296c041530f509f4c0372c15217c8b54a17f51b034261b5b109f4503ab24a8181f
+  checksum: fae1e9de89fcc0f75a71dd7cc78cb870fa4d0989a0dd2e1084eec2fdc95f9ff503a124f05ea88f87b52c3d03463a79e96439e5620a6c0f24ac39135c81af9edc
   languageName: node
   linkType: hard
 
@@ -30450,10 +30450,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meta-png@npm:1.0.5":
-  version: 1.0.5
-  resolution: "meta-png@npm:1.0.5"
-  checksum: b8c92a696d5e78ef7f0ab53eb9039f108ee0c55cdac9d70e92e5fe2187b090176c0489426d58e594c7d1096481dac37913dd1265f28dfa39926db4d702a5e21d
+"meta-png@npm:1.0.6":
+  version: 1.0.6
+  resolution: "meta-png@npm:1.0.6"
+  checksum: aed14b3b53189c9d32002d76c40926bd93dd9d439bae3ad23ffb2645c375c9772c160879aa8af59ac85a2f43ae8bbe06b9648a53fe27815f4aeab238f4e9b79d
   languageName: node
   linkType: hard
 
@@ -33465,7 +33465,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pngjs@npm:6.0.0, pngjs@npm:^6.0.0":
+"pngjs@npm:7.0.0":
+  version: 7.0.0
+  resolution: "pngjs@npm:7.0.0"
+  checksum: b19a018930d27de26229c1b3ff250b3a25d09caa22cbb0b0459987d91eb0a560a18ab5d67da45a38ed7514140f26d1db58de83c31159ec101f2bb270a3c707f1
+  languageName: node
+  linkType: hard
+
+"pngjs@npm:^6.0.0":
   version: 6.0.0
   resolution: "pngjs@npm:6.0.0"
   checksum: ab6c285086060087097eab9fe6b5a528a24f9e79c03dea2b4fd6264ed4fdb5beff4a3257eeeaf2a9dc18249b539609c2a4e4013c567164a1f6b5ba2c974d5ecb
