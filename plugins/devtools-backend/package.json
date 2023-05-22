@@ -52,7 +52,7 @@
     "@types/ping": "^0.4.1",
     "@types/supertest": "^2.0.8",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "msw": "^0.47.0",
+    "msw": "^0.49.0",
     "supertest": "^6.2.4"
   },
   "files": [
