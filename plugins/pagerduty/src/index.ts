@@ -29,8 +29,14 @@ export {
 
 export * from './components';
 
-// @deprecated Please use EntityPagerDutyCard
+/**
+ * @deprecated Please use EntityPagerDutyCard
+ */
 export { EntityPagerDutyCard as PagerDutyCard } from './components';
+
+/**
+ * @deprecated Please use EntityPagerDutyCardProps
+ */
 export type { EntityPagerDutyCardProps as PagerDutyCardProps } from './components';
 
 export * from './api';

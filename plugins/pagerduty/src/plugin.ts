@@ -23,7 +23,7 @@ import {
   configApiRef,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
-import { createCardExtension } from '@backstage/plugin-home';
+import { createCardExtension } from '@backstage/plugin-home-react';
 import { HomePagePagerDutyCardProps } from './components/HomePagePagerDutyCard/Content';
 
 export const rootRouteRef = createRouteRef({
@@ -60,15 +60,8 @@ export const EntityPagerDutyCard = pagerDutyPlugin.provide(
   }),
 );
 
-export const homePlugin = createPlugin({
-  id: 'pagerduty-home',
-  routes: {
-    root: rootRouteRef,
-  },
-});
-
 /** @public */
-export const HomePagePagerDutyCard = homePlugin.provide(
+export const HomePagePagerDutyCard = pagerDutyPlugin.provide(
   createCardExtension<HomePagePagerDutyCardProps>({
     name: 'HomePagePagerDutyCard',
     title: 'PagerDuty Homepage Card',
