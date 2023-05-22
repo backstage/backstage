@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { ExploreTool } from '@backstage/plugin-explore-common';
 import {
@@ -40,6 +43,7 @@ export interface ToolDocument extends IndexableDocument, ExploreTool {}
 export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager?: TokenManager;
 };
 
 /**
@@ -52,10 +56,12 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
 
   private readonly discovery: PluginEndpointDiscovery;
   private readonly logger: Logger;
+  private readonly tokenManager?: TokenManager;
 
   private constructor(options: ToolDocumentCollatorFactoryOptions) {
     this.discovery = options.discovery;
     this.logger = options.logger;
+    this.tokenManager = options.tokenManager;
   }
 
   static fromConfig(
@@ -87,7 +93,17 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
 
   private async fetchTools() {
     const baseUrl = await this.discovery.getBaseUrl('explore');
-    const response = await fetch(`${baseUrl}/tools`);
+
+    let headers = {};
+
+    if (this.tokenManager) {
+      const { token } = await this.tokenManager.getToken();
+      headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    const response = await fetch(`${baseUrl}/tools`, headers);
 
     if (!response.ok) {
       throw new Error(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage plugin that helps you build a home page
- *
- * @packageDocumentation
- */
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
+  Entity,
+} from '@backstage/catalog-model';
+import gitUrlParse from 'git-url-parse';
 
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  HomePageToolkit,
-  HomePageCompanyLogo,
-  HomePageStarredEntities,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-  HeaderWorldClock,
-} from './plugin';
-export * from './components';
-export * from './assets';
-export * from './homePageComponents';
-export * from './deprecated';
+export const getHostnameFromEntity = (entity: Entity) => {
+  const location =
+    entity?.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION] ??
+    entity?.metadata.annotations?.[ANNOTATION_LOCATION];
+
+  return location?.startsWith('url:')
+    ? gitUrlParse(location.slice(4)).resource
+    : undefined;
+};

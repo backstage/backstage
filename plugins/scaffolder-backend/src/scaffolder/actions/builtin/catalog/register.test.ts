@@ -265,9 +265,7 @@ describe('catalog:register', () => {
 
   it('should ignore failures when dry running the location in the catalog if `optional` is set', async () => {
     addLocation
-      .mockResolvedValueOnce({
-        entities: [],
-      })
+      .mockRejectedValueOnce(new Error('Not found'))
       .mockRejectedValueOnce(new Error('Not found'));
     await action.handler({
       ...mockContext,
@@ -298,6 +296,56 @@ describe('catalog:register', () => {
     expect(mockContext.output).toHaveBeenCalledWith(
       'catalogInfoUrl',
       'http://foo/var',
+    );
+  });
+
+  it('should fetch entities when adding location in the catalog fails and `optional` is set', async () => {
+    addLocation
+      .mockRejectedValueOnce(new Error('Already registered'))
+      .mockResolvedValueOnce({
+        entities: [
+          {
+            metadata: {
+              namespace: 'default',
+              name: 'test',
+            },
+            kind: 'Component',
+          } as Entity,
+        ],
+      });
+    await action.handler({
+      ...mockContext,
+      input: {
+        catalogInfoUrl: 'http://foo/var',
+        optional: true,
+      },
+    });
+
+    expect(addLocation).toHaveBeenNthCalledWith(
+      1,
+      {
+        type: 'url',
+        target: 'http://foo/var',
+      },
+      {},
+    );
+    expect(addLocation).toHaveBeenNthCalledWith(
+      2,
+      {
+        dryRun: true,
+        type: 'url',
+        target: 'http://foo/var',
+      },
+      {},
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'catalogInfoUrl',
+      'http://foo/var',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'entityRef',
+      'component:default/test',
     );
   });
 });

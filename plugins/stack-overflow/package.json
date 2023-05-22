@@ -25,7 +25,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/plugin-home": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/theme": "workspace:^",

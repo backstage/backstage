@@ -20,10 +20,10 @@ import {
   configApiRef,
   createPlugin,
   createApiFactory,
-  githubAuthApiRef,
   createRoutableExtension,
   createComponentExtension,
 } from '@backstage/core-plugin-api';
+import { scmAuthApiRef } from '@backstage/integration-react';
 
 /** @public */
 export const githubActionsPlugin = createPlugin({
@@ -31,9 +31,9 @@ export const githubActionsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: githubActionsApiRef,
-      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
-      factory: ({ configApi, githubAuthApi }) =>
-        new GithubActionsClient({ configApi, githubAuthApi }),
+      deps: { configApi: configApiRef, scmAuthApi: scmAuthApiRef },
+      factory: ({ configApi, scmAuthApi }) =>
+        new GithubActionsClient({ configApi, scmAuthApi }),
     }),
   ],
   routes: {

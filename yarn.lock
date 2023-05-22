@@ -6745,6 +6745,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -6759,6 +6760,7 @@ __metadata:
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^3.1.5
+    git-url-parse: ^13.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -7036,6 +7038,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-home-react@workspace:^, @backstage/plugin-home-react@workspace:plugins/home-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-home-react@workspace:plugins/home-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@rjsf/utils": 5.6.0
+    "@testing-library/dom": ^8.0.0
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": ^16.11.26
+    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react-grid-layout": ^1.3.2
+    cross-fetch: ^3.1.5
+    msw: ^1.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-home@^0.5.1, @backstage/plugin-home@workspace:^, @backstage/plugin-home@workspace:plugins/home":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-home@workspace:plugins/home"
@@ -7048,6 +7079,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-home-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -8845,7 +8877,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/plugin-home": "workspace:^"
+    "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -13006,20 +13038,19 @@ __metadata:
   linkType: hard
 
 "@octokit/auth-app@npm:^4.0.0":
-  version: 4.0.9
-  resolution: "@octokit/auth-app@npm:4.0.9"
+  version: 4.0.13
+  resolution: "@octokit/auth-app@npm:4.0.13"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
     "@octokit/request": ^6.0.0
     "@octokit/request-error": ^3.0.0
     "@octokit/types": ^9.0.0
-    "@types/lru-cache": ^5.1.0
     deprecation: ^2.3.1
-    lru-cache: ^6.0.0
+    lru-cache: ^9.0.0
     universal-github-app-jwt: ^1.1.1
     universal-user-agent: ^6.0.0
-  checksum: 3846ebeda40bf88684fa310741ec4b5838d57e18ba5c38986e422161e1ce95c750053fbb2aa18bdce120d6eb857d16bb8e9988597c3dfda40fec985dbdda1b2a
+  checksum: 809004bc3e985fd4911cc42060fecd7b88e609e1334b90c4f79711aa27cade03fa1d930945ea8f7339ddd8d4514dd220a6ae8489faefa9e0ce6881519a02fc37
   languageName: node
   linkType: hard
 
@@ -13133,13 +13164,13 @@ __metadata:
   linkType: hard
 
 "@octokit/graphql@npm:^5.0.0":
-  version: 5.0.5
-  resolution: "@octokit/graphql@npm:5.0.5"
+  version: 5.0.6
+  resolution: "@octokit/graphql@npm:5.0.6"
   dependencies:
     "@octokit/request": ^6.0.0
     "@octokit/types": ^9.0.0
     universal-user-agent: ^6.0.0
-  checksum: eb2d1a6305a3d1f55ff0ce92fb88b677f0bb789757152d58a79ef61171fb65ecf6fe18d6c27e236c0cee6a0c2600c2cb8370f5ac7184f8e9361c085aa4555bb1
+  checksum: 7be545d348ef31dcab0a2478dd64d5746419a2f82f61459c774602bcf8a9b577989c18001f50b03f5f61a3d9e34203bdc021a4e4d75ff2d981e8c9c09cf8a65c
   languageName: node
   linkType: hard
 
@@ -13843,8 +13874,8 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.3.11
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.11"
+  version: 2.3.12
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.12"
   dependencies:
     "@backstage/catalog-model": ^1.3.0
     "@backstage/core-components": ^0.13.0
@@ -13866,7 +13897,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 175b8b1f7e307fe5e06c3caa2845cee45840e64dfb0fd8a4a7e44f6bfa45a4c0ecc07998ec4239ca39246c073ae55bc4541650b0bb1e43d2ee3441efbedfe3cd
+  checksum: 4c2b14b43e0daa6aa17aef44b51c74c74a3aa41d48d50644cae58e5e9ae5fdf656d2b71aa7175a3c9c8269ac9cdacfa64c1339f212273849e83020342298ed8c
   languageName: node
   linkType: hard
 
@@ -16105,13 +16136,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lru-cache@npm:^5.1.0":
-  version: 5.1.1
-  resolution: "@types/lru-cache@npm:5.1.1"
-  checksum: e1d6c0085f61b16ec5b3073ec76ad1be4844ea036561c3f145fc19f71f084b58a6eb600b14128aa95809d057d28f1d147c910186ae51219f58366ffd2ff2e118
-  languageName: node
-  linkType: hard
-
 "@types/lunr@npm:^2.3.3":
   version: 2.3.4
   resolution: "@types/lunr@npm:2.3.4"
@@ -16230,12 +16254,12 @@ __metadata:
   linkType: hard
 
 "@types/node-fetch@npm:^2.5.0, @types/node-fetch@npm:^2.5.12, @types/node-fetch@npm:^2.5.7, @types/node-fetch@npm:^2.6.1":
-  version: 2.6.3
-  resolution: "@types/node-fetch@npm:2.6.3"
+  version: 2.6.4
+  resolution: "@types/node-fetch@npm:2.6.4"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
-  checksum: b68cda58e91535a42dd5337932443c37f8e198ca1e8deeb95bd92a64a9a84d92071867b91c5eb84ee8e13f33d45a70549fe2bc11dd070a894dd561909f4d39f5
+  checksum: f3e1d881bb42269e676ecaf49f0e096ab345e22823a2b2d071d60619414817fe02df48a31a8d05adb23054028a2a65521bdb3906ceb763ab6d3339c8d8775058
   languageName: node
   linkType: hard
 
@@ -16249,9 +16273,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
-  version: 20.1.4
-  resolution: "@types/node@npm:20.1.4"
-  checksum: bffa6a6e92831cc805b13658c55be8e04abe3202d5e57ddd7fee4cfbe269656a1f475909a9f9514e1aff50310d0d90c516ac2c649cb6f1c77d4b1079c2fd1e88
+  version: 20.2.2
+  resolution: "@types/node@npm:20.2.2"
+  checksum: a39bef01b7592fd35c5704c74b9167c154a9a357017db8cd8644461c6e6ad87be19f82dfc65ecb2f35a8fb143fc8a0587f17507bc0b0c9bfee676b3fb4bc89ae
   languageName: node
   linkType: hard
 
@@ -16284,16 +16308,16 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^16.0.0, @types/node@npm:^16.11.26, @types/node@npm:^16.9.2":
-  version: 16.18.30
-  resolution: "@types/node@npm:16.18.30"
-  checksum: 2975519e337a3f29c495b97aa7510ef3f4ac5d3c9356f7886698a4abf8b12641c1f1247512b525599cba6aefe774735ef25fc83555e989033bdbcc4a2b1c7401
+  version: 16.18.32
+  resolution: "@types/node@npm:16.18.32"
+  checksum: c5966c8e671205b2971ae66ae548ce92235cef89ae1a0f2ecbf118e775923259dc85f57c58cfc56267089d56dfce967700c058276199c6ed9510d0a0b077af2d
   languageName: node
   linkType: hard
 
 "@types/node@npm:^18.11.17":
-  version: 18.16.9
-  resolution: "@types/node@npm:18.16.9"
-  checksum: 7fe0ef372ba8b157bd646efe29b0ece92ccb9f455171a7ceb4c92d6b490789ff0f14411b1dc6ad203351a0efa2b435072dfab5566fb6eaaaa5cd549e1fb22afa
+  version: 18.16.14
+  resolution: "@types/node@npm:18.16.14"
+  checksum: c11cb3c787236414efe58240ae71854971592554d82ff9d201876ce7cafd51c37aaa001c63602d002e8238614d7331bd6d48ac4c1c0caa826799980b6846fb08
   languageName: node
   linkType: hard
 
@@ -21058,20 +21082,20 @@ __metadata:
   linkType: hard
 
 "css-loader@npm:^6.5.1":
-  version: 6.7.3
-  resolution: "css-loader@npm:6.7.3"
+  version: 6.7.4
+  resolution: "css-loader@npm:6.7.4"
   dependencies:
     icss-utils: ^5.1.0
-    postcss: ^8.4.19
+    postcss: ^8.4.21
     postcss-modules-extract-imports: ^3.0.0
-    postcss-modules-local-by-default: ^4.0.0
+    postcss-modules-local-by-default: ^4.0.1
     postcss-modules-scope: ^3.0.0
     postcss-modules-values: ^4.0.0
     postcss-value-parser: ^4.2.0
     semver: ^7.3.8
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 473cc32b6c837c2848e2051ad1ba331c1457449f47442e75a8c480d9891451434ada241f7e3de2347e57de17fcd84610b3bcfc4a9da41102cdaedd1e17902d31
+  checksum: 6021fa9e375d767b9675e295c1513f2ee4ae04f76d9de69a75b8446e05f6e02b2170407ea72939925b788dcd5aa308527f6b41be3870dc1f4b0bfff8d2532c6e
   languageName: node
   linkType: hard
 
@@ -29331,8 +29355,8 @@ __metadata:
   linkType: hard
 
 "lint-staged@npm:^13.0.0":
-  version: 13.2.1
-  resolution: "lint-staged@npm:13.2.1"
+  version: 13.2.2
+  resolution: "lint-staged@npm:13.2.2"
   dependencies:
     chalk: 5.2.0
     cli-truncate: ^3.1.0
@@ -29346,10 +29370,10 @@ __metadata:
     object-inspect: ^1.12.3
     pidtree: ^0.6.0
     string-argv: ^0.3.1
-    yaml: ^2.2.1
+    yaml: ^2.2.2
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 5788d3fe38e69b7f7b7f700284d4e10738978a0916bc77d3f6253c43a030fc4f01f89c09da349fb658f929f3393d8b1e3eaabaac5b604416ebc33476640b51ce
+  checksum: f34f6e2e85e827364658ab8717bf8b35239473c2d4959d746b053a4cf158ac657348444c755820a8ef3eac2d4753a37c52e9db3e201ee20b085f26d2f2fbc9ed
   languageName: node
   linkType: hard
 
@@ -29871,6 +29895,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^9.0.0":
+  version: 9.1.1
+  resolution: "lru-cache@npm:9.1.1"
+  checksum: 4d703bb9b66216bbee55ead82a9682820a2b6acbdfca491b235390b1ef1056000a032d56dfb373fdf9ad4492f1fa9d04cc9a05a77f25bd7ce6901d21ad9b68b7
   languageName: node
   linkType: hard
 
@@ -30886,13 +30917,13 @@ __metadata:
   linkType: hard
 
 "mini-css-extract-plugin@npm:^2.4.2":
-  version: 2.7.2
-  resolution: "mini-css-extract-plugin@npm:2.7.2"
+  version: 2.7.6
+  resolution: "mini-css-extract-plugin@npm:2.7.6"
   dependencies:
     schema-utils: ^4.0.0
   peerDependencies:
     webpack: ^5.0.0
-  checksum: cd65611d6dc452f230c6ebba8a47bc5f5146b813b13b0b402c6f4a69f6451242eeea781152bebd31cad8ca7c7e95dac91e7e464087f18fb65b2d1097b58cf4ae
+  checksum: be6f7cefc6275168eb0a6b8fe977083a18c743c9612c9f00e6c1a62c3393ca7960e93fba1a7ebb09b75f36a0204ad087d772c1ef574bc29c90c0e8175a3c0b83
   languageName: node
   linkType: hard
 
@@ -32290,9 +32321,9 @@ __metadata:
   linkType: hard
 
 "openapi-types@npm:^12.0.0":
-  version: 12.1.0
-  resolution: "openapi-types@npm:12.1.0"
-  checksum: d8f3e2bae519aa6bcf2012f4a5592b7283fe928c06f3bdc182776ce637c7ed8d5f9f342724f68c95c9572aefe21ed5e89b18a0295a703da61af5f97bd2aea9a7
+  version: 12.1.1
+  resolution: "openapi-types@npm:12.1.1"
+  checksum: 881dbc514e22046eb790c81370e912ca2daf5beec13cde77e8a15b5ec2635140487abdebf681ec969777067bcbb56b3c0880a0a22aa236d075d8fca5da9535ad
   languageName: node
   linkType: hard
 
@@ -33624,16 +33655,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-modules-local-by-default@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "postcss-modules-local-by-default@npm:4.0.0"
+"postcss-modules-local-by-default@npm:^4.0.0, postcss-modules-local-by-default@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "postcss-modules-local-by-default@npm:4.0.1"
   dependencies:
     icss-utils: ^5.0.0
     postcss-selector-parser: ^6.0.2
     postcss-value-parser: ^4.1.0
   peerDependencies:
     postcss: ^8.1.0
-  checksum: 6cf570badc7bc26c265e073f3ff9596b69bb954bc6ac9c5c1b8cba2995b80834226b60e0a3cbb87d5f399dbb52e6466bba8aa1d244f6218f99d834aec431a69d
+  checksum: 1a95eb8bc54a363a77dbd77a0a88f500e7937ecbed5903becef9362eace28de406e6fdf62640126c22964678370e87eb10481eea2703702772935b4515603bfd
   languageName: node
   linkType: hard
 
@@ -33864,7 +33895,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.1.0, postcss@npm:^8.4.19":
+"postcss@npm:^8.1.0, postcss@npm:^8.4.21":
   version: 8.4.23
   resolution: "postcss@npm:8.4.23"
   dependencies:
@@ -40947,7 +40978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.1.1, yaml@npm:^2.2.1":
+"yaml@npm:^2.0.0, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2":
   version: 2.2.2
   resolution: "yaml@npm:2.2.2"
   checksum: d90c235e099e30094dcff61ba3350437aef53325db4a6bcd04ca96e1bfe7e348b191f6a7a52b5211e2dbc4eeedb22a00b291527da030de7c189728ef3f2b4eb3
