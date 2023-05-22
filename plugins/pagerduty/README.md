@@ -42,7 +42,7 @@ The file paths mentioned in the following steps are relative to your app's root 
 First, install the PagerDuty plugin via a CLI:
 
 ```bash
-# From your Backstage app root directory
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-pagerduty
 ```
 
