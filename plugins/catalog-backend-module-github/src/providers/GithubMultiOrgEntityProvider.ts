@@ -838,6 +838,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       .map(install =>
         install.target_type === 'Organization' &&
         install.account &&
+        'login' in install.account &&
         install.account.login
           ? install.account.login
           : undefined,
