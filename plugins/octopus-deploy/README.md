@@ -18,7 +18,7 @@ To use it, you will need to generate an [API Key](https://octopus.com/docs/octop
 // app-config.yaml
 proxy:
   '/octopus-deploy':
-    target: '<your-octopus-server-url>'
+    target: 'https://<your-octopus-server-instance>/api'
     headers:
       X-Octopus-ApiKey: ${OCTOPUS_API_KEY}
 ```
