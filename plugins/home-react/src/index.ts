@@ -19,21 +19,14 @@
  *
  * @packageDocumentation
  */
-
-export {
-  homePlugin,
-  HomepageCompositionRoot,
-  HomePageRandomJoke,
-  HomePageToolkit,
-  HomePageCompanyLogo,
-  HomePageStarredEntities,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
-  WelcomeTitle,
-  HeaderWorldClock,
-} from './plugin';
 export * from './components';
-export * from './assets';
-export * from './homePageComponents';
-export * from './deprecated';
+export { createCardExtension } from './extensions';
+export type {
+  CardExtensionProps,
+  ComponentParts,
+  ComponentRenderer,
+  RendererProps,
+  CardLayout,
+  CardSettings,
+  CardConfig,
+} from './extensions';
