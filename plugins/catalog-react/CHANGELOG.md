@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-react
 
+## 1.7.0-next.0
+
+### Minor Changes
+
+- cb4c15989b6b: The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
+
+  The component now loads entities asynchronously, resulting in improved performance and responsiveness. Instead of loading all entities upfront, they are now loaded in batches as the user scrolls.
+  The previous implementation inferred users and groups displayed by the `EntityOwnerPicker` component based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling and improved performance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+
 ## 1.6.0
 
 ### Minor Changes

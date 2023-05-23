@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.7-next.0
+
+### Patch Changes
+
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.1.6
 
 ### Patch Changes

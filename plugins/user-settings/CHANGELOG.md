@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings
 
+## 0.7.4-next.0
+
+### Patch Changes
+
+- 7a8441b9a323: Reflect the updated sign on status for a provider after signing out.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-app-api@1.8.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.7.3
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @backstage/app-defaults
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 1fd38bc4141a: **MUI v5 Support:** Adding platform-wide support for MUI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
+
+  To allow the future support of plugins & components using MUI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
+
+  ```diff
+       Provider: ({ children }) => (
+  -    <ThemeProvider theme={lightTheme}>
+  -      <CssBaseline>{children}</CssBaseline>
+  -    </ThemeProvider>
+  +    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+       ),
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-app-api@1.8.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+
 ## 1.3.1
 
 ### Patch Changes

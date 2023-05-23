@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 84a5c7724c7e: fixed refresh problem when backstage backend disconnects without any feedback to user. Now we send a generic message and try to reconnect after 15 seconds
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-scaffolder-common@1.3.0
+
 ## 1.4.0
 
 ### Minor Changes
