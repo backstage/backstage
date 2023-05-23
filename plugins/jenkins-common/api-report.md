@@ -8,5 +8,8 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 // @public
 export const jenkinsExecutePermission: ResourcePermission<'catalog-entity'>;
 
+// @public
+export const jenkinsPermissions: ResourcePermission<'catalog-entity'>[];
+
 // (No @packageDocumentation comment for this package)
 ```

@@ -28,3 +28,10 @@ export const jenkinsExecutePermission = createPermission({
   },
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 });
+
+/**
+ * List of all Jenkins permissions
+ *
+ * @public
+ */
+export const jenkinsPermissions = [jenkinsExecutePermission];

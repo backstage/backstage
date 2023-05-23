@@ -35,7 +35,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: bootstrap kind
-        uses: helm/kind-action@v1.5.0
+        uses: helm/kind-action@v1.7.0
 
       - name: kubernetes test
         working-directory: packages/backend-common

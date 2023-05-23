@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { Pod } from 'kubernetes-models/v1';
+import { DetectedError } from '../../error-detection';
 
 export interface PodAndErrors {
   clusterName: string;
   pod: Pod;
-  errors: any[];
+  errors: DetectedError[];
 }

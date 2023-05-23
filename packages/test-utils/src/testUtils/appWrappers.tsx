@@ -17,9 +17,7 @@
 import React, { ComponentType, ReactNode, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
@@ -142,9 +140,9 @@ export function createTestAppWrapper(
         title: 'Test App Theme',
         variant: 'light',
         Provider: ({ children }) => (
-          <ThemeProvider theme={lightTheme}>
-            <CssBaseline>{children}</CssBaseline>
-          </ThemeProvider>
+          <UnifiedThemeProvider theme={themes.light}>
+            {children}
+          </UnifiedThemeProvider>
         ),
       },
     ],
