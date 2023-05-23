@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
 import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
+import { kubernetesProxyApiRef } from '../../../api';
 
 interface PodLogsOptions {
   podScope: ContainerScope;

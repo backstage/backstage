@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import { createTheme } from './baseTheme';
-import { pageTheme } from './pageTheme';
-import { yellow } from '@material-ui/core/colors';
-
 /**
- * The default Backstage light theme.
+ * Built-in Backstage color palettes.
  *
  * @public
  */
-export const lightTheme = createTheme({
-  palette: {
-    type: 'light',
+export const palettes = {
+  light: {
+    type: 'light' as const,
+    mode: 'light' as const,
     background: {
       default: '#F8F8F8',
+      paper: '#FFFFFF',
     },
     status: {
       ok: '#1DB954',
@@ -71,7 +69,7 @@ export const lightTheme = createTheme({
     warningText: '#000000',
     linkHover: '#2196F3',
     link: '#0A6EBE',
-    gold: yellow.A700,
+    gold: '#FFD600',
     navigation: {
       background: '#171717',
       indicator: '#9BF0E1',
@@ -92,20 +90,12 @@ export const lightTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
-  defaultPageTheme: 'home',
-  pageTheme,
-});
-
-/**
- * The default Backstage dark theme.
- *
- * @public
- */
-export const darkTheme = createTheme({
-  palette: {
-    type: 'dark',
+  dark: {
+    type: 'dark' as const,
+    mode: 'dark' as const,
     background: {
       default: '#333333',
+      paper: '#424242',
     },
     status: {
       ok: '#71CF88',
@@ -153,7 +143,7 @@ export const darkTheme = createTheme({
     warningText: '#000000',
     linkHover: '#82BAFD',
     link: '#9CC9FF',
-    gold: yellow.A700,
+    gold: '#FFD600',
     navigation: {
       background: '#424242',
       indicator: '#9BF0E1',
@@ -174,6 +164,4 @@ export const darkTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
-  defaultPageTheme: 'home',
-  pageTheme,
-});
+};

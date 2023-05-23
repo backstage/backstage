@@ -1,5 +1,16 @@
 # @backstage/plugin-analytics-module-ga4
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.1.0
 
 ### Minor Changes

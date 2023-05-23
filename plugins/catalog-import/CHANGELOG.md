@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-import
 
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 2ef84c05aee7: Added analytics event for import entity button
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/integration-react@1.1.14-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-common@1.0.13
+
 ## 0.9.8
 
 ### Patch Changes

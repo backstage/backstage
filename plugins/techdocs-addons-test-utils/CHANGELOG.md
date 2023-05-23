@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.14-next.0
+
+### Patch Changes
+
+- 1fd38bc4141a: Avoiding re-running tests on cleanup.
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.6.3-next.0
+  - @backstage/test-utils@1.4.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/plugin-techdocs-react@1.1.7-next.0
+  - @backstage/plugin-catalog@1.11.1-next.0
+  - @backstage/core-app-api@1.8.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/integration-react@1.1.14-next.0
+  - @backstage/plugin-search-react@1.6.1-next.0
+
 ## 1.0.13
 
 ### Patch Changes
