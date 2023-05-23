@@ -1,5 +1,23 @@
 # @backstage/app-defaults
 
+## 1.3.1
+
+### Patch Changes
+
+- 575d9178eff: Added a System Icon for resource entities.
+  This can be obtained using:
+
+  ```ts
+  useApp().getSystemIcon('kind:resource');
+  ```
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-app-api@1.8.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+
 ## 1.3.1-next.2
 
 ### Patch Changes

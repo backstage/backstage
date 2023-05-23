@@ -28,6 +28,7 @@ import {
   SubvalueCell,
 } from '@backstage/core-components';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { Pod } from 'kubernetes-models/v1/Pod';
 
 export const imageChips = (pod: V1Pod): ReactNode => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
@@ -38,19 +39,19 @@ export const imageChips = (pod: V1Pod): ReactNode => {
   return <div>{images}</div>;
 };
 
-export const containersReady = (pod: V1Pod): string => {
+export const containersReady = (pod: Pod): string => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
   const containersReadyItem = containerStatuses.filter(cs => cs.ready).length;
 
   return `${containersReadyItem}/${containerStatuses.length}`;
 };
 
-export const totalRestarts = (pod: V1Pod): number => {
+export const totalRestarts = (pod: Pod): number => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
   return containerStatuses?.reduce((a, b) => a + b.restartCount, 0);
 };
 
-export const containerStatuses = (pod: V1Pod): ReactNode => {
+export const containerStatuses = (pod: Pod): ReactNode => {
   const containerStatusesItem = pod.status?.containerStatuses ?? [];
   const errors = containerStatusesItem.reduce((accum, next) => {
     if (next.state === undefined) {

@@ -25,7 +25,8 @@ import get from 'lodash/get';
  * @param defaultNamespace - if set to false then namespace is never omitted,
  * if set to string which matches namespace of entity then omitted
  *
- * @public */
+ * @public
+ **/
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
   opts?: {
@@ -73,27 +74,19 @@ export function humanizeEntityRef(
  * If an entity is either User or Group, this will be its `spec.profile.displayName`.
  * Otherwise, this is `metadata.title`.
  *
- * If neither of those are found or populated, fallback to `humanizeEntityRef`.
+ * If neither of those are found or populated, fallback to `defaultName`.
  *
  * @param entity - Entity to convert.
- * @param opts - If entity readable name is not available, opts will be used to specify humanizeEntityRef options.
- * @returns Readable name, defaults to unique identifier.
+ * @param defaultName - If entity readable name is not available, `defaultName` will be returned.
+ * @returns Readable name, defaults to `defaultName`.
  *
- * @public
  */
-export function humanizeEntity(
-  entity: Entity,
-  opts?: {
-    defaultKind?: string;
-    defaultNamespace?: string | false;
-  },
-) {
+export function humanizeEntity(entity: Entity, defaultName: string) {
   for (const path of ['spec.profile.displayName', 'metadata.title']) {
     const value = get(entity, path);
     if (value && typeof value === 'string') {
       return value;
     }
   }
-
-  return humanizeEntityRef(entity, opts);
+  return defaultName;
 }

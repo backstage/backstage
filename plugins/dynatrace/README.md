@@ -26,6 +26,7 @@ The Dynatrace plugin will require the following information, to be used in the c
 1. Install the plugin on your frontend:
 
 ```
+# From your Backstage root directory
 yarn add --cwd packages/app @backstage/plugin-dynatrace
 ```
 

@@ -117,8 +117,8 @@ export interface Config {
   };
 
   /**
-   $ Enable redirect authentication flow type, instead of a popup for authentication
-   * default value: 'false'
+   * Enable redirect authentication flow type, instead of a popup for authentication.
+   * @defaultValue false
    * @visibility frontend
    */
   enableExperimentalRedirectFlow?: boolean;

@@ -15,9 +15,10 @@
  */
 
 import { readGithubIntegrationConfigs } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { GithubActionsApi } from './GithubActionsApi';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { ConfigApi, OAuthApi } from '@backstage/core-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
 
 /**
  * A client for fetching information about GitHub actions.
@@ -26,22 +27,26 @@ import { ConfigApi, OAuthApi } from '@backstage/core-plugin-api';
  */
 export class GithubActionsClient implements GithubActionsApi {
   private readonly configApi: ConfigApi;
-  private readonly githubAuthApi: OAuthApi;
+  private readonly scmAuthApi: ScmAuthApi;
 
-  constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi }) {
+  constructor(options: { configApi: ConfigApi; scmAuthApi: ScmAuthApi }) {
     this.configApi = options.configApi;
-    this.githubAuthApi = options.githubAuthApi;
+    this.scmAuthApi = options.scmAuthApi;
   }
 
-  private async getOctokit(hostname?: string): Promise<Octokit> {
-    // TODO: Get access token for the specified hostname
-    const token = await this.githubAuthApi.getAccessToken(['repo']);
+  private async getOctokit(hostname: string = 'github.com'): Promise<Octokit> {
+    const { token } = await this.scmAuthApi.getCredentials({
+      url: `https://${hostname}/`,
+      additionalScope: {
+        customScopes: {
+          github: ['repo'],
+        },
+      },
+    });
     const configs = readGithubIntegrationConfigs(
       this.configApi.getOptionalConfigArray('integrations.github') ?? [],
     );
-    const githubIntegrationConfig = configs.find(
-      v => v.host === hostname ?? 'github.com',
-    );
+    const githubIntegrationConfig = configs.find(v => v.host === hostname);
     const baseUrl = githubIntegrationConfig?.apiBaseUrl;
     return new Octokit({ auth: token, baseUrl });
   }

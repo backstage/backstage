@@ -316,6 +316,7 @@ scaffolded
 scaffolder
 Scaffolder
 scrollbar
+sdks
 seb
 semlas
 semver
@@ -343,6 +344,8 @@ stdout
 storable
 stringified
 stringify
+subcommand
+subcommands
 subcomponent
 subcomponents
 subfolder

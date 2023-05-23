@@ -89,7 +89,11 @@ export function OAuthRequestDialog(_props: {}) {
           classes={{ root: classes.title }}
           id="oauth-req-dialog-title"
         >
-          <Typography className={classes.titleHeading} variant="h1">
+          <Typography
+            className={classes.titleHeading}
+            variant="h1"
+            variantMapping={{ h1: 'span' }}
+          >
             Login Required
           </Typography>
           {authRedirect ? (

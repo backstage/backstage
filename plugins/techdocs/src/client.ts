@@ -23,11 +23,13 @@ import {
 } from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 import {
+  SyncResult,
+  TechDocsApi,
   TechDocsEntityMetadata,
   TechDocsMetadata,
+  TechDocsStorageApi,
 } from '@backstage/plugin-techdocs-react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
 
 /**
  * API to talk to `techdocs-backend`.
@@ -189,7 +191,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
    * @param entityId - Object containing entity data like name, namespace, etc.
    * @param logHandler - Callback to receive log messages from the build process
    * @returns Whether documents are currently synchronized to newest version
-   * @throws Throws error on error from sync endpoint in Techdocs Backend
+   * @throws Throws error on error from sync endpoint in TechDocs Backend
    */
   async syncEntityDocs(
     entityId: CompoundEntityRef,

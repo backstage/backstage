@@ -37,7 +37,7 @@ backend:
     connection: ':memory:'
     # highlight-remove-end
     # highlight-add-start
-    # config options: https://node-postgres.com/api/client
+    # config options: https://node-postgres.com/apis/client
     client: pg
     connection:
       host: ${POSTGRES_HOST}
@@ -72,7 +72,7 @@ backend:
     connection: ':memory:'
     # highlight-remove-end
     # highlight-add-start
-    # config options: https://node-postgres.com/api/client
+    # config options: https://node-postgres.com/apis/client
     client: pg
     connection:
       host: ${POSTGRES_HOST}

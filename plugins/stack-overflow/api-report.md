@@ -7,7 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { CardExtensionProps } from '@backstage/plugin-home';
+import { CardExtensionProps } from '@backstage/plugin-home-react';
 import { default as React_2 } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';

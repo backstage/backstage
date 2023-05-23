@@ -25,6 +25,7 @@ import {
   ConfigSchemaPackageEntry,
   CONFIG_VISIBILITIES,
 } from './types';
+import { normalizeAjvPath } from './utils';
 
 /**
  * Options that control the loading of configuration schema files in the backend.
@@ -49,7 +50,9 @@ function errorsToError(errors: ValidationError[]): Error {
     const paramStr = Object.entries(params)
       .map(([name, value]) => `${name}=${value}`)
       .join(' ');
-    return `Config ${message || ''} { ${paramStr} } at ${instancePath}`;
+    return `Config ${message || ''} { ${paramStr} } at ${normalizeAjvPath(
+      instancePath,
+    )}`;
   });
   const error = new Error(`Config validation failed, ${messages.join('; ')}`);
   (error as any).messages = messages;

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { readGithubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -22,12 +21,7 @@ import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Typography } from '@material-ui/core';
 
-import {
-  configApiRef,
-  errorApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   ErrorPanel,
   InfoCard,
@@ -36,6 +30,7 @@ import {
   Table,
 } from '@backstage/core-components';
 import { buildRouteRef } from '../../routes';
+import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
@@ -49,13 +44,9 @@ export const RecentWorkflowRunsCard = (props: {
   const { branch, dense = false, limit = 5, variant } = props;
 
   const { entity } = useEntity();
-  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
 
-  // TODO: Get github hostname from metadata annotation
-  const hostname = readGithubIntegrationConfigs(
-    config.getOptionalConfigArray('integrations.github') ?? [],
-  )[0].host;
+  const hostname = getHostnameFromEntity(entity);
 
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'

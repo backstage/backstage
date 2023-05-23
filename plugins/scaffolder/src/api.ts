@@ -41,6 +41,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import queryString from 'qs';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -224,8 +225,11 @@ export class ScaffolderClient implements ScaffolderApi {
         params.set('after', String(Number(after)));
       }
 
-      this.discoveryApi.getBaseUrl('scaffolder').then(
-        baseUrl => {
+      Promise.all([
+        this.discoveryApi.getBaseUrl('scaffolder'),
+        this.identityApi?.getCredentials(),
+      ]).then(
+        ([baseUrl, credentials]) => {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
@@ -240,7 +244,12 @@ export class ScaffolderClient implements ScaffolderApi {
             }
           };
 
-          const eventSource = new EventSource(url, { withCredentials: true });
+          const eventSource = new EventSourcePolyfill(url, {
+            withCredentials: true,
+            headers: credentials?.token
+              ? { Authorization: `Bearer ${credentials.token}` }
+              : {},
+          });
           eventSource.addEventListener('log', processEvent);
           eventSource.addEventListener('cancelled', processEvent);
           eventSource.addEventListener('completion', (event: any) => {

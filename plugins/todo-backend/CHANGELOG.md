@@ -1,5 +1,20 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.42
+
+### Patch Changes
+
+- 901f1ada325: Added OpenAPI schema
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.1.42-next.1
 
 ### Patch Changes
