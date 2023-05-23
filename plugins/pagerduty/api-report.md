@@ -20,11 +20,9 @@ export const EntityPagerDutyCard: (
 ) => JSX.Element;
 
 // @public (undocumented)
-type EntityPagerDutyCardProps = {
+export type EntityPagerDutyCardProps = {
   readOnly?: boolean;
 };
-export { EntityPagerDutyCardProps };
-export { EntityPagerDutyCardProps as PagerDutyCardProps };
 
 // @public (undocumented)
 export const HomePagePagerDutyCard: (
@@ -67,8 +65,11 @@ export type PagerDutyAssignee = {
   html_url: string;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const PagerDutyCard: (props: EntityPagerDutyCardProps) => JSX.Element;
+
+// @public @deprecated (undocumented)
+export type PagerDutyCardProps = EntityPagerDutyCardProps;
 
 // @public (undocumented)
 export type PagerDutyChangeEvent = {
