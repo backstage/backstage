@@ -62,10 +62,12 @@ export type DbRelationsRow = {
 };
 
 export type DbFinalEntitiesRow = {
-  entity_id: string;
+  entity_ref: string;
+  entity_id: string | null;
   hash: string;
   stitch_ticket: string;
-  final_entity?: string;
+  final_entity: string | null;
+  deleted_at: string | Date | null;
   last_updated_at?: string | Date;
 };
 

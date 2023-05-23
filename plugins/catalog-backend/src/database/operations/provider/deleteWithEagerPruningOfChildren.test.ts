@@ -38,7 +38,7 @@ describe('deleteWithEagerPruningOfChildren', () => {
     knex: Knex,
     options: { entityRefs: string[]; sourceKey: string },
   ): Promise<number> {
-    let result: string[];
+    let result: number;
     await knex.transaction(
       async tx => {
         // We can't return here, as knex swallows the return type in case the
@@ -51,7 +51,7 @@ describe('deleteWithEagerPruningOfChildren', () => {
         doNotRejectOnRollback: true,
       },
     );
-    return result!.length;
+    return result!;
   }
 
   async function insertReference(

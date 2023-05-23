@@ -20,7 +20,6 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { EventBroker } from '@backstage/events';
 import { Knex } from 'knex';
 import { isEqual, chunk as lodashChunk } from 'lodash';
 import { Logger } from 'winston';
@@ -50,7 +49,6 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
-import { createDeleteEvent } from '../processing/events';
 
 import { Stitcher } from '../stitching/Stitcher';
 
@@ -193,18 +191,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: Logger;
   private readonly stitcher: Stitcher;
-  private readonly events?: EventBroker;
 
-  constructor(options: {
-    database: Knex;
-    logger: Logger;
-    stitcher: Stitcher;
-    events?: EventBroker;
-  }) {
+  constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
-    this.events = options.events;
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -611,18 +602,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .select({ ref: 'relations.source_entity_ref' }),
       );
 
-    const row = await this.database<DbRefreshStateRow>('refresh_state')
-      .where('entity_id', uid)
-      .select('entity_ref')
-      .first();
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
 
     await this.stitcher.stitch(new Set(relationPeers.map(p => p.ref)));
-    if (row) {
-      this.events?.publish(createDeleteEvent(row.entity_ref, uid));
-    }
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

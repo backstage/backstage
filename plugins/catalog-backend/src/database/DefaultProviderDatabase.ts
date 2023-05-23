@@ -16,17 +16,11 @@
 
 import { isDatabaseConflictError } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { EventBroker } from '@backstage/events';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
-import {
-  createDeleteEvent,
-  createInsertEvent,
-  createUpdateEvent,
-} from '../processing/events';
 import { rethrowError } from './conversion';
 import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';
@@ -53,7 +47,6 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     private readonly options: {
       database: Knex;
       logger: Logger;
-      events?: EventBroker;
     },
   ) {}
 
@@ -87,19 +80,13 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
-      const removedEntityRefs = await deleteWithEagerPruningOfChildren({
+      const removedCount = await deleteWithEagerPruningOfChildren({
         tx,
         entityRefs: toRemove,
         sourceKey: options.sourceKey,
       });
-      // TODO(timbonicus): Include entity uids
-      removedEntityRefs.forEach(ref =>
-        this.options.events?.publish(createDeleteEvent(ref)),
-      );
       this.options.logger.debug(
-        `removed, ${removedEntityRefs.length} entities: ${JSON.stringify(
-          toRemove,
-        )}`,
+        `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
       );
     }
 
@@ -164,9 +151,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             hash,
             locationKey,
           });
-          if (ok) {
-            this.options.events?.publish(createUpdateEvent(entity));
-          } else {
+          if (!ok) {
             ok = await insertUnprocessedEntity({
               tx,
               entity,
@@ -174,9 +159,6 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               locationKey,
               logger: this.options.logger,
             });
-            if (ok) {
-              this.options.events?.publish(createInsertEvent(entity));
-            }
           }
 
           await tx<DbRefreshStateReferencesRow>('refresh_state_references')

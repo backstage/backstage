@@ -447,7 +447,6 @@ export class CatalogBuilder {
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
-      events: this.env.events,
       logger,
     });
     const catalogDatabase = new DefaultCatalogDatabase({
@@ -470,7 +469,6 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
-      events: this.env.events,
     });
 
     let permissionEvaluator: PermissionEvaluator;

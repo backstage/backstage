@@ -26,6 +26,12 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { Stitcher } from './Stitcher';
+import { EventBroker } from '@backstage/events';
+import {
+  createDeleteEvent,
+  createInsertEvent,
+  createUpdateEvent,
+} from '../processing/events';
 
 jest.setTimeout(60_000);
 
@@ -267,6 +273,154 @@ describe('Stitcher', () => {
             value: 'v',
           },
         ]),
+      );
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'prunes deletions for %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      await applyDatabaseMigrations(db);
+
+      const stitcher = new Stitcher(db, logger);
+
+      await db<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'id-a',
+          entity_ref: 'k:ns/a',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'a',
+              namespace: 'ns',
+            },
+          }),
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+        {
+          entity_id: 'id-b',
+          entity_ref: 'k:ns/b',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'b',
+              namespace: 'ns',
+            },
+          }),
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+      ]);
+
+      await stitcher.stitch(new Set(['k:ns/a', 'k:ns/b']));
+
+      let entities = await db<DbFinalEntitiesRow>('final_entities');
+      expect(entities.length).toBe(2);
+      expect(entities).toEqual([
+        expect.objectContaining({
+          entity_id: 'id-a',
+          entity_ref: 'k:ns/a',
+          deleted_at: null,
+        }),
+        expect.objectContaining({
+          entity_id: 'id-b',
+          entity_ref: 'k:ns/b',
+          deleted_at: null,
+        }),
+      ]);
+
+      await db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_id: 'id-b' })
+        .delete();
+      await stitcher.pruneDeletedEntities();
+
+      entities = await db<DbFinalEntitiesRow>('final_entities');
+      expect(entities.length).toBe(2);
+      expect(entities).toEqual([
+        expect.objectContaining({
+          entity_id: 'id-a',
+          entity_ref: 'k:ns/a',
+          deleted_at: null,
+        }),
+        expect.objectContaining({
+          entity_id: null,
+          entity_ref: 'k:ns/b',
+          deleted_at: expect.any(String),
+        }),
+      ]);
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'emits catalog events for %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      await applyDatabaseMigrations(db);
+
+      const eventBroker: jest.Mocked<EventBroker> = {
+        publish: jest.fn(),
+        subscribe: jest.fn(),
+      };
+      const stitcher = new Stitcher(db, logger, eventBroker);
+      await db<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+          }),
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+      ]);
+
+      await stitcher.stitch(new Set(['k:ns/n']));
+      expect(eventBroker.publish).toHaveBeenCalledTimes(1);
+      expect(eventBroker.publish).toHaveBeenLastCalledWith(
+        createInsertEvent('k:ns/n', 'my-id'),
+      );
+
+      await db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_id: 'my-id' })
+        .update({
+          processed_entity: JSON.stringify({
+            apiVersion: 'b',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+          }),
+        });
+
+      await stitcher.stitch(new Set(['k:ns/n']));
+      expect(eventBroker.publish).toHaveBeenCalledTimes(2);
+      expect(eventBroker.publish).toHaveBeenLastCalledWith(
+        createUpdateEvent('k:ns/n', 'my-id'),
+      );
+
+      await db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_id: 'my-id' })
+        .delete();
+      await stitcher.pruneDeletedEntities();
+      expect(eventBroker.publish).toHaveBeenCalledTimes(3);
+      expect(eventBroker.publish).toHaveBeenLastCalledWith(
+        createDeleteEvent('k:ns/n'),
       );
     },
   );

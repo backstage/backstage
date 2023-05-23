@@ -50,6 +50,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private readonly createHash: () => Hash;
   private readonly pollingIntervalMs: number;
   private readonly orphanCleanupIntervalMs: number;
+  private readonly pruneDeletionsIntervalMs: number;
   private readonly onProcessingError?: (event: {
     unprocessedEntity: Entity;
     errors: Error[];
@@ -68,6 +69,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     createHash: () => Hash;
     pollingIntervalMs?: number;
     orphanCleanupIntervalMs?: number;
+    pruneDeletionsIntervalMs?: number;
     onProcessingError?: (event: {
       unprocessedEntity: Entity;
       errors: Error[];
@@ -83,6 +85,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     this.createHash = options.createHash;
     this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
+    this.pruneDeletionsIntervalMs = options.pruneDeletionsIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
 
@@ -96,10 +99,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
     const stopPipeline = this.startPipeline();
     const stopCleanup = this.startOrphanCleanup();
+    const stopPruneDeletions = this.startPruneDeletions();
 
     this.stopFunc = () => {
       stopPipeline();
       stopCleanup();
+      stopPruneDeletions();
     };
   }
 
@@ -343,6 +348,37 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     }
 
     const intervalKey = setInterval(runOnce, this.orphanCleanupIntervalMs);
+    return () => {
+      clearInterval(intervalKey);
+    };
+  }
+
+  private startPruneDeletions(): () => void {
+    const runOnce = async () => {
+      try {
+        await this.stitcher.pruneDeletedEntities();
+      } catch (error) {
+        this.logger.warn(`Failed to prune deleted entities`, error);
+      }
+    };
+
+    if (this.scheduler) {
+      const abortController = new AbortController();
+
+      this.scheduler.scheduleTask({
+        id: 'catalog_prune_deletions',
+        frequency: { milliseconds: this.pruneDeletionsIntervalMs },
+        timeout: { milliseconds: this.pruneDeletionsIntervalMs * 0.8 },
+        fn: runOnce,
+        signal: abortController.signal,
+      });
+
+      return () => {
+        abortController.abort();
+      };
+    }
+
+    const intervalKey = setInterval(runOnce, this.pruneDeletionsIntervalMs);
     return () => {
       clearInterval(intervalKey);
     };
