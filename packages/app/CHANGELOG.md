@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.84
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes@0.9.1
+
 ## 0.2.83
 
 ### Patch Changes
