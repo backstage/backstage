@@ -22,7 +22,7 @@ import { BackButton, NextButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult, ReviewResult } from '../useImportState';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
@@ -40,6 +40,7 @@ export const StepReviewLocation = ({
 }: Props) => {
   const catalogApi = useApi(catalogApiRef);
   const configApi = useApi(configApiRef);
+  const analytics = useAnalytics();
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
@@ -52,6 +53,7 @@ export const StepReviewLocation = ({
       : false;
   const handleClick = useCallback(async () => {
     setSubmitted(true);
+    analytics.captureEvent('click', 'import entity');
     try {
       let refreshed = new Array<{ target: string }>();
       if (prepareResult.type === 'locations') {
@@ -108,7 +110,7 @@ export const StepReviewLocation = ({
         setSubmitted(false);
       }
     }
-  }, [prepareResult, onReview, catalogApi]);
+  }, [prepareResult, onReview, catalogApi, analytics]);
 
   return (
     <>
