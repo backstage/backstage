@@ -32,6 +32,7 @@ import { ContainerCard } from './ContainerCard';
 import { PodAndErrors } from '../types';
 import { KubernetesDrawer } from '../../KubernetesDrawer';
 import { PendingPodContent } from './PendingPodContent';
+import { ErrorList } from '../ErrorList';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -116,6 +117,16 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                 )}
               </ItemCardGrid>
             </Grid>
+            {podAndErrors.errors.length > 0 && (
+              <Grid item xs={12}>
+                <Typography variant="h5">Errors:</Typography>
+              </Grid>
+            )}
+            {podAndErrors.errors.length > 0 && (
+              <Grid item xs={12}>
+                <ErrorList podAndErrors={[podAndErrors]} />
+              </Grid>
+            )}
           </Grid>
         )}
       </div>
