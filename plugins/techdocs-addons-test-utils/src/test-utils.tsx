@@ -278,7 +278,7 @@ export class TechDocsAddonTester {
       render(this.build());
     });
 
-    const shadowHost = screen.getByTestId('techdocs-native-shadowroot');
+    const shadowHost = await screen.findByTestId('techdocs-native-shadowroot');
 
     return {
       ...screen,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * {@link https://mui.com | material-ui} theme for use with Backstage
- *
- * @packageDocumentation
- */
-
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+export { darkTheme, lightTheme } from './themes';
+export {
+  createTheme,
+  createThemeOptions,
+  createThemeOverrides,
+} from './baseTheme';
+export type {
+  BackstagePalette,
+  BackstagePaletteOptions,
+  BackstageTheme,
+  BackstageThemeOptions,
+  SimpleThemeOptions,
+} from './types';

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * {@link https://mui.com | material-ui} theme for use with Backstage
- *
- * @packageDocumentation
- */
+import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
 
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+/**
+ * This API is introduced in @mui/material (v5.0.5) as a replacement of deprecated createGenerateClassName & only affects v5 MUI components from `@mui/*`
+ */
+ClassNameGenerator.configure(componentName => {
+  return `v5-${componentName}`;
+});

@@ -236,21 +236,13 @@ export type AppOptions = {
    *   title: 'Light Theme',
    *   variant: 'light',
    *   icon: <LightIcon />,
-   *   Provider: ({ children }) => (
-   *     <ThemeProvider theme={lightTheme}>
-   *       <CssBaseline>{children}</CssBaseline>
-   *     </ThemeProvider>
-   *   ),
+   *   Provider: ({ children }) => <UnifiedThemeProvider theme={themes.light} />,
    * }, {
    *   id: 'dark',
    *   title: 'Dark Theme',
    *   variant: 'dark',
    *   icon: <DarkIcon />,
-   *   Provider: ({ children }) => (
-   *     <ThemeProvider theme={darkTheme}>
-   *       <CssBaseline>{children}</CssBaseline>
-   *     </ThemeProvider>
-   *   ),
+   *   Provider: ({ children }) => <UnifiedThemeProvider theme={themes.dark} />,
    * }]
    * ```
    */

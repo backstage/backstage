@@ -165,16 +165,17 @@ module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
 
 The configuration factory also provides utilities for extending the configuration in ways that are otherwise very cumbersome to do with plain ESLint, particularly for rules like `no-restricted-syntax`. These are the extra keys that are available:
 
-| Key                     | Description                                                        |
-| ----------------------- | ------------------------------------------------------------------ |
-| `tsRules`               | Additional rules to apply to TypeScript files                      |
-| `testRules`             | Additional rules to apply to tests files                           |
-| `restrictedImports`     | Additional paths to add to `no-restricted-imports`                 |
-| `restrictedSrcImports`  | Additional paths to add to `no-restricted-imports` in src files    |
-| `restrictedTestImports` | Additional paths to add to `no-restricted-imports` in test files   |
-| `restrictedSyntax`      | Additional patterns to add to `no-restricted-syntax`               |
-| `restrictedSrcSyntax`   | Additional patterns to add to `no-restricted-syntax` in src files  |
-| `restrictedTestSyntax`  | Additional patterns to add to `no-restricted-syntax` in test files |
+| Key                        | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `tsRules`                  | Additional rules to apply to TypeScript files                      |
+| `testRules`                | Additional rules to apply to tests files                           |
+| `restrictedImports`        | Additional paths to add to `no-restricted-imports`                 |
+| `restrictedImportPatterns` | Additional patterns to add to `no-restricted-imports`              |
+| `restrictedSrcImports`     | Additional paths to add to `no-restricted-imports` in src files    |
+| `restrictedTestImports`    | Additional paths to add to `no-restricted-imports` in test files   |
+| `restrictedSyntax`         | Additional patterns to add to `no-restricted-syntax`               |
+| `restrictedSrcSyntax`      | Additional patterns to add to `no-restricted-syntax` in src files  |
+| `restrictedTestSyntax`     | Additional patterns to add to `no-restricted-syntax` in test files |
 
 ## Type Checking
 

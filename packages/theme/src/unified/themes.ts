@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * {@link https://mui.com | material-ui} theme for use with Backstage
- *
- * @packageDocumentation
- */
+import { palettes } from '../base';
+import { createUnifiedTheme } from './UnifiedTheme';
 
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+/**
+ * Built-in Backstage MUI themes.
+ *
+ * @public
+ */
+export const themes = {
+  light: createUnifiedTheme({ palette: palettes.light }),
+  dark: createUnifiedTheme({ palette: palettes.dark }),
+};

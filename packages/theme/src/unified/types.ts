@@ -15,12 +15,12 @@
  */
 
 /**
- * {@link https://mui.com | material-ui} theme for use with Backstage
+ * A container of one theme for multiple different MUI versions.
  *
- * @packageDocumentation
+ * Currently known keys are 'v4' and 'v5'.
+ *
+ * @public
  */
-
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+export interface UnifiedTheme {
+  getTheme(version: string): unknown | undefined;
+}

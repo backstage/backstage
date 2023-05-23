@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * {@link https://mui.com | material-ui} theme for use with Backstage
- *
- * @packageDocumentation
- */
-
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+export { transformV5ComponentThemesToV4 } from './overrides';
+export { createUnifiedTheme, createUnifiedThemeFromV4 } from './UnifiedTheme';
+export type { UnifiedThemeOptions } from './UnifiedTheme';
+export { themes } from './themes';
+export { UnifiedThemeProvider } from './UnifiedThemeProvider';
+export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
+export type { UnifiedTheme } from './types';

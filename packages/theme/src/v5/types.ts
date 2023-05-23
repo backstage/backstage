@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * {@link https://mui.com | material-ui} theme for use with Backstage
- *
- * @packageDocumentation
- */
+import { Theme } from '@mui/material/styles';
+import {
+  BackstagePaletteAdditions,
+  BackstageThemeAdditions,
+} from '../base/types';
 
-export * from './unified';
-export * from './base';
-export * from './v4';
-export * from './v5';
+declare module '@mui/material/styles' {
+  interface Palette extends BackstagePaletteAdditions {}
+
+  interface PaletteOptions extends BackstagePaletteAdditions {}
+}
+
+declare module '@mui/material/styles' {
+  interface Theme extends BackstageThemeAdditions {}
+
+  interface ThemeOptions extends BackstageThemeAdditions {}
+}
+
+declare module '@mui/private-theming/defaultTheme' {
+  interface DefaultTheme extends Theme {}
+}
