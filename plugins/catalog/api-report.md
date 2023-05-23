@@ -105,7 +105,7 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
-    selectedTemplateRoute: ExternalRouteRef<
+    createFromTemplate: ExternalRouteRef<
       {
         namespace: string;
         templateName: string;

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
@@ -42,6 +41,7 @@ import {
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   Card,
   CardContent,
@@ -50,14 +50,14 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import CachedIcon from '@material-ui/icons/Cached';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
-import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+
+import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
-import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -91,7 +91,8 @@ export interface AboutCardProps {
 /**
  * Exported publicly via the EntityAboutCard
  */
-export function AboutCard({ variant }: AboutCardProps) {
+export function AboutCard(props: AboutCardProps) {
+  const { variant } = props;
   const app = useApp();
   const classes = useStyles();
   const { entity } = useEntity();
@@ -100,7 +101,7 @@ export function AboutCard({ variant }: AboutCardProps) {
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
-  const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const templateRoute = useRouteRef(createFromTemplateRouteRef);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -133,7 +134,7 @@ export function AboutCard({ variant }: AboutCardProps) {
   const subHeaderLinks = [viewInSource, viewInTechDocs];
 
   if (isTemplateEntityV1beta3(entity)) {
-    const Icon = app.getSystemIcon('scaffolder') ?? AddIcon;
+    const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
 
     const launchTemplate: IconLinkVerticalProps = {
       label: 'Launch Template',

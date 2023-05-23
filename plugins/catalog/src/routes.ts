@@ -30,8 +30,8 @@ export const viewTechDocRouteRef = createExternalRouteRef({
   params: ['namespace', 'kind', 'name'],
 });
 
-export const selectedTemplateRouteRef = createExternalRouteRef({
-  id: 'selected-template',
+export const createFromTemplateRouteRef = createExternalRouteRef({
+  id: 'create-from-template',
   optional: true,
   params: ['namespace', 'templateName'],
 });

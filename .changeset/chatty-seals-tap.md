@@ -1,4 +1,5 @@
 ---
+'@backstage/create-app': patch
 '@backstage/plugin-catalog': patch
 ---
 

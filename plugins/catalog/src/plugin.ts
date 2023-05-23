@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import {
   createComponentRouteRef,
-  selectedTemplateRouteRef,
+  createFromTemplateRouteRef,
   viewTechDocRouteRef,
 } from './routes';
 import {
@@ -81,7 +81,7 @@ export const catalogPlugin = createPlugin({
   externalRoutes: {
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
-    selectedTemplateRoute: selectedTemplateRouteRef,
+    createFromTemplate: createFromTemplateRouteRef,
   },
   __experimentalConfigure(
     options?: CatalogInputPluginOptions,

@@ -30,7 +30,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutCard } from './AboutCard';
 
 describe('<AboutCard />', () => {
@@ -545,7 +545,7 @@ describe('<AboutCard />', () => {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/create/templates/:namespace/:templateName':
-            selectedTemplateRouteRef,
+            createFromTemplateRouteRef,
         },
       },
     );
@@ -612,7 +612,7 @@ describe('<AboutCard />', () => {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
             '/create/templates/:namespace/:templateName':
-              selectedTemplateRouteRef,
+              createFromTemplateRouteRef,
           },
         },
       );
