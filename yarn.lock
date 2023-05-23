@@ -5202,6 +5202,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-backstage-plugins@workspace:plugins/catalog-backend-module-backstage-plugins":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-backstage-plugins@workspace:plugins/catalog-backend-module-backstage-plugins"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    codeowners-utils: ^1.0.2
+    winston: ^3.2.1
+    zod: ^3.21.4
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-bitbucket-cloud@workspace:plugins/catalog-backend-module-bitbucket-cloud":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-cloud@workspace:plugins/catalog-backend-module-bitbucket-cloud"

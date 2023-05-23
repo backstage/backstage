@@ -162,6 +162,7 @@ indexable
 ingestors
 inlined
 inlinehilite
+InnerSource
 integrator's
 interop
 JaCoCo
