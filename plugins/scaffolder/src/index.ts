@@ -27,7 +27,7 @@ export {
   EntityTagsPickerFieldExtension,
   OwnerPickerFieldExtension,
   OwnedEntityPickerFieldExtension,
-  GroupsImPartOfPickerFieldExtension,
+  OwnershipEntityRefPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,

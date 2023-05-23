@@ -65,9 +65,9 @@ import {
   editRouteRef,
 } from './routes';
 import {
-  GroupsImPartOfPicker,
-  GroupsImPartOfPickerSchema,
-} from './components/fields/GroupsImPartOfPicker/GroupsImPartOfPicker';
+  OwnershipEntityRefPicker,
+  OwnershipEntityRefPickerSchema,
+} from './components/fields/OwnershipEntityRefPicker/OwnershipEntityRefPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -167,11 +167,11 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
  *
  * @public
  */
-export const GroupsImPartOfPickerFieldExtension = scaffolderPlugin.provide(
+export const OwnershipEntityRefPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    component: GroupsImPartOfPicker,
-    name: 'GroupsImPartOfPicker',
-    schema: GroupsImPartOfPickerSchema,
+    component: OwnershipEntityRefPicker,
+    name: 'OwnershipEntityRefPicker',
+    schema: OwnershipEntityRefPickerSchema,
   }),
 );
 

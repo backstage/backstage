@@ -40,9 +40,9 @@ import {
   OwnedEntityPickerSchema,
 } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import {
-  GroupsImPartOfPicker,
-  GroupsImPartOfPickerSchema,
-} from '../components/fields/GroupsImPartOfPicker/GroupsImPartOfPicker';
+  OwnershipEntityRefPicker,
+  OwnershipEntityRefPickerSchema,
+} from '../components/fields/OwnershipEntityRefPicker/OwnershipEntityRefPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
@@ -78,8 +78,8 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
     schema: OwnedEntityPickerSchema,
   },
   {
-    component: GroupsImPartOfPicker,
-    name: 'GroupsImPartOfPicker',
-    schema: GroupsImPartOfPickerSchema,
+    component: OwnershipEntityRefPicker,
+    name: 'OwnershipEntityRefPicker',
+    schema: OwnershipEntityRefPickerSchema,
   },
 ];

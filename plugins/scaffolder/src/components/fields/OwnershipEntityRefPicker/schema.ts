@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export {
-  GroupsImPartOfPickerSchema,
-  type GroupsImPartOfPickerUiOptions,
-} from './schema';
+import { z } from 'zod';
+import { makeFieldSchemaFromZod } from '../utils';
+
+export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
+  z.string(),
+  z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+  }),
+);
+
+export type OwnershipEntityRefPickerUiOptions =
+  typeof OwnershipEntityRefPickerFieldSchema.uiOptionsType;
+export type OwnershipEntityRefPickerProps =
+  typeof OwnershipEntityRefPickerFieldSchema.type;
+export const OwnershipEntityRefPickerSchema =
+  OwnershipEntityRefPickerFieldSchema.schema;
