@@ -365,9 +365,9 @@ describe('entitySchemaValidator', () => {
     expect(() => validator(entity)).toThrow(/relations/);
   });
 
-  it('does not reject missing relations.target', () => {
+  it('does reject missing relations.target', () => {
     delete entity.relations[0].target;
-    expect(() => validator(entity)).not.toThrow(/relations/);
+    expect(() => validator(entity)).toThrow(/relations/);
   });
 
   it('does reject missing relations.targetRef', () => {
