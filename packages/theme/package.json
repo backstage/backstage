@@ -42,11 +42,6 @@
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0"
   },
-  "peerDependenciesMeta": {
-    "@material-ui/core": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0"
