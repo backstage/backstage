@@ -171,9 +171,13 @@ export class DatabaseDocumentStore implements DatabaseStore {
       Object.keys(fields).forEach(key => {
         const value = fields[key];
         const valueArray = Array.isArray(value) ? value : [value];
-        const valueCompare = valueArray
+        const fieldValueCompare = valueArray
           .map(v => ({ [key]: v }))
           .map(v => JSON.stringify(v));
+        const arrayValueCompare = valueArray
+          .map(v => ({ [key]: [v] }))
+          .map(v => JSON.stringify(v));
+        const valueCompare = [...fieldValueCompare, ...arrayValueCompare];
         query.whereRaw(
           `(${valueCompare.map(() => 'document @> ?').join(' OR ')})`,
           valueCompare,
