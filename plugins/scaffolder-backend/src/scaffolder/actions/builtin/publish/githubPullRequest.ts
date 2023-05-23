@@ -312,6 +312,19 @@ export const createPublishGithubPullRequestAction = (
       );
 
       try {
+        const gitAuthorInfo =
+          gitAuthorEmail && gitAuthorName
+            ? { email: gitAuthorEmail, name: gitAuthorName }
+            : undefined;
+
+        const gitCommitterInfo =
+          gitAuthorEmail || gitAuthorName
+            ? {
+                email: gitAuthorEmail ?? gitAuthorEmail,
+                name: gitAuthorName ?? gitAuthorName,
+              }
+            : undefined;
+
         const response = await client.createPullRequest({
           owner,
           repo,
@@ -320,17 +333,8 @@ export const createPublishGithubPullRequestAction = (
             {
               files,
               commit: commitMessage ?? title,
-              author:
-                gitAuthorEmail && gitAuthorName
-                  ? { email: gitAuthorEmail, name: gitAuthorName }
-                  : undefined,
-              committer:
-                gitAuthorEmail || gitAuthorName
-                  ? {
-                      email: gitAuthorEmail ?? gitAuthorEmail,
-                      name: gitAuthorName ?? gitAuthorName,
-                    }
-                  : undefined,
+              author: gitAuthorInfo,
+              committer: gitCommitterInfo,
             },
           ],
           body: description,
