@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.1
+
+### Patch Changes
+
+- a3360ecd0d7f: Fix cyclical dependency in built output
+
 ## 0.9.0
 
 ### Minor Changes
