@@ -64,8 +64,8 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                     <Grid container>
                       <Grid item xs={9}>
                         <ListItemText
-                      primary={error.message}
-                      secondary={onlyPodWithErrors.pod.metadata?.name}
+                          primary={error.message}
+                          secondary={onlyPodWithErrors.pod.metadata?.name}
                         />
                       </Grid>
                       <Grid item xs={3}>
