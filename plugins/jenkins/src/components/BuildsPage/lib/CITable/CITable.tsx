@@ -26,7 +26,6 @@ import { buildRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
 import { JenkinsRunStatus } from '../Status';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-import { useJenkinsPluginOptions } from '../../../../options';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -203,22 +202,6 @@ const generatedColumns: TableColumn[] = [
             }
           }
         };
-
-        const { tableAction } = useJenkinsPluginOptions();
-
-        if (tableAction === 'view') {
-          return row.lastBuild?.url ? (
-            <IconButton href={row.lastBuild.url} target="_blank">
-              <VisibilityIcon />
-            </IconButton>
-          ) : null;
-        } else if (tableAction === 'replay') {
-          return row.lastBuild?.url ? (
-            <IconButton href={`${row.lastBuild.url}replay`} target="_blank">
-              <RetryIcon />
-            </IconButton>
-          ) : null;
-        }
 
         return (
           <div style={{ width: '98px' }}>
