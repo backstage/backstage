@@ -131,6 +131,10 @@ const findBranches = async (opts: {
   return branch;
 };
 
+/**
+ * Creates a BitbucketServer Pull Request action.
+ * @public
+ */
 export function createPublishBitbucketServerPullRequestAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
