@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes
 
+## 0.9.2-next.0
+
+### Patch Changes
+
+- dc3cddf51ab5: Fix cyclical dependency in built output
+- 4b230b97660d: Add errors to PodDrawer
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-kubernetes-common@0.6.3
+
 ## 0.9.0
 
 ### Minor Changes

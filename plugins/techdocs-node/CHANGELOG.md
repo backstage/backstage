@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-node
 
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/integration-aws-node@0.1.3
+  - @backstage/config@1.0.7
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-search-common@1.2.3
+
 ## 1.7.1
 
 ### Patch Changes

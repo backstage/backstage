@@ -226,5 +226,33 @@
     "@backstage/plugin-vault-backend": "0.3.1",
     "@backstage/plugin-xcmetrics": "0.2.38"
   },
-  "changesets": []
+  "changesets": [
+    "angry-jobs-ring",
+    "beige-kangaroos-suffer",
+    "beige-zebras-walk",
+    "breezy-kids-obey",
+    "chatty-ads-attack",
+    "clean-months-bake",
+    "create-app-1684855417",
+    "curvy-years-smoke",
+    "few-oranges-complain",
+    "few-pugs-jam",
+    "khaki-radios-teach",
+    "light-cows-bow",
+    "little-boats-think",
+    "long-lobsters-brake",
+    "lovely-impalas-sell",
+    "lucky-keys-behave",
+    "perfect-readers-attack",
+    "selfish-mugs-study",
+    "shaggy-gorillas-occur",
+    "short-seahorses-kiss",
+    "silver-cars-type",
+    "violet-pots-push",
+    "weak-snails-spar",
+    "weak-snails-spark",
+    "weak-snails-sparkl",
+    "weak-snails-sparkle",
+    "yellow-crews-float"
+  ]
 }

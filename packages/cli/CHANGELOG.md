@@ -1,5 +1,20 @@
 # @backstage/cli
 
+## 0.22.8-next.0
+
+### Patch Changes
+
+- 20b7da6f1311: Enforcing MUI v5 specific linting to minimize bundle size.
+- Updated dependencies
+  - @backstage/config-loader@1.3.1-next.0
+  - @backstage/config@1.0.7
+  - @backstage/release-manifests@0.0.9
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.0
+  - @backstage/errors@1.1.5
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/types@1.0.2
+
 ## 0.22.7
 
 ### Patch Changes

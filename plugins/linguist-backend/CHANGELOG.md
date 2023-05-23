@@ -1,5 +1,36 @@
 # @backstage/plugin-linguist-backend
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- bbf91840a52a: **BREAKING**: Removed public constructor from `LinguistBackendApi`. Removed export of `LinguistBackendDatabase` and `LinguistBackendStore`
+
+  Several improvements to the Linguist backend have been made:
+
+  - Added tests for the `LinguistBackendDatabase` and `LinguistBackendApi`
+  - Added support for using SQLite as a database, helpful for local development
+  - Removed the default from the `processes_date` column
+  - Converted the `LinguistBackendApi` into an Interface
+  - Added the `LinguistBackendClient` which implements the `LinguistBackendApi` Interface
+  - Unprocessed entities will get processed before stale entities
+  - Entities in the Linguist database but not in the Catalog anymore will be deleted
+  - Improved the README's headings
+
+### Patch Changes
+
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.0
+  - @backstage/plugin-linguist-common@0.1.0
+
 ## 0.2.2
 
 ### Patch Changes
