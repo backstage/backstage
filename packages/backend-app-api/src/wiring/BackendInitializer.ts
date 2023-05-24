@@ -21,6 +21,7 @@ import {
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
+import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
 import {
   BackendRegisterInit,
   EnumerableServiceHolder,
@@ -33,7 +34,8 @@ import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
-  #registerInits = new Array<BackendRegisterInit>();
+  #pluginInits = new Array<BackendRegisterInit>();
+  #moduleInits = new Map<string, Array<BackendRegisterInit>>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
   #serviceHolder: EnumerableServiceHolder;
 
@@ -130,7 +132,7 @@ export class BackendInitializer {
       }
     }
 
-    // Initialize all features
+    // Enumerate all features
     for (const feature of this.#features) {
       for (const r of feature.getRegistrations()) {
         const provides = new Set<ExtensionPoint<unknown>>();
@@ -147,24 +149,62 @@ export class BackendInitializer {
           }
         }
 
-        this.#registerInits.push({
-          id: r.type === 'plugin' ? r.pluginId : `${r.pluginId}.${r.moduleId}`,
-          provides,
-          consumes: new Set(Object.values(r.init.deps)),
-          init: r.init,
-        });
+        if (r.type === 'plugin') {
+          this.#pluginInits.push({
+            id: r.pluginId,
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        } else {
+          let modules = this.#moduleInits.get(r.pluginId);
+          if (!modules) {
+            modules = [];
+            this.#moduleInits.set(r.pluginId, modules);
+          }
+          modules.push({
+            id: `${r.pluginId}.${r.moduleId}`,
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        }
       }
     }
 
-    const orderedRegisterResults = this.#resolveInitOrder(this.#registerInits);
+    // All plugins are initialized in parallel
+    await Promise.all(
+      this.#pluginInits.map(async pluginInit => {
+        // Modules are initialized before plugins, so that they can provide extension to the plugin
+        const modules = this.#moduleInits.get(pluginInit.id) ?? [];
+        await Promise.all(
+          modules.map(async moduleInit => {
+            const moduleDeps = await this.#getInitDeps(
+              moduleInit.init.deps,
+              moduleInit.id,
+            );
+            await moduleInit.init.func(moduleDeps);
+          }),
+        );
 
-    for (const registerInit of orderedRegisterResults) {
-      const deps = await this.#getInitDeps(
-        registerInit.init.deps,
-        registerInit.id,
-      );
-      await registerInit.init.func(deps);
-    }
+        // Once all modules have been initialized, we can initialize the plugin itself
+        const pluginDeps = await this.#getInitDeps(
+          pluginInit.init.deps,
+          pluginInit.id,
+        );
+        await pluginInit.init.func(pluginDeps);
+
+        // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
+        const lifecycleService = await this.#getPluginLifecycleImpl(
+          pluginInit.id,
+        );
+        await lifecycleService.startup();
+      }),
+    );
+
+    // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
+    const lifecycleService = await this.#getRootLifecycleImpl();
+    await lifecycleService.startup();
 
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.
@@ -186,56 +226,38 @@ export class BackendInitializer {
     }
   }
 
-  #resolveInitOrder(registerInits: Array<BackendRegisterInit>) {
-    let registerInitsToOrder = registerInits.slice();
-    const orderedRegisterInits = new Array<BackendRegisterInit>();
-
-    // TODO: Validate duplicates
-
-    while (registerInitsToOrder.length > 0) {
-      const toRemove = new Set<unknown>();
-
-      for (const registerInit of registerInitsToOrder) {
-        const unInitializedDependents = [];
-
-        for (const provided of registerInit.provides) {
-          if (
-            registerInitsToOrder.some(
-              init => init !== registerInit && init.consumes.has(provided),
-            )
-          ) {
-            unInitializedDependents.push(provided);
-          }
-        }
-
-        if (unInitializedDependents.length === 0) {
-          orderedRegisterInits.push(registerInit);
-          toRemove.add(registerInit);
-        }
-      }
-
-      registerInitsToOrder = registerInitsToOrder.filter(r => !toRemove.has(r));
-    }
-
-    return orderedRegisterInits;
-  }
-
   async stop(): Promise<void> {
     if (!this.#startPromise) {
       return;
     }
     await this.#startPromise;
 
+    const lifecycleService = await this.#getRootLifecycleImpl();
+    await lifecycleService.shutdown();
+  }
+
+  // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
+  async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
     const lifecycleService = await this.#serviceHolder.get(
       coreServices.rootLifecycle,
       'root',
     );
-
-    // TODO(Rugvip): Find a better way to do this
     if (lifecycleService instanceof BackendLifecycleImpl) {
-      await lifecycleService.shutdown();
-    } else {
-      throw new Error('Unexpected lifecycle service implementation');
+      return lifecycleService;
     }
+    throw new Error('Unexpected root lifecycle service implementation');
+  }
+
+  async #getPluginLifecycleImpl(
+    pluginId: string,
+  ): Promise<BackendPluginLifecycleImpl> {
+    const lifecycleService = await this.#serviceHolder.get(
+      coreServices.lifecycle,
+      pluginId,
+    );
+    if (lifecycleService instanceof BackendPluginLifecycleImpl) {
+      return lifecycleService;
+    }
+    throw new Error('Unexpected plugin lifecycle service implementation');
   }
 }

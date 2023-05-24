@@ -26,6 +26,8 @@ export type { DiscoveryService } from './DiscoveryService';
 export type { HttpRouterService } from './HttpRouterService';
 export type {
   LifecycleService,
+  LifecycleServiceStartupHook,
+  LifecycleServiceStartupOptions,
   LifecycleServiceShutdownHook,
   LifecycleServiceShutdownOptions,
 } from './LifecycleService';

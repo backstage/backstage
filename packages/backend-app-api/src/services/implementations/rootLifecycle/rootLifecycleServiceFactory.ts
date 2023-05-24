@@ -17,16 +17,52 @@
 import {
   createServiceFactory,
   coreServices,
+  LifecycleServiceStartupHook,
+  LifecycleServiceStartupOptions,
   LifecycleServiceShutdownHook,
   LifecycleServiceShutdownOptions,
   RootLifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
+/** @internal */
 export class BackendLifecycleImpl implements RootLifecycleService {
   constructor(private readonly logger: LoggerService) {}
 
-  #isCalled = false;
+  #hasStarted = false;
+  #startupTasks: Array<{
+    hook: LifecycleServiceStartupHook;
+    options?: LifecycleServiceStartupOptions;
+  }> = [];
+
+  addStartupHook(
+    hook: LifecycleServiceStartupHook,
+    options?: LifecycleServiceStartupOptions,
+  ): void {
+    this.#startupTasks.push({ hook, options });
+  }
+
+  async startup(): Promise<void> {
+    if (this.#hasStarted) {
+      return;
+    }
+    this.#hasStarted = true;
+
+    this.logger.info(`Running ${this.#startupTasks.length} startup tasks...`);
+    await Promise.all(
+      this.#startupTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
+        try {
+          await hook();
+          logger.info(`Startup hook succeeded`);
+        } catch (error) {
+          logger.error(`Startup hook failed, ${error}`);
+        }
+      }),
+    );
+  }
+
+  #hasShutdown = false;
   #shutdownTasks: Array<{
     hook: LifecycleServiceShutdownHook;
     options?: LifecycleServiceShutdownOptions;
@@ -40,10 +76,10 @@ export class BackendLifecycleImpl implements RootLifecycleService {
   }
 
   async shutdown(): Promise<void> {
-    if (this.#isCalled) {
+    if (this.#hasShutdown) {
       return;
     }
-    this.#isCalled = true;
+    this.#hasShutdown = true;
 
     this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
     await Promise.all(
