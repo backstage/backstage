@@ -14221,18 +14221,18 @@ __metadata:
   linkType: hard
 
 "@react-hookz/web@npm:^23.0.0":
-  version: 23.0.0
-  resolution: "@react-hookz/web@npm:23.0.0"
+  version: 23.0.1
+  resolution: "@react-hookz/web@npm:23.0.1"
   dependencies:
     "@react-hookz/deep-equal": ^1.0.4
   peerDependencies:
-    js-cookie: ^3.0.1
+    js-cookie: ^3.0.5
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   peerDependenciesMeta:
     js-cookie:
       optional: true
-  checksum: 230bff62291bcafa65e0b9adcc3f0769fd63fabc226c77149e7797d1ea67362e9ad581ceff3cdfe2949698798d2deefb223c05bdfed1e465b5d92298d48cf3e5
+  checksum: 321770570c947321ba44de6ecee17337e4bb0c2a0c9d0dff5cf29e999faa2b7c1132c72a15aface46da9a709b715042ab48a30085d2a8feefba91aac96e82037
   languageName: node
   linkType: hard
 
