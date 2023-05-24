@@ -10,25 +10,31 @@ import React, { useState } from 'react';
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
 
+interface IPluginsList {
+  corePlugins: IPluginData[];
+  otherPlugins: IPluginData[];
+}
+
 const pluginsContext = require.context(
   '../../../data/plugins',
   false,
   /\.ya?ml/,
 );
 
-const plugins = pluginsContext.keys().reduce(
+const plugins: IPluginsList = pluginsContext.keys().reduce(
   (acum, id) => {
     let pluginData: IPluginData = pluginsContext(id).default;
+    const category: keyof IPluginsList =
+      pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins';
 
     pluginData = calcIsNewPlugin(pluginData);
+    pluginData = truncateDescription(pluginData);
 
-    acum[
-      pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins'
-    ].push(truncateDescription(pluginData));
+    acum[category].push(pluginData);
 
     return acum;
   },
-  { corePlugins: [] as IPluginData[], otherPlugins: [] as IPluginData[] },
+  { corePlugins: [], otherPlugins: [] } as IPluginsList,
 );
 
 plugins.corePlugins.sort((a, b) => a.order - b.order);
