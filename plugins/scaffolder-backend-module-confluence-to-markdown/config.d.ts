@@ -31,7 +31,7 @@ export interface Config {
      */
     token?: string;
     /**
-     * Email encoded with the token for the bearer auth method
+     * Email used with the token for the basic auth method
      * @visibility secret
      */
     email?: string;

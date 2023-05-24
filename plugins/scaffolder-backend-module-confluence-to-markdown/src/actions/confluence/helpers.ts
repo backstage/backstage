@@ -90,28 +90,23 @@ export const getConfluenceConfig = (config: Config) => {
 };
 
 export const getAuthorizationHeaderValue = (config: ConfluenceConfig) => {
-  let authHeaderValue: string = '';
   switch (config.auth) {
     case 'bearer':
-      authHeaderValue = `Bearer ${config.token}`;
-      break;
+      return `Bearer ${config.token}`;
     case 'basic': {
       const buffer = Buffer.from(`${config.email}:${config.token}`, 'utf8');
-      authHeaderValue = `Basic ${buffer.toString('base64')}`;
-      break;
+      return `Basic ${buffer.toString('base64')}`;
     }
     case 'userpass': {
       const buffer = Buffer.from(
         `${config.username}:${config.password}`,
         'utf8',
       );
-      authHeaderValue = `Basic ${buffer.toString('base64')}`;
-      break;
+      return `Basic ${buffer.toString('base64')}`;
     }
     default:
       throw new Error(`Unknown auth method '${config.auth}' provided`);
   }
-  return authHeaderValue;
 };
 
 export const readFileAsString = async (fileDir: string) => {

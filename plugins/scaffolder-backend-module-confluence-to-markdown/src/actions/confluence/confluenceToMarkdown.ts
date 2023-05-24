@@ -58,7 +58,7 @@ export const createConfluenceToMarkdownAction = (options: {
             type: 'array',
             title: 'Confluence URL',
             description:
-              'Paste your confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
+              'Paste your Confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud',
             items: {
               type: 'string',
               default: 'Confluence URL',

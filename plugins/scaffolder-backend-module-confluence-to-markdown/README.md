@@ -60,17 +60,15 @@ export default async function createPlugin(
 
 ### Configuration
 
-There is some configuration that needs to be setup to use this action, here are all the settings:
+There is some configuration that needs to be setup to use this action, these are the base parameters:
 
 ```yaml
 confluence:
   baseUrl: 'https://confluence.example.com'
-  auth: 'bearer'
   token: '${CONFLUENCE_TOKEN}'
-  email: 'example@company.org'
-  username: 'your-username'
-  password: 'your-password'
 ```
+
+The sections below will go into more details about the Base URL and Auth Methods.
 
 #### Base URL
 
@@ -123,7 +121,7 @@ kind: Template
 metadata:
   name: confluence-to-markdown
   title: Confluence to Markdown
-  description: This template converts a single confluence document to Markdown for Techdocs and adds it to a given GitHub repo.
+  description: This template converts a single Confluence document to Markdown for Techdocs and adds it to a given GitHub repo.
   tags:
     - do-not-use
     - poc
@@ -135,10 +133,9 @@ spec:
       properties:
         confluenceUrls:
           type: array
-          description: Urls for confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE> or <CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE> for Confluence cloud
+          description: Urls for Confluence doc to be converted to markdown. In format <CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE> or <CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE> for Confluence cloud
           items:
             type: string
-            default: confluence url
           ui:options:
             addable: true
           minItems: 1
@@ -161,7 +158,7 @@ spec:
         repoUrl: <GITHUB_BASE_URL>?repo=${{ steps['create-docs'].output.repo }}&owner=${{ steps['create-docs'].output.owner }}
         branchName: confluence-to-markdown
         title: Confluence to Markdown
-        description: PR for converting confluence page to mkdocs
+        description: PR for converting Confluence page to mkdocs
 ```
 
 Replace `<GITHUB_BASE_URL>` with your GitHub URL without `https://`.
