@@ -61,18 +61,7 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
   if (templates.length === 0) {
-    return (
-      <Content>
-        {titleComponent}
-        <Typography variant="body2">
-          No templates found that match your filter. Learn more about{' '}
-          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-            adding templates
-          </Link>
-          .
-        </Typography>
-      </Content>
-    );
+    return null;
   }
 
   const Card = CardComponent || TemplateCard;
