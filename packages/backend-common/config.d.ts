@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { CustomTypesConfig } from 'pg';
+import { ConnectionOptions } from 'tls';
+
 export interface Config {
   app: {
     baseUrl: string; // defined in core, but repeated here without doc
@@ -72,10 +75,63 @@ export interface Config {
       /** Default database client to use */
       client: 'better-sqlite3' | 'sqlite3' | 'pg';
       /**
-       * Base database connection string or Knex object
+       * Base database connection string or Knex (PG) object
+       * PG object details come from: https://node-postgres.com/apis/client
        * @visibility secret
        */
-      connection: string | object;
+      connection:
+        | string
+        | {
+            /**
+             * User with which to authenticate to the server
+             */
+            user?: string;
+            /**
+             * Corresponding password
+             * @visibility secret
+             */
+            password: string;
+            /**
+             * Postgres server hostname or, for UNIX domain sockets, the socket filename
+             */
+            host?: string;
+            /**
+             * Database name within the server
+             */
+            database?: string;
+            /**
+             * Port on which to connect
+             */
+            port?: number;
+            /**
+             * TLS/SSL connections settings
+             */
+            ssl?: boolean | ConnectionOptions;
+            /**
+             * Custom type parsers
+             */
+            types?: CustomTypesConfig;
+            /**
+             * Number of milliseconds before a statement in query will time out, default is no timeout
+             */
+            statement_timeout?: false | number;
+            /**
+             * Number of milliseconds before a query call will timeout, default is no timeout
+             */
+            query_timeout?: number;
+            /**
+             * The name of the application that created this Client instance
+             */
+            application_name?: string;
+            /**
+             * Number of milliseconds to wait for connection, default is no timeout
+             */
+            connectionTimeoutMillis?: number;
+            /**
+             * Number of milliseconds before terminating any session with an open idle transaction, default is no timeout
+             */
+            idle_in_transaction_session_timeout?: number;
+          };
       /** Database name prefix override */
       prefix?: string;
       /**
