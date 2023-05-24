@@ -459,6 +459,12 @@ describe('DatabaseDocumentStore', () => {
               myField: ['that', 'not'],
               location: 'LOCATION-1',
             } as unknown as IndexableDocument,
+            {
+              title: 'Consectetur adipiscing',
+              text: 'Hello World',
+              myField: ['that', 'not', 'where'],
+              location: 'LOCATION-1',
+            } as unknown as IndexableDocument,
           ]);
           await store.completeInsert(tx, 'my-type');
         });
@@ -500,6 +506,16 @@ describe('DatabaseDocumentStore', () => {
               text: 'Hello World',
               title: 'Sed ut perspiciatis',
               myField: ['that', 'not'],
+            },
+            rank: expect.any(Number),
+            type: 'my-type',
+          },
+          {
+            document: {
+              location: 'LOCATION-1',
+              text: 'Hello World',
+              title: 'Consectetur adipiscing',
+              myField: ['that', 'not', 'where'],
             },
             rank: expect.any(Number),
             type: 'my-type',
