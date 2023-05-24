@@ -31,7 +31,17 @@ export interface Config {
           /**
            * Object with extra headers to be added to target requests.
            */
-          headers?: { [key: string]: string };
+          headers?: Partial<{
+            /** @visibility secret */
+            Authorization: string;
+            /** @visibility secret */
+            authorization: string;
+            /** @visibility secret */
+            'X-Api-Key': string;
+            /** @visibility secret */
+            'x-api-key': string;
+            [key: string]: string;
+          }>;
           /**
            * Changes the origin of the host header to the target URL. Default: true.
            */
