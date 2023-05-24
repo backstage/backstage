@@ -52,6 +52,7 @@ describe('GithubIntegration', () => {
 
   describe('resolveUrl', () => {
     let integration: GithubIntegration;
+
     beforeAll(() => {
       integration = new GithubIntegration({ host: 'h.com' });
     });
@@ -66,6 +67,18 @@ describe('GithubIntegration', () => {
       ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml#L17');
     });
 
+    it('should resolve a relative URL pointing to file in parent directory, for query path format', () => {
+      expect(
+        integration.resolveUrl({
+          url: '../a.yaml',
+          base: 'https://github.com/backstage/backstage/blob/branchName/withSlashes?path=test/README.md',
+          lineNumber: 17,
+        }),
+      ).toBe(
+        'https://github.com/backstage/backstage/tree/branchName/withSlashes?path=a.yaml#L17',
+      );
+    });
+
     it('should resolve a relative URL pointing to current directory', () => {
       expect(
         integration.resolveUrl({
@@ -75,26 +88,36 @@ describe('GithubIntegration', () => {
       ).toBe('https://github.com/backstage/backstage/tree/master/test/');
     });
 
-    it('should not change query parameters when resolving full URLs', () => {
+    it('should resolve a relative URL pointing to current directory, for query path format', () => {
       expect(
         integration.resolveUrl({
-          url: 'https://github.com/backstage/backstage/blob/release/production?path=catalog-info.yaml',
-          base: '',
+          url: './',
+          base: 'https://github.com/backstage/backstage/blob/branchName/withSlashes?path=test/README.md',
         }),
       ).toBe(
-        'https://github.com/backstage/backstage/tree/release/production?path=catalog-info.yaml',
+        'https://github.com/backstage/backstage/tree/branchName/withSlashes?path=test/',
       );
     });
   });
 
-  it('resolve edit URL', () => {
+  it('resolves edit URL', () => {
     const integration = new GithubIntegration({ host: 'h.com' });
-
     expect(
       integration.resolveEditUrl(
         'https://github.com/backstage/backstage/blob/master/README.md',
       ),
     ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+  });
+
+  it('resolves edit URL, for query path format', () => {
+    const integration = new GithubIntegration({ host: 'h.com' });
+    expect(
+      integration.resolveEditUrl(
+        'https://github.com/backstage/backstage/blob/branchName/withSlashes?path=README.md',
+      ),
+    ).toBe(
+      'https://github.com/backstage/backstage/edit/branchName/withSlashes?path=README.md',
+    );
   });
 });
 
@@ -124,5 +147,24 @@ describe('replaceGithubUrlType', () => {
         'blob',
       ),
     ).toBe('https://github.com/backstage/backstage/blob/tree/README.md');
+  });
+
+  it('should replace with expected type, for query path format', () => {
+    expect(
+      replaceGithubUrlType(
+        'https://github.com/backstage/backstage/blob/branchName/withSlashes?path=README.md',
+        'edit',
+      ),
+    ).toBe(
+      'https://github.com/backstage/backstage/edit/branchName/withSlashes?path=README.md',
+    );
+    expect(
+      replaceGithubUrlType(
+        'https://github.com/backstage/backstage/blob/branchName/withSlashes?path=blob/README.md',
+        'edit',
+      ),
+    ).toBe(
+      'https://github.com/backstage/backstage/edit/branchName/withSlashes?path=blob/README.md',
+    );
   });
 });
