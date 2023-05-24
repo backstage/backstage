@@ -12488,17 +12488,17 @@ __metadata:
   linkType: hard
 
 "@kubernetes-models/apimachinery@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "@kubernetes-models/apimachinery@npm:1.1.1"
+  version: 1.2.0
+  resolution: "@kubernetes-models/apimachinery@npm:1.2.0"
   dependencies:
-    "@kubernetes-models/base": ^4.0.1
-    "@kubernetes-models/validate": ^3.0.1
+    "@kubernetes-models/base": ^4.0.2
+    "@kubernetes-models/validate": ^3.1.0
     tslib: ^2.4.0
-  checksum: 915d6a55b485335622d43c6e1f1031ea949bfb3e985deba6389462b4c0a3b3030e71e6eebfc1e7b894afee543de2e5a1af0ff6694225a372e220f7dccb5b6eed
+  checksum: ac93980b732239517af47e0cb512e28fc320ed8348eaa8a68f65b16adc98cf90b6b36d9a9752d825e6e1ac84ae0c0d37e2dc8c8de140011506753a058c89bcf2
   languageName: node
   linkType: hard
 
-"@kubernetes-models/base@npm:^4.0.0, @kubernetes-models/base@npm:^4.0.1":
+"@kubernetes-models/base@npm:^4.0.0, @kubernetes-models/base@npm:^4.0.1, @kubernetes-models/base@npm:^4.0.2":
   version: 4.0.2
   resolution: "@kubernetes-models/base@npm:4.0.2"
   dependencies:
@@ -12509,7 +12509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kubernetes-models/validate@npm:^3.0.0, @kubernetes-models/validate@npm:^3.0.1, @kubernetes-models/validate@npm:^3.1.0":
+"@kubernetes-models/validate@npm:^3.0.0, @kubernetes-models/validate@npm:^3.1.0":
   version: 3.1.0
   resolution: "@kubernetes-models/validate@npm:3.1.0"
   dependencies:
