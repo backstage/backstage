@@ -1,4 +1,4 @@
-FROM ruby:3.0
+FROM ruby:3.2
 
 RUN apt-get update -qq && \
     apt-get install -y nodejs postgresql-client git && \
