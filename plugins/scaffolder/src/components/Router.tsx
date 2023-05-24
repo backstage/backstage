@@ -74,10 +74,6 @@ export type RouterProps = {
     /** Whether to show a link to the actions documentation */
     actions?: boolean;
   };
-  /**
-   * Options for any filter on the scaffolder page
-   */
-  customFilters?: Array<React.ReactElement>;
 };
 
 /**
@@ -140,7 +136,6 @@ export const Router = (props: RouterProps) => {
             TemplateCardComponent={TemplateCardComponent}
             contextMenu={props.contextMenu}
             headerOptions={props.headerOptions}
-            customFilters={props.customFilters}
           />
         }
       />

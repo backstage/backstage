@@ -59,7 +59,6 @@ export type ScaffolderPageProps = {
     title?: string;
     subtitle?: string;
   };
-  customFilters?: Array<React.ReactElement>;
 };
 
 export const ScaffolderPageContents = ({
@@ -68,7 +67,6 @@ export const ScaffolderPageContents = ({
   templateFilter,
   contextMenu,
   headerOptions,
-  customFilters,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
@@ -118,10 +116,6 @@ export const ScaffolderPageContents = ({
             />
             <TemplateTypePicker />
             <EntityTagPicker />
-            {customFilters &&
-              customFilters.map((component, index) => (
-                <React.Fragment key={index}>{component}</React.Fragment>
-              ))}
           </CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
             {groups &&
@@ -152,7 +146,6 @@ export const ScaffolderPage = ({
   templateFilter,
   contextMenu,
   headerOptions,
-  customFilters,
 }: ScaffolderPageProps) => (
   <EntityListProvider>
     <ScaffolderPageContents
@@ -161,7 +154,6 @@ export const ScaffolderPage = ({
       templateFilter={templateFilter}
       contextMenu={contextMenu}
       headerOptions={headerOptions}
-      customFilters={customFilters}
     />
   </EntityListProvider>
 );

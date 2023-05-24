@@ -42,7 +42,6 @@ export type NextRouterProps = {
     actions?: boolean;
     tasks?: boolean;
   };
-  customFilters?: Array<React_2.ReactElement>;
 };
 
 // @alpha
