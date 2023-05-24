@@ -47,3 +47,15 @@ export const devToolsExternalDependenciesReadPermission = createPermission({
   name: 'devtools.external-dependencies',
   attributes: { action: 'read' },
 });
+
+/**
+ * List of all Devtools permissions
+ *
+ * @public
+ */
+export const devToolsPermissions = [
+  devToolsAdministerPermission,
+  devToolsInfoReadPermission,
+  devToolsConfigReadPermission,
+  devToolsExternalDependenciesReadPermission,
+];
