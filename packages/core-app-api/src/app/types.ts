@@ -33,33 +33,33 @@ import { AppConfig } from '@backstage/config';
  *
  * @public
  */
-export type BootErrorPageProps = {
+export type BootErrorPageProps = PropsWithChildren<{
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
+}>;
 
 /**
  * Props for the `SignInPage` component of {@link AppComponents}.
  *
  * @public
  */
-export type SignInPageProps = {
+export type SignInPageProps = PropsWithChildren<{
   /**
    * Set the IdentityApi on successful sign-in. This should only be called once.
    */
   onSignInSuccess(identityApi: IdentityApi): void;
-};
+}>;
 
 /**
  * Props for the fallback error boundary.
  *
  * @public
  */
-export type ErrorBoundaryFallbackProps = {
+export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
-};
+}>;
 
 /**
  * A set of replaceable core components that are part of every Backstage app.
@@ -70,7 +70,7 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<{ basename?: string }>;
+  Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
 

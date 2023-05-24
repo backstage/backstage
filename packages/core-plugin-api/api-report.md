@@ -141,9 +141,11 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<{
-    basename?: string;
-  }>;
+  Router: ComponentType<
+    PropsWithChildren<{
+      basename?: string;
+    }>
+  >;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
   SignInPage?: ComponentType<SignInPageProps>;
@@ -248,10 +250,10 @@ export const bitbucketServerAuthApiRef: ApiRef<
 >;
 
 // @public
-export type BootErrorPageProps = {
+export type BootErrorPageProps = PropsWithChildren<{
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
+}>;
 
 // @public
 export type CommonAnalyticsContext = {
@@ -406,11 +408,11 @@ export type ErrorApiErrorContext = {
 export const errorApiRef: ApiRef<ErrorApi>;
 
 // @public
-export type ErrorBoundaryFallbackProps = {
+export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin_2;
   error: Error;
   resetError: () => void;
-};
+}>;
 
 // @public
 export type Extension<T> = {
@@ -691,9 +693,9 @@ export enum SessionState {
 }
 
 // @public
-export type SignInPageProps = {
+export type SignInPageProps = PropsWithChildren<{
   onSignInSuccess(identityApi: IdentityApi_2): void;
-};
+}>;
 
 // @public
 export interface StorageApi {

@@ -148,9 +148,11 @@ export type AppComponents = {
   NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
-  Router: ComponentType<{
-    basename?: string;
-  }>;
+  Router: ComponentType<
+    PropsWithChildren<{
+      basename?: string;
+    }>
+  >;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
   ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
   SignInPage?: ComponentType<SignInPageProps>;
@@ -316,10 +318,10 @@ export type BitbucketSession = {
 };
 
 // @public
-export type BootErrorPageProps = {
+export type BootErrorPageProps = PropsWithChildren<{
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
+}>;
 
 export { ConfigReader };
 
@@ -359,11 +361,11 @@ export class ErrorApiForwarder implements ErrorApi {
 }
 
 // @public
-export type ErrorBoundaryFallbackProps = {
+export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
-};
+}>;
 
 // @public
 export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
@@ -596,9 +598,9 @@ export class SamlAuth
 }
 
 // @public
-export type SignInPageProps = {
+export type SignInPageProps = PropsWithChildren<{
   onSignInSuccess(identityApi: IdentityApi): void;
-};
+}>;
 
 // @public
 export class UnhandledErrorForwarder {
