@@ -78,6 +78,11 @@ export function createHttpServer(
   },
 ): Promise<ExtendedHttpServer>;
 
+// @public
+export function createLifecycleMiddleware(
+  options: LifecycleMiddlewareOptions,
+): RequestHandler;
+
 // @public (undocumented)
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
@@ -169,6 +174,14 @@ export type IdentityFactoryOptions = {
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
 ) => ServiceFactory<IdentityService, 'plugin'>;
+
+// @public
+export interface LifecycleMiddlewareOptions {
+  // (undocumented)
+  lifecycle: LifecycleService;
+  // (undocumented)
+  timeoutMs?: number;
+}
 
 // @public
 export const lifecycleServiceFactory: () => ServiceFactory<
