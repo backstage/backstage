@@ -247,4 +247,5 @@ Additionally, the API is at a very early state, so contributing with additional 
 
 ### Homepage Templates
 
-We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates). If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example to create your own](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx), and then open a PR with your suggestion.
+We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates).
+If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx) or [CustomizableTemplate storybook example](/packages/app/src/components/home/templates/CustomizableTemplate.stories.tsx) to create your own, and then open a PR with your suggestion.
