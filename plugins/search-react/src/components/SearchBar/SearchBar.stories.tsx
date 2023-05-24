@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { Grid, makeStyles, Paper } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -43,67 +43,51 @@ export default {
 };
 
 export const Default = () => {
-  return (
-    <Paper style={{ padding: '8px' }}>
-      <SearchBar />
-    </Paper>
-  );
+  return <SearchBar />;
 };
 
 export const CustomPlaceholder = () => {
-  return (
-    <Paper style={{ padding: '8px' }}>
-      <SearchBar placeholder="This is a custom placeholder" />
-    </Paper>
-  );
+  return <SearchBar placeholder="This is a custom placeholder" />;
 };
 
 export const CustomLabel = () => {
-  return (
-    <Paper style={{ padding: '8px' }}>
-      <SearchBar label="This is a custom label" />
-    </Paper>
-  );
+  return <SearchBar label="This is a custom label" />;
 };
 
 export const Focused = () => {
   return (
-    <Paper style={{ padding: '8px' }}>
-      {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
-      {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-      <SearchBar autoFocus />
-    </Paper>
+    // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
+    // eslint-disable-next-line jsx-a11y/no-autofocus
+    <SearchBar autoFocus />
   );
 };
 
 export const WithoutClearButton = () => {
-  return (
-    <Paper style={{ padding: '8px' }}>
-      <SearchBar clearButton={false} />
-    </Paper>
-  );
+  return <SearchBar clearButton={false} />;
 };
 
-const useStyles = makeStyles({
-  search: {
-    display: 'flex',
-    justifyContent: 'space-between',
+const useStyles = makeStyles(theme => ({
+  searchBarRoot: {
     padding: '8px 16px',
+    background: theme.palette.background.paper,
+    boxShadow: theme.shadows[1],
     borderRadius: '50px',
-    margin: 'auto',
   },
-  notchedOutline: {
+  searchBarOutline: {
     borderStyle: 'none',
   },
-});
+}));
 
 export const CustomStyles = () => {
   const classes = useStyles();
   return (
-    <Paper className={classes.search}>
-      <SearchBar
-        InputProps={{ classes: { notchedOutline: classes.notchedOutline } }}
-      />
-    </Paper>
+    <SearchBar
+      InputProps={{
+        classes: {
+          root: classes.searchBarRoot,
+          notchedOutline: classes.searchBarOutline,
+        },
+      }}
+    />
   );
 };

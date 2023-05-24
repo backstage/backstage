@@ -23,10 +23,12 @@ import {
 import { useNavigateToQuery } from '../util';
 
 const useStyles = makeStyles({
-  root: {
+  searchBarRoot: {
+    fontSize: '1.5em',
+  },
+  searchBarOutline: {
     border: '1px solid #555',
     borderRadius: '6px',
-    fontSize: '1.5em',
   },
 });
 
@@ -60,10 +62,17 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
 
   return (
     <SearchBarBase
-      classes={{ root: classes.root }}
       value={query}
       onSubmit={handleSubmit}
       onChange={handleChange}
+      InputProps={{
+        ...props.InputProps,
+        classes: {
+          root: classes.searchBarRoot,
+          notchedOutline: classes.searchBarOutline,
+          ...props.InputProps?.classes,
+        },
+      }}
       {...props}
     />
   );
