@@ -4521,6 +4521,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
+    front-matter: ^4.0.2
   languageName: unknown
   linkType: soft
 
@@ -25384,6 +25385,15 @@ __metadata:
   version: 1.3.2
   resolution: "fromentries@npm:1.3.2"
   checksum: 33729c529ce19f5494f846f0dd4945078f4e37f4e8955f4ae8cc7385c218f600e9d93a7d225d17636c20d1889106fd87061f911550861b7072f53bf891e6b341
+  languageName: node
+  linkType: hard
+
+"front-matter@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "front-matter@npm:4.0.2"
+  dependencies:
+    js-yaml: ^3.13.1
+  checksum: a5b4c36d75a820301ebf31db0f677332d189c4561903ab6853eaa0504b43634f98557dbf87752e09043dbd2c9dcc14b4bcf9151cb319c8ad7e26edb203c0cd23
   languageName: node
   linkType: hard
 

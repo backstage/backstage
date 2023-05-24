@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { parseMadrWithFrontmatter } from '@backstage/plugin-adr-common';
 import { AdrContentDecorator } from './types';
 
 /**
@@ -43,5 +44,24 @@ export const adrDecoratorFactories = Object.freeze({
         `![$1](${baseUrl}/$2$3$4)`,
       ),
     });
+  },
+  /**
+   * Formats YAML front-matter into a table format (if any exists in the markdown document)
+   */
+  createFrontMatterFormatterDecorator(): AdrContentDecorator {
+    return ({ content }) => {
+      const parsedFrontmatter = parseMadrWithFrontmatter(content);
+      let table = '';
+      const attrs = parsedFrontmatter.attributes;
+      if (Object.keys(attrs).length > 0) {
+        const stripNewLines = (val: unknown) =>
+          String(val).replaceAll('\n', '<br/>');
+        const row = (vals: string[]) => `|${vals.join('|')}|\n`;
+        table = `${row(Object.keys(attrs))}`;
+        table += `${row(Object.keys(attrs).map(() => '---'))}`;
+        table += `${row(Object.values(attrs).map(stripNewLines))}\n\n`;
+      }
+      return { content: table + parsedFrontmatter.content };
+    };
   },
 });
