@@ -1,5 +1,6 @@
 import Link from '@docusaurus/Link';
 import { SimpleCard } from '@site/src/components/simpleCard/simpleCard';
+import clsx from 'clsx';
 import React from 'react';
 
 export interface IPluginData {
@@ -10,6 +11,8 @@ export interface IPluginData {
   documentation: string;
   iconUrl: string;
   title: string;
+  addedDate: string;
+  isNew: boolean;
   order?: number;
 }
 
@@ -22,14 +25,17 @@ export const PluginCard = ({
   description,
   documentation,
   iconUrl,
+  isNew = false,
   title,
 }: IPluginData) => (
   <SimpleCard
     header={
       <>
+        {isNew && <div className="newRibbon">NEW</div>}
+
         <img src={iconUrl || defaultIconUrl} alt={title} />
 
-        <h3>{title}</h3>
+        <h3 className={clsx({ newRibbonPadding: isNew })}>{title}</h3>
 
         <p className="PluginCardAuthor">
           by <a href={authorUrl}>{author}</a>

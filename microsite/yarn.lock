@@ -2941,6 +2941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3.0.0":
+  version: 3.3.0
+  resolution: "@types/luxon@npm:3.3.0"
+  checksum: f7e3a89fc3ca404fbc3ea538653ed6860bc28f570a8c4d6d24449b89b9b553b7d6ad6cc94a9e129c5b8c9a2b97f0c365b3017f811e59c4a859a9c219a1c918e0
+  languageName: node
+  linkType: hard
+
 "@types/mdast@npm:^3.0.0":
   version: 3.0.10
   resolution: "@types/mdast@npm:3.0.10"
@@ -3752,10 +3759,12 @@ __metadata:
     "@spotify/prettier-config": ^14.0.0
     "@swc/core": ^1.3.46
     "@tsconfig/docusaurus": ^1.0.6
+    "@types/luxon": ^3.0.0
     "@types/webpack-env": ^1.18.0
     clsx: ^1.1.1
     docusaurus-plugin-sass: ^0.2.3
     js-yaml: ^4.1.0
+    luxon: ^3.0.0
     prettier: ^2.6.2
     prism-react-renderer: ^1.3.5
     react: ^17.0.2
@@ -7345,6 +7354,13 @@ __metadata:
   version: 7.14.1
   resolution: "lru-cache@npm:7.14.1"
   checksum: d72c6713c6a6d86836a7a6523b3f1ac6764768cca47ec99341c3e76db06aacd4764620e5e2cda719a36848785a52a70e531822dc2b33fb071fa709683746c104
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^3.0.0":
+  version: 3.3.0
+  resolution: "luxon@npm:3.3.0"
+  checksum: 50cf17a0dc155c3dcacbeae8c0b7e80db425e0ba97b9cbdf12a7fc142d841ff1ab1560919f033af46240ed44e2f70c49f76e3422524c7fc8bb8d81ca47c66187
   languageName: node
   linkType: hard
 

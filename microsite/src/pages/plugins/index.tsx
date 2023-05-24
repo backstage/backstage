@@ -1,12 +1,14 @@
 import Link from '@docusaurus/Link';
+import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
+import { calcIsNewPlugin } from '@site/src/util/calcIsNewPlugin';
+import { truncateDescription } from '@site/src/util/truncateDescription';
+import { ChipCategory } from '@site/src/util/types';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
-import { ChipCategory } from '@site/src/util/types';
-import { truncateDescription } from '@site/src/util/truncateDescription';
-import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
 
 const pluginsContext = require.context(
   '../../../data/plugins',
@@ -16,7 +18,9 @@ const pluginsContext = require.context(
 
 const plugins = pluginsContext.keys().reduce(
   (acum, id) => {
-    const pluginData: IPluginData = pluginsContext(id).default;
+    let pluginData: IPluginData = pluginsContext(id).default;
+
+    pluginData = calcIsNewPlugin(pluginData);
 
     acum[
       pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins'

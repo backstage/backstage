@@ -11,12 +11,35 @@
   :global(.card .card__header) {
     display: grid;
     row-gap: 0.25rem;
+    position: relative;
     column-gap: 1rem;
     align-items: center;
     grid-template-columns: auto 1fr;
 
     > * {
       margin: 0;
+    }
+
+    :global(.newRibbon) {
+      --paddingX: 1.2lh;
+      --rotation: 45deg;
+      --translateX: 30%;
+      --translateY: -100%;
+
+      top: 0;
+      right: 0;
+      padding: 0 var(--paddingX);
+      position: absolute;
+      text-align: center;
+
+      transform: translateY(var(--translateY)) translateX(var(--translateX))
+        rotate(var(--rotation));
+      transform-origin: bottom left;
+      background-color: var(--ifm-color-primary);
+    }
+
+    :global(.newRibbonPadding) {
+      padding-right: 1.2lh;
     }
 
     :global(img) {
