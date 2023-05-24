@@ -19,9 +19,7 @@ import {
   Content,
   ContentHeader,
   ItemCardGrid,
-  Link,
 } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
 import { IconComponent } from '@backstage/core-plugin-api';
