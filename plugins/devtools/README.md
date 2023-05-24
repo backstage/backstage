@@ -147,7 +147,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-devtools
+   yarn add --cwd packages/app @backstage/plugin-devtools-common
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
