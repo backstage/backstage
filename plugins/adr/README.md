@@ -113,7 +113,7 @@ import { AdrDocument } from '@backstage/plugin-adr-common';
 
 ## Custom ADR formats
 
-By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR) v2.x template](https://github.com/adr/madr/tree/2.1.2). If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
+By default, this plugin will parse ADRs according to the format specified by the [Markdown Architecture Decision Record (MADR) v2.x template](https://github.com/adr/madr/tree/2.1.2) or the [Markdown Any Decision Record (MADR) 3.x template](https://github.com/adr/madr/tree/3.0.0). If your ADRs are written using a different format, you can apply the following customizations to correctly identify and parse your documents:
 
 ### Custom Filename/Path Format
 
@@ -135,7 +135,7 @@ const myCustomFilterFn: AdrFilePathFilterFn = (path: string): boolean => {
 
 ### Custom Content Decorators
 
-Your ADR Markdown content will typically be rendered in the UI as is with the exception of relative links/embeds being rewritten as absolute URLs so they can be linked correctly (e.g. `./my-diagram.png` => `<ABSOLUTE_ADR_DIR_URL>/my-diagram.png`). Depending on your ADR format, you may want to apply additional transformations to the content (e.g. parsing/ignoring front matter). You can do so by passing in a list of custom content decorators for the optional `contentDecorators` parameter. Note that passing in this parameter will override the default decorators. If you want to include the default ones, make sure to add them as well:
+Your ADR Markdown content will typically be rendered in the UI as is with the exception of relative links/embeds being rewritten as absolute URLs so they can be linked correctly (e.g. `./my-diagram.png` => `<ABSOLUTE_ADR_DIR_URL>/my-diagram.png`). Depending on your ADR format, you may want to apply additional transformations to the content (e.g. hiding or formatting front matter in a different way). You can do so by passing in a list of custom content decorators for the optional `contentDecorators` parameter. Note that passing in this parameter will override the default decorators. If you want to include the default ones, make sure to add them as well:
 
 ```tsx
 import {
@@ -154,6 +154,7 @@ const myCustomDecorator: AdrContentDecorator = ({ content }) => {
 <EntityAdrContent contentDecorators={[
     AdrReader.decorators.createRewriteRelativeLinksDecorator(),
     AdrReader.decorators.createRewriteRelativeEmbedsDecorator(),
+    AdrReader.decorators.createFrontMatterFormatterDecorator(),
     myCustomDecorator,
   ]}
 />
