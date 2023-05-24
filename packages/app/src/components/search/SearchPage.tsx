@@ -28,6 +28,7 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { AdrSearchResultListItem } from '@backstage/plugin-adr';
 import { SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
@@ -86,6 +87,11 @@ const SearchPage = () => {
                     name: 'Documentation',
                     icon: <DocsIcon />,
                   },
+                  {
+                    value: 'adr',
+                    name: 'Architecture Decision Records',
+                    icon: <DocsIcon />,
+                  },
                 ]}
               />
               <Paper className={classes.filters}>
@@ -131,6 +137,7 @@ const SearchPage = () => {
               <CatalogSearchResultListItem icon={<CatalogIcon />} />
               <TechDocsSearchResultListItem icon={<DocsIcon />} />
               <ToolSearchResultListItem icon={<BuildIcon />} />
+              <AdrSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
             <SearchResultPager />
           </Grid>

@@ -4525,7 +4525,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-adr@workspace:plugins/adr":
+"@backstage/plugin-adr@workspace:^, @backstage/plugin-adr@workspace:plugins/adr":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-adr@workspace:plugins/adr"
   dependencies:
@@ -24254,6 +24254,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-adr": "workspace:^"
     "@backstage/plugin-airbrake": "workspace:^"
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"

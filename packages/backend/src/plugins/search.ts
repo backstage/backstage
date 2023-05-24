@@ -15,6 +15,7 @@
  */
 
 import { useHotCleanup } from '@backstage/backend-common';
+import { DefaultAdrCollatorFactory } from '@backstage/plugin-adr-backend';
 import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-explore-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
@@ -68,6 +69,18 @@ export default async function createPlugin(
 
   // Collators are responsible for gathering documents known to plugins. This
   // particular collator gathers entities from the software catalog.
+  indexBuilder.addCollator({
+    schedule,
+    factory: DefaultAdrCollatorFactory.fromConfig({
+      cache: env.cache,
+      config: env.config,
+      discovery: env.discovery,
+      logger: env.logger,
+      reader: env.reader,
+      tokenManager: env.tokenManager,
+    }),
+  });
+
   indexBuilder.addCollator({
     schedule,
     factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {

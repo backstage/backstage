@@ -26,6 +26,7 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { EmptyState, InfoCard } from '@backstage/core-components';
+import { EntityAdrContent, isAdrAvailable } from '@backstage/plugin-adr';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -482,6 +483,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route if={isAdrAvailable} path="/adrs" title="ADRS">
+      <EntityAdrContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route
