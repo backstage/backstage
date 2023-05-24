@@ -16,7 +16,7 @@ Lists helpful information about your current running Backstage instance such as:
 
 Lists the configuration being used by your current running Backstage instance.
 
-**Note:** The Config tab uses the configuration schema [defined by each plugin](https://backstage.io/docs/conf/defining) to be able to mask secrets. It does this by checking that the [visibility](https://backstage.io/docs/conf/defining#visibility) has been marked as `secret`. If this is not set then the secret will appear in clear text. To avoid this it is highly recommended that you enable the [permission framework](https://backstage.io/docs/permissions/overview) and [apply the proper permissions](#permissions)).
+**Note:** The Config tab uses the configuration schema [defined by each plugin](https://backstage.io/docs/conf/defining) to be able to mask secrets. It does this by checking that the [visibility](https://backstage.io/docs/conf/defining#visibility) has been marked as `secret`. If this is not set then the secret will appear in clear text. To mitigate this it is highly recommended that you enable the [permission framework](https://backstage.io/docs/permissions/overview) and [apply the proper permissions](#permissions)). If you do see secrets in clear text please contact the plugin's author to get the visibility set to secret for the applicable property.
 
 ![Example of Config tab](./docs/devtools-config-tab.png)
 
