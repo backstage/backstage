@@ -18205,6 +18205,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
+  version: 1.0.0
+  resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
+  dependencies:
+    "@improbable-eng/grpc-web": ^0.14.0
+    google-protobuf: ^3.15.8
+  checksum: 8ff16c5da1560fcb31f9e078cf4a8fa0fcf3897b197cd0a5c85f8da0996737c76f89297f999382406c8317d7c97e9746e3b4b992bfbc1344b75e4151b8349c9b
+  languageName: node
+  linkType: hard
+
 "a-sync-waterfall@npm:^1.0.0":
   version: 1.0.1
   resolution: "a-sync-waterfall@npm:1.0.1"
@@ -25559,16 +25569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gendocu-public-apis@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "gendocu-public-apis@npm:1.0.0"
-  dependencies:
-    "@improbable-eng/grpc-web": ^0.14.0
-    google-protobuf: ^3.15.8
-  checksum: ee1548d1285f9d2dc7ef04c959e620516322314c8aa2f2bfedd25345a6211abf51cdca4d54cca18de8f31a90f2b86ab171ae41f7c2f39dfdd0ac7163f875f719
-  languageName: node
-  linkType: hard
-
 "generate-function@npm:^2.3.1":
   version: 2.3.1
   resolution: "generate-function@npm:2.3.1"
@@ -25961,10 +25961,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-protobuf@npm:^3.15.8, google-protobuf@npm:^3.19.1":
-  version: 3.20.1
-  resolution: "google-protobuf@npm:3.20.1"
-  checksum: a440fbc329bb441b253bc421b01540918f4b66921c47a3bc57d154d2677dc917cb1a29126ff35ddc4d8872d1b5843ef1ece60b6dff506ba64a9f5807962d3f61
+"google-protobuf@npm:^3.15.8, google-protobuf@npm:^3.21.2":
+  version: 3.21.2
+  resolution: "google-protobuf@npm:3.21.2"
+  checksum: 3caa2e1e2654714cc1a201ac5e5faabcaa48f5fba3d8ff9b64ca66fe19e4e0506b94053f32eddc77bf3a7a47ac1660315c6744185c1e2bb27654fd76fe91b988
   languageName: node
   linkType: hard
 
@@ -26184,13 +26184,13 @@ __metadata:
   linkType: hard
 
 "grpc-docs@npm:^1.0.6, grpc-docs@npm:^1.1.2":
-  version: 1.1.3
-  resolution: "grpc-docs@npm:1.1.3"
+  version: 1.1.4
+  resolution: "grpc-docs@npm:1.1.4"
   dependencies:
     "@improbable-eng/grpc-web": ^0.15.0
     "@types/minimatch": ^3.0.5
-    gendocu-public-apis: ^1.0.0
-    google-protobuf: ^3.19.1
+    GendocuPublicApis: "https://git.gendocu.com/gendocu/GendocuPublicApis.git#master"
+    google-protobuf: ^3.21.2
     grpc-docs: ^1.0.6
     js-yaml: ^4.1.0
     minimatch: ^3.0.4
@@ -26203,7 +26203,7 @@ __metadata:
     styled-components: ^5.3.3
   peerDependencies:
     react: ^16.0.0
-  checksum: 1bcd3179ce276e8fd34229acc6d3f1024908b7e6734e36ddcc4852c6db0100b900093355652577ab476c9927167cff92b05e560713995803154d4dbd4459f973
+  checksum: 55b088011205fe82ced6af763136bb2494eb059445c5776bf29922439b814fa8983774a68910c47898cef5be82bea60801c2f96305e76170cff1df3f890b8d18
   languageName: node
   linkType: hard
 
