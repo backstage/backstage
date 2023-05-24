@@ -30,7 +30,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface FieldProps {
+/**
+ * Props for the {@link ScaffolderField} component
+ * @alpha
+ */
+export interface ScaffolderFieldProps {
   rawDescription?: string;
   errors?: ReactElement;
   rawErrors?: string[];
@@ -46,7 +50,9 @@ interface FieldProps {
  * on the field types
  * @alpha
  */
-export const ScaffolderField = (props: PropsWithChildren<FieldProps>) => {
+export const ScaffolderField = (
+  props: PropsWithChildren<ScaffolderFieldProps>,
+) => {
   const {
     children,
     displayLabel = true,
