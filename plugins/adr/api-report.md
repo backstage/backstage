@@ -80,6 +80,7 @@ export const AdrReader: {
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
     createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
+    createFrontMatterFormatterDecorator(): AdrContentDecorator;
   }>;
 };
 
