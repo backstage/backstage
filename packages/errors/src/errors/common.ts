@@ -33,21 +33,33 @@ import { CustomErrorBase } from './CustomErrorBase';
  *
  * @public
  */
-export class InputError extends CustomErrorBase {}
+export class InputError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'InputError');
+  }
+}
 
 /**
  * The request requires authentication, which was not properly supplied.
  *
  * @public
  */
-export class AuthenticationError extends CustomErrorBase {}
+export class AuthenticationError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'AuthenticationError');
+  }
+}
 
 /**
  * The authenticated caller is not allowed to perform this request.
  *
  * @public
  */
-export class NotAllowedError extends CustomErrorBase {}
+export class NotAllowedError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'NotAllowedError');
+  }
+}
 
 /**
  * The requested resource could not be found.
@@ -57,7 +69,11 @@ export class NotAllowedError extends CustomErrorBase {}
  *
  * @public
  */
-export class NotFoundError extends CustomErrorBase {}
+export class NotFoundError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'NotFoundError');
+  }
+}
 
 /**
  * The request could not complete due to a conflict in the current state of the
@@ -65,21 +81,33 @@ export class NotFoundError extends CustomErrorBase {}
  *
  * @public
  */
-export class ConflictError extends CustomErrorBase {}
+export class ConflictError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'ConflictError');
+  }
+}
 
 /**
  * The requested resource has not changed since last request.
  *
  * @public
  */
-export class NotModifiedError extends CustomErrorBase {}
+export class NotModifiedError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'NotModifiedError');
+  }
+}
 
 /**
  * The server does not support the functionality required to fulfill the request.
  *
  * @public
  */
-export class NotImplementedError extends CustomErrorBase {}
+export class NotImplementedError extends CustomErrorBase {
+  constructor(message?: string, cause?: Error | unknown) {
+    super(message, cause, 'NotImplementedError');
+  }
+}
 
 /**
  * The server is not ready to handle the request.
@@ -98,8 +126,6 @@ export class ServiceUnavailableError extends CustomErrorBase {}
  */
 export class ForwardedError extends CustomErrorBase {
   constructor(message: string, cause: Error | unknown) {
-    super(message, cause);
-
-    this.name = isError(cause) ? cause.name : 'Error';
+    super(message, cause, isError(cause) ? cause.name : 'Error');
   }
 }
