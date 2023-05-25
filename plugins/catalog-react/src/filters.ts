@@ -72,6 +72,10 @@ export class EntityTagFilter implements EntityFilter {
     return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
   }
 
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'metadata.tags': this.values };
+  }
+
   toQueryValue(): string[] {
     return this.values;
   }
@@ -136,6 +140,10 @@ export class EntityOwnerFilter implements EntityFilter {
     }, [] as string[]);
   }
 
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'relations.ownedBy': this.values };
+  }
+
   filterEntity(entity: Entity): boolean {
     return this.values.some(v =>
       getEntityRelations(entity, RELATION_OWNED_BY).some(
@@ -160,6 +168,10 @@ export class EntityOwnerFilter implements EntityFilter {
 export class EntityLifecycleFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'spec.lifecycle': this.values };
+  }
+
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.spec?.lifecycle === v);
   }
@@ -176,6 +188,9 @@ export class EntityLifecycleFilter implements EntityFilter {
 export class EntityNamespaceFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'spec.lifecycle': this.values };
+  }
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.metadata.namespace === v);
   }
@@ -218,6 +233,11 @@ export class UserListFilter implements EntityFilter {
  */
 export class EntityOrphanFilter implements EntityFilter {
   constructor(readonly value: boolean) {}
+
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'metadata.annotations.backstage.io/orphan': String(this.value) };
+  }
+
   filterEntity(entity: Entity): boolean {
     const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
     return orphan !== undefined && this.value.toString() === orphan;
@@ -230,6 +250,10 @@ export class EntityOrphanFilter implements EntityFilter {
  */
 export class EntityErrorFilter implements EntityFilter {
   constructor(readonly value: boolean) {}
+
+  // TODO(vinzscam): is it possible to implement
+  // getCatalogFilters? ask mammals
+
   filterEntity(entity: Entity): boolean {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
