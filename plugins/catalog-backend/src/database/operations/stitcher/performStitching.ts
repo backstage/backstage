@@ -32,6 +32,7 @@ import {
   DbSearchRow,
 } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
+import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { BATCH_SIZE, generateStableHash } from './util';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
@@ -216,6 +217,14 @@ export async function performStitching(options: {
     .where('stitch_ticket', stitchTicket)
     .onConflict('entity_id')
     .merge(['final_entity', 'hash', 'last_updated_at']);
+
+  if (options.strategy.mode === 'deferred') {
+    await markDeferredStitchCompleted({
+      knex: knex,
+      entityRef,
+      stitchTicket,
+    });
+  }
 
   if (amountOfRowsChanged === 0) {
     logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);

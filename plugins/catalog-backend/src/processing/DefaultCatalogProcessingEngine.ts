@@ -28,7 +28,7 @@ import { metrics, trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
-import { Stitcher } from '../stitching/types';
+import { Stitcher, stitchingStrategyFromConfig } from '../stitching/types';
 import { startTaskPipeline } from './TaskPipeline';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -335,11 +335,13 @@ export class DefaultCatalogProcessingEngine {
       return () => {};
     }
 
+    const stitchingStrategy = stitchingStrategyFromConfig(this.config);
+
     const runOnce = async () => {
       try {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
-          strategy: { mode: 'immediate' },
+          strategy: stitchingStrategy,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

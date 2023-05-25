@@ -239,4 +239,75 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20230525141717_stitch_queue.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20230525141717_stitch_queue.js');
+
+      await knex
+        .insert([
+          {
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: '{}',
+            processed_entity: '{}',
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          },
+        ])
+        .into('refresh_state');
+      await knex
+        .insert({
+          entity_id: 'my-id',
+          hash: 'd1c0c56d5fea4238e4c091d9dde4cb42d05a6b7e',
+          stitch_ticket: '',
+          final_entity: '{}',
+        })
+        .into('final_entities');
+
+      await migrateUpOnce(knex);
+
+      await expect(knex('refresh_state')).resolves.toEqual([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          location_key: null,
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          cache: null,
+          unprocessed_hash: null,
+          result_hash: null,
+          next_update_at: expect.anything(),
+          next_stitch_at: null,
+          next_stitch_ticket: null,
+          last_discovery_at: expect.anything(),
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('refresh_state')).resolves.toEqual([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          location_key: null,
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          cache: null,
+          unprocessed_hash: null,
+          result_hash: null,
+          next_update_at: expect.anything(),
+          last_discovery_at: expect.anything(),
+        },
+      ]);
+
+      await knex.destroy();
+    },
+  );
 });
