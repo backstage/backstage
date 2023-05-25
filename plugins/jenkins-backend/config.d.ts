@@ -38,11 +38,17 @@ export interface Config {
        * instance.
        */
       name: string;
-
       baseUrl: string;
       username: string;
       /** @visibility secret */
       apiKey: string;
+      extraRequestHeaders?: Partial<{
+        /** @visibility secret */
+        Authorization: string;
+        /** @visibility secret */
+        authorization: string;
+        [key: string]: string;
+      }>;
     }[];
   };
 }
