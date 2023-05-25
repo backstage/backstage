@@ -70,10 +70,24 @@ a Backstage app server on port 3000. The Backstage app has a custom TechDocs API
 implementation, which uses the MkDocs preview server as a proxy to fetch the
 generated documentation files and assets.
 
+### Preview TechDocs site locally with a provided Backstage app
+
 Backstage instances might differ from the provided preview app in appearance and
 behavior. To preview documentation with a different app, use
 `--preview-app-bundle-path` with a path to the bundle of the app to use instead.
 Typically, a `dist` or `build` directory.
+
+Firstly, generate the mkdocs site and provide your catalog-info file
+
+```bash
+techdocs-cli generate --catalog-file [CATALOG FILE PATH]
+```
+
+Serve the app. Optionally provide a `--preview-app-port` if your Backstage bundle is hardcoded to issue requests to a backend with a port other than the default (3000)
+
+```bash
+techdocs-cli serve --preview-app-bundle-path [BACKSTAGE APP BUNDLE PATH]
+```
 
 NOTE: When using a custom `techdocs` docker image, make sure the entry point is
 also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
