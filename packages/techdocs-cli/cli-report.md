@@ -34,6 +34,7 @@ Options:
   --techdocs-ref <HOST_TYPE:URL>
   --etag <ETAG>
   --site-name
+  --catalog-file <PATH>
   -v --verbose
   --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
@@ -101,6 +102,7 @@ Options:
   --docker-option <DOCKER_OPTION...>
   --no-docker
   --site-name
+  --site-dir <PATH>
   --mkdocs-port <PORT>
   -v --verbose
   --preview-app-bundle-path <PATH_TO_BUNDLE>
