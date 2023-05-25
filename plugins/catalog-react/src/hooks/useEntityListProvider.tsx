@@ -41,16 +41,17 @@ import {
   EntityTypeFilter,
   UserListFilter,
   EntityNamespaceFilter,
+  UserOwnersFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
-import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
+import { reduceBackendCatalogFilters, reduceEntityFilters } from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
 /** @public */
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
-  user?: UserListFilter;
+  user?: UserListFilter | UserOwnersFilter;
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
@@ -156,8 +157,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     async () => {
       const compacted = compact(Object.values(requestedFilters));
       const entityFilter = reduceEntityFilters(compacted);
-      const backendFilter = reduceCatalogFilters(compacted);
-      const previousBackendFilter = reduceCatalogFilters(
+      const backendFilter = reduceBackendCatalogFilters(compacted);
+      const previousBackendFilter = reduceBackendCatalogFilters(
         compact(Object.values(outputState.appliedFilters)),
       );
 
