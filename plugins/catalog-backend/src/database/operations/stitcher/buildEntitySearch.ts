@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
-import { DbSearchRow } from '../database/tables';
+import { DbSearchRow } from '../../tables';
 
 // These are excluded in the generic loop, either because they do not make sense
 // to index, or because they are special-case always inserted whether they are

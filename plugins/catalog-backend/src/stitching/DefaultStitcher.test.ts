@@ -25,7 +25,7 @@ import {
   DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
-import { Stitcher } from './Stitcher';
+import { DefaultStitcher } from './DefaultStitcher';
 
 jest.setTimeout(60_000);
 
@@ -41,7 +41,11 @@ describe('Stitcher', () => {
       const db = await databases.init(databaseId);
       await applyDatabaseMigrations(db);
 
-      const stitcher = new Stitcher(db, logger);
+      const stitcher = new DefaultStitcher({
+        knex: db,
+        logger,
+        strategy: { mode: 'immediate' },
+      });
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
 
@@ -85,7 +89,7 @@ describe('Stitcher', () => {
         },
       ]);
 
-      await stitcher.stitch(new Set(['k:ns/n']));
+      await stitcher.stitch({ entityRefs: ['k:ns/n'] });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
 
@@ -165,7 +169,7 @@ describe('Stitcher', () => {
       );
 
       // Re-stitch without any changes
-      await stitcher.stitch(new Set(['k:ns/n']));
+      await stitcher.stitch({ entityRefs: ['k:ns/n'] });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
       expect(entities.length).toBe(1);
@@ -183,7 +187,7 @@ describe('Stitcher', () => {
         },
       ]);
 
-      await stitcher.stitch(new Set(['k:ns/n']));
+      await stitcher.stitch({ entityRefs: ['k:ns/n'] });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
 
