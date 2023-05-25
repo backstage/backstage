@@ -25,6 +25,11 @@ import { HttpRouterService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
+/**
+ * Module providing Unprocessed Entities API endpoints
+ *
+ * @public
+ */
 export class UnprocessedEntitesModule {
   private readonly moduleRouter;
 

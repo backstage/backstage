@@ -20,6 +20,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { UnprocessedEntitesModule } from './module';
 
+/**
+ * Catalog Module for Unprocessed Entities
+ *
+ * @public
+ */
 export const catalogModuleUnprocessedEntities = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'catalogModuleUnprocessedEntities',
