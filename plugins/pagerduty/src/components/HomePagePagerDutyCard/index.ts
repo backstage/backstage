@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export type {
-  PagerDutyChangeEvent,
-  PagerDutyIncident,
-  PagerDutyService,
-  PagerDutyOnCall,
-  PagerDutyAssignee,
-  PagerDutyUser,
-} from './types';
-
-export type { EntityPagerDutyCardProps } from './EntityPagerDutyCard';
-export type { HomePagePagerDutyCardProps } from './HomePagePagerDutyCard';
-
-export {
-  isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isPagerDutyAvailable,
-  EntityPagerDutyCard,
-} from './EntityPagerDutyCard';
-
-export { TriggerButton } from './TriggerButton';
+export { Content } from './Content';
+export type { HomePagePagerDutyCardProps } from './Content';

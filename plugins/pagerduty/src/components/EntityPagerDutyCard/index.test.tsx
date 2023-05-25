@@ -15,7 +15,12 @@
  */
 import React from 'react';
 import { render, waitFor, fireEvent, act } from '@testing-library/react';
-import { PagerDutyCard } from '../PagerDutyCard';
+import {
+  EntityPagerDutyCard,
+  isPluginApplicableToEntity,
+} from '../EntityPagerDutyCard';
+import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
@@ -23,6 +28,49 @@ import { PagerDutyService, PagerDutyUser } from '../types';
 
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
+
+const entity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/integration-key': 'abc123',
+    },
+  },
+};
+
+const entityWithoutAnnotations: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {},
+  },
+};
+
+const entityWithServiceId: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/service-id': 'def456',
+    },
+  },
+};
+
+const entityWithAllAnnotations: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/integration-key': 'abc123',
+      'pagerduty.com/service-id': 'def456',
+    },
+  },
+};
 
 const user: PagerDutyUser = {
   name: 'person1',
@@ -46,6 +94,7 @@ const service: PagerDutyService = {
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByEntity: async () => ({ service }),
+  getServiceByPagerDutyEntity: async () => ({ service }),
   getOnCallByPolicyId: async () => ({ oncalls: [] }),
   getIncidentsByServiceId: async () => ({ incidents: [] }),
 };
@@ -55,7 +104,33 @@ const apis = TestApiRegistry.from(
   [alertApiRef, {}],
 );
 
-describe('PagerDutyCard', () => {
+describe('isPluginApplicableToEntity', () => {
+  describe('when entity has no annotations', () => {
+    it('returns false', () => {
+      expect(isPluginApplicableToEntity(entityWithoutAnnotations)).toBe(false);
+    });
+  });
+
+  describe('when entity has the pagerduty.com/integration-key annotation', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entity)).toBe(true);
+    });
+  });
+
+  describe('when entity has the pagerduty.com/service-id annotation', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entityWithServiceId)).toBe(true);
+    });
+  });
+
+  describe('when entity has all annotations', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entityWithAllAnnotations)).toBe(true);
+    });
+  });
+});
+
+describe('EntityPagerDutyCard', () => {
   it('Render pagerduty', async () => {
     mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
@@ -64,7 +139,9 @@ describe('PagerDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
+          <EntityProvider entity={entity}>
+            <EntityPagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -83,7 +160,9 @@ describe('PagerDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
+          <EntityProvider entity={entity}>
+            <EntityPagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -99,7 +178,9 @@ describe('PagerDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
+          <EntityProvider entity={entity}>
+            <EntityPagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -114,7 +195,9 @@ describe('PagerDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
+          <EntityProvider entity={entity}>
+            <EntityPagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -135,7 +218,9 @@ describe('PagerDutyCard', () => {
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard name="blah" integrationKey="abc123" />
+          <EntityProvider entity={entity}>
+            <EntityPagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -158,7 +243,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard name="blah" integrationKey="abc123" />
+            <EntityProvider entity={entityWithServiceId}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -177,11 +264,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
+            <EntityProvider entity={entityWithServiceId}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -199,11 +284,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
+            <EntityProvider entity={entityWithServiceId}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -218,11 +301,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
+            <EntityProvider entity={entityWithServiceId}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -243,7 +324,9 @@ describe('PagerDutyCard', () => {
       const { queryByTestId, getByTitle } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard name="blah" serviceId="def123" />
+            <EntityProvider entity={entityWithServiceId}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -264,11 +347,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-            />
+            <EntityProvider entity={entityWithAllAnnotations}>
+              <EntityPagerDutyCard />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );
@@ -289,12 +370,9 @@ describe('PagerDutyCard', () => {
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <PagerDutyCard
-              name="blah"
-              integrationKey="abc123"
-              serviceId="def123"
-              readOnly
-            />
+            <EntityProvider entity={entityWithAllAnnotations}>
+              <EntityPagerDutyCard readOnly />
+            </EntityProvider>
           </ApiProvider>,
         ),
       );

@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Button } from '@material-ui/core';
-import { EmptyState } from '@backstage/core-components';
 
-export const ServiceNotFoundError = () => (
-  <EmptyState
-    missing="data"
-    title="PagerDuty Service Not Found"
-    description="A service could not be found within PagerDuty based on the provided service id. Please verify your configuration."
-    action={
-      <Button
-        color="primary"
-        variant="contained"
-        href="https://github.com/backstage/backstage/blob/master/plugins/pagerduty/README.md"
-      >
-        Read More
-      </Button>
-    }
-  />
-);
+import { PagerDutyEntity } from '../../types';
+import { PagerDutyCard } from '../PagerDutyCard';
+
+/** @public */
+export type HomePagePagerDutyCardProps = PagerDutyEntity & {
+  readOnly?: boolean;
+};
+
+/** @public */
+export const Content = (props: HomePagePagerDutyCardProps) => {
+  return <PagerDutyCard {...props} />;
+};

@@ -30,6 +30,7 @@ import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import React from 'react';
 import HomeIcon from '@material-ui/icons/Home';
+import { HomePagePagerDutyCard } from '@backstage/plugin-pagerduty';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -93,6 +94,7 @@ export const homePage = (
         <HomePageSearchBar />
         <HomePageRandomJoke />
         <HomePageCalendar />
+        <HomePagePagerDutyCard name="Rota" />
         <MicrosoftCalendarCard />
         <HomePageStarredEntities />
         <HomePageCompanyLogo />
