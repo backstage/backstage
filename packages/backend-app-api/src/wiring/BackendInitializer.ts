@@ -22,20 +22,23 @@ import {
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
-import {
-  BackendRegisterInit,
-  EnumerableServiceHolder,
-  ServiceOrExtensionPoint,
-} from './types';
+import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
 
+export interface BackendRegisterInit {
+  consumes: Set<ServiceOrExtensionPoint>;
+  provides: Set<ServiceOrExtensionPoint>;
+  init: {
+    deps: { [name: string]: ServiceOrExtensionPoint };
+    func: (deps: { [name: string]: unknown }) => Promise<void>;
+  };
+}
+
 export class BackendInitializer {
   #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
-  #pluginInits = new Array<BackendRegisterInit>();
-  #moduleInits = new Map<string, Array<BackendRegisterInit>>();
   #extensionPoints = new Map<ExtensionPoint<unknown>, unknown>();
   #serviceHolder: EnumerableServiceHolder;
 
@@ -132,6 +135,9 @@ export class BackendInitializer {
       }
     }
 
+    const pluginInits = new Map<string, BackendRegisterInit>();
+    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+
     // Enumerate all features
     for (const feature of this.#features) {
       for (const r of feature.getRegistrations()) {
@@ -150,20 +156,26 @@ export class BackendInitializer {
         }
 
         if (r.type === 'plugin') {
-          this.#pluginInits.push({
-            id: r.pluginId,
+          if (pluginInits.has(r.pluginId)) {
+            throw new Error(`Plugin '${r.pluginId}' is already registered`);
+          }
+          pluginInits.set(r.pluginId, {
             provides,
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
         } else {
-          let modules = this.#moduleInits.get(r.pluginId);
+          let modules = moduleInits.get(r.pluginId);
           if (!modules) {
-            modules = [];
-            this.#moduleInits.set(r.pluginId, modules);
+            modules = new Map();
+            moduleInits.set(r.pluginId, modules);
           }
-          modules.push({
-            id: `${r.pluginId}.${r.moduleId}`,
+          if (modules.has(r.moduleId)) {
+            throw new Error(
+              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
+            );
+          }
+          modules.set(r.moduleId, {
             provides,
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
@@ -172,32 +184,38 @@ export class BackendInitializer {
       }
     }
 
+    const allPluginIds = [
+      ...new Set([...pluginInits.keys(), ...moduleInits.keys()]),
+    ];
+
     // All plugins are initialized in parallel
     await Promise.all(
-      this.#pluginInits.map(async pluginInit => {
+      allPluginIds.map(async pluginId => {
         // Modules are initialized before plugins, so that they can provide extension to the plugin
-        const modules = this.#moduleInits.get(pluginInit.id) ?? [];
+        const modules = moduleInits.get(pluginId) ?? [];
         await Promise.all(
-          modules.map(async moduleInit => {
+          Array.from(modules.values()).map(async moduleInit => {
             const moduleDeps = await this.#getInitDeps(
               moduleInit.init.deps,
-              moduleInit.id,
+              pluginId,
             );
             await moduleInit.init.func(moduleDeps);
           }),
         );
 
         // Once all modules have been initialized, we can initialize the plugin itself
-        const pluginDeps = await this.#getInitDeps(
-          pluginInit.init.deps,
-          pluginInit.id,
-        );
-        await pluginInit.init.func(pluginDeps);
+        const pluginInit = pluginInits.get(pluginId);
+        // We allow modules to be installed without the accompanying plugin, so the plugin may not exist
+        if (pluginInit) {
+          const pluginDeps = await this.#getInitDeps(
+            pluginInit.init.deps,
+            pluginId,
+          );
+          await pluginInit.init.func(pluginDeps);
+        }
 
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
-        const lifecycleService = await this.#getPluginLifecycleImpl(
-          pluginInit.id,
-        );
+        const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
         await lifecycleService.startup();
       }),
     );
