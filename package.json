@@ -56,7 +56,6 @@
     "@backstage/cli": "workspace:*",
     "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
-    "@backstage/plugin-catalog-unprocessed-entities": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^19.0.3",
