@@ -46,9 +46,15 @@ export function useEntityOwnership(): {
     return ownershipEntityRefs;
   }, []);
 
-  const isOwnedEntity = useMemo(() => {
+  const isOwnedEntity = useIsOwnedEntity(refs);
+
+  return useMemo(() => ({ loading, isOwnedEntity }), [loading, isOwnedEntity]);
+}
+
+export function useIsOwnedEntity(refs?: string[]) {
+  return useMemo(() => {
     const myOwnerRefs = new Set(refs ?? []);
-    return (entity: Entity) => {
+    const isOwnedEntity = (entity: Entity) => {
       const entityOwnerRefs = getEntityRelations(entity, RELATION_OWNED_BY).map(
         stringifyEntityRef,
       );
@@ -59,7 +65,6 @@ export function useEntityOwnership(): {
       }
       return false;
     };
+    return isOwnedEntity;
   }, [refs]);
-
-  return useMemo(() => ({ loading, isOwnedEntity }), [loading, isOwnedEntity]);
 }
