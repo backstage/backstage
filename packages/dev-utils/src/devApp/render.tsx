@@ -44,7 +44,7 @@ import {
 } from '@backstage/integration-react';
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode } from 'react';
+import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
@@ -164,7 +164,7 @@ export class DevAppBuilder {
   /**
    * Build a DevApp component using the resources registered so far
    */
-  build(): ComponentType<{}> {
+  build(): ComponentType<PropsWithChildren<{}>> {
     const fakeRouteRef = createRouteRef({ id: 'fake' });
     const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 import { Grid } from '@material-ui/core';
 import LabelIcon from '@material-ui/icons/Label';
@@ -31,7 +31,7 @@ export default {
   title: 'Plugins/Search/SearchAutocomplete',
   component: SearchAutocomplete,
   decorators: [
-    (Story: ComponentType<{}>) => (
+    (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

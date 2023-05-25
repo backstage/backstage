@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 import { List, ListItem } from '@material-ui/core';
 import DefaultIcon from '@material-ui/icons/InsertDriveFile';
@@ -70,7 +70,7 @@ export default {
   title: 'Plugins/Search/SearchResult',
   component: SearchResult,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
           <SearchContextProvider>

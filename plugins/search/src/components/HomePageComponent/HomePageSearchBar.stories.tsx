@@ -18,12 +18,12 @@ import { rootRouteRef, HomePageSearchBar } from '../../plugin';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
 export default {
   title: 'Plugins/Home/Components/SearchBar',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
           <TestApiProvider
