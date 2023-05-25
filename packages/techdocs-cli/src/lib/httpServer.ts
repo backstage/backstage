@@ -68,13 +68,11 @@ export default class HTTPServer {
   }
 
   public async serve(): Promise<http.Server> {
-    const entityMetadata = await fs.readFile(
+    const entityMetadata = await this.readMetadataFile(
       path.join(this.siteDir, 'entity_metadata.json'),
-      'utf8',
     );
-    const techdocsMetadata = await fs.readFile(
+    const techdocsMetadata = await this.readMetadataFile(
       path.join(this.siteDir, 'techdocs_metadata.json'),
-      'utf8',
     );
     return new Promise<http.Server>((resolve, reject) => {
       const proxyHandler = this.createProxy();
@@ -146,5 +144,14 @@ export default class HTTPServer {
         reject(error);
       });
     });
+  }
+
+  private async readMetadataFile(metadataFilePath: string): Promise<string> {
+    try {
+      return await fs.readFile(metadataFilePath, 'utf8');
+    } catch (error) {
+      // no-op
+    }
+    return '{}';
   }
 }
