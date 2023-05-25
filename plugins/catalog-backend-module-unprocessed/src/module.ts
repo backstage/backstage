@@ -15,118 +15,37 @@
  */
 
 import {
-  HydratedRefreshState,
-  RefreshState,
-  UnprocessedEntitiesRequest,
-  UnprocessedEntitiesResponse,
-} from './types';
-import { Knex } from 'knex';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
-import Router from 'express-promise-router';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { UnprocessedEntitesModule } from './UnprocessedEntitiesModule';
 
 /**
- * Module providing Unprocessed Entities API endpoints
+ * Catalog Module for Unprocessed Entities
  *
  * @public
  */
-export class UnprocessedEntitesModule {
-  private readonly moduleRouter;
-
-  constructor(
-    private readonly database: Knex,
-    private readonly router: HttpRouterService,
-  ) {
-    this.moduleRouter = Router();
-    this.router.use(this.moduleRouter);
-  }
-
-  private async unprocessed(
-    request: UnprocessedEntitiesRequest,
-  ): Promise<UnprocessedEntitiesResponse> {
-    if (request.reason === 'pending') {
-      return {
-        type: 'pending',
-        entities: await this.pending(request.owner),
-      };
-    }
-    return {
-      type: 'failed',
-      entities: await this.failed(request.owner),
-    };
-  }
-
-  private hydrateRefreshState(r: RefreshState): HydratedRefreshState {
-    return {
-      ...r,
-      unprocessed_entity: JSON.parse(r.unprocessed_entity),
-      ...(r.processed_entity && {
-        processed_entity: JSON.parse(r.processed_entity),
-      }),
-      ...(r.errors && { errors: JSON.parse(r.errors) }),
-      ...(r.cache && { cache: JSON.parse(r.cache) }),
-    };
-  }
-
-  private async pending(owner?: string): Promise<HydratedRefreshState[]> {
-    const res = (
-      await this.database('refresh_state.*')
-        .from('refresh_state')
-        .leftJoin(
-          'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
-        )
-        .whereNull('final_entities.entity_id')
-    ).map(this.hydrateRefreshState);
-    if (owner) {
-      return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
-    }
-
-    return res;
-  }
-
-  private async failed(owner?: string): Promise<HydratedRefreshState[]> {
-    const res = (
-      await this.database('refresh_state.*')
-        .from('refresh_state')
-        .rightJoin(
-          'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
-        )
-        .whereNull('final_entities.final_entity')
-    ).map(this.hydrateRefreshState);
-    if (owner) {
-      return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
-    }
-
-    return res;
-  }
-
-  registerRoutes() {
-    this.moduleRouter
-      .get('/entities/unprocessed/failed', async (req, res) => {
-        return res.json(
-          await this.unprocessed({
-            reason: 'failed',
-            owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
-          }),
+export const catalogModuleUnprocessedEntities = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'catalogModuleUnprocessedEntities',
+  register(env) {
+    env.registerInit({
+      deps: {
+        database: coreServices.database,
+        router: coreServices.httpRouter,
+        logger: coreServices.logger,
+      },
+      async init({ database, router, logger }) {
+        const module = new UnprocessedEntitesModule(
+          await database.getClient(),
+          router,
         );
-      })
-      .get('/entities/unprocessed/pending', async (req, res) => {
-        return res.json(
-          await this.unprocessed({
-            reason: 'pending',
-            owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
-          }),
+
+        module.registerRoutes();
+        logger.info(
+          'registered additional routes for catalogModuleUnprocessedEntities',
         );
-      });
-  }
-}
+      },
+    });
+  },
+});
