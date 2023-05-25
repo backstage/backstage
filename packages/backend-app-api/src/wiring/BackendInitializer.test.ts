@@ -115,4 +115,64 @@ describe('BackendInitializer', () => {
       "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
     );
   });
+
+  it('should reject duplicate plugins', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' is already registered",
+    );
+  });
+
+  it('should reject duplicate modules', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' is already registered",
+    );
+  });
 });
