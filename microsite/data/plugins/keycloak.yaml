@@ -2,7 +2,7 @@
 title: Authentication and Authorization with Keycloak
 author: Red Hat
 authorUrl: https://redhat.com
-category: Authentication
+category: Authentication/Authorization
 description: Load users and groups from Keycloak, enabling use of multiple authentication providers to be applied to Backstage entities.
 documentation: https://janus-idp.io/plugins/keycloak
 iconUrl: http://janus-idp.io/images/plugins/keycloak.svg

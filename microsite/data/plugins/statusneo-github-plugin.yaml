@@ -1,7 +1,7 @@
 title: Statusneo GitHub Plugin
 author: Statusneo
 authorUrl: https://statusneo.com/
-category: GitHub
+category: Source Control Mgmt
 description: Provides status cards GitHub pull requests and GitHub actions.
 documentation: https://github.com/StatusNeo/backstage-plugin-github
 iconUrl: /img/github-statusneo.png
