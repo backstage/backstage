@@ -514,7 +514,7 @@ HTML and prevent XSS attacks.
 
 It's possible to allow some iframes based on a list of allowed hosts. To do
 this, add the allowed hosts in the `techdocs.sanitizer.allowedIframeHosts`
-configuration of your `app-config.yaml`
+configuration of your `app-config.yaml`.
 
 For example:
 
