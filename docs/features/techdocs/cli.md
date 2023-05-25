@@ -85,10 +85,10 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs")
+  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs:v1.2.0")
   --docker-entrypoint <DOCKER_ENTRYPOINT>     Override the image entrypoint
-  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
-                                              (can be added multiple times).
+  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added
+                                              multiple times).
   --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
   --mkdocs-parameter-clean                    Pass "--clean" parameter to mkdocs server running in containerized environment.
   --mkdocs-parameter-dirtyreload              Pass "--dirtyreload" parameter to mkdocs server running in containerized environment.
@@ -99,6 +99,8 @@ Options:
                                               Can only be used with "--preview-app-bundle-path". (default: "3000")
   -c, --mkdocs-config-file-name <FILENAME>    Yaml file to use as config by mkdocs.
   -v --verbose                                Enable verbose output. (default: false)
+  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using another web app
+  --preview-app-port <PORT>                   Port for the preview app to be served on (default: "3000")
   -h, --help                                  display help for command
 ```
 
@@ -125,7 +127,6 @@ sure all the dependencies are installed. But it can be disabled using
 Command reference:
 
 ```bash
-techdocs-cli generate --help
 Usage: techdocs-cli generate|build [options]
 
 Generate TechDocs documentation site using MkDocs.
@@ -133,7 +134,7 @@ Generate TechDocs documentation site using MkDocs.
 Options:
   --source-dir <PATH>             Source directory containing mkdocs.yml and docs/ directory. (default: ".")
   --output-dir <PATH>             Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
+  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.2.0")
   --no-pull                       Do not pull the latest docker image
   --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
   --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.
@@ -151,6 +152,9 @@ Options:
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
   --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
   -v --verbose                    Enable verbose output. (default: false)
+  --omitTechdocsCoreMkdocsPlugin  Don't patch MkDocs file automatically with techdocs-core plugin. (default: false)
+  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default
+                                  <docs-dir>/index.md is not provided. (default: false)
   -h, --help                      display help for command
 ```
 
