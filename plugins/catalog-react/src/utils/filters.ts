@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../types';
+import { EntityKindFilter, EntityTypeFilter } from '../filters';
 
 export function reduceCatalogFilters(
   filters: EntityFilter[],
@@ -26,6 +27,24 @@ export function reduceCatalogFilters(
       ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
     };
   }, {} as Record<string, string | symbol | (string | symbol)[]>);
+}
+
+export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
+  const backendCatalogFilters: Record<
+    string,
+    string | symbol | (string | symbol)[]
+  > = {};
+
+  filters.forEach(filter => {
+    if (
+      filter instanceof EntityKindFilter ||
+      filter instanceof EntityTypeFilter
+    ) {
+      Object.assign(backendCatalogFilters, filter.getCatalogFilters());
+    }
+  });
+
+  return backendCatalogFilters;
 }
 
 export function reduceEntityFilters(
