@@ -128,6 +128,7 @@ export default async function serve(opts: OptionValues) {
     previewAppPath,
     port,
     mkdocsExpectedDevAddr,
+    opts.siteDir,
     opts.verbose,
   );
 

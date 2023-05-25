@@ -86,16 +86,17 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs")
+  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs:v1.2.0")
   --docker-entrypoint <DOCKER_ENTRYPOINT>     Override the image entrypoint
-  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
-                                              (can be added multiple times).
+  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added
+                                              multiple times).
   --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
+  --site-name                                 Name for site when using default MkDocs config
+  --site-dir <PATH>                           Directory containing generated TechDocs site. (default: "./site/")
   --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
-  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
-  --preview-app-port <PORT>                   Port where the preview will be served.
-                                              Can only be used with "--preview-app-bundle-path". (default: "3000")
   -v --verbose                                Enable verbose output. (default: false)
+  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using another web app
+  --preview-app-port <PORT>                   Port for the preview app to be served on (default: "3000")
   -h, --help                                  display help for command
 ```
 
@@ -122,7 +123,6 @@ sure all the dependencies are installed. But it can be disabled using
 Command reference:
 
 ```bash
-techdocs-cli generate --help
 Usage: techdocs-cli generate|build [options]
 
 Generate TechDocs documentation site using MkDocs.
@@ -130,22 +130,20 @@ Generate TechDocs documentation site using MkDocs.
 Options:
   --source-dir <PATH>             Source directory containing mkdocs.yml and docs/ directory. (default: ".")
   --output-dir <PATH>             Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
+  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.2.0")
   --no-pull                       Do not pull the latest docker image
   --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
-  --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.
-                                  url:https://ghe.mycompany.net.com/org/repo.
-                                  This value is same as the backstage.io/techdocs-ref annotation of the corresponding
-                                  Backstage entity.
-                                  It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml
-                                  if not found.
-  --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
-                                  in techdocs_metadata.json.
-  --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
-                                  Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
-  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
-                                  in case a default <docs-dir>/index.md is not provided. (default: false)
+  --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.
+                                  This value is same as the backstage.io/techdocs-ref annotation of the corresponding Backstage entity.
+                                  It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml if not found.
+  --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
+  --site-name                     Name for site when using default MkDocs config
+  --catalog-file <PATH>           Path to the backstage catalog file. This optional and will only be used if serving using the --preview-app-bundle-path
+                                  flag
   -v --verbose                    Enable verbose output. (default: false)
+  --omitTechdocsCoreMkdocsPlugin  Don't patch MkDocs file automatically with techdocs-core plugin. (default: false)
+  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default
+                                  <docs-dir>/index.md is not provided. (default: false)
   -h, --help                      display help for command
 ```
 

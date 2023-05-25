@@ -23,6 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
+  createOrUpdateEntityMetadata,
   createOrUpdateMetadata,
   getMkdocsYml,
   patchIndexPreBuild,
@@ -92,6 +93,7 @@ export class TechdocsGenerator implements GeneratorBase {
     const {
       inputDir,
       outputDir,
+      catalogFilePath,
       parsedLocationAnnotation,
       etag,
       logger: childLogger,
@@ -186,6 +188,14 @@ export class TechdocsGenerator implements GeneratorBase {
     /**
      * Post Generate steps
      */
+
+    if (catalogFilePath) {
+      await createOrUpdateEntityMetadata(
+        catalogFilePath,
+        path.join(outputDir, 'entity_metadata.json'),
+        childLogger,
+      );
+    }
 
     // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
