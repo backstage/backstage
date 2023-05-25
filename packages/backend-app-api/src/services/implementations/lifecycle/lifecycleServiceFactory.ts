@@ -44,6 +44,9 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
     hook: LifecycleServiceStartupHook,
     options?: LifecycleServiceStartupOptions,
   ): void {
+    if (this.#hasStarted) {
+      throw new Error('Attempted to add startup hook after startup');
+    }
     this.#startupTasks.push({ hook, options });
   }
 

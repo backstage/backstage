@@ -39,6 +39,9 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     hook: LifecycleServiceStartupHook,
     options?: LifecycleServiceStartupOptions,
   ): void {
+    if (this.#hasStarted) {
+      throw new Error('Attempted to add startup hook after startup');
+    }
     this.#startupTasks.push({ hook, options });
   }
 
@@ -72,6 +75,9 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     hook: LifecycleServiceShutdownHook,
     options?: LifecycleServiceShutdownOptions,
   ): void {
+    if (this.#hasShutdown) {
+      throw new Error('Attempted to add shutdown hook after shutdown');
+    }
     this.#shutdownTasks.push({ hook, options });
   }
 
