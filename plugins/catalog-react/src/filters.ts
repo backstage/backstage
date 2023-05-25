@@ -201,7 +201,53 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 /**
+ * @public
+ */
+export class UserOwnersFilter implements EntityFilter {
+  private constructor(
+    readonly value: UserListFilterKind,
+    readonly refs?: string[],
+  ) {}
+
+  static owned(ownershipEntityRefs: string[]) {
+    return new UserOwnersFilter('owned', ownershipEntityRefs);
+  }
+
+  static all() {
+    return new UserOwnersFilter('all');
+  }
+
+  static starred(starredEntityRefs: string[]) {
+    return new UserOwnersFilter('starred', starredEntityRefs);
+  }
+
+  getCatalogFilters(): Record<string, string[]> {
+    if (this.value === 'owned') {
+      return { 'relations.ownedBy': this.refs ?? [] };
+    }
+    if (this.value === 'starred') {
+      return {
+        'metadata.name': this.refs?.map(e => parseEntityRef(e).name) ?? [],
+      };
+    }
+    return {};
+  }
+
+  filterEntity(entity: Entity) {
+    if (this.value === 'starred') {
+      return this.refs?.includes(stringifyEntityRef(entity)) ?? true;
+    }
+    return true;
+  }
+
+  toQueryValue(): string {
+    return this.value;
+  }
+}
+
+/**
  * Filters entities based on whatever the user has starred or owns them.
+ * @deprecated use UserOwnersFilter
  * @public
  */
 export class UserListFilter implements EntityFilter {
