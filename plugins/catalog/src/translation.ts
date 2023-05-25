@@ -18,12 +18,7 @@ import { createTranslationRef } from '@backstage/core-plugin-api';
 
 export const catalogTranslationRef = createTranslationRef({
   id: 'catalog',
-  resources: {
-    en: {
-      catalog: 'catalog-en',
-    },
-    zh: {
-      catalog: '软件目录',
-    },
+  lazyResources: {
+    zh: () => import('./translations/zh'),
   },
 });

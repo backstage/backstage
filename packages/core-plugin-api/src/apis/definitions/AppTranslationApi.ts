@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
 import { type i18n } from 'i18next';
+
+import { ApiRef, createApiRef } from '../system';
+
+import { TranslationRef } from '../../translation';
 
 export type AppTranslationApi = {
   getI18n(): i18n;
+
+  useTranslationRef<
+    LazyMessages extends Record<string, string>,
+    Messages extends Record<string, string>,
+  >(
+    translationRef: TranslationRef<LazyMessages, Messages>,
+  ): void;
 };
 
 /**

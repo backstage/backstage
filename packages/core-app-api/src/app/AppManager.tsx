@@ -78,7 +78,7 @@ import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
 import { AppRouter, getBasePath } from './AppRouter';
 import { AppTranslationProvider } from './AppTranslationProvider';
-import { createAppTranslation } from './createAppTranslation';
+import { AppTranslationApiImpl } from '../apis/implementations/AppTranslationApi';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -229,7 +229,7 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.appTranslationApi = createAppTranslation(options.initI18next);
+    this.appTranslationApi = AppTranslationApiImpl.create(options.initI18next);
   }
 
   getPlugins(): BackstagePlugin[] {

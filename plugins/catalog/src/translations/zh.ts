@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-import { createTranslationRef } from '@backstage/core-plugin-api';
-
-export const userSettingsTranslationRef = createTranslationRef({
-  id: 'user-settings',
-  lazyResources: {
-    zh: () => import('./translations/zh'),
-  },
-  // The following are loaded eagerly because they are used in the settings
-  resources: {
-    en: {
-      lng: 'English',
-      select_lng: 'Select English',
-    },
-    zh: {
-      lng: '中文',
-      select_lng: '选择中文',
-    },
-  },
-});
+export const messages = {
+  page_title: '{{ orgName }} 软件目录',
+};

@@ -26,8 +26,8 @@ import {
 import {
   configApiRef,
   useApi,
-  usePluginTranslation,
   useRouteRef,
+  useTranslationRef,
 } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
@@ -76,11 +76,15 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
   const { createButtonTitle } = useCatalogPluginOptions();
-  const { t } = usePluginTranslation(catalogTranslationRef);
+
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <PageWithHeader
-      title={`${orgName} ${t('catalog', 'Catalog')}`}
+      title={t('page_title', {
+        defaultValue: `${orgName} Catalog`,
+        orgName,
+      })}
       themeId="home"
     >
       <Content>

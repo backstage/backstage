@@ -15,6 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -24,8 +25,7 @@ import {
   Tooltip,
   makeStyles,
 } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import { TRANSLATION_NS } from '../../translation';
+import { userSettingsTranslationRef } from '../../translation';
 
 type TooltipToggleButtonProps = {
   children: JSX.Element;
@@ -85,7 +85,7 @@ const TooltipToggleButton = ({
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
 
-  const { t, i18n } = useTranslation(TRANSLATION_NS);
+  const { t, i18n } = useTranslationRef(userSettingsTranslationRef);
 
   const supportedLngs = useMemo(
     () => (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode'),
@@ -125,19 +125,16 @@ export const UserSettingsLanguageToggle = () => {
           onChange={handleSetLanguage}
         >
           {supportedLngs.map(lng => {
-            const isEn = lng === 'en';
             return (
               <TooltipToggleButton
                 key={lng}
                 title={t('select_lng', {
-                  defaultValue: isEn ? 'Select English' : undefined,
                   lng,
                 })}
                 value={lng}
               >
                 <>
                   {t('lng', {
-                    defaultValue: isEn ? 'English' : undefined,
                     lng,
                   })}
                 </>

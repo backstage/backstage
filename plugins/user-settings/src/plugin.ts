@@ -19,7 +19,6 @@ import {
   createRoutableExtension,
   createRouteRef,
 } from '@backstage/core-plugin-api';
-import { settingTranslationRef } from './translation';
 
 export const settingsRouteRef = createRouteRef({
   id: 'user-settings',
@@ -31,7 +30,6 @@ export const userSettingsPlugin = createPlugin({
   routes: {
     settingsPage: settingsRouteRef,
   },
-  translationRef: settingTranslationRef,
 });
 
 /** @public */

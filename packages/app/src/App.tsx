@@ -124,14 +124,8 @@ const app = createApp({
         default: ['en'],
       },
       resources: {
-        zh: {
-          'plugin__user-settings': {
-            lng: '中文',
-            select_lng: '选择中文',
-          },
-        },
         'zh-Hans': {
-          'plugin__user-settings': {
+          'user-settings': {
             lng: '简体中文',
             select_lng: '选择简体中文',
           },

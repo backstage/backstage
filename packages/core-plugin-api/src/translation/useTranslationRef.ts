@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-export interface TranslationRefConfig<
+import { TOptions } from 'i18next';
+import { useTranslation } from 'react-i18next';
+
+import { TranslationRef } from './types';
+import { appTranslationApiRef, useApi } from '../apis';
+
+export const useTranslationRef = <
   LazyMessages extends Record<string, string>,
   Messages extends Record<string, string>,
-> {
-  id: string;
-  lazyResources: Record<string, () => Promise<{ messages: LazyMessages }>>;
-  resources?: Record<string, Messages>;
-}
+>(
+  translationRef: TranslationRef<LazyMessages, Messages>,
+) => {
+  type MessageKey = keyof Messages | keyof LazyMessages;
 
-export interface TranslationRef<
-  LazyMessages extends Record<string, string> = Record<string, string>,
-  Messages extends Record<string, string> = Record<string, string>,
-> {
-  getId(): string;
+  const appTranslationApi = useApi(appTranslationApiRef);
 
-  getResources(): Record<string, Messages> | undefined;
+  appTranslationApi.useTranslationRef(translationRef);
 
-  getLazyResources(): Record<string, () => Promise<{ messages: LazyMessages }>>;
-}
+  const translation = useTranslation(translationRef.getId());
+
+  return translation as Omit<typeof translation, 't'> & {
+    t(key: MessageKey, defaultValue?: string): string;
+    t(key: MessageKey, options?: TOptions): string;
+  };
+};
