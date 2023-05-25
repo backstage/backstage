@@ -1,8 +1,24 @@
 # catalog-unprocessed-entities
 
-Welcome to the catalog-unprocessed-entities plugin!
+Frontend plugin to view unprocessed entities.
 
-_This plugin was created through the Backstage CLI_
+## Requirements
+
+Requires the `@backstage/plugin-catalog-backend-module-unprocessed` module to be installed.
+
+## Installation
+
+Import into your App.tsx and include into the `<FlatRoutes>` component:
+
+```tsx
+import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+//...
+
+<Route
+  path="/catalog-unprocessed-entities"
+  element={<CatalogUnprocessedEntitiesPage />}
+/>;
+```
 
 ## Getting started
 
