@@ -48,13 +48,13 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     }
     this.#hasStarted = true;
 
-    this.logger.info(`Running ${this.#startupTasks.length} startup tasks...`);
+    this.logger.debug(`Running ${this.#startupTasks.length} startup tasks...`);
     await Promise.all(
       this.#startupTasks.map(async ({ hook, options }) => {
         const logger = options?.logger ?? this.logger;
         try {
           await hook();
-          logger.info(`Startup hook succeeded`);
+          logger.debug(`Startup hook succeeded`);
         } catch (error) {
           logger.error(`Startup hook failed, ${error}`);
         }
@@ -81,13 +81,15 @@ export class BackendLifecycleImpl implements RootLifecycleService {
     }
     this.#hasShutdown = true;
 
-    this.logger.info(`Running ${this.#shutdownTasks.length} shutdown tasks...`);
+    this.logger.debug(
+      `Running ${this.#shutdownTasks.length} shutdown tasks...`,
+    );
     await Promise.all(
       this.#shutdownTasks.map(async ({ hook, options }) => {
         const logger = options?.logger ?? this.logger;
         try {
           await hook();
-          logger.info(`Shutdown hook succeeded`);
+          logger.debug(`Shutdown hook succeeded`);
         } catch (error) {
           logger.error(`Shutdown hook failed, ${error}`);
         }
