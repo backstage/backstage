@@ -2,4 +2,4 @@
 '@backstage/plugin-proxy-backend': patch
 ---
 
-The headers `Authorization` and `X-Api-Key` are sensitive and must be declared a secret.
+Marked headers `Authorization` and `X-Api-Key` as secret in order to not show up in frontend configuration.
