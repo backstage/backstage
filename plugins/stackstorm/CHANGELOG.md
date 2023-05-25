@@ -1,5 +1,34 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes

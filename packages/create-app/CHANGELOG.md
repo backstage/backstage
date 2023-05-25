@@ -1,5 +1,28 @@
 # @backstage/create-app
 
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.1
+
+### Patch Changes
+
+- 1d5e42655cd: Correct command to create new plugins
+- e04bb20bdc4: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.1-next.2
+
+### Patch Changes
+
+- 1d5e42655cd: Correct command to create new plugins
+
 ## 0.5.1-next.1
 
 ### Patch Changes
@@ -2595,7 +2618,7 @@
   fields that clarify a previous grey area such that the intent of the alteration
   is made explicit. This is caught by `tsc` and your editor if you are using the
   `@ts-check` and `@param` syntax in your migration files
-  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  ([example](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
   which we strongly recommend.
 
   See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
@@ -2665,7 +2688,7 @@
   fields that clarify a previous grey area such that the intent of the alteration
   is made explicit. This is caught by `tsc` and your editor if you are using the
   `@ts-check` and `@param` syntax in your migration files
-  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  ([example](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
   which we strongly recommend.
 
   See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more

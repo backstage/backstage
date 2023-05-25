@@ -24,7 +24,7 @@ describe('<EntityKindIcon />', () => {
       <EntityKindIcon kind="Component" />,
     );
 
-    expect(baseElement.querySelector('.MuiSvgIcon-root')).toBeInTheDocument();
+    expect(baseElement.querySelector('svg')).toBeInTheDocument();
   });
 
   it('renders without exploding for unknown kind', async () => {
@@ -32,6 +32,6 @@ describe('<EntityKindIcon />', () => {
       <EntityKindIcon kind="unknown" />,
     );
 
-    expect(baseElement.querySelector('.MuiSvgIcon-root')).toBeInTheDocument();
+    expect(baseElement.querySelector('svg')).toBeInTheDocument();
   });
 });

@@ -1,5 +1,40 @@
 # @backstage/plugin-kafka
 
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+
+## 0.3.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.3.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.3.18-next.1
 
 ### Patch Changes

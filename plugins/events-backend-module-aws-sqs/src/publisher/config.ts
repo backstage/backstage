@@ -31,6 +31,7 @@ export interface AwsSqsEventSourceConfig {
   topic: string;
   visibilityTimeout?: Duration;
   waitTimeAfterEmptyReceive: Duration;
+  endpoint?: string;
 }
 
 // TODO(pjungermann): validation could be improved similar to `convertToHumanDuration` at @backstage/backend-tasks
@@ -74,6 +75,7 @@ export function readConfig(config: Config): AwsSqsEventSourceConfig[] {
       }
       const queueUrl = topicConfig.getString('queue.url');
       const region = topicConfig.getString('queue.region');
+      const endpoint = topicConfig.getOptionalString('queue.endpoint');
       const visibilityTimeout = readOptionalDuration(
         topicConfig,
         'queue.visibilityTimeout',
@@ -106,6 +108,7 @@ export function readConfig(config: Config): AwsSqsEventSourceConfig[] {
       return {
         pollingWaitTime,
         queueUrl,
+        endpoint,
         region,
         timeout,
         topic,

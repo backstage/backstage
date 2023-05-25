@@ -14,15 +14,17 @@ To support GitLab authentication, you must create an Application from the
 [GitLab settings](https://gitlab.com/-/profile/applications). The `Redirect URI`
 should point to your Backstage backend auth handler.
 
-Settings for local development:
-
-- Name: Backstage (or your custom app name)
-- Redirect URI: `http://localhost:7007/api/auth/gitlab/handler/frame`
-- Scopes: `read_user` for sign-in. If you also need ID tokens (e.g. if you are
-  using the Kubernetes plugin and have clusters with `authProvider: oidc` and
-  [`oidcTokenProvider:
-gitlab`](https://backstage.io/docs/features/kubernetes/configuration/#clustersoidctokenprovider-optional)),
-  add the `openid` scope.
+1. Set Application Name to `backstage-dev` or something along those lines.
+2. The Authorization Callback URL should match the redirect URI set in Backstage.
+   1. Set this to `http://localhost:7007/api/auth/gitlab/handler/frame` for local development.
+   2. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/gitlab/handler/frame` for non-local deployments.
+   3. Select the following scopes from the list:
+      - [x] `read_user` Grants read-only access to the authenticated user's profile through the /user API endpoint, which includes username, public email, and full name. Also grants access to read-only API endpoints under /users.
+      - [x] `read_repository` Grants read-only access to repositories on private projects using Git-over-HTTP (not using the API).
+      - [x] `write_repository` Grants read-write access to repositories on private projects using Git-over-HTTP (not using the API).
+      - [x] `openid` Grants permission to authenticate with GitLab using OpenID Connect. Also gives read-only access to the user's profile and group memberships.
+      - [x] `profile` Grants read-only access to the user's profile data using OpenID Connect.
+      - [x] `email` Grants read-only access to the user's primary email address using OpenID Connect.
 
 ## Configuration
 

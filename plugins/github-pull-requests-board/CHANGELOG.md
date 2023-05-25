@@ -1,5 +1,40 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+
+## 0.1.12
+
+### Patch Changes
+
+- cf125c36569: The `EntityTeamPullRequestsContent` and `EntityTeamPullRequestsCard` support the ability to view the labels/tags added to each PR
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.1.12-next.1
 
 ### Patch Changes

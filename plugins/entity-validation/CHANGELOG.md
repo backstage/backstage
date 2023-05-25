@@ -1,5 +1,44 @@
 # @backstage/plugin-entity-validation
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 3d11596a72b5: Update plugin installation docs to be more consistent across documentations
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.1.3-next.1
 
 ### Patch Changes

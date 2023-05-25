@@ -22,6 +22,7 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { Pod } from 'kubernetes-models/v1';
+import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -281,6 +282,7 @@ export const kubernetesApiRef: ApiRef<KubernetesApi>;
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   constructor(options: {
+    microsoftAuthApi: OAuthApi;
     googleAuthApi: OAuthApi;
     oidcProviders?: {
       [key: string]: OpenIdConnectApi;

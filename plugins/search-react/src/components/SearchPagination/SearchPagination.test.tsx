@@ -185,4 +185,31 @@ describe('SearchPagination', () => {
       }),
     );
   });
+
+  it('Resets page cursor when page limit changes', async () => {
+    const initialState = {
+      term: '',
+      types: [],
+      filters: {},
+      pageCursor: 'Mg==', // page: 2
+    };
+
+    await renderWithEffects(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchPagination />
+        </SearchContextProvider>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByText('25')); // first click to open the options
+    await userEvent.click(screen.getByText('10')); // second click to select the option
+
+    expect(query).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        pageCursor: undefined,
+        pageLimit: 10,
+      }),
+    );
+  });
 });

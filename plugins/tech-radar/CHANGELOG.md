@@ -1,5 +1,35 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.6.4
+
+### Patch Changes
+
+- be4fa53fab8: Fix description links when clicking entry in radar.
+- Added the ability to display a timeline to each entry in the details box
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/core-components@0.13.1
+  - @backstage/core-plugin-api@1.5.1
+
+## 0.6.4-next.2
+
+### Patch Changes
+
+- be4fa53fab8: Fix description links when clicking entry in radar.
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.6.4-next.1
 
 ### Patch Changes

@@ -1,5 +1,41 @@
 # @backstage/plugin-github-issues
 
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.7.0-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/plugin-catalog-react@1.6.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/plugin-catalog-react@1.6.0-next.2
+  - @backstage/core-plugin-api@1.5.1
+
 ## 0.2.7-next.1
 
 ### Patch Changes

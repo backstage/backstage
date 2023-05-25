@@ -36,7 +36,7 @@ export const createGitlabProjectDeployTokenAction = (options: {
   return createTemplateAction({
     id: 'gitlab:projectDeployToken:create',
     schema: {
-      input: commonGitlabConfig.and(
+      input: commonGitlabConfig.merge(
         z.object({
           projectId: z.union([z.number(), z.string()], {
             description: 'Project ID',

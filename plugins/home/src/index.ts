@@ -36,12 +36,4 @@ export {
 export * from './components';
 export * from './assets';
 export * from './homePageComponents';
-export { createCardExtension } from './extensions';
-export type {
-  CardExtensionProps,
-  ComponentParts,
-  ComponentRenderer,
-  RendererProps,
-  CardLayout,
-  CardSettings,
-} from './extensions';
+export * from './deprecated';

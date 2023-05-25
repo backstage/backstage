@@ -188,6 +188,7 @@ learnings
 Leasot
 lerna
 Lerna
+lightbox
 limitranges
 LocalStack
 lockdown
@@ -247,6 +248,7 @@ Olausson
 Oldsberg
 onboarding
 Onboarding
+OpenSearch
 OpenShift
 orgs
 padding
@@ -314,6 +316,7 @@ scaffolded
 scaffolder
 Scaffolder
 scrollbar
+sdks
 seb
 semlas
 semver
@@ -341,6 +344,8 @@ stdout
 storable
 stringified
 stringify
+subcommand
+subcommands
 subcomponent
 subcomponents
 subfolder
@@ -389,6 +394,7 @@ transpilers
 truthy
 TSDoc
 typeahead
+Uffizzi
 ui
 unbreak
 Unconference

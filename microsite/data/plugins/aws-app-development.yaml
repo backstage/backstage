@@ -1,0 +1,10 @@
+---
+title: AWS App Developer Tools
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: Infrastructure
+description: Create and manage AWS Apps within Backstage
+documentation: https://github.com/awslabs/app-development-for-backstage-io-on-aws#readme
+iconUrl: https://github.com/awslabs/app-development-for-backstage-io-on-aws/blob/main/docs/images/AWS_logo.png?raw=true
+npmPackageName: '@aws/plugin-aws-apps-for-backstage'
+addedDate: '2023-05-10'

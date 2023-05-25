@@ -348,7 +348,28 @@ const gheAuthApiRef: ApiRef<OAuthApi & ProfileInfoApi & SessionApi> =
   });
 ```
 
-The new ref is then used to add a new provider to the ApiFactory:
+This new API ref will only work if you define an API factory for it. For example:
+
+```ts
+createApiFactory({
+  api: gheAuthApiRef,
+  deps: {
+    discoveryApi: discoveryApiRef,
+    oauthRequestApi: oauthRequestApiRef,
+    configApi: configApiRef,
+  },
+  factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+    GithubAuth.create({
+      configApi,
+      discoveryApi,
+      oauthRequestApi,
+      defaultScopes: ['read:user'],
+      environment: configApi.getOptionalString('auth.environment'),
+    }),
+});
+```
+
+The new API ref is then used to add a new provider to the ApiFactory:
 
 ```ts
 createApiFactory({

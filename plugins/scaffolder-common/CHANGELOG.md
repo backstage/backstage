@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.3.0
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+- 67115f532b8: Expose scaffolder permissions in new sub-aggregations.
+
+  In addition to exporting a list of all scaffolder permissions in `scaffolderPermissions`, scaffolder-common now exports `scaffolderTemplatePermissions` and `scaffolderActionPermissions`, which contain subsets of the scaffolder permissions separated by resource type.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-permission-common@0.7.5
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 82e10a6939c: Add support for Markdown text blob outputs from templates
+
 ## 1.2.7
 
 ### Patch Changes

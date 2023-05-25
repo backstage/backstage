@@ -1,5 +1,31 @@
 # @backstage/backend-test-utils
 
+## 0.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.4-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.0
+
+## 0.1.37
+
+### Patch Changes
+
+- 63af7f6d53f: Allow specifying custom Docker registry for database tests
+- b1eb268bf9d: Added `POSTGRES_11` and `POSTGRES_12` as supported test database IDs.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/backend-app-api@0.4.3
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.1.37-next.1
 
 ### Patch Changes

@@ -51,6 +51,8 @@ The Home Page can be composed with regular React components, so there's no magic
 Finally, the `createCardExtension` also accepts a generic, such that Component Developers can indicate to App Integrators what custom props their component will accept, such as the example below where the default category of the random jokes can be set.
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const RandomJokeHomePageComponent = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'programming' | 'any' }>({
     title: 'Random Joke',
@@ -121,6 +123,8 @@ want to add additional configuration like component size or settings, you can de
 property:
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const RandomJokeHomePageComponent = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
@@ -178,6 +182,8 @@ properties. The `settings.schema` object should follow
 must be `object`.
 
 ```tsx
+import { createCardExtension } from '@backstage/plugin-home-react';
+
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
@@ -241,4 +247,5 @@ Additionally, the API is at a very early state, so contributing with additional 
 
 ### Homepage Templates
 
-We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates). If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example to create your own](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx), and then open a PR with your suggestion.
+We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates).
+If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx) or [CustomizableTemplate storybook example](/packages/app/src/components/home/templates/CustomizableTemplate.stories.tsx) to create your own, and then open a PR with your suggestion.

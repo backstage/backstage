@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.3.7-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 0.2.1
+
+### Patch Changes
+
+- b12c41fafc4: Fix a corner case where returned users are null for bots
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes

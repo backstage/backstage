@@ -243,6 +243,8 @@ integrations:
       token: ${GITHUB_TOKEN} # this will use the environment variable GITHUB_TOKEN
 ```
 
+> Note: If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn dev`. Once the backend has restarted, retry the operation.
+
 Some helpful links, for if you want to learn more about:
 
 - [Other available integrations](../integrations/)

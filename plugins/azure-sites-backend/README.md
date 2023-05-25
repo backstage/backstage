@@ -2,7 +2,7 @@
 
 Simple plugin that proxies requests to the Azure Portal API through Azure SDK JavaScript libraries.
 
-_Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
+_Inspired by [roadie.io AWS Lambda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
 
 ## Setup
 
@@ -65,7 +65,7 @@ Here's how to get the backend plugin up and running:
    ```ts
    import azure from './plugins/azure';
 
-   // Removed for clairty...
+   // Removed for clarity...
 
    async function main() {
      // ...
@@ -82,4 +82,4 @@ Here's how to get the backend plugin up and running:
 
 4. Now run `yarn start-backend` from the repo root.
 
-5. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.
+5. Finally, open `http://localhost:7007/api/azure-sites/health` in a browser, it should return `{"status":"ok"}`.

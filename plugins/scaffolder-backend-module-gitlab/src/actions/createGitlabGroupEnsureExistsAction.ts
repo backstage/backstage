@@ -36,7 +36,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
     id: 'gitlab:group:ensureExists',
     description: 'Ensures a Gitlab group exists',
     schema: {
-      input: commonGitlabConfig.and(
+      input: commonGitlabConfig.merge(
         z.object({
           path: z
             .array(z.string(), {

@@ -48,6 +48,8 @@ describe('<RecentWorkflowRunsCard />', () => {
       name: 'software',
       annotations: {
         'github.com/project-slug': 'theorg/the-service',
+        'backstage.io/source-location':
+          'url:https://ghes.acme.co/theorg/the-service/tree/main/',
       },
     },
     spec: {
@@ -119,10 +121,14 @@ describe('<RecentWorkflowRunsCard />', () => {
     );
   });
 
-  it('uses the github repo and owner from the entity annotation', async () => {
+  it('uses the github hostname, repo and owner from the entity annotations', async () => {
     renderSubject();
     expect(useWorkflowRuns).toHaveBeenCalledWith(
-      expect.objectContaining({ owner: 'theorg', repo: 'the-service' }),
+      expect.objectContaining({
+        hostname: 'ghes.acme.co',
+        owner: 'theorg',
+        repo: 'the-service',
+      }),
     );
   });
 

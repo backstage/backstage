@@ -33,6 +33,8 @@ const mockEntity: Entity = {
     description: 'backstage.io',
     annotations: {
       'github.com/project-slug': 'backstage/backstage',
+      'backstage.io/source-location':
+        'url:https://ghes.acme.co/backstage/backstage/tree/master/',
     },
   },
   spec: {

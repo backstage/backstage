@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.15-next.1",
+  "version": "0.1.16-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -25,7 +25,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/plugin-home": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/theme": "workspace:^",

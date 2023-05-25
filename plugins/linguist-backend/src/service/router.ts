@@ -31,6 +31,8 @@ import {
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
 import { HumanDuration } from '@backstage/types';
+import { CatalogClient } from '@backstage/catalog-client';
+import { LinguistBackendClient } from '../api/LinguistBackendClient';
 
 /** @public */
 export interface PluginOptions {
@@ -74,14 +76,16 @@ export async function createRouter(
     await database.getClient(),
   );
 
-  const linguistBackendApi =
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  const linguistBackendClient =
     routerOptions.linguistBackendApi ||
-    new LinguistBackendApi(
+    new LinguistBackendClient(
       logger,
       linguistBackendStore,
       reader,
-      discovery,
       tokenManager,
+      catalogClient,
       age,
       batchSize,
       useSourceLocation,
@@ -100,7 +104,7 @@ export async function createRouter(
       initialDelay: schedule.initialDelay,
       scope: schedule.scope,
       fn: async () => {
-        await linguistBackendApi.processEntities();
+        await linguistBackendClient.processEntities();
       },
     });
   }
@@ -122,7 +126,7 @@ export async function createRouter(
       throw new Error('No entityRef was provided');
     }
 
-    const entityLanguages = await linguistBackendApi.getEntityLanguages(
+    const entityLanguages = await linguistBackendClient.getEntityLanguages(
       entityRef as string,
     );
     res.status(200).json(entityLanguages);

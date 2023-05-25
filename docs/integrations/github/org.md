@@ -65,6 +65,42 @@ export default async function createPlugin(
 }
 ```
 
+Alternatively, if you wish to ingest data from multiple GitHub organizations you can use
+the `GithubMultiOrgEntityProvider` instead. Note that by default, this provider will namespace
+groups according to the org they originate from to avoid potential name duplicates:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+
+  /* highlight-add-start */
+  // The GitHub URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      githubUrl: 'https://github.com',
+      // Set the following to list the GitHub orgs you wish to ingest from. You can
+      // also omit this option to ingest all orgs accessible by your GitHub integration
+      orgs: ['org-a', 'org-b'],
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
+```
+
 ## Installation with Events Support
 
 Please follow the installation instructions at
@@ -107,6 +143,42 @@ export default async function createPlugin(
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
   return router;
+}
+```
+
+Or, alternatively, if using the `GithubMultiOrgEntityProvider`:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubMultiOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+
+  /* highlight-add-start */
+  // The GitHub URL below needs to match a configured integrations.github entry
+  // specified in your app-config.
+  builder.addEntityProvider(
+    GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      id: 'production',
+      githubUrl: 'https://github.com',
+      // Set the following to list the GitHub orgs you wish to ingest from. You can
+      // also omit this option to ingest all orgs accessible by your GitHub integration
+      orgs: ['org-a', 'org-b'],
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+      // Pass in the eventBroker to allow this provider to subscribe to GitHub events
+      eventBroker: env.eventBroker,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
 }
 ```
 

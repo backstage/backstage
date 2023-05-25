@@ -64,6 +64,22 @@ const serviceEntityPage = (
 3. Run the app with `yarn start` and the backend with `yarn start-backend`.
    Then navigate to `/github-actions/` under any entity.
 
+### Self-hosted / Enterprise GitHub
+
+The plugin will try to use `backstage.io/source-location` or `backstage.io/managed-by-location`
+annotations to figure out the location of the source code.
+
+1. Add the `host` and `apiBaseUrl` to your `app-config.yaml`
+
+```yaml
+# app-config.yaml
+
+integrations:
+  github:
+    - host: 'your-github-host.com'
+      apiBaseUrl: 'https://api.your-github-host.com'
+```
+
 ## Features
 
 - List workflow runs for a project

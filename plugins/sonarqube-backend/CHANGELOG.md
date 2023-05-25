@@ -1,5 +1,24 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 0bb0b19b0da2: Provide full schema definition for sonarqube plugin, especially to protect api keys.
+- Updated dependencies
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.18.5
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
 ## 0.1.10-next.1
 
 ### Patch Changes

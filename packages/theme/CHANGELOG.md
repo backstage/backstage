@@ -1,5 +1,42 @@
 # @backstage/theme
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 1fd38bc4141a: **MUI v5 Support:** Adding platform-wide support for MUI v5 allowing a transition phase for migrating central plugins & components over. We still support v4 instances & plugins by adding a
+
+  To allow the future support of plugins & components using MUI v5 you want to upgrade your `AppTheme`'s to using the `UnifiedThemeProvider`
+
+  ```diff
+       Provider: ({ children }) => (
+  -    <ThemeProvider theme={lightTheme}>
+  -      <CssBaseline>{children}</CssBaseline>
+  -    </ThemeProvider>
+  +    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+       ),
+  ```
+
+## 0.3.0
+
+### Minor Changes
+
+- 98c0c199b15: Updates light theme's primary foreground and `running` status indicator colours to meet WCAG. Previously #2E77D0 changed to #1F5493.
+
+### Patch Changes
+
+- 83b45f9df50: Fix accessibility issue with Backstage Table's header style
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 98c0c199b15: Updates light theme's primary foreground and `running` status indicator colours to meet WCAG. Previously #2E77D0 changed to #1F5493.
+
+### Patch Changes
+
+- 83b45f9df50: Fix accessibility issue with Backstage Table's header style
+
 ## 0.2.19
 
 ### Patch Changes

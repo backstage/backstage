@@ -6,36 +6,33 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { Extension } from '@backstage/core-plugin-api';
+import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
+import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
+import { CardLayout as CardLayout_2 } from '@backstage/plugin-home-react';
+import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
+import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
+import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
+import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
-import { RJSFSchema } from '@rjsf/utils';
+import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// @public (undocumented)
-export type CardExtensionProps<T> = ComponentRenderer & {
-  title?: string;
-} & T;
+// @public
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-// @public (undocumented)
-export type CardLayout = {
-  width?: {
-    minColumns?: number;
-    maxColumns?: number;
-    defaultColumns?: number;
-  };
-  height?: {
-    minRows?: number;
-    maxRows?: number;
-    defaultRows?: number;
-  };
-};
+// @public @deprecated (undocumented)
+export type CardConfig = CardConfig_2;
 
-// @public (undocumented)
-export type CardSettings = {
-  schema?: RJSFSchema;
-};
+// @public @deprecated (undocumented)
+export type CardExtensionProps<T> = CardExtensionProps_2<T>;
+
+// @public @deprecated (undocumented)
+export type CardLayout = CardLayout_2;
+
+// @public @deprecated (undocumented)
+export type CardSettings = CardSettings_2;
 
 // @public (undocumented)
 export type ClockConfig = {
@@ -53,18 +50,11 @@ export const ComponentAccordion: (props: {
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
-// @public (undocumented)
-export type ComponentParts = {
-  Content: (props?: any) => JSX.Element;
-  Actions?: () => JSX.Element;
-  Settings?: () => JSX.Element;
-  ContextProvider?: (props: any) => JSX.Element;
-};
+// @public @deprecated (undocumented)
+export type ComponentParts = ComponentParts_2;
 
-// @public (undocumented)
-export type ComponentRenderer = {
-  Renderer?: (props: RendererProps) => JSX.Element;
-};
+// @public @deprecated (undocumented)
+export type ComponentRenderer = ComponentRenderer_2;
 
 // @public (undocumented)
 export const ComponentTab: (props: {
@@ -82,26 +72,28 @@ export const ComponentTabs: (props: {
   }[];
 }) => JSX.Element;
 
-// @public
-export function createCardExtension<T>(options: {
-  title: string;
-  components: () => Promise<ComponentParts>;
-  name?: string;
-  description?: string;
-  layout?: CardLayout;
-  settings?: CardSettings;
-}): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
+// @public @deprecated (undocumented)
+export const createCardExtension: typeof createCardExtension_2;
 
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
 ) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type CustomHomepageGridProps = {
   children?: ReactNode;
   config?: LayoutConfiguration[];
   rowHeight?: number;
+  breakpoints?: Record<Breakpoint, number>;
+  cols?: Record<Breakpoint, number>;
+  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
+  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
+  maxRows?: number;
+  style?: React_2.CSSProperties;
+  compactType?: 'vertical' | 'horizontal' | null;
+  allowOverlap?: boolean;
+  preventCollision?: boolean;
 };
 
 // @public
@@ -124,19 +116,19 @@ export const HomepageCompositionRoot: (props: {
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
-  props: CardExtensionProps<{
+  props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming' | undefined;
   }>,
 ) => JSX.Element;
 
 // @public
 export const HomePageStarredEntities: (
-  props: CardExtensionProps<unknown>,
+  props: CardExtensionProps_2<unknown>,
 ) => JSX.Element;
 
 // @public
 export const HomePageToolkit: (
-  props: CardExtensionProps<ToolkitContentProps>,
+  props: CardExtensionProps_2<ToolkitContentProps>,
 ) => JSX.Element;
 
 // @public (undocumented)
@@ -157,12 +149,10 @@ export type LayoutConfiguration = {
   height: number;
 };
 
-// @public (undocumented)
-export type RendererProps = {
-  title: string;
-} & ComponentParts;
+// @public @deprecated (undocumented)
+export type RendererProps = RendererProps_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;
