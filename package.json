@@ -40,6 +40,7 @@
     "fix": "backstage-cli repo fix --publish",
     "postinstall": "husky || true",
     "lint": "backstage-cli repo lint --since origin/master",
+    "lint-staged": "node node_modules/lint-staged/bin/lint-staged.js",
     "lint:all": "backstage-cli repo lint",
     "lint:circular-deps": "madge --circular .",
     "lint:docs": "node ./scripts/check-docs-quality",
