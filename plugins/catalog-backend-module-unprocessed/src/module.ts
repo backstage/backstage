@@ -21,10 +21,7 @@ import {
   UnprocessedEntitiesResponse,
 } from './types';
 import { Knex } from 'knex';
-import {
-  HttpRouterService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { HttpRouterService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
@@ -34,7 +31,6 @@ export class UnprocessedEntitesModule {
   constructor(
     private readonly database: Knex,
     private readonly router: HttpRouterService,
-    private readonly logger: LoggerService,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
@@ -96,7 +92,6 @@ export class UnprocessedEntitesModule {
         )
         .whereNull('final_entities.final_entity')
     ).map(this.hydrateRefreshState);
-
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
     }

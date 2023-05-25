@@ -34,7 +34,6 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         const module = new UnprocessedEntitesModule(
           await database.getClient(),
           router,
-          logger,
         );
 
         module.registerRoutes();

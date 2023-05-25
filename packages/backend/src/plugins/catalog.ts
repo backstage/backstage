@@ -39,7 +39,6 @@ export default async function createPlugin(
   const unprocessed = new UnprocessedEntitesModule(
     await env.database.getClient(),
     router,
-    env.logger,
   );
   unprocessed.registerRoutes();
   await processingEngine.start();
