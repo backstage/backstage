@@ -2,7 +2,7 @@
 title: Pipelines with Tekton
 author: Red Hat
 authorUrl: https://redhat.com
-category: CI
+category: CI/CD
 description: Easily view Tekton PipelineRun status for your services in Backstage.
 documentation: https://janus-idp.io/plugins/tekton
 iconUrl: http://janus-idp.io/images/plugins/tekton.svg
