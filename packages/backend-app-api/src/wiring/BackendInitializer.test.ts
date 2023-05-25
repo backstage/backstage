@@ -18,6 +18,8 @@ import {
   createServiceRef,
   createServiceFactory,
   coreServices,
+  createBackendPlugin,
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
@@ -71,5 +73,46 @@ describe('BackendInitializer', () => {
 
     expect(rootFactory).toHaveBeenCalled();
     expect(pluginFactory).not.toHaveBeenCalled();
+  });
+
+  it('should forward errors when plugins fail to start', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should forward errors when modules fail to start', async () => {
+    const init = new BackendInitializer(new ServiceRegistry([]));
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      })(),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
   });
 });

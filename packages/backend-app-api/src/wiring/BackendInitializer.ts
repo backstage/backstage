@@ -26,6 +26,7 @@ import { EnumerableServiceHolder, ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+import { ForwardedError } from '@backstage/errors';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -194,12 +195,17 @@ export class BackendInitializer {
         // Modules are initialized before plugins, so that they can provide extension to the plugin
         const modules = moduleInits.get(pluginId) ?? [];
         await Promise.all(
-          Array.from(modules.values()).map(async moduleInit => {
+          Array.from(modules).map(async ([moduleId, moduleInit]) => {
             const moduleDeps = await this.#getInitDeps(
               moduleInit.init.deps,
               pluginId,
             );
-            await moduleInit.init.func(moduleDeps);
+            await moduleInit.init.func(moduleDeps).catch(error => {
+              throw new ForwardedError(
+                `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                error,
+              );
+            });
           }),
         );
 
@@ -211,7 +217,12 @@ export class BackendInitializer {
             pluginInit.init.deps,
             pluginId,
           );
-          await pluginInit.init.func(pluginDeps);
+          await pluginInit.init.func(pluginDeps).catch(error => {
+            throw new ForwardedError(
+              `Plugin '${pluginId}' startup failed`,
+              error,
+            );
+          });
         }
 
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
