@@ -17,9 +17,11 @@
 import {
   createServiceRef,
   createServiceFactory,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { ServiceRegistry } from './ServiceRegistry';
+import { rootLifecycleServiceFactory } from '../services/implementations';
 
 const rootRef = createServiceRef<{ x: number }>({
   id: '1',
@@ -29,6 +31,16 @@ const rootRef = createServiceRef<{ x: number }>({
 const pluginRef = createServiceRef<{ x: number }>({
   id: '2',
 });
+
+class MockLogger {
+  debug() {}
+  info() {}
+  warn() {}
+  error() {}
+  child() {
+    return this;
+  }
+}
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
@@ -45,6 +57,12 @@ describe('BackendInitializer', () => {
         service: pluginRef,
         deps: {},
         factory: pluginFactory,
+      })(),
+      rootLifecycleServiceFactory(),
+      createServiceFactory({
+        service: coreServices.rootLogger,
+        deps: {},
+        factory: () => new MockLogger(),
       })(),
     ]);
 
