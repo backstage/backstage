@@ -63,7 +63,10 @@ describe('createLifecycleMiddleware', () => {
 
   it('should throw ServiceUnavailableError after timeout', async () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
-    const middleware = createLifecycleMiddleware({ lifecycle, timeoutMs: 1 });
+    const middleware = createLifecycleMiddleware({
+      lifecycle,
+      startupRequestPauseTimeout: { milliseconds: 1 },
+    });
 
     const next = jest.fn();
     middleware({} as any, {} as any, next);

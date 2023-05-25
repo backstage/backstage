@@ -16,9 +16,31 @@
 
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { ServiceUnavailableError } from '@backstage/errors';
+import { HumanDuration } from '@backstage/types';
 import { RequestHandler } from 'express';
 
-export const DEFAULT_TIMEOUT_MS = 5000;
+export const DEFAULT_TIMEOUT = { seconds: 5 };
+
+function durationToMs(duration: HumanDuration): number {
+  const {
+    years = 0,
+    months = 0,
+    weeks = 0,
+    days = 0,
+    hours = 0,
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0,
+  } = duration;
+
+  const totalDays = years * 365 + months * 30 + weeks * 7 + days;
+  const totalHours = totalDays * 24 + hours;
+  const totalMinutes = totalHours * 60 + minutes;
+  const totalSeconds = totalMinutes * 60 + seconds;
+  const totalMilliseconds = totalSeconds * 1000 + milliseconds;
+
+  return totalMilliseconds;
+}
 
 /**
  * Options for {@link createLifecycleMiddleware}.
@@ -26,7 +48,10 @@ export const DEFAULT_TIMEOUT_MS = 5000;
  */
 export interface LifecycleMiddlewareOptions {
   lifecycle: LifecycleService;
-  timeoutMs?: number;
+  /**
+   * The maximum time that paused requests will wait for the service to start, before returning an error.
+   */
+  startupRequestPauseTimeout?: HumanDuration;
 }
 
 /**
@@ -46,7 +71,7 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
-  const { lifecycle, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+  const { lifecycle, startupRequestPauseTimeout = DEFAULT_TIMEOUT } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
   const waiting = new Set<{
@@ -74,6 +99,8 @@ export function createLifecycleMiddleware(
     }
     waiting.clear();
   });
+
+  const timeoutMs = durationToMs(startupRequestPauseTimeout);
 
   return (_req, _res, next) => {
     if (state === 'up') {

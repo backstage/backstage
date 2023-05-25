@@ -18,6 +18,7 @@ import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { LifecycleService } from '@backstage/backend-plugin-api';
@@ -179,8 +180,7 @@ export const identityServiceFactory: (
 export interface LifecycleMiddlewareOptions {
   // (undocumented)
   lifecycle: LifecycleService;
-  // (undocumented)
-  timeoutMs?: number;
+  startupRequestPauseTimeout?: HumanDuration;
 }
 
 // @public
