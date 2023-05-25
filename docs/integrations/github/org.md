@@ -261,8 +261,8 @@ returned identity.
 async (user, ctx): Promise<UserEntity | undefined> => {
   const entity = await defaultUserTransformer(user, ctx);
 
-  if (entity && user.organizationVerifiedDomainEmails) {
-    entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0] || '';
+  if (entity && user.organizationVerifiedDomainEmails?.length) {
+    entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0];
   }
 
   return entity;
