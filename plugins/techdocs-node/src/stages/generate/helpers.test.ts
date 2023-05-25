@@ -23,6 +23,7 @@ import os from 'os';
 import path, { resolve as resolvePath } from 'path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
+  createOrUpdateEntityMetadata,
   createOrUpdateMetadata,
   getGeneratorKey,
   getMkdocsYml,
@@ -514,6 +515,68 @@ describe('helpers', () => {
 
       const json = await fs.readJson(filePath);
       expect(json.etag).toBe('etag123abc');
+    });
+  });
+
+  describe('createOrUpdateEntityMetadata', () => {
+    const mockFiles = {
+      'invalid_entity_metadata.json': 'dsds',
+      'entity_metadata.json': '{"site_name": "Entity Docs"}',
+      'catalog.yaml': 'site_name: Catalog Docs',
+    };
+
+    beforeEach(() => {
+      mockFs({
+        [rootDir]: mockFiles,
+      });
+    });
+
+    it('should create the file if it does not exist', async () => {
+      const filePath = path.join(rootDir, 'wrong_entity_metadata.json');
+      await createOrUpdateEntityMetadata(
+        path.join(rootDir, 'catalog.yaml'),
+        filePath,
+        mockLogger,
+      );
+
+      // Check if the file exists
+      await expect(
+        fs.access(filePath, fs.constants.F_OK),
+      ).resolves.not.toThrow();
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = path.join(rootDir, 'invalid_entity_metadata.json');
+
+      await expect(
+        createOrUpdateEntityMetadata(
+          path.join(rootDir, 'catalog.yaml'),
+          filePath,
+          mockLogger,
+        ),
+      ).rejects.toThrow('Unexpected token d in JSON at position 0');
+    });
+
+    it('should throw error when the YAML is invalid', async () => {
+      const filePath = path.join(rootDir, 'entity_metadata.json');
+      const catalogPath = path.join(rootDir, 'invalid_catalog.yaml');
+
+      await expect(
+        createOrUpdateEntityMetadata(catalogPath, filePath, mockLogger),
+      ).rejects.toThrow();
+    });
+
+    it('should add catalog yaml contents to the metadata json', async () => {
+      const filePath = path.join(rootDir, 'entity_metadata.json');
+
+      await createOrUpdateEntityMetadata(
+        path.join(rootDir, 'catalog.yaml'),
+        filePath,
+        mockLogger,
+      );
+
+      const json = await fs.readJson(filePath);
+      expect(json.site_name).toEqual('Catalog Docs');
     });
   });
 
