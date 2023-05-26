@@ -142,7 +142,7 @@ export const columnFactories: Readonly<{
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
-  user?: UserListFilter | UserOwnersFilter;
+  user?: UserListFilter | EntityUserListFilter;
   owners?: EntityOwnerFilter;
   lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
@@ -507,6 +507,26 @@ export interface EntityTypePickerProps {
   initialFilter?: string;
 }
 
+// @public (undocumented)
+export class EntityUserListFilter implements EntityFilter {
+  // (undocumented)
+  static all(): EntityUserListFilter;
+  // (undocumented)
+  filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  getCatalogFilters(): Record<string, string[]>;
+  // (undocumented)
+  static owned(ownershipEntityRefs: string[]): EntityUserListFilter;
+  // (undocumented)
+  readonly refs?: string[] | undefined;
+  // (undocumented)
+  static starred(starredEntityRefs: string[]): EntityUserListFilter;
+  // (undocumented)
+  toQueryValue(): string;
+  // (undocumented)
+  readonly value: UserListFilterKind;
+}
+
 // @public
 export const FavoriteEntity: (
   props: FavoriteEntityProps,
@@ -661,28 +681,7 @@ export const UserListPicker: (
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
-  useServerSideFilters?: boolean;
 };
-
-// @public (undocumented)
-export class UserOwnersFilter implements EntityFilter {
-  // (undocumented)
-  static all(): UserOwnersFilter;
-  // (undocumented)
-  filterEntity(entity: Entity): boolean;
-  // (undocumented)
-  getCatalogFilters(): Record<string, string[]>;
-  // (undocumented)
-  static owned(ownershipEntityRefs: string[]): UserOwnersFilter;
-  // (undocumented)
-  readonly refs?: string[] | undefined;
-  // (undocumented)
-  static starred(starredEntityRefs: string[]): UserOwnersFilter;
-  // (undocumented)
-  toQueryValue(): string;
-  // (undocumented)
-  readonly value: UserListFilterKind;
-}
 
 // @public (undocumented)
 export function useStarredEntities(): {

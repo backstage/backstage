@@ -237,6 +237,15 @@ export class EntityUserListFilter implements EntityFilter {
     if (this.value === 'starred') {
       return this.refs?.includes(stringifyEntityRef(entity)) ?? true;
     }
+    if (this.value === 'owned') {
+      return (
+        this.refs?.some(v =>
+          getEntityRelations(entity, RELATION_OWNED_BY).some(
+            o => stringifyEntityRef(o) === v,
+          ),
+        ) ?? false
+      );
+    }
     return true;
   }
 
