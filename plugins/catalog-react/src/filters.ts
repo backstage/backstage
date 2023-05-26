@@ -237,10 +237,9 @@ export class EntityUserListFilter implements EntityFilter {
     if (this.value === 'starred') {
       return this.refs?.includes(stringifyEntityRef(entity)) ?? true;
     }
-    // used only for retro-compatibility with the old
-    // non paginated table. This is supposed to return always true
-    // for paginated owned entities, since the filters are applied
-    // server side.
+    // used only for retro-compatibility with non paginated data.
+    // This is supposed to return always true for paginated
+    // owned entities, since the filters are applied server side.
     if (this.value === 'owned') {
       return (
         this.refs?.some(v =>
