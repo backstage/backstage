@@ -33,7 +33,7 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { UserListFilter, UserOwnersFilter } from '../../filters';
+import { UserListFilter, EntityUserListFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
 import { UserListFilterKind } from '../../types';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
@@ -219,7 +219,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
         if (selectedUserFilter === 'starred') {
           return starredEntitiesFilter;
         }
-        return UserOwnersFilter.all();
+        return EntityUserListFilter.all();
       };
 
       updateFilters({ user: getFilter() });
