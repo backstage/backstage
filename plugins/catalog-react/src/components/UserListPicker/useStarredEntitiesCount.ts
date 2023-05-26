@@ -30,27 +30,27 @@ export function useStarredEntitiesCount() {
   const { filters } = useEntityList();
   const { starredEntities } = useStarredEntities();
 
-  const refRequest = useRef<QueryEntitiesInitialRequest>();
-  useMemo(async () => {
+  const prevRequest = useRef<QueryEntitiesInitialRequest>();
+  const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
     const filter = reduceCatalogFilters(compacted);
 
     const facet = 'metadata.name';
 
-    const request: QueryEntitiesInitialRequest = {
+    const newRequest: QueryEntitiesInitialRequest = {
       filter: {
         ...filter,
         [facet]: Array.from(starredEntities).map(e => parseEntityRef(e).name),
       },
       limit: 1000,
     };
-    if (isEqual(request, refRequest.current)) {
-      return refRequest.current;
+    if (isEqual(newRequest, prevRequest.current)) {
+      return prevRequest.current;
     }
-    refRequest.current = request;
+    prevRequest.current = newRequest;
 
-    return request;
+    return newRequest;
   }, [filters, starredEntities]);
 
   const { value: count, loading } = useAsync(async () => {
@@ -58,7 +58,7 @@ export function useStarredEntitiesCount() {
       return 0;
     }
 
-    const response = await catalogApi.queryEntities(refRequest.current);
+    const response = await catalogApi.queryEntities(request);
 
     return response.items
       .map(e =>
@@ -69,7 +69,7 @@ export function useStarredEntitiesCount() {
         }),
       )
       .filter(e => starredEntities.has(e)).length;
-  }, [refRequest.current, starredEntities]);
+  }, [request, starredEntities]);
 
   const filter = useMemo(
     () => EntityUserListFilter.starred(Array.from(starredEntities)),

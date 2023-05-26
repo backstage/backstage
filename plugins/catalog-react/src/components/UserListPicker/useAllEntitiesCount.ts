@@ -22,40 +22,32 @@ import { catalogApiRef } from '../../api';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
 
-/**
- * TODO(vinzscam): we need to find a better way
- * for retrieving this value. One possible way, could be to use
- * the /entities endpoint: since this method is paginated,
- * it should also return how many items matching the provided filters
- *  are in the catalog
- */
 export function useAllEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
   const { filters } = useEntityList();
 
-  const refRequest = useRef<QueryEntitiesInitialRequest>();
-  useMemo(() => {
+  const prevRequest = useRef<QueryEntitiesInitialRequest>();
+  const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
     const filter = reduceCatalogFilters(compacted);
-    const request: QueryEntitiesInitialRequest = {
+    const newRequest: QueryEntitiesInitialRequest = {
       filter,
       limit: 0,
     };
 
-    if (isEqual(request, refRequest.current)) {
-      return refRequest.current;
+    if (isEqual(newRequest, prevRequest.current)) {
+      return prevRequest.current;
     }
-    refRequest.current = request;
-
-    return request;
+    prevRequest.current = newRequest;
+    return newRequest;
   }, [filters]);
 
   const { value: count, loading } = useAsync(async () => {
-    const { totalItems } = await catalogApi.queryEntities(refRequest.current);
+    const { totalItems } = await catalogApi.queryEntities(request);
 
     return totalItems;
-  }, [refRequest.current]);
+  }, [request]);
 
   return { count, loading };
 }
