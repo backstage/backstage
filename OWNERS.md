@@ -72,10 +72,16 @@ Team: @backstage/permission-maintainers
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
-| Name                     | Organization | Team            | GitHub                                           | Discord            |
-| ------------------------ | ------------ | --------------- | ------------------------------------------------ | ------------------ |
-| Vincenzo Scamporlino     | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)           | vinzscam#6944      |
-| Ainhoa Larumbe           | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)             | ainhoa#8085        |
+| Name                 | Organization | Team            | GitHub                                         | Discord          |
+| -------------------- | ------------ | --------------- | ---------------------------------------------- | ---------------- |
+| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)           | ainhoa#8085      |
+| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey) | clairecasey#2710 |
+| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)             | iamEAP#3058      |
+| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)               | simplex#3451     |
+| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)     | Sixpool#5060     |
+| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)           | mtlewis#3658     |
+| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)     | timbonicus#6871  |
+| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)         | vinzscam#6944    |
 
 ### TechDocs
 
@@ -87,7 +93,6 @@ Scope: The TechDocs plugin and related tooling
 | ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
 | Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
 | Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
-
 
 ## Sponsors
 
