@@ -1,12 +1,19 @@
 import Link from '@docusaurus/Link';
+import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
+import { calcIsNewPlugin } from '@site/src/util/calcIsNewPlugin';
+import { truncateDescription } from '@site/src/util/truncateDescription';
+import { ChipCategory } from '@site/src/util/types';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+
 import { IPluginData, PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
-import { ChipCategory } from '@site/src/util/types';
-import { truncateDescription } from '@site/src/util/truncateDescription';
-import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
+
+interface IPluginsList {
+  corePlugins: IPluginData[];
+  otherPlugins: IPluginData[];
+}
 
 const pluginsContext = require.context(
   '../../../data/plugins',
@@ -14,17 +21,20 @@ const pluginsContext = require.context(
   /\.ya?ml/,
 );
 
-const plugins = pluginsContext.keys().reduce(
+const plugins: IPluginsList = pluginsContext.keys().reduce(
   (acum, id) => {
-    const pluginData: IPluginData = pluginsContext(id).default;
+    let pluginData: IPluginData = pluginsContext(id).default;
+    const category: keyof IPluginsList =
+      pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins';
 
-    acum[
-      pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins'
-    ].push(truncateDescription(pluginData));
+    pluginData = calcIsNewPlugin(pluginData);
+    pluginData = truncateDescription(pluginData);
+
+    acum[category].push(pluginData);
 
     return acum;
   },
-  { corePlugins: [] as IPluginData[], otherPlugins: [] as IPluginData[] },
+  { corePlugins: [], otherPlugins: [] } as IPluginsList,
 );
 
 plugins.corePlugins.sort((a, b) => a.order - b.order);

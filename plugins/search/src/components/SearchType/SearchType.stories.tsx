@@ -18,7 +18,7 @@ import { Grid, Paper } from '@material-ui/core';
 import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { SearchType } from './SearchType';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
@@ -31,7 +31,7 @@ export default {
   title: 'Plugins/Search/SearchType',
   component: SearchType,
   decorators: [
-    (Story: ComponentType<{}>) => (
+    (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

@@ -35,8 +35,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { ComponentType } from 'react';
-
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { SearchType } from '../SearchType';
 import { SearchModal } from './SearchModal';
@@ -75,7 +74,7 @@ export default {
   title: 'Plugins/Search/SearchModal',
   component: SearchModal,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[[searchApiRef, new MockSearchApi(mockResults)]]}

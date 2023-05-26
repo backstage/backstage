@@ -2,7 +2,7 @@
 title: S3 Viewer
 author: Spreadgroup
 authorUrl: https://github.com/spreadshirt
-category: AWS
+category: Infrastructure
 description: Visualization of S3 buckets and their contents in file explorer style.
 documentation: https://github.com/spreadshirt/backstage-plugin-s3/
 iconUrl: /img/s3-bucket.svg

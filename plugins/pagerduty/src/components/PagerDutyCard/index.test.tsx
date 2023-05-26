@@ -15,9 +15,7 @@
  */
 import React from 'react';
 import { render, waitFor, fireEvent, act } from '@testing-library/react';
-import { PagerDutyCard, isPluginApplicableToEntity } from '../PagerDutyCard';
-import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { PagerDutyCard } from '../PagerDutyCard';
 import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
@@ -25,49 +23,6 @@ import { PagerDutyService, PagerDutyUser } from '../types';
 
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-
-const entity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'pagerduty-test',
-    annotations: {
-      'pagerduty.com/integration-key': 'abc123',
-    },
-  },
-};
-
-const entityWithoutAnnotations: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'pagerduty-test',
-    annotations: {},
-  },
-};
-
-const entityWithServiceId: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'pagerduty-test',
-    annotations: {
-      'pagerduty.com/service-id': 'def456',
-    },
-  },
-};
-
-const entityWithAllAnnotations: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'pagerduty-test',
-    annotations: {
-      'pagerduty.com/integration-key': 'abc123',
-      'pagerduty.com/service-id': 'def456',
-    },
-  },
-};
 
 const user: PagerDutyUser = {
   name: 'person1',
@@ -100,44 +55,16 @@ const apis = TestApiRegistry.from(
   [alertApiRef, {}],
 );
 
-describe('isPluginApplicableToEntity', () => {
-  describe('when entity has no annotations', () => {
-    it('returns false', () => {
-      expect(isPluginApplicableToEntity(entityWithoutAnnotations)).toBe(false);
-    });
-  });
-
-  describe('when entity has the pagerduty.com/integration-key annotation', () => {
-    it('returns true', () => {
-      expect(isPluginApplicableToEntity(entity)).toBe(true);
-    });
-  });
-
-  describe('when entity has the pagerduty.com/service-id annotation', () => {
-    it('returns true', () => {
-      expect(isPluginApplicableToEntity(entityWithServiceId)).toBe(true);
-    });
-  });
-
-  describe('when entity has all annotations', () => {
-    it('returns true', () => {
-      expect(isPluginApplicableToEntity(entityWithAllAnnotations)).toBe(true);
-    });
-  });
-});
-
-describe('PageDutyCard', () => {
+describe('PagerDutyCard', () => {
   it('Render pagerduty', async () => {
-    mockPagerDutyApi.getServiceByEntity = jest
+    mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
         </ApiProvider>,
       ),
     );
@@ -149,16 +76,14 @@ describe('PageDutyCard', () => {
   });
 
   it('Handles custom error for missing token', async () => {
-    mockPagerDutyApi.getServiceByEntity = jest
+    mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
         </ApiProvider>,
       ),
     );
@@ -167,16 +92,14 @@ describe('PageDutyCard', () => {
   });
 
   it('Handles custom NotFoundError', async () => {
-    mockPagerDutyApi.getServiceByEntity = jest
+    mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockRejectedValueOnce(new NotFoundError());
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
         </ApiProvider>,
       ),
     );
@@ -185,15 +108,13 @@ describe('PageDutyCard', () => {
   });
 
   it('handles general error', async () => {
-    mockPagerDutyApi.getServiceByEntity = jest
+    mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
         </ApiProvider>,
       ),
     );
@@ -207,16 +128,14 @@ describe('PageDutyCard', () => {
   });
 
   it('opens the dialog when trigger button is clicked', async () => {
-    mockPagerDutyApi.getServiceByEntity = jest
+    mockPagerDutyApi.getServiceByPagerDutyEntity = jest
       .fn()
       .mockImplementationOnce(async () => ({ service }));
 
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityProvider entity={entity}>
-            <PagerDutyCard />
-          </EntityProvider>
+          <PagerDutyCard name="blah" integrationKey="abc123" />
         </ApiProvider>,
       ),
     );
@@ -232,16 +151,14 @@ describe('PageDutyCard', () => {
 
   describe('when entity has the pagerduty.com/service-id annotation', () => {
     it('Renders PagerDuty service information', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard name="blah" integrationKey="abc123" />
           </ApiProvider>,
         ),
       );
@@ -253,16 +170,18 @@ describe('PageDutyCard', () => {
     });
 
     it('Handles custom error for missing token', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockRejectedValueOnce(new UnauthorizedError());
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard
+              name="blah"
+              integrationKey="abc123"
+              serviceId="def123"
+            />
           </ApiProvider>,
         ),
       );
@@ -273,16 +192,18 @@ describe('PageDutyCard', () => {
     });
 
     it('Handles custom NotFoundError', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockRejectedValueOnce(new NotFoundError());
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard
+              name="blah"
+              integrationKey="abc123"
+              serviceId="def123"
+            />
           </ApiProvider>,
         ),
       );
@@ -291,15 +212,17 @@ describe('PageDutyCard', () => {
     });
 
     it('handles general error', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockRejectedValueOnce(new Error('An error occurred'));
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard
+              name="blah"
+              integrationKey="abc123"
+              serviceId="def123"
+            />
           </ApiProvider>,
         ),
       );
@@ -313,16 +236,14 @@ describe('PageDutyCard', () => {
     });
 
     it('disables the Create Incident button', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
       const { queryByTestId, getByTitle } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithServiceId}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard name="blah" serviceId="def123" />
           </ApiProvider>,
         ),
       );
@@ -336,16 +257,18 @@ describe('PageDutyCard', () => {
 
   describe('when entity has all annotations', () => {
     it('queries by integration key', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithAllAnnotations}>
-              <PagerDutyCard />
-            </EntityProvider>
+            <PagerDutyCard
+              name="blah"
+              integrationKey="abc123"
+              serviceId="def123"
+            />
           </ApiProvider>,
         ),
       );
@@ -359,16 +282,19 @@ describe('PageDutyCard', () => {
 
   describe('when entity has all annotations but the plugin has been configured to be "read only"', () => {
     it('queries by integration key but does not render the "Create Incident" button', async () => {
-      mockPagerDutyApi.getServiceByEntity = jest
+      mockPagerDutyApi.getServiceByPagerDutyEntity = jest
         .fn()
         .mockImplementationOnce(async () => ({ service }));
 
       const { getByText, queryByTestId } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <EntityProvider entity={entityWithAllAnnotations}>
-              <PagerDutyCard readOnly />
-            </EntityProvider>
+            <PagerDutyCard
+              name="blah"
+              integrationKey="abc123"
+              serviceId="def123"
+              readOnly
+            />
           </ApiProvider>,
         ),
       );

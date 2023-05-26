@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import {
   EntityPeekAheadPopover,
   EntityPeekAheadPopoverProps,
@@ -80,7 +80,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /PeekAheadPopover',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
           <TestApiProvider

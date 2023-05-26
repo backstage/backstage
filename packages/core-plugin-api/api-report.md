@@ -12,6 +12,7 @@ import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -137,14 +138,16 @@ export type ApiRefConfig = {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<{}>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
-  Router: ComponentType<{
-    basename?: string;
-  }>;
+  Progress: ComponentType<PropsWithChildren<{}>>;
+  Router: ComponentType<
+    PropsWithChildren<{
+      basename?: string;
+    }>
+  >;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<{}>;
+  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -247,10 +250,10 @@ export const bitbucketServerAuthApiRef: ApiRef<
 >;
 
 // @public
-export type BootErrorPageProps = {
+export type BootErrorPageProps = PropsWithChildren<{
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
+}>;
 
 // @public
 export type CommonAnalyticsContext = {
@@ -405,11 +408,11 @@ export type ErrorApiErrorContext = {
 export const errorApiRef: ApiRef<ErrorApi>;
 
 // @public
-export type ErrorBoundaryFallbackProps = {
+export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin_2;
   error: Error;
   resetError: () => void;
-};
+}>;
 
 // @public
 export type Extension<T> = {
@@ -690,9 +693,9 @@ export enum SessionState {
 }
 
 // @public
-export type SignInPageProps = {
+export type SignInPageProps = PropsWithChildren<{
   onSignInSuccess(identityApi: IdentityApi_2): void;
-};
+}>;
 
 // @public
 export interface StorageApi {

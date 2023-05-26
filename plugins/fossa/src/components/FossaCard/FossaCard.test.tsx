@@ -26,7 +26,7 @@ describe('<FossaCard />', () => {
     getFindingSummary: jest.fn(),
     getFindingSummaries: jest.fn(),
   };
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (

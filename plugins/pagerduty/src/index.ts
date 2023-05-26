@@ -24,9 +24,12 @@ export {
   pagerDutyPlugin,
   pagerDutyPlugin as plugin,
   EntityPagerDutyCard,
+  HomePagePagerDutyCard,
 } from './plugin';
 
 export * from './components';
+
 export * from './api';
+export * from './deprecated';
 
 export type { PagerDutyEntity } from './types';

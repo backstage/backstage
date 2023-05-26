@@ -16,12 +16,14 @@
 
 import { Header } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { ClockConfig, HeaderWorldClock } from './HeaderWorldClock';
 
 export default {
   title: 'Plugins/Home/Components/HeaderWorldClock',
-  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
 };
 
 export const Default = () => {

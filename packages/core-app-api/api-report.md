@@ -145,14 +145,16 @@ export class ApiResolver implements ApiHolder {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<{}>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
-  Progress: ComponentType<{}>;
-  Router: ComponentType<{
-    basename?: string;
-  }>;
+  Progress: ComponentType<PropsWithChildren<{}>>;
+  Router: ComponentType<
+    PropsWithChildren<{
+      basename?: string;
+    }>
+  >;
   ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
-  ThemeProvider?: ComponentType<{}>;
+  ThemeProvider?: ComponentType<PropsWithChildren<{}>>;
   SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -274,9 +276,9 @@ export type AuthApiCreateOptions = {
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
-  createRoot(element: JSX.Element): ComponentType<{}>;
-  getProvider(): ComponentType<{}>;
-  getRouter(): ComponentType<{}>;
+  createRoot(element: JSX.Element): ComponentType<PropsWithChildren<{}>>;
+  getProvider(): ComponentType<PropsWithChildren<{}>>;
+  getRouter(): ComponentType<PropsWithChildren<{}>>;
 };
 
 // @public
@@ -316,10 +318,10 @@ export type BitbucketSession = {
 };
 
 // @public
-export type BootErrorPageProps = {
+export type BootErrorPageProps = PropsWithChildren<{
   step: 'load-config' | 'load-chunk';
   error: Error;
-};
+}>;
 
 export { ConfigReader };
 
@@ -359,11 +361,11 @@ export class ErrorApiForwarder implements ErrorApi {
 }
 
 // @public
-export type ErrorBoundaryFallbackProps = {
+export type ErrorBoundaryFallbackProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
-};
+}>;
 
 // @public
 export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
@@ -596,9 +598,9 @@ export class SamlAuth
 }
 
 // @public
-export type SignInPageProps = {
+export type SignInPageProps = PropsWithChildren<{
   onSignInSuccess(identityApi: IdentityApi): void;
-};
+}>;
 
 // @public
 export class UnhandledErrorForwarder {
