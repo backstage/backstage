@@ -32,13 +32,12 @@ export function useOwnedEntitiesCount() {
   // Trigger load only on mount
   const { value: ownershipEntityRefs, loading: loadingEntityRefs } = useAsync(
     async () => (await identityApi.getBackstageIdentity()).ownershipEntityRefs,
-
     [],
   );
 
-  const refRequest = useRef<QueryEntitiesInitialRequest>();
+  const prevRequest = useRef<QueryEntitiesInitialRequest>();
 
-  useMemo(async () => {
+  const request = useMemo(() => {
     const compacted = compact(Object.values(filters));
     const allFilter = reduceCatalogFilters(compacted);
     const { ['metadata.name']: metadata, ...filter } = allFilter;
@@ -54,15 +53,12 @@ export function useOwnedEntitiesCount() {
     const ownedBy =
       ownedByFilter.length > 0 ? ownedByFilter : ownershipEntityRefs;
     if (ownedByFilter.length > 0 && commonOwnedBy.length === 0) {
-      // don't send any request if another filter sets
-      // totally different values for relations.ownedBy filter.
-      // TODO(vinzscam): check conflicts between UserOwnersFilter and EntityOwnerFilter.
-      // both set filters on the same relations.ownedBy key, so the conflicts need
-      // to be addressed properly.
-      refRequest.current = undefined;
-      return null;
+      // detect whether another filter sets values that will produce
+      // empty results in order to avoid sending an additional request.
+      prevRequest.current = undefined;
+      return undefined;
     }
-    const request: QueryEntitiesInitialRequest = {
+    const newRequest: QueryEntitiesInitialRequest = {
       filter: {
         ...filter,
         'relations.ownedBy': ownedBy ?? [],
@@ -70,13 +66,13 @@ export function useOwnedEntitiesCount() {
       limit: 0,
     };
 
-    if (isEqual(request, refRequest.current)) {
-      return refRequest.current;
+    if (isEqual(newRequest, prevRequest.current)) {
+      return prevRequest.current;
     }
 
-    refRequest.current = request;
+    prevRequest.current = newRequest;
 
-    return request;
+    return newRequest;
   }, [filters, ownershipEntityRefs]);
 
   const { value: count, loading: loadingEntityOwnership } =
@@ -84,13 +80,13 @@ export function useOwnedEntitiesCount() {
       if (!ownershipEntityRefs?.length) {
         return 0;
       }
-      if (!refRequest.current) {
+      if (!request) {
         return 0;
       }
-      const { totalItems } = await catalogApi.queryEntities(refRequest.current);
+      const { totalItems } = await catalogApi.queryEntities(request);
 
       return totalItems;
-    }, [refRequest.current]);
+    }, [request]);
 
   const loading = loadingEntityRefs || loadingEntityOwnership;
   const filter = useMemo(
