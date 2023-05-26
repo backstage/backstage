@@ -105,7 +105,6 @@ describe('ToolDocumentCollatorFactory', () => {
     });
 
     it('non-authenticated backend', async () => {
-      // Provide an alternate location template.
       factory = ToolDocumentCollatorFactory.fromConfig(config, {
         discovery: mockDiscoveryApi,
         logger,
