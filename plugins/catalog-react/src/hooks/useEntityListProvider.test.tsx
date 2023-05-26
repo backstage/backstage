@@ -32,7 +32,11 @@ import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '../api';
 import { starredEntitiesApiRef, MockStarredEntitiesApi } from '../apis';
 import { EntityKindPicker, UserListPicker } from '../components';
-import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
+import {
+  EntityKindFilter,
+  EntityTypeFilter,
+  EntityUserListFilter,
+} from '../filters';
 import { UserListFilterKind } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
@@ -62,11 +66,14 @@ const entities: Entity[] = [
 const mockConfigApi = {
   getOptionalString: () => '',
 } as Partial<ConfigApi>;
+
+const ownershipEntityRefs = ['user:default/guest'];
+
 const mockIdentityApi: Partial<IdentityApi> = {
   getBackstageIdentity: async () => ({
     type: 'user',
     userEntityRef: 'user:default/guest',
-    ownershipEntityRefs: [],
+    ownershipEntityRefs,
   }),
   getCredentials: async () => ({ token: undefined }),
 };
@@ -141,11 +148,7 @@ describe('<EntityListProvider />', () => {
 
     act(() =>
       result.current.updateFilters({
-        user: new UserListFilter(
-          'owned',
-          entity => entity.metadata.name === 'component-1',
-          () => true,
-        ),
+        user: EntityUserListFilter.owned(ownershipEntityRefs),
       }),
     );
 
@@ -185,11 +188,7 @@ describe('<EntityListProvider />', () => {
 
     act(() =>
       result.current.updateFilters({
-        user: new UserListFilter(
-          'owned',
-          entity => entity.metadata.name === 'component-1',
-          () => true,
-        ),
+        user: EntityUserListFilter.owned(ownershipEntityRefs),
       }),
     );
 

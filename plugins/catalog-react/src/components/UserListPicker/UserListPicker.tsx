@@ -33,13 +33,12 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { UserListFilter, EntityUserListFilter } from '../../filters';
-import { useEntityList, useStarredEntities } from '../../hooks';
+import { EntityUserListFilter } from '../../filters';
+import { useEntityList } from '../../hooks';
 import { UserListFilterKind } from '../../types';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
-import { useIsOwnedEntity } from '../../hooks/useEntityOwnership';
 
 /** @public */
 export type CatalogReactUserListPickerClassKey =
@@ -120,12 +119,11 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
-  useServerSideFilters?: boolean;
 };
 
 /** @public */
 export const UserListPicker = (props: UserListPickerProps) => {
-  const { initialFilter, availableFilters, useServerSideFilters } = props;
+  const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -154,7 +152,6 @@ export const UserListPicker = (props: UserListPickerProps) => {
     count: ownedEntitiesCount,
     loading: loadingOwnedEntities,
     filter: ownedEntitiesFilter,
-    ownershipEntityRefs,
   } = useOwnedEntitiesCount();
   const { count: allCount } = useAllEntitiesCount();
   const {
@@ -179,9 +176,6 @@ export const UserListPicker = (props: UserListPickerProps) => {
       owned: ownedEntitiesCount,
     };
   }, [starredEntitiesCount, ownedEntitiesCount, allCount]);
-
-  const { isStarredEntity } = useStarredEntities();
-  const isOwnedEntity = useIsOwnedEntity(ownershipEntityRefs);
 
   // Set selected user filter on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
@@ -211,38 +205,24 @@ export const UserListPicker = (props: UserListPickerProps) => {
     if (loading) {
       return;
     }
-    if (useServerSideFilters) {
-      const getFilter = () => {
-        if (selectedUserFilter === 'owned') {
-          return ownedEntitiesFilter;
-        }
-        if (selectedUserFilter === 'starred') {
-          return starredEntitiesFilter;
-        }
-        return EntityUserListFilter.all();
-      };
 
-      updateFilters({ user: getFilter() });
-    } else {
-      // legacy
-      updateFilters({
-        user: selectedUserFilter
-          ? new UserListFilter(
-              selectedUserFilter as UserListFilterKind,
-              isOwnedEntity,
-              isStarredEntity,
-            )
-          : undefined,
-      });
-    }
+    const getFilter = () => {
+      if (selectedUserFilter === 'owned') {
+        return ownedEntitiesFilter;
+      }
+      if (selectedUserFilter === 'starred') {
+        return starredEntitiesFilter;
+      }
+      return EntityUserListFilter.all();
+    };
+
+    updateFilters({ user: getFilter() });
   }, [
     selectedUserFilter,
     starredEntitiesFilter,
     ownedEntitiesFilter,
     updateFilters,
-    useServerSideFilters,
-    isOwnedEntity,
-    isStarredEntity,
+
     loading,
   ]);
 
