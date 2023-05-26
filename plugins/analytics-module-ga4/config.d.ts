@@ -80,14 +80,14 @@ export interface Config {
          * metadata will be captured in Google Analytics.
          * Contexts that will be sent as parameters in the event.
          * context-name will be prefixed by c_, for example, pluginId will be c_pluginId in the event.
-         *
+         * @visibility frontend
          */
         allowedContexts?: string[] | ['*'];
         /**
          *
          * Attributes that will be sent as parameters in the event
          * attribute-name will be prefixed by a_, for example , testAttribute will be c_testAttribute in the event.
-         *
+         * @visibility frontend
          */
         allowedAttributes?: string[] | ['*'];
       };
