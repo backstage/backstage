@@ -32,7 +32,7 @@ backend:
     port: 7007
   database:
     client: pg
-    connection: postgres://postgres:backstage@localhost:5432
+    connection: postgres://localhost:5432
 
   cache:
     store: memory

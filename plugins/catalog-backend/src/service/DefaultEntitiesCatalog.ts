@@ -118,18 +118,18 @@ function addCondition(
 ): void {
   const key = filter.key.toLowerCase();
   const values = filter.values?.map(v => v.toLowerCase());
-
+  console.log(key);
   // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
   // make a lot of sense. However, it had abysmal performance on sqlite
   // when datasets grew large, so we're using IN instead.
-  const matchQuery = db<DbSearchRow>('search')
-    .select('search.entity_id')
-    .where({ key })
+  const matchQuery = db<DbFinalEntitiesRow>('final_entities')
+    .select('entity_id')
     .andWhere(function keyFilter() {
       if (values?.length === 1) {
-        this.where({ value: values.at(0) });
+        this.whereRaw('final_entity->>? = ?', [key, values[0]]);
       } else if (values) {
-        this.andWhere('value', 'in', values);
+        this.whereRaw('final_entity->>? = ?', [key, values[0]]);
+        // this.whereRaw('final_entity->>? in ?', [key, values]);
       }
     });
   queryBuilder.andWhere(entityIdField, negate ? 'not in' : 'in', matchQuery);
@@ -269,7 +269,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
-    let entities: Entity[] = rows.map(e => JSON.parse(e.final_entity!));
+    let entities: Entity[] = rows.map(e => e.final_entity);
 
     if (request?.fields) {
       entities = entities.map(e => request.fields!(e));
@@ -374,12 +374,16 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const [prevItemOrderFieldValue, prevItemUid] =
       cursor.orderFieldValues || [];
 
-    const dbQuery = db('search')
-      .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
-      .where('search.key', sortField.field);
+    const dbQuery = db('final_entities');
 
     if (cursor.filter) {
-      parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
+      parseFilter(
+        cursor.filter,
+        dbQuery,
+        db,
+        false,
+        'final_entities.entity_id',
+      );
     }
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
@@ -413,6 +417,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const isOrderingDescending = sortField.order === 'desc';
 
+    console.log('here');
+
     if (prevItemOrderFieldValue) {
       dbQuery.andWhere(function nested() {
         this.where(
@@ -422,7 +428,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         )
           .orWhere('value', '=', prevItemOrderFieldValue)
           .andWhere(
-            'search.entity_id',
+            'entity_id',
             isFetchingBackwards !== isOrderingDescending ? '<' : '>',
             prevItemUid,
           );
@@ -432,13 +438,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     dbQuery
       .orderBy([
         {
-          column: 'value',
-          order: isFetchingBackwards
-            ? invertOrder(sortField.order)
-            : sortField.order,
-        },
-        {
-          column: 'search.entity_id',
+          column: 'entity_id',
           order: isFetchingBackwards
             ? invertOrder(sortField.order)
             : sortField.order,
@@ -447,7 +447,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
 
-    countQuery.count('search.entity_id', { as: 'count' });
+    countQuery.count('entity_id', { as: 'count' });
 
     const [rows, [{ count }]] = await Promise.all([
       dbQuery,
@@ -507,7 +507,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         : undefined;
 
     const items = rows
-      .map(e => JSON.parse(e.final_entity!))
+      .map(e => e.final_entity)
       .map(e => (request.fields ? request.fields(e) : e));
 
     return {

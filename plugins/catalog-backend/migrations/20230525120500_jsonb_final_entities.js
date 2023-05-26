@@ -20,20 +20,23 @@
  * @param { import("knex").Knex } knex
  */
 exports.up = async function up(knex) {
+  console.log('done this migration bis');
   await knex.schema.alterTable('final_entities', table => {
     table
       .jsonb('final_entity_json')
       .comment('The final entity, as a JSON object');
   });
-
+  console.log('done this migration bis');
   await knex('final_entities').update({
-    final_entity_json: knex.raw(`final_entity::jsonb`),
+    final_entity_json: knex.raw(`final_entity::jsonb || '{}'::jsonb`),
   });
-
+  console.log('done this migration bis');
   await knex.schema.alterTable('final_entities', table => {
     table.dropColumn('final_entity');
     table.renameColumn('final_entity_json', 'final_entity');
   });
+
+  console.log('done this migration bis');
 };
 
 /**
