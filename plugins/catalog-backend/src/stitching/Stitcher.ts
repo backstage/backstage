@@ -32,6 +32,7 @@ import {
 } from '../database/tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { BATCH_SIZE, generateStableHash } from './util';
+import { entityMetadataFactRetriever } from '@backstage/plugin-tech-insights-backend';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =

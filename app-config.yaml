@@ -31,8 +31,9 @@ backend:
   listen:
     port: 7007
   database:
-    client: better-sqlite3
-    connection: ':memory:'
+    client: pg
+    connection: postgres://postgres:backstage@localhost:5432
+
   cache:
     store: memory
   cors:
