@@ -22,7 +22,9 @@ import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
+import { EventsService } from '@backstage/backend-plugin-api';
 import express from 'express';
+import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -222,6 +224,15 @@ export function createDatabaseClient(
 ): Knex<any, any[]>;
 
 // @public
+export function createEventsServer(
+  server: ExtendedHttpServer,
+  deps: {
+    logger: LoggerService;
+  },
+  options?: EventsServerConfig,
+): void;
+
+// @public
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
@@ -281,6 +292,55 @@ export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
   logger?: LoggerService;
   logClientErrors?: boolean;
+};
+
+// @public
+export type EventClientCommand =
+  | EventsClientRegisterCommand
+  | EventsClientPublishCommand
+  | EventsClientSubscribeCommand;
+
+// @public
+export class EventsClientManager {
+  forPlugin(pluginId: string): PluginEventsManager;
+  static fromConfig(
+    config: Config,
+    options?: EventsClientManagerOptions,
+  ): EventsClientManager;
+  setTokenManager(tokenManager: TokenManager): this;
+}
+
+// @public
+export type EventsClientManagerOptions = {
+  logger?: LoggerService;
+  tokenManager?: TokenManager;
+};
+
+// @public
+export type EventsClientPublishCommand = {
+  command: 'publish';
+  pluginId: string;
+  topic?: string;
+  targetEntityRefs?: string[];
+  data: unknown;
+};
+
+// @public
+export type EventsClientRegisterCommand = {
+  command: 'register';
+  pluginId: string;
+};
+
+// @public
+export type EventsClientSubscribeCommand = {
+  command: 'subscribe' | 'unsubscribe';
+  pluginId: string;
+  topic?: string;
+};
+
+// @public
+export type EventsServerConfig = {
+  enabled?: boolean;
 };
 
 // @public
@@ -590,11 +650,20 @@ export { PluginDatabaseManager };
 export { PluginEndpointDiscovery };
 
 // @public
+export interface PluginEventsManager {
+  // (undocumented)
+  getClient(): EventsService;
+}
+
+// @public
 export type ReaderFactory = (options: {
   config: Config;
   logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
+
+// @public
+export function readEventsServerOptions(config?: Config): EventsServerConfig;
 
 export { ReadTreeOptions };
 

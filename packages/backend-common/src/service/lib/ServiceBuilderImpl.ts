@@ -29,20 +29,24 @@ import {
   notFoundHandler,
   requestLoggingHandler as defaultRequestLoggingHandler,
 } from '../../middleware';
-import { RequestLoggingHandlerFactory, ServiceBuilder } from '../types';
+import {
+  ExtendedHttpServerOptions,
+  RequestLoggingHandlerFactory,
+  ServiceBuilder,
+} from '../types';
 import {
   readCorsOptions,
   readHelmetOptions,
   readHttpServerOptions,
-  HttpServerOptions,
   createHttpServer,
 } from '@backstage/backend-app-api';
+import { readEventsServerOptions, createEventsServer } from '../../events';
 
 export type CspOptions = Record<string, string[]>;
 
 export class ServiceBuilderImpl implements ServiceBuilder {
   private logger: LoggerService | undefined;
-  private serverOptions: HttpServerOptions;
+  private serverOptions: ExtendedHttpServerOptions;
   private helmetOptions: HelmetOptions;
   private corsOptions: cors.CorsOptions;
   private routers: [string, Router][];
@@ -58,7 +62,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     this.module = moduleRef;
     this.useDefaultErrorHandler = true;
 
-    this.serverOptions = readHttpServerOptions();
+    this.serverOptions = {
+      http: readHttpServerOptions(),
+      events: readEventsServerOptions(),
+    };
     this.corsOptions = readCorsOptions();
     this.helmetOptions = readHelmetOptions();
   }
@@ -66,7 +73,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   loadConfig(config: Config): ServiceBuilder {
     const backendConfig = config.getOptionalConfig('backend');
 
-    this.serverOptions = readHttpServerOptions(backendConfig);
+    this.serverOptions = {
+      http: readHttpServerOptions(backendConfig),
+      events: readEventsServerOptions(backendConfig),
+    };
     this.corsOptions = readCorsOptions(backendConfig);
     this.helmetOptions = readHelmetOptions(backendConfig);
 
@@ -74,12 +84,12 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   }
 
   setPort(port: number): ServiceBuilder {
-    this.serverOptions.listen.port = port;
+    this.serverOptions.http.listen.port = port;
     return this;
   }
 
   setHost(host: string): ServiceBuilder {
-    this.serverOptions.listen.host = host;
+    this.serverOptions.http.listen.host = host;
     return this;
   }
 
@@ -92,14 +102,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     certificate: { key: string; cert: string } | { hostname: string };
   }): ServiceBuilder {
     if ('hostname' in settings.certificate) {
-      this.serverOptions.https = {
+      this.serverOptions.http.https = {
         certificate: {
           ...settings.certificate,
           type: 'generated',
         },
       };
     } else {
-      this.serverOptions.https = {
+      this.serverOptions.http.https = {
         certificate: {
           ...settings.certificate,
           type: 'pem',
@@ -168,7 +178,16 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(defaultErrorHandler());
     }
 
-    const server = await createHttpServer(app, this.serverOptions, { logger });
+    const server = await createHttpServer(app, this.serverOptions.http, {
+      logger,
+    });
+    createEventsServer(
+      server,
+      {
+        logger,
+      },
+      this.serverOptions.events,
+    );
 
     useHotCleanup(this.module, () =>
       server.stop().catch(error => {

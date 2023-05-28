@@ -6,6 +6,7 @@
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 
 // @public (undocumented)
@@ -28,6 +29,43 @@ export class TestEventPublisher implements EventPublisher {
   get eventBroker(): EventBroker | undefined;
   // (undocumented)
   setEventBroker(eventBroker: EventBroker): Promise<void>;
+}
+
+// @public (undocumented)
+export class TestEventsService implements EventsService {
+  // (undocumented)
+  connect(): Promise<void>;
+  // (undocumented)
+  disconnect(): Promise<void>;
+  // (undocumented)
+  isConnected: boolean;
+  // (undocumented)
+  publish(
+    message: unknown,
+    target?: {
+      topic?: string;
+      entityRefs?: string[];
+    },
+  ): Promise<void>;
+  // (undocumented)
+  readonly published: {
+    message: unknown;
+    topic?: string;
+    entityRefs?: string[];
+  }[];
+  // (undocumented)
+  subscribe(
+    pluginId: string,
+    _: (data: unknown) => void,
+    topic?: string,
+  ): Promise<void>;
+  // (undocumented)
+  readonly subscribed: {
+    pluginId: string;
+    topic?: string;
+  }[];
+  // (undocumented)
+  unsubscribe(pluginId: string, topic?: string): Promise<void>;
 }
 
 // @public (undocumented)

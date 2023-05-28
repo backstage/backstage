@@ -19,6 +19,8 @@ import cors from 'cors';
 import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsServerConfig } from '../events/types';
+import { HttpServerOptions } from '@backstage/backend-app-api';
 
 /**
  * A helper for building backend service instances.
@@ -131,3 +133,13 @@ export type ServiceBuilder = {
 export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,
 ) => RequestHandler;
+
+/**
+ * Http server options including events options
+ *
+ * @public
+ */
+export type ExtendedHttpServerOptions = {
+  http: HttpServerOptions;
+  events?: EventsServerConfig;
+};

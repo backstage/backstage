@@ -35,3 +35,4 @@ export * from './scm';
 export * from './service';
 export * from './tokens';
 export * from './util';
+export * from './events';

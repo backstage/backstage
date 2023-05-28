@@ -17,3 +17,4 @@
 export { TestEventBroker } from './TestEventBroker';
 export { TestEventPublisher } from './TestEventPublisher';
 export { TestEventSubscriber } from './TestEventSubscriber';
+export { TestEventsService } from './TestEventsService';

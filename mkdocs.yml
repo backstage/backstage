@@ -129,6 +129,7 @@ nav:
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'
+      - Events: 'plugins/events.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'

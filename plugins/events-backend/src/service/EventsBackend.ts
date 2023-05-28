@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 import { DefaultEventBroker } from './DefaultEventBroker';
+import { EventsService } from '@backstage/backend-plugin-api';
 
 /**
  * A builder that helps wire up all component parts of the event management.
@@ -32,8 +33,8 @@ export class EventsBackend {
   private publishers: EventPublisher[] = [];
   private subscribers: EventSubscriber[] = [];
 
-  constructor(logger: Logger) {
-    this.eventBroker = new DefaultEventBroker(logger);
+  constructor(logger: Logger, eventsClient?: EventsService) {
+    this.eventBroker = new DefaultEventBroker(logger, eventsClient);
   }
 
   setEventBroker(eventBroker: EventBroker): EventsBackend {

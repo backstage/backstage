@@ -66,7 +66,17 @@ export interface Config {
             key: string;
           };
         };
-
+    /**
+     * Enable or disable events server. Defaults to false.
+     */
+    events?:
+      | boolean
+      | {
+          /** Is events enabled, defaults to false */
+          enabled?: boolean;
+          /** Endpoint for the clients to connect to, must start with ws:// or wss:// */
+          endpoint?: string;
+        };
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */

@@ -20,6 +20,7 @@ import {
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
+import { EventsService } from '@backstage/backend-plugin-api';
 
 /**
  * In process event broker which will pass the event to all registered subscribers
@@ -30,7 +31,12 @@ import { Logger } from 'winston';
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
 export class DefaultEventBroker implements EventBroker {
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly eventsClient?: EventsService,
+  ) {
+    eventsClient?.connect();
+  }
 
   private readonly subscribers: {
     [topic: string]: EventSubscriber[];
@@ -56,12 +62,17 @@ export class DefaultEventBroker implements EventBroker {
         }
       }),
     );
+    // This allows to listen to events also in the frontend
+    // TODO(drodil): The actual events frontend to subscribe to the topics
+    await this.eventsClient?.publish(params.eventPayload, {
+      topic: params.topic,
+    });
   }
 
   subscribe(
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void {
-    subscribers.flat().forEach(subscriber => {
+    subscribers.flat().forEach((subscriber: EventSubscriber) => {
       subscriber.supportsEventTopics().forEach(topic => {
         this.subscribers[topic] = this.subscribers[topic] ?? [];
         this.subscribers[topic].push(subscriber);

@@ -31,6 +31,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  EventsClient,
 } from '@backstage/core-app-api';
 
 import {
@@ -46,10 +47,12 @@ import {
   gitlabAuthApiRef,
   microsoftAuthApiRef,
   storageApiRef,
+  eventsApiRef,
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 // TODO(Rugvip): This is just a copy of the createApp default APIs for now, but
@@ -202,5 +205,14 @@ export const defaultApis = [
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
+  }),
+  createApiFactory({
+    api: eventsApiRef,
+    deps: {
+      configApi: configApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ configApi, identityApi }) =>
+      EventsClient.create({ configApi, identityApi }),
   }),
 ];

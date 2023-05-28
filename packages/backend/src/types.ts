@@ -20,6 +20,7 @@ import {
   PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  PluginEventsManager,
   TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
@@ -40,4 +41,5 @@ export type PluginEnvironment = {
   scheduler: PluginTaskScheduler;
   identity: IdentityApi;
   eventBroker: EventBroker;
+  eventsManager: PluginEventsManager;
 };

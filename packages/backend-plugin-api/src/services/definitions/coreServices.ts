@@ -165,4 +165,13 @@ export namespace coreServices {
   export const identity = createServiceRef<
     import('./IdentityService').IdentityService
   >({ id: 'core.identity' });
+
+  /**
+   * The service reference for the plugin scoped {@link EventsService}.
+   *
+   * @public
+   */
+  export const events = createServiceRef<
+    import('./EventsService').EventsService
+  >({ id: 'core.events' });
 }

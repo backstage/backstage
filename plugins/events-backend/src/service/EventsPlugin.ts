@@ -92,8 +92,9 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.config,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
+        events: coreServices.events,
       },
-      async init({ config, logger, router }) {
+      async init({ config, logger, router, events }) {
         const winstonLogger = loggerToWinstonLogger(logger);
 
         const ingresses = Object.fromEntries(
@@ -113,7 +114,8 @@ export const eventsPlugin = createBackendPlugin({
         router.use(eventsRouter);
 
         const eventBroker =
-          extensionPoint.eventBroker ?? new DefaultEventBroker(winstonLogger);
+          extensionPoint.eventBroker ??
+          new DefaultEventBroker(winstonLogger, events);
 
         eventBroker.subscribe(extensionPoint.subscribers);
         [extensionPoint.publishers, http]

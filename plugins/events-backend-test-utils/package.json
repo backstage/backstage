@@ -23,6 +23,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^"
   },
   "devDependencies": {

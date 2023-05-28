@@ -34,6 +34,7 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  EventsClient,
 } from '@backstage/core-app-api';
 
 import {
@@ -51,6 +52,7 @@ import {
   gitlabAuthApiRef,
   microsoftAuthApiRef,
   storageApiRef,
+  eventsApiRef,
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
@@ -268,5 +270,14 @@ export const apis = [
     },
     factory: ({ config, discovery, identity }) =>
       IdentityPermissionApi.create({ config, discovery, identity }),
+  }),
+  createApiFactory({
+    api: eventsApiRef,
+    deps: {
+      configApi: configApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ configApi, identityApi }) =>
+      EventsClient.create({ configApi, identityApi }),
   }),
 ];

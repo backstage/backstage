@@ -76,6 +76,18 @@ export interface Config {
      * @visibility frontend
      */
     baseUrl: string;
+    /**
+     * Enable or disable events connections. Defaults to false.
+     * @visibility frontend
+     */
+    events?:
+      | boolean
+      | {
+          /** Is events enabled, defaults to false */
+          enabled?: boolean;
+          /** Endpoint for the clients to connect to, must start with ws:// or wss:// */
+          endpoint?: string;
+        };
   };
 
   /**

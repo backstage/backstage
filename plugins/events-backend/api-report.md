@@ -7,6 +7,7 @@ import { Config } from '@backstage/config';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
@@ -14,7 +15,7 @@ import { Logger } from 'winston';
 
 // @public
 export class DefaultEventBroker implements EventBroker {
-  constructor(logger: Logger);
+  constructor(logger: Logger, eventsClient?: EventsService | undefined);
   // (undocumented)
   publish(params: EventParams): Promise<void>;
   // (undocumented)
@@ -25,7 +26,7 @@ export class DefaultEventBroker implements EventBroker {
 
 // @public
 export class EventsBackend {
-  constructor(logger: Logger);
+  constructor(logger: Logger, eventsClient?: EventsService);
   // (undocumented)
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>

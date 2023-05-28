@@ -34,6 +34,7 @@ import {
   UrlReaders,
   useHotMemoize,
   ServerTokenManager,
+  EventsClientManager,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -96,8 +97,15 @@ function makeCreateEnv(config: Config) {
   const identity = DefaultIdentityClient.create({
     discovery,
   });
+  const eventsClientManager = EventsClientManager.fromConfig(config, {
+    logger: root,
+    tokenManager,
+  });
 
-  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
+  const eventBroker = new DefaultEventBroker(
+    root.child({ type: 'plugin' }),
+    eventsClientManager.forPlugin('events').getClient(),
+  );
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -106,6 +114,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
+    const eventsManager = eventsClientManager.forPlugin(plugin);
 
     return {
       logger,
@@ -119,6 +128,7 @@ function makeCreateEnv(config: Config) {
       permissions,
       scheduler,
       identity,
+      eventsManager,
     };
   };
 }

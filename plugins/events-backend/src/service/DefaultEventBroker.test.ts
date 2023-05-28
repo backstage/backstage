@@ -15,24 +15,42 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
+import {
+  TestEventsService,
+  TestEventSubscriber,
+} from '@backstage/plugin-events-backend-test-utils';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { DefaultEventBroker } from './DefaultEventBroker';
 
 const logger = getVoidLogger();
 
 describe('DefaultEventBroker', () => {
-  it('passes events to interested subscribers', () => {
+  it('passes events to interested subscribers', async () => {
+    const eventsService = new TestEventsService();
     const subscriber1 = new TestEventSubscriber('test1', ['topicA', 'topicB']);
     const subscriber2 = new TestEventSubscriber('test2', ['topicB', 'topicC']);
-    const eventBroker = new DefaultEventBroker(logger);
+    const eventBroker = new DefaultEventBroker(logger, eventsService);
+
+    expect(eventsService.isConnected).toBeTruthy();
 
     eventBroker.subscribe(subscriber1);
     eventBroker.subscribe(subscriber2);
-    eventBroker.publish({ topic: 'topicA', eventPayload: { test: 'topicA' } });
-    eventBroker.publish({ topic: 'topicB', eventPayload: { test: 'topicB' } });
-    eventBroker.publish({ topic: 'topicC', eventPayload: { test: 'topicC' } });
-    eventBroker.publish({ topic: 'topicD', eventPayload: { test: 'topicD' } });
+    await eventBroker.publish({
+      topic: 'topicA',
+      eventPayload: { test: 'topicA' },
+    });
+    await eventBroker.publish({
+      topic: 'topicB',
+      eventPayload: { test: 'topicB' },
+    });
+    await eventBroker.publish({
+      topic: 'topicC',
+      eventPayload: { test: 'topicC' },
+    });
+    await eventBroker.publish({
+      topic: 'topicD',
+      eventPayload: { test: 'topicD' },
+    });
 
     expect(Object.keys(subscriber1.receivedEvents)).toEqual([
       'topicA',
@@ -63,6 +81,12 @@ describe('DefaultEventBroker', () => {
       topic: 'topicC',
       eventPayload: { test: 'topicC' },
     });
+
+    expect(eventsService.published.length).toEqual(4);
+    expect(eventsService.published[0].topic).toEqual('topicA');
+    expect(eventsService.published[1].topic).toEqual('topicB');
+    expect(eventsService.published[2].topic).toEqual('topicC');
+    expect(eventsService.published[3].topic).toEqual('topicD');
   });
 
   it('logs errors from subscribers', async () => {
@@ -86,7 +110,8 @@ describe('DefaultEventBroker', () => {
     })();
 
     const errorSpy = jest.spyOn(logger, 'error');
-    const eventBroker = new DefaultEventBroker(logger);
+    const eventsService = new TestEventsService();
+    const eventBroker = new DefaultEventBroker(logger, eventsService);
 
     eventBroker.subscribe(subscriber1);
     await eventBroker.publish({ topic, eventPayload: '1' });

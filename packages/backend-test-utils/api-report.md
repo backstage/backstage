@@ -8,6 +8,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
@@ -52,6 +53,11 @@ export namespace mockServices {
   export namespace database {
     const // (undocumented)
       factory: () => ServiceFactory<DatabaseService, 'plugin'>;
+  }
+  // (undocumented)
+  export namespace events {
+    const // (undocumented)
+      factory: () => ServiceFactory<EventsService, 'plugin'>;
   }
   // (undocumented)
   export namespace httpRouter {

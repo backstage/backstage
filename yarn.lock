@@ -3658,6 +3658,7 @@ __metadata:
     "@kubernetes/client-node": 0.18.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
+    "@relaycorp/ws-mock": ^5.2.6
     "@types/archiver": ^5.1.0
     "@types/base64-stream": ^1.0.2
     "@types/compression": ^1.7.0
@@ -3667,6 +3668,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.3
     "@types/http-errors": ^2.0.0
+    "@types/jwt-decode": ^3.1.0
     "@types/luxon": ^3.0.0
     "@types/minimist": ^1.2.0
     "@types/mock-fs": ^4.13.0
@@ -3678,6 +3680,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     "@types/tar": ^6.1.1
     "@types/webpack-env": ^1.15.2
+    "@types/ws": ^8.5.4
     "@types/yauzl": ^2.10.0
     archiver: ^5.0.2
     aws-sdk-client-mock: ^2.0.0
@@ -3696,6 +3699,7 @@ __metadata:
     http-errors: ^2.0.0
     isomorphic-git: ^1.23.0
     jose: ^4.6.0
+    jwt-decode: ^3.1.0
     keyv: ^4.5.2
     knex: ^2.0.0
     lodash: ^4.17.21
@@ -3719,6 +3723,7 @@ __metadata:
     uuid: ^8.3.2
     winston: ^3.2.1
     winston-transport: ^4.5.0
+    ws: ^8.13.0
     yauzl: ^2.10.0
     yn: ^4.0.0
   peerDependencies:
@@ -6714,6 +6719,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
   languageName: unknown
@@ -14462,6 +14468,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@relaycorp/ws-mock@npm:^5.2.6":
+  version: 5.2.6
+  resolution: "@relaycorp/ws-mock@npm:5.2.6"
+  dependencies:
+    buffer-to-arraybuffer: 0.0.6
+    ws: ^8.13.0
+  peerDependencies:
+    ws: ">= 7.4.1 < 8"
+  checksum: 24abc178f74d412631554955a4eda3257b5ff3b55c859b01699fab084eb5211db2a022058cf6e4243eecf0f481d08287d0d0c95aa617f40a471dad69821bb145
+  languageName: node
+  linkType: hard
+
 "@remix-run/router@npm:1.3.2":
   version: 1.3.2
   resolution: "@remix-run/router@npm:1.3.2"
@@ -17804,7 +17822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.0.0, @types/ws@npm:^8.5.1, @types/ws@npm:^8.5.3":
+"@types/ws@npm:^8.0.0, @types/ws@npm:^8.5.1, @types/ws@npm:^8.5.3, @types/ws@npm:^8.5.4":
   version: 8.5.4
   resolution: "@types/ws@npm:8.5.4"
   dependencies:
@@ -20082,6 +20100,13 @@ __metadata:
   version: 1.1.2
   resolution: "buffer-from@npm:1.1.2"
   checksum: 0448524a562b37d4d7ed9efd91685a5b77a50672c556ea254ac9a6d30e3403a517d8981f10e565db24e8339413b43c97ca2951f10e399c6125a0d8911f5679bb
+  languageName: node
+  linkType: hard
+
+"buffer-to-arraybuffer@npm:0.0.6":
+  version: 0.0.6
+  resolution: "buffer-to-arraybuffer@npm:0.0.6"
+  checksum: 6c754569f2289de1335d8665a60130df507391194d1bd1ddd420a82b1595df7e177b62f21496d3360f0d45babede0b29f4c7f10c52f6701dc86ed9544902f71e
   languageName: node
   linkType: hard
 
@@ -24611,6 +24636,7 @@ __metadata:
   resolution: "example-backend@workspace:packages/backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"

@@ -415,6 +415,19 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
+export interface EventsApi {
+  subscribe(
+    pluginId: string,
+    onMessage: (data: unknown) => void,
+    topic?: string,
+  ): void;
+  unsubscribe(pluginId: string, topic?: string): void;
+}
+
+// @public
+export const eventsApiRef: ApiRef<EventsApi>;
+
+// @public
 export type Extension<T> = {
   expose(plugin: BackstagePlugin): T;
 };

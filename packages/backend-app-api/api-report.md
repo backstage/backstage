@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
 import { Handler } from 'express';
@@ -119,6 +120,12 @@ export interface DefaultRootHttpRouterOptions {
 // @public (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
   PluginEndpointDiscovery,
+  'plugin'
+>;
+
+// @public (undocumented)
+export const eventsServiceFactory: () => ServiceFactory<
+  EventsService,
   'plugin'
 >;
 
