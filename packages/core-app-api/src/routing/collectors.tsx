@@ -33,6 +33,7 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   path: '*',
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
+  plugins: new Set(),
 };
 
 function stringifyNode(node: ReactNode): string {
@@ -44,6 +45,16 @@ function stringifyNode(node: ReactNode): string {
   }
   return String(anyNode);
 }
+
+const pluginSet = (
+  plugin: BackstagePlugin | undefined,
+): Set<BackstagePlugin> => {
+  const set = new Set<BackstagePlugin>();
+  if (plugin) {
+    set.add(plugin);
+  }
+  return set;
+};
 
 interface RoutingV2CollectorContext {
   routeRef?: RouteRef;
@@ -132,6 +143,7 @@ export const routingV2Collector = createCollector(
           routeRefs: new Set<RouteRef>(),
           caseSensitive: Boolean(node.props?.caseSensitive),
           children: [MATCH_ALL_ROUTE],
+          plugins: new Set<BackstagePlugin>(),
           plugin: undefined,
         };
         parentChildren.push(newObj);
@@ -162,6 +174,7 @@ export const routingV2Collector = createCollector(
           routeRefs: new Set([routeRef]),
           caseSensitive: Boolean(node.props?.caseSensitive),
           children: [MATCH_ALL_ROUTE],
+          plugins: pluginSet(plugin),
           plugin,
         };
         parentChildren.push(newObj);
@@ -187,6 +200,15 @@ export const routingV2Collector = createCollector(
       }
 
       ctx?.obj?.routeRefs.add(mountPoint);
+
+      const mountPointPlugin = getComponentData<BackstagePlugin>(
+        node,
+        'core.plugin',
+      );
+      if (mountPointPlugin) {
+        ctx?.obj?.plugins.add(mountPointPlugin);
+      }
+
       acc.paths.set(mountPoint, ctx.gatherPath);
       acc.parents.set(mountPoint, ctx?.gatherRouteRef);
 
@@ -306,6 +328,12 @@ export const routingV1Collector = createCollector(
           element: 'mounted',
           routeRefs: new Set([routeRef]),
           children: [MATCH_ALL_ROUTE],
+          plugins: pluginSet(
+            getComponentData<BackstagePlugin>(
+              node.props.element,
+              'core.plugin',
+            ),
+          ),
           plugin: getComponentData<BackstagePlugin>(
             node.props.element,
             'core.plugin',
@@ -336,6 +364,7 @@ export const routingV1Collector = createCollector(
           element: 'gathered',
           routeRefs: new Set(),
           children: [MATCH_ALL_ROUTE],
+          plugins: pluginSet(ctx?.obj?.plugin),
           plugin: ctx?.obj?.plugin,
         };
         parentChildren.push(currentObj);
