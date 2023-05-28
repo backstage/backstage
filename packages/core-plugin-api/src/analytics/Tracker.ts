@@ -14,12 +14,49 @@
  * limitations under the License.
  */
 
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import {
   AnalyticsApi,
   AnalyticsEventAttributes,
   AnalyticsTracker,
 } from '../apis';
 import { AnalyticsContextValue } from './';
+
+type TempGlobalEvents = {
+  /**
+   * Stores the most recent "gathered" mountpoint navigation.
+   */
+  mostRecentGatheredNavigation?: {
+    action: string;
+    subject: string;
+    value?: number;
+    attributes?: AnalyticsEventAttributes;
+    context: AnalyticsContextValue;
+  };
+  /**
+   * Stores the most recent routable extension render.
+   */
+  mostRecentRoutableExtensionRender?: {
+    context: AnalyticsContextValue;
+  };
+};
+
+/**
+ * Temporary global store for select event data. Used to make `navigate` events
+ * more accurate when gathered mountpoints are used.
+ */
+const globalEvents = getOrCreateGlobalSingleton<TempGlobalEvents>(
+  'core-plugin-api:analytics-tracker-events',
+  () => ({
+    mostRecentGatheredNavigation: undefined,
+    mostRecentRoutableExtensionRender: undefined,
+  }),
+);
+
+/**
+ * Internal-only event representing when a routable extension is rendered.
+ */
+export const routableExtensionRenderedEvent = '_ROUTABLE-EXTENSION-RENDERED';
 
 export class Tracker implements AnalyticsTracker {
   constructor(
@@ -43,13 +80,65 @@ export class Tracker implements AnalyticsTracker {
       attributes,
     }: { value?: number; attributes?: AnalyticsEventAttributes } = {},
   ) {
+    // Never pass internal "_routeNodeType" context value.
+    const { _routeNodeType, ...context } = this.context;
+
+    // Never fire the special "_routable-extension-rendered" internal event.
+    if (action === routableExtensionRenderedEvent) {
+      // Instead, set it on the global store.
+      globalEvents.mostRecentRoutableExtensionRender = {
+        context: {
+          ...context,
+          extension: 'App',
+        },
+      };
+      return;
+    }
+
+    // If we are about to fire a real event, and we have an un-fired gathered
+    // mountpoint navigation on the global store, we need to fire the navigate
+    // event first, so this real event happens accurately after the navigation.
+    if (globalEvents.mostRecentGatheredNavigation) {
+      try {
+        this.analyticsApi.captureEvent({
+          ...globalEvents.mostRecentGatheredNavigation,
+          ...globalEvents.mostRecentRoutableExtensionRender,
+        });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Error during analytics event capture. %o', e);
+      }
+
+      // Clear the global stores.
+      globalEvents.mostRecentGatheredNavigation = undefined;
+      globalEvents.mostRecentRoutableExtensionRender = undefined;
+    }
+
+    // Never directly fire a navigation event on a gathered route with default
+    // contextual details.
+    if (
+      action === 'navigate' &&
+      _routeNodeType === 'gathered' &&
+      context.pluginId === 'root'
+    ) {
+      // Instead, set it on the global store.
+      globalEvents.mostRecentGatheredNavigation = {
+        action,
+        subject,
+        value,
+        attributes,
+        context,
+      };
+      return;
+    }
+
     try {
       this.analyticsApi.captureEvent({
         action,
         subject,
         value,
         attributes,
-        context: this.context,
+        context,
       });
     } catch (e) {
       // eslint-disable-next-line no-console
