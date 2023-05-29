@@ -15,12 +15,35 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { NOMAD_GROUP_ANNOTATION } from '../Router';
+import { NOMAD_GROUP_ANNOTATION, NOMAD_NAMESPACE_ANNOTATION } from '../Router';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { nomadApiRef } from '../api';
+import useAsync from 'react-use/lib/useAsync';
 
 /**
  * Get the entity's group and query it from the Nomad API.
  */
 export const useGroupForEntity = () => {
   const { entity } = useEntity();
+
+  const namespace =
+    entity.metadata.annotations?.[NOMAD_NAMESPACE_ANNOTATION] ?? 'default';
   const group = entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION] ?? '';
+
+  const nomadApi = useApi(nomadApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  const response = useAsync(
+    () =>
+      nomadApi.listAllocations({
+        namespace,
+        filter: `TaskGroup == "${group}"`,
+      }),
+    [group],
+  );
+
+  if (response.error) {
+    errorApi.post(response.error);
+  }
+  return response;
 };
