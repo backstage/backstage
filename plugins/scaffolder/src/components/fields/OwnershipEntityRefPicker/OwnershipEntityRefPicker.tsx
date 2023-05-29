@@ -30,12 +30,7 @@ export { OwnershipEntityRefPickerSchema };
 export const OwnershipEntityRefPicker = (
   props: OwnershipEntityRefPickerProps,
 ) => {
-  const {
-    schema: { title = 'Group', description = 'A group you are part of' },
-    required,
-    rawErrors,
-    formData,
-  } = props;
+  const { uiSchema, required, rawErrors, formData } = props;
 
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -79,9 +74,9 @@ export const OwnershipEntityRefPicker = (
         renderInput={params => (
           <TextField
             {...params}
-            label={title}
+            label={uiSchema['ui:options']?.title}
             margin="dense"
-            helperText={description}
+            helperText={uiSchema['ui:options']?.description}
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}

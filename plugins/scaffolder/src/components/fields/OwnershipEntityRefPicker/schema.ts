@@ -20,8 +20,11 @@ import { makeFieldSchemaFromZod } from '../utils';
 export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
-    title: z.string().optional(),
-    description: z.string().optional(),
+    title: z.string().default('Group').describe('Group'),
+    description: z
+      .string()
+      .default('A group you are part of')
+      .describe('The group to which the entity belongs'),
   }),
 );
 
