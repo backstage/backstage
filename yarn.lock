@@ -14100,9 +14100,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oriflame/backstage-plugin-score-card@npm:^0.6.0":
-  version: 0.6.3
-  resolution: "@oriflame/backstage-plugin-score-card@npm:0.6.3"
+"@oriflame/backstage-plugin-score-card@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@oriflame/backstage-plugin-score-card@npm:0.7.0"
   dependencies:
     "@backstage/catalog-model": ^1.1.5
     "@backstage/config": ^1.0.6
@@ -14120,7 +14120,7 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
-  checksum: cdf57bb0ea42b1ef3699b65e558c0d9f2483555fefd03bc3ff4e4d75524c904d723e4808987e8718eac63ab60da6257af82e7d45c70cd42fc00bb1a4c392578b
+  checksum: 72ce56c8df0cc4611a0a66c7d22659f911ac8d265b3b2802cd4c35b7b0415a70d6c448eb681fd77bd4ab9167ffa560e8facc0b06301fc55ac933bdaf0d9e336d
   languageName: node
   linkType: hard
 
@@ -24408,7 +24408,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
-    "@oriflame/backstage-plugin-score-card": ^0.6.0
+    "@oriflame/backstage-plugin-score-card": ^0.7.0
     "@roadiehq/backstage-plugin-buildkite": ^2.0.8
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
