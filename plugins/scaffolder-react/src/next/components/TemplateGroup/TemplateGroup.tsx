@@ -19,9 +19,7 @@ import {
   Content,
   ContentHeader,
   ItemCardGrid,
-  Link,
 } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -61,18 +59,7 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
   if (templates.length === 0) {
-    return (
-      <Content>
-        {titleComponent}
-        <Typography variant="body2">
-          No templates found that match your filter. Learn more about{' '}
-          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-            adding templates
-          </Link>
-          .
-        </Typography>
-      </Content>
-    );
+    return null;
   }
 
   const Card = CardComponent || TemplateCard;
