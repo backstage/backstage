@@ -45,13 +45,23 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface FixDialogProps {
+/**
+ * Props for FixDialog
+ *
+ * @public
+ */
+export interface FixDialogProps {
   open?: boolean;
   clusterName: string;
   pod: Pod;
   error: DetectedError;
 }
 
+/**
+ * A dialog for fixing detected Kubernetes errors
+ *
+ * @public
+ */
 export const FixDialog: React.FC<FixDialogProps> = ({
   open,
   pod,

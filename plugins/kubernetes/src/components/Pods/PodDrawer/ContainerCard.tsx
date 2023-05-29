@@ -83,12 +83,22 @@ const ContainerDatetime = ({ prefix, dateTime }: ContainerDatetimeProps) => {
   );
 };
 
+/**
+ * Props for ContainerCard
+ *
+ * @public
+ */
 export interface ContainerCardProps {
   podScope: PodScope;
   containerSpec?: IContainer;
   containerStatus: IContainerStatus;
 }
 
+/**
+ * Shows details about a container within a pod
+ *
+ * @public
+ */
 export const ContainerCard: React.FC<ContainerCardProps> = ({
   podScope,
   containerSpec,

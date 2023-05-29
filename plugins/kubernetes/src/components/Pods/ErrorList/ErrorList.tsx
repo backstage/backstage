@@ -40,10 +40,20 @@ const useStyles = makeStyles((_theme: Theme) =>
   }),
 );
 
-interface ErrorListProps {
+/**
+ * Props for ErrorList
+ *
+ * @public
+ */
+export interface ErrorListProps {
   podAndErrors: PodAndErrors[];
 }
 
+/**
+ * Shows a list of errors found on a Pod
+ *
+ * @public
+ */
 export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
   const classes = useStyles();
   return (

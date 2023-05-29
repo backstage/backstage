@@ -43,10 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+/**
+ * Props for PodLogsDialog
+ *
+ * @public
+ */
 interface PodLogsDialogProps {
   podScope: ContainerScope;
 }
 
+/**
+ * Shows the logs for the given pod in a Dialog
+ *
+ * @public
+ */
 export const PodLogsDialog = ({
   podScope: containerScope,
 }: PodLogsDialogProps) => {

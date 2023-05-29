@@ -92,13 +92,23 @@ export const EventsContent = ({
   );
 };
 
-interface EventsProps {
+/**
+ * Props for Events
+ *
+ * @public
+ */
+export interface EventsProps {
   involvedObjectName: string;
   namespace: string;
   clusterName: string;
   warningEventsOnly?: boolean;
 }
 
+/**
+ * Shows Kubernetes events for the given object
+ *
+ * @public
+ */
 export const Events = ({
   involvedObjectName,
   namespace,

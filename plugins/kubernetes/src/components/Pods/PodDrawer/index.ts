@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export { PodDrawer } from './PodDrawer';
+export { ContainerCard } from './ContainerCard';
+export { PendingPodContent } from './PendingPodContent';

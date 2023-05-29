@@ -19,11 +19,21 @@ import useAsync from 'react-use/lib/useAsync';
 import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
 
-interface PodLogsOptions {
+/**
+ * Arguments for usePodLogs
+ *
+ * @public
+ */
+export interface PodLogsOptions {
   containerScope: ContainerScope;
   previous?: boolean;
 }
 
+/**
+ * Retrieves the logs for the given pod
+ *
+ * @public
+ */
 export const usePodLogs = ({ containerScope, previous }: PodLogsOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {

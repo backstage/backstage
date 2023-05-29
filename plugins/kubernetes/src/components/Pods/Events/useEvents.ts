@@ -17,12 +17,22 @@ import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
 
+/**
+ * Arguments for useEvents
+ *
+ * @public
+ */
 interface EventsOptions {
   involvedObjectName: string;
   namespace: string;
   clusterName: string;
 }
 
+/**
+ * Retrieves the events for the given object
+ *
+ * @public
+ */
 export const useEvents = ({
   involvedObjectName,
   namespace,

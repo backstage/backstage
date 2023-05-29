@@ -26,11 +26,21 @@ import { Skeleton } from '@material-ui/lab';
 import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
 
+/**
+ * Props for PodLogs
+ *
+ * @public
+ */
 interface PodLogsProps {
   containerScope: ContainerScope;
   previous?: boolean;
 }
 
+/**
+ * Shows the logs for the given pod
+ *
+ * @public
+ */
 export const PodLogs: React.FC<PodLogsProps> = ({
   containerScope,
   previous,
