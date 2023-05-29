@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { Table } from '@backstage/core-components';
+import { Progress } from '@backstage/core-components';
 import React from 'react';
+import { useGroupForEntity } from '../../hooks/useGroupForEntity';
+import { GroupListTable } from './GroupListTable';
 
 export const GroupListForEntity = () => {
-  return (
-    <Table
-      options={{
-        paging: false,
-        toolbar: false,
-      }}
-      columns={[]}
-      data={[]}
-    />
-  );
+  const { value, loading, error } = useGroupForEntity();
+
+  if (loading) {
+    return <Progress />;
+  }
+  if (error || !value) {
+    return null;
+  }
+
+  return <GroupListTable allocations={value.allocations} />;
 };

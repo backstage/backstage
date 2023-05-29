@@ -25,7 +25,7 @@ export const nomadApiRef = createApiRef<NomadApi>({
 /** @public */
 export type NomadApi = {
   /**
-   * listAllocations is for listing all allocations matching some part of 'prefix'.
+   * listAllocations is for listing all allocations matching some part of 'filter'.
    *
    * See: https://developer.hashicorp.com/nomad/api-docs/allocations#list-allocations
    */
@@ -36,8 +36,8 @@ export type NomadApi = {
 
 /** @public */
 export interface ListAllocationsRequest {
-  namespace?: string;
-  filter?: string;
+  namespace: string;
+  filter: string;
 }
 
 /** @public */
@@ -47,45 +47,71 @@ export interface ListAllocationsResponse {
 
 /** @public */
 export interface Allocation {
-  id: string;
-  clientStatus: string;
-  createTime: number;
-  namespace: string;
-  name: string;
-  modifyTime: number;
-  nodeID: string;
-  taskGroup: string;
+  ClientStatus: string;
+  CreateTime: number;
+  DeploymentStatus: DeploymentStatus;
+  ID: string;
+  ModifyTime: number;
+  Name: string;
+  Namespace: string;
+  NodeID: string;
+  TaskGroup: string;
 }
 
 /** @public */
 export interface DeploymentStatus {
-  healthy: boolean;
-  timestamp: string;
+  Healthy: boolean;
+  Timestamp: string;
+}
+
+/** @public */
+export class FetchError extends Error {
+  get name(): string {
+    return this.constructor.name;
+  }
+
+  static async forResponse(resp: Response): Promise<FetchError> {
+    return new FetchError(
+      `Request failed with status code ${
+        resp.status
+      }.\nReason: ${await resp.text()}`,
+    );
+  }
 }
 
 /** @public */
 export class NomadHttpApi implements NomadApi {
   static fromConfig(config: Config) {
     return new NomadHttpApi(
-      config.getOptionalString('nomad.nomadAddr'),
-      config.getOptionalString('nomad.nomadRegion'),
-      config.getOptionalString('nomad.nomadNamespace'),
-      config.getOptionalString('nomad.nomadToken'),
+      config.getOptionalString('nomad.addr'),
+      config.getOptionalString('nomad.token'),
     );
   }
 
   constructor(
-    private nomadAddr?: string,
-    private nomadRegion?: string,
-    private nomadNamespace?: string,
-    private nomadToken?: string,
+    private addr: string = 'http://127.0.0.1:4646',
+    private token?: string,
   ) {}
 
+  // TODO: pagination
   async listAllocations(
     options: ListAllocationsRequest,
   ): Promise<ListAllocationsResponse> {
+    const resp = await fetch(
+      `${this.addr}/v1/allocations?namespace=${encodeURIComponent(
+        options.namespace,
+      )}&filter=${encodeURIComponent(options.filter)}`,
+      {
+        method: 'GET',
+        headers: {
+          'X-Nomad-Token': this.token || '',
+        },
+      },
+    );
+    if (!resp.ok) throw await FetchError.forResponse(resp);
+
     return Promise.resolve({
-      allocations: [],
+      allocations: await resp.json(),
     });
   }
 }

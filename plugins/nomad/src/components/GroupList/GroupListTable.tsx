@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { nomadPlugin, NomadPage, EntityNomadContent } from './plugin';
-export { isNomadAvailable, EmbeddedRouter } from './Router';
+
+import { Table, TableColumn } from '@backstage/core-components';
+import React from 'react';
+import { Allocation } from '../../api';
+
+const columns: TableColumn[] = [
+  {
+    title: 'Allocation ID',
+    field: 'ID',
+  },
+  {
+    title: 'Name',
+    field: 'Name',
+  },
+];
+
+export const GroupListTable = ({
+  allocations,
+}: {
+  allocations: Allocation[];
+}) => {
+  return (
+    <Table
+      options={{
+        paging: false,
+        toolbar: false,
+      }}
+      columns={columns}
+      data={allocations}
+    />
+  );
+};

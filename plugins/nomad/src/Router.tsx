@@ -22,15 +22,14 @@ import { Route, Routes } from 'react-router-dom';
 import { GroupListForEntity } from './components/GroupList/GroupListForEntity';
 
 /** @public */
+export const NOMAD_NAMESPACE_ANNOTATION = 'nomad.io/namespace';
+
+/** @public */
 export const NOMAD_GROUP_ANNOTATION = 'nomad.io/group';
 
 /** @public */
-export const NOMAD_TASK_ANNOTATION = 'nomad.io/task';
-
-/** @public */
 export const isNomadAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]) ||
-  Boolean(entity.metadata.annotations?.[NOMAD_TASK_ANNOTATION]);
+  Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]);
 
 /** @public */
 export const EmbeddedRouter = () => {

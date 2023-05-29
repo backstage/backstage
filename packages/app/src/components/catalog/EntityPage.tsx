@@ -112,6 +112,7 @@ import {
   EntityOwnershipCard,
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
+import { EntityNomadContent, isNomadAvailable } from '@backstage/plugin-nomad';
 import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
@@ -499,6 +500,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/nomad" title="Nomad">
+      <EntityNomadContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
