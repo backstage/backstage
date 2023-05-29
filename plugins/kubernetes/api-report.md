@@ -172,8 +172,6 @@ export const ErrorList: ({ podAndErrors }: ErrorListProps) => JSX.Element;
 
 // @public
 export interface ErrorListProps {
-  // Warning: (ae-forgotten-export) The symbol "PodAndErrors" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   podAndErrors: PodAndErrors[];
 }
@@ -595,6 +593,16 @@ export const PendingPodContent: ({
 
 // @public
 export interface PendingPodContentProps {
+  // (undocumented)
+  pod: Pod_2;
+}
+
+// @public
+export interface PodAndErrors {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  errors: DetectedError[];
   // (undocumented)
   pod: Pod_2;
 }
