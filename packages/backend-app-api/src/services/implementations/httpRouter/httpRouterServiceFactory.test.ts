@@ -26,24 +26,32 @@ describe('httpRouterFactory', () => {
       {
         rootHttpRouter,
         plugin: { getId: () => 'test1' },
+        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
       },
       undefined,
     );
     router1.use(handler1);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith('/api/test1', handler1);
+    expect(rootHttpRouter.use).toHaveBeenCalledWith(
+      '/api/test1',
+      expect.any(Function),
+    );
 
     const handler2 = () => {};
     const router2 = await factory.factory(
       {
         rootHttpRouter,
         plugin: { getId: () => 'test2' },
+        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
       },
       undefined,
     );
     router2.use(handler2);
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith('/api/test2', handler2);
+    expect(rootHttpRouter.use).toHaveBeenCalledWith(
+      '/api/test2',
+      expect.any(Function),
+    );
   });
 
   it('should use custom path generator', async () => {
@@ -57,6 +65,7 @@ describe('httpRouterFactory', () => {
       {
         rootHttpRouter,
         plugin: { getId: () => 'test1' },
+        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
       },
       undefined,
     );
@@ -64,7 +73,7 @@ describe('httpRouterFactory', () => {
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/some/test1/path',
-      handler1,
+      expect.any(Function),
     );
 
     const handler2 = () => {};
@@ -72,6 +81,7 @@ describe('httpRouterFactory', () => {
       {
         rootHttpRouter,
         plugin: { getId: () => 'test2' },
+        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
       },
       undefined,
     );
@@ -79,7 +89,7 @@ describe('httpRouterFactory', () => {
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/some/test2/path',
-      handler2,
+      expect.any(Function),
     );
   });
 });

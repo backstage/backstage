@@ -126,5 +126,8 @@ export function serializeError(
 ): SerializedError;
 
 // @public
+export class ServiceUnavailableError extends CustomErrorBase {}
+
+// @public
 export function stringifyError(error: unknown): string;
 ```

@@ -35,7 +35,10 @@ describe('createBackend', () => {
           createServiceFactory({
             service: coreServices.rootLifecycle,
             deps: {},
-            factory: async () => ({ addShutdownHook: () => {} }),
+            factory: async () => ({
+              addStartupHook: () => {},
+              addShutdownHook: () => {},
+            }),
           }),
         ],
       }),
@@ -49,12 +52,18 @@ describe('createBackend', () => {
           createServiceFactory({
             service: coreServices.rootLifecycle,
             deps: {},
-            factory: async () => ({ addShutdownHook: () => {} }),
+            factory: async () => ({
+              addStartupHook: () => {},
+              addShutdownHook: () => {},
+            }),
           }),
           createServiceFactory({
             service: coreServices.rootLifecycle,
             deps: {},
-            factory: async () => ({ addShutdownHook: () => {} }),
+            factory: async () => ({
+              addStartupHook: () => {},
+              addShutdownHook: () => {},
+            }),
           }),
         ],
       }),

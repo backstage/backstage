@@ -82,6 +82,13 @@ export class NotModifiedError extends CustomErrorBase {}
 export class NotImplementedError extends CustomErrorBase {}
 
 /**
+ * The server is not ready to handle the request.
+ *
+ * @public
+ */
+export class ServiceUnavailableError extends CustomErrorBase {}
+
+/**
  * An error that forwards an underlying cause with additional context in the message.
  *
  * The `name` property of the error will be inherited from the `cause` if

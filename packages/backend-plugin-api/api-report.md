@@ -273,6 +273,10 @@ export interface LifecycleService {
     hook: LifecycleServiceShutdownHook,
     options?: LifecycleServiceShutdownOptions,
   ): void;
+  addStartupHook(
+    hook: LifecycleServiceStartupHook,
+    options?: LifecycleServiceStartupOptions,
+  ): void;
 }
 
 // @public (undocumented)
@@ -280,6 +284,14 @@ export type LifecycleServiceShutdownHook = () => void | Promise<void>;
 
 // @public (undocumented)
 export interface LifecycleServiceShutdownOptions {
+  logger?: LoggerService;
+}
+
+// @public (undocumented)
+export type LifecycleServiceStartupHook = () => void | Promise<void>;
+
+// @public (undocumented)
+export interface LifecycleServiceStartupOptions {
   logger?: LoggerService;
 }
 
