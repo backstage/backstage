@@ -50,6 +50,8 @@ export interface LifecycleMiddlewareOptions {
   lifecycle: LifecycleService;
   /**
    * The maximum time that paused requests will wait for the service to start, before returning an error.
+   *
+   * Defaults to 5 seconds.
    */
   startupRequestPauseTimeout?: HumanDuration;
 }
