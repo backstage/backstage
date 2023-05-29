@@ -52,8 +52,7 @@ const useStyles = makeStyles<
         paddingBottom: props => props.sidebarConfig.mobileSidebarHeight,
       },
       '@media print': {
-        paddingLeft: '0px !important',
-        paddingBottom: '0px !important',
+        padding: '0px !important',
       },
     },
     content: {
