@@ -81,57 +81,17 @@ export interface Config {
        */
       connection:
         | string
-        | {
+        | Partial<{
             /**
-             * User with which to authenticate to the server
-             */
-            user?: string;
-            /**
-             * Corresponding password
+             * Password that belongs to the Postgres User
              * @visibility secret
              */
             password: string;
             /**
-             * Postgres server hostname or, for UNIX domain sockets, the socket filename
+             * Other Knex (PG) object settings
              */
-            host?: string;
-            /**
-             * Database name within the server
-             */
-            database?: string;
-            /**
-             * Port on which to connect
-             */
-            port?: number;
-            /**
-             * TLS/SSL connections settings
-             */
-            ssl?: boolean | ConnectionOptions;
-            /**
-             * Custom type parsers
-             */
-            types?: CustomTypesConfig;
-            /**
-             * Number of milliseconds before a statement in query will time out, default is no timeout
-             */
-            statement_timeout?: false | number;
-            /**
-             * Number of milliseconds before a query call will timeout, default is no timeout
-             */
-            query_timeout?: number;
-            /**
-             * The name of the application that created this Client instance
-             */
-            application_name?: string;
-            /**
-             * Number of milliseconds to wait for connection, default is no timeout
-             */
-            connectionTimeoutMillis?: number;
-            /**
-             * Number of milliseconds before terminating any session with an open idle transaction, default is no timeout
-             */
-            idle_in_transaction_session_timeout?: number;
-          };
+            [key: string]: unknown;
+          }>;
       /** Database name prefix override */
       prefix?: string;
       /**
