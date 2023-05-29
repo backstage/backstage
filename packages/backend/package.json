@@ -40,7 +40,6 @@
     "@backstage/plugin-azure-sites-backend": "workspace:^",
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
-    "@backstage/plugin-catalog-backend-module-github": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-code-coverage-backend": "workspace:^",
     "@backstage/plugin-devtools-backend": "workspace:^",

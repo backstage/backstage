@@ -317,7 +317,7 @@ export type Cursor = {
  */
 export type CatalogConflictEventPayload = {
   /**
-   * The new conflicting entity
+   * The new conflicting entity in raw, unvalidated form
    */
   entity: Entity;
   /**
