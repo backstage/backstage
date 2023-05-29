@@ -19,7 +19,12 @@ export {
   readAzureIntegrationConfig,
   readAzureIntegrationConfigs,
 } from './config';
-export type { AzureIntegrationConfig } from './config';
+export type {
+  AzureIntegrationConfig,
+  AzureCredential,
+  ManagedIdentity,
+  ClientSecret,
+} from './config';
 export {
   getAzureCommitsUrl,
   getAzureDownloadUrl,
