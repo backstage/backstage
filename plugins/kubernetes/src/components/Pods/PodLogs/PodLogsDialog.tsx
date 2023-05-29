@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
  *
  * @public
  */
-interface PodLogsDialogProps {
+export interface PodLogsDialogProps {
   podScope: ContainerScope;
 }
 

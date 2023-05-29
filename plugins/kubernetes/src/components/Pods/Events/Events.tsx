@@ -36,7 +36,12 @@ import { Skeleton } from '@material-ui/lab';
 import { DismissableBanner } from '@backstage/core-components';
 import { Event } from 'kubernetes-models/v1';
 
-interface EventsContentProps {
+/**
+ * Props for Events
+ *
+ * @public
+ */
+export interface EventsContentProps {
   warningEventsOnly?: boolean;
   events: Event[];
 }
@@ -49,6 +54,11 @@ const getAvatarByType = (type?: string) => {
   );
 };
 
+/**
+ * Shows given Kubernetes events
+ *
+ * @public
+ */
 export const EventsContent = ({
   events,
   warningEventsOnly,
@@ -105,7 +115,7 @@ export interface EventsProps {
 }
 
 /**
- * Shows Kubernetes events for the given object
+ * Retrieves and shows Kubernetes events for the given object
  *
  * @public
  */

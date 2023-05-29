@@ -31,7 +31,7 @@ import { usePodLogs } from './usePodLogs';
  *
  * @public
  */
-interface PodLogsProps {
+export interface PodLogsProps {
   containerScope: ContainerScope;
   previous?: boolean;
 }

@@ -69,7 +69,7 @@ const PodCondition = ({ condition }: PodConditionProps) => {
  *
  * @public
  */
-interface PendingPodContentProps {
+export interface PendingPodContentProps {
   pod: Pod;
 }
 

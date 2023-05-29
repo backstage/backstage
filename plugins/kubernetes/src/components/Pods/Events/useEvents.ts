@@ -22,7 +22,7 @@ import useAsync from 'react-use/lib/useAsync';
  *
  * @public
  */
-interface EventsOptions {
+export interface EventsOptions {
   involvedObjectName: string;
   namespace: string;
   clusterName: string;

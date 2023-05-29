@@ -82,10 +82,18 @@ export interface ClusterLinksFormatterOptions {
 // @public (undocumented)
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
-// Warning: (ae-forgotten-export) The symbol "ContainerCardProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const ContainerCard: React_2.FC<ContainerCardProps>;
+
+// @public
+export interface ContainerCardProps {
+  // (undocumented)
+  containerSpec?: IContainer;
+  // (undocumented)
+  containerStatus: IContainerStatus;
+  // (undocumented)
+  podScope: PodScope;
+}
 
 // @public
 export interface ContainerScope extends PodScope {
@@ -199,14 +207,29 @@ export const Events: ({
   warningEventsOnly,
 }: EventsProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "EventsContentProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EventsContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EventsContent: ({
   events,
   warningEventsOnly,
 }: EventsContentProps) => JSX.Element;
+
+// @public
+export interface EventsContentProps {
+  // (undocumented)
+  events: Event_2[];
+  // (undocumented)
+  warningEventsOnly?: boolean;
+}
+
+// @public
+export interface EventsOptions {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  involvedObjectName: string;
+  // (undocumented)
+  namespace: string;
+}
 
 // @public
 export interface EventsProps {
@@ -220,10 +243,20 @@ export interface EventsProps {
   warningEventsOnly?: boolean;
 }
 
-// Warning: (ae-forgotten-export) The symbol "FixDialogProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const FixDialog: React_2.FC<FixDialogProps>;
+
+// @public
+export interface FixDialogProps {
+  // (undocumented)
+  clusterName: string;
+  // (undocumented)
+  error: DetectedError;
+  // (undocumented)
+  open?: boolean;
+  // (undocumented)
+  pod: Pod;
+}
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -555,32 +588,46 @@ export const LinkErrorPanel: ({
   errorMessage,
 }: ErrorPanelProps_2) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "PendingPodContentProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const PendingPodContent: ({
   pod,
 }: PendingPodContentProps) => JSX.Element;
+
+// @public
+export interface PendingPodContentProps {
+  // (undocumented)
+  pod: Pod_2;
+}
 
 // Warning: (ae-forgotten-export) The symbol "PodDrawerProps" needs to be exported by the entry point index.d.ts
 //
 // @public
 export const PodDrawer: ({ podAndErrors, open }: PodDrawerProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "PodLogsProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const PodLogs: React_2.FC<PodLogsProps>;
 
-// Warning: (ae-forgotten-export) The symbol "PodLogsDialogProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const PodLogsDialog: ({
   podScope: containerScope,
 }: PodLogsDialogProps) => JSX.Element;
 
 // @public
+export interface PodLogsDialogProps {
+  // (undocumented)
+  podScope: ContainerScope;
+}
+
+// @public
 export interface PodLogsOptions {
+  // (undocumented)
+  containerScope: ContainerScope;
+  // (undocumented)
+  previous?: boolean;
+}
+
+// @public
+export interface PodLogsProps {
   // (undocumented)
   containerScope: ContainerScope;
   // (undocumented)
@@ -648,8 +695,6 @@ export const useCustomResources: (
   intervalMs?: number,
 ) => KubernetesObjects;
 
-// Warning: (ae-forgotten-export) The symbol "EventsOptions" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const useEvents: ({
   involvedObjectName,
