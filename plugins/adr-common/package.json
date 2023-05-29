@@ -31,7 +31,8 @@
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^",
+    "front-matter": "^4.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

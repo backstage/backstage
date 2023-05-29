@@ -59,6 +59,7 @@ export const AdrReader = (props: {
     const adrDecorators = decorators ?? [
       adrDecoratorFactories.createRewriteRelativeLinksDecorator(),
       adrDecoratorFactories.createRewriteRelativeEmbedsDecorator(),
+      adrDecoratorFactories.createFrontMatterFormatterDecorator(),
     ];
 
     return adrDecorators.reduce(
