@@ -13639,7 +13639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^4.0.0, @octokit/core@npm:^4.1.0, @octokit/core@npm:^4.2.1":
+"@octokit/core@npm:^4.0.0, @octokit/core@npm:^4.2.1":
   version: 4.2.1
   resolution: "@octokit/core@npm:4.2.1"
   dependencies:
@@ -13765,7 +13765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-paginate-rest@npm:^6.0.0, @octokit/plugin-paginate-rest@npm:^6.1.0":
+"@octokit/plugin-paginate-rest@npm:^6.0.0, @octokit/plugin-paginate-rest@npm:^6.1.0, @octokit/plugin-paginate-rest@npm:^6.1.2":
   version: 6.1.2
   resolution: "@octokit/plugin-paginate-rest@npm:6.1.2"
   dependencies:
@@ -13786,7 +13786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-rest-endpoint-methods@npm:^7.0.0, @octokit/plugin-rest-endpoint-methods@npm:^7.1.1":
+"@octokit/plugin-rest-endpoint-methods@npm:^7.1.1, @octokit/plugin-rest-endpoint-methods@npm:^7.1.2":
   version: 7.1.2
   resolution: "@octokit/plugin-rest-endpoint-methods@npm:7.1.2"
   dependencies:
@@ -13873,14 +13873,14 @@ __metadata:
   linkType: hard
 
 "@octokit/rest@npm:^19.0.3":
-  version: 19.0.7
-  resolution: "@octokit/rest@npm:19.0.7"
+  version: 19.0.11
+  resolution: "@octokit/rest@npm:19.0.11"
   dependencies:
-    "@octokit/core": ^4.1.0
-    "@octokit/plugin-paginate-rest": ^6.0.0
+    "@octokit/core": ^4.2.1
+    "@octokit/plugin-paginate-rest": ^6.1.2
     "@octokit/plugin-request-log": ^1.0.4
-    "@octokit/plugin-rest-endpoint-methods": ^7.0.0
-  checksum: 1f970c4de2cf3d1691d3cf5dd4bfa5ac205629e76417b5c51561e1beb5b4a7e6c65ba647f368727e67e5243418e06ca9cdafd9e733173e1529385d4f4d053d3d
+    "@octokit/plugin-rest-endpoint-methods": ^7.1.2
+  checksum: 147518ad51d214ead88adc717b5fdc4f33317949d58c124f4069bdf07d2e6b49fa66861036b9e233aed71fcb88ff367a6da0357653484e466175ab4fb7183b3b
   languageName: node
   linkType: hard
 
