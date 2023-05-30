@@ -30,12 +30,16 @@ export { OwnershipEntityRefPickerSchema };
 export const OwnershipEntityRefPicker = (
   props: OwnershipEntityRefPickerProps,
 ) => {
-  const { uiSchema, required, rawErrors, formData } = props;
+  const {
+    schema: { title, description },
+    required,
+    rawErrors,
+  } = props;
 
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [groups, setGroups] = useState<string[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserGroups = async () => {
@@ -63,20 +67,20 @@ export const OwnershipEntityRefPicker = (
     <FormControl
       margin="normal"
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      error={rawErrors?.length > 0}
     >
       <Autocomplete
         id="OwnershipEntityRefPicker-dropdown"
         options={groups || []}
-        value={selectedGroup || null}
+        value={selectedGroup}
         onChange={(_, value) => setSelectedGroup(value || '')}
         getOptionLabel={group => group}
         renderInput={params => (
           <TextField
             {...params}
-            label={uiSchema['ui:options']?.title}
+            label={title}
             margin="dense"
-            helperText={uiSchema['ui:options']?.description}
+            helperText={description}
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
