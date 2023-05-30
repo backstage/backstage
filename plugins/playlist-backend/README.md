@@ -61,27 +61,17 @@ This package also exports a `DefaultPlaylistPermissionPolicy` which contains a r
 ```diff
 # packages/backend/src/plugins/permission.ts
 
-+import { DefaultPlaylistPermissionPolicy, isPlaylistPermission } from '@backstage/plugin-playlist-backend';
-...
-class BackstagePermissionPolicy implements PermissionPolicy {
-+  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
++import { DefaultPlaylistPermissionPolicy } from '@backstage/plugin-playlist-backend';
 
-  async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-+    if (isPlaylistPermission(request.permission)) {
-+      return this.playlistPermissionPolicy.handle(request, user);
-+    }
-    ...
-  }
-}
+ export default async function createPlugin(
+   env: PluginEnvironment,
+   ...
+   const mainPolicy: MainPermissionPolicy = new AllowAllAfterSubPolicies();
+   if (mainPolicy.addSubPolicies) {
+     // Add sub-policies contributed by other plugins here
++    mainPolicy.addSubPolicies(new DefaultPlaylistPermissionPolicy());
+   }
 
-export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
-  return await createRouter({
-    config: env.config,
-    logger: env.logger,
-    discovery: env.discovery,
-    policy: new BackstagePermissionPolicy(),
+   return await createRouter({
     ...
 ```

@@ -13,7 +13,6 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -21,6 +20,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import { SubPermissionPolicy } from '@backstage/plugin-permission-node';
 
 // @public (undocumented)
 export const createPlaylistConditionalDecision: (
@@ -32,7 +32,9 @@ export const createPlaylistConditionalDecision: (
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
+export class DefaultPlaylistPermissionPolicy implements SubPermissionPolicy {
+  // (undocumented)
+  enabled: (permission: Permission) => boolean;
   // (undocumented)
   handle(
     request: PolicyQuery,

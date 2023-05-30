@@ -21,16 +21,14 @@ import {
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
+import { PolicyQuery } from '@backstage/plugin-permission-node';
 import { permissions } from '@backstage/plugin-playlist-common';
 
 import {
   createPlaylistConditionalDecision,
   playlistConditions,
 } from './conditions';
+import { SubPermissionPolicy } from '@backstage/plugin-permission-node';
 
 /**
  * @public
@@ -46,7 +44,7 @@ export const isPlaylistPermission = (permission: Permission) =>
  *
  * @public
  */
-export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
+export class DefaultPlaylistPermissionPolicy implements SubPermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
@@ -91,4 +89,6 @@ export class DefaultPlaylistPermissionPolicy implements PermissionPolicy {
 
     return { result: AuthorizeResult.ALLOW };
   }
+
+  enabled = isPlaylistPermission;
 }
