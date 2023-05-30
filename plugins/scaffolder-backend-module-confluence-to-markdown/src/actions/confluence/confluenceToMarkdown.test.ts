@@ -155,7 +155,7 @@ describe('confluence:transform:markdown', () => {
     expect(logger.info).toHaveBeenCalledWith(
       `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(5);
+    expect(logger.info).toHaveBeenCalledTimes(6);
     expect(createWriteStream).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(writeFile).toHaveBeenCalledTimes(1);
@@ -202,7 +202,7 @@ describe('confluence:transform:markdown', () => {
     expect(logger.info).toHaveBeenCalledWith(
       `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(5);
+    expect(logger.info).toHaveBeenCalledTimes(6);
 
     expect(createWriteStream).not.toHaveBeenCalled();
     expect(readFile).toHaveBeenCalledTimes(1);

@@ -60,6 +60,7 @@
     "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-rollbar-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^",
