@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.5.0-next.1
+
+### Minor Changes
+
+- 6b571405f806: `scaffolder/next`: Provide some default template components to `rjsf` to allow for standardization and markdown descriptions
+- 4505dc3b4598: `scaffolder/next`: Don't render `TemplateGroups` when there's no results in with search query
+- 6b571405f806: `scaffolder/next`: provide a `ScaffolderField` component which is meant to replace some of the `FormControl` components from MUI, making it easier to write `FieldExtensions`.
+
+### Patch Changes
+
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/core-components@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/plugin-scaffolder-common@1.3.1-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
 ## 1.4.1-next.0
 
 ### Patch Changes
