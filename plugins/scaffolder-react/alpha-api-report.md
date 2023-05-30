@@ -139,7 +139,7 @@ export const ScaffolderField: (
 // @alpha
 export interface ScaffolderFieldProps {
   // (undocumented)
-  disabled: boolean;
+  disabled?: boolean;
   // (undocumented)
   displayLabel?: boolean;
   // (undocumented)

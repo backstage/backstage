@@ -41,7 +41,7 @@ export interface ScaffolderFieldProps {
   help?: ReactElement;
   rawHelp?: string;
   required?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   displayLabel?: boolean;
 }
 
