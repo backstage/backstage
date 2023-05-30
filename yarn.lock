@@ -7939,7 +7939,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-nomad@^0.0.0, @backstage/plugin-nomad@workspace:plugins/nomad":
+"@backstage/plugin-nomad@workspace:^, @backstage/plugin-nomad@workspace:plugins/nomad":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-nomad@workspace:plugins/nomad"
   dependencies:
@@ -24607,7 +24607,7 @@ __metadata:
     "@backstage/plugin-microsoft-calendar": "workspace:^"
     "@backstage/plugin-newrelic": "workspace:^"
     "@backstage/plugin-newrelic-dashboard": "workspace:^"
-    "@backstage/plugin-nomad": ^0.0.0
+    "@backstage/plugin-nomad": "workspace:^"
     "@backstage/plugin-octopus-deploy": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-pagerduty": "workspace:^"

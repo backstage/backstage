@@ -15,19 +15,52 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import React from 'react';
-import { useGroupForEntity } from '../../hooks/useGroupForEntity';
+import React, { useState } from 'react';
 import { GroupListTable } from './GroupListTable';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { Allocation, nomadApiRef } from '../../api';
+import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import {
+  NOMAD_GROUP_ANNOTATION,
+  NOMAD_NAMESPACE_ANNOTATION,
+} from '../../Router';
 
 export const GroupListForEntity = () => {
-  const { value, loading, error } = useGroupForEntity();
+  const { entity } = useEntity();
 
-  if (loading) {
+  const namespace =
+    entity.metadata.annotations?.[NOMAD_NAMESPACE_ANNOTATION] ?? 'default';
+  const group = entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION] ?? '';
+
+  const nomadApi = useApi(nomadApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  // Retrieve allocations for the group
+  const [allocations, setAllocations] = useState<Allocation[]>([]);
+  const response = useAsync(async () => {
+    // Wait until entity is loaded
+    if (!entity) {
+      return;
+    }
+
+    try {
+      const resp = await nomadApi.listAllocations({
+        namespace,
+        filter: `TaskGroup == "${group}"`,
+      });
+      setAllocations(resp.allocations);
+    } catch (e) {
+      errorApi.post(e as ErrorApiError);
+    }
+  }, [group]);
+
+  if (response.loading) {
     return <Progress />;
   }
-  if (error || !value) {
+  if (response.error || !response.value) {
     return null;
   }
 
-  return <GroupListTable allocations={value.allocations} />;
+  return <GroupListTable allocations={allocations} />;
 };
