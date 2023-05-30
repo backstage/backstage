@@ -147,7 +147,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   const toLocation = useResolvedPath(to ?? '');
   const currentLocation = useLocation();
-  let isActive = isLocationMatch(currentLocation, toLocation, exact || false);
+  let isActive = isLocationMatch(currentLocation, toLocation, exact);
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -156,7 +156,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive = isLocationMatch(currentLocation, resolvedPath, exact || false);
+      isActive = isLocationMatch(currentLocation, resolvedPath, exact);
       return isActive;
     });
     return (
