@@ -234,6 +234,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
   #toggle-sidebar {
     display: none;
   }
+  
   .md-content {
     margin: 0;
     width: 100%;
