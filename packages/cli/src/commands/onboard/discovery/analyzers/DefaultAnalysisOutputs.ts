@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-export {
-  readGitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-  getGitLabIntegrationRelativePath,
-} from './config';
-export type { GitLabIntegrationConfig } from './config';
-export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
-export { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
-export { DefaultGitlabCredentialsProvider } from './DefaultGitlabCredentialsProvider';
-export type { GitlabCredentials, GitlabCredentialsProvider } from './types';
+import { AnalysisOutput, AnalysisOutputs } from './types';
+
+export class DefaultAnalysisOutputs implements AnalysisOutputs {
+  readonly #outputs = new Map<string, AnalysisOutput>();
+
+  produce(output: AnalysisOutput) {
+    this.#outputs.set(output.entity.metadata.name, output);
+  }
+
+  list() {
+    return Array.from(this.#outputs).map(([_, output]) => output);
+  }
+}

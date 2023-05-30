@@ -177,6 +177,18 @@ export class DefaultGithubCredentialsProvider
 }
 
 // @public
+export class DefaultGitlabCredentialsProvider
+  implements GitlabCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultGitlabCredentialsProvider;
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
+}
+
+// @public
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
@@ -488,6 +500,20 @@ export type GithubIntegrationConfig = {
   token?: string;
   apps?: GithubAppConfig[];
 };
+
+// @public (undocumented)
+export type GitlabCredentials = {
+  headers?: {
+    [name: string]: string;
+  };
+  token?: string;
+};
+
+// @public (undocumented)
+export interface GitlabCredentialsProvider {
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
+}
 
 // @public
 export class GitLabIntegration implements ScmIntegration {

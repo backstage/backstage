@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-export {
-  readGitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-  getGitLabIntegrationRelativePath,
-} from './config';
-export type { GitLabIntegrationConfig } from './config';
-export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
-export { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
-export { DefaultGitlabCredentialsProvider } from './DefaultGitlabCredentialsProvider';
-export type { GitlabCredentials, GitlabCredentialsProvider } from './types';
+import { RepositoryFile } from '../types';
+
+/**
+ * A single file in a GitLab repository.
+ */
+export class GitlabFile implements RepositoryFile {
+  readonly #path: string;
+  readonly #content: string;
+
+  constructor(path: string, content: string) {
+    this.#path = path;
+    this.#content = content;
+  }
+
+  get path(): string {
+    return this.#path;
+  }
+
+  async text(): Promise<string> {
+    return this.#content;
+  }
+}
