@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.40-next.1
+
+### Patch Changes
+
+- 95987388f26b: Marked headers `Authorization` and `X-Api-Key` as secret in order to not show up in frontend configuration.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/config@1.0.7
+
 ## 0.2.40-next.0
 
 ### Patch Changes

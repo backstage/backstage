@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.2-next.1
+
+### Patch Changes
+
+- 83bdc3a555c1: Replaced usages of `theme.palette.theme.hint` with `theme.palette.text.secondary` as it has been removed in MUI v5
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/version-bridge@1.0.4
+
 ## 0.13.2-next.0
 
 ### Patch Changes

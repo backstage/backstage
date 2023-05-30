@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.1-next.1
+
+### Patch Changes
+
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/plugin-catalog-backend@1.9.2-next.1
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.1
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/plugin-events-node@0.2.7-next.1
+  - @backstage/plugin-catalog-common@1.0.14-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.3.1-next.0
 
 ### Patch Changes

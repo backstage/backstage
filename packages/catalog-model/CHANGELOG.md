@@ -1,5 +1,18 @@
 # @backstage/catalog-model
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 33eae4b39a95: Deprecate target field and make targetRef required in common.schema.json
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 1.3.0
 
 ### Minor Changes

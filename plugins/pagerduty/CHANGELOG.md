@@ -1,5 +1,19 @@
 # @backstage/plugin-pagerduty
 
+## 0.5.12-next.1
+
+### Patch Changes
+
+- 9512f13eb3af: Add a homepage widget for the `Pagerduty` component.
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/core-components@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.7.0-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-home-react@0.1.0-next.1
+  - @backstage/theme@0.4.0-next.0
+
 ## 0.5.12-next.0
 
 ### Patch Changes

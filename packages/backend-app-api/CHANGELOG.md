@@ -1,5 +1,24 @@
 # @backstage/backend-app-api
 
+## 0.4.4-next.1
+
+### Patch Changes
+
+- 3bb4158a8aa4: Switched startup strategy to initialize all plugins in parallel, as well as hook into the new startup lifecycle hooks.
+- 2c9f67e6f166: Introduced built-in middleware into the default `HttpService` implementation that throws a `ServiceNotAvailable` error when plugins aren't able to serve request. Also introduced a request stalling mechanism that pauses incoming request until plugins have been fully initialized.
+- c4e8fefd9f13: Added handling of `ServiceUnavailableError` to error handling middleware.
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-auth-node@0.2.15-next.1
+  - @backstage/plugin-permission-node@0.7.9-next.1
+  - @backstage/config-loader@1.3.1-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.4.4-next.0
 
 ### Patch Changes
