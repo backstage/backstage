@@ -112,7 +112,7 @@ import {
   EntityOwnershipCard,
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
-import { EntityNomadContent, isNomadAvailable } from '@backstage/plugin-nomad';
+import { EntityNomadContent } from '@backstage/plugin-nomad';
 import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,

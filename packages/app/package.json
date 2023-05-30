@@ -50,7 +50,7 @@
     "@backstage/plugin-microsoft-calendar": "workspace:^",
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
-    "@backstage/plugin-nomad": "^0.0.0",
+    "@backstage/plugin-nomad": "workspace:^",
     "@backstage/plugin-octopus-deploy": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-pagerduty": "workspace:^",
