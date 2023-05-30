@@ -293,6 +293,27 @@ export const OwnerPickerFieldSchema: FieldSchema<
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
 // @public
+export const OwnershipEntityRefPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    title?: string | undefined;
+    description?: string | undefined;
+  }
+>;
+
+// Warning: (ae-missing-release-tag) "OwnershipEntityRefPickerSchema" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const OwnershipEntityRefPickerSchema: CustomFieldExtensionSchema_2;
+
+// Warning: (ae-forgotten-export) The symbol "OwnershipEntityRefPickerFieldSchema" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "OwnershipEntityRefPickerUiOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OwnershipEntityRefPickerUiOptions =
+  typeof OwnershipEntityRefPickerFieldSchema.uiOptionsType;
+
+// @public
 export const repoPickerValidation: (
   value: string,
   validation: FieldValidation,
