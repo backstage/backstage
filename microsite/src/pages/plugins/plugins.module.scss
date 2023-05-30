@@ -31,6 +31,7 @@
       padding: 0 var(--paddingX);
       position: absolute;
       text-align: center;
+      font-weight: bold;
 
       transform: translateY(var(--translateY)) translateX(var(--translateX))
         rotate(var(--rotation));
