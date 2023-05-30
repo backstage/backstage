@@ -69,6 +69,14 @@ of Material-UI, you are able to adapt the interface to your brand guidelines.
 
 ## Technical FAQ
 
+### What technology does Backstage use?
+
+Backstage is a large scale [TypeScript](https://www.typescriptlang.org/)
+application whose frontend parts use [React](https://react.dev/) and
+[Material-UI](https://mui.com/), while the backend parts use
+[Node.js](https://nodejs.org/) and the [Express](https://expressjs.com/)
+framework.
+
 ### Why Material-UI?
 
 The short answer is that's what we've been using in Backstage internally.
@@ -82,12 +90,6 @@ It strikes a good balance between power, customizability, and ease of use. A
 core focus of Backstage is to make plugin developers productive with as few
 hurdles as possible. Material-UI lets plugin makers get going easily with both
 well-known tech and a large flora of components.
-
-### What technology does Backstage use?
-
-The codebase is a large-scale React application that uses TypeScript. For
-[Phase 2](https://github.com/backstage/backstage#project-roadmap), we plan to
-use Node.js and GraphQL.
 
 ### What is the end-to-end user flow? The happy path story.
 
