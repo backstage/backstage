@@ -91,12 +91,12 @@ describe('<OwnershipEntityRefPicker />', () => {
 
     render(<OwnershipEntityRefPicker {...props} />);
 
-    // Assuming the component calls `onChange` with the groups a user is a part of
     expect(onChange).toHaveBeenCalledWith(['group1', 'group2']);
   });
 
   it('should not return groups a user is not part of', async () => {
-    catalogApi.getEntityByRef.mockResolvedValueOnce(entities[1]);
+    // Mock 'getEntityByRef' to return the entity that represents Bob
+    catalogApi.getEntityByRef.mockResolvedValueOnce(entities[0]);
 
     uiSchema = { 'ui:options': { catalogApi } };
     props = {
@@ -110,8 +110,8 @@ describe('<OwnershipEntityRefPicker />', () => {
 
     render(<OwnershipEntityRefPicker {...props} />);
 
-    // Assuming the component calls `onChange` with the groups a user is a part of
-    expect(onChange).not.toHaveBeenCalledWith(['group1', 'group2']);
+    // The onChange should not have been called with 'group3', since Bob is not part of 'group3'
+    expect(onChange).not.toHaveBeenCalledWith(['group3']);
   });
 
   it('should render without imploding', () => {
