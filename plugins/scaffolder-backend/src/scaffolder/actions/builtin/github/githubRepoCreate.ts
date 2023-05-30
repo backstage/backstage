@@ -90,6 +90,8 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean;
     token?: string;
     topics?: string[];
+    repoVariables?: { [key: string]: string };
+    secrets?: { [key: string]: string };
     requireCommitSigning?: boolean;
   }>({
     id: 'github:repo:create',
@@ -125,6 +127,8 @@ export function createGithubRepoCreateAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          repoVariables: inputProps.repoVariables,
+          secrets: inputProps.secrets,
           requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
@@ -155,6 +159,8 @@ export function createGithubRepoCreateAction(options: {
         hasWiki = undefined,
         hasIssues = undefined,
         topics,
+        repoVariables,
+        secrets,
         token: providedToken,
       } = ctx.input;
 
@@ -192,6 +198,8 @@ export function createGithubRepoCreateAction(options: {
         hasWiki,
         hasIssues,
         topics,
+        repoVariables,
+        secrets,
         ctx.logger,
       );
 
