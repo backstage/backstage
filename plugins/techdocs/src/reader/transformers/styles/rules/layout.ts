@@ -230,11 +230,14 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
 
 @media print {
-  .md-sidebar {
+  .md-sidebar,
+  #toggle-sidebar {
     display: none;
   }
   .md-content {
     margin: 0;
+    width: 100%;
+    max-width: 100%;
   }
 }
 `;
