@@ -5609,6 +5609,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-unprocessed@workspace:^, @backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    express-promise-router: ^4.1.1
+    knex: ^2.4.2
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend@workspace:^, @backstage/plugin-catalog-backend@workspace:plugins/catalog-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend@workspace:plugins/catalog-backend"
@@ -5888,6 +5901,34 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-unprocessed-entities@workspace:^, @backstage/plugin-catalog-unprocessed-entities@workspace:plugins/catalog-unprocessed-entities":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-unprocessed-entities@workspace:plugins/catalog-unprocessed-entities"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    "@testing-library/user-event": ^14.0.0
+    "@types/node": "*"
+    cross-fetch: ^3.1.5
+    msw: ^1.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -24341,6 +24382,7 @@ __metadata:
     "@backstage/plugin-catalog-graph": "workspace:^"
     "@backstage/plugin-catalog-import": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
     "@backstage/plugin-circleci": "workspace:^"
     "@backstage/plugin-cloudbuild": "workspace:^"
     "@backstage/plugin-code-coverage": "workspace:^"
@@ -24433,6 +24475,7 @@ __metadata:
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
@@ -24467,6 +24510,7 @@ __metadata:
     "@backstage/plugin-azure-sites-backend": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-code-coverage-backend": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
@@ -24642,7 +24686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-promise-router@npm:^4.1.0":
+"express-promise-router@npm:^4.1.0, express-promise-router@npm:^4.1.1":
   version: 4.1.1
   resolution: "express-promise-router@npm:4.1.1"
   dependencies:

@@ -111,6 +111,7 @@ import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
+import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 
 const app = createApp({
   apis,
@@ -171,6 +172,10 @@ const routes = (
     >
       {entityPage}
     </Route>
+    <Route
+      path="/catalog-unprocessed-entities"
+      element={<CatalogUnprocessedEntitiesPage />}
+    />
     <Route
       path="/catalog-import"
       element={
