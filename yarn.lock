@@ -13535,22 +13535,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/app@npm:^13.1.3":
-  version: 13.1.4
-  resolution: "@octokit/app@npm:13.1.4"
+"@octokit/app@npm:^13.1.5":
+  version: 13.1.5
+  resolution: "@octokit/app@npm:13.1.5"
   dependencies:
-    "@octokit/auth-app": ^4.0.8
+    "@octokit/auth-app": ^4.0.13
     "@octokit/auth-unauthenticated": ^3.0.0
     "@octokit/core": ^4.0.0
     "@octokit/oauth-app": ^4.0.7
     "@octokit/plugin-paginate-rest": ^6.0.0
     "@octokit/types": ^9.0.0
     "@octokit/webhooks": ^10.0.0
-  checksum: 1c322fea80a5e7186b692990cdc07fc4ef4ee187b2098e1a687310c0d5d717ea144ab241eb6f1ca15841fdcfdf1bfbd5d10eeb34278d02b9ee8c7e1bd8f20dfa
+  checksum: bc1b348c2b80d701d68672455e6f3d6ae7dbed09e2b5ba323fb941316d7055d101d20d1a803b0b5b98d60a6e7bd9907da4a1cca4445263e2180270aab783c3a4
   languageName: node
   linkType: hard
 
-"@octokit/auth-app@npm:^4.0.0, @octokit/auth-app@npm:^4.0.8":
+"@octokit/auth-app@npm:^4.0.0, @octokit/auth-app@npm:^4.0.13":
   version: 4.0.13
   resolution: "@octokit/auth-app@npm:4.0.13"
   dependencies:
@@ -32797,10 +32797,10 @@ __metadata:
   linkType: hard
 
 "octokit@npm:^2.0.0, octokit@npm:^2.0.4":
-  version: 2.0.18
-  resolution: "octokit@npm:2.0.18"
+  version: 2.0.19
+  resolution: "octokit@npm:2.0.19"
   dependencies:
-    "@octokit/app": ^13.1.3
+    "@octokit/app": ^13.1.5
     "@octokit/core": ^4.2.1
     "@octokit/oauth-app": ^4.2.1
     "@octokit/plugin-paginate-rest": ^6.1.0
@@ -32808,7 +32808,7 @@ __metadata:
     "@octokit/plugin-retry": ^4.1.3
     "@octokit/plugin-throttling": ^5.2.2
     "@octokit/types": ^9.2.2
-  checksum: 7693c94ff41cb78e9ec9bb84476c0282219fa3ca9afd8a09d1a06b9361144c0aec4e01663bf860ceac152a0b1fadfcf590e7c0f06ce52230376dbc66d3cead37
+  checksum: cc0acd5427a3dc25f70ca0ffd2e828cc7bcd51c7e4586caf06e40353f87084addd4ed6df59d441b087b9cf597540069d21bc75c27b2836e78a59e5f9f3fbec38
   languageName: node
   linkType: hard
 
