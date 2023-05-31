@@ -122,7 +122,7 @@ By using `pulumi login --local` we are making sure that Pulumi stores our state 
 
 :::warning
 
-Make sure that [Docker](https://docs.docker.com/) is running before you start with this section.
+Make sure that [Docker](https://docs.docker.com/) is running before you start this section.
 
 :::
 
