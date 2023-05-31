@@ -77,7 +77,6 @@ export type NextRouterProps = {
     /** Whether to show a link to the tasks page */
     tasks?: boolean;
   };
-  customFilters?: Array<React.ReactElement>;
 };
 
 /**
@@ -121,7 +120,6 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
             contextMenu={props.contextMenu}
             groups={props.groups}
             templateFilter={props.templateFilter}
-            customFilters={props.customFilters}
           />
         }
       />

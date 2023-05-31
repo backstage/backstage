@@ -67,7 +67,6 @@ export type TemplateListPageProps = {
     actions?: boolean;
     tasks?: boolean;
   };
-  customFilters?: Array<React.ReactElement>;
 };
 
 const defaultGroup: TemplateGroupFilter = {
@@ -183,10 +182,6 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               />
               <TemplateCategoryPicker />
               <EntityTagPicker />
-              {props.customFilters &&
-                props.customFilters.map((component, index) => (
-                  <React.Fragment key={index}>{component}</React.Fragment>
-                ))}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
