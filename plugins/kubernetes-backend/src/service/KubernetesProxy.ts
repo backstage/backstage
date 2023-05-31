@@ -137,6 +137,7 @@ export class KubernetesProxy {
       middleware = createProxyMiddleware({
         logProvider: () => logger,
         secure: !originalCluster.skipTLSVerify,
+        changeOrigin: true,
         router: async req => {
           // Re-evaluate the cluster on each request, in case it has changed
           const cluster = await this.getClusterForRequest(req);
