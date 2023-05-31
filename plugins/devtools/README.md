@@ -20,6 +20,20 @@ Lists the configuration being used by your current running Backstage instance.
 
 ![Example of Config tab](./docs/devtools-config-tab.png)
 
+#### Backstage Version Reporting
+
+The Backstage Version that is reported requires `backstage.json` to be present at the root of the running backstage instance.  
+You may need to modify your Dockerfile to ensure `backstage.json` is copied into the `WORKDIR` of your image.
+
+```sh
+WORKDIR /app
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
+
+# Then copy the rest of the backend bundle, along with any other files we might want (including backstage.json).
+COPY --chown=node:node ... backstage.json ./
+```
+
 ## Optional Features
 
 The DevTools plugin can be setup with other tabs with additional helpful features.
@@ -375,3 +389,15 @@ Configuration details:
 - `name` is the friendly name for your endpoint
 - `type` can be either `ping` or `fetch` and will perform the respective action on the `target`
 - `target` is either a URL or server that you want to trigger a `type` action on
+
+### External Dependencies Requirements
+
+If you are using the `ping` type you must ensure that `ping` is available in the Host OS that is running Backstage.
+For example you may need to add `ping` into the Dockerfile that builds your Backstage image:
+
+```sh
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y  ... iputils-ping
+```
