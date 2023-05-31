@@ -15,7 +15,8 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import { Grid, makeStyles, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Typography, Box } from '@material-ui/core';
+import { OverflowTooltip } from '@backstage/core-components';
 import React from 'react';
 
 const useStyles = makeStyles(theme => ({
@@ -61,7 +62,9 @@ export function AboutField(props: AboutFieldProps) {
       childElements
     ) : (
       <Typography variant="body2" className={classes.value}>
-        {value || `unknown`}
+        <Box maxWidth="200px">
+          <OverflowTooltip text={value || `unknown`} />
+        </Box>
       </Typography>
     );
   return (

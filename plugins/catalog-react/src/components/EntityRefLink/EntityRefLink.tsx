@@ -25,7 +25,8 @@ import { entityRouteRef } from '../../routes';
 import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, Box } from '@material-ui/core';
+import { OverflowTooltip } from '@backstage/core-components';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -80,7 +81,12 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     const link = (
       <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
         {children}
-        {!children && (title ?? formattedEntityRefTitle)}
+        {!children &&
+          (title ?? (
+            <Box maxWidth="200px">
+              <OverflowTooltip text={formattedEntityRefTitle} />
+            </Box>
+          ))}
       </Link>
     );
 
