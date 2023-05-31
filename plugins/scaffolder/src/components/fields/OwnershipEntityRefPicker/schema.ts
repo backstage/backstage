@@ -17,6 +17,11 @@
 import { z } from 'zod';
 import { makeFieldSchemaFromZod } from '../utils';
 
+/**
+ * Field schema for the OwnershipEntityRefPicker.
+ * @public
+ */
+
 export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
@@ -28,9 +33,25 @@ export const OwnershipEntityRefPickerFieldSchema = makeFieldSchemaFromZod(
   }),
 );
 
+/**
+ * UI options for the OwnershipEntityRefPicker.
+ * @public
+ */
+
 export type OwnershipEntityRefPickerUiOptions =
   typeof OwnershipEntityRefPickerFieldSchema.uiOptionsType;
+/**
+ * Props for the OwnershipEntityRefPicker.
+ * @public
+ */
+
 export type OwnershipEntityRefPickerProps =
   typeof OwnershipEntityRefPickerFieldSchema.type;
+
+/**
+ * Schema for the OwnershipEntityRefPicker.
+ * @public
+ */
+
 export const OwnershipEntityRefPickerSchema =
   OwnershipEntityRefPickerFieldSchema.schema;

@@ -17,4 +17,5 @@
 export {
   OwnershipEntityRefPickerSchema,
   type OwnershipEntityRefPickerUiOptions,
+  OwnershipEntityRefPickerFieldSchema,
 } from './schema';

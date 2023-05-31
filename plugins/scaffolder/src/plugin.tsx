@@ -163,7 +163,7 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
 );
 
 /**
- * A field extension for picking users and groups out of the Catalog.
+ * A field extension for picking groups a user belongs to out of the catalog.
  *
  * @public
  */
