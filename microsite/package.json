@@ -17,7 +17,7 @@
     "docusaurus": "docusaurus"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "0.0.0-5580",
+    "@docusaurus/module-type-aliases": "0.0.0-5589",
     "@spotify/prettier-config": "^14.0.0",
     "@tsconfig/docusaurus": "^1.0.6",
     "@types/luxon": "^3.0.0",
@@ -29,9 +29,9 @@
   },
   "prettier": "@spotify/prettier-config",
   "dependencies": {
-    "@docusaurus/core": "0.0.0-5580",
-    "@docusaurus/plugin-client-redirects": "0.0.0-5580",
-    "@docusaurus/preset-classic": "0.0.0-5580",
+    "@docusaurus/core": "0.0.0-5589",
+    "@docusaurus/plugin-client-redirects": "0.0.0-5589",
+    "@docusaurus/preset-classic": "0.0.0-5589",
     "@swc/core": "^1.3.46",
     "clsx": "^1.1.1",
     "docusaurus-plugin-sass": "^0.2.3",
