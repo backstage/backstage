@@ -137,4 +137,35 @@ describe('gitlab:group:ensureExists', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
   });
+
+  it('should not call API on dryRun', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+
+    await action.handler({
+      ...mockContext,
+      isDryRun: true,
+      input: {
+        repoUrl: 'gitlab.com',
+        path: ['foo', 'bar'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.search).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
 });
