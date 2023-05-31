@@ -21,7 +21,6 @@ import Divider from '@mui/material/Divider';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
-import { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import 'graphiql/graphiql.css';
 
@@ -32,7 +31,7 @@ const GraphiQL = React.lazy(() =>
   import('graphiql').then(m => ({ default: m.GraphiQL })),
 );
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
     display: 'flex',
