@@ -320,7 +320,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       spec: {
         profile: {
           displayName: user.name,
-          picture: user.avatar_url,
+          picture: user.avatar_url || undefined,
         },
         memberOf: [],
       },
