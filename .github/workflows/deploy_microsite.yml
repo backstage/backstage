@@ -13,6 +13,10 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=8192
       DOCUSAURUS_SSR_CONCURRENCY: 5
 
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - uses: actions/checkout@v3
 
