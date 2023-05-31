@@ -16,7 +16,11 @@
 
 import React, { ReactNode } from 'react';
 import './MuiClassNameSetup';
-import { ThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeProvider,
+  StylesProvider,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
   ThemeProvider as Mui5Provider,
@@ -34,6 +38,12 @@ export interface UnifiedThemeProviderProps {
   theme: UnifiedTheme;
   noCssBaseline?: boolean;
 }
+
+// See https://mui.com/x/migration/migration-data-grid-v4/#using-mui-core-v4-with-v5
+const generateV4ClassName = createGenerateClassName({
+  disableGlobal: true,
+  seed: 'mui', // using a slightly shorter prefix than suggested in the docs
+});
 
 /**
  * Provides themes for all MUI versions supported by the provided unified theme.
@@ -61,7 +71,11 @@ export function UnifiedThemeProvider(
   );
 
   if (v4Theme) {
-    result = <ThemeProvider theme={v4Theme}>{result}</ThemeProvider>;
+    result = (
+      <StylesProvider generateClassName={generateV4ClassName}>
+        <ThemeProvider theme={v4Theme}>{result}</ThemeProvider>
+      </StylesProvider>
+    );
   }
 
   if (v5Theme) {
