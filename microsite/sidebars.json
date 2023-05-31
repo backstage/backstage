@@ -328,8 +328,8 @@
       "deployment/heroku",
       {
         "type": "category",
-        "label": "Deploying on a cloud provider with Backstage Deploy",
-        "items": ["deployment/backstage-deploy/aws"]
+        "label": "Using Backstage Deploy (alpha)",
+        "items": ["deployment/backstage-deploy/aws-lightsail"]
       }
     ],
     "Designing for Backstage": [

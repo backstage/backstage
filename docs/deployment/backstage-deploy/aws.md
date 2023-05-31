@@ -1,7 +1,7 @@
 ---
-id: aws
+id: aws-lightsail
 title: Deploying Backstage on AWS Lightsail
-sidebar_label: AWS
+sidebar_label: AWS Lightsail
 description: How to deploy Backstage on AWS Lightsail
 ---
 
@@ -110,6 +110,12 @@ $ export AWS_SECRET_ACCESS_KEY=.... (second secret value)
 Second, install the [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/).
 
 Then we need to execute the following commands, to set Pulumi up:
+
+:::tip
+
+Make sure to store your passphrase somewhere save as it is used to encrypt/decrypt your Pulumi config.
+
+:::
 
 ```bash
 $ pulumi login --local
