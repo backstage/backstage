@@ -34,15 +34,25 @@ import {
   PolicyExtensionPoint,
 } from '@backstage/plugin-permission-node/alpha';
 import { createRouter } from './service';
+import {
+  MainPermissionPolicy,
+  SubPermissionPolicy,
+} from '@backstage/plugin-permission-node';
+import { DelegateWithAllowAllFallbackPermissionPolicy } from './policies/delegate-with-allow-all-fallback';
 
 class PolicyExtensionPointImpl implements PolicyExtensionPoint {
-  public policy: PermissionPolicy | undefined;
+  public policy: MainPermissionPolicy | undefined;
+  public subPolicies: SubPermissionPolicy[] = [];
 
-  setPolicy(policy: PermissionPolicy): void {
+  setPolicy(policy: MainPermissionPolicy): void {
     if (this.policy) {
       throw new Error('Policy already set');
     }
     this.policy = policy;
+  }
+
+  addSubPolicies(...subPolicies: SubPermissionPolicy[]): void {
+    this.subPolicies.push(...subPolicies);
   }
 }
 
@@ -76,6 +86,26 @@ export const permissionModuleAllowAllPolicy = createBackendModule({
 });
 
 /**
+ * A permission policy module that delegates to contributed sub-policies
+ * and allows all requests as a fallback.
+ *
+ * @alpha
+ */
+export const permissionModuleDelegateWithAllowAllFallbackPolicy =
+  createBackendModule({
+    moduleId: 'delegateWithAllowAllFallbackPolicy',
+    pluginId: 'permission',
+    register(reg) {
+      reg.registerInit({
+        deps: { policy: policyExtensionPoint },
+        async init({ policy }) {
+          policy.setPolicy(new DelegateWithAllowAllFallbackPermissionPolicy());
+        },
+      });
+    },
+  });
+
+/**
  * Permission plugin
  *
  * @alpha
@@ -99,8 +129,17 @@ export const permissionPlugin = createBackendPlugin(() => ({
         const winstonLogger = loggerToWinstonLogger(logger);
         if (!policies.policy) {
           throw new Error(
-            'No policy module installed! Please install a policy module. If you want to allow all requests, use permissionModuleAllowAllPolicy',
+            'No policy module installed! Please install a policy module. If you want to allow all requests, use permissionModuleAllowAllPolicy or permissionModuleAllowAllAfterSubpoliciesPolicy',
           );
+        }
+
+        if (policies.subPolicies.length > 0) {
+          if (!policies.policy.addSubPolicies) {
+            throw new Error(
+              'The main policy module does not support sub-policies! Please install a policy module that supports sub-policies, like permissionModuleAllowAllAfterSubpoliciesPolicy.',
+            );
+          }
+          policies.policy.addSubPolicies(...policies.subPolicies);
         }
 
         http.use(

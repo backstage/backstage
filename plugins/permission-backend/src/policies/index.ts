@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { type PolicyExtensionPoint, policyExtensionPoint } from './plugin';
-export * from './policy';
+export { DelegateWithAllowAllFallbackPermissionPolicy } from './delegate-with-allow-all-fallback';

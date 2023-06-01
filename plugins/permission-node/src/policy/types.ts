@@ -56,3 +56,27 @@ export interface PermissionPolicy {
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
+
+/**
+ * A permission policy that can be used as a main policy (the policy provided to the permission router),
+ * and optionally allows adding sub-policies that can be delegated to during the policy evaluation.
+ *
+ * @public
+ */
+export interface MainPermissionPolicy extends PermissionPolicy {
+  addSubPolicies?(...subPolicies: SubPermissionPolicy[]): void;
+}
+
+/**
+ * A permission policy that can be passed, as a sub policy, to a main permission policy.
+ *
+ * @public
+ */
+export interface SubPermissionPolicy extends PermissionPolicy {
+  /**
+   * A function that returns true if this policy should be applied when evaluating the given permission.
+   *
+   * @public
+   */
+  enabled(permission: Permission): boolean;
+}

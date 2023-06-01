@@ -40,6 +40,7 @@ import {
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
+  MainPermissionPolicy,
   PermissionPolicy,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
@@ -94,7 +95,7 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
 export interface RouterOptions {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
-  policy: PermissionPolicy;
+  policy: MainPermissionPolicy;
   identity: IdentityApi;
   config: Config;
 }

@@ -19,3 +19,4 @@
  * @packageDocumentation
  */
 export * from './service';
+export * from './policies';

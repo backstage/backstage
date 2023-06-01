@@ -177,6 +177,12 @@ export const isOrCriteria: <T>(
 ) => criteria is AnyOfCriteria<T>;
 
 // @public
+export interface MainPermissionPolicy extends PermissionPolicy {
+  // (undocumented)
+  addSubPolicies?(...subPolicies: SubPermissionPolicy[]): void;
+}
+
+// @public
 export const makeCreatePermissionRule: <
   TResource,
   TQuery,
@@ -291,5 +297,10 @@ export class ServerPermissionClient implements PermissionEvaluator {
       tokenManager: TokenManager;
     },
   ): ServerPermissionClient;
+}
+
+// @public
+export interface SubPermissionPolicy extends PermissionPolicy {
+  enabled(permission: Permission): boolean;
 }
 ```

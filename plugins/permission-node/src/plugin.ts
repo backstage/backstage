@@ -15,7 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import { MainPermissionPolicy, SubPermissionPolicy } from './policy/types';
 
 /**
  * Allows supplying policies to the permissions backend
@@ -23,7 +23,8 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
  * @alpha
  */
 export type PolicyExtensionPoint = {
-  setPolicy(policy: PermissionPolicy): void;
+  setPolicy(policy: MainPermissionPolicy): void;
+  addSubPolicies(...subPolicies: SubPermissionPolicy[]): void;
 };
 
 /**
