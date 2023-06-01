@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Add option to require exact matching for isLocationMatch
+Added `exact` prop to `SidebarSubmenuItem` which causes it to only highlight if the current location is an exact match.
