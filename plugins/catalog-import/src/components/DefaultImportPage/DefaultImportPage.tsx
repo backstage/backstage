@@ -61,6 +61,13 @@ export const DefaultImportPage = () => {
 
         <Grid container spacing={2}>
           {isMobile ? contentItems : contentItems.reverse()}
+          <Grid item xs={12} md={8} lg={6} xl={4}>
+            <ImportStepper />
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={6} xl={8}>
+            <ImportInfoCard />
+          </Grid>
         </Grid>
       </Content>
     </Page>
