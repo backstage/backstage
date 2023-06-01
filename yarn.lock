@@ -8247,6 +8247,7 @@ __metadata:
   resolution: "@backstage/plugin-playlist-backend@workspace:plugins/playlist-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
