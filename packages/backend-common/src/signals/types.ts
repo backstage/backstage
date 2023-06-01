@@ -17,11 +17,11 @@ import { LoggerService, SignalsService } from '@backstage/backend-plugin-api';
 import { TokenManager } from '../tokens';
 
 /**
- * Options for starting up an events server.
+ * Options for starting up an signals broker.
  *
  * @public
  */
-export type SignalsServerConfig = {
+export type SignalsBrokerConfig = {
   enabled?: boolean;
   adapter?: string;
   databaseConnection?: string | object;

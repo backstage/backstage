@@ -33,9 +33,9 @@ import { SignalsService } from '@backstage/backend-plugin-api';
 export class DefaultEventBroker implements EventBroker {
   constructor(
     private readonly logger: Logger,
-    private readonly eventsClient?: SignalsService,
+    private readonly signalsService?: SignalsService,
   ) {
-    eventsClient?.connect();
+    signalsService?.connect();
   }
 
   private readonly subscribers: {
@@ -64,7 +64,7 @@ export class DefaultEventBroker implements EventBroker {
     );
     // This allows to listen to events also in the frontend
     // TODO(drodil): The actual events frontend to subscribe to the topics
-    await this.eventsClient?.publish(params.eventPayload, {
+    await this.signalsService?.publish(params.eventPayload, {
       topic: params.topic,
     });
   }

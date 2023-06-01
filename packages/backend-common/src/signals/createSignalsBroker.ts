@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SignalsServerConfig } from './types';
+import { SignalsBrokerConfig } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Server } from 'socket.io';
 import { SignalsBroker } from './SignalsBroker';
@@ -26,7 +26,7 @@ import { Emitter } from '@socket.io/postgres-emitter';
 import { normalizeConnection } from '../database/connection';
 import { Knex } from 'knex';
 
-const getAdapterAndEmitter = async (config: SignalsServerConfig) => {
+const getAdapterAndEmitter = async (config: SignalsBrokerConfig) => {
   if (config.adapter === 'pg') {
     if (!config.databaseConnection) {
       throw new Error(
@@ -68,7 +68,7 @@ const getAdapterAndEmitter = async (config: SignalsServerConfig) => {
 export async function createSignalsBroker(
   server: ExtendedHttpServer,
   deps: { logger: LoggerService },
-  options?: SignalsServerConfig,
+  options?: SignalsBrokerConfig,
   cors?: CorsOptions,
 ) {
   if (!options?.enabled) {

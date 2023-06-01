@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { readEventsServerOptions } from './config';
+export { readSignalsBrokerOptions } from './config';
 export { createSignalsBroker } from './createSignalsBroker';
 export { SignalsClientManager } from './SignalsClientManager';
 export * from './types';

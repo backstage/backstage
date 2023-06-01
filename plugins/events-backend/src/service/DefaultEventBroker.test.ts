@@ -26,12 +26,12 @@ const logger = getVoidLogger();
 
 describe('DefaultEventBroker', () => {
   it('passes events to interested subscribers', async () => {
-    const eventsService = new TestSignalsService();
+    const signalsService = new TestSignalsService();
     const subscriber1 = new TestEventSubscriber('test1', ['topicA', 'topicB']);
     const subscriber2 = new TestEventSubscriber('test2', ['topicB', 'topicC']);
-    const eventBroker = new DefaultEventBroker(logger, eventsService);
+    const eventBroker = new DefaultEventBroker(logger, signalsService);
 
-    expect(eventsService.isConnected).toBeTruthy();
+    expect(signalsService.isConnected).toBeTruthy();
 
     eventBroker.subscribe(subscriber1);
     eventBroker.subscribe(subscriber2);
@@ -82,11 +82,11 @@ describe('DefaultEventBroker', () => {
       eventPayload: { test: 'topicC' },
     });
 
-    expect(eventsService.published.length).toEqual(4);
-    expect(eventsService.published[0].topic).toEqual('topicA');
-    expect(eventsService.published[1].topic).toEqual('topicB');
-    expect(eventsService.published[2].topic).toEqual('topicC');
-    expect(eventsService.published[3].topic).toEqual('topicD');
+    expect(signalsService.published.length).toEqual(4);
+    expect(signalsService.published[0].topic).toEqual('topicA');
+    expect(signalsService.published[1].topic).toEqual('topicB');
+    expect(signalsService.published[2].topic).toEqual('topicC');
+    expect(signalsService.published[3].topic).toEqual('topicD');
   });
 
   it('logs errors from subscribers', async () => {
@@ -110,8 +110,8 @@ describe('DefaultEventBroker', () => {
     })();
 
     const errorSpy = jest.spyOn(logger, 'error');
-    const eventsService = new TestSignalsService();
-    const eventBroker = new DefaultEventBroker(logger, eventsService);
+    const signalsService = new TestSignalsService();
+    const eventBroker = new DefaultEventBroker(logger, signalsService);
 
     eventBroker.subscribe(subscriber1);
     await eventBroker.publish({ topic, eventPayload: '1' });

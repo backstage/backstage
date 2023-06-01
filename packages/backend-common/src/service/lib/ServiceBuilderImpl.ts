@@ -40,7 +40,7 @@ import {
   readHttpServerOptions,
   createHttpServer,
 } from '@backstage/backend-app-api';
-import { readEventsServerOptions, createSignalsBroker } from '../../signals';
+import { readSignalsBrokerOptions, createSignalsBroker } from '../../signals';
 
 export type CspOptions = Record<string, string[]>;
 
@@ -64,7 +64,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
     this.serverOptions = {
       http: readHttpServerOptions(),
-      events: readEventsServerOptions(),
+      signals: readSignalsBrokerOptions(),
     };
     this.corsOptions = readCorsOptions();
     this.helmetOptions = readHelmetOptions();
@@ -75,7 +75,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
     this.serverOptions = {
       http: readHttpServerOptions(backendConfig),
-      events: readEventsServerOptions(backendConfig),
+      signals: readSignalsBrokerOptions(backendConfig),
     };
     this.corsOptions = readCorsOptions(backendConfig);
     this.helmetOptions = readHelmetOptions(backendConfig);
@@ -186,7 +186,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       {
         logger,
       },
-      this.serverOptions.events,
+      this.serverOptions.signals,
       this.corsOptions,
     );
 

@@ -12,11 +12,11 @@ to other plugins messages and subscribe works for both frontend and backend plug
 Additionally, plugins can subscribe only to a specific topic of the messages which allows
 plugins to only listen to messages they are interested in.
 
-Publishing messages to events channel can only be done from the backend plugins.
+Publishing messages to signal channel can only be done from the backend plugins.
 
 ## Configuration
 
-To enable events support, configuration value `backend.signals` must be set to `true`:
+To enable signals support, configuration value `backend.signals` must be set to `true`:
 
 ```yaml
 backend:
@@ -63,7 +63,7 @@ backend:
 
 ## Backend plugins
 
-To use the events in backend plugins, you can pass the `SignalsClientManager` in plugin
+To use the signals in backend plugins, you can pass the `SignalsClientManager` in plugin
 environment to the plugin. In your `packages/backend/src/index.ts` add the client manager
 to the environment as follows:
 
@@ -95,7 +95,7 @@ import { PluginSignalsManager } from '@backstage/backend-common';
 
 export type PluginEnvironment = {
   // ...
-  signanlsManager: PluginSignalsManager;
+  signalsManager: PluginSignalsManager;
 };
 ```
 
@@ -106,7 +106,7 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   return await createRouter({
-    events: env.signalsManager.getClient(),
+    singnals: env.signalsManager.getClient(),
   });
 }
 ```
@@ -124,7 +124,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { signals } = options;
-  await events.connect();
+  await signals.connect();
 
   // ...
   await signals.publish(
@@ -150,7 +150,7 @@ export async function createRouter(
 
 ## Frontend plugins
 
-Frontend plugins can subscribe to messages from the backend plugins using the `eventsApiRef`:
+Frontend plugins can subscribe to messages from the backend plugins using the `signalsApiRef`:
 
 ```ts
 import { useApi, signalsApiRef } from '@backstage/core-plugin-api';

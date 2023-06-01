@@ -123,12 +123,6 @@ export const discoveryServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public (undocumented)
-export const eventsServiceFactory: () => ServiceFactory<
-  SignalsService,
-  'plugin'
->;
-
 // @public
 export interface ExtendedHttpServer extends http.Server {
   // (undocumented)
@@ -293,6 +287,12 @@ export const rootLoggerServiceFactory: () => ServiceFactory<
 // @public (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
+  'plugin'
+>;
+
+// @public (undocumented)
+export const signalsServiceFactory: () => ServiceFactory<
+  SignalsService,
   'plugin'
 >;
 

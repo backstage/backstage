@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import { SignalsServerConfig } from './types';
+import { SignalsBrokerConfig } from './types';
 
 /**
- * Reads {@link SignalsServerConfig} from a {@link @backstage/config#Config} object.
+ * Reads {@link SignalsBrokerConfig} from a {@link @backstage/config#Config} object.
  *
  * @public
  * @remarks
  *
  * @example
  * ```ts
- * const opts = readEventsServerOptions(config.getConfig('backend'));
+ * const opts = readSignalsBrokerOptions(config.getConfig('backend'));
  * ```
  */
-export function readEventsServerOptions(config?: Config): SignalsServerConfig {
+export function readSignalsBrokerOptions(config?: Config): SignalsBrokerConfig {
   const ws = config?.getOptional('signals');
   if (ws === true) {
     return { enabled: true };

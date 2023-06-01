@@ -15,7 +15,7 @@ import { SignalsService } from '@backstage/backend-plugin-api';
 
 // @public
 export class DefaultEventBroker implements EventBroker {
-  constructor(logger: Logger, eventsClient?: SignalsService | undefined);
+  constructor(logger: Logger, signalsService?: SignalsService | undefined);
   // (undocumented)
   publish(params: EventParams): Promise<void>;
   // (undocumented)

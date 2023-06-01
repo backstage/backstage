@@ -55,11 +55,6 @@ export namespace mockServices {
       factory: () => ServiceFactory<DatabaseService, 'plugin'>;
   }
   // (undocumented)
-  export namespace events {
-    const // (undocumented)
-      factory: () => ServiceFactory<SignalsService, 'plugin'>;
-  }
-  // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
       factory: (
@@ -110,6 +105,11 @@ export namespace mockServices {
   export namespace scheduler {
     const // (undocumented)
       factory: () => ServiceFactory<SchedulerService, 'plugin'>;
+  }
+  // (undocumented)
+  export namespace signals {
+    const // (undocumented)
+      factory: () => ServiceFactory<SignalsService, 'plugin'>;
   }
   // (undocumented)
   export function tokenManager(): TokenManagerService;

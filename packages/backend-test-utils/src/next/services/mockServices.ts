@@ -34,7 +34,7 @@ import {
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
-  eventsServiceFactory,
+  signalsServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -139,7 +139,7 @@ export namespace mockServices {
     export const factory = urlReaderServiceFactory;
   }
 
-  export namespace events {
-    export const factory = eventsServiceFactory;
+  export namespace signals {
+    export const factory = signalsServiceFactory;
   }
 }

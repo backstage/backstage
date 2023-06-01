@@ -29,4 +29,4 @@ export * from './rootLogger';
 export * from './scheduler';
 export * from './tokenManager';
 export * from './urlReader';
-export * from './events';
+export * from './signals';

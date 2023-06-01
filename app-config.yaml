@@ -38,12 +38,12 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-    #client: pg
-    #connection:
-      #host: localhost
-      #port: 5432
-      #user: postgres
-      #password: postgres
+    # client: pg
+    # connection:
+    #   host: localhost
+    #   port: 5432
+    #   user: postgres
+    #   password: postgres
   cache:
     store: memory
   cors:

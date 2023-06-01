@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 /** @public */
-export const eventsServiceFactory = createServiceFactory({
+export const signalsServiceFactory = createServiceFactory({
   service: coreServices.signals,
   deps: {
     config: coreServices.config,

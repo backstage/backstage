@@ -67,9 +67,9 @@ export interface Config {
           };
         };
     /**
-     * Enable or disable events server. Defaults to false.
+     * Enable or disable signals broker. Defaults to false.
      */
-    events?:
+    signals?:
       | boolean
       | {
           /** Is events enabled, defaults to false */

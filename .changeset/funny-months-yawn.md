@@ -6,7 +6,7 @@
 '@backstage/backend-defaults': minor
 ---
 
-Add support for plugin events connections in backend.
+Add support for plugin signal connections in backend.
 
-Backend plugins can subscribe and publish events to other plugins using
-the `EventsService` service interface.
+Backend plugins can publish signals to other plugins using
+the `SignalsService` service interface.

@@ -6,7 +6,7 @@
 '@backstage/test-utils': minor
 ---
 
-Add support for Events in frontend plugins.
+Add support for signals in frontend plugins.
 
-Frontend plugins can subscribe to plugin events using the `eventsApiRef`
+Frontend plugins can subscribe to backend signals using the `signalsApiRef`
 API reference.

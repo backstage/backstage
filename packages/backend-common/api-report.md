@@ -239,7 +239,7 @@ export function createSignalsBroker(
   deps: {
     logger: LoggerService;
   },
-  options?: SignalsServerConfig,
+  options?: SignalsBrokerConfig,
   cors?: CorsOptions,
 ): Promise<void>;
 
@@ -616,7 +616,7 @@ export type ReaderFactory = (options: {
 }) => UrlReaderPredicateTuple[];
 
 // @public
-export function readEventsServerOptions(config?: Config): SignalsServerConfig;
+export function readSignalsBrokerOptions(config?: Config): SignalsBrokerConfig;
 
 export { ReadTreeOptions };
 
@@ -765,6 +765,13 @@ export type ServiceBuilder = {
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public
+export type SignalsBrokerConfig = {
+  enabled?: boolean;
+  adapter?: string;
+  databaseConnection?: string | object;
+};
+
+// @public
 export type SignalsClientCommand =
   | SignalsClientRegisterCommand
   | SignalsClientMessage
@@ -803,13 +810,6 @@ export type SignalsClientRegisterCommand = {
 export type SignalsClientSubscribeCommand = {
   pluginId: string;
   topic?: string;
-};
-
-// @public
-export type SignalsServerConfig = {
-  enabled?: boolean;
-  adapter?: string;
-  databaseConnection?: string | object;
 };
 
 // @public @deprecated

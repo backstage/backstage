@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
-import { readEventsServerOptions } from './config';
+import { readSignalsBrokerOptions } from './config';
 
 describe('config', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('should read boolean config', () => {
     const config = new ConfigReader({ signals: true });
-    expect(readEventsServerOptions(config)).toEqual({ enabled: true });
+    expect(readSignalsBrokerOptions(config)).toEqual({ enabled: true });
   });
 
-  it('should read events config', () => {
+  it('should read signals config', () => {
     const config = new ConfigReader({
       signals: { enabled: true, endpoint: 'ws://localhost:7007' },
     });
-    expect(readEventsServerOptions(config)).toEqual({
+    expect(readSignalsBrokerOptions(config)).toEqual({
       enabled: true,
       adapter: 'memory',
       databaseConnection: undefined,
@@ -36,7 +36,7 @@ describe('config', () => {
   });
 
   it('should disable events with undefined config', () => {
-    expect(readEventsServerOptions()).toEqual({
+    expect(readSignalsBrokerOptions()).toEqual({
       enabled: false,
       adapter: 'memory',
       databaseConnection: undefined,
