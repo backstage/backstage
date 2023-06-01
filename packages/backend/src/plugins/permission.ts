@@ -14,48 +14,32 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
-import {
-  AuthorizeResult,
-  PolicyDecision,
-} from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
-import {
-  DefaultPlaylistPermissionPolicy,
-  isPlaylistPermission,
-} from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-
-class ExamplePermissionPolicy implements PermissionPolicy {
-  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
-
-  async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    if (isPlaylistPermission(request.permission)) {
-      return this.playlistPermissionPolicy.handle(request, user);
-    }
-
-    return {
-      result: AuthorizeResult.ALLOW,
-    };
-  }
-}
+import { DelegateWithAllowAllFallbackPermissionPolicy } from '@backstage/plugin-permission-backend';
+import { MainPermissionPolicy } from '@backstage/plugin-permission-node';
+import { DefaultPlaylistPermissionPolicy } from '@backstage/plugin-playlist-backend';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  // You can change mainPolicy to some other customized MainPermissionPolicy implementation.
+  // The AllowAllAfterSubPolicies main policy is a simplistic, basic policy that delegates
+  // to sub-policies provided by other plugins and finally
+  // returns an AllowAll answer if no contributed sub-policy was elligible.
+  const mainPolicy: MainPermissionPolicy =
+    new DelegateWithAllowAllFallbackPermissionPolicy();
+  if (mainPolicy.addSubPolicies) {
+    // Add sub-policies contributed by other plugins here
+    mainPolicy.addSubPolicies(new DefaultPlaylistPermissionPolicy());
+  }
+
   return await createRouter({
     config: env.config,
     logger: env.logger,
     discovery: env.discovery,
-    policy: new ExamplePermissionPolicy(),
+    policy: mainPolicy,
     identity: env.identity,
   });
 }

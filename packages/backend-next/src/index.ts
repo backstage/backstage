@@ -19,7 +19,7 @@ import { appPlugin } from '@backstage/plugin-app-backend/alpha';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
 import {
-  permissionModuleAllowAllPolicy,
+  permissionModuleDelegateWithAllowAllFallbackPolicy,
   permissionPlugin,
 } from '@backstage/plugin-permission-backend/alpha';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend/alpha';
@@ -59,7 +59,7 @@ backend.add(kubernetesPlugin());
 
 // Permissions
 backend.add(permissionPlugin());
-backend.add(permissionModuleAllowAllPolicy());
+backend.add(permissionModuleDelegateWithAllowAllFallbackPolicy());
 
 backend.add(catalogModuleUnprocessedEntities());
 
