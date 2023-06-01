@@ -69,6 +69,9 @@ describe('readBitbucketIntegrationConfig', () => {
       token: 't',
       username: 'u',
       appPassword: 'p',
+      retryOptions: {
+        retries: 0,
+      },
     });
   });
 
@@ -121,6 +124,9 @@ describe('readBitbucketIntegrationConfig', () => {
     ).toEqual({
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
+      retryOptions: {
+        retries: 0,
+      },
     });
   });
 });
@@ -148,6 +154,9 @@ describe('readBitbucketIntegrationConfigs', () => {
       token: 't',
       username: 'u',
       appPassword: 'p',
+      retryOptions: {
+        retries: 0,
+      },
     });
   });
 
@@ -169,6 +178,9 @@ describe('readBitbucketIntegrationConfigs', () => {
       {
         host: 'bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        retryOptions: {
+          retries: 0,
+        },
       },
     ]);
   });

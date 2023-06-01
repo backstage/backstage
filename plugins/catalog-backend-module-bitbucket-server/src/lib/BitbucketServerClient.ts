@@ -15,6 +15,7 @@
  */
 
 import fetch, { Request, Response } from 'node-fetch';
+import pRetry, { AbortError } from 'p-retry';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
@@ -66,10 +67,16 @@ export class BitbucketServerClient {
     path: string;
   }): Promise<Response> {
     const base = new URL(this.config.apiBaseUrl);
-    return fetch(
-      `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
-      getBitbucketServerRequestOptions(this.config),
-    );
+    return pRetry(async () => {
+      const result = await fetch(
+        `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+        getBitbucketServerRequestOptions(this.config),
+      );
+      if (result.status === 429) {
+        throw new Error(result.statusText);
+      }
+      return result;
+    }, this.config.retryOptions);
   }
 
   async getRepository(options: {
@@ -77,10 +84,16 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await fetch(
-      request,
-      getBitbucketServerRequestOptions(this.config),
-    );
+    const response = await pRetry(async () => {
+      const result = await fetch(
+        request,
+        getBitbucketServerRequestOptions(this.config),
+      );
+      if (result.status === 429) {
+        throw new Error(result.statusText);
+      }
+      return result;
+    }, this.config.retryOptions);
     return response.json();
   }
 
@@ -118,15 +131,20 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
-      (response: Response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-          );
-        }
-        return response;
-      },
+    return pRetry(
+      () =>
+        fetch(req, getBitbucketServerRequestOptions(this.config)).then(
+          (response: Response) => {
+            if (!response.ok) {
+              const error = `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`;
+              throw response.status === 429
+                ? new Error(error)
+                : new AbortError(error);
+            }
+            return response;
+          },
+        ),
+      this.config.retryOptions,
     );
   }
 }

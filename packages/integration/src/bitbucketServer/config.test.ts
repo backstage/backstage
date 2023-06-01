@@ -67,6 +67,9 @@ describe('readBitbucketServerIntegrationConfig', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       token: 't',
+      retryOptions: {
+        retries: 0,
+      },
     });
   });
 
@@ -84,6 +87,28 @@ describe('readBitbucketServerIntegrationConfig', () => {
       apiBaseUrl: 'https://a.com/api',
       username: 'u',
       password: 'p',
+      retryOptions: {
+        retries: 0,
+      },
+    });
+  });
+
+  it('reads all values, retries', () => {
+    const output = readBitbucketServerIntegrationConfig(
+      buildConfig({
+        host: 'a.com',
+        apiBaseUrl: 'https://a.com/api',
+        retryOptions: {
+          retries: 5,
+        },
+      }),
+    );
+    expect(output).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+      retryOptions: {
+        retries: 5,
+      },
     });
   });
 
@@ -118,6 +143,9 @@ describe('readBitbucketServerIntegrationConfig', () => {
     ).toEqual({
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
+      retryOptions: {
+        retries: 0,
+      },
     });
   });
 });
@@ -136,6 +164,9 @@ describe('readBitbucketServerIntegrationConfigs', () => {
           host: 'a.com',
           apiBaseUrl: 'https://a.com/api',
           token: 't',
+          retryOptions: {
+            forever: true,
+          },
         },
       ]),
     );
@@ -143,6 +174,10 @@ describe('readBitbucketServerIntegrationConfigs', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       token: 't',
+      retryOptions: {
+        retries: 0,
+        forever: true,
+      },
     });
   });
 
@@ -159,6 +194,9 @@ describe('readBitbucketServerIntegrationConfigs', () => {
       {
         host: 'bitbucket.company.com',
         apiBaseUrl: 'https://bitbucket.company.com/rest/api/1.0',
+        retryOptions: {
+          retries: 0,
+        },
       },
     ]);
   });

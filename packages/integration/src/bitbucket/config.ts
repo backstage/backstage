@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { Options as RetryOptions } from 'p-retry';
 import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
@@ -62,6 +63,15 @@ export type BitbucketIntegrationConfig = {
    * See https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
    */
   appPassword?: string;
+
+  /**
+   * Options that passed to the p-retry module.
+   *
+   * For backward compatibility the default behavior is not to repeat Bitbucket Server API requests.
+   *
+   * See https://github.com/sindresorhus/p-retry
+   */
+  retryOptions?: object;
 };
 
 /**
@@ -79,6 +89,10 @@ export function readBitbucketIntegrationConfig(
   const token = config.getOptionalString('token');
   const username = config.getOptionalString('username');
   const appPassword = config.getOptionalString('appPassword');
+  const retryOptions = {
+    retries: 0,
+    ...config.getOptional<RetryOptions>('retryOptions'),
+  };
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -100,6 +114,7 @@ export function readBitbucketIntegrationConfig(
     token,
     username,
     appPassword,
+    retryOptions,
   };
 }
 

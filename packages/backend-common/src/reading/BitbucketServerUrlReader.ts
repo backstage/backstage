@@ -23,6 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import fetch, { Response } from 'node-fetch';
+import pRetry from 'p-retry';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -83,22 +84,28 @@ export class BitbucketServerUrlReader implements UrlReader {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
-        headers: {
-          ...requestOptions.headers,
-          ...(etag && { 'If-None-Match': etag }),
-          ...(lastModifiedAfter && {
-            'If-Modified-Since': lastModifiedAfter.toUTCString(),
-          }),
-        },
-        // TODO(freben): The signal cast is there because pre-3.x versions of
-        // node-fetch have a very slightly deviating AbortSignal type signature.
-        // The difference does not affect us in practice however. The cast can be
-        // removed after we support ESM for CLI dependencies and migrate to
-        // version 3 of node-fetch.
-        // https://github.com/backstage/backstage/issues/8242
-        ...(signal && { signal: signal as any }),
-      });
+      response = await pRetry(async () => {
+        const result = await fetch(bitbucketUrl.toString(), {
+          headers: {
+            ...requestOptions.headers,
+            ...(etag && { 'If-None-Match': etag }),
+            ...(lastModifiedAfter && {
+              'If-Modified-Since': lastModifiedAfter.toUTCString(),
+            }),
+          },
+          // TODO(freben): The signal cast is there because pre-3.x versions of
+          // node-fetch have a very slightly deviating AbortSignal type signature.
+          // The difference does not affect us in practice however. The cast can be
+          // removed after we support ESM for CLI dependencies and migrate to
+          // version 3 of node-fetch.
+          // https://github.com/backstage/backstage/issues/8242
+          ...(signal && { signal: signal as any }),
+        });
+        if (result.status === 429) {
+          throw new Error(result.statusText);
+        }
+        return result;
+      }, this.integration.config.retryOptions);
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -138,10 +145,17 @@ export class BitbucketServerUrlReader implements UrlReader {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
-      downloadUrl,
-      getBitbucketServerRequestOptions(this.integration.config),
-    );
+    const archiveResponse = await pRetry(async () => {
+      const response = await fetch(
+        downloadUrl,
+        getBitbucketServerRequestOptions(this.integration.config),
+      );
+      if (response.status === 429) {
+        throw new Error(response.statusText);
+      }
+      return response;
+    }, this.integration.config.retryOptions);
+
     if (!archiveResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
       if (archiveResponse.status === 404) {
@@ -204,10 +218,17 @@ export class BitbucketServerUrlReader implements UrlReader {
     // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
     const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const branchListResponse = await fetch(
-      branchListUrl,
-      getBitbucketServerRequestOptions(this.integration.config),
-    );
+    const branchListResponse = await pRetry(async () => {
+      const response = await fetch(
+        branchListUrl,
+        getBitbucketServerRequestOptions(this.integration.config),
+      );
+      if (response.status === 429) {
+        throw new Error(response.statusText);
+      }
+      return response;
+    }, this.integration.config.retryOptions);
+
     if (!branchListResponse.ok) {
       const message = `Failed to retrieve branch list from ${branchListUrl}, ${branchListResponse.status} ${branchListResponse.statusText}`;
       if (branchListResponse.status === 404) {

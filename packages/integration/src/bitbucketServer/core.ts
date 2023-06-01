@@ -15,6 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
+import pRetry from 'p-retry';
 import parseGitUrl from 'git-url-parse';
 import { BitbucketServerIntegrationConfig } from './config';
 
@@ -34,17 +35,22 @@ export async function getBitbucketServerDefaultBranch(
   // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp184
   let branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;
 
-  let response = await fetch(
-    branchUrl,
-    getBitbucketServerRequestOptions(config),
-  );
-
-  if (response.status === 404) {
-    // First try the new format, and then if it gets specifically a 404 it should try the old format
-    // (to support old  Atlassian Bitbucket Server v5.11.1 format )
-    branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
-    response = await fetch(branchUrl, getBitbucketServerRequestOptions(config));
-  }
+  const response = await pRetry(async () => {
+    let result = await fetch(
+      branchUrl,
+      getBitbucketServerRequestOptions(config),
+    );
+    if (result.status === 404) {
+      // First try the new format, and then if it gets specifically a 404 it should try the old format
+      // (to support old  Atlassian Bitbucket Server v5.11.1 format )
+      branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
+      result = await fetch(branchUrl, getBitbucketServerRequestOptions(config));
+    }
+    if (result.status === 429) {
+      throw new Error(result.statusText);
+    }
+    return result;
+  }, config.retryOptions);
 
   if (!response.ok) {
     const message = `Failed to retrieve default branch from ${branchUrl}, ${response.status} ${response.statusText}`;

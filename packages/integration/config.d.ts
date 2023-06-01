@@ -64,6 +64,13 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
+
+      /**
+       * Arbitrary retry config object to pass to pRetry calls
+       * (https://github.com/sindresorhus/p-retry). Most notable are the `retries`
+       * and `forever` options
+       */
+      retryOptions?: object;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
@@ -107,6 +114,13 @@ export interface Config {
        * @visibility frontend
        */
       apiBaseUrl?: string;
+
+      /**
+       * Arbitrary retry config object to pass to pRetry calls
+       * (https://github.com/sindresorhus/p-retry). Most notable are the `retries`
+       * and `forever` options
+       */
+      retryOptions?: object;
     }>;
 
     /** Integration configuration for Gerrit */

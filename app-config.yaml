@@ -199,10 +199,16 @@ integrations:
   #   - username: ${BITBUCKET_USERNAME}
   #     appPassword: ${BITBUCKET_APP_PASSWORD}
   ### Example for how to add your bitbucket server instance using the API:
-  # - host: server.bitbucket.com
-  #   apiBaseUrl: server.bitbucket.com
-  #   username: ${BITBUCKET_SERVER_USERNAME}
-  #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+  # bitbucketServer:
+  #   - host: server.bitbucket.com
+  #     apiBaseUrl: server.bitbucket.com
+  #     username: ${BITBUCKET_SERVER_USERNAME}
+  #     appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+  #     ## Retry options (https://github.com/tim-kos/node-retry#retryoperationoptions) for repeating API calls in case of 429 Too Many Requests error
+  #     retryOptions:
+  #       retries: 3
+  #       minTimeout: 500
+  #       maxRetryTime: 2000
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}

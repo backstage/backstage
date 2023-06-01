@@ -126,6 +126,7 @@ export type BitbucketIntegrationConfig = {
   token?: string;
   username?: string;
   appPassword?: string;
+  retryOptions?: object;
 };
 
 // @public
@@ -156,6 +157,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  retryOptions?: object;
 };
 
 // @public

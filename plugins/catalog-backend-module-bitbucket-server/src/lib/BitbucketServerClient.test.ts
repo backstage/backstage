@@ -45,6 +45,9 @@ describe('BitbucketServerClient', () => {
     apiBaseUrl: 'https://bitbucket.mycompany.com/api/rest/1.0',
     username: 'test-user',
     password: 'test-pw',
+    retryOptions: {
+      retries: 1,
+    },
   };
   const client = BitbucketServerClient.fromConfig({
     config: config,
@@ -90,6 +93,7 @@ describe('BitbucketServerClient', () => {
   });
 
   it('listRepositories', async () => {
+    let retriesCount = 1;
     server.use(
       rest.get(
         `${config.apiBaseUrl}/projects/test-project/repos`,
@@ -99,6 +103,10 @@ describe('BitbucketServerClient', () => {
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
             return res(ctx.status(400));
+          }
+          if (retriesCount > 0) {
+            retriesCount--;
+            return res(ctx.status(429));
           }
           const response: BitbucketServerPagedResponse<BitbucketServerRepository> =
             {
@@ -147,9 +155,11 @@ describe('BitbucketServerClient', () => {
     expect(results[0].links.self[0].href).toEqual(
       'https://bitbucket.mycompany.com/projects/test-project',
     );
+    expect(retriesCount).toEqual(0);
   });
 
   it('getFile', async () => {
+    let retriesCount = 1;
     server.use(
       rest.get(
         `https://${config.host}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
@@ -159,6 +169,10 @@ describe('BitbucketServerClient', () => {
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
             return res(ctx.status(400));
+          }
+          if (retriesCount > 0) {
+            retriesCount--;
+            return res(ctx.status(429));
           }
 
           return res(ctx.text(catalogInfoFile));
@@ -172,9 +186,11 @@ describe('BitbucketServerClient', () => {
       path: 'catalog-info.yaml',
     });
     expect(await response.text()).toEqual(catalogInfoFile);
+    expect(retriesCount).toEqual(0);
   });
 
   it('getRepository', async () => {
+    let retriesCount = 1;
     server.use(
       rest.get(
         `${config.apiBaseUrl}/projects/test-project/repos/test-repo`,
@@ -184,6 +200,10 @@ describe('BitbucketServerClient', () => {
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
             return res(ctx.status(400));
+          }
+          if (retriesCount > 0) {
+            retriesCount--;
+            return res(ctx.status(429));
           }
           const response: BitbucketServerRepository = {
             project: {
@@ -214,5 +234,6 @@ describe('BitbucketServerClient', () => {
     expect(repo.links.self[0].href).toEqual(
       'https://bitbucket.mycompany.com/projects/test-project',
     );
+    expect(retriesCount).toEqual(0);
   });
 });

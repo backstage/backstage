@@ -40,12 +40,14 @@
     "cross-fetch": "^3.1.5",
     "git-url-parse": "^13.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.0"
+    "luxon": "^3.0.0",
+    "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@types/luxon": "^3.0.0",
+    "@types/p-retry": "^3.0.1",
     "msw": "^1.0.0"
   },
   "files": [

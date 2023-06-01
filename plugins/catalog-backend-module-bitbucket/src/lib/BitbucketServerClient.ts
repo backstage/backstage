@@ -19,6 +19,7 @@ import {
   getBitbucketRequestOptions,
 } from '@backstage/integration';
 import fetch from 'node-fetch';
+import pRetry from 'p-retry';
 
 export class BitbucketServerClient {
   private readonly config: BitbucketIntegrationConfig;
@@ -54,10 +55,16 @@ export class BitbucketServerClient {
       }
     }
 
-    const response = await fetch(
-      request.toString(),
-      getBitbucketRequestOptions(this.config),
-    );
+    const response = await pRetry(async () => {
+      const result = await fetch(
+        request.toString(),
+        getBitbucketRequestOptions(this.config),
+      );
+      if (result.status === 429) {
+        throw new Error(result.statusText);
+      }
+      return result;
+    }, this.config.retryOptions);
     if (!response.ok) {
       throw new Error(
         `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
