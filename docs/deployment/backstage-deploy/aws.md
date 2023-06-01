@@ -134,37 +134,23 @@ Make sure that [Docker](https://docs.docker.com/) is running before you start th
 
 After you have made your changes to your local instance, it's time to deploy it on Lightsail.
 
-First, we need to configure the `app-config.yaml` and update the `baseUrl`.
-
-```diff
-app:
--  baseUrl: http://localhost:3000
-+  baseUrl: ${BACKSTAGE_HOST}
-
-backend:
--  baseUrl: http://localhost:7007
-+  baseUrl: ${BACKSTAGE_HOST}
-  listen:
-    port: 7007
-```
-
-The environment variable `BACKSTAGE_HOST` will be set to the endpoint that AWS Lightsail creates.
-
-In addition, you should create a `app-config.local.yaml`:
+First, we need to configure a new `app-config` file and update the `baseUrl`.
 
 ```bash
-$ touch app-config.local.yaml
+$ touch app-config.deployment.yaml
 ```
 
 And then update the file with the following yaml:
 
 ```yaml
 app:
-  baseUrl: http://localhost:3000
+  baseUrl: ${BACKSTAGE_HOST}
 
 backend:
-  baseUrl: http://localhost:7007
+  baseUrl: ${BACKSTAGE_HOST}
 ```
+
+The environment variable `BACKSTAGE_HOST` will be set to the endpoint that AWS Lightsail creates.
 
 Now we can deploy our instance!
 
