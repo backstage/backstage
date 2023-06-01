@@ -3,7 +3,7 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Updated EntityRefLink and AboutField components to handle long values by using the OverflowTooltip core backstage component to truncate when needed.
+Updated `EntityRefLink` and `AboutField` components to handle long values by using the `OverflowTooltip` component to truncate when needed.
 
 Changes to EntityRefLink.tsx:
 
