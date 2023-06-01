@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
+import { io, Socket } from 'socket.io-client';
 import { ConfigApi, IdentityApi, EventsApi } from '@backstage/core-plugin-api';
 
 type EventsSubscription = {
   pluginId: string;
   topic?: string;
-  onMessage: (data: JsonValue) => void;
+  onMessage: (data: any) => void;
+};
+
+export type EventsMessage = {
+  pluginId: string;
+  topic?: string;
+  targetEntityRefs?: string[];
+  data: unknown;
 };
 
 /**
@@ -29,11 +36,12 @@ type EventsSubscription = {
  * @public
  */
 export class EventsClient implements EventsApi {
+  connected: boolean = false;
   private endpoint: string;
-  private ws: WebSocket | null;
+  private ws?: Socket;
   private eventsEnabled: boolean;
   private subscriptions: Map<string, EventsSubscription>;
-  private readonly messageQueue: Set<string>;
+  private readonly messageQueue: Set<{ channel: string; message: any }>;
   private readonly identity: IdentityApi;
 
   static create(options: { configApi: ConfigApi; identityApi: IdentityApi }) {
@@ -42,7 +50,6 @@ export class EventsClient implements EventsApi {
   }
 
   private constructor(config: ConfigApi, identity: IdentityApi) {
-    this.ws = null;
     this.subscriptions = new Map();
     this.messageQueue = new Set();
     this.eventsEnabled = false;
@@ -72,85 +79,52 @@ export class EventsClient implements EventsApi {
   }
 
   private async connect() {
-    if (this.ws) {
-      return;
-    }
-
     const url = new URL(this.endpoint);
-    url.pathname = '/events';
-
     const { token } = await this.identity.getCredentials();
-    if (token) {
-      // WebSocket does not support setting custom headers for the Upgrade request
-      // thus setting the token in query parameter as described in
-      // https://www.rfc-editor.org/rfc/rfc6750#section-2.3
-      url.searchParams.set('access_token', token);
+
+    if (!this.ws) {
+      this.ws = io(url.toString(), {
+        path: '/events',
+        auth: { token: token },
+      });
+    } else if (!this.ws.connected) {
+      this.ws.connect();
     }
 
-    this.ws = new WebSocket(url.toString());
-    this.ws.onopen = () => {
+    this.ws.on('connect', () => {
       for (const msg of this.messageQueue) {
-        this.send(msg);
+        this.send(msg.channel, msg.message);
       }
       this.messageQueue.clear();
-    };
+    });
 
-    this.ws.onerror = () => {
-      this.subscriptions.clear();
-      this.ws = null;
-    };
-
-    this.ws.onmessage = (data: MessageEvent) => {
-      if (!data.data || !this.ws) {
-        return;
-      }
-
-      if (data.data === 'ping') {
-        this.ws.send('pong');
-        return;
-      }
-
-      try {
-        const msg = JSON.parse(data.data.toString());
-        for (const subscription of this.subscriptions.values()) {
-          if (
-            subscription.pluginId === msg.pluginId &&
-            (!msg.topic || subscription.topic === msg.topic)
-          ) {
+    this.ws.on('message', (msg: EventsMessage) => {
+      for (const subscription of this.subscriptions.values()) {
+        if (
+          subscription.pluginId === msg.pluginId &&
+          (!msg.topic || subscription.topic === msg.topic)
+        ) {
+          try {
             subscription.onMessage(msg.data);
+          } catch (_) {
+            // ignore
           }
         }
-      } catch (_e) {
-        // NOOP
       }
-    };
-
-    this.ws.onclose = () => {
-      this.ws = null;
-    };
+    });
   }
 
-  private async disconnect() {
-    if (!this.ws) {
-      return;
-    }
-
-    this.ws.close();
-    this.subscriptions.clear();
-    this.ws = null;
-  }
-
-  private async send(msg: string) {
+  private async send(channel: string, message: any) {
     if (!this.ws) {
       await this.connect();
-      this.messageQueue.add(msg);
+      this.messageQueue.add({ channel, message });
       return;
     }
 
     try {
-      this.ws.send(msg);
+      this.ws.emit(channel, message);
     } catch (_e) {
-      this.messageQueue.add(msg);
+      this.messageQueue.add({ channel, message });
     }
   }
 
@@ -169,8 +143,7 @@ export class EventsClient implements EventsApi {
     }
 
     this.subscriptions.set(subscriptionKey, { pluginId, onMessage, topic });
-    const cmd = JSON.stringify({ command: 'subscribe', pluginId, topic });
-    await this.send(cmd);
+    await this.send('subscribe', { pluginId, topic });
   }
 
   async unsubscribe(pluginId: string, topic?: string) {
@@ -184,11 +157,6 @@ export class EventsClient implements EventsApi {
     }
 
     this.subscriptions.delete(subscriptionKey);
-    const cmd = JSON.stringify({ command: 'unsubscribe', pluginId, topic });
-    await this.send(cmd);
-
-    if (this.subscriptions.size === 0) {
-      await this.disconnect();
-    }
+    await this.send('unsubscribe', { pluginId, topic });
   }
 }

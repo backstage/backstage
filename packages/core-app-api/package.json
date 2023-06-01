@@ -41,6 +41,7 @@
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react-use": "^17.2.4",
+    "socket.io-client": "^4.6.2",
     "zen-observable": "^0.10.0",
     "zod": "^3.21.4"
   },

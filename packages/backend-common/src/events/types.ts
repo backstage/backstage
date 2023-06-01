@@ -59,7 +59,6 @@ export type EventsClientManagerOptions = {
  * @public
  */
 export type EventsClientRegisterCommand = {
-  command: 'register';
   pluginId: string;
 };
 
@@ -70,11 +69,10 @@ export type EventsClientRegisterCommand = {
  * @public
  */
 export type EventsClientPublishCommand = {
-  command: 'publish';
   pluginId: string;
   topic?: string;
   targetEntityRefs?: string[];
-  data: unknown;
+  data: any;
 };
 
 /**
@@ -83,7 +81,6 @@ export type EventsClientPublishCommand = {
  * @public
  */
 export type EventsClientSubscribeCommand = {
-  command: 'subscribe' | 'unsubscribe';
   pluginId: string;
   topic?: string;
 };

@@ -187,6 +187,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
         logger,
       },
       this.serverOptions.events,
+      this.corsOptions,
     );
 
     useHotCleanup(this.module, () =>

@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { Server, WebSocket, RawData } from 'ws';
+import { Server, Socket } from 'socket.io';
 import jwt_decode from 'jwt-decode';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { EventClientCommand } from './types';
-import { IncomingMessage } from 'http';
+import {
+  EventsClientPublishCommand,
+  EventsClientRegisterCommand,
+  EventsClientSubscribeCommand,
+} from './types';
 import { JWTPayload } from 'jose';
+import { Handshake } from 'socket.io/dist/socket';
+
+type EventsServerConnectionType = 'frontend' | 'backend';
 
 type EventsServerSubscription = {
   pluginId: string;
   topic?: string;
 };
 
-type EventsServerConnectionType = 'frontend' | 'backend';
-
 type EventsServerConnection = {
-  ws: WebSocket;
-  isAlive: boolean;
+  ws: Socket;
   type: EventsServerConnectionType;
   ip?: string;
   sub?: string;
@@ -41,7 +44,7 @@ type EventsServerConnection = {
 };
 
 const stringifyConnection = (conn: EventsServerConnection) => {
-  return `(type: ${conn.type}, sub: ${conn.sub}, plugin: ${conn.pluginId}, ip: ${conn.ip})`;
+  return `(id: ${conn.ws.id}, type: ${conn.type}, sub: ${conn.sub}, plugin: ${conn.pluginId}, ip: ${conn.ip})`;
 };
 
 /**
@@ -52,8 +55,7 @@ const stringifyConnection = (conn: EventsServerConnection) => {
  */
 export class EventsServer {
   private readonly logger: LoggerService;
-  private readonly connections: EventsServerConnection[];
-  private heartbeatInterval: ReturnType<typeof setInterval> | null;
+  private readonly connections: Map<EventsServerConnection>;
 
   static create(server: Server, logger: LoggerService): EventsServer {
     return new EventsServer(server, logger);
@@ -62,66 +64,33 @@ export class EventsServer {
   private constructor(server: Server, logger: LoggerService) {
     this.logger = logger;
     this.heartbeatInterval = null;
-    this.connections = [];
+    this.connections = new Map();
 
     server.on('connection', this.handleConnection);
     server.on('close', () => {
-      if (this.heartbeatInterval) {
-        clearInterval(this.heartbeatInterval);
-        this.heartbeatInterval = null;
+      for (const conn of this.connections.values()) {
+        conn.ws.disconnect();
       }
+      this.connections.clear();
     });
   }
 
-  private startHeartbeat = () => {
-    if (this.heartbeatInterval) {
-      return;
-    }
-    this.heartbeatInterval = setInterval(() => {
-      // If all connections are closed, stop the heartbeat
-      if (this.connections.length === 0) {
-        if (this.heartbeatInterval) {
-          clearInterval(this.heartbeatInterval);
-        }
-        this.heartbeatInterval = null;
-        return;
-      }
-
-      for (let i = 0; i < this.connections.length; i++) {
-        const conn = this.connections[i];
-        // Missed two heartbeats, close and clean the connection
-        if (!conn.isAlive) {
-          this.closeConnection(conn);
-          return;
-        }
-        conn.isAlive = false;
-        conn.ws.ping();
-      }
-    }, 30000);
-  };
-
   private closeConnection = (conn: EventsServerConnection) => {
-    const idx = this.connections.findIndex(c => c === conn);
-    if (idx >= 0) {
-      this.logger.info(`Closing connection ${stringifyConnection(conn)}`);
-      conn.ws.close();
-      this.connections.splice(idx, 1);
-    }
+    this.logger.info(`Closing connection ${stringifyConnection(conn)}`);
+    conn.ws.disconnect();
+    this.connections.delete(conn.ws.id);
   };
 
-  private parseConnectionRequest = (req: IncomingMessage) => {
-    const ip =
-      req.socket.remoteAddress ??
-      req.headers?.['x-forwarded-for']?.toString().split(',')[0].trim();
-    const url = new URL(req.url ?? '', `https://${req.headers.host}`);
+  private parseConnectionRequest = (handshake: Handshake) => {
+    const ip = handshake.address;
     let token = undefined;
-
-    if (url.searchParams.has('access_token')) {
-      token = url.searchParams.get('access_token');
+    if (handshake.auth.token) {
+      token = handshake.auth.token;
     }
 
-    if (typeof req.headers.authorization === 'string') {
-      const matches = req.headers.authorization.match(/^Bearer[ ]+(\S+)$/i);
+    if (typeof handshake.headers.authorization === 'string') {
+      const matches =
+        handshake.headers.authorization.match(/^Bearer[ ]+(\S+)$/i);
       token = matches?.[1];
     }
 
@@ -141,125 +110,131 @@ export class EventsServer {
     return { ip, type, entities, sub };
   };
 
-  private handleConnection = (ws: WebSocket, req: IncomingMessage) => {
+  private handleConnection = (ws: Socket) => {
     let ip;
     let type;
     let entities;
     let sub;
 
     try {
-      ({ ip, type, entities, sub } = this.parseConnectionRequest(req));
+      ({ ip, type, entities, sub } = this.parseConnectionRequest(ws.handshake));
     } catch (e) {
       this.logger.error(`Failed to authenticate connection: ${e}`);
-      ws.close();
+      ws.disconnect();
       return;
     }
 
-    this.startHeartbeat();
-
     const conn: EventsServerConnection = {
       ws,
-      isAlive: true,
       sub,
       entityRefs: entities,
+      subscriptions: new Map(),
       ip,
       type,
-      subscriptions: new Map(),
     };
 
-    this.connections.push(conn);
+    this.connections.set(ws.id, conn);
 
-    conn.ws.on('pong', () => {
-      conn.isAlive = true;
+    conn.ws.on('register', (data: EventsClientRegisterCommand) => {
+      this.handleRegister(conn, data);
     });
-
-    conn.ws.on('message', (data: RawData) => {
-      this.handleMessage(conn, data.toString());
+    conn.ws.on('publish', (data: EventsClientPublishCommand) => {
+      this.handlePublish(conn, data);
     });
-
-    conn.ws.on('close', () => {
+    conn.ws.on('subscribe', (data: EventsClientSubscribeCommand) => {
+      this.logger.info(`Subscribing to ${stringifyConnection(conn)}`);
+      this.handleSubscribe(conn, data);
+    });
+    conn.ws.on('unsubscribe', (data: EventsClientSubscribeCommand) => {
+      this.handleUnsubscribe(conn, data);
+    });
+    conn.ws.on('disconnect', () => {
       this.closeConnection(conn);
     });
-
     conn.ws.on('error', (err: Error) => {
       this.logger.error(`Events error occurred: ${err}`);
     });
   };
 
-  private handleMessage = (conn: EventsServerConnection, data: string) => {
+  private handleRegister = (
+    conn: EventsServerConnection,
+    cmd: EventsClientRegisterCommand,
+  ) => {
     const connStr = stringifyConnection(conn);
-    try {
-      const cmd = JSON.parse(data) as EventClientCommand;
-      if (cmd.command === 'register') {
-        if (conn.type !== 'backend') {
-          this.logger.warn(`Invalid events register request from ${connStr}`);
-          return;
-        }
-
-        conn.pluginId = cmd.pluginId;
-        this.logger.info(
-          `Plugin '${cmd.pluginId}' registered to events server ${connStr}`,
-        );
-      } else if (cmd.command === 'publish') {
-        if (!conn.pluginId || conn.type !== 'backend') {
-          this.logger.warn(`Invalid events publish request from ${connStr}`);
-          return;
-        }
-
-        for (const c of this.connections) {
-          if (c.ws === conn.ws) {
-            continue;
-          }
-
-          const subs = [...c.subscriptions.values()];
-
-          // Check that the connection has subscription to plugin and optional topic
-          if (
-            !subs.find(
-              subscription =>
-                subscription.pluginId === cmd.pluginId &&
-                (!subscription.topic || subscription.topic === cmd.topic),
-            )
-          ) {
-            continue;
-          }
-
-          // If the message is intended to specific users or groups by entityRefs,
-          // check that the connection has been established using those
-          if (
-            cmd.targetEntityRefs &&
-            cmd.targetEntityRefs.some(r => c.entityRefs.includes(r))
-          ) {
-            continue;
-          }
-
-          this.logger.debug(
-            `${connStr} sent message to ${stringifyConnection(c)}`,
-          );
-          c.ws.send(JSON.stringify(cmd));
-        }
-      } else if (cmd.command === 'subscribe') {
-        const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
-        if (conn.subscriptions.has(subscriptionKey)) {
-          return;
-        }
-        this.logger.info(`${connStr} subscribed to ${subscriptionKey}`);
-        conn.subscriptions.set(subscriptionKey, {
-          pluginId: cmd.pluginId,
-          topic: cmd.topic,
-        });
-      } else if (cmd.command === 'unsubscribe') {
-        const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
-        if (conn.subscriptions.has(subscriptionKey)) {
-          return;
-        }
-        this.logger.info(`${connStr} unsubscribed from ${subscriptionKey}`);
-        conn.subscriptions.delete(subscriptionKey);
-      }
-    } catch (e) {
-      this.logger.error(
-        `Invalid events message received from ${connStr}: ${data}: ${e}`,
-      );
+    if (conn.type !== 'backend') {
+      this.logger.warn(`Invalid events register request from ${connStr}`);
+      return;
     }
+
+    conn.pluginId = cmd.pluginId;
+    this.logger.info(
+      `Plugin '${cmd.pluginId}' registered to events server ${connStr}`,
+    );
+  };
+
+  private handlePublish = (
+    conn: EventsServerConnection,
+    cmd: EventsClientPublishCommand,
+  ) => {
+    const connStr = stringifyConnection(conn);
+    if (!conn.pluginId || conn.type !== 'backend') {
+      this.logger.warn(`Invalid events publish request from ${connStr}`);
+      return;
+    }
+
+    for (const c of this.connections.values()) {
+      const subs = [...c.subscriptions.values()];
+
+      // Check that the connection has subscription to plugin and optional topic
+      if (
+        !subs.find(
+          subscription =>
+            subscription.pluginId === cmd.pluginId &&
+            (!subscription.topic || subscription.topic === cmd.topic),
+        )
+      ) {
+        continue;
+      }
+
+      // If the message is intended to specific users or groups by entityRefs,
+      // check that the connection has been established using those
+      if (
+        cmd.targetEntityRefs &&
+        cmd.targetEntityRefs.some(r => c.entityRefs.includes(r))
+      ) {
+        continue;
+      }
+
+      c.ws.emit('message', cmd);
+    }
+  };
+
+  private handleSubscribe = (
+    conn: EventsServerConnection,
+    cmd: EventsClientSubscribeCommand,
+  ) => {
+    const connStr = stringifyConnection(conn);
+    const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
+    if (conn.subscriptions.has(subscriptionKey)) {
+      return;
+    }
+    this.logger.info(`${connStr} subscribed to ${subscriptionKey}`);
+    conn.subscriptions.set(subscriptionKey, {
+      pluginId: cmd.pluginId,
+      topic: cmd.topic,
+    });
+  };
+
+  private handleUnsubscribe = (
+    conn: EventsServerConnection,
+    cmd: EventsClientSubscribeCommand,
+  ) => {
+    const connStr = stringifyConnection(conn);
+    const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
+    if (!conn.subscriptions.has(subscriptionKey)) {
+      return;
+    }
+    this.logger.info(`${connStr} unsubscribed from ${subscriptionKey}`);
+    conn.subscriptions.delete(subscriptionKey);
   };
 }

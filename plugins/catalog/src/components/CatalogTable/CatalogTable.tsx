@@ -40,9 +40,10 @@ import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
+import { eventsApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Props for {@link CatalogTable}.
@@ -78,6 +79,17 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
+
+  // TODO(drodil): Test code, to be removed.
+  const events = useApi(eventsApiRef);
+  useEffect(() => {
+    events.subscribe('catalog', (_: any) => {
+      // console.log(_);
+    });
+    return () => {
+      events.unsubscribe('catalog');
+    };
+  }, [events]);
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [

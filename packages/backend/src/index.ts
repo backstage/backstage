@@ -219,6 +219,13 @@ async function main() {
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
+  // TODO(drodil): Test code, to be removed.
+  const client = catalogEnv.eventsManager.getClient();
+  await client.connect();
+  setInterval(async () => {
+    await client.publish({ test: 'test' });
+  }, 10000);
+
   await service.start().catch(err => {
     logger.error(err);
     process.exit(1);

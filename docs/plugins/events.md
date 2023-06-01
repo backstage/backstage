@@ -115,7 +115,7 @@ export async function createRouter(
   // ...
   await events.subscribe(
     'catalog', // Plugin to subscribe
-    (data: JsonValue) => {
+    (data: any) => {
       // Callback for data from the plugin publish
       console.log(data);
     },
@@ -147,7 +147,7 @@ import { useApi, eventsApiRef } from '@backstage/core-plugin-api';
 
 const events = useApi(eventsApiRef);
 useEffect(() => {
-  events.subscribe('catalog', (data: JsonValue) => {
+  events.subscribe('catalog', (data: any) => {
     console.log(data);
   });
   return () => {

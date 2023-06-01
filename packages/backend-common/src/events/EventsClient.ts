@@ -19,27 +19,23 @@ import {
   EventsClientRegisterCommand,
   EventsClientSubscribeCommand,
 } from './types';
-import { RawData, WebSocket } from 'ws';
+import { io, Socket } from 'socket.io-client';
 import { TokenManager } from '../tokens';
 
 type EventsClientSubscription = {
   pluginId: string;
   topic?: string;
-  onMessage: (data: unknown) => void;
+  onMessage: (data: EventsClientPublishCommand) => void;
 };
-
-const MAX_CONNECTION_RETRYS = 5;
-const CONNECTION_RETRY_INTERVAL = 5000;
 
 export class DefaultEventsClient implements EventsService {
   private readonly pluginId: string;
   private readonly endpoint: string;
   private readonly logger: LoggerService;
   private readonly tokenManager?: TokenManager;
-  private ws: WebSocket | null;
+  private ws: Socket | null;
   private subscriptions: Map<string, EventsClientSubscription>;
-  private connectionRetries = 0;
-  private readonly messageQueue: Set<string>;
+  private readonly messageQueue: Set<{ channel: string; message: any }>;
 
   constructor(
     endpoint: string,
@@ -57,58 +53,38 @@ export class DefaultEventsClient implements EventsService {
   }
 
   async connect() {
-    if (this.ws) {
-      return;
-    }
     this.logger.info(`${this.pluginId} connecting to events service`);
-    this.connectionRetries = 0;
-    await this.connectInternal();
-  }
-
-  private readonly connectInternal = async () => {
     const url = new URL(this.endpoint);
-    url.pathname = '/events';
     let token;
     if (this.tokenManager) {
       ({ token } = await this.tokenManager.getToken());
     }
-    this.ws = new WebSocket(url.toString(), {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    this.ws = io(url.toString(), {
+      path: '/events',
+      auth: {
+        token: token,
+      },
     });
 
     this.ws.on('error', (err: Error) => {
-      this.ws?.close();
-      this.ws = null;
-      this.connectionRetries += 1;
-      if (this.connectionRetries < MAX_CONNECTION_RETRYS) {
-        setTimeout(this.connectInternal, CONNECTION_RETRY_INTERVAL);
-        return;
-      }
-      this.subscriptions.clear();
       this.logger.error(`${this.pluginId} events error occurred: ${err}`);
     });
 
-    this.ws.on('open', () => {
-      if (!this.ws) {
-        return;
-      }
-      this.connectionRetries = 0;
+    this.ws.on('connect', () => {
       // Register this plugin client to the events server
       const cmd: EventsClientRegisterCommand = {
-        command: 'register',
         pluginId: this.pluginId,
       };
-      this.send(JSON.stringify(cmd));
+      this.send('register', cmd);
 
       for (const msg of this.messageQueue) {
-        this.send(msg);
+        this.send(msg.channel, msg.message);
       }
       this.messageQueue.clear();
     });
 
-    this.ws.on('message', (data: RawData) => {
+    this.ws.on('message', (msg: EventsClientPublishCommand) => {
       try {
-        const msg = JSON.parse(data.toString()) as EventsClientPublishCommand;
         for (const subscription of this.subscriptions.values()) {
           if (
             subscription.pluginId === msg.pluginId &&
@@ -119,11 +95,11 @@ export class DefaultEventsClient implements EventsService {
         }
       } catch (e) {
         this.logger.error(
-          `${this.pluginId} invalid data received from server: ${data}: ${e}`,
+          `${this.pluginId} invalid data received from server: ${msg}: ${e}`,
         );
       }
     });
-  };
+  }
 
   async disconnect() {
     for (const subscription of this.subscriptions.values()) {
@@ -137,16 +113,16 @@ export class DefaultEventsClient implements EventsService {
     this.ws = null;
   }
 
-  private send(msg: string) {
-    if (!this.ws) {
-      this.messageQueue.add(msg);
+  private send(channel: string, message: any) {
+    if (!this.ws || !this.ws.connected) {
+      this.messageQueue.add({ channel, message });
       return;
     }
 
     try {
-      this.ws.send(msg);
+      this.ws.emit(channel, message);
     } catch (_e) {
-      this.messageQueue.add(msg);
+      this.messageQueue.add({ channel, message });
     }
   }
 
@@ -158,19 +134,18 @@ export class DefaultEventsClient implements EventsService {
     },
   ) {
     const cmd: EventsClientPublishCommand = {
-      command: 'publish',
       pluginId: this.pluginId,
       topic: target?.topic,
       targetEntityRefs: target?.entityRefs,
       data: message,
     };
     this.logger.info(`Publish event from ${this.pluginId}`);
-    this.send(JSON.stringify(cmd));
+    this.send('publish', cmd);
   }
 
   async subscribe(
     pluginId: string,
-    onMessage: (data: unknown) => void,
+    onMessage: (data: EventsClientPublishCommand) => void,
     topic?: string,
   ) {
     const subscriptionKey = `${pluginId}:${topic}`;
@@ -181,11 +156,10 @@ export class DefaultEventsClient implements EventsService {
     this.subscriptions.set(subscriptionKey, { pluginId, onMessage, topic });
 
     const cmd: EventsClientSubscribeCommand = {
-      command: 'subscribe',
       pluginId,
       topic,
     };
-    this.send(JSON.stringify(cmd));
+    this.send('subscribe', cmd);
   }
 
   async unsubscribe(pluginId: string, topic?: string) {
@@ -197,10 +171,9 @@ export class DefaultEventsClient implements EventsService {
     this.subscriptions.delete(subscriptionKey);
 
     const cmd: EventsClientSubscribeCommand = {
-      command: 'unsubscribe',
       pluginId,
       topic,
     };
-    this.send(JSON.stringify(cmd));
+    this.send('unsubscribe', cmd);
   }
 }

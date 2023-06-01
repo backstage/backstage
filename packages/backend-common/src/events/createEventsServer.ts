@@ -16,9 +16,10 @@
 
 import { EventsServerConfig } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Server } from 'ws';
+import { Server } from 'socket.io';
 import { EventsServer } from './EventsServer';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
+import { CorsOptions } from 'cors';
 
 /**
  * Adds events support on top of the Node.js HTTP server
@@ -29,11 +30,12 @@ export function createEventsServer(
   server: ExtendedHttpServer,
   deps: { logger: LoggerService },
   options?: EventsServerConfig,
+  cors?: CorsOptions,
 ) {
   if (!options?.enabled) {
     return;
   }
 
-  const wss = new Server({ server, path: '/events' });
+  const wss = new Server(server, { path: '/events', cors });
   EventsServer.create(wss, deps.logger.child({ type: 'events-server' }));
 }
