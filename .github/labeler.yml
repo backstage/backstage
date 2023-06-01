@@ -21,7 +21,8 @@ microsite:
   - microsite/**/*
 auth:
   - plugins/auth-backend/**/*
-  - plugins/permission-*/**/*
   - packages/core-app-api/src/apis/implementations/auth/**/*
   - packages/core-app-api/src/lib/Auth*/**/*
   - packages/core-plugin-api/src/apis/definitions/auth.ts
+area:permission:
+  - plugins/permission-*/**/*
