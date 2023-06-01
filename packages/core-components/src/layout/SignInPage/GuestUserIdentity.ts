@@ -28,8 +28,7 @@ export class GuestUserIdentity implements IdentityApi {
   static fromConfig(config?: Config): GuestUserIdentity {
     const newIdentity = new GuestUserIdentity();
     if (
-      config &&
-      config.getOptionalConfig(`auth`)?.getOptionalBoolean(`allowGuestMode`)
+      config?.getOptionalConfig(`auth`)?.getOptionalBoolean(`allowGuestMode`)
     ) {
       newIdentity.setIdToken(newIdentity.issueToken());
     }
@@ -44,8 +43,13 @@ export class GuestUserIdentity implements IdentityApi {
     const userEntityRef = `user:default/guest`;
     const idToken: string = nJwt
       .create(
-        { sub: userEntityRef, ent: [userEntityRef] },
-        Buffer.from('signing key'),
+        { sub: userEntityRef, ent: [userEntityRef], aud: 'backstage' },
+        '-----BEGIN PRIVATE KEY-----\n' +
+          'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
+          'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
+          'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
+          '-----END PRIVATE KEY-----\n',
+        'ES256',
       )
       .compact();
 
