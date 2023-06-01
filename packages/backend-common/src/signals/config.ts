@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import { EventsServerConfig } from './types';
+import { SignalsServerConfig } from './types';
 
 /**
- * Reads {@link EventsServerConfig} from a {@link @backstage/config#Config} object.
+ * Reads {@link SignalsServerConfig} from a {@link @backstage/config#Config} object.
  *
  * @public
  * @remarks
@@ -27,14 +27,14 @@ import { EventsServerConfig } from './types';
  * const opts = readEventsServerOptions(config.getConfig('backend'));
  * ```
  */
-export function readEventsServerOptions(config?: Config): EventsServerConfig {
-  const ws = config?.getOptional('events');
+export function readEventsServerOptions(config?: Config): SignalsServerConfig {
+  const ws = config?.getOptional('signals');
   if (ws === true) {
     return { enabled: true };
   }
 
-  const eventsConfig = config?.getOptionalConfig('events');
+  const eventsConfig = config?.getOptionalConfig('signals');
   return {
-    enabled: eventsConfig?.getOptionalBoolean('enabled') ?? false,
+    enabled: eventsConfig?.getOptionalBoolean('signals') ?? false,
   };
 }

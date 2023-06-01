@@ -14,15 +14,38 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
-
 /**
- * Events API for subscribing to messages suitable for use by
- * Backstage frontend plugins.
+ * Signals service for publishing and subscribing to messages suitable for use by
+ * Backstage plugins.
  *
  * @public
  */
-export interface EventsApi {
+export interface SignalsService {
+  /**
+   * Connects the service to the backend. Must be called before publishing or subscribing
+   * to data.
+   */
+  connect(): void;
+
+  /**
+   * Disconnects the service from the backend and cleans all subscriptions.
+   */
+  disconnect(): void;
+
+  /**
+   * Publishes a message from this plugin with optional topic.
+   *
+   * @param message - Message to be published
+   * @param target - Optional plugin specific topic or user/group entity references this message is targeted for
+   */
+  publish(
+    message: unknown,
+    target?: {
+      topic?: string;
+      entityRefs?: string[];
+    },
+  ): void;
+
   /**
    * Subscribe to messages from specific plugin optionally to specific topic.
    * @param pluginId - Plugin id
@@ -42,12 +65,3 @@ export interface EventsApi {
    */
   unsubscribe(pluginId: string, topic?: string): void;
 }
-
-/**
- * The {@link ApiRef} of {@link EventsApi}.
- *
- * @public
- */
-export const eventsApiRef: ApiRef<EventsApi> = createApiRef({
-  id: 'core.events',
-});

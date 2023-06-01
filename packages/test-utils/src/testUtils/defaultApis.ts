@@ -31,7 +31,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-  EventsClient,
+  SignalsClient,
 } from '@backstage/core-app-api';
 
 import {
@@ -47,7 +47,7 @@ import {
   gitlabAuthApiRef,
   microsoftAuthApiRef,
   storageApiRef,
-  eventsApiRef,
+  signalsApiRef,
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
@@ -207,12 +207,12 @@ export const defaultApis = [
     },
   }),
   createApiFactory({
-    api: eventsApiRef,
+    api: signalsApiRef,
     deps: {
       configApi: configApiRef,
       identityApi: identityApiRef,
     },
     factory: ({ configApi, identityApi }) =>
-      EventsClient.create({ configApi, identityApi }),
+      SignalsClient.create({ configApi, identityApi }),
   }),
 ];

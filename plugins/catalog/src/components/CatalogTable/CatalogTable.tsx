@@ -43,7 +43,7 @@ import { capitalize } from 'lodash';
 import React, { ReactNode, useEffect, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
-import { eventsApiRef, useApi } from '@backstage/core-plugin-api';
+import { signalsApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Props for {@link CatalogTable}.
@@ -81,7 +81,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { loading, error, entities, filters } = useEntityList();
 
   // TODO(drodil): Test code, to be removed.
-  const events = useApi(eventsApiRef);
+  const events = useApi(signalsApiRef);
   useEffect(() => {
     events.subscribe('catalog', (_: any) => {
       // console.log(_);

@@ -3658,7 +3658,6 @@ __metadata:
     "@kubernetes/client-node": 0.18.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
-    "@relaycorp/ws-mock": ^5.2.6
     "@types/archiver": ^5.1.0
     "@types/base64-stream": ^1.0.2
     "@types/compression": ^1.7.0
@@ -14470,18 +14469,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@relaycorp/ws-mock@npm:^5.2.6":
-  version: 5.2.6
-  resolution: "@relaycorp/ws-mock@npm:5.2.6"
-  dependencies:
-    buffer-to-arraybuffer: 0.0.6
-    ws: ^8.13.0
-  peerDependencies:
-    ws: ">= 7.4.1 < 8"
-  checksum: 24abc178f74d412631554955a4eda3257b5ff3b55c859b01699fab084eb5211db2a022058cf6e4243eecf0f481d08287d0d0c95aa617f40a471dad69821bb145
-  languageName: node
-  linkType: hard
-
 "@remix-run/router@npm:1.3.2":
   version: 1.3.2
   resolution: "@remix-run/router@npm:1.3.2"
@@ -20116,13 +20103,6 @@ __metadata:
   version: 1.1.2
   resolution: "buffer-from@npm:1.1.2"
   checksum: 0448524a562b37d4d7ed9efd91685a5b77a50672c556ea254ac9a6d30e3403a517d8981f10e565db24e8339413b43c97ca2951f10e399c6125a0d8911f5679bb
-  languageName: node
-  linkType: hard
-
-"buffer-to-arraybuffer@npm:0.0.6":
-  version: 0.0.6
-  resolution: "buffer-to-arraybuffer@npm:0.0.6"
-  checksum: 6c754569f2289de1335d8665a60130df507391194d1bd1ddd420a82b1595df7e177b62f21496d3360f0d45babede0b29f4c7f10c52f6701dc86ed9544902f71e
   languageName: node
   linkType: hard
 

@@ -6,8 +6,8 @@
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
-import { EventsService } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/plugin-events-node';
+import { SignalsService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export class TestEventBroker implements EventBroker {
@@ -32,7 +32,22 @@ export class TestEventPublisher implements EventPublisher {
 }
 
 // @public (undocumented)
-export class TestEventsService implements EventsService {
+export class TestEventSubscriber implements EventSubscriber {
+  constructor(name: string, topics: string[]);
+  // (undocumented)
+  readonly name: string;
+  // (undocumented)
+  onEvent(params: EventParams): Promise<void>;
+  // (undocumented)
+  readonly receivedEvents: Record<string, EventParams[]>;
+  // (undocumented)
+  supportsEventTopics(): string[];
+  // (undocumented)
+  readonly topics: string[];
+}
+
+// @public (undocumented)
+export class TestSignalsService implements SignalsService {
   // (undocumented)
   connect(): Promise<void>;
   // (undocumented)
@@ -66,20 +81,5 @@ export class TestEventsService implements EventsService {
   }[];
   // (undocumented)
   unsubscribe(pluginId: string, topic?: string): Promise<void>;
-}
-
-// @public (undocumented)
-export class TestEventSubscriber implements EventSubscriber {
-  constructor(name: string, topics: string[]);
-  // (undocumented)
-  readonly name: string;
-  // (undocumented)
-  onEvent(params: EventParams): Promise<void>;
-  // (undocumented)
-  readonly receivedEvents: Record<string, EventParams[]>;
-  // (undocumented)
-  supportsEventTopics(): string[];
-  // (undocumented)
-  readonly topics: string[];
 }
 ```

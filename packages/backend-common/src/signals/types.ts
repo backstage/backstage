@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService, EventsService } from '@backstage/backend-plugin-api';
+import { LoggerService, SignalsService } from '@backstage/backend-plugin-api';
 import { TokenManager } from '../tokens';
 
 /**
@@ -21,30 +21,30 @@ import { TokenManager } from '../tokens';
  *
  * @public
  */
-export type EventsServerConfig = {
+export type SignalsServerConfig = {
   enabled?: boolean;
 };
 
 /**
- * Generates a PluginEventsManager for consumption by plugins.
+ * Generates a ${@link PluginSignalsManager} for consumption by plugins.
  *
- * @param pluginId - The plugin that the events manager should be created for.
+ * @param pluginId - The plugin that the signals manager should be created for.
  *        Plugin names should be unique.
  *
  * @public
  */
-export interface PluginEventsManager {
-  getClient(): EventsService;
+export interface PluginSignalsManager {
+  getClient(): SignalsService;
 }
 
 /**
- * Options given when constructing a {@link EventsClientManager}.
+ * Options given when constructing a {@link SignalsClientManager}.
  *
  * @public
  */
-export type EventsClientManagerOptions = {
+export type SignalsClientManagerOptions = {
   /**
-   * An optional logger for use by the PluginEventsClient.
+   * An optional logger for use by the PluginSignalsClient.
    */
   logger?: LoggerService;
   /**
@@ -54,21 +54,21 @@ export type EventsClientManagerOptions = {
 };
 
 /**
- * Command to register plugin events client to the server
+ * Command to register plugin signals client to the server
  *
  * @public
  */
-export type EventsClientRegisterCommand = {
+export type SignalsClientRegisterCommand = {
   pluginId: string;
 };
 
 /**
- * Command to publish new message from the plugin events client to other
+ * Command to publish new message from the plugin signals client to other
  * client subscribed to the plugin
  *
  * @public
  */
-export type EventsClientPublishCommand = {
+export type SignalsClientMessage = {
   pluginId: string;
   topic?: string;
   targetEntityRefs?: string[];
@@ -80,17 +80,17 @@ export type EventsClientPublishCommand = {
  *
  * @public
  */
-export type EventsClientSubscribeCommand = {
+export type SignalsClientSubscribeCommand = {
   pluginId: string;
   topic?: string;
 };
 
 /**
- * Events client commands
+ * Signals client commands
  *
  * @public
  */
-export type EventClientCommand =
-  | EventsClientRegisterCommand
-  | EventsClientPublishCommand
-  | EventsClientSubscribeCommand;
+export type SignalsClientCommand =
+  | SignalsClientRegisterCommand
+  | SignalsClientMessage
+  | SignalsClientSubscribeCommand;

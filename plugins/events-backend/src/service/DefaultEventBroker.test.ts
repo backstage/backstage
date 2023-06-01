@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import {
-  TestEventsService,
+  TestSignalsService,
   TestEventSubscriber,
 } from '@backstage/plugin-events-backend-test-utils';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
@@ -26,7 +26,7 @@ const logger = getVoidLogger();
 
 describe('DefaultEventBroker', () => {
   it('passes events to interested subscribers', async () => {
-    const eventsService = new TestEventsService();
+    const eventsService = new TestSignalsService();
     const subscriber1 = new TestEventSubscriber('test1', ['topicA', 'topicB']);
     const subscriber2 = new TestEventSubscriber('test2', ['topicB', 'topicC']);
     const eventBroker = new DefaultEventBroker(logger, eventsService);
@@ -110,7 +110,7 @@ describe('DefaultEventBroker', () => {
     })();
 
     const errorSpy = jest.spyOn(logger, 'error');
-    const eventsService = new TestEventsService();
+    const eventsService = new TestSignalsService();
     const eventBroker = new DefaultEventBroker(logger, eventsService);
 
     eventBroker.subscribe(subscriber1);

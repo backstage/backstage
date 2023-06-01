@@ -12,7 +12,6 @@ import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
 import { ErrorRequestHandler } from 'express';
-import { EventsService } from '@backstage/backend-plugin-api';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
 import { Handler } from 'express';
@@ -37,6 +36,7 @@ import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
+import { SignalsService } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
@@ -125,7 +125,7 @@ export const discoveryServiceFactory: () => ServiceFactory<
 
 // @public (undocumented)
 export const eventsServiceFactory: () => ServiceFactory<
-  EventsService,
+  SignalsService,
   'plugin'
 >;
 

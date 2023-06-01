@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { EventsService } from '@backstage/backend-plugin-api';
+import { SignalsService } from '@backstage/backend-plugin-api';
 
 /** @public */
-export class TestEventsService implements EventsService {
+export class TestSignalsService implements SignalsService {
   readonly published: {
     message: unknown;
     topic?: string;

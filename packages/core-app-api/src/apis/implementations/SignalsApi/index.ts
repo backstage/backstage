@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { readEventsServerOptions } from './config';
-export { createEventsServer } from './createEventsServer';
-export { EventsClientManager } from './EventsClientManager';
-export * from './types';
+export { SignalsClient } from './SignalsClient';

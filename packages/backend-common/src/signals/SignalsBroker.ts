@@ -18,52 +18,51 @@ import { Server, Socket } from 'socket.io';
 import jwt_decode from 'jwt-decode';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
-  EventsClientPublishCommand,
-  EventsClientRegisterCommand,
-  EventsClientSubscribeCommand,
+  SignalsClientMessage,
+  SignalsClientRegisterCommand,
+  SignalsClientSubscribeCommand,
 } from './types';
 import { JWTPayload } from 'jose';
 import { Handshake } from 'socket.io/dist/socket';
 
-type EventsServerConnectionType = 'frontend' | 'backend';
+type SignalsConnectionType = 'frontend' | 'backend';
 
-type EventsServerSubscription = {
+type SignalsSubscription = {
   pluginId: string;
   topic?: string;
 };
 
-type EventsServerConnection = {
+type SignalsConnection = {
   ws: Socket;
-  type: EventsServerConnectionType;
+  type: SignalsConnectionType;
   ip?: string;
   sub?: string;
   entityRefs: string[];
-  subscriptions: Map<string, EventsServerSubscription>;
+  subscriptions: Map<string, SignalsSubscription>;
   pluginId?: string;
   topic?: string;
 };
 
-const stringifyConnection = (conn: EventsServerConnection) => {
+const stringifyConnection = (conn: SignalsConnection) => {
   return `(id: ${conn.ws.id}, type: ${conn.type}, sub: ${conn.sub}, plugin: ${conn.pluginId}, ip: ${conn.ip})`;
 };
 
 /**
- * Implements a Events Manager which will take care of connections and distributing
+ * Implements a signals broker which will take care of connections and distributing
  * messages to the connected clients.
  *
  * @private
  */
-export class EventsServer {
+export class SignalsBroker {
   private readonly logger: LoggerService;
-  private readonly connections: Map<EventsServerConnection>;
+  private readonly connections: Map<string, SignalsConnection>;
 
-  static create(server: Server, logger: LoggerService): EventsServer {
-    return new EventsServer(server, logger);
+  static create(server: Server, logger: LoggerService): SignalsBroker {
+    return new SignalsBroker(server, logger);
   }
 
   private constructor(server: Server, logger: LoggerService) {
     this.logger = logger;
-    this.heartbeatInterval = null;
     this.connections = new Map();
 
     server.on('connection', this.handleConnection);
@@ -75,7 +74,7 @@ export class EventsServer {
     });
   }
 
-  private closeConnection = (conn: EventsServerConnection) => {
+  private closeConnection = (conn: SignalsConnection) => {
     this.logger.info(`Closing connection ${stringifyConnection(conn)}`);
     conn.ws.disconnect();
     this.connections.delete(conn.ws.id);
@@ -94,7 +93,7 @@ export class EventsServer {
       token = matches?.[1];
     }
 
-    let type: EventsServerConnectionType = 'frontend';
+    let type: SignalsConnectionType = 'frontend';
     let entities: string[] = [];
     let sub;
     if (token) {
@@ -124,7 +123,7 @@ export class EventsServer {
       return;
     }
 
-    const conn: EventsServerConnection = {
+    const conn: SignalsConnection = {
       ws,
       sub,
       entityRefs: entities,
@@ -135,50 +134,50 @@ export class EventsServer {
 
     this.connections.set(ws.id, conn);
 
-    conn.ws.on('register', (data: EventsClientRegisterCommand) => {
+    conn.ws.on('register', (data: SignalsClientRegisterCommand) => {
       this.handleRegister(conn, data);
     });
-    conn.ws.on('publish', (data: EventsClientPublishCommand) => {
+    conn.ws.on('publish', (data: SignalsClientMessage) => {
       this.handlePublish(conn, data);
     });
-    conn.ws.on('subscribe', (data: EventsClientSubscribeCommand) => {
+    conn.ws.on('subscribe', (data: SignalsClientSubscribeCommand) => {
       this.logger.info(`Subscribing to ${stringifyConnection(conn)}`);
       this.handleSubscribe(conn, data);
     });
-    conn.ws.on('unsubscribe', (data: EventsClientSubscribeCommand) => {
+    conn.ws.on('unsubscribe', (data: SignalsClientSubscribeCommand) => {
       this.handleUnsubscribe(conn, data);
     });
     conn.ws.on('disconnect', () => {
       this.closeConnection(conn);
     });
     conn.ws.on('error', (err: Error) => {
-      this.logger.error(`Events error occurred: ${err}`);
+      this.logger.error(`Signals error occurred: ${err}`);
     });
   };
 
   private handleRegister = (
-    conn: EventsServerConnection,
-    cmd: EventsClientRegisterCommand,
+    conn: SignalsConnection,
+    cmd: SignalsClientRegisterCommand,
   ) => {
     const connStr = stringifyConnection(conn);
     if (conn.type !== 'backend') {
-      this.logger.warn(`Invalid events register request from ${connStr}`);
+      this.logger.warn(`Invalid signals register request from ${connStr}`);
       return;
     }
 
     conn.pluginId = cmd.pluginId;
     this.logger.info(
-      `Plugin '${cmd.pluginId}' registered to events server ${connStr}`,
+      `Plugin '${cmd.pluginId}' registered to signals server ${connStr}`,
     );
   };
 
   private handlePublish = (
-    conn: EventsServerConnection,
-    cmd: EventsClientPublishCommand,
+    conn: SignalsConnection,
+    cmd: SignalsClientMessage,
   ) => {
     const connStr = stringifyConnection(conn);
     if (!conn.pluginId || conn.type !== 'backend') {
-      this.logger.warn(`Invalid events publish request from ${connStr}`);
+      this.logger.warn(`Invalid signals publish request from ${connStr}`);
       return;
     }
 
@@ -210,8 +209,8 @@ export class EventsServer {
   };
 
   private handleSubscribe = (
-    conn: EventsServerConnection,
-    cmd: EventsClientSubscribeCommand,
+    conn: SignalsConnection,
+    cmd: SignalsClientSubscribeCommand,
   ) => {
     const connStr = stringifyConnection(conn);
     const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
@@ -226,8 +225,8 @@ export class EventsServer {
   };
 
   private handleUnsubscribe = (
-    conn: EventsServerConnection,
-    cmd: EventsClientSubscribeCommand,
+    conn: SignalsConnection,
+    cmd: SignalsClientSubscribeCommand,
   ) => {
     const connStr = stringifyConnection(conn);
     const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;

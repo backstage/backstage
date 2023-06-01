@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   TestEventBroker,
   TestEventPublisher,
-  TestEventsService,
+  TestSignalsService,
   TestEventSubscriber,
 } from '@backstage/plugin-events-backend-test-utils';
 import { EventsBackend } from './EventsBackend';
@@ -30,7 +30,7 @@ describe('EventsBackend', () => {
     const eventBroker = new TestEventBroker();
     const publisher1 = new TestEventPublisher();
     const publisher2 = new TestEventPublisher();
-    const eventsService = new TestEventsService();
+    const eventsService = new TestSignalsService();
 
     await new EventsBackend(logger, eventsService)
       .setEventBroker(eventBroker)

@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { EventsServerConfig } from './types';
+import { SignalsServerConfig } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Server } from 'socket.io';
-import { EventsServer } from './EventsServer';
+import { SignalsBroker } from './SignalsBroker';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { CorsOptions } from 'cors';
 
 /**
- * Adds events support on top of the Node.js HTTP server
+ * Adds signals support on top of the Node.js HTTP server
  *
  * @public
  */
-export function createEventsServer(
+export function createSignalsBroker(
   server: ExtendedHttpServer,
   deps: { logger: LoggerService },
-  options?: EventsServerConfig,
+  options?: SignalsServerConfig,
   cors?: CorsOptions,
 ) {
   if (!options?.enabled) {
     return;
   }
 
-  const wss = new Server(server, { path: '/events', cors });
-  EventsServer.create(wss, deps.logger.child({ type: 'events-server' }));
+  const wss = new Server(server, { path: '/signals', cors });
+  SignalsBroker.create(wss, deps.logger.child({ type: 'signals-broker' }));
 }

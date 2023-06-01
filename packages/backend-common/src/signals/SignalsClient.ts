@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService, EventsService } from '@backstage/backend-plugin-api';
+import { LoggerService, SignalsService } from '@backstage/backend-plugin-api';
 import {
-  EventsClientPublishCommand,
-  EventsClientRegisterCommand,
-  EventsClientSubscribeCommand,
+  SignalsClientMessage,
+  SignalsClientRegisterCommand,
+  SignalsClientSubscribeCommand,
 } from './types';
 import { io, Socket } from 'socket.io-client';
 import { TokenManager } from '../tokens';
 
-type EventsClientSubscription = {
+type SignalsClientSubscription = {
   pluginId: string;
   topic?: string;
-  onMessage: (data: EventsClientPublishCommand) => void;
+  onMessage: (data: SignalsClientMessage) => void;
 };
 
-export class DefaultEventsClient implements EventsService {
+export class DefaultSignalsClient implements SignalsService {
   private readonly pluginId: string;
   private readonly endpoint: string;
   private readonly logger: LoggerService;
   private readonly tokenManager?: TokenManager;
   private ws: Socket | null;
-  private subscriptions: Map<string, EventsClientSubscription>;
+  private subscriptions: Map<string, SignalsClientSubscription>;
   private readonly messageQueue: Set<{ channel: string; message: any }>;
 
   constructor(
@@ -53,26 +53,26 @@ export class DefaultEventsClient implements EventsService {
   }
 
   async connect() {
-    this.logger.info(`${this.pluginId} connecting to events service`);
+    this.logger.info(`${this.pluginId} connecting to signals service`);
     const url = new URL(this.endpoint);
     let token;
     if (this.tokenManager) {
       ({ token } = await this.tokenManager.getToken());
     }
     this.ws = io(url.toString(), {
-      path: '/events',
+      path: '/signals',
       auth: {
         token: token,
       },
     });
 
     this.ws.on('error', (err: Error) => {
-      this.logger.error(`${this.pluginId} events error occurred: ${err}`);
+      this.logger.error(`${this.pluginId} signals error occurred: ${err}`);
     });
 
     this.ws.on('connect', () => {
-      // Register this plugin client to the events server
-      const cmd: EventsClientRegisterCommand = {
+      // Register this plugin client to the signals server
+      const cmd: SignalsClientRegisterCommand = {
         pluginId: this.pluginId,
       };
       this.send('register', cmd);
@@ -83,7 +83,7 @@ export class DefaultEventsClient implements EventsService {
       this.messageQueue.clear();
     });
 
-    this.ws.on('message', (msg: EventsClientPublishCommand) => {
+    this.ws.on('message', (msg: SignalsClientMessage) => {
       try {
         for (const subscription of this.subscriptions.values()) {
           if (
@@ -133,19 +133,19 @@ export class DefaultEventsClient implements EventsService {
       entityRefs?: string[];
     },
   ) {
-    const cmd: EventsClientPublishCommand = {
+    const cmd: SignalsClientMessage = {
       pluginId: this.pluginId,
       topic: target?.topic,
       targetEntityRefs: target?.entityRefs,
       data: message,
     };
-    this.logger.info(`Publish event from ${this.pluginId}`);
+    this.logger.debug(`Publish signal from ${this.pluginId}`);
     this.send('publish', cmd);
   }
 
   async subscribe(
     pluginId: string,
-    onMessage: (data: EventsClientPublishCommand) => void,
+    onMessage: (data: SignalsClientMessage) => void,
     topic?: string,
   ) {
     const subscriptionKey = `${pluginId}:${topic}`;
@@ -155,7 +155,7 @@ export class DefaultEventsClient implements EventsService {
 
     this.subscriptions.set(subscriptionKey, { pluginId, onMessage, topic });
 
-    const cmd: EventsClientSubscribeCommand = {
+    const cmd: SignalsClientSubscribeCommand = {
       pluginId,
       topic,
     };
@@ -170,7 +170,7 @@ export class DefaultEventsClient implements EventsService {
 
     this.subscriptions.delete(subscriptionKey);
 
-    const cmd: EventsClientSubscribeCommand = {
+    const cmd: SignalsClientSubscribeCommand = {
       pluginId,
       topic,
     };

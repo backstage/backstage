@@ -120,7 +120,6 @@
     "@aws-sdk/util-stream-node": "^3.310.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@relaycorp/ws-mock": "^5.2.6",
     "@types/archiver": "^5.1.0",
     "@types/base64-stream": "^1.0.2",
     "@types/compression": "^1.7.0",

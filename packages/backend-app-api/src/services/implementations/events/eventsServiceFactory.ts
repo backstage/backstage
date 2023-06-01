@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventsClientManager } from '@backstage/backend-common';
+import { SignalsClientManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -22,7 +22,7 @@ import {
 
 /** @public */
 export const eventsServiceFactory = createServiceFactory({
-  service: coreServices.events,
+  service: coreServices.signals,
   deps: {
     config: coreServices.config,
     plugin: coreServices.pluginMetadata,
@@ -30,7 +30,7 @@ export const eventsServiceFactory = createServiceFactory({
   },
   async createRootContext({ config }) {
     // TokenManager not available in root so set it in the factory
-    return EventsClientManager.fromConfig(config);
+    return SignalsClientManager.fromConfig(config);
   },
   async factory({ plugin, tokenManager }, manager) {
     return manager

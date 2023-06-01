@@ -20,7 +20,7 @@ import {
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { EventsService } from '@backstage/backend-plugin-api';
+import { SignalsService } from '@backstage/backend-plugin-api';
 
 /**
  * In process event broker which will pass the event to all registered subscribers
@@ -33,7 +33,7 @@ import { EventsService } from '@backstage/backend-plugin-api';
 export class DefaultEventBroker implements EventBroker {
   constructor(
     private readonly logger: Logger,
-    private readonly eventsClient?: EventsService,
+    private readonly eventsClient?: SignalsService,
   ) {
     eventsClient?.connect();
   }

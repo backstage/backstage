@@ -16,35 +16,35 @@
 
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
-import { EventsClientManager } from './EventsClientManager';
-import { DefaultEventsClient } from './EventsClient';
+import { SignalsClientManager } from './SignalsClientManager';
+import { DefaultSignalsClient } from './SignalsClient';
 
-describe('EventsClientManager', () => {
+describe('SignalsClientManager', () => {
   const logger = getVoidLogger();
 
   it('should return noop client if no config', () => {
     const config = new ConfigReader({});
-    const client = EventsClientManager.fromConfig(config, { logger })
+    const client = SignalsClientManager.fromConfig(config, { logger })
       .forPlugin('catalog')
       .getClient();
-    expect(client instanceof DefaultEventsClient).toBeFalsy();
+    expect(client instanceof DefaultSignalsClient).toBeFalsy();
   });
 
   it('should return client with boolean config', () => {
     const config = new ConfigReader({ backend: { events: true } });
-    const client = EventsClientManager.fromConfig(config, { logger })
+    const client = SignalsClientManager.fromConfig(config, { logger })
       .forPlugin('catalog')
       .getClient();
-    expect(client instanceof DefaultEventsClient).toBeTruthy();
+    expect(client instanceof DefaultSignalsClient).toBeTruthy();
   });
 
   it('should return client with object config', () => {
     const config = new ConfigReader({
       backend: { events: { enabled: true } },
     });
-    const client = EventsClientManager.fromConfig(config, { logger })
+    const client = SignalsClientManager.fromConfig(config, { logger })
       .forPlugin('catalog')
       .getClient();
-    expect(client instanceof DefaultEventsClient).toBeTruthy();
+    expect(client instanceof DefaultSignalsClient).toBeTruthy();
   });
 });

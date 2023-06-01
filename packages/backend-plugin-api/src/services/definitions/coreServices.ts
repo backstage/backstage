@@ -167,11 +167,11 @@ export namespace coreServices {
   >({ id: 'core.identity' });
 
   /**
-   * The service reference for the plugin scoped {@link EventsService}.
+   * The service reference for the plugin scoped {@link SignalsService}.
    *
    * @public
    */
-  export const events = createServiceRef<
-    import('./EventsService').EventsService
-  >({ id: 'core.events' });
+  export const signals = createServiceRef<
+    import('./SignalsService').SignalsService
+  >({ id: 'core.signals' });
 }

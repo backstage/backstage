@@ -32,7 +32,7 @@ export default async function createPlugin(
   });
   http.bind(eventsRouter);
 
-  await new EventsBackend(env.logger, env.eventsManager.getClient())
+  await new EventsBackend(env.logger, env.signalsManager.getClient())
     .setEventBroker(env.eventBroker)
     .addPublishers(http)
     .start();

@@ -19,7 +19,7 @@ import cors from 'cors';
 import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { EventsServerConfig } from '../events/types';
+import { SignalsServerConfig } from '../signals/types';
 import { HttpServerOptions } from '@backstage/backend-app-api';
 
 /**
@@ -141,5 +141,5 @@ export type RequestLoggingHandlerFactory = (
  */
 export type ExtendedHttpServerOptions = {
   http: HttpServerOptions;
-  events?: EventsServerConfig;
+  events?: SignalsServerConfig;
 };

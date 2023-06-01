@@ -20,9 +20,9 @@ import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/back
 import { Config } from '@backstage/config';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import cors from 'cors';
+import { CorsOptions } from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
-import { EventsService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { GerritIntegration } from '@backstage/integration';
@@ -60,6 +60,7 @@ import { SearchResponse } from '@backstage/backend-plugin-api';
 import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { SignalsService } from '@backstage/backend-plugin-api';
 import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
@@ -224,15 +225,6 @@ export function createDatabaseClient(
 ): Knex<any, any[]>;
 
 // @public
-export function createEventsServer(
-  server: ExtendedHttpServer,
-  deps: {
-    logger: LoggerService;
-  },
-  options?: EventsServerConfig,
-): void;
-
-// @public
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
@@ -240,6 +232,16 @@ export function createRootLogger(
 
 // @public
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
+
+// @public
+export function createSignalsBroker(
+  server: ExtendedHttpServer,
+  deps: {
+    logger: LoggerService;
+  },
+  options?: SignalsServerConfig,
+  cors?: CorsOptions,
+): void;
 
 // @public
 export function createStatusCheckRouter(options: {
@@ -292,55 +294,6 @@ export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
   logger?: LoggerService;
   logClientErrors?: boolean;
-};
-
-// @public
-export type EventClientCommand =
-  | EventsClientRegisterCommand
-  | EventsClientPublishCommand
-  | EventsClientSubscribeCommand;
-
-// @public
-export class EventsClientManager {
-  forPlugin(pluginId: string): PluginEventsManager;
-  static fromConfig(
-    config: Config,
-    options?: EventsClientManagerOptions,
-  ): EventsClientManager;
-  setTokenManager(tokenManager: TokenManager): this;
-}
-
-// @public
-export type EventsClientManagerOptions = {
-  logger?: LoggerService;
-  tokenManager?: TokenManager;
-};
-
-// @public
-export type EventsClientPublishCommand = {
-  command: 'publish';
-  pluginId: string;
-  topic?: string;
-  targetEntityRefs?: string[];
-  data: unknown;
-};
-
-// @public
-export type EventsClientRegisterCommand = {
-  command: 'register';
-  pluginId: string;
-};
-
-// @public
-export type EventsClientSubscribeCommand = {
-  command: 'subscribe' | 'unsubscribe';
-  pluginId: string;
-  topic?: string;
-};
-
-// @public
-export type EventsServerConfig = {
-  enabled?: boolean;
 };
 
 // @public
@@ -650,9 +603,9 @@ export { PluginDatabaseManager };
 export { PluginEndpointDiscovery };
 
 // @public
-export interface PluginEventsManager {
+export interface PluginSignalsManager {
   // (undocumented)
-  getClient(): EventsService;
+  getClient(): SignalsService;
 }
 
 // @public
@@ -663,7 +616,7 @@ export type ReaderFactory = (options: {
 }) => UrlReaderPredicateTuple[];
 
 // @public
-export function readEventsServerOptions(config?: Config): EventsServerConfig;
+export function readEventsServerOptions(config?: Config): SignalsServerConfig;
 
 export { ReadTreeOptions };
 
@@ -810,6 +763,52 @@ export type ServiceBuilder = {
 
 // @public
 export function setRootLogger(newLogger: winston.Logger): void;
+
+// @public
+export type SignalsClientCommand =
+  | SignalsClientRegisterCommand
+  | SignalsClientMessage
+  | SignalsClientSubscribeCommand;
+
+// @public
+export class SignalsClientManager {
+  forPlugin(pluginId: string): PluginSignalsManager;
+  static fromConfig(
+    config: Config,
+    options?: SignalsClientManagerOptions,
+  ): SignalsClientManager;
+  setTokenManager(tokenManager: TokenManager): this;
+}
+
+// @public
+export type SignalsClientManagerOptions = {
+  logger?: LoggerService;
+  tokenManager?: TokenManager;
+};
+
+// @public
+export type SignalsClientMessage = {
+  pluginId: string;
+  topic?: string;
+  targetEntityRefs?: string[];
+  data: any;
+};
+
+// @public
+export type SignalsClientRegisterCommand = {
+  pluginId: string;
+};
+
+// @public
+export type SignalsClientSubscribeCommand = {
+  pluginId: string;
+  topic?: string;
+};
+
+// @public
+export type SignalsServerConfig = {
+  enabled?: boolean;
+};
 
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery;

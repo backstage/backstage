@@ -52,4 +52,4 @@ export type {
   UrlReaderService,
 } from './UrlReaderService';
 export type { IdentityService } from './IdentityService';
-export type { EventsService } from './EventsService';
+export type { SignalsService } from './SignalsService';

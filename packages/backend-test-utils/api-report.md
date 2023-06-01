@@ -8,7 +8,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { ConfigService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { EventsService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
@@ -23,6 +22,7 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { SignalsService } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -57,7 +57,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace events {
     const // (undocumented)
-      factory: () => ServiceFactory<EventsService, 'plugin'>;
+      factory: () => ServiceFactory<SignalsService, 'plugin'>;
   }
   // (undocumented)
   export namespace httpRouter {

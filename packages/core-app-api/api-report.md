@@ -31,7 +31,6 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
-import { EventsApi } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FeatureFlagsApi } from '@backstage/core-plugin-api';
@@ -61,6 +60,7 @@ import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
+import { SignalsApi } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
@@ -369,23 +369,6 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
-export class EventsClient implements EventsApi {
-  // (undocumented)
-  static create(options: {
-    configApi: ConfigApi;
-    identityApi: IdentityApi;
-  }): EventsClient;
-  // (undocumented)
-  subscribe(
-    pluginId: string,
-    onMessage: (data: unknown) => void,
-    topic?: string,
-  ): Promise<void>;
-  // (undocumented)
-  unsubscribe(pluginId: string, topic?: string): Promise<void>;
-}
-
-// @public
 export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element;
 
 // @public
@@ -613,6 +596,23 @@ export class SamlAuth
   signIn(): Promise<void>;
   // (undocumented)
   signOut(): Promise<void>;
+}
+
+// @public
+export class SignalsClient implements SignalsApi {
+  // (undocumented)
+  static create(options: {
+    configApi: ConfigApi;
+    identityApi: IdentityApi;
+  }): SignalsClient;
+  // (undocumented)
+  subscribe(
+    pluginId: string,
+    onMessage: (data: unknown) => void,
+    topic?: string,
+  ): Promise<void>;
+  // (undocumented)
+  unsubscribe(pluginId: string, topic?: string): Promise<void>;
 }
 
 // @public

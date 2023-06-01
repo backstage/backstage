@@ -26,7 +26,7 @@ import {
   TestEventBroker,
   TestEventPublisher,
   TestEventSubscriber,
-  TestEventsService,
+  TestSignalsService,
 } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -38,7 +38,7 @@ describe('eventPlugin', () => {
     const eventBroker = new TestEventBroker();
     const publisher = new TestEventPublisher();
     const subscriber = new TestEventSubscriber('sub', ['fake']);
-    const eventsService = new TestEventsService();
+    const eventsService = new TestSignalsService();
 
     const config = new ConfigReader({
       events: {
@@ -76,7 +76,7 @@ describe('eventPlugin', () => {
         [coreServices.config, config],
         [coreServices.httpRouter, httpRouter],
         [coreServices.logger, getVoidLogger()],
-        [coreServices.events, eventsService],
+        [coreServices.signals, eventsService],
       ],
       features: [eventsPlugin(), testModule()],
     });

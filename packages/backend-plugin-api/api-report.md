@@ -114,7 +114,7 @@ export namespace coreServices {
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const identity: ServiceRef<IdentityService, 'plugin'>;
-  const events: ServiceRef<EventsService, 'plugin'>;
+  const signals: ServiceRef<SignalsService, 'plugin'>;
 }
 
 // @public
@@ -244,25 +244,6 @@ export interface DatabaseService {
 export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
-}
-
-// @public
-export interface EventsService {
-  connect(): void;
-  disconnect(): void;
-  publish(
-    message: unknown,
-    target?: {
-      topic?: string;
-      entityRefs?: string[];
-    },
-  ): void;
-  subscribe(
-    pluginId: string,
-    onMessage: (data: unknown) => void,
-    topic?: string,
-  ): void;
-  unsubscribe(pluginId: string, topic?: string): void;
 }
 
 // @public
@@ -506,6 +487,25 @@ export interface SharedBackendEnvironment {
 export interface SharedBackendEnvironmentConfig {
   // (undocumented)
   services?: ServiceFactoryOrFunction[];
+}
+
+// @public
+export interface SignalsService {
+  connect(): void;
+  disconnect(): void;
+  publish(
+    message: unknown,
+    target?: {
+      topic?: string;
+      entityRefs?: string[];
+    },
+  ): void;
+  subscribe(
+    pluginId: string,
+    onMessage: (data: unknown) => void,
+    topic?: string,
+  ): void;
+  unsubscribe(pluginId: string, topic?: string): void;
 }
 
 // @public

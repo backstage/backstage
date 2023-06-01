@@ -92,7 +92,7 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.config,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
-        events: coreServices.events,
+        events: coreServices.signals,
       },
       async init({ config, logger, router, events }) {
         const winstonLogger = loggerToWinstonLogger(logger);

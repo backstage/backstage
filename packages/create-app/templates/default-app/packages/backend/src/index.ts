@@ -18,7 +18,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
   ServerTokenManager,
-  EventsClientManager,
+  SignalsClientManager,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -41,7 +41,7 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const tokenManager = ServerTokenManager.noop();
   const taskScheduler = TaskScheduler.fromConfig(config);
-  const eventsClientManager = EventsClientManager.fromConfig(config, {
+  const signalsClientManager = SignalsClientManager.fromConfig(config, {
     logger: root,
     tokenManager,
   });
@@ -61,7 +61,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
-    const eventsManager = eventsClientManager.forPlugin(plugin);
+    const signalsManager = signalsClientManager.forPlugin(plugin);
     return {
       logger,
       database,
@@ -73,7 +73,7 @@ function makeCreateEnv(config: Config) {
       scheduler,
       permissions,
       identity,
-      eventsManager,
+      signalsManager,
     };
   };
 }

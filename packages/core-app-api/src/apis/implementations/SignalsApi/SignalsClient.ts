@@ -15,15 +15,15 @@
  */
 
 import { io, Socket } from 'socket.io-client';
-import { ConfigApi, IdentityApi, EventsApi } from '@backstage/core-plugin-api';
+import { ConfigApi, IdentityApi, SignalsApi } from '@backstage/core-plugin-api';
 
-type EventsSubscription = {
+type SignalsSubscription = {
   pluginId: string;
   topic?: string;
   onMessage: (data: any) => void;
 };
 
-export type EventsMessage = {
+export type SignalsMessage = {
   pluginId: string;
   topic?: string;
   targetEntityRefs?: string[];
@@ -31,28 +31,27 @@ export type EventsMessage = {
 };
 
 /**
- * An default implementation of the events API
+ * An default implementation of the signals API
  *
  * @public
  */
-export class EventsClient implements EventsApi {
-  connected: boolean = false;
+export class SignalsClient implements SignalsApi {
   private endpoint: string;
   private ws?: Socket;
-  private eventsEnabled: boolean;
-  private subscriptions: Map<string, EventsSubscription>;
+  private signalsEnabled: boolean;
+  private subscriptions: Map<string, SignalsSubscription>;
   private readonly messageQueue: Set<{ channel: string; message: any }>;
   private readonly identity: IdentityApi;
 
   static create(options: { configApi: ConfigApi; identityApi: IdentityApi }) {
     const { configApi, identityApi } = options;
-    return new EventsClient(configApi, identityApi);
+    return new SignalsClient(configApi, identityApi);
   }
 
   private constructor(config: ConfigApi, identity: IdentityApi) {
     this.subscriptions = new Map();
     this.messageQueue = new Set();
-    this.eventsEnabled = false;
+    this.signalsEnabled = false;
     this.endpoint = '';
     this.identity = identity;
     this.readConfig(config);
@@ -61,9 +60,9 @@ export class EventsClient implements EventsApi {
   private readConfig(config: ConfigApi) {
     const baseUrl =
       config.getOptionalString('backend.baseUrl') ?? 'http://localhost/';
-    const ws = config.getOptional('backend.events');
+    const ws = config.getOptional('backend.signals');
     if (ws === true) {
-      this.eventsEnabled = true;
+      this.signalsEnabled = true;
       const url = new URL(baseUrl);
       const https = config.getOptional('backend.https');
       url.protocol = https ? 'wss' : 'ws';
@@ -71,10 +70,11 @@ export class EventsClient implements EventsApi {
       return;
     }
 
-    const eventsConfig = config.getOptionalConfig('backend.events');
-    if (eventsConfig) {
-      this.eventsEnabled = eventsConfig.getOptionalBoolean('enabled') || false;
-      this.endpoint = eventsConfig.getOptionalString('endpoint') ?? baseUrl;
+    const signalsConfig = config.getOptionalConfig('backend.signals');
+    if (signalsConfig) {
+      this.signalsEnabled =
+        signalsConfig.getOptionalBoolean('enabled') || false;
+      this.endpoint = signalsConfig.getOptionalString('endpoint') ?? baseUrl;
     }
   }
 
@@ -84,7 +84,7 @@ export class EventsClient implements EventsApi {
 
     if (!this.ws) {
       this.ws = io(url.toString(), {
-        path: '/events',
+        path: '/signals',
         auth: { token: token },
       });
     } else if (!this.ws.connected) {
@@ -98,7 +98,7 @@ export class EventsClient implements EventsApi {
       this.messageQueue.clear();
     });
 
-    this.ws.on('message', (msg: EventsMessage) => {
+    this.ws.on('message', (msg: SignalsMessage) => {
       for (const subscription of this.subscriptions.values()) {
         if (
           subscription.pluginId === msg.pluginId &&
@@ -107,7 +107,7 @@ export class EventsClient implements EventsApi {
           try {
             subscription.onMessage(msg.data);
           } catch (_) {
-            // ignore
+            // ignore callback errors
           }
         }
       }
@@ -133,7 +133,7 @@ export class EventsClient implements EventsApi {
     onMessage: (data: unknown) => void,
     topic?: string,
   ) {
-    if (!this.eventsEnabled) {
+    if (!this.signalsEnabled) {
       return;
     }
 
@@ -147,7 +147,7 @@ export class EventsClient implements EventsApi {
   }
 
   async unsubscribe(pluginId: string, topic?: string) {
-    if (!this.eventsEnabled) {
+    if (!this.signalsEnabled) {
       return;
     }
 

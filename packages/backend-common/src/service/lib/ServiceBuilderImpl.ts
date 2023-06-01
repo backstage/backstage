@@ -40,7 +40,7 @@ import {
   readHttpServerOptions,
   createHttpServer,
 } from '@backstage/backend-app-api';
-import { readEventsServerOptions, createEventsServer } from '../../events';
+import { readEventsServerOptions, createSignalsBroker } from '../../signals';
 
 export type CspOptions = Record<string, string[]>;
 
@@ -181,7 +181,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     const server = await createHttpServer(app, this.serverOptions.http, {
       logger,
     });
-    createEventsServer(
+    createSignalsBroker(
       server,
       {
         logger,

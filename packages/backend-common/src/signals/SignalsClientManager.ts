@@ -15,13 +15,13 @@
  */
 
 import { Config } from '@backstage/config';
-import { LoggerService, EventsService } from '@backstage/backend-plugin-api';
+import { LoggerService, SignalsService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
-import { PluginEventsManager, EventsClientManagerOptions } from './types';
-import { DefaultEventsClient } from './EventsClient';
+import { PluginSignalsManager, SignalsClientManagerOptions } from './types';
+import { DefaultSignalsClient } from './SignalsClient';
 import { TokenManager } from '../tokens';
 
-class NoopEventsClient implements EventsService {
+class NoopSignalsClient implements SignalsService {
   connect() {}
   disconnect() {}
   publish(_: unknown, __?: any) {}
@@ -30,32 +30,32 @@ class NoopEventsClient implements EventsService {
 }
 
 /**
- * Implements a events client manager which will automatically create new event clients
+ * Implements a signals client manager which will automatically create new signal clients
  * for plugins when requested.
  *
  * @public
  */
-export class EventsClientManager {
+export class SignalsClientManager {
   private readonly logger: LoggerService;
   private readonly endpoint: string;
-  private readonly eventsEnabled: boolean;
+  private readonly signalsEnabled: boolean;
   private tokenManager?: TokenManager;
 
   /**
-   * Creates a new {@link EventsClientManager} instance by reading from the `backend`
+   * Creates a new {@link SignalsClientManager} instance by reading from the `backend`
    * config section, specifically the `.cache` key.
    *
    * @param config - The loaded application configuration.
    */
   static fromConfig(
     config: Config,
-    options?: EventsClientManagerOptions,
-  ): EventsClientManager {
+    options?: SignalsClientManagerOptions,
+  ): SignalsClientManager {
     const { endpoint, enabled } = this.readConfig(config);
     const logger = (options?.logger || getRootLogger()).child({
-      type: 'events-client',
+      type: 'signals-client',
     });
-    return new EventsClientManager(
+    return new SignalsClientManager(
       enabled,
       endpoint,
       logger,
@@ -66,7 +66,7 @@ export class EventsClientManager {
   private static readConfig(config: Config) {
     const baseUrl =
       config.getOptionalString('backend.baseUrl') ?? 'http://localhost';
-    const ws = config.getOptional('backend.events');
+    const ws = config.getOptional('backend.signals');
     if (ws === true) {
       const enabled = true;
       const url = new URL(baseUrl);
@@ -76,10 +76,10 @@ export class EventsClientManager {
       return { endpoint, enabled };
     }
 
-    const eventsConfig = config.getOptionalConfig('backend.events');
-    if (eventsConfig) {
-      const enabled = eventsConfig.getOptionalBoolean('enabled') || false;
-      const endpoint = eventsConfig.getOptionalString('endpoint') ?? baseUrl;
+    const signalsConfig = config.getOptionalConfig('backend.signals');
+    if (signalsConfig) {
+      const enabled = signalsConfig.getOptionalBoolean('enabled') || false;
+      const endpoint = signalsConfig.getOptionalString('endpoint') ?? baseUrl;
       return { endpoint, enabled };
     }
 
@@ -92,7 +92,7 @@ export class EventsClientManager {
     logger: LoggerService,
     tokenManager?: TokenManager,
   ) {
-    this.eventsEnabled = enabled;
+    this.signalsEnabled = enabled;
     this.endpoint = endpoint;
     this.logger = logger;
     this.tokenManager = tokenManager;
@@ -109,21 +109,21 @@ export class EventsClientManager {
   }
 
   /**
-   * Generates a PluginEventsManager for consumption by plugins.
+   * Generates a PluginSignalsManager for consumption by plugins.
    *
-   * @param pluginId - The plugin that the events manager should be created for.
+   * @param pluginId - The plugin that the signals manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): PluginEventsManager {
+  forPlugin(pluginId: string): PluginSignalsManager {
     const endpoint = this.endpoint;
     const logger = this.logger;
-    const eventsEnabled = this.eventsEnabled;
+    const signalsEnabled = this.signalsEnabled;
     const tokenManager = this.tokenManager;
     return {
-      getClient(): EventsService {
-        return eventsEnabled
-          ? new DefaultEventsClient(endpoint, pluginId, logger, tokenManager)
-          : new NoopEventsClient();
+      getClient(): SignalsService {
+        return signalsEnabled
+          ? new DefaultSignalsClient(endpoint, pluginId, logger, tokenManager)
+          : new NoopSignalsClient();
       },
     };
   }

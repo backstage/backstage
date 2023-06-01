@@ -34,7 +34,7 @@ import {
   UrlReaders,
   useHotMemoize,
   ServerTokenManager,
-  EventsClientManager,
+  SignalsClientManager,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
@@ -97,14 +97,14 @@ function makeCreateEnv(config: Config) {
   const identity = DefaultIdentityClient.create({
     discovery,
   });
-  const eventsClientManager = EventsClientManager.fromConfig(config, {
+  const signalsClientManager = SignalsClientManager.fromConfig(config, {
     logger: root,
     tokenManager,
   });
 
   const eventBroker = new DefaultEventBroker(
     root.child({ type: 'plugin' }),
-    eventsClientManager.forPlugin('events').getClient(),
+    signalsClientManager.forPlugin('events').getClient(),
   );
 
   root.info(`Created UrlReader ${reader}`);
@@ -114,7 +114,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
-    const eventsManager = eventsClientManager.forPlugin(plugin);
+    const signalsManager = signalsClientManager.forPlugin(plugin);
 
     return {
       logger,
@@ -128,7 +128,7 @@ function makeCreateEnv(config: Config) {
       permissions,
       scheduler,
       identity,
-      eventsManager,
+      signalsManager,
     };
   };
 }
@@ -220,7 +220,7 @@ async function main() {
     .addRouter('', await app(appEnv));
 
   // TODO(drodil): Test code, to be removed.
-  const client = catalogEnv.eventsManager.getClient();
+  const client = catalogEnv.signalsManager.getClient();
   await client.connect();
   setInterval(async () => {
     await client.publish({ test: 'test' });
