@@ -41,7 +41,6 @@ import { Config } from '@backstage/config';
  */
 export class UserIdentity implements IdentityApi {
   private profilePromise?: Promise<ProfileInfo>;
-  // private static config: Config;
 
   /**
    * Creates a new IdentityApi that acts as a Guest User.
@@ -104,7 +103,7 @@ export class UserIdentity implements IdentityApi {
     private readonly authApi: ProfileInfoApi &
       BackstageIdentityApi &
       SessionApi,
-    private readonly profile?: ProfileInfo, // private readonly config?: Config
+    private readonly profile?: ProfileInfo,
   ) {}
 
   /** {@inheritdoc @backstage/core-plugin-api#IdentityApi.getUserId} */

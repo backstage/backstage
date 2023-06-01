@@ -106,7 +106,6 @@ export class DefaultIdentityClient implements IdentityApi {
     token: string | undefined,
   ): Promise<BackstageIdentityResponse> {
     // Extract token from header
-    // let decoded;
     if (!token) {
       throw new AuthenticationError('No token specified');
     }
@@ -119,13 +118,11 @@ export class DefaultIdentityClient implements IdentityApi {
     if (!this.keyStore) {
       throw new AuthenticationError('No keystore exists');
     }
-
     const decoded = await jwtVerify(token, this.keyStore, {
       algorithms: this.algorithms,
       audience: 'backstage',
       issuer: this.issuer,
     });
-
     // Verified, return the matching user as BackstageIdentity
     // TODO: Settle internal user format/properties
     if (!decoded.payload.sub) {

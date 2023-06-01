@@ -27,9 +27,7 @@ export class GuestUserIdentity implements IdentityApi {
 
   static fromConfig(config?: Config): GuestUserIdentity {
     const newIdentity = new GuestUserIdentity();
-    if (
-      config?.getOptionalConfig(`auth`)?.getOptionalBoolean(`allowGuestMode`)
-    ) {
+    if (config?.getOptionalBoolean(`auth.allowGuestMode`)) {
       newIdentity.setIdToken(newIdentity.issueToken());
     }
     return newIdentity;

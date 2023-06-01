@@ -21,7 +21,6 @@ import {
   useApiHolder,
   errorApiRef,
   IdentityApi,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -88,7 +87,6 @@ export const useSignInProviders = (
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
   const [loading, setLoading] = useState(true);
-  const appConfig = useApi(configApiRef);
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(

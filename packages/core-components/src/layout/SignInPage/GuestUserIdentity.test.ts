@@ -64,12 +64,20 @@ describe('GuestUserIdentity', () => {
     // covers edgecase where response is undefined and would be compared to an undefined verifiedtoken
     const response = (await guestUserIdentity.getIdToken()) ?? 'no token';
 
-    const verifiedToken = nJwt.verify(response, 'signing key');
+    const verifiedToken = nJwt.verify(
+      response,
+      '-----BEGIN PRIVATE KEY-----\n' +
+        'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
+        'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
+        'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
+        '-----END PRIVATE KEY-----\n',
+      'ES256',
+    );
 
     expect(response).toEqual(verifiedToken?.toString());
   });
 
-  it('getProfile() returns correct guestProfile info', () => {
+  it('getProfile() returns guestProfile info', () => {
     const guestUserIdentity = new GuestUserIdentity();
 
     const response = guestUserIdentity.getProfile();
@@ -77,7 +85,7 @@ describe('GuestUserIdentity', () => {
     expect(response).toEqual(mockProfileInfo);
   });
 
-  it('getProfileInfo() returns correct guest user info', async () => {
+  it('getProfileInfo() returns guest user info', async () => {
     const guestUserIdentity = new GuestUserIdentity();
 
     const response = await guestUserIdentity.getProfileInfo();
@@ -85,7 +93,7 @@ describe('GuestUserIdentity', () => {
     expect(response).toEqual(mockProfileInfo);
   });
 
-  it('getBackstageIdentity() returns correct guest user identity', async () => {
+  it('getBackstageIdentity() returns guest user identity', async () => {
     const guestUserIdentity = new GuestUserIdentity();
 
     const response = await guestUserIdentity.getBackstageIdentity();
@@ -130,7 +138,19 @@ describe('GuestUserIdentity', () => {
 
       const token = response.token ?? 'no token';
 
-      expect(token).toEqual(nJwt.verify(token, 'signing key')?.toString());
+      expect(token).toEqual(
+        nJwt
+          .verify(
+            token,
+            '-----BEGIN PRIVATE KEY-----\n' +
+              'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
+              'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
+              'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
+              '-----END PRIVATE KEY-----\n',
+            'ES256',
+          )
+          ?.toString(),
+      );
     });
   });
 });
