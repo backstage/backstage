@@ -36,6 +36,7 @@
         "spec": {
           "type": "object",
           "required": ["memberOf"],
+          "additionalProperties": false,
           "properties": {
             "profile": {
               "type": "object",

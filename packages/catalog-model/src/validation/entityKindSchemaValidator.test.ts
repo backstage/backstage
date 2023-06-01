@@ -110,4 +110,9 @@ describe('entityKindSchemaValidator', () => {
     entity.spec = 7;
     expect(() => validator(entity)).toThrow(/spec/);
   });
+
+  it('rejects when spec contains additional properties that are not part of the schema', () => {
+    entity.spec.unknown = 7;
+    expect(() => validator(entity)).toThrow(/spec/);
+  });
 });

@@ -19,7 +19,7 @@
   ],
   "type": "object",
   "required": ["name"],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "uid": {
       "type": "string",

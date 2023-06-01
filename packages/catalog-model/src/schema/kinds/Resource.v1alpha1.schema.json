@@ -34,6 +34,7 @@
         "spec": {
           "type": "object",
           "required": ["type", "owner"],
+          "additionalProperties": false,
           "properties": {
             "type": {
               "type": "string",

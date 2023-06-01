@@ -61,9 +61,9 @@ describe('userEntityV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(false);
   });
 
-  it('spec accepts unknown additional fields', async () => {
+  it('spec does not accept unknown additional fields', async () => {
     (entity as any).spec.foo = 'data';
-    await expect(validator.check(entity)).resolves.toBe(true);
+    await expect(validator.check(entity)).rejects.toThrow(/spec/);
   });
 
   // profile

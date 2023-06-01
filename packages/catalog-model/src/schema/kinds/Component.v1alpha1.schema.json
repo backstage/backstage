@@ -40,6 +40,7 @@
         "spec": {
           "type": "object",
           "required": ["type", "lifecycle", "owner"],
+          "additionalProperties": false,
           "properties": {
             "type": {
               "type": "string",

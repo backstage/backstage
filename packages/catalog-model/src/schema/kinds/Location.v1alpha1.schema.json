@@ -35,6 +35,7 @@
         "spec": {
           "type": "object",
           "required": [],
+          "additionalProperties": false,
           "properties": {
             "type": {
               "type": "string",

@@ -39,6 +39,7 @@
         "spec": {
           "type": "object",
           "required": ["type", "children"],
+          "additionalProperties": false,
           "properties": {
             "type": {
               "type": "string",

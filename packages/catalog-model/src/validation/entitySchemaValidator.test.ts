@@ -307,9 +307,9 @@ describe('entitySchemaValidator', () => {
     expect(() => validator(entity)).toThrow(/links/);
   });
 
-  it('accepts unknown metadata field', () => {
+  it('does not accept unknown metadata field', () => {
     entity.metadata.unknown = 7;
-    expect(() => validator(entity)).not.toThrow();
+    expect(() => validator(entity)).toThrow(/metadata/);
   });
 
   //
