@@ -25,8 +25,6 @@ class NoopSignalsClient implements SignalsService {
   connect() {}
   disconnect() {}
   publish(_: unknown, __?: any) {}
-  subscribe(_: string, __: (data: unknown) => void, ___?: string) {}
-  unsubscribe(_: string, __?: string) {}
 }
 
 /**
@@ -69,16 +67,12 @@ export class SignalsClientManager {
     const ws = config.getOptional('backend.signals');
     if (ws === true) {
       const enabled = true;
-      const url = new URL(baseUrl);
-      const https = config.getOptional('backend.https');
-      url.protocol = https ? 'wss' : 'ws';
-      const endpoint = url.toString();
-      return { endpoint, enabled };
+      return { endpoint: baseUrl, enabled };
     }
 
     const signalsConfig = config.getOptionalConfig('backend.signals');
     if (signalsConfig) {
-      const enabled = signalsConfig.getOptionalBoolean('enabled') || false;
+      const enabled = signalsConfig.getOptionalBoolean('enabled') ?? false;
       const endpoint = signalsConfig.getOptionalString('endpoint') ?? baseUrl;
       return { endpoint, enabled };
     }

@@ -81,15 +81,15 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { loading, error, entities, filters } = useEntityList();
 
   // TODO(drodil): Test code, to be removed.
-  const events = useApi(signalsApiRef);
+  const signals = useApi(signalsApiRef);
   useEffect(() => {
-    events.subscribe('catalog', (_: any) => {
+    signals.subscribe('catalog', (_: any) => {
       // console.log(_);
     });
     return () => {
-      events.unsubscribe('catalog');
+      signals.unsubscribe('catalog');
     };
-  }, [events]);
+  }, [signals]);
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [

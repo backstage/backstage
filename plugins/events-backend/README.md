@@ -44,17 +44,17 @@ Then update plugin environment to include the event broker.
 +  eventBroker: EventBroker;
 ```
 
-To enable events also to frontend, you must pass event service to the broker:
+To enable events also to frontend, you must pass signal service to the broker:
 
 ```diff
 // packages/backend/src/index.ts
 +  const eventBroker = new DefaultEventBroker(
 +    root.child({ type: 'plugin' }),
-+    eventsClientManager.forPlugin('events').getClient(),
++    signalsClientManager.forPlugin('events').getClient(),
 +  );
 ```
 
-Read more about the events service from `docs/plugins/events.md`.
+Read more about the signals service from `docs/plugins/signals.md`.
 
 ### Publishing and Subscribing to events with the broker
 

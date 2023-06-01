@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 import { LoggerService, SignalsService } from '@backstage/backend-plugin-api';
-import {
-  SignalsClientMessage,
-  SignalsClientRegisterCommand,
-  SignalsClientSubscribeCommand,
-} from './types';
+import { SignalsClientMessage, SignalsClientRegisterCommand } from './types';
 import { io, Socket } from 'socket.io-client';
 import { TokenManager } from '../tokens';
-
-type SignalsClientSubscription = {
-  pluginId: string;
-  topic?: string;
-  onMessage: (data: SignalsClientMessage) => void;
-};
 
 export class DefaultSignalsClient implements SignalsService {
   private readonly pluginId: string;
@@ -34,7 +24,6 @@ export class DefaultSignalsClient implements SignalsService {
   private readonly logger: LoggerService;
   private readonly tokenManager?: TokenManager;
   private ws: Socket | null;
-  private subscriptions: Map<string, SignalsClientSubscription>;
   private readonly messageQueue: Set<{ channel: string; message: any }>;
 
   constructor(
@@ -48,18 +37,16 @@ export class DefaultSignalsClient implements SignalsService {
     this.logger = logger;
     this.tokenManager = tokenManager;
     this.ws = null;
-    this.subscriptions = new Map();
     this.messageQueue = new Set();
   }
 
   async connect() {
     this.logger.info(`${this.pluginId} connecting to signals service`);
-    const url = new URL(this.endpoint);
     let token;
     if (this.tokenManager) {
       ({ token } = await this.tokenManager.getToken());
     }
-    this.ws = io(url.toString(), {
+    this.ws = io(this.endpoint, {
       path: '/signals',
       auth: {
         token: token,
@@ -82,30 +69,9 @@ export class DefaultSignalsClient implements SignalsService {
       }
       this.messageQueue.clear();
     });
-
-    this.ws.on('message', (msg: SignalsClientMessage) => {
-      try {
-        for (const subscription of this.subscriptions.values()) {
-          if (
-            subscription.pluginId === msg.pluginId &&
-            (!msg.topic || subscription.topic === msg.topic)
-          ) {
-            subscription.onMessage(msg.data);
-          }
-        }
-      } catch (e) {
-        this.logger.error(
-          `${this.pluginId} invalid data received from server: ${msg}: ${e}`,
-        );
-      }
-    });
   }
 
   async disconnect() {
-    for (const subscription of this.subscriptions.values()) {
-      await this.unsubscribe(subscription.pluginId, subscription.topic);
-    }
-    this.subscriptions.clear();
     this.messageQueue.clear();
     if (this.ws) {
       this.ws.close();
@@ -139,41 +105,7 @@ export class DefaultSignalsClient implements SignalsService {
       targetEntityRefs: target?.entityRefs,
       data: message,
     };
-    this.logger.debug(`Publish signal from ${this.pluginId}`);
+    this.logger.debug(`Publish signal from plugin ${this.pluginId}`);
     this.send('publish', cmd);
-  }
-
-  async subscribe(
-    pluginId: string,
-    onMessage: (data: SignalsClientMessage) => void,
-    topic?: string,
-  ) {
-    const subscriptionKey = `${pluginId}:${topic}`;
-    if (this.subscriptions.has(subscriptionKey)) {
-      return;
-    }
-
-    this.subscriptions.set(subscriptionKey, { pluginId, onMessage, topic });
-
-    const cmd: SignalsClientSubscribeCommand = {
-      pluginId,
-      topic,
-    };
-    this.send('subscribe', cmd);
-  }
-
-  async unsubscribe(pluginId: string, topic?: string) {
-    const subscriptionKey = `${pluginId}:${topic}`;
-    if (!this.subscriptions.has(subscriptionKey)) {
-      return;
-    }
-
-    this.subscriptions.delete(subscriptionKey);
-
-    const cmd: SignalsClientSubscribeCommand = {
-      pluginId,
-      topic,
-    };
-    this.send('unsubscribe', cmd);
   }
 }

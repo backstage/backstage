@@ -24,6 +24,7 @@ import {
 } from './types';
 import { JWTPayload } from 'jose';
 import { Handshake } from 'socket.io/dist/socket';
+import { Emitter } from '@socket.io/postgres-emitter';
 
 type SignalsConnectionType = 'frontend' | 'backend';
 
@@ -56,14 +57,24 @@ const stringifyConnection = (conn: SignalsConnection) => {
 export class SignalsBroker {
   private readonly logger: LoggerService;
   private readonly connections: Map<string, SignalsConnection>;
+  private readonly emitter?: Emitter;
 
-  static create(server: Server, logger: LoggerService): SignalsBroker {
-    return new SignalsBroker(server, logger);
+  static create(
+    server: Server,
+    logger: LoggerService,
+    emitter?: Emitter,
+  ): SignalsBroker {
+    return new SignalsBroker(server, logger, emitter);
   }
 
-  private constructor(server: Server, logger: LoggerService) {
+  private constructor(
+    server: Server,
+    logger: LoggerService,
+    emitter?: Emitter,
+  ) {
     this.logger = logger;
     this.connections = new Map();
+    this.emitter = emitter;
 
     server.on('connection', this.handleConnection);
     server.on('close', () => {
@@ -167,7 +178,7 @@ export class SignalsBroker {
 
     conn.pluginId = cmd.pluginId;
     this.logger.info(
-      `Plugin '${cmd.pluginId}' registered to signals server ${connStr}`,
+      `Plugin '${cmd.pluginId}' registered to signals broker ${connStr}`,
     );
   };
 
@@ -179,6 +190,11 @@ export class SignalsBroker {
     if (!conn.pluginId || conn.type !== 'backend') {
       this.logger.warn(`Invalid signals publish request from ${connStr}`);
       return;
+    }
+
+    // Emit the message to all other backends
+    if (this.emitter) {
+      this.emitter.serverSideEmit('publish', cmd);
     }
 
     for (const c of this.connections.values()) {

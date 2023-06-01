@@ -20,18 +20,26 @@ describe('config', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('should read boolean config', () => {
-    const config = new ConfigReader({ events: true });
+    const config = new ConfigReader({ signals: true });
     expect(readEventsServerOptions(config)).toEqual({ enabled: true });
   });
 
   it('should read events config', () => {
     const config = new ConfigReader({
-      events: { enabled: true, endpoint: 'ws://localhost:7007' },
+      signals: { enabled: true, endpoint: 'ws://localhost:7007' },
     });
-    expect(readEventsServerOptions(config)).toEqual({ enabled: true });
+    expect(readEventsServerOptions(config)).toEqual({
+      enabled: true,
+      adapter: 'memory',
+      databaseConnection: undefined,
+    });
   });
 
   it('should disable events with undefined config', () => {
-    expect(readEventsServerOptions()).toEqual({ enabled: false });
+    expect(readEventsServerOptions()).toEqual({
+      enabled: false,
+      adapter: 'memory',
+      databaseConnection: undefined,
+    });
   });
 });

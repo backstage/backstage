@@ -500,12 +500,6 @@ export interface SignalsService {
       entityRefs?: string[];
     },
   ): void;
-  subscribe(
-    pluginId: string,
-    onMessage: (data: unknown) => void,
-    topic?: string,
-  ): void;
-  unsubscribe(pluginId: string, topic?: string): void;
 }
 
 // @public

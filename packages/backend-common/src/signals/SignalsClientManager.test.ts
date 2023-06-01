@@ -31,7 +31,7 @@ describe('SignalsClientManager', () => {
   });
 
   it('should return client with boolean config', () => {
-    const config = new ConfigReader({ backend: { events: true } });
+    const config = new ConfigReader({ backend: { signals: true } });
     const client = SignalsClientManager.fromConfig(config, { logger })
       .forPlugin('catalog')
       .getClient();
@@ -40,7 +40,7 @@ describe('SignalsClientManager', () => {
 
   it('should return client with object config', () => {
     const config = new ConfigReader({
-      backend: { events: { enabled: true } },
+      backend: { signals: { enabled: true } },
     });
     const client = SignalsClientManager.fromConfig(config, { logger })
       .forPlugin('catalog')

@@ -63,19 +63,14 @@ export class SignalsClient implements SignalsApi {
     const ws = config.getOptional('backend.signals');
     if (ws === true) {
       this.signalsEnabled = true;
-      const url = new URL(baseUrl);
-      const https = config.getOptional('backend.https');
-      url.protocol = https ? 'wss' : 'ws';
-      this.endpoint = url.toString();
+      this.endpoint = baseUrl;
       return;
     }
 
-    const signalsConfig = config.getOptionalConfig('backend.signals');
-    if (signalsConfig) {
-      this.signalsEnabled =
-        signalsConfig.getOptionalBoolean('enabled') || false;
-      this.endpoint = signalsConfig.getOptionalString('endpoint') ?? baseUrl;
-    }
+    this.signalsEnabled =
+      config.getOptionalBoolean('backend.signals.enabled') ?? false;
+    this.endpoint =
+      config.getOptionalString('backend.signals.endpoint') ?? baseUrl;
   }
 
   private async connect() {
@@ -86,6 +81,7 @@ export class SignalsClient implements SignalsApi {
       this.ws = io(url.toString(), {
         path: '/signals',
         auth: { token: token },
+        multiplex: true,
       });
     } else if (!this.ws.connected) {
       this.ws.connect();

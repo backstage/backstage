@@ -3658,6 +3658,8 @@ __metadata:
     "@kubernetes/client-node": 0.18.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
+    "@socket.io/postgres-adapter": ^0.3.1
+    "@socket.io/postgres-emitter": ^0.1.0
     "@types/archiver": ^5.1.0
     "@types/base64-stream": ^1.0.2
     "@types/compression": ^1.7.0
@@ -3712,7 +3714,7 @@ __metadata:
     mysql2: ^2.2.5
     node-fetch: ^2.6.7
     node-forge: ^1.3.1
-    pg: ^8.3.0
+    pg: ^8.11.0
     raw-body: ^2.4.1
     recursive-readdir: ^2.2.2
     selfsigned: ^2.0.0
@@ -13231,6 +13233,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@msgpack/msgpack@npm:^2.7.0, @msgpack/msgpack@npm:~2.8.0":
+  version: 2.8.0
+  resolution: "@msgpack/msgpack@npm:2.8.0"
+  checksum: bead9393f57239007a2fe455df5277cbc03b125f14f310162a652b81471dcf3ab6780eaa24b36e20aa742998910a6840147d08b7267063b8e2de5d40c624360e
+  languageName: node
+  linkType: hard
+
 "@mswjs/cookies@npm:^0.2.2":
   version: 0.2.2
   resolution: "@mswjs/cookies@npm:0.2.2"
@@ -14986,6 +14995,30 @@ __metadata:
   version: 3.1.0
   resolution: "@socket.io/component-emitter@npm:3.1.0"
   checksum: db069d95425b419de1514dffe945cc439795f6a8ef5b9465715acf5b8b50798e2c91b8719cbf5434b3fe7de179d6cdcd503c277b7871cb3dd03febb69bdd50fa
+  languageName: node
+  linkType: hard
+
+"@socket.io/postgres-adapter@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@socket.io/postgres-adapter@npm:0.3.1"
+  dependencies:
+    "@msgpack/msgpack": ~2.8.0
+    "@types/pg": ^8.6.6
+    debug: ~4.3.4
+    pg: ^8.9.0
+  peerDependencies:
+    socket.io-adapter: ^2.4.0
+  checksum: 90506fd017f8482c918e62de5818655c219ef5d5f8adc4f82748a4b3b391d5f4f9af1fcd6e1f08b9073cdb5b46c9472c0aa8887ddd359a55854f14ced4bfe4b1
+  languageName: node
+  linkType: hard
+
+"@socket.io/postgres-emitter@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@socket.io/postgres-emitter@npm:0.1.0"
+  dependencies:
+    "@msgpack/msgpack": ^2.7.0
+    debug: ~4.3.1
+  checksum: fdfec5a986b640e3cdc7dbc95cf0d4a493f1fd219dd08bb8ceb46e9b0d5e94d430db62ff6ab21e34630a6f95a075f257057a6872b94ef643548fc8aa22404978
   languageName: node
   linkType: hard
 
@@ -22466,7 +22499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2":
+"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2, debug@npm:~4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -34022,10 +34055,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-connection-string@npm:2.5.0, pg-connection-string@npm:^2.3.0, pg-connection-string@npm:^2.4.0, pg-connection-string@npm:^2.5.0":
+"pg-cloudflare@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "pg-cloudflare@npm:1.1.0"
+  checksum: fca32af487feadf337baccceca4d2a6a43c6bbe324efcdf620ea581e958e70873cbf64424bd0861d37ecaf2cd3f33319fefb49018bcae5e909dea5f2c859698d
+  languageName: node
+  linkType: hard
+
+"pg-connection-string@npm:2.5.0":
   version: 2.5.0
   resolution: "pg-connection-string@npm:2.5.0"
   checksum: a6f3a068f7c9416a5b33a326811caf0dfaaee045c225b7c628b4c9b4e9a2b25bdd12a21e4c48940e1000ea223a4e608ca122d2ff3dd08c8b1db0fc9f5705133a
+  languageName: node
+  linkType: hard
+
+"pg-connection-string@npm:^2.3.0, pg-connection-string@npm:^2.4.0, pg-connection-string@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "pg-connection-string@npm:2.6.0"
+  checksum: 0262452638163c0b875495cfb82e363061cc8d560d3162143b1dfb63f70a666c7c52ba37e78054a3476de9a627faeec75f65445ba6fe065db068317ec84d3df8
   languageName: node
   linkType: hard
 
@@ -34065,23 +34112,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.3.0, pg@npm:^8.4.0":
-  version: 8.10.0
-  resolution: "pg@npm:8.10.0"
+"pg@npm:^8.11.0, pg@npm:^8.3.0, pg@npm:^8.4.0, pg@npm:^8.9.0":
+  version: 8.11.0
+  resolution: "pg@npm:8.11.0"
   dependencies:
     buffer-writer: 2.0.0
     packet-reader: 1.0.0
-    pg-connection-string: ^2.5.0
+    pg-cloudflare: ^1.1.0
+    pg-connection-string: ^2.6.0
     pg-pool: ^3.6.0
     pg-protocol: ^1.6.0
     pg-types: ^2.1.0
     pgpass: 1.x
   peerDependencies:
     pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: c6be78f2e823f2ae3c618c8e54a6622592dd71b556fb665d7eaedcbcc2fa5d210a8bcf519401e72526a65b9d797f19b772f48f29b9d9f31e98dd526fd27d61e0
+  checksum: 30448ab90fca85c3cf6dfb79f351b759a8d5b384b89bc3b7e5ba6be7afaa0cd7422a3c770acb052d512dd6b1e03768e6d6a6674547ec4a21cb5870c7b72cc101
   languageName: node
   linkType: hard
 

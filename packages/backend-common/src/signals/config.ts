@@ -33,8 +33,10 @@ export function readEventsServerOptions(config?: Config): SignalsServerConfig {
     return { enabled: true };
   }
 
-  const eventsConfig = config?.getOptionalConfig('signals');
+  const signalsConfig = config?.getOptionalConfig('signals');
   return {
-    enabled: eventsConfig?.getOptionalBoolean('signals') ?? false,
+    enabled: signalsConfig?.getOptionalBoolean('enabled') || false,
+    adapter: signalsConfig?.getOptionalString('adapter') || 'memory',
+    databaseConnection: config?.getOptional('database.connection'),
   };
 }

@@ -23,6 +23,8 @@ import { TokenManager } from '../tokens';
  */
 export type SignalsServerConfig = {
   enabled?: boolean;
+  adapter?: string;
+  databaseConnection?: string | object;
 };
 
 /**

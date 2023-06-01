@@ -77,15 +77,19 @@ export interface Config {
      */
     baseUrl: string;
     /**
-     * Enable or disable events connections. Defaults to false.
+     * Enable or disable signals connections. Defaults to false.
      * @visibility frontend
      */
-    events?:
+    signals?:
       | boolean
       | {
-          /** Is events enabled, defaults to false */
+          /** Is signals enabled, defaults to false
+           * @visibility frontend
+           */
           enabled?: boolean;
-          /** Endpoint for the clients to connect to, must start with http://, https://, ws:// or wss:// */
+          /** Endpoint for the clients to connect to, must start with http://, https://, ws:// or wss://
+           * @visibility frontend
+           */
           endpoint?: string;
         };
   };

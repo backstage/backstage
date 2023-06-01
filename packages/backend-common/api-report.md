@@ -241,7 +241,7 @@ export function createSignalsBroker(
   },
   options?: SignalsServerConfig,
   cors?: CorsOptions,
-): void;
+): Promise<void>;
 
 // @public
 export function createStatusCheckRouter(options: {
@@ -808,6 +808,8 @@ export type SignalsClientSubscribeCommand = {
 // @public
 export type SignalsServerConfig = {
   enabled?: boolean;
+  adapter?: string;
+  databaseConnection?: string | object;
 };
 
 // @public @deprecated

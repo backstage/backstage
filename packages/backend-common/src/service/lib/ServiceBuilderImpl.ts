@@ -181,7 +181,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     const server = await createHttpServer(app, this.serverOptions.http, {
       logger,
     });
-    createSignalsBroker(
+    await createSignalsBroker(
       server,
       {
         logger,

@@ -45,23 +45,4 @@ export interface SignalsService {
       entityRefs?: string[];
     },
   ): void;
-
-  /**
-   * Subscribe to messages from specific plugin optionally to specific topic.
-   * @param pluginId - Plugin id
-   * @param onMessage - Callback function to be called when data is received
-   * @param topic - Optional plugin specific topic
-   */
-  subscribe(
-    pluginId: string,
-    onMessage: (data: unknown) => void,
-    topic?: string,
-  ): void;
-
-  /**
-   * Unsubscribe from messages from specific plugin optionally to specific topic.
-   * @param pluginId - Plugin id
-   * @param topic - Optional plugin specific topic
-   */
-  unsubscribe(pluginId: string, topic?: string): void;
 }

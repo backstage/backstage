@@ -39,6 +39,28 @@ backend:
     endpoint: ws://localhost:7007
 ```
 
+### Handling multiple backend instances
+
+To be able to deliver signals to multiple backend instances, an adapter configuration has to be specified.
+Currently only `pg` is supported as an adapter to share signals between the instances. The configuration
+uses same database configuration as you have defined for the backend.
+
+```yaml
+backend:
+  baseUrl: http://localhost:7007
+  signals:
+    enabled: true
+    endpoint: ws://localhost:7007
+    adapter: 'pg'
+  database:
+    client: 'pg'
+    connection:
+      host: localhost
+      port: 5432
+      user: postgres
+      password: postgres
+```
+
 ## Backend plugins
 
 To use the events in backend plugins, you can pass the `SignalsClientManager` in plugin
