@@ -31,6 +31,7 @@ import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
+import { defaultPlaylistSubPermissionPolicy } from '@backstage/plugin-playlist-backend/alpha';
 
 const backend = createBackend();
 
@@ -60,6 +61,7 @@ backend.add(kubernetesPlugin());
 // Permissions
 backend.add(permissionPlugin());
 backend.add(permissionModuleDelegateWithAllowAllFallbackPolicy());
+backend.add(defaultPlaylistSubPermissionPolicy());
 
 backend.add(catalogModuleUnprocessedEntities());
 
