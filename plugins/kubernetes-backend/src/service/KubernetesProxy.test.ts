@@ -155,6 +155,44 @@ describe('KubernetesProxy', () => {
     expect(response.body).toStrictEqual(apiResponse);
   });
 
+  it('sets host header to support clusters behind name-based virtual hosts', async () => {
+    worker.use(
+      rest.get(
+        'http://localhost:9999/api/v1/namespaces',
+        (req: any, res: any, ctx: any) => {
+          const host = req.headers.get('Host');
+          return host === 'localhost:9999'
+            ? res(ctx.status(200))
+            : res.networkError(`Host '${host}' is not in the cert's altnames`);
+        },
+      ),
+    );
+    permissionApi.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        authProvider: '',
+      },
+    ]);
+    authTranslator.decorateClusterDetailsWithAuth.mockImplementation(
+      async x => x,
+    );
+    const app = express().use(
+      Router().use('/mountpath', proxy.createRequestHandler({ permissionApi })),
+    );
+
+    const requestPromise = request(app)
+      .get('/mountpath/api/v1/namespaces')
+      .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
+    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(200);
+  });
+
   it('should default to using a authTranslator provided serviceAccountToken as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
     worker.use(
       rest.get(
