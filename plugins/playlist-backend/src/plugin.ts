@@ -50,7 +50,7 @@ export const defaultPlaylistSubPermissionPolicy = createBackendModule({
  * @alpha
  */
 export const playlistPlugin = createBackendPlugin(() => ({
-  pluginId: 'permission',
+  pluginId: 'playlist',
   register(env) {
     env.registerInit({
       deps: {
