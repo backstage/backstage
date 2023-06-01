@@ -86,6 +86,7 @@ export async function createRouter(
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
     algorithm: tokenFactoryAlgorithm,
+    config,
   });
 
   const secret = config.getOptionalString('auth.session.secret');

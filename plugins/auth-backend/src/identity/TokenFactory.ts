@@ -21,6 +21,7 @@ import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 
 import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
+import { Config } from '@backstage/config';
 
 const MS_IN_S = 1000;
 
@@ -39,6 +40,20 @@ type Options = {
    * If not, add a knex migration file in the migrations folder.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithm?: string;
+  config?: Config;
+};
+
+/**
+ * Static guest key added to list of valid public keys when auth.allowGuestMode flag is set to true
+ */
+const GUEST_KEY: AnyJWK = {
+  use: 'sig',
+  alg: 'ES256',
+  kty: 'EC',
+  x: '7ZGHzCnW9XC5GrEXPO5e_hbtAXzWNzjMRLbV_OxpD98',
+  y: '7ZDojNHUtJr36HkA9LvzWEo08WVRAOe63MC4KEJo_tk',
+  crv: 'P-256',
+  kid: uuid(),
 };
 
 /**
@@ -61,6 +76,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
+  private readonly config?: Config;
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -71,6 +87,7 @@ export class TokenFactory implements TokenIssuer {
     this.keyStore = options.keyStore;
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
+    this.config = options.config;
   }
 
   async issueToken(params: TokenParams): Promise<string> {
@@ -140,8 +157,20 @@ export class TokenFactory implements TokenIssuer {
       });
     }
 
-    // NOTE: we're currently only storing public keys, but if we start storing private keys we'd have to convert here
-    return { keys: validKeys.map(({ key }) => key) };
+    // NOTE: we're currently only storing public keys, but if we start storing private keys we'd have to convert here.
+    const returnedKeys = validKeys.map(({ key }) => key);
+
+    // NOTE: If the auth.allowGuestMode flag is set to true add a static EC256 guest key to the list of valid public keys that the identity client can authenticate against. This key will only be used in "development" and "test" processes. Key will not be set as valid for "production".
+    if (
+      this.config?.getOptionalBoolean(`auth.allowGuestMode`) &&
+      process.env.NODE_ENV !== 'production'
+    ) {
+      returnedKeys.push(GUEST_KEY);
+    }
+
+    return {
+      keys: returnedKeys,
+    };
   }
 
   private async getKey(): Promise<JWK> {

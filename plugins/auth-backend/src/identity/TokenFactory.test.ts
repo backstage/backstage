@@ -19,6 +19,7 @@ import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
 
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
+import { ConfigReader } from '@backstage/config';
 
 const logger = getVoidLogger();
 
@@ -172,5 +173,51 @@ describe('TokenFactory', () => {
 
     const verifyResult = await jwtVerify(token, keyStore);
     expect(verifyResult.protectedHeader.alg).toBe('ES256');
+  });
+
+  describe('allowGuestMode Flag is set in config', () => {
+    it('listPublicKeys should have a valid key present in its list of valid keys', async () => {
+      const keyDurationSeconds = 5;
+      const config = new ConfigReader({
+        auth: {
+          allowGuestMode: true,
+        },
+      });
+      const factory = new TokenFactory({
+        issuer: 'my-issuer',
+        keyStore: new MemoryKeyStore(),
+        keyDurationSeconds,
+        logger,
+        config,
+      });
+      const { keys } = await factory.listPublicKeys();
+      expect(keys.length).toEqual(1);
+      expect(keys).toContainEqual(
+        expect.objectContaining({
+          x: '7ZGHzCnW9XC5GrEXPO5e_hbtAXzWNzjMRLbV_OxpD98',
+          y: '7ZDojNHUtJr36HkA9LvzWEo08WVRAOe63MC4KEJo_tk',
+          crv: 'P-256',
+        }),
+      );
+    });
+
+    it('listPublicKeys should not have a guest key present in its list of valid keys', async () => {
+      const keyDurationSeconds = 5;
+      const config = new ConfigReader({
+        auth: {
+          allowGuestMode: false,
+        },
+      });
+      const factory = new TokenFactory({
+        issuer: 'my-issuer',
+        keyStore: new MemoryKeyStore(),
+        keyDurationSeconds,
+        logger,
+        config,
+      });
+      const { keys } = await factory.listPublicKeys();
+      expect(keys.length).toEqual(0);
+      expect(keys).toEqual([]);
+    });
   });
 });
