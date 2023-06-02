@@ -51,7 +51,7 @@ The TechDocs plugin has supported integrations to Search, meaning that it
 provides a default collator factory ready to be used.
 
 The purpose of this guide is to walk you through how to register the
-[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
+[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/1adc2c7/plugins/search-backend-module-techdocs/src/collators/DefaultTechDocsCollatorFactory.ts)
 in your App, so that you can get TechDocs documents indexed.
 
 If you have been through the
@@ -61,10 +61,10 @@ so, you can go ahead and follow this guide - if not, start by going through the
 getting started guide.
 
 1. Import the `DefaultTechDocsCollatorFactory` from
-   `@backstage/plugin-techdocs-backend`.
+   `@backstage/plugin-search-backend-module-techdocs`.
 
    ```typescript
-   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
    ```
 
 2. If there isn't an existing schedule you'd like to run the collator on, be
