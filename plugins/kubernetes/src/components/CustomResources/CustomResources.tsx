@@ -17,6 +17,7 @@
 import React, { useContext } from 'react';
 import lodash, { Dictionary } from 'lodash';
 import { RolloutAccordions } from './ArgoRollouts';
+import { K8sGPTResultAccordions } from './K8sGPTResults';
 import { DefaultCustomResourceAccordions } from './DefaultCustomResource';
 import { GroupedResponsesContext } from '../../hooks';
 
@@ -40,6 +41,14 @@ export const CustomResources = ({}: CustomResourcesProps) => {
         switch (kind) {
           case 'Rollout':
             return <RolloutAccordions key={i} rollouts={resources} />;
+          case 'Result':
+            return (
+              <K8sGPTResultAccordions
+                key={i}
+                customResources={resources}
+                customResourceName={kind}
+              />
+            );
           default:
             return (
               <DefaultCustomResourceAccordions
