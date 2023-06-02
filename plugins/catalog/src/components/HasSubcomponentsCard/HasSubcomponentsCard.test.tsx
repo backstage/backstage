@@ -27,12 +27,14 @@ import React from 'react';
 import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
 describe('<HasSubcomponentsCard />', () => {
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
+  const getEntitiesByRefs: jest.MockedFunction<
+    CatalogApi['getEntitiesByRefs']
+  > = jest.fn();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+      <TestApiProvider apis={[[catalogApiRef, { getEntitiesByRefs }]]}>
         {children}
       </TestApiProvider>
     );
@@ -85,7 +87,7 @@ describe('<HasSubcomponentsCard />', () => {
         },
       ],
     };
-    getEntities.mockResolvedValue({
+    getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',

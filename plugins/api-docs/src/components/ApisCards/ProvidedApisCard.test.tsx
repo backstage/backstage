@@ -32,12 +32,7 @@ describe('<ProvidedApisCard />', () => {
     getApiDefinitionWidget: jest.fn(),
   } as any;
   const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
+    getEntitiesByRefs: jest.fn(),
   } as any;
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
@@ -99,7 +94,7 @@ describe('<ProvidedApisCard />', () => {
         },
       ],
     };
-    catalogApi.getEntities.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',
