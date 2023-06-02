@@ -484,3 +484,28 @@ You can see more ways to use this in the [Storybook Sidebar examples](https://ba
 
 In addition to a custom theme, a custom logo, you can also customize the
 homepage of your app. Read the full guide on the [next page](homepage.md).
+
+## Migrating to Material UI v5
+
+For supporting Material UI v5 in addition to v4 we introduced a `UnifiedThemeProvider` allowing a step-by-step migration. To use it you have to update your App's `ThemeProvider` in `app/src/App.tsx` like the following:
+
+```diff
+     Provider: ({ children }) => (
+-    <ThemeProvider theme={lightTheme}>
+-      <CssBaseline>{children}</CssBaseline>
+-    </ThemeProvider>
++    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+     ),
+```
+
+When you are looking for migrating code from v4 to v5 the [Migration Guide provided by MUI](https://mui.com/material-ui/migration/migration-v4/) might be a helpful resource. It is worth mentioning that we are still using `@mui/styles` & thereby `jss`. You might stumble accross the migration to `emotion` for `makeStyles` or `withStyles`. It is not required to move to `emotion` yet.
+
+### Plugins
+
+To migrate your plugin to MUI v5 you can build up on the resources available.
+
+1. Run the migration `codemod` for the path of the specific plug: `npx @mui/codemod v5.0.0/preset-safe <path>`
+2. Manual fix imports to align with linting rules & take a look at potential `TODO:` items the `codemod` could not fix.
+3. Remove types & methods from `@backstage/theme`, which are marked as `@deprecated`
+
+You can follow the [migration of the GraphiQL plugin](https://github.com/backstage/backstage/pull/17696) as an example plugin migration.
