@@ -35,7 +35,8 @@ import { CustomErrorBase } from './CustomErrorBase';
  */
 export class InputError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'InputError');
+    super(message, cause);
+    this.name = 'InputError';
   }
 }
 
@@ -46,7 +47,8 @@ export class InputError extends CustomErrorBase {
  */
 export class AuthenticationError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'AuthenticationError');
+    super(message, cause);
+    this.name = 'AuthenticationError';
   }
 }
 
@@ -57,7 +59,8 @@ export class AuthenticationError extends CustomErrorBase {
  */
 export class NotAllowedError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'NotAllowedError');
+    super(message, cause);
+    this.name = 'NotAllowedError';
   }
 }
 
@@ -71,7 +74,8 @@ export class NotAllowedError extends CustomErrorBase {
  */
 export class NotFoundError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'NotFoundError');
+    super(message, cause);
+    this.name = 'NotFoundError';
   }
 }
 
@@ -83,7 +87,8 @@ export class NotFoundError extends CustomErrorBase {
  */
 export class ConflictError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'ConflictError');
+    super(message, cause);
+    this.name = 'ConflictError';
   }
 }
 
@@ -94,7 +99,8 @@ export class ConflictError extends CustomErrorBase {
  */
 export class NotModifiedError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'NotModifiedError');
+    super(message, cause);
+    this.name = 'NotModifiedError';
   }
 }
 
@@ -105,7 +111,8 @@ export class NotModifiedError extends CustomErrorBase {
  */
 export class NotImplementedError extends CustomErrorBase {
   constructor(message?: string, cause?: Error | unknown) {
-    super(message, cause, 'NotImplementedError');
+    super(message, cause);
+    this.name = 'NotImplementedError';
   }
 }
 
@@ -126,6 +133,8 @@ export class ServiceUnavailableError extends CustomErrorBase {}
  */
 export class ForwardedError extends CustomErrorBase {
   constructor(message: string, cause: Error | unknown) {
-    super(message, cause, isError(cause) ? cause.name : 'Error');
+    super(message, cause);
+
+    this.name = isError(cause) ? cause.name : 'Error';
   }
 }

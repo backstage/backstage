@@ -19,7 +19,6 @@ import { isError } from './assertion';
 
 /**
  * A base class that custom Error classes can inherit from.
- * @param name This is useful when you extend this base class to pass a custom name that will be included in the error message
  *
  * @public
  * @example
@@ -39,7 +38,7 @@ export class CustomErrorBase extends Error {
    */
   readonly cause?: Error | undefined;
 
-  constructor(message?: string, cause?: Error | unknown, name?: string) {
+  constructor(message?: string, cause?: Error | unknown) {
     let fullMessage = message;
     if (cause !== undefined) {
       const causeStr = stringifyError(cause);
@@ -54,7 +53,7 @@ export class CustomErrorBase extends Error {
 
     Error.captureStackTrace?.(this, this.constructor);
 
-    this.name = name || 'CustomErrorBase';
+    this.name = 'CustomErrorBase';
     this.cause = isError(cause) ? cause : undefined;
   }
 }

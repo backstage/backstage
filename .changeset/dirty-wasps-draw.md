@@ -2,4 +2,4 @@
 '@backstage/errors': patch
 ---
 
-Added a new parameter "name" to "CustomErrorBase" and updated all the existing extensions to use it
+Set `this.name` in all error classes that extend `CustomErrorBase` class to their actual name
