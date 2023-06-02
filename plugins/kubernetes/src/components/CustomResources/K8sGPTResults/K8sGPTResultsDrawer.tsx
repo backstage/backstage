@@ -22,22 +22,19 @@ const capitalize = (str: string) =>
   str.charAt(0).toLocaleUpperCase('en-US') + str.slice(1);
 
 export const K8sGPTResultDrawer = ({
-  customResource,
-  customResourceName,
+  result,
   expanded,
 }: {
-  customResource: any;
-  customResourceName: string;
+  result: any;
   expanded?: boolean;
 }) => {
-  const capitalizedName = capitalize(customResourceName);
-  const name = customResource.spec?.name.split('/').pop();
-  const namespace = customResource.spec?.name.split('/').shift();
+  const name = result.spec?.name.split('/').pop();
+  const namespace = result.spec?.name.split('/').shift();
   return (
     <KubernetesStructuredMetadataTableDrawer
-      object={customResource}
+      object={result}
       expanded={expanded}
-      kind={capitalizedName}
+      kind="Result"
       renderObject={cr => cr}
     >
       <Grid
@@ -49,7 +46,7 @@ export const K8sGPTResultDrawer = ({
       >
         <Grid item>
           <Typography variant="body1">
-            {customResource.spec?.name ?? 'unknown object'}
+            {result.spec?.name ?? 'unknown object'}
           </Typography>
         </Grid>
         <Grid item>

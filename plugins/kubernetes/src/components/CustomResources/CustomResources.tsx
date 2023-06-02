@@ -42,13 +42,7 @@ export const CustomResources = ({}: CustomResourcesProps) => {
           case 'Rollout':
             return <RolloutAccordions key={i} rollouts={resources} />;
           case 'Result':
-            return (
-              <K8sGPTResultAccordions
-                key={i}
-                customResources={resources}
-                customResourceName={kind}
-              />
-            );
+            return <K8sGPTResultAccordions key={i} results={resources} />;
           default:
             return (
               <DefaultCustomResourceAccordions

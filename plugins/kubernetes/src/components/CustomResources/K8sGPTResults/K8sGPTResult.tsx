@@ -27,29 +27,23 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 
 type K8sGPTResultAccordionsProps = {
-  customResources: any[];
-  customResourceName: string;
+  results: any[];
   defaultExpanded?: boolean;
   children?: React.ReactNode;
 };
 
 type K8sGPTResultAccordionProps = {
-  customResource: any;
-  customResourceName: string;
+  result: any;
   defaultExpanded?: boolean;
   children?: React.ReactNode;
 };
 
 type K8sGPTResultSummaryProps = {
-  customResource: any;
-  customResourceName: string;
+  result: any;
   children?: React.ReactNode;
 };
 
-const K8sGPTResultSummary = ({
-  customResource,
-  customResourceName,
-}: K8sGPTResultSummaryProps) => {
+const K8sGPTResultSummary = ({ result }: K8sGPTResultSummaryProps) => {
   return (
     <Grid
       container
@@ -59,18 +53,14 @@ const K8sGPTResultSummary = ({
       spacing={0}
     >
       <Grid xs={12} item>
-        <K8sGPTResultDrawer
-          customResource={customResource}
-          customResourceName={customResourceName}
-        />
+        <K8sGPTResultDrawer result={result} />
       </Grid>
     </Grid>
   );
 };
 
 const K8sGPTResultAccordion = ({
-  customResource,
-  customResourceName,
+  result,
   defaultExpanded,
 }: K8sGPTResultAccordionProps) => {
   return (
@@ -80,14 +70,11 @@ const K8sGPTResultAccordion = ({
       variant="outlined"
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <K8sGPTResultSummary
-          customResource={customResource}
-          customResourceName={customResourceName}
-        />
+        <K8sGPTResultSummary result={result} />
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="body2">
-          K8sGPT found this issue: {customResource.spec.details}
+          K8sGPT found this issue: {result.spec.details}
         </Typography>
       </AccordionDetails>
     </Accordion>
@@ -95,8 +82,7 @@ const K8sGPTResultAccordion = ({
 };
 
 export const K8sGPTResultAccordions = ({
-  customResources,
-  customResourceName,
+  results,
   defaultExpanded = false,
 }: K8sGPTResultAccordionsProps) => {
   return (
@@ -106,13 +92,12 @@ export const K8sGPTResultAccordions = ({
       justifyContent="flex-start"
       alignItems="flex-start"
     >
-      {customResources.map((cr, i) => (
+      {results.map((result, i) => (
         <Grid container item key={i} xs>
           <Grid item xs>
             <K8sGPTResultAccordion
               defaultExpanded={defaultExpanded}
-              customResource={cr}
-              customResourceName={customResourceName}
+              result={result}
             />
           </Grid>
         </Grid>
