@@ -51,5 +51,30 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/nomad",
+    "type": "object",
+    "properties": {
+      "nomad": {
+        "type": "object",
+        "properties": {
+          "addr": {
+            "type": "string",
+            "description": "The address of the Nomad API. See: https://developer.hashicorp.com/nomad/api-docs#addressing-and-ports",
+            "visibility": "frontend"
+          },
+          "token": {
+            "type": "string",
+            "description": "The token to call the Nomad API with. See: https://developer.hashicorp.com/nomad/api-docs#authentication",
+            "visibility": "secret"
+          }
+        },
+        "required": [
+          "addr"
+        ]
+      }
+    }
+  }
 }

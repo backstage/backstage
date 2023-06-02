@@ -54,6 +54,8 @@ export interface Allocation {
   CreateTime: number;
   DeploymentStatus: DeploymentStatus;
   ID: string;
+  JobID: string;
+  JobVersion: string;
   ModifyTime: number;
   Name: string;
   Namespace: string;
