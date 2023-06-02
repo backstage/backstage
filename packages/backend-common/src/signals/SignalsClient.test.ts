@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { io } from 'socket.io-client';
-import { SignalsBroker } from './SignalsBroker';
+import { io, Socket } from 'socket.io-client';
 import { DefaultSignalsClient } from './SignalsClient';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.mock('socket.io-client', () => ({
   io: jest.fn(),
@@ -31,7 +31,11 @@ class MockSocket {
   }
 
   callCallback(event: string, ...args: any[]) {
-    this.callbacks.get(event)(...args);
+    const cb = this.callbacks.get(event);
+    if (!cb) {
+      throw new Error(`No callback registered for event ${event}`);
+    }
+    cb(...args);
   }
 
   emit(channel: string, data: any) {
@@ -43,7 +47,7 @@ class MockSocket {
   }
 }
 
-describe('SignalsBroker', () => {
+describe('DefaultSignalsClient', () => {
   const mockLogger = {
     debug: jest.fn(),
     info: jest.fn(),
@@ -56,9 +60,15 @@ describe('SignalsBroker', () => {
 
   beforeEach(() => {
     mockSocket = new MockSocket();
-    io.mockReturnValue(mockSocket);
+    (io as unknown as jest.MockedFn<typeof io>).mockReturnValue(
+      mockSocket as unknown as Socket,
+    );
 
-    client = new DefaultSignalsClient('http://localhost', 'plugin', mockLogger);
+    client = new DefaultSignalsClient(
+      'http://localhost',
+      'plugin',
+      mockLogger as unknown as LoggerService,
+    );
     mockLogger.debug.mockClear();
     mockLogger.info.mockClear();
     mockLogger.warn.mockReset();

@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { SignalsBroker } from './SignalsBroker';
 import { Handshake } from 'socket.io/dist/socket';
 import * as uuid from 'uuid';
 import jwt_decode from 'jwt-decode';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.mock('socket.io');
 jest.mock('jwt-decode', () => jest.fn());
 
 const jwtMock = jwt_decode as unknown as jest.Mock;
 
-class MockServer extends Server {
+class MockServer {
   callbacks: Map<string, Function> = new Map();
   isOpen: boolean = true;
 
-  on(event: string, cb: Function) {
+  on(event: string, cb: Function): this {
     this.callbacks.set(event, cb);
+    return this;
   }
 
   callCallback(event: string, ...args: any[]) {
-    this.callbacks.get(event)(...args);
+    const cb = this.callbacks.get(event);
+    if (!cb) {
+      throw new Error(`No callback registered for event ${event}`);
+    }
+    cb(...args);
   }
 
   close() {
@@ -42,27 +48,37 @@ class MockServer extends Server {
   }
 }
 
-class MockSocket extends Socket {
+class MockSocket {
   callbacks: Map<string, Function> = new Map();
   id: string = uuid.v4();
   isConnected: boolean = true;
-  handshake: Handshake = { address: '127.0.0.1', auth: {} };
+  handshake: Partial<Handshake> = {
+    address: '127.0.0.1',
+    auth: { token: undefined },
+  };
   sent: { channel: string; data: any }[] = [];
 
-  on(event: string, cb: Function) {
+  on(event: string, cb: Function): this {
     this.callbacks.set(event, cb);
+    return this;
   }
 
   callCallback(event: string, ...args: any[]) {
-    this.callbacks.get(event)(...args);
+    const cb = this.callbacks.get(event);
+    if (!cb) {
+      throw new Error(`No callback registered for event ${event}`);
+    }
+    cb(...args);
   }
 
-  emit(channel: string, data: any) {
+  emit(channel: string, data: any): boolean {
     this.sent.push({ channel, data });
+    return true;
   }
 
-  disconnect() {
+  disconnect(): this {
     this.isConnected = false;
+    return this;
   }
 }
 
@@ -75,11 +91,13 @@ describe('SignalsBroker', () => {
   };
 
   let mockServer: MockServer;
-  let broker: SignalsBroker;
 
   beforeEach(() => {
     mockServer = new MockServer();
-    broker = SignalsBroker.create(mockServer, mockLogger);
+    SignalsBroker.create(
+      mockServer as unknown as Server,
+      mockLogger as unknown as LoggerService,
+    );
     mockLogger.debug.mockClear();
     mockLogger.info.mockClear();
     mockLogger.warn.mockReset();
@@ -90,7 +108,9 @@ describe('SignalsBroker', () => {
   const createBackendMock = (id?: string) => {
     jwtMock.mockReturnValueOnce({ sub: 'backstage-server', ent: null });
     const mockSocket = new MockSocket();
-    mockSocket.handshake.auth.token = 'jwt';
+    if (mockSocket.handshake.auth) {
+      mockSocket.handshake.auth.token = 'jwt';
+    }
     mockSocket.id = id ?? 'test';
     mockServer.callCallback('connection', mockSocket);
     return mockSocket;
@@ -106,7 +126,9 @@ describe('SignalsBroker', () => {
       ent: entities ?? ['group:default/test'],
     });
     const mockSocket = new MockSocket();
-    mockSocket.handshake.auth.token = 'jwt';
+    if (mockSocket.handshake.auth) {
+      mockSocket.handshake.auth.token = 'jwt';
+    }
     mockSocket.id = id ?? 'test';
     mockServer.callCallback('connection', mockSocket);
     return mockSocket;
@@ -151,7 +173,9 @@ describe('SignalsBroker', () => {
 
   it('should not allow invalid authentication', () => {
     const mockSocket = new MockSocket();
-    mockSocket.handshake.auth.token = 'invalid';
+    if (mockSocket.handshake.auth) {
+      mockSocket.handshake.auth.token = 'invalid';
+    }
     mockServer.callCallback('connection', mockSocket);
     expect(mockSocket.isConnected).toBeFalsy();
   });

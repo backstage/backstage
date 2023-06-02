@@ -137,7 +137,11 @@ export class SignalsClient implements SignalsApi {
 
     const subscriptionKey = this.getSubscriptionKey(pluginId, topic);
     if (this.subscriptions.has(subscriptionKey)) {
-      return;
+      throw new Error(
+        `Subscription already exists for ${pluginId}${
+          topic ? `and topic ${topic}` : ''
+        }`,
+      );
     }
 
     this.subscriptions.set(subscriptionKey, { pluginId, onMessage, topic });
