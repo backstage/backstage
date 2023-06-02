@@ -54,7 +54,15 @@ export class DefaultSignalsClient implements SignalsService {
     });
 
     this.ws.on('error', (err: Error) => {
-      this.logger.error(`${this.pluginId} signals error occurred: ${err}`);
+      this.logger.error(
+        `${this.pluginId} signals error occurred: ${err}, disconnecting`,
+      );
+      this.disconnect();
+    });
+
+    this.ws.on('disconnect', () => {
+      this.logger.info(`${this.pluginId} signals disconnected`);
+      this.disconnect();
     });
 
     this.ws.on('connect', () => {

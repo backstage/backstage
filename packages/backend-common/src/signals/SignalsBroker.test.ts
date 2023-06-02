@@ -68,18 +68,10 @@ class MockSocket extends Socket {
 
 describe('SignalsBroker', () => {
   const mockLogger = {
-    debug: jest.fn().mockImplementation(d => {
-      console.log(d);
-    }),
-    info: jest.fn().mockImplementation(d => {
-      console.log(d);
-    }),
-    warn: jest.fn().mockImplementation(d => {
-      console.log(d);
-    }),
-    error: jest.fn().mockImplementation(d => {
-      console.log(d);
-    }),
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
   };
 
   let mockServer: MockServer;
