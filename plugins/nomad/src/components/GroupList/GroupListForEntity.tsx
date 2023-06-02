@@ -16,15 +16,16 @@
 
 import { Progress } from '@backstage/core-components';
 import React, { useState } from 'react';
-import { GroupListTable } from './GroupListTable';
+import { AllocationListTable } from './AllocationListTable';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Allocation, nomadApiRef } from '../../api';
-import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import {
   NOMAD_GROUP_ANNOTATION,
   NOMAD_NAMESPACE_ANNOTATION,
 } from '../../Router';
+import { Alert } from '@material-ui/lab';
 
 export const GroupListForEntity = () => {
   const { entity } = useEntity();
@@ -33,8 +34,11 @@ export const GroupListForEntity = () => {
     entity.metadata.annotations?.[NOMAD_NAMESPACE_ANNOTATION] ?? 'default';
   const group = entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION] ?? '';
 
+  const configApi = useApi(configApiRef);
   const nomadApi = useApi(nomadApiRef);
-  const errorApi = useApi(errorApiRef);
+
+  // Get the Nomad server address for links in the table
+  const nomadAddr = configApi.getString('nomad.addr');
 
   // Retrieve allocations for the group
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -45,23 +49,23 @@ export const GroupListForEntity = () => {
     }
 
     // Issue call to nomad-backend
-    try {
-      const resp = await nomadApi.listAllocations({
-        namespace,
-        filter: `TaskGroup == "${group}"`,
-      });
-      setAllocations(resp.allocations);
-    } catch (e) {
-      errorApi.post(e as ErrorApiError);
-    }
+    const resp = await nomadApi.listAllocations({
+      namespace,
+      filter: `TaskGroup == "${group}"`,
+    });
+    setAllocations(
+      resp.allocations.sort((a, b) => b.CreateTime - a.CreateTime),
+    );
   }, [group]);
 
   if (response.loading) {
     return <Progress />;
   }
   if (response.error) {
-    return null;
+    return <Alert severity="error">{response.error.message}</Alert>;
   }
 
-  return <GroupListTable allocations={allocations} />;
+  return (
+    <AllocationListTable allocations={allocations} nomadAddr={nomadAddr} />
+  );
 };
