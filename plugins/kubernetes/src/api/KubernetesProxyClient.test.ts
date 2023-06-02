@@ -53,6 +53,30 @@ describe('KubernetesProxyClient', () => {
       path: '/api/v1/namespaces/some-namespace/pods/some-pod/log?container=some-container',
     });
   });
+  it('/logs returns log text - crash logs', async () => {
+    const request = {
+      podName: 'some-pod',
+      namespace: 'some-namespace',
+      clusterName: 'some-cluster',
+      containerName: 'some-container',
+      previous: true,
+    };
+
+    callProxyMock.mockResolvedValue({
+      text: jest.fn().mockResolvedValue('Hello World'),
+      ok: true,
+    });
+
+    const response = await proxy.getPodLogs(request);
+    await expect(response).toStrictEqual({ text: 'Hello World' });
+    expect(callProxyMock).toHaveBeenCalledWith({
+      clusterName: 'some-cluster',
+      init: {
+        method: 'GET',
+      },
+      path: '/api/v1/namespaces/some-namespace/pods/some-pod/log?container=some-container&previous=',
+    });
+  });
   it('/getEventsByInvolvedObjectName returns events', async () => {
     const request = {
       clusterName: 'some-cluster',

@@ -172,7 +172,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
       </CardContent>
       <CardActions disableSpacing>
         <PodLogsDialog
-          podScope={{
+          containerScope={{
             containerName: containerStatus.name,
             ...podScope,
           }}

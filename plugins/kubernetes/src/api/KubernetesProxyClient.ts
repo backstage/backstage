@@ -42,7 +42,7 @@ export class KubernetesProxyClient {
     return await response.text();
   }
 
-  private async handleResponse(response: Response): Promise<any> {
+  private async handleJson(response: Response): Promise<any> {
     if (!response.ok) {
       const payload = await response.text();
       let message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
@@ -76,7 +76,7 @@ export class KubernetesProxyClient {
           method: 'GET',
         },
       })
-      .then(response => this.handleResponse(response))
+      .then(response => this.handleJson(response))
       .then(eventList => eventList.items);
   }
 

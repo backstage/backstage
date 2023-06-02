@@ -15,7 +15,7 @@
  */
 import React, { useState } from 'react';
 
-import { Button, ButtonGroup, Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -25,7 +25,6 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import HelpIcon from '@material-ui/icons/Help';
-import SubjectIcon from '@material-ui/icons/Subject';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 import { Pod } from 'kubernetes-models/v1/Pod';
@@ -69,8 +68,6 @@ export const FixDialog: React.FC<FixDialogProps> = ({
   clusterName,
 }: FixDialogProps) => {
   const [isOpen, setOpen] = useState(!!open);
-  const [hasGotCrashLogs, setHasGotCrashLogs] = useState<boolean>(false);
-  const [hasPodEvents, setHasPodEvents] = useState<boolean>(false);
   const classes = useStyles();
 
   const openDialog = () => {
@@ -100,7 +97,7 @@ export const FixDialog: React.FC<FixDialogProps> = ({
           <Typography variant="h6">Fix:</Typography>
           <Typography>
             <ul>
-              {(error.proposedFix?.possibleFixes ?? []).map((fix, i) => {
+              {(error.proposedFix?.actions ?? []).map((fix, i) => {
                 return (
                   <li key={`${pod.metadata?.name ?? 'unknown'}-pf-${i}`}>
                     {fix}
@@ -110,28 +107,39 @@ export const FixDialog: React.FC<FixDialogProps> = ({
             </ul>
           </Typography>
         </Grid>
-        {hasGotCrashLogs && pf && pf.type === 'logs' && (
-          <Grid item xs={9}>
-            <PodLogs
-              previous
-              containerScope={{
-                podName: pod.metadata?.name ?? 'unknown',
-                podNamespace: pod.metadata?.namespace ?? 'unknown',
-                clusterName: clusterName,
-                containerName: pf.container,
-              }}
-            />
-          </Grid>
+
+        {pf && pf.type === 'logs' && (
+          <>
+            <Grid item xs={12}>
+              <Typography variant="h6">Crash logs:</Typography>
+            </Grid>
+            <Grid item xs={9}>
+              <PodLogs
+                previous
+                containerScope={{
+                  podName: pod.metadata?.name ?? 'unknown',
+                  podNamespace: pod.metadata?.namespace ?? 'unknown',
+                  clusterName: clusterName,
+                  containerName: pf.container,
+                }}
+              />
+            </Grid>
+          </>
         )}
-        {hasPodEvents && pf && pf.type === 'events' && (
-          <Grid item>
-            <Events
-              warningEventsOnly
-              involvedObjectName={pod.metadata?.name ?? ''}
-              namespace={pod.metadata?.namespace ?? ''}
-              clusterName={clusterName}
-            />
-          </Grid>
+        {pf && pf.type === 'events' && (
+          <>
+            <Grid item xs={12}>
+              <Typography variant="h6">Events:</Typography>
+            </Grid>
+            <Grid item xs={9}>
+              <Events
+                warningEventsOnly
+                involvedObjectName={pod.metadata?.name ?? ''}
+                namespace={pod.metadata?.namespace ?? ''}
+                clusterName={clusterName}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
     );
@@ -161,42 +169,17 @@ export const FixDialog: React.FC<FixDialogProps> = ({
         </DialogTitle>
         <DialogContent>{dialogContent()}</DialogContent>
         <DialogActions>
-          <ButtonGroup
-            variant="contained"
-            aria-label="outlined primary button group"
-          >
-            {pf && pf.type === 'logs' && (
-              <Button
-                disabled={hasGotCrashLogs}
-                variant="outlined"
-                startIcon={<SubjectIcon />}
-                onClick={() => setHasGotCrashLogs(true)}
-              >
-                Crash Logs
-              </Button>
-            )}
-            {pf && pf.type === 'events' && (
-              <Button
-                disabled={hasPodEvents}
-                variant="outlined"
-                startIcon={<SubjectIcon />}
-                onClick={() => setHasPodEvents(true)}
-              >
-                Pod Events
-              </Button>
-            )}
-            {pf && pf.type === 'docs' && (
-              <LinkButton
-                to={pf.docsLink}
-                variant="outlined"
-                startIcon={<OpenInNewIcon />}
-                target="_blank"
-                rel="noopener"
-              >
-                Open docs
-              </LinkButton>
-            )}
-          </ButtonGroup>
+          {pf && pf.type === 'docs' && (
+            <LinkButton
+              to={pf.docsLink}
+              variant="outlined"
+              startIcon={<OpenInNewIcon />}
+              target="_blank"
+              rel="noopener"
+            >
+              Open docs
+            </LinkButton>
+          )}
         </DialogActions>
       </Dialog>
     </>

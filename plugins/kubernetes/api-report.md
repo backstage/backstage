@@ -617,13 +617,13 @@ export const PodLogs: React_2.FC<PodLogsProps>;
 
 // @public
 export const PodLogsDialog: ({
-  podScope: containerScope,
+  containerScope,
 }: PodLogsDialogProps) => JSX.Element;
 
 // @public
 export interface PodLogsDialogProps {
   // (undocumented)
-  podScope: ContainerScope;
+  containerScope: ContainerScope;
 }
 
 // @public

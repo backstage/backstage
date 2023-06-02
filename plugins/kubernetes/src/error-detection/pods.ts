@@ -80,12 +80,11 @@ const readinessProbeProposedFixes = (pod: Pod): ProposedFix | undefined => {
   return {
     errorType: 'ReadinessProbeFailed',
     rootCauseExplanation: `The container ${firstUnreadyContainerStatus?.name} failed to start properly, but is not crashing`,
-    possibleFixes: [
+    actions: [
       'Ensure that the container starts correctly locally',
       "Check the container's logs looking for error during startup",
     ],
     type: 'events',
-    docsLink: 'TODO', // TODO not implement yet
     podName: pod.metadata?.name ?? '',
   };
 };
@@ -107,7 +106,7 @@ const restartingPodProposedFixes = (pod: Pod): ProposedFix | undefined => {
         // TODO check this one, it's more likely a cluster issue
         errorType: 'Unknown',
         rootCauseExplanation: `This container has exited with a non-zero exit code (${lastTerminated.exitCode})`,
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         container: lastTerminatedCs.name,
         type: 'logs',
       };
@@ -115,7 +114,7 @@ const restartingPodProposedFixes = (pod: Pod): ProposedFix | undefined => {
       return {
         errorType: 'Error',
         rootCauseExplanation: `This container has exited with a non-zero exit code (${lastTerminated.exitCode})`,
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         container: lastTerminatedCs.name,
         type: 'logs',
       };
@@ -123,7 +122,7 @@ const restartingPodProposedFixes = (pod: Pod): ProposedFix | undefined => {
       return {
         errorType: 'OOMKilled',
         rootCauseExplanation: `The container "${lastTerminatedCs.name}" has crashed because it has tried to use more memory that it has been allocated`,
-        possibleFixes: [
+        actions: [
           `Increase the amount of memory assigned to the container`,
           'Ensure the application is memory bounded and is not trying to consume too much memory',
         ],
@@ -150,9 +149,7 @@ const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
       return {
         errorType: 'InvalidImageName',
         rootCauseExplanation: 'The image in the pod is invalid',
-        possibleFixes: [
-          'Ensure the image name is correct and valid image name',
-        ],
+        actions: ['Ensure the image name is correct and valid image name'],
         type: 'docs',
         docsLink:
           'https://docs.docker.com/engine/reference/commandline/tag/#extended-description',
@@ -162,7 +159,7 @@ const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
         errorType: 'ImagePullBackOff',
         rootCauseExplanation:
           'The image either could not be found or Kubernetes does not have permission to pull it',
-        possibleFixes: [
+        actions: [
           'Ensure the image name is correct',
           'Ensure Kubernetes has permission to pull this image',
         ],
@@ -174,7 +171,7 @@ const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
       return {
         errorType: 'CrashLoopBackOff',
         rootCauseExplanation: `The container ${waitingCs?.name} has crashed many times, it will be exponentially restarted until it stops crashing`,
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         type: 'logs',
         container: waitingCs?.name ?? 'unknown',
       };
@@ -183,7 +180,7 @@ const waitingProposedFix = (pod: Pod): ProposedFix | undefined => {
         errorType: 'CreateContainerConfigError',
         rootCauseExplanation:
           'There is missing or mismatching configuration required to start the container',
-        possibleFixes: [
+        actions: [
           'Ensure ConfigMaps references in the Deployment manifest are correct and the keys exist',
           'Ensure Secrets references in the Deployment manifest are correct and the keys exist',
         ],

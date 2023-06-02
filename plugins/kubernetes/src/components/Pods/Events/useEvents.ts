@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 import useAsync from 'react-use/lib/useAsync';
+import { kubernetesProxyApiRef } from '../../../api';
 
 /**
  * Arguments for useEvents

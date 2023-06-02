@@ -79,11 +79,13 @@ export const EventsContent = ({
               return true;
             })
             .map(event => {
-              const timeAgo = DateTime.fromISO(
-                event.metadata.creationTimestamp as any,
-              ).toRelative({
-                locale: 'en',
-              });
+              const timeAgo = event.metadata.creationTimestamp
+                ? DateTime.fromISO(event.metadata.creationTimestamp).toRelative(
+                    {
+                      locale: 'en',
+                    },
+                  )
+                : 'unknown';
               return (
                 <ListItem key={event.metadata.name}>
                   <Tooltip title={`${event.type ?? ''} event`}>

@@ -20,6 +20,18 @@ import { render } from '@testing-library/react';
 import { FixDialog } from './FixDialog';
 import { Pod } from 'kubernetes-models/v1/Pod';
 
+jest.mock('../Events', () => ({
+  Events: () => {
+    return <React.Fragment data-testid="events" />;
+  },
+}));
+
+jest.mock('../PodLogs', () => ({
+  PodLogs: () => {
+    return <React.Fragment data-testid="logs" />;
+  },
+}));
+
 describe('FixDialog', () => {
   it('docs link should render', () => {
     const { getByText } = render(
@@ -50,7 +62,7 @@ describe('FixDialog', () => {
             docsLink: 'http://google.com',
             errorType: 'some error type',
             rootCauseExplanation: 'some root cause',
-            possibleFixes: ['fix1', 'fix2'],
+            actions: ['fix1', 'fix2'],
           },
         }}
       />,
@@ -88,16 +100,15 @@ describe('FixDialog', () => {
           },
           proposedFix: {
             type: 'events',
-            docsLink: 'http://google.com',
             podName: 'some-pod',
             errorType: 'some error type',
             rootCauseExplanation: 'some root cause',
-            possibleFixes: ['fix1', 'fix2'],
+            actions: ['fix1', 'fix2'],
           },
         }}
       />,
     );
-    expect(getByText('Pod Events')).toBeInTheDocument();
+    expect(getByText('Events:')).toBeInTheDocument();
     expect(getByText('some error message')).toBeInTheDocument();
     expect(getByText('some-pod - some error type')).toBeInTheDocument();
     expect(getByText('some root cause')).toBeInTheDocument();
@@ -133,12 +144,12 @@ describe('FixDialog', () => {
             container: 'some-container',
             errorType: 'some error type',
             rootCauseExplanation: 'some root cause',
-            possibleFixes: ['fix1', 'fix2'],
+            actions: ['fix1', 'fix2'],
           },
         }}
       />,
     );
-    expect(getByText('Crash Logs')).toBeInTheDocument();
+    expect(getByText('Crash logs:')).toBeInTheDocument();
     expect(getByText('some error message')).toBeInTheDocument();
     expect(getByText('some-pod - some error type')).toBeInTheDocument();
     expect(getByText('some root cause')).toBeInTheDocument();

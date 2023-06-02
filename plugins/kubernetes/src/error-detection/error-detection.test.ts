@@ -159,7 +159,7 @@ describe('detectErrors', () => {
       proposedFix: {
         container: 'other-side-car',
         errorType: 'CrashLoopBackOff',
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         rootCauseExplanation:
           'The container other-side-car has crashed many times, it will be exponentially restarted until it stops crashing',
         type: 'logs',
@@ -178,7 +178,7 @@ describe('detectErrors', () => {
       proposedFix: {
         container: 'other-side-car',
         errorType: 'CrashLoopBackOff',
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         rootCauseExplanation:
           'The container other-side-car has crashed many times, it will be exponentially restarted until it stops crashing',
         type: 'logs',
@@ -203,7 +203,7 @@ describe('detectErrors', () => {
       proposedFix: {
         container: 'other-side-car',
         errorType: 'Error',
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         rootCauseExplanation:
           'This container has exited with a non-zero exit code (1)',
         type: 'logs',
@@ -221,7 +221,7 @@ describe('detectErrors', () => {
       proposedFix: {
         container: 'other-side-car',
         errorType: 'Error',
-        possibleFixes: ['Check the crash logs for stacktraces'],
+        actions: ['Check the crash logs for stacktraces'],
         rootCauseExplanation:
           'This container has exited with a non-zero exit code (1)',
         type: 'logs',
@@ -251,7 +251,7 @@ describe('detectErrors', () => {
         docsLink:
           'https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/',
         errorType: 'CreateContainerConfigError',
-        possibleFixes: [
+        actions: [
           'Ensure ConfigMaps references in the Deployment manifest are correct and the keys exist',
           'Ensure Secrets references in the Deployment manifest are correct and the keys exist',
         ],
@@ -471,10 +471,9 @@ describe('detectErrors', () => {
         'The container some-container failed to start properly, but is not crashing',
       occuranceCount: 1,
       proposedFix: {
-        docsLink: 'TODO',
         errorType: 'ReadinessProbeFailed',
         podName: '',
-        possibleFixes: [
+        actions: [
           'Ensure that the container starts correctly locally',
           "Check the container's logs looking for error during startup",
         ],

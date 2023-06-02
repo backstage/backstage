@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
  * @public
  */
 export interface PodLogsDialogProps {
-  podScope: ContainerScope;
+  containerScope: ContainerScope;
 }
 
 /**
@@ -57,9 +57,7 @@ export interface PodLogsDialogProps {
  *
  * @public
  */
-export const PodLogsDialog = ({
-  podScope: containerScope,
-}: PodLogsDialogProps) => {
+export const PodLogsDialog = ({ containerScope }: PodLogsDialogProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 

@@ -54,7 +54,7 @@ export type ProposedFix = LogSolution | DocsSolution | EventsSolution;
 interface ProposedFixBase {
   errorType: string;
   rootCauseExplanation: string;
-  possibleFixes: string[];
+  actions: string[];
 }
 
 export interface LogSolution extends ProposedFixBase {
@@ -69,7 +69,6 @@ export interface DocsSolution extends ProposedFixBase {
 
 export interface EventsSolution extends ProposedFixBase {
   type: 'events';
-  docsLink: string;
   podName: string;
 }
 
