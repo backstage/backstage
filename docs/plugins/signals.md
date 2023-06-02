@@ -28,15 +28,27 @@ In this case, signal clients will use the `backend.baseUrl` as the connection ad
 defined as well. If the configuration value is `false` or not defined, the signal server will
 not be started and the clients will default to no operation and do nothing.
 
-If you need to connect the service from outside, the signal endpoint must be specified in the configuration
-as follows:
+If your frontend needs to connect the service from outside, the signal endpoint must be specified
+in the configuration as follows:
 
 ```yaml
 backend:
   baseUrl: http://localhost:7007
   signals:
     enabled: true
-    endpoint: ws://localhost:7007
+    endpoint: https://my-backstage-instance.io
+```
+
+The endpoint should be also added to the CORS to allow users to connect to the service:
+
+```yaml
+backend:
+  cors:
+    origin:
+      - http://localhost:3000
+      - https://my-backstage-instance.io
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
 ```
 
 ### Handling multiple backend instances

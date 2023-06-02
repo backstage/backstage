@@ -34,16 +34,16 @@ backend:
     enabled: true
     endpoint: 'http://localhost:7007'
     # Enable for multiple backend instances support, requires postgres database configuration in database
-    # adapter: 'pg'
+    adapter: 'pg'
   database:
-    client: better-sqlite3
-    connection: ':memory:'
-    # client: pg
-    # connection:
-    #   host: localhost
-    #   port: 5432
-    #   user: postgres
-    #   password: postgres
+    #client: better-sqlite3
+    #connection: ':memory:'
+    client: pg
+    connection:
+      host: localhost
+      port: 5432
+      user: postgres
+      password: postgres
   cache:
     store: memory
   cors:

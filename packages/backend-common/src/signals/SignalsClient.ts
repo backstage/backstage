@@ -62,6 +62,9 @@ export class DefaultSignalsClient implements SignalsService {
       const cmd: SignalsClientRegisterCommand = {
         pluginId: this.pluginId,
       };
+      this.logger.debug(
+        `Registering signals client for plugin ${this.pluginId}`,
+      );
       this.send('register', cmd);
 
       for (const msg of this.messageQueue) {

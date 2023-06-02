@@ -124,6 +124,10 @@ export class SignalsClient implements SignalsApi {
     }
   }
 
+  private getSubscriptionKey = (pluginId: string, topic?: string) => {
+    return topic ? `${pluginId}:${topic}` : pluginId;
+  };
+
   async subscribe(
     pluginId: string,
     onMessage: (data: unknown) => void,
@@ -133,7 +137,7 @@ export class SignalsClient implements SignalsApi {
       return;
     }
 
-    const subscriptionKey = `${pluginId}:${topic}`;
+    const subscriptionKey = this.getSubscriptionKey(pluginId, topic);
     if (this.subscriptions.has(subscriptionKey)) {
       return;
     }
@@ -147,7 +151,7 @@ export class SignalsClient implements SignalsApi {
       return;
     }
 
-    const subscriptionKey = `${pluginId}:${topic}`;
+    const subscriptionKey = this.getSubscriptionKey(pluginId, topic);
     if (!this.subscriptions.has(subscriptionKey)) {
       return;
     }

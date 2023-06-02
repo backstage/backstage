@@ -23,29 +23,41 @@ import {
   SignalsClientSubscribeCommand,
 } from './types';
 import { JWTPayload } from 'jose';
+import * as uuid from 'uuid';
 import { Handshake } from 'socket.io/dist/socket';
 import { Emitter } from '@socket.io/postgres-emitter';
-
-type SignalsConnectionType = 'frontend' | 'backend';
 
 type SignalsSubscription = {
   pluginId: string;
   topic?: string;
 };
 
-type SignalsConnection = {
+type SignalsBaseConnection = {
   ws: Socket;
-  type: SignalsConnectionType;
   ip?: string;
   sub?: string;
+};
+
+type SignalsFrontendConnection = {
+  type: 'frontend';
   entityRefs: string[];
   subscriptions: Map<string, SignalsSubscription>;
+} & SignalsBaseConnection;
+
+type SignalsBackendConnection = {
+  type: 'backend';
   pluginId?: string;
-  topic?: string;
+} & SignalsBaseConnection;
+
+type SignalsConnection = SignalsFrontendConnection | SignalsBackendConnection;
+
+type SignalsSyncMessage = {
+  uid: string;
+  message: SignalsClientMessage;
 };
 
 const stringifyConnection = (conn: SignalsConnection) => {
-  return `(id: ${conn.ws.id}, type: ${conn.type}, sub: ${conn.sub}, plugin: ${conn.pluginId}, ip: ${conn.ip})`;
+  return `(id: ${conn.ws.id}, type: ${conn.type}, sub: ${conn.sub}, ip: ${conn.ip})`;
 };
 
 /**
@@ -55,6 +67,8 @@ const stringifyConnection = (conn: SignalsConnection) => {
  * @private
  */
 export class SignalsBroker {
+  private readonly uid: string;
+  private readonly server: Server;
   private readonly logger: LoggerService;
   private readonly connections: Map<string, SignalsConnection>;
   private readonly emitter?: Emitter;
@@ -72,17 +86,35 @@ export class SignalsBroker {
     logger: LoggerService,
     emitter?: Emitter,
   ) {
+    this.uid = uuid.v4();
+    this.server = server;
     this.logger = logger;
     this.connections = new Map();
     this.emitter = emitter;
 
-    server.on('connection', this.handleConnection);
-    server.on('close', () => {
+    this.server.on('connection', this.handleConnection);
+    this.server.on('close', () => {
       for (const conn of this.connections.values()) {
         conn.ws.disconnect();
       }
       this.connections.clear();
     });
+
+    if (this.emitter) {
+      // This handles publish messages from other backend instances
+      this.server.on('broker:publish', (cmd: SignalsSyncMessage) => {
+        // Skip own instance messages as those are already sent to the clients
+        if (cmd.uid === this.uid) {
+          this.logger.debug('Received sync message from self, rejecting');
+          return;
+        }
+
+        this.logger.debug(
+          `Received sync message from broker ${cmd.uid}, sending!`,
+        );
+        this.publishToClients(cmd.message, cmd.uid);
+      });
+    }
   }
 
   private closeConnection = (conn: SignalsConnection) => {
@@ -104,7 +136,7 @@ export class SignalsBroker {
       token = matches?.[1];
     }
 
-    let type: SignalsConnectionType = 'frontend';
+    let type = 'frontend';
     let entities: string[] = [];
     let sub;
     if (token) {
@@ -133,17 +165,22 @@ export class SignalsBroker {
       ws.disconnect();
       return;
     }
-
-    const conn: SignalsConnection = {
-      ws,
-      sub,
-      entityRefs: entities,
-      subscriptions: new Map(),
-      ip,
-      type,
-    };
+    let conn: SignalsConnection;
+    if (type === 'backend') {
+      conn = { ws, sub, ip } as SignalsBackendConnection;
+    } else {
+      conn = {
+        ws,
+        sub,
+        ip,
+        type,
+        entityRefs: entities,
+        subscriptions: new Map(),
+      } as SignalsFrontendConnection;
+    }
 
     this.connections.set(ws.id, conn);
+    this.logger.info(`New connection from ${stringifyConnection(conn)}`);
 
     conn.ws.on('register', (data: SignalsClientRegisterCommand) => {
       this.handleRegister(conn, data);
@@ -152,7 +189,6 @@ export class SignalsBroker {
       this.handlePublish(conn, data);
     });
     conn.ws.on('subscribe', (data: SignalsClientSubscribeCommand) => {
-      this.logger.info(`Subscribing to ${stringifyConnection(conn)}`);
       this.handleSubscribe(conn, data);
     });
     conn.ws.on('unsubscribe', (data: SignalsClientSubscribeCommand) => {
@@ -187,17 +223,29 @@ export class SignalsBroker {
     cmd: SignalsClientMessage,
   ) => {
     const connStr = stringifyConnection(conn);
-    if (!conn.pluginId || conn.type !== 'backend') {
+    if (conn.type !== 'backend' || !conn.pluginId) {
       this.logger.warn(`Invalid signals publish request from ${connStr}`);
       return;
     }
 
     // Emit the message to all other backends
     if (this.emitter) {
-      this.emitter.serverSideEmit('publish', cmd);
+      const sync: SignalsSyncMessage = { uid: this.uid, message: cmd };
+      this.emitter.serverSideEmit('broker:publish', sync);
     }
 
+    this.publishToClients(cmd, this.uid);
+  };
+
+  private publishToClients = (cmd: SignalsClientMessage, brokerUid: string) => {
+    // We don't want to leak the receivers to the frontends
+    const msg = { ...cmd, targetEntityRefs: undefined };
+
     for (const c of this.connections.values()) {
+      // Backend subscriptions are disabled
+      if (c.type !== 'frontend') {
+        continue;
+      }
       const subs = [...c.subscriptions.values()];
 
       // Check that the connection has subscription to plugin and optional topic
@@ -220,16 +268,30 @@ export class SignalsBroker {
         continue;
       }
 
-      c.ws.emit('message', cmd);
+      this.logger.debug(
+        `Publishing message to ${stringifyConnection(
+          c,
+        )} initiated by broker ${brokerUid}, this broker is ${this.uid}`,
+      );
+
+      c.ws.emit('message', msg);
     }
+  };
+
+  private getSubscriptionKey = (cmd: SignalsClientSubscribeCommand) => {
+    return cmd.topic ? `${cmd.pluginId}:${cmd.topic}` : cmd.pluginId;
   };
 
   private handleSubscribe = (
     conn: SignalsConnection,
     cmd: SignalsClientSubscribeCommand,
   ) => {
+    // Backend subscriptions are disabled for now
+    if (conn.type !== 'frontend') {
+      return;
+    }
     const connStr = stringifyConnection(conn);
-    const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
+    const subscriptionKey = this.getSubscriptionKey(cmd);
     if (conn.subscriptions.has(subscriptionKey)) {
       return;
     }
@@ -244,8 +306,12 @@ export class SignalsBroker {
     conn: SignalsConnection,
     cmd: SignalsClientSubscribeCommand,
   ) => {
+    // Backend subscriptions are disabled for now
+    if (conn.type !== 'frontend') {
+      return;
+    }
     const connStr = stringifyConnection(conn);
-    const subscriptionKey = `${cmd.pluginId}:${cmd.topic}`;
+    const subscriptionKey = this.getSubscriptionKey(cmd);
     if (!conn.subscriptions.has(subscriptionKey)) {
       return;
     }

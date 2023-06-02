@@ -73,8 +73,7 @@ export class SignalsClientManager {
     const signalsConfig = config.getOptionalConfig('backend.signals');
     if (signalsConfig) {
       const enabled = signalsConfig.getOptionalBoolean('enabled') ?? false;
-      const endpoint = signalsConfig.getOptionalString('endpoint') ?? baseUrl;
-      return { endpoint, enabled };
+      return { endpoint: baseUrl, enabled };
     }
 
     return { endpoint: '', enabled: false };

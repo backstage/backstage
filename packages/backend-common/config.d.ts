@@ -74,8 +74,6 @@ export interface Config {
       | {
           /** Is events enabled, defaults to false */
           enabled?: boolean;
-          /** Endpoint for the clients to connect to, must start with http://, https://, ws:// or wss:// */
-          endpoint?: string;
           /** Adapter to use for multiple backend instances */
           adapter?: 'memory' | 'pg';
         };
