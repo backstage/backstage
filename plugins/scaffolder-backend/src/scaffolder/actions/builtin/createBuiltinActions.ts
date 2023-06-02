@@ -42,6 +42,8 @@ import {
 } from './filesystem';
 import {
   createGithubActionsDispatchAction,
+  createGithubDeployKeyAction,
+  createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
@@ -193,6 +195,12 @@ export const createBuiltinActions = (
       integrations,
       config,
       githubCredentialsProvider,
+    }),
+    createGithubEnvironmentAction({
+      integrations,
+    }),
+    createGithubDeployKeyAction({
+      integrations,
     }),
   ];
 
