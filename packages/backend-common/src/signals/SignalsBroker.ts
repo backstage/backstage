@@ -93,28 +93,35 @@ export class SignalsBroker {
     this.emitter = emitter;
 
     this.server.on('connection', this.handleConnection);
+
+    this.server.on('error', (err: Error) => {
+      this.logger.error(`Signal broker error occurred: ${err}, closing broker`);
+      this.server.close();
+    });
+
     this.server.on('close', () => {
+      this.logger.info('Signal broker closing, disconnecting all clients');
       for (const conn of this.connections.values()) {
         conn.ws.disconnect();
       }
       this.connections.clear();
     });
 
-    if (this.emitter) {
-      // This handles publish messages from other backend instances
-      this.server.on('broker:publish', (cmd: SignalsSyncMessage) => {
-        // Skip own instance messages as those are already sent to the clients
-        if (cmd.uid === this.uid) {
-          this.logger.debug('Received sync message from self, rejecting');
-          return;
-        }
+    // This handles publish messages from other backend instances
+    this.server.on('broker:publish', (cmd: SignalsSyncMessage) => {
+      // Skip own instance messages as those are already sent to the clients
+      if (cmd.uid === this.uid) {
+        this.logger.debug('Received sync message from self, rejecting');
+        return;
+      }
 
-        this.logger.debug(
-          `Received sync message from broker ${cmd.uid}, sending!`,
-        );
-        this.publishToClients(cmd.message, cmd.uid);
-      });
-    }
+      this.logger.debug(
+        `Received sync message from broker ${cmd.uid}, sending!`,
+      );
+      this.publishToClients(cmd.message, cmd.uid);
+    });
+
+    this.logger.info(`Initialized signal broker ${this.uid}`);
   }
 
   private closeConnection = (conn: SignalsConnection) => {
@@ -130,19 +137,13 @@ export class SignalsBroker {
       token = handshake.auth.token;
     }
 
-    if (typeof handshake.headers.authorization === 'string') {
-      const matches =
-        handshake.headers.authorization.match(/^Bearer[ ]+(\S+)$/i);
-      token = matches?.[1];
-    }
-
     let type = 'frontend';
     let entities: string[] = [];
     let sub;
     if (token) {
       const decoded = jwt_decode<JWTPayload>(token);
       sub = decoded.sub;
-      if (decoded.sub === 'backstage-server') {
+      if (sub === 'backstage-server') {
         type = 'backend';
       }
       if (Array.isArray(decoded.ent)) {
@@ -167,7 +168,7 @@ export class SignalsBroker {
     }
     let conn: SignalsConnection;
     if (type === 'backend') {
-      conn = { ws, sub, ip } as SignalsBackendConnection;
+      conn = { ws, sub, type, ip } as SignalsBackendConnection;
     } else {
       conn = {
         ws,
@@ -195,10 +196,16 @@ export class SignalsBroker {
       this.handleUnsubscribe(conn, data);
     });
     conn.ws.on('disconnect', () => {
+      this.logger.info(`Connection ${stringifyConnection(conn)} disconnected`);
       this.closeConnection(conn);
     });
     conn.ws.on('error', (err: Error) => {
-      this.logger.error(`Signals error occurred: ${err}`);
+      this.logger.error(
+        `Signals connection error occurred for ${stringifyConnection(
+          conn,
+        )}: ${err}, disconnecting`,
+      );
+      this.closeConnection(conn);
     });
   };
 
@@ -223,7 +230,11 @@ export class SignalsBroker {
     cmd: SignalsClientMessage,
   ) => {
     const connStr = stringifyConnection(conn);
-    if (conn.type !== 'backend' || !conn.pluginId) {
+    if (
+      conn.type !== 'backend' ||
+      !conn.pluginId ||
+      conn.pluginId !== cmd.pluginId
+    ) {
       this.logger.warn(`Invalid signals publish request from ${connStr}`);
       return;
     }
@@ -263,7 +274,7 @@ export class SignalsBroker {
       // check that the connection has been established using those
       if (
         cmd.targetEntityRefs &&
-        cmd.targetEntityRefs.some(r => c.entityRefs.includes(r))
+        !cmd.targetEntityRefs.some(r => c.entityRefs.includes(r))
       ) {
         continue;
       }
@@ -271,7 +282,7 @@ export class SignalsBroker {
       this.logger.debug(
         `Publishing message to ${stringifyConnection(
           c,
-        )} initiated by broker ${brokerUid}, this broker is ${this.uid}`,
+        )} initiated by broker ${brokerUid}, sent by ${this.uid}`,
       );
 
       c.ws.emit('message', msg);
@@ -286,16 +297,17 @@ export class SignalsBroker {
     conn: SignalsConnection,
     cmd: SignalsClientSubscribeCommand,
   ) => {
+    const connStr = stringifyConnection(conn);
     // Backend subscriptions are disabled for now
     if (conn.type !== 'frontend') {
+      this.logger.warn(`Invalid signals subscribe request from ${connStr}`);
       return;
     }
-    const connStr = stringifyConnection(conn);
     const subscriptionKey = this.getSubscriptionKey(cmd);
     if (conn.subscriptions.has(subscriptionKey)) {
       return;
     }
-    this.logger.info(`${connStr} subscribed to ${subscriptionKey}`);
+    this.logger.info(`${connStr} subscribed to '${subscriptionKey}'`);
     conn.subscriptions.set(subscriptionKey, {
       pluginId: cmd.pluginId,
       topic: cmd.topic,
@@ -306,16 +318,17 @@ export class SignalsBroker {
     conn: SignalsConnection,
     cmd: SignalsClientSubscribeCommand,
   ) => {
+    const connStr = stringifyConnection(conn);
     // Backend subscriptions are disabled for now
     if (conn.type !== 'frontend') {
+      this.logger.warn(`Invalid signals unsubscribe request from ${connStr}`);
       return;
     }
-    const connStr = stringifyConnection(conn);
     const subscriptionKey = this.getSubscriptionKey(cmd);
     if (!conn.subscriptions.has(subscriptionKey)) {
       return;
     }
-    this.logger.info(`${connStr} unsubscribed from ${subscriptionKey}`);
+    this.logger.info(`${connStr} unsubscribed from '${subscriptionKey}'`);
     conn.subscriptions.delete(subscriptionKey);
   };
 }

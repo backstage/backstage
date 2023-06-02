@@ -26,7 +26,6 @@ type SignalsSubscription = {
 export type SignalsMessage = {
   pluginId: string;
   topic?: string;
-  targetEntityRefs?: string[];
   data: unknown;
 };
 
@@ -74,11 +73,10 @@ export class SignalsClient implements SignalsApi {
   }
 
   private async connect() {
-    const url = new URL(this.endpoint);
     const { token } = await this.identity.getCredentials();
 
     if (!this.ws) {
-      this.ws = io(url.toString(), {
+      this.ws = io(this.endpoint, {
         path: '/signals',
         auth: { token: token },
         multiplex: true,
