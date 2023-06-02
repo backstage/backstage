@@ -42,11 +42,9 @@ import {
   OAuthRefreshRequest,
 } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { BACKSTAGE_SESSION_EXPIRATION } from '../../lib/session';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
-
-// TODO(Rugvip): Auth providers need a way to access this in a less hardcoded way
-const BACKSTAGE_SESSION_EXPIRATION = 3600;
 
 type PrivateInfo = {
   refreshToken?: string;
