@@ -457,7 +457,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     repoUrl: string;
     title: string;
     description?: string | undefined;
-    targetBranch: string;
+    targetBranch?: string | undefined;
     sourceBranch: string;
     token?: string | undefined;
   },

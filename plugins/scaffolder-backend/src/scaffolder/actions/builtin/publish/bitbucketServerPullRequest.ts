@@ -120,15 +120,13 @@ const findBranches = async (opts: {
   }
 
   const r = await response.json();
-  let branch;
   for (const object of r.values) {
     if (object.displayId === branchName) {
-      branch = object;
-      break;
+      return object;
     }
   }
 
-  return branch;
+  return undefined;
 };
 
 /**
@@ -145,7 +143,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     repoUrl: string;
     title: string;
     description?: string;
-    targetBranch: string;
+    targetBranch?: string;
     sourceBranch: string;
     token?: string;
   }>({
@@ -153,16 +151,16 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     schema: {
       input: {
         type: 'object',
-        required: ['repoUrl'],
+        required: ['repoUrl', 'title', 'sourceBranch'],
         properties: {
           repoUrl: {
             title: 'Repository Location',
             type: 'string',
           },
           title: {
-            title: 'Pull Request Name',
+            title: 'Pull Request title',
             type: 'string',
-            description: 'The name for the pull request',
+            description: 'The title for the pull request',
           },
           description: {
             title: 'Pull Request Description',
@@ -172,15 +170,15 @@ export function createPublishBitbucketServerPullRequestAction(options: {
           targetBranch: {
             title: 'Target Branch',
             type: 'string',
-            description: 'The description of the pull request',
+            description: `Branch of repository to apply changes to. The default value is 'master'`,
           },
           sourceBranch: {
             title: 'Source Branch',
             type: 'string',
-            description: 'The description of the pull request',
+            description: 'Branch of repository to copy changes from',
           },
           token: {
-            title: 'Authentication Token',
+            title: 'Authorization Token',
             type: 'string',
             description:
               'The token to use for authorization to BitBucket Server',
@@ -198,8 +196,13 @@ export function createPublishBitbucketServerPullRequestAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, title, description, targetBranch, sourceBranch } =
-        ctx.input;
+      const {
+        repoUrl,
+        title,
+        description,
+        targetBranch = 'master',
+        sourceBranch,
+      } = ctx.input;
 
       const { project, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -227,7 +230,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
       const authorization = reqOpts.headers.Authorization;
       if (!authorization) {
         throw new Error(
-          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, or (b) a token or (c) username + password to the integration config.`,
+          `Authorization has not been provided for ${integrationConfig.config.host}. Please add either (a) a user login auth token, or (b) a token input from the template or (c) username + password to the integration config.`,
         );
       }
 
