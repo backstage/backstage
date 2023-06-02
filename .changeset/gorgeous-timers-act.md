@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-gitlab': patch
 ---
 
-added test if user does not have name or profile picture,variable default to undefined
+Fixed bug that caused ingestion errors when a user's name or profile picture is undefined.
