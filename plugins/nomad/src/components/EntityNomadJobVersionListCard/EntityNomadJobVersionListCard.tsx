@@ -110,6 +110,8 @@ export const EntityNomadJobVersionListCard = () => {
     return <ResponseErrorPanel error={err} />;
   }
 
+  if (!entity) return <></>;
+
   // Check that job ID is set
   if (!isNomadJobIDAvailable(entity)) {
     return (
@@ -121,11 +123,11 @@ export const EntityNomadJobVersionListCard = () => {
 
   return (
     <Table<rowType>
-      title="Job Versions"
+      title="Job versions"
       actions={[
         {
           icon: () => <OpenInNewIcon />,
-          tooltip: 'Open Job Versions Tab in Nomad',
+          tooltip: 'Open in Nomad UI',
           isFreeAction: true,
           onClick: () => window.open(`${nomadAddr}/ui/jobs/${jobID}/versions`),
         },
