@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  createApiRef,
+} from '@backstage/core-plugin-api';
 
 /** @public */
 export const nomadApiRef = createApiRef<NomadApi>({
@@ -81,32 +84,22 @@ export class FetchError extends Error {
 
 /** @public */
 export class NomadHttpApi implements NomadApi {
-  static fromConfig(config: Config) {
-    return new NomadHttpApi(
-      config.getOptionalString('nomad.addr'),
-      config.getOptionalString('nomad.token'),
-    );
+  static new(discoveryApi: DiscoveryApi, fetchApi: FetchApi) {
+    return new NomadHttpApi(discoveryApi, fetchApi);
   }
 
-  constructor(
-    private addr: string = 'http://127.0.0.1:4646',
-    private token?: string,
-  ) {}
+  constructor(private discoveryApi: DiscoveryApi, private fetchApi: FetchApi) {}
 
   // TODO: pagination
   async listAllocations(
     options: ListAllocationsRequest,
   ): Promise<ListAllocationsResponse> {
-    const resp = await fetch(
-      `${this.addr}/v1/allocations?namespace=${encodeURIComponent(
+    const apiUrl = await this.discoveryApi.getBaseUrl('nomad');
+
+    const resp = await this.fetchApi.fetch(
+      `${apiUrl}/v1/allocations?namespace=${encodeURIComponent(
         options.namespace,
       )}&filter=${encodeURIComponent(options.filter)}`,
-      {
-        method: 'GET',
-        headers: {
-          'X-Nomad-Token': this.token || '',
-        },
-      },
     );
     if (!resp.ok) throw await FetchError.forResponse(resp);
 

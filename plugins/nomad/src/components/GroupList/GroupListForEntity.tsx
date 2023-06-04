@@ -44,6 +44,7 @@ export const GroupListForEntity = () => {
       return;
     }
 
+    // Issue call to nomad-backend
     try {
       const resp = await nomadApi.listAllocations({
         namespace,
@@ -58,7 +59,7 @@ export const GroupListForEntity = () => {
   if (response.loading) {
     return <Progress />;
   }
-  if (response.error || !response.value) {
+  if (response.error) {
     return null;
   }
 
