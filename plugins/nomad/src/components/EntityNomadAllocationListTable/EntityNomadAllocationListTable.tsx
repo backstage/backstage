@@ -16,6 +16,7 @@
 
 import {
   Link,
+  MissingAnnotationEmptyState,
   ResponseErrorPanel,
   StatusError,
   StatusOK,
@@ -32,6 +33,7 @@ import {
   NOMAD_GROUP_ANNOTATION,
   NOMAD_JOB_ID_ANNOTATION,
   NOMAD_NAMESPACE_ANNOTATION,
+  isNomadAllocationsAvailable,
 } from '../../Router';
 import useAsync from 'react-use/lib/useAsync';
 
@@ -92,13 +94,14 @@ const columns: TableColumn<rowType>[] = [
 ];
 
 /**
- * AllocationListTable is roughly based off Nomad's Allocations tab's view.
+ * EntityNomadAllocationListTable is roughly based off Nomad's Allocations tab's view.
  */
-export const AllocationListTable = () => {
+export const EntityNomadAllocationListTable = () => {
   // Wait on entity
   const { entity } = useEntity();
 
   // Get ref to the backend API
+  const [init, setInit] = useState(true);
   const configApi = useApi(configApiRef);
   const nomadApi = useApi(nomadApiRef);
   const nomadAddr = configApi.getString('nomad.addr');
@@ -106,6 +109,13 @@ export const AllocationListTable = () => {
   // Store results of calling API
   const [allocations, setAllocations] = useState<rowType[]>([]);
   const [err, setErr] = useState<Error>();
+
+  // Check that attributes are available
+  if (!isNomadAllocationsAvailable(entity)) {
+    <MissingAnnotationEmptyState
+      annotation={[NOMAD_JOB_ID_ANNOTATION, NOMAD_GROUP_ANNOTATION]}
+    />;
+  }
 
   // Get plugin attributes
   const namespace =
@@ -137,10 +147,8 @@ export const AllocationListTable = () => {
         .sort(({ ClientStatus: a }, { ClientStatus: b }) => {
           if (a === 'running' || b !== 'running') {
             return -1;
-          } else if (a === b || a !== 'running') {
-            return 0;
           }
-          return 1;
+          return 0;
         });
 
       setAllocations(results.map(row => ({ ...row, id: row.ID, nomadAddr })));
@@ -148,14 +156,21 @@ export const AllocationListTable = () => {
     } catch (e) {
       setAllocations([]);
       setErr(e);
-      return;
     }
   };
 
   // Start querying for allocations every 5s
   useAsync(async () => {
-    query();
-    return () => clearInterval(setInterval(query, 5000));
+    if (init) {
+      setInit(false);
+      query();
+    }
+
+    const interval = setTimeout(() => {
+      query();
+    }, 5_000);
+
+    return () => clearTimeout(interval);
   }, [allocations, entity]);
 
   // Store a ref to a potential error

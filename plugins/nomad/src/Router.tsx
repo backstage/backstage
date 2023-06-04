@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 import { Route, Routes } from 'react-router-dom';
-import { AllocationListTable } from './components/AllocationList/AllocationListTable';
+import { EntityNomadAllocationListTable } from './components/EntityNomadAllocationListTable/EntityNomadAllocationListTable';
 
 /** @public */
 export const NOMAD_NAMESPACE_ANNOTATION = 'nomad.io/namespace';
@@ -31,7 +31,11 @@ export const NOMAD_JOB_ID_ANNOTATION = 'nomad.io/job-id';
 export const NOMAD_GROUP_ANNOTATION = 'nomad.io/group';
 
 /** @public */
-export const isNomadAvailable = (entity: Entity) =>
+export const isNomadJobIDAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[NOMAD_JOB_ID_ANNOTATION]);
+
+/** @public */
+export const isNomadAllocationsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[NOMAD_JOB_ID_ANNOTATION]) ||
   Boolean(entity.metadata.annotations?.[NOMAD_GROUP_ANNOTATION]);
 
@@ -39,7 +43,7 @@ export const isNomadAvailable = (entity: Entity) =>
 export const EmbeddedRouter = () => {
   const { entity } = useEntity();
 
-  if (!isNomadAvailable(entity)) {
+  if (!isNomadAllocationsAvailable(entity)) {
     return (
       <MissingAnnotationEmptyState
         annotation={[NOMAD_JOB_ID_ANNOTATION, NOMAD_GROUP_ANNOTATION]}
@@ -49,7 +53,7 @@ export const EmbeddedRouter = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<AllocationListTable />} />
+      <Route path="/" element={<EntityNomadAllocationListTable />} />
     </Routes>
   );
 };

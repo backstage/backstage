@@ -44,22 +44,3 @@ export const nomadPlugin = createPlugin({
     entityContent: entityContentRouteRef,
   },
 });
-
-/** @public */
-export const NomadPage = nomadPlugin.provide(
-  createRoutableExtension({
-    name: 'NomadPage',
-    component: () =>
-      import('./components/NomadComponent').then(m => m.NomadComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
-
-/** @public */
-export const EntityNomadContent = nomadPlugin.provide(
-  createRoutableExtension({
-    name: 'EntityNomadContent',
-    component: () => import('./Router').then(m => m.EmbeddedRouter),
-    mountPoint: entityContentRouteRef,
-  }),
-);

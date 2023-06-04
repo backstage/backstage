@@ -16,21 +16,32 @@
 import { errorHandler, requestLoggingHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import express, { RequestHandler } from 'express';
+import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
-const createEndpoint = (
+export interface RouterOptions {
+  logger: Logger;
+  config: Config;
+}
+
+export async function createRouter(
   options: RouterOptions,
-  endpoint: string,
-): RequestHandler => {
+): Promise<express.Router> {
   const { config, logger } = options;
 
   // Get Nomad addr and token from config
   const addr = config.getString('nomad.addr');
   const token = config.getOptionalString('nomad.token');
 
-  return async function (req, resp) {
+  const router = Router();
+  router.use(express.json());
+
+  router.get('/health', (_, resp) => {
+    resp.json({ status: 'ok' });
+  });
+
+  router.get('/v1/allocations', async (req, resp) => {
     // Check namespace argument
     const namespace = (req.query.namespace as string) ?? '';
     if (!namespace || namespace === '') {
@@ -39,12 +50,7 @@ const createEndpoint = (
 
     // Check filter argument
     const filter = (req.query.filter as string) ?? '';
-    if (!filter || filter === '') {
-      throw new InputError(`Missing "filter" query parameter`);
-    }
-    logger.debug(
-      `${endpoint} request headers: namespace=${namespace} filter=${filter}`,
-    );
+    logger.debug(`request headers: namespace=${namespace} filter=${filter}`);
 
     // Issue the request
     const allocationsResp = await fetch(
@@ -62,27 +68,39 @@ const createEndpoint = (
 
     // Deserialize and return
     const allocationsBody = await allocationsResp.json();
-    logger.debug(`${endpoint} response: ${allocationsBody}`);
+    logger.debug(`/v1/allocations response: ${allocationsBody}`);
     resp.json(allocationsBody);
-  };
-};
-
-export interface RouterOptions {
-  logger: Logger;
-  config: Config;
-}
-
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const router = Router();
-  router.use(express.json());
-
-  router.get('/health', (_, resp) => {
-    resp.json({ status: 'ok' });
   });
-  router.get('/v1/allocations', createEndpoint(options, '/v1/allocations'));
-  router.get('/v1/deployments', createEndpoint(options, '/v1/deployments'));
+
+  router.get('/v1/job/:job_id/versions', async (req, resp) => {
+    // Check namespace argument
+    const namespace = (req.query.namespace as string) ?? '';
+    if (!namespace || namespace === '') {
+      throw new InputError(`Missing "namespace" query parameter`);
+    }
+
+    // Get job ID
+    const jobID = (req.params.job_id as string) ?? '';
+
+    // Issue the request
+    const versionsResp = await fetch(
+      `${addr}/v1/job/${jobID}/versions?namespace=${encodeURIComponent(
+        namespace,
+      )}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'X-Nomad-Token': token || '',
+        },
+      },
+    );
+
+    // Deserialize and return
+    const versionsBody = await versionsResp.json();
+    logger.debug(`/v1/job/:job_id/versions response: ${versionsBody}`);
+    resp.json(versionsBody);
+  });
 
   router.use(requestLoggingHandler());
   router.use(errorHandler());
