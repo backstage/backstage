@@ -54,6 +54,7 @@
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-lighthouse-backend": "workspace:^",
     "@backstage/plugin-linguist-backend": "workspace:^",
+    "@backstage/plugin-nomad-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",

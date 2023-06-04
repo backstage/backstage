@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -33,8 +34,9 @@ export const nomadPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: nomadApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => NomadHttpApi.fromConfig(configApi),
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        NomadHttpApi.new(discoveryApi, fetchApi),
     }),
   ],
   routes: {

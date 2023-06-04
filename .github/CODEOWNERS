@@ -54,6 +54,7 @@
 /plugins/gcalendar                                @backstage/maintainers @szubster @ptychu @kielosz @alexrybch
 /plugins/git-release-manager                      @backstage/maintainers @erikengervall
 /plugins/home                                     @backstage/discoverability-maintainers
+/plugins/home-*                                   @backstage/discoverability-maintainers
 /plugins/ilert                                    @backstage/maintainers @yacut
 /plugins/jenkins                                  @backstage/maintainers @timja
 /plugins/jenkins-backend                          @backstage/maintainers @timja
