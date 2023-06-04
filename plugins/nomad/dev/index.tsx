@@ -13,15 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { nomadPlugin, NomadPage } from '../src/plugin';
+import { nomadPlugin } from '../src/plugin';
 
-createDevApp()
-  .registerPlugin(nomadPlugin)
-  .addPage({
-    element: <NomadPage />,
-    title: 'Root Page',
-    path: '/nomad',
-  })
-  .render();
+createDevApp().registerPlugin(nomadPlugin).render();
