@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 import { EntityNomadJobVersionListCard } from './EntityNomadJobVersionListCard/EntityNomadJobVersionListCard';
+import { EntityNomadAllocationListTable } from './EntityNomadAllocationListTable/EntityNomadAllocationListTable';
 
-export { EntityNomadJobVersionListCard };
+export { EntityNomadJobVersionListCard, EntityNomadAllocationListTable };

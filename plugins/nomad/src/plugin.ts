@@ -18,8 +18,9 @@ import {
   fetchApiRef,
   createApiFactory,
   createPlugin,
-  createRoutableExtension,
   createRouteRef,
+  createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
@@ -44,3 +45,42 @@ export const nomadPlugin = createPlugin({
     entityContent: entityContentRouteRef,
   },
 });
+
+/** @public */
+export const EntityNomadContent = nomadPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityNomadContent',
+    component: () => import('./Router').then(m => m.EmbeddedRouter),
+    mountPoint: entityContentRouteRef,
+  }),
+);
+
+/**
+ * Card used to show the list of Nomad job versions.
+ *
+ * @public
+ */
+export const EntityNomadJobVersionListCard = nomadPlugin.provide(
+  createComponentExtension({
+    name: 'EntityNomadJobVersionListCard',
+    component: {
+      lazy: () =>
+        import('./components').then(m => m.EntityNomadJobVersionListCard),
+    },
+  }),
+);
+
+/**
+ * Table used to show the list of Nomad allocations for a job and/or task-group.
+ *
+ * @public
+ */
+export const EntityNomadAllocationListTable = nomadPlugin.provide(
+  createComponentExtension({
+    name: 'EntityNomadAllocationListTable',
+    component: {
+      lazy: () =>
+        import('./components').then(m => m.EntityNomadAllocationListTable),
+    },
+  }),
+);

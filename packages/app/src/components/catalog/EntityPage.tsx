@@ -113,8 +113,10 @@ import {
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
 import {
-  EntityNomadContent,
+  EntityNomadAllocationListTable,
   EntityNomadJobVersionListCard,
+  isNomadAllocationsAvailable,
+  isNomadJobIDAvailable,
 } from '@backstage/plugin-nomad';
 import {
   EntityPagerDutyCard,
@@ -176,7 +178,6 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
-import { isNomadJobIDAvailable } from '@backstage/plugin-nomad';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -450,7 +451,7 @@ const overviewContent = (
 
     <EntitySwitch>
       <EntitySwitch.Case if={isNomadJobIDAvailable}>
-        <Grid item sm={4}>
+        <Grid item md={6} xs={12}>
           <EntityNomadJobVersionListCard />
         </Grid>
       </EntitySwitch.Case>
@@ -514,8 +515,12 @@ const serviceEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/nomad" title="Nomad">
-      <EntityNomadContent />
+    <EntityLayout.Route
+      if={isNomadAllocationsAvailable}
+      path="/nomad"
+      title="Nomad"
+    >
+      <EntityNomadAllocationListTable />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
