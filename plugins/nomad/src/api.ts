@@ -37,13 +37,13 @@ export type NomadApi = {
   ) => Promise<ListAllocationsResponse>;
 
   /**
-   * listDeployments is for listing all deployments matching some part of 'filter'.
+   * listJobVersions is for listing all deployments matching some part of 'filter'.
    *
    * See: https://developer.hashicorp.com/nomad/api-docs/deployments#list-deployments
    */
-  listDeployments: (
-    options: ListDeploymentsRequest,
-  ) => Promise<ListDeploymentsResponse>;
+  listJobVersions: (
+    options: ListJobVersionsRequest,
+  ) => Promise<ListJobVersionsResponse>;
 };
 
 /** @public */
@@ -79,37 +79,22 @@ export interface DeploymentStatus {
 }
 
 /** @public */
-export interface ListDeploymentsRequest {
+export interface ListJobVersionsRequest {
   namespace: string;
-  filter: string;
+  jobID: string;
 }
 
 /** @public */
-export interface ListDeploymentsResponse {
-  deployments: Deployment[];
+export interface ListJobVersionsResponse {
+  versions: Version[];
 }
 
 /** @public */
-export interface Deployment {
+export interface Version {
   ID: string;
-  JobID: string;
-  JobVersion: number;
-  JobModifyIndex: number;
-  TaskGroups: {
-    [taskGroup: string]: {
-      Promoted: boolean;
-      DesiredCanaries: number;
-      DesiredTotal: number;
-      PlacedAllocs: number;
-      HealthyAllocs: number;
-      UnhealthyAllocs: number;
-    };
-  };
-  JobSpecModifyIndex: number;
-  JobCreateIndex: number;
-  Status: string;
-  CreateIndex: number;
-  ModifyIndex: number;
+  SubmitTime: number;
+  Stable: boolean;
+  Version: number;
 }
 
 /** @public */
@@ -154,20 +139,22 @@ export class NomadHttpApi implements NomadApi {
   }
 
   // TODO: pagination
-  async listDeployments(
-    options: ListDeploymentsRequest,
-  ): Promise<ListDeploymentsResponse> {
+  async listJobVersions(
+    options: ListJobVersionsRequest,
+  ): Promise<ListJobVersionsResponse> {
     const apiUrl = await this.discoveryApi.getBaseUrl('nomad');
 
     const resp = await this.fetchApi.fetch(
-      `${apiUrl}/v1/deployments?namespace=${encodeURIComponent(
-        options.namespace,
-      )}&filter=${encodeURIComponent(options.filter)}`,
+      `${apiUrl}/v1/job/${
+        options.jobID
+      }/versions?namespace=${encodeURIComponent(options.namespace)}`,
     );
     if (!resp.ok) throw await FetchError.forResponse(resp);
 
+    const respJson = await resp.json();
+
     return Promise.resolve({
-      deployments: await resp.json(),
+      versions: respJson.Versions,
     });
   }
 }

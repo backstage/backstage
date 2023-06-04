@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { nomadPlugin, NomadPage, EntityNomadContent } from './plugin';
-export { isNomadAvailable, EmbeddedRouter } from './Router';
+export { nomadPlugin } from './plugin';
+export {
+  isNomadAllocationsAvailable,
+  isNomadJobIDAvailable,
+  EmbeddedRouter,
+} from './Router';
+export { EntityNomadJobVersionListCard } from './components';

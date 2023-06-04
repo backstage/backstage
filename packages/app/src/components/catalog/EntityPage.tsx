@@ -112,7 +112,10 @@ import {
   EntityOwnershipCard,
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
-import { EntityNomadContent } from '@backstage/plugin-nomad';
+import {
+  EntityNomadContent,
+  EntityNomadJobVersionListCard,
+} from '@backstage/plugin-nomad';
 import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
@@ -173,6 +176,7 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
+import { isNomadJobIDAvailable } from '@backstage/plugin-nomad';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -443,6 +447,14 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isNomadJobIDAvailable}>
+        <Grid item sm={4}>
+          <EntityNomadJobVersionListCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
   </Grid>
 );
 
