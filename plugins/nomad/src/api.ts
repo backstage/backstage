@@ -35,6 +35,15 @@ export type NomadApi = {
   listAllocations: (
     options: ListAllocationsRequest,
   ) => Promise<ListAllocationsResponse>;
+
+  /**
+   * listDeployments is for listing all deployments matching some part of 'filter'.
+   *
+   * See: https://developer.hashicorp.com/nomad/api-docs/deployments#list-deployments
+   */
+  listDeployments: (
+    options: ListDeploymentsRequest,
+  ) => Promise<ListDeploymentsResponse>;
 };
 
 /** @public */
@@ -67,6 +76,40 @@ export interface Allocation {
 export interface DeploymentStatus {
   Healthy: boolean;
   Timestamp: string;
+}
+
+/** @public */
+export interface ListDeploymentsRequest {
+  namespace: string;
+  filter: string;
+}
+
+/** @public */
+export interface ListDeploymentsResponse {
+  deployments: Deployment[];
+}
+
+/** @public */
+export interface Deployment {
+  ID: string;
+  JobID: string;
+  JobVersion: number;
+  JobModifyIndex: number;
+  TaskGroups: {
+    [taskGroup: string]: {
+      Promoted: boolean;
+      DesiredCanaries: number;
+      DesiredTotal: number;
+      PlacedAllocs: number;
+      HealthyAllocs: number;
+      UnhealthyAllocs: number;
+    };
+  };
+  JobSpecModifyIndex: number;
+  JobCreateIndex: number;
+  Status: string;
+  CreateIndex: number;
+  ModifyIndex: number;
 }
 
 /** @public */
@@ -107,6 +150,24 @@ export class NomadHttpApi implements NomadApi {
 
     return Promise.resolve({
       allocations: await resp.json(),
+    });
+  }
+
+  // TODO: pagination
+  async listDeployments(
+    options: ListDeploymentsRequest,
+  ): Promise<ListDeploymentsResponse> {
+    const apiUrl = await this.discoveryApi.getBaseUrl('nomad');
+
+    const resp = await this.fetchApi.fetch(
+      `${apiUrl}/v1/deployments?namespace=${encodeURIComponent(
+        options.namespace,
+      )}&filter=${encodeURIComponent(options.filter)}`,
+    );
+    if (!resp.ok) throw await FetchError.forResponse(resp);
+
+    return Promise.resolve({
+      deployments: await resp.json(),
     });
   }
 }
