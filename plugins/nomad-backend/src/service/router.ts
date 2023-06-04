@@ -16,45 +16,37 @@
 import { errorHandler, requestLoggingHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
-export interface RouterOptions {
-  logger: Logger;
-  config: Config;
-}
-
-export async function createRouter(
+const createEndpoint = (
   options: RouterOptions,
-): Promise<express.Router> {
+  endpoint: string,
+): RequestHandler => {
   const { config, logger } = options;
 
-  const router = Router();
-  router.use(express.json());
+  // Get Nomad addr and token from config
+  const addr = config.getString('nomad.addr');
+  const token = config.getOptionalString('nomad.token');
 
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.json({ status: 'ok' });
-  });
-
-  router.get('/v1/allocations', async (req, resp) => {
-    const addr = config.getString('nomad.addr');
-    const token = config.getOptionalString('nomad.token');
-
+  return async function (req, resp) {
+    // Check namespace argument
     const namespace = (req.query.namespace as string) ?? '';
     if (!namespace || namespace === '') {
       throw new InputError(`Missing "namespace" query parameter`);
     }
 
+    // Check filter argument
     const filter = (req.query.filter as string) ?? '';
     if (!filter || filter === '') {
       throw new InputError(`Missing "filter" query parameter`);
     }
-
     logger.debug(
-      `/v1/allocations request headers: namespace=${namespace} filter=${filter}`,
+      `${endpoint} request headers: namespace=${namespace} filter=${filter}`,
     );
+
+    // Issue the request
     const allocationsResp = await fetch(
       `${addr}/v1/allocations?namespace=${encodeURIComponent(
         namespace,
@@ -68,11 +60,29 @@ export async function createRouter(
       },
     );
 
+    // Deserialize and return
     const allocationsBody = await allocationsResp.json();
-    logger.debug(`/v1/allocations response: ${allocationsBody}`);
-
+    logger.debug(`${endpoint} response: ${allocationsBody}`);
     resp.json(allocationsBody);
+  };
+};
+
+export interface RouterOptions {
+  logger: Logger;
+  config: Config;
+}
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const router = Router();
+  router.use(express.json());
+
+  router.get('/health', (_, resp) => {
+    resp.json({ status: 'ok' });
   });
+  router.get('/v1/allocations', createEndpoint(options, '/v1/allocations'));
+  router.get('/v1/deployments', createEndpoint(options, '/v1/deployments'));
 
   router.use(requestLoggingHandler());
   router.use(errorHandler());
