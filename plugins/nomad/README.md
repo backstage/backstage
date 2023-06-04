@@ -1,6 +1,8 @@
 # @backstage/plugin-nomad
 
-This plugin is a frontend for viewing Nomad job versions and allocations.
+This is a frontend plugin is for viewing Nomad [job versions](https://developer.hashicorp.com/nomad/docs/concepts/architecture#job) and [task group allocations](https://developer.hashicorp.com/nomad/docs/concepts/architecture#allocation).
+
+This plugin has a corresponding backend plugin required to call the Nomad cluster's API: ` @backstage/plugin-nomad-backend`.
 
 ## Introduction
 
@@ -19,9 +21,11 @@ At the time of writing, this plugin provides two components:
 
 ### Requirements
 
-You will need a running Nomad cluster. You can follow [this tutorial](https://developer.hashicorp.com/nomad/tutorials/enterprise/production-deployment-guide-vm-with-consul) to learn how to deploy one.
+You will need to have the backend Nomad plugin, `@backstage/plugin-nomad-backend`, installed and running. See its README for set up instructions.
 
-If ACLs are enabled, you will need a `token` with at least [`list-jobs` and `read-jobs` capabilities](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-policies#namespace-rules). You can check [this tutorial](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-create-policy) for more info.
+You will need a running Nomad cluster with an API address that is reachable from the `@backstage/plugin-nomad/backend` plugin [running in the back end](https://backstage.io/docs/overview/architecture-overview/#third-party-backed-plugins). You can follow [this tutorial](https://developer.hashicorp.com/nomad/tutorials/enterprise/production-deployment-guide-vm-with-consul) to learn how to deploy one.
+
+If your Nomad cluster has ACLs enabled, you will need a `token` with at least [`list-jobs` and `read-jobs` capabilities](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-policies#namespace-rules). You can check [this tutorial](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-create-policy) for more info.
 
 ### Installation
 
@@ -44,18 +48,21 @@ The `token` can be excluded if [ACLs are not enabled](https://developer.hashicor
 
 ### Annotate Components
 
-There are two annotations for Components in the Service Catalog:
+Several annotations are available for Components that make use of this plugin:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   annotations:
+    nomad.io/namespace: default
     nomad.io/job-id: redis
     nomad.io/group: 'redis|prometheus-collector'
 ```
 
-The `nomad.io/job-id` annotation's value is matched exactly. The `nomad.io/group` annotation's value is used as a regex pattern against `TaskGroup` using [Nomad's server-side filtering](https://developer.hashicorp.com/nomad/api-docs#filtering).
+- `nomad.io/job-id` annotation's value is matched exactly and corresponds to `JobID` in the Nomad API. It is required for the Job Versions Card but optional for the Allocations Table
+- `nomad.io/group` annotation's value is used as a regex pattern against `TaskGroup` using [Nomad's server-side filtering](https://developer.hashicorp.com/nomad/api-docs#filtering). It is optional for the [Allocations Table](#allocations-table)
+- `nomad.io/namespace` is the Namespace of the Job and Allocations of the Component. If omitted, it defaults to `default`
 
 ### Job Versions Card
 
