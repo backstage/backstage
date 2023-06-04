@@ -152,6 +152,30 @@ export function locationSpecToLocationEntity(opts: {
 // @public
 export function locationSpecToMetadataName(location: LocationSpec_2): string;
 
+// @public (undocumented)
+export type PlaceholderResolver = (
+  params: PlaceholderResolverParams,
+) => Promise<JsonValue>;
+
+// @public (undocumented)
+export type PlaceholderResolverParams = {
+  key: string;
+  value: JsonValue;
+  baseUrl: string;
+  read: PlaceholderResolverRead;
+  resolveUrl: PlaceholderResolverResolveUrl;
+  emit: CatalogProcessorEmit;
+};
+
+// @public (undocumented)
+export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
+
+// @public (undocumented)
+export type PlaceholderResolverResolveUrl = (
+  url: string,
+  base: string,
+) => string;
+
 // @public
 export const processingResult: Readonly<{
   readonly notFoundError: (
