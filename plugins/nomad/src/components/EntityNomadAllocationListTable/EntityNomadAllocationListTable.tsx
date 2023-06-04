@@ -126,7 +126,7 @@ export const EntityNomadAllocationListTable = () => {
   // Make filter from attributes
   const filter: string[] = [];
   if (job) {
-    filter.push(`(JobID matches "${job}")`);
+    filter.push(`(JobID == "${job}")`);
   }
   if (group) {
     filter.push(`(TaskGroup matches "${group}")`);
