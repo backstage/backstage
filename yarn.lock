@@ -25833,13 +25833,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gcp-metadata@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "gcp-metadata@npm:5.0.0"
+"gcp-metadata@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "gcp-metadata@npm:5.2.0"
   dependencies:
     gaxios: ^5.0.0
     json-bigint: ^1.0.0
-  checksum: b75635e564a39ef0a6ebbff0daa97cea37382c3d6f0d7a6a0406e03a275de804a74e3f3d410d5313a6c9dd3496023e96bc81474917fa8369974398eb069d9645
+  checksum: 4e7ed589c814bb79cbf052b0eda1d5e219fbee030f4772eca27ec1e6e1faa85ba0ef3b17ea5c3fd51a54fc5429c924b4edbb260ac147701f211fb9807b893544
   languageName: node
   linkType: hard
 
@@ -26192,19 +26192,19 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^8.0.0, google-auth-library@npm:^8.0.1, google-auth-library@npm:^8.0.2":
-  version: 8.7.0
-  resolution: "google-auth-library@npm:8.7.0"
+  version: 8.8.0
+  resolution: "google-auth-library@npm:8.8.0"
   dependencies:
     arrify: ^2.0.0
     base64-js: ^1.3.0
     ecdsa-sig-formatter: ^1.0.11
     fast-text-encoding: ^1.0.0
     gaxios: ^5.0.0
-    gcp-metadata: ^5.0.0
+    gcp-metadata: ^5.2.0
     gtoken: ^6.1.0
     jws: ^4.0.0
     lru-cache: ^6.0.0
-  checksum: 978d1c5f763aceddbc0218cd76fa578c8ba54a0653cefffaf61847bb8d246ebf26e7fcd276d8885b8a3354c17eef0a11cfae9e60e4df62c01cae4378d4eb78e4
+  checksum: 4552805466679e258febc4c0621d401d510df267f2f105957b8925b79c1454d9a2e5d53af211dd90a1848658f608babac7f5bc2f3c536c441ba32ba3641d335d
   languageName: node
   linkType: hard
 
