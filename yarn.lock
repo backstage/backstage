@@ -11161,8 +11161,8 @@ __metadata:
   linkType: hard
 
 "@frsource/cypress-plugin-visual-regression-diff@npm:^3.2.8":
-  version: 3.3.7
-  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.3.7"
+  version: 3.3.8
+  resolution: "@frsource/cypress-plugin-visual-regression-diff@npm:3.3.8"
   dependencies:
     "@frsource/base64": 1.0.14
     glob: 8.0.3
@@ -11173,7 +11173,7 @@ __metadata:
     sharp: 0.31.2
   peerDependencies:
     cypress: ">=4.5.0"
-  checksum: 8521afd0627525d3523307c56eb74b5ca7cce45835cce22e20f9864066f2493efba209165bfce33c00271f0ffa71e6b0a98f43e20614f92a9f529bbc95876c66
+  checksum: 657cd8f4343da939677ae8db611445846eed21176fd2494617050ac267aed7665ce1b084aba0ce774170f7113a7bd79af41b3207e457af28a212e46b07f4783d
   languageName: node
   linkType: hard
 
