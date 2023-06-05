@@ -44,7 +44,7 @@
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.1.6",
-    "xml2js": "^0.5.0"
+    "xml2js": "^0.6.0"
   },
   "files": [
     "dist",
