@@ -14730,8 +14730,8 @@ __metadata:
   linkType: hard
 
 "@rollup/plugin-yaml@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "@rollup/plugin-yaml@npm:4.0.1"
+  version: 4.1.0
+  resolution: "@rollup/plugin-yaml@npm:4.1.0"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     js-yaml: ^4.1.0
@@ -14741,7 +14741,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: d48e248a9acd3110c889d745562e03e5a16e5861838c6b6d92701e59c0d4a24af374ee7bd81db0ab8e6d021cdb925c05bd7d30149e4e9a0fce4d899170a78857
+  checksum: e8dcfbb6032ebd493e3cf1f3fcc7ee7e50509e3848a283ab21c743ec59b65b587d3755f744c7135f49db97aee1fc7eee818375519f293e7227e278ccf9d8b3dc
   languageName: node
   linkType: hard
 
