@@ -555,7 +555,7 @@ export function useEntityTypeFilter(): {
   setSelectedTypes: (types: string[]) => void;
 };
 
-// @public (undocumented)
+// @public
 export function useRelatedEntities(
   entity: Entity,
   relationFilter: {
