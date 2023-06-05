@@ -39,6 +39,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     title: string;
     description: string;
     branchName: string;
+    targetBranchName?: string;
     sourcePath?: string;
     targetPath?: string;
     token?: string;
@@ -77,8 +78,13 @@ export const createPublishGitlabMergeRequestAction = (options: {
           },
           branchName: {
             type: 'string',
-            title: 'Destination Branch name',
-            description: 'The description of the merge request',
+            title: 'Source Branch Name',
+            description: 'The source branch name of the merge request',
+          },
+          targetBranchName: {
+            type: 'string',
+            title: 'Target Branch Name',
+            description: 'The target branch name of the merge request',
           },
           sourcePath: {
             type: 'string',
@@ -119,6 +125,10 @@ export const createPublishGitlabMergeRequestAction = (options: {
       output: {
         type: 'object',
         properties: {
+          targetBranchName: {
+            title: 'Target branch name of the merge request',
+            type: 'string',
+          },
           projectid: {
             title: 'Gitlab Project id/Name(slug)',
             type: 'string',
@@ -139,6 +149,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const {
         assignee,
         branchName,
+        targetBranchName,
         description,
         repoUrl,
         removeSourceBranch,
@@ -211,12 +222,16 @@ export const createPublishGitlabMergeRequestAction = (options: {
         execute_filemode: file.executable,
       }));
 
-      const projects = await api.Projects.show(repoID);
+      let targetBranch = targetBranchName;
+      if (!targetBranch) {
+        const projects = await api.Projects.show(repoID);
 
-      const { default_branch: defaultBranch } = projects;
+        const { default_branch: defaultBranch } = projects;
+        targetBranch = defaultBranch!;
+      }
 
       try {
-        await api.Branches.create(repoID, branchName, String(defaultBranch));
+        await api.Branches.create(repoID, branchName, String(targetBranch));
       } catch (e) {
         throw new InputError(
           `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${e}`,
@@ -235,7 +250,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         const mergeRequestUrl = await api.MergeRequests.create(
           repoID,
           branchName,
-          String(defaultBranch),
+          String(targetBranch),
           title,
           {
             description,
@@ -246,6 +261,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
           return mergeRequest.web_url;
         });
         ctx.output('projectid', repoID);
+        ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
         ctx.output('mergeRequestUrl', mergeRequestUrl);
       } catch (e) {
