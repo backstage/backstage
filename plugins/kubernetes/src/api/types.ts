@@ -21,6 +21,7 @@ import {
   CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { Event } from 'kubernetes-models/v1';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
@@ -60,5 +61,11 @@ export interface KubernetesProxyApi {
     namespace: string;
     clusterName: string;
     containerName: string;
+    previous?: boolean;
   }): Promise<{ text: string }>;
+  getEventsByInvolvedObjectName(request: {
+    clusterName: string;
+    involvedObjectName: string;
+    namespace: string;
+  }): Promise<Event[]>;
 }
