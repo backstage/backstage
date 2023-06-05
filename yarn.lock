@@ -12670,12 +12670,12 @@ __metadata:
   linkType: hard
 
 "@keyv/memcache@npm:^1.3.5":
-  version: 1.3.7
-  resolution: "@keyv/memcache@npm:1.3.7"
+  version: 1.4.0
+  resolution: "@keyv/memcache@npm:1.4.0"
   dependencies:
     json-buffer: ^3.0.1
     memjs: ^1.3.1
-  checksum: 61c836c1b0c264c35281a38dbc380a102b2899eab46226a0e31614d3d7c4708ecdb06d8858f711893212ae5b357a79213c7a7b7a81b6196e56dd889dd1ca498b
+  checksum: c14f9b63d6067016656bbeb75c24f409fb6736d35c2b7f00011d897462c4bf8131d448d681572a180372dd248e35df96d71a2e409ade08a2eb36cb9ec8d45f66
   languageName: node
   linkType: hard
 
