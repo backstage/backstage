@@ -16,6 +16,7 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { Config } from '@backstage/config';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -1410,7 +1411,7 @@ export class UserIdentity implements IdentityApi {
     authApi: ProfileInfoApi & BackstageIdentityApi & SessionApi;
     profile?: ProfileInfo;
   }): IdentityApi;
-  static createGuest(): IdentityApi;
+  static createGuest(options?: { config?: Config }): IdentityApi;
   static fromLegacy(result: {
     userId: string;
     profile: ProfileInfo;
