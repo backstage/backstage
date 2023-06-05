@@ -31,10 +31,18 @@ import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
 import { todoPlugin } from '@backstage/plugin-todo-backend';
 import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
+import {
+  authPlugin,
+  defaultAuthProviders,
+} from '@backstage/plugin-auth-backend/alpha';
 
 const backend = createBackend();
 
 backend.add(appPlugin({ appPackageName: 'example-app' }));
+
+// Auth
+backend.add(authPlugin());
+backend.add(defaultAuthProviders());
 
 // Todo
 backend.add(todoPlugin());
