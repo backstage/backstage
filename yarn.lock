@@ -7334,7 +7334,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@rjsf/utils": 5.6.0
+    "@rjsf/utils": 5.7.3
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -7400,10 +7400,10 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0"
-    "@rjsf/material-ui": 5.6.0
-    "@rjsf/utils": 5.6.0
-    "@rjsf/validator-ajv8": 5.6.0
+    "@rjsf/core-v5": "npm:@rjsf/core@5.7.3"
+    "@rjsf/material-ui": 5.7.3
+    "@rjsf/utils": 5.7.3
+    "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -8681,11 +8681,11 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
-    "@rjsf/core-v5": "npm:@rjsf/core@5.6.0"
+    "@rjsf/core-v5": "npm:@rjsf/core@5.7.3"
     "@rjsf/material-ui": ^3.2.1
-    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.6.0"
-    "@rjsf/utils": 5.6.0
-    "@rjsf/validator-ajv8": 5.6.0
+    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.7.3"
+    "@rjsf/utils": 5.7.3
+    "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -8748,8 +8748,8 @@ __metadata:
     "@react-hookz/web": ^20.0.0
     "@rjsf/core": ^3.2.1
     "@rjsf/material-ui": ^3.2.1
-    "@rjsf/utils": 5.6.0
-    "@rjsf/validator-ajv8": 5.6.0
+    "@rjsf/utils": 5.7.3
+    "@rjsf/validator-ajv8": 5.7.3
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.10.1
     "@testing-library/react": ^12.1.3
@@ -14500,6 +14500,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rjsf/core-v5@npm:@rjsf/core@5.7.3":
+  version: 5.7.3
+  resolution: "@rjsf/core@npm:5.7.3"
+  dependencies:
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
+    markdown-to-jsx: ^7.2.0
+    nanoid: ^3.3.6
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@rjsf/utils": 5.7.x
+    react: ^16.14.0 || >=17
+  checksum: bdae474fd0a6d4d8fd625ef74384a90624860841e1426b516358365a960d5627a98a1a159a6ddc59cc84659dd768ac7bba126d459c83c4f1d78acd8ad8d98f19
+  languageName: node
+  linkType: hard
+
 "@rjsf/core@npm:^3.2.1":
   version: 3.2.1
   resolution: "@rjsf/core@npm:3.2.1"
@@ -14519,7 +14535,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.6.0, @rjsf/material-ui@npm:5.6.0":
+"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.7.3, @rjsf/material-ui@npm:5.7.3":
+  version: 5.7.3
+  resolution: "@rjsf/material-ui@npm:5.7.3"
+  peerDependencies:
+    "@material-ui/core": ^4.12.3
+    "@material-ui/icons": ^4.11.2
+    "@rjsf/core": 5.7.x
+    "@rjsf/utils": 5.7.x
+    react: ^16.14.0 || >=17
+  checksum: 96ff2a0227b6810efd8b9e36e7e956f1e753c9cecd78215e79e9487af6276da70ee25b8c9d4678241afb85cf5ade31c3591d39659cdeda3cd52ccb6a1ada1d17
+  languageName: node
+  linkType: hard
+
+"@rjsf/material-ui@npm:5.6.0":
   version: 5.6.0
   resolution: "@rjsf/material-ui@npm:5.6.0"
   peerDependencies:
@@ -14559,6 +14588,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rjsf/utils@npm:5.7.3":
+  version: 5.7.3
+  resolution: "@rjsf/utils@npm:5.7.3"
+  dependencies:
+    json-schema-merge-allof: ^0.8.1
+    jsonpointer: ^5.0.1
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
+    react-is: ^18.2.0
+  peerDependencies:
+    react: ^16.14.0 || >=17
+  checksum: 30ceab80a98a33076eef3c680d079ca90bb7023d40524776fa6cce79f0dc21a5eeaec63fa786e3775b60ccee27f993d030b340d6704c3c4d23515f9d046d4354
+  languageName: node
+  linkType: hard
+
 "@rjsf/validator-ajv8@npm:5.6.0":
   version: 5.6.0
   resolution: "@rjsf/validator-ajv8@npm:5.6.0"
@@ -14570,6 +14614,20 @@ __metadata:
   peerDependencies:
     "@rjsf/utils": ^5.0.0
   checksum: 0b7ff0375565ec40c6f564d7c9b333b6d3f22c84c2ac6cda97bba40147705b954435d5cd73b1eaf10a6a300209e394c7647ec7412b557d1bb1d5e7b6834bc7af
+  languageName: node
+  linkType: hard
+
+"@rjsf/validator-ajv8@npm:5.7.3":
+  version: 5.7.3
+  resolution: "@rjsf/validator-ajv8@npm:5.7.3"
+  dependencies:
+    ajv: ^8.12.0
+    ajv-formats: ^2.1.1
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
+  peerDependencies:
+    "@rjsf/utils": 5.7.x
+  checksum: 0b2ab4bf718c761a8b990f4a3894ad10af2f3d473c425dd4fdf2f1bec6d15a363ac9a012215f0cc4d9fecb0a6cf12bc4e13fd20fa782975e5c0b1e254ef8939e
   languageName: node
   linkType: hard
 
