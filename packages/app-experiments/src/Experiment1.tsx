@@ -29,40 +29,39 @@ App structure:
 
 // import { redExtensionPointRef } from 'wherever';
 
-type Extension<TInstanceConfig extends unknown, TOutput = ComponentType> = {
+type Extension<TInstanceConfig, TOutput> = {
   factory(instanceOptions: { id: string; config: TInstanceConfig }): TOutput;
 };
 
-type ExtensionInstanceConfig<TInstanceConfig extends unknown> = {
+type ExtensionInstanceConfig<TInstanceConfig, TOutput> = {
   id: string;
   config: TInstanceConfig;
   // what should point be for root
   point?: string;
-  extension: Extension<TInstanceConfig>;
+  extension: Extension<TInstanceConfig, TOutput>;
 };
 
-type ExtensionInstance = {
+type ExtensionInstance<TOutput> = {
   id: string;
   // what should point be for root
   point?: string;
-  output: ComponentType;
+  output: TOutput;
 };
 
 const BackstageAppContext = createContext<{
-  extensionInstances: ExtensionInstance[];
+  extensionInstances: ExtensionInstance<unknown>[];
 }>({ extensionInstances: [] });
 
 const container = {
-  createExtension<TInstanceConfig extends unknown>(extensionOptions: {
-    render: (options: { id: string; config: TInstanceConfig }) => JSX.Element;
-  }): Extension<TInstanceConfig> {
+  createExtension<TInstanceConfig, TOutput>(extensionOptions: {
+    render: (options: { id: string; config: TInstanceConfig }) => TOutput;
+  }): Extension<TInstanceConfig, TOutput> {
     return {
       factory(instanceOptions) {
-        return () =>
-          extensionOptions.render({
-            id: instanceOptions.id,
-            config: instanceOptions.config,
-          });
+        return extensionOptions.render({
+          id: instanceOptions.id,
+          config: instanceOptions.config,
+        });
       },
     };
   },
@@ -78,7 +77,8 @@ const ExtensionInstanceDerp = (props: { id: string }) => {
     throw new Error(`No extension instance found with id ${id}`);
   }
 
-  const { output: ComponentInstance } = value;
+  // TODO: Validation?
+  const ComponentInstance = value.output as React.ComponentType;
 
   return <ComponentInstance />;
 };
@@ -115,8 +115,8 @@ const Box = container.createExtension({
 });
 
 function createExtensionInstances(
-  instanceConfigs: ExtensionInstanceConfig<unknown>[],
-): ExtensionInstance[] {
+  instanceConfigs: ExtensionInstanceConfig<unknown, unknown>[],
+): ExtensionInstance<unknown>[] {
   return instanceConfigs.map(instanceConfig => ({
     id: instanceConfig.id,
     point: instanceConfig.point,
