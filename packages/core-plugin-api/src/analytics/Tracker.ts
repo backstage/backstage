@@ -39,6 +39,11 @@ type TempGlobalEvents = {
   mostRecentRoutableExtensionRender?: {
     context: AnalyticsContextValue;
   };
+  /**
+   * Tracks whether or not a beforeunload event listener has already been
+   * registered.
+   */
+  beforeUnloadRegistered: boolean;
 };
 
 /**
@@ -50,6 +55,7 @@ const globalEvents = getOrCreateGlobalSingleton<TempGlobalEvents>(
   () => ({
     mostRecentGatheredNavigation: undefined,
     mostRecentRoutableExtensionRender: undefined,
+    beforeUnloadRegistered: false,
   }),
 );
 
@@ -66,7 +72,30 @@ export class Tracker implements AnalyticsTracker {
       pluginId: 'root',
       extension: 'App',
     },
-  ) {}
+  ) {
+    // Only register a single beforeunload event across all trackers.
+    if (!globalEvents.beforeUnloadRegistered) {
+      // Before the page unloads, attempt to capture any deferred navigation
+      // events that haven't yet been captured.
+      addEventListener(
+        'beforeunload',
+        () => {
+          if (globalEvents.mostRecentGatheredNavigation) {
+            this.analyticsApi.captureEvent({
+              ...globalEvents.mostRecentGatheredNavigation,
+              ...globalEvents.mostRecentRoutableExtensionRender,
+            });
+            globalEvents.mostRecentGatheredNavigation = undefined;
+            globalEvents.mostRecentRoutableExtensionRender = undefined;
+          }
+        },
+        { once: true, passive: true },
+      );
+
+      // Prevent duplicate handlers from being registered.
+      globalEvents.beforeUnloadRegistered = true;
+    }
+  }
 
   setContext(context: AnalyticsContextValue) {
     this.context = context;
