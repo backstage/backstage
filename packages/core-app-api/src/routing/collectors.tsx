@@ -334,10 +334,6 @@ export const routingV1Collector = createCollector(
               'core.plugin',
             ),
           ),
-          plugin: getComponentData<BackstagePlugin>(
-            node.props.element,
-            'core.plugin',
-          ),
         };
         parentChildren.push(currentObj);
       } else {
@@ -364,8 +360,7 @@ export const routingV1Collector = createCollector(
           element: 'gathered',
           routeRefs: new Set(),
           children: [MATCH_ALL_ROUTE],
-          plugins: pluginSet(ctx?.obj?.plugin),
-          plugin: ctx?.obj?.plugin,
+          plugins: ctx?.obj?.plugins || new Set(),
         };
         parentChildren.push(currentObj);
       }

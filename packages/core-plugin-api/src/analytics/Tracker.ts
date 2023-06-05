@@ -85,13 +85,16 @@ export class Tracker implements AnalyticsTracker {
 
     // Never fire the special "_routable-extension-rendered" internal event.
     if (action === routableExtensionRenderedEvent) {
-      // Instead, set it on the global store.
-      globalEvents.mostRecentRoutableExtensionRender = {
-        context: {
-          ...context,
-          extension: 'App',
-        },
-      };
+      // But keep track of it if we're delaying a `navigate` event for a
+      // a gathered route node type.
+      if (globalEvents.mostRecentGatheredNavigation) {
+        globalEvents.mostRecentRoutableExtensionRender = {
+          context: {
+            ...context,
+            extension: 'App',
+          },
+        };
+      }
       return;
     }
 
