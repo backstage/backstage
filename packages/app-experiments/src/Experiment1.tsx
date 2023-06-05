@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, createContext, useMemo } from 'react';
+import React, { ComponentType, createContext } from 'react';
 
 /*
 
@@ -29,34 +29,83 @@ App structure:
 
 // import { redExtensionPointRef } from 'wherever';
 
-type Extension<TInstanceConfig extends unknown> = {
-  factory(instanceOptions: { config: TInstanceConfig }): ComponentType;
+type Extension<TInstanceConfig extends unknown, TOutput = ComponentType> = {
+  factory(instanceOptions: { id: string; config: TInstanceConfig }): TOutput;
 };
 
-type ExtensionInstance<TInstanceConfig extends unknown> = {
+type ExtensionInstanceConfig<TInstanceConfig extends unknown> = {
   id: string;
   config: TInstanceConfig;
+  // what should point be for root
+  point?: string;
   extension: Extension<TInstanceConfig>;
 };
 
+type ExtensionInstance = {
+  id: string;
+  // what should point be for root
+  point?: string;
+  output: ComponentType;
+};
+
 const BackstageAppContext = createContext<{
-  extensionInstances: ExtensionInstance<unknown>[];
+  extensionInstances: ExtensionInstance[];
 }>({ extensionInstances: [] });
 
 const container = {
   createExtension<TInstanceConfig extends unknown>(extensionOptions: {
-    render: (config: TInstanceConfig) => JSX.Element;
+    render: (options: { id: string; config: TInstanceConfig }) => JSX.Element;
   }): Extension<TInstanceConfig> {
     return {
-      factory(instanceOptions: { config: TInstanceConfig }) {
-        return () => extensionOptions.render(instanceOptions.config);
+      factory(instanceOptions) {
+        return () =>
+          extensionOptions.render({
+            id: instanceOptions.id,
+            config: instanceOptions.config,
+          });
       },
     };
   },
 };
 
+const ExtensionInstanceDerp = (props: { id: string }) => {
+  const { id } = props;
+  const { extensionInstances } = React.useContext(BackstageAppContext);
+
+  const value = extensionInstances.find(i => i.id === id);
+
+  if (!value) {
+    throw new Error(`No extension instance found with id ${id}`);
+  }
+
+  const { output: ComponentInstance } = value;
+
+  return <ComponentInstance />;
+};
+
+const ExtensionPointInstance = (props: { id: string }) => {
+  const { extensionInstances } = React.useContext(BackstageAppContext);
+
+  return (
+    <>
+      {extensionInstances
+        .filter(i => i.point === props.id)
+        .map(extensionInstance => (
+          <ExtensionInstanceDerp
+            key={extensionInstance.id}
+            id={extensionInstance.id}
+          />
+        ))}
+    </>
+  );
+};
+
+const Container = container.createExtension({
+  render: ({ id }) => <ExtensionPointInstance id={id} />,
+});
+
 const Box = container.createExtension({
-  render: (config: { color: string }) => {
+  render: ({ config }: { config: { color: string } }) => {
     return (
       <div style={{ background: config.color, width: 100, height: 100 }}>
         {config.color}
@@ -65,44 +114,55 @@ const Box = container.createExtension({
   },
 });
 
-const ExtensionInstanceDerp = (props: { id: string }) => {
-  const { id } = props;
-  const { extensionInstances } = React.useContext(BackstageAppContext);
-
-  const instance = extensionInstances.find(i => i.id === id);
-
-  if (!instance) {
-    throw new Error(`No extension instance found with id ${id}`);
-  }
-
-  const Component = useMemo(
-    () => instance.extension.factory({ config: instance.config }),
-    [instance],
-  );
-  return <Component />;
-};
+function createExtensionInstances(
+  instanceConfigs: ExtensionInstanceConfig<unknown>[],
+): ExtensionInstance[] {
+  return instanceConfigs.map(instanceConfig => ({
+    id: instanceConfig.id,
+    point: instanceConfig.point,
+    output: instanceConfig.extension.factory({
+      id: instanceConfig.id,
+      config: instanceConfig.config,
+    }),
+  }));
+}
 
 export function Experiment1() {
   // const element = useExtension("red");
+
+  const extensionInstances = createExtensionInstances([
+    { id: 'root', config: {}, extension: Container },
+    { id: 'nestedRoot', point: 'root', config: {}, extension: Container },
+    {
+      id: 'red',
+      point: 'nestedRoot',
+      config: { color: 'red' },
+      extension: Box,
+    },
+    {
+      id: 'green',
+      point: 'nestedRoot',
+      config: { color: 'green' },
+      extension: Box,
+    },
+    {
+      id: 'blue',
+      point: 'nestedRoot',
+      config: { color: 'blue' },
+      extension: Box,
+    },
+  ]);
 
   return (
     <BackstageAppContext.Provider
       value={{
         // This will come from config eventually
-        extensionInstances: [
-          // { id: 'root' },
-          { id: 'red', config: { color: 'red' }, extension: Box },
-          { id: 'green', config: { color: 'green' }, extension: Box },
-          { id: 'blue', config: { color: 'blue' }, extension: Box },
-        ],
+        extensionInstances,
       }}
     >
       <h1>Experiment 1</h1>
       <p>This is an experiment to see how the app-experiments package works.</p>
-      {/* extension point */}
-      <ExtensionInstanceDerp id="red" />
-      <ExtensionInstanceDerp id="green" />
-      <ExtensionInstanceDerp id="blue" />
+      <ExtensionInstanceDerp id="root" />
     </BackstageAppContext.Provider>
   );
 }
