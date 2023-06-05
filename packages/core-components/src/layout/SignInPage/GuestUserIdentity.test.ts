@@ -18,6 +18,7 @@ import { BackstageUserIdentity, ProfileInfo } from '@backstage/core-plugin-api';
 import { GuestUserIdentity } from './GuestUserIdentity';
 import { Config, ConfigReader } from '@backstage/config';
 import nJwt from 'njwt';
+import { GUEST_USER_PRIVATE_KEY } from '@backstage/plugin-auth-common';
 
 describe('GuestUserIdentity', () => {
   let config: Config;
@@ -66,11 +67,7 @@ describe('GuestUserIdentity', () => {
 
     const verifiedToken = nJwt.verify(
       response,
-      '-----BEGIN PRIVATE KEY-----\n' +
-        'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
-        'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
-        'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
-        '-----END PRIVATE KEY-----\n',
+      GUEST_USER_PRIVATE_KEY,
       'ES256',
     );
 
@@ -139,17 +136,7 @@ describe('GuestUserIdentity', () => {
       const token = response.token ?? 'no token';
 
       expect(token).toEqual(
-        nJwt
-          .verify(
-            token,
-            '-----BEGIN PRIVATE KEY-----\n' +
-              'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
-              'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
-              'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
-              '-----END PRIVATE KEY-----\n',
-            'ES256',
-          )
-          ?.toString(),
+        nJwt.verify(token, GUEST_USER_PRIVATE_KEY, 'ES256')?.toString(),
       );
     });
   });

@@ -22,6 +22,7 @@ import { Logger } from 'winston';
 
 import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
 import { Config } from '@backstage/config';
+import { GUEST_KEY_JWK_VALUES } from '@backstage/plugin-auth-common';
 
 const MS_IN_S = 1000;
 
@@ -47,13 +48,9 @@ type Options = {
  * Static guest key added to list of valid public keys when auth.allowGuestMode flag is set to true
  */
 const GUEST_KEY: AnyJWK = {
-  use: 'sig',
-  alg: 'ES256',
-  kty: 'EC',
-  x: '7ZGHzCnW9XC5GrEXPO5e_hbtAXzWNzjMRLbV_OxpD98',
-  y: '7ZDojNHUtJr36HkA9LvzWEo08WVRAOe63MC4KEJo_tk',
-  crv: 'P-256',
+  ...GUEST_KEY_JWK_VALUES,
   kid: uuid(),
+  use: 'sig',
 };
 
 /**

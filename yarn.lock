@@ -4266,11 +4266,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
@@ -4970,6 +4972,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-common": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@davidzemon/passport-okta-oauth": ^0.0.5
@@ -5021,6 +5024,14 @@ __metadata:
     uuid: ^8.0.0
     winston: ^3.2.1
     yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-auth-common@workspace:^, @backstage/plugin-auth-common@workspace:plugins/auth-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-common@workspace:plugins/auth-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft
 

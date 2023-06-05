@@ -32,9 +32,11 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@date-io/core": "^1.3.13",

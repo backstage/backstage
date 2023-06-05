@@ -21,6 +21,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { Config } from '@backstage/config';
 import nJwt from 'njwt';
+import { GUEST_USER_PRIVATE_KEY } from '@backstage/plugin-auth-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export class GuestUserIdentity implements IdentityApi {
   private idToken?: string;
@@ -38,15 +40,16 @@ export class GuestUserIdentity implements IdentityApi {
   }
 
   private issueToken(): string {
-    const userEntityRef = `user:default/guest`;
+    const userEntityRef = stringifyEntityRef({
+      kind: 'User',
+      namespace: 'default',
+      name: 'guest',
+    });
+
     const idToken: string = nJwt
       .create(
         { sub: userEntityRef, ent: [userEntityRef], aud: 'backstage' },
-        '-----BEGIN PRIVATE KEY-----\n' +
-          'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgeK+2+vxWmdH3l5vS\n' +
-          'fWPXCPojy2dQ44hr3XoUN3pQ1KihRANCAATtkYfMKdb1cLkasRc87l7+Fu0BfNY3\n' +
-          'OMxEttX87GkP3+2Q6IzR1LSa9+h5APS781hKNPFlUQDnutzAuChCaP7Z\n' +
-          '-----END PRIVATE KEY-----\n',
+        GUEST_USER_PRIVATE_KEY,
         'ES256',
       )
       .compact();
@@ -77,7 +80,12 @@ export class GuestUserIdentity implements IdentityApi {
   }
 
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
-    const userEntityRef = `user:default/guest`;
+    const userEntityRef = stringifyEntityRef({
+      kind: 'User',
+      namespace: 'default',
+      name: 'guest',
+    });
+
     return {
       type: 'user',
       userEntityRef,
