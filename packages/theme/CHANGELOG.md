@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 5065a5e8ebd6: Tweaked `UnifiedThemeProvider` to avoid overlapping JSS class names in production.
+
 ## 0.4.0-next.0
 
 ### Minor Changes

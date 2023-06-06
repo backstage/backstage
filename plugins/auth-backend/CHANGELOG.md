@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.18.4-next.2
+
+### Patch Changes
+
+- d0f5b0c886c2: Set the expiration time of oidc `idToken` to be less than backstage session expiration time.
+- Updated dependencies
+  - @backstage/config@1.0.7
+
 ## 0.18.4-next.1
 
 ### Patch Changes

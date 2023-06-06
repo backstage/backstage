@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- b9a6d1348d96: Properly handle `async` event callback
+- Updated dependencies
+  - @backstage/config@1.0.7
+
 ## 0.3.1-next.1
 
 ### Patch Changes
