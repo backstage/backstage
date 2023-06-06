@@ -16,37 +16,33 @@
 import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import {
-  InfoCard,
   Header,
   Page,
   Content,
   ContentHeader,
-  HeaderLabel,
-  SupportButton,
 } from '@backstage/core-components';
-import { ExampleFetchComponent } from '../ExampleFetchComponent';
+import { OpenCostFetchComponent } from '../OpenCostFetchComponent';
 
-export const ExampleComponent = () => (
+export const OpenCostPage = () => (
   <Page themeId="tool">
-    <Header title="Welcome to OpenCost!" subtitle="Optional subtitle">
-      <img src={require('../../images/logo.png')} alt="OpenCost" />
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
+    <Header
+      title="OpenCost"
+      subtitle="Open source Kubernetes cloud cost monitoring"
+    >
+      <a href="https://opencost.io">
+        <img
+          width={68}
+          height={64}
+          src={require('../../images/pig.png')}
+          alt="OpenCost"
+        />
+      </a>
     </Header>
     <Content>
-      <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
-      </ContentHeader>
+      <ContentHeader title="Namespaces " />
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <InfoCard title="Information card">
-            <Typography variant="body1">
-              All content should be wrapped in a card like this.
-            </Typography>
-          </InfoCard>
-        </Grid>
-        <Grid item>
-          <ExampleFetchComponent />
+          <OpenCostFetchComponent />
         </Grid>
       </Grid>
     </Content>

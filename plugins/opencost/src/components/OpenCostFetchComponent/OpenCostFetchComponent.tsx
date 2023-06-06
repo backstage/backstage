@@ -93,7 +93,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
   );
 };
 
-export const ExampleFetchComponent = () => {
+export const OpenCostFetchComponent = () => {
   const { fetch } = useApi(fetchApiRef);
   const { value, loading, error } = useAsync(async (): Promise<User[]> => {
     const response = await fetch('https://randomuser.me/api/?results=20');

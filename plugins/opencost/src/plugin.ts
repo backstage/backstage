@@ -31,7 +31,7 @@ export const OpenCostPage = openCostPlugin.provide(
   createRoutableExtension({
     name: 'OpenCostPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/OpenCostPage').then(m => m.OpenCostPage),
     mountPoint: rootRouteRef,
   }),
 );
