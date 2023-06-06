@@ -47,4 +47,4 @@ export default async function createPlugin(
 +  apiRouter.use('/nomad', await nomad(nomadEnv));
 ```
 
-Note: for this backend to work, the `nomad` configuration described in the README of `@backstage/plugin-nomad` must be configured.
+Note: for this backend to work, the `nomad` configuration described in the README of `@backstage/plugin-nomad` must be implemented.
