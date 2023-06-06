@@ -34,7 +34,7 @@ describe('SearchResultPager', () => {
   it('renders pager buttons', async () => {
     const fetchNextPage = jest.fn();
     const fetchPreviousPage = jest.fn();
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as jest.Mock).mockReturnValue({
       result: { loading: false, value: [] },
       fetchNextPage,
       fetchPreviousPage,

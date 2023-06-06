@@ -16,7 +16,11 @@
 
 import React, { ReactNode } from 'react';
 import './MuiClassNameSetup';
-import { ThemeProvider } from '@material-ui/core/styles';
+import {
+  ThemeProvider,
+  StylesProvider,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
   ThemeProvider as Mui5Provider,
@@ -34,6 +38,14 @@ export interface UnifiedThemeProviderProps {
   theme: UnifiedTheme;
   noCssBaseline?: boolean;
 }
+
+// Background at https://mui.com/x/migration/migration-data-grid-v4/#using-mui-core-v4-with-v5
+// Rather than disabling globals and custom seed, we instead only set a production prefix that
+// won't collide with MUI 5 styles. We've already got a separate class name generator for v5 set
+// up in MuiClassNameSetup.ts, so only the production JSS needs deduplication.
+const generateV4ClassName = createGenerateClassName({
+  productionPrefix: 'jss4-',
+});
 
 /**
  * Provides themes for all MUI versions supported by the provided unified theme.
@@ -61,7 +73,11 @@ export function UnifiedThemeProvider(
   );
 
   if (v4Theme) {
-    result = <ThemeProvider theme={v4Theme}>{result}</ThemeProvider>;
+    result = (
+      <StylesProvider generateClassName={generateV4ClassName}>
+        <ThemeProvider theme={v4Theme}>{result}</ThemeProvider>
+      </StylesProvider>
+    );
   }
 
   if (v5Theme) {
