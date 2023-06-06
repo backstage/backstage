@@ -19,18 +19,8 @@ type User = {
     first: string; // "Duane",
     last: string; // "Reed"
   };
-  location: object; // {street: {number: 5060, name: "Hickory Creek Dr"}, city: "Albany", state: "New South Wales",…}
   email: string; // "duane.reed@example.com"
-  login: object; // {uuid: "4b785022-9a23-4ab9-8a23-cb3fb43969a9", username: "blackdog796", password: "patch",…}
-  dob: object; // {date: "1983-06-22T12:30:23.016Z", age: 37}
-  registered: object; // {date: "2006-06-13T18:48:28.037Z", age: 14}
-  phone: string; // "07-2154-5651"
-  cell: string; // "0405-592-879"
-  id: {
-    name: string; // "TFN",
-    value: string; // "796260432"
-  };
-  picture: { medium: string }; // {medium: "https://randomuser.me/api/portraits/men/95.jpg",…}
+  picture: string; // "https://api.dicebear.com/6.x/open-peeps/svg?seed=Duane"
   nat: string; // "AU"
 };
 
@@ -52,7 +42,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
     return {
       avatar: (
         <img
-          src={user.picture.medium}
+          src={user.picture}
           className={classes.avatar}
           alt={user.name.first}
         />
@@ -65,7 +55,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
 
   return (
     <Table
-      title="Example User List (fetching data from randomuser.me)"
+      title="Example User List"
       options=\{{ search: false, paging: false }}
       columns={columns}
       data={data}
@@ -76,7 +66,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
 export const ExampleFetchComponent = () => {
   const { fetch } = useApi(fetchApiRef);
   const { value, loading, error } = useAsync(async (): Promise<User[]> => {
-    const response = await fetch('https://randomuser.me/api/?results=20');
+    const response = await fetch('https://tinyurl.com/fake-data');
     const data = await response.json();
     return data.results;
   }, []);

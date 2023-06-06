@@ -13,7 +13,7 @@ describe('ExampleFetchComponent', () => {
   // setup mock response
   beforeEach(() => {
     server.use(
-      rest.get('https://randomuser.me/*', (_, res, ctx) =>
+      rest.get('https://tinyurl.com/fake-data', (_, res, ctx) =>
         res(ctx.status(200), ctx.delay(2000), ctx.json({})),
       ),
     );
