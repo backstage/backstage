@@ -144,7 +144,6 @@ export const routingV2Collector = createCollector(
           caseSensitive: Boolean(node.props?.caseSensitive),
           children: [MATCH_ALL_ROUTE],
           plugins: new Set<BackstagePlugin>(),
-          plugin: undefined,
         };
         parentChildren.push(newObj);
 
@@ -175,7 +174,6 @@ export const routingV2Collector = createCollector(
           caseSensitive: Boolean(node.props?.caseSensitive),
           children: [MATCH_ALL_ROUTE],
           plugins: pluginSet(plugin),
-          plugin,
         };
         parentChildren.push(newObj);
         acc.paths.set(routeRef, path);
