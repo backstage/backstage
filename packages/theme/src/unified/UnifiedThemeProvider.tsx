@@ -39,10 +39,12 @@ export interface UnifiedThemeProviderProps {
   noCssBaseline?: boolean;
 }
 
-// See https://mui.com/x/migration/migration-data-grid-v4/#using-mui-core-v4-with-v5
+// Background at https://mui.com/x/migration/migration-data-grid-v4/#using-mui-core-v4-with-v5
+// Rather than disabling globals and custom seed, we instead only set a production prefix that
+// won't collide with MUI 5 styles. We've already got a separate class name generator for v5 set
+// up in MuiClassNameSetup.ts, so only the production JSS needs deduplication.
 const generateV4ClassName = createGenerateClassName({
-  disableGlobal: true,
-  seed: 'mui', // using a slightly shorter prefix than suggested in the docs
+  productionPrefix: 'jss4-',
 });
 
 /**
