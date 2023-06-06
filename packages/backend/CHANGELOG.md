@@ -1,5 +1,20 @@
 # example-backend
 
+## 0.2.84-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.11.1-next.2
+  - @backstage/plugin-badges-backend@0.2.1-next.2
+  - @backstage/plugin-scaffolder-backend@1.15.0-next.2
+  - @backstage/plugin-auth-backend@0.18.4-next.2
+  - @backstage/plugin-code-coverage-backend@0.2.12-next.2
+  - example-app@0.2.84-next.2
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.1.3-next.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.15-next.2
+  - @backstage/config@1.0.7
+
 ## 0.2.84-next.1
 
 ### Patch Changes
