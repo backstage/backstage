@@ -265,6 +265,18 @@ const requiredCommitSigning = {
   description: `Require commit signing so that you must sign commits on this branch.`,
 };
 
+const repoVariables = {
+  title: 'Repository Variables',
+  description: `Variables attached to the repository`,
+  type: 'object',
+};
+
+const secrets = {
+  title: 'Repository Secrets',
+  description: `Secrets attached to the repository`,
+  type: 'object',
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -299,3 +311,5 @@ export { sourcePath };
 export { token };
 export { topics };
 export { requiredCommitSigning };
+export { repoVariables };
+export { secrets };

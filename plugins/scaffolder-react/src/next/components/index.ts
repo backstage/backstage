@@ -25,3 +25,4 @@ export * from './TaskSteps';
 export * from './TaskLogStream';
 export * from './TemplateCategoryPicker';
 export * from './ScaffolderPageContextMenu';
+export * from './ScaffolderField';

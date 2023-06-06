@@ -2,7 +2,7 @@
 title: Multi Cluster View with OCM
 author: Red Hat
 authorUrl: https://redhat.com
-category: OCM
+category: Infrastructure
 description: View clusters from OCM's MultiClusterHub and MultiCluster Engine in Backstage.
 documentation: https://janus-idp.io/plugins/ocm
 iconUrl: http://janus-idp.io/images/plugins/ocm.svg

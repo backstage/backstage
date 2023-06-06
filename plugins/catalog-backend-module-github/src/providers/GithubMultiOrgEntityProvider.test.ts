@@ -1694,7 +1694,6 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           },
         });
-        await new Promise(process.nextTick);
 
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -1867,7 +1866,6 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           },
         });
-        await new Promise(process.nextTick);
 
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({

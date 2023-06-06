@@ -22,11 +22,9 @@ yarn add --cwd packages/app @backstage/plugin-home
 ```tsx
 import React from 'react';
 
-export const HomePage = () => {
-  return {
-    /* TODO: Compose a Home Page here */
-  };
-};
+export const homePage = (
+  /* TODO: Compose a Home Page here */
+);
 ```
 
 2. Add a route where the homepage will live, presumably `/`.
@@ -35,11 +33,11 @@ export const HomePage = () => {
 
 ```tsx
 import { HomepageCompositionRoot } from '@backstage/plugin-home';
-import { HomePage } from './components/home/HomePage';
+import { homePage } from './components/home/HomePage';
 
 // ...
 <Route path="/" element={<HomepageCompositionRoot />}>
-  <HomePage />
+  {homePage}
 </Route>;
 // ...
 ```
@@ -72,15 +70,13 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { RandomJokeHomePageComponent } from '@backstage/plugin-home';
 
-export const HomePage = () => {
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={4}>
-        <RandomJokeHomePageComponent />
-      </Grid>
+export const homePage = (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <RandomJokeHomePageComponent />
     </Grid>
-  );
-};
+  </Grid>
+);
 ```
 
 Additionally, the App Integrator is provided an escape hatch in case the way the card is rendered does not fit their requirements. They may optionally pass the `Renderer`-prop, which will receive the `title`, `content` and optionally `actions`, `settings` and `contextProvider`, if they exist for the component. This allows the App Integrator to render the content in any way they want.
@@ -102,18 +98,16 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 
-export const HomePage = () => {
-  return (
-    <CustomHomepageGrid>
-      // Insert the allowed widgets inside the grid
-      <HomePageSearchBar />
-      <HomePageRandomJoke />
-      <HomePageCalendar />
-      <MicrosoftCalendarCard />
-      <HomePageStarredEntities />
-    </CustomHomepageGrid>
-  );
-};
+export const homePage = (
+  <CustomHomepageGrid>
+    // Insert the allowed widgets inside the grid
+    <HomePageSearchBar />
+    <HomePageRandomJoke />
+    <HomePageCalendar />
+    <MicrosoftCalendarCard />
+    <HomePageStarredEntities />
+  </CustomHomepageGrid>
+);
 ```
 
 ### Creating Customizable Components
@@ -247,4 +241,5 @@ Additionally, the API is at a very early state, so contributing with additional 
 
 ### Homepage Templates
 
-We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates). If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example to create your own](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx), and then open a PR with your suggestion.
+We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates).
+If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx) or [CustomizableTemplate storybook example](/packages/app/src/components/home/templates/CustomizableTemplate.stories.tsx) to create your own, and then open a PR with your suggestion.

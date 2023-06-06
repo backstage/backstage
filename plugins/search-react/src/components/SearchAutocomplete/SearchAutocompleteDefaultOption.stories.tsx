@@ -30,7 +30,7 @@ export default {
   title: 'Plugins/Search/SearchAutocompleteDefaultOption',
   component: SearchAutocompleteDefaultOption,
   decorators: [
-    (Story: ComponentType<{}>) => (
+    (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">

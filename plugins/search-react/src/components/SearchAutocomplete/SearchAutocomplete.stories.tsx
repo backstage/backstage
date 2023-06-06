@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 
-import { Grid, makeStyles, Paper } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import LabelIcon from '@material-ui/icons/Label';
 
 import { TestApiProvider } from '@backstage/test-utils';
@@ -31,7 +31,7 @@ export default {
   title: 'Plugins/Search/SearchAutocomplete',
   component: SearchAutocomplete,
   decorators: [
-    (Story: ComponentType<{}>) => (
+    (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">
@@ -45,51 +45,24 @@ export default {
   ],
 };
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(1),
-  },
-}));
-
 export const Default = () => {
-  const classes = useStyles();
-  return (
-    <Paper className={classes.root}>
-      <SearchAutocomplete options={['hello-word', 'petstore', 'spotify']} />
-    </Paper>
-  );
+  return <SearchAutocomplete options={['hello-word', 'petstore', 'spotify']} />;
 };
 
 export const Outlined = () => {
-  const classes = useStyles();
-  return (
-    <Paper className={classes.root} variant="outlined">
-      <SearchAutocomplete options={['hello-word', 'petstore', 'spotify']} />
-    </Paper>
-  );
+  return <SearchAutocomplete options={['hello-word', 'petstore', 'spotify']} />;
 };
 
 export const Initialized = () => {
-  const classes = useStyles();
   const options = ['hello-word', 'petstore', 'spotify'];
-  return (
-    <Paper className={classes.root}>
-      <SearchAutocomplete options={options} value={options[0]} />
-    </Paper>
-  );
+  return <SearchAutocomplete options={options} value={options[0]} />;
 };
 
 export const LoadingOptions = () => {
-  const classes = useStyles();
-  return (
-    <Paper className={classes.root}>
-      <SearchAutocomplete options={[]} loading />
-    </Paper>
-  );
+  return <SearchAutocomplete options={[]} loading />;
 };
 
 export const RenderingCustomOptions = () => {
-  const classes = useStyles();
   const options = [
     {
       title: 'hello-world',
@@ -106,17 +79,15 @@ export const RenderingCustomOptions = () => {
   ];
 
   return (
-    <Paper className={classes.root}>
-      <SearchAutocomplete
-        options={options}
-        renderOption={option => (
-          <SearchAutocompleteDefaultOption
-            icon={<LabelIcon titleAccess="Option icon" />}
-            primaryText={option.title}
-            secondaryText={option.text}
-          />
-        )}
-      />
-    </Paper>
+    <SearchAutocomplete
+      options={options}
+      renderOption={option => (
+        <SearchAutocompleteDefaultOption
+          icon={<LabelIcon titleAccess="Option icon" />}
+          primaryText={option.title}
+          secondaryText={option.text}
+        />
+      )}
+    />
   );
 };

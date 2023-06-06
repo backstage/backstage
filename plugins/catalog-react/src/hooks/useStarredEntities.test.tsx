@@ -27,7 +27,7 @@ import { useStarredEntities } from './useStarredEntities';
 
 describe('useStarredEntities', () => {
   let mockApi: StarredEntitiesApi;
-  let wrapper: React.ComponentType;
+  let wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   const mockEntity: Entity = {
     apiVersion: '1',

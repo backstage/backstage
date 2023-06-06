@@ -16,13 +16,15 @@
 
 import { StackOverflowSearchResultListItem } from '../../plugin';
 import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { StackOverflowIcon } from '../../icons';
 
 export default {
   title: 'Plugins/Search/StackOverflowResultListItem',
   component: StackOverflowSearchResultListItem,
-  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
 };
 
 export const Default = () => {

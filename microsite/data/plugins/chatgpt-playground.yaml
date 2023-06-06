@@ -3,8 +3,8 @@ title: 'ChatGPT Plugin'
 author: Enfuse
 authorUrl: https://enfuse.io/
 category: Development
-description: Experiment with the OpenAI playground to help you develop more efficiently 
+description: Experiment with the OpenAI playground to help you develop more efficiently
 documentation: https://github.com/enfuse/backstage-chatgpt-plugin/blob/main/README.md
 iconUrl: /img/enfuse.png
 npmPackageName: '@enfuse/chatgpt-plugin-frontend'
-addedDate: '2023-04-21'
+addedDate: '2023-05-23'

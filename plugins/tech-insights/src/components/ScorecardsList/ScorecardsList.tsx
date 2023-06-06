@@ -17,10 +17,11 @@
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
-import { techInsightsApiRef } from '../../api/TechInsightsApi';
+import { techInsightsApiRef } from '../../api';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { BackstageTheme } from '@backstage/theme';
 import { Alert } from '@material-ui/lab';
+import { MarkdownContent } from '@backstage/core-components';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   listItemText: {
@@ -49,7 +50,11 @@ export const ScorecardsList = (props: { checkResults: CheckResult[] }) => {
               key={index}
               primary={result.check.name}
               secondary={
-                description ? description(result) : result.check.description
+                description ? (
+                  description(result)
+                ) : (
+                  <MarkdownContent content={result.check.description} />
+                )
               }
               className={classes.listItemText}
             />

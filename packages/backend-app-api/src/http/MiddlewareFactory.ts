@@ -36,6 +36,7 @@ import {
   NotAllowedError,
   NotFoundError,
   NotModifiedError,
+  ServiceUnavailableError,
   serializeError,
 } from '@backstage/errors';
 import { NotImplementedError } from '@backstage/errors';
@@ -260,6 +261,8 @@ function getStatusCode(error: Error): number {
       return 409;
     case NotImplementedError.name:
       return 501;
+    case ServiceUnavailableError.name:
+      return 503;
     default:
       break;
   }

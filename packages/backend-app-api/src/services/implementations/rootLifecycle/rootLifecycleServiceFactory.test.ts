@@ -44,4 +44,17 @@ describe('lifecycleService', () => {
     });
     await expect(service.shutdown()).resolves.toBeUndefined();
   });
+
+  it('should reject hooks after trigger', async () => {
+    const service = new BackendLifecycleImpl(getVoidLogger());
+    await service.startup();
+    expect(() => {
+      service.addStartupHook(() => {});
+    }).toThrow('Attempted to add startup hook after startup');
+
+    await service.shutdown();
+    expect(() => {
+      service.addShutdownHook(() => {});
+    }).toThrow('Attempted to add shutdown hook after shutdown');
+  });
 });

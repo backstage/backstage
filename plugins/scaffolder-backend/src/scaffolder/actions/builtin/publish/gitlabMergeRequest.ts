@@ -57,7 +57,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
           repoUrl: {
             type: 'string',
             title: 'Repository Location',
-            description: `Accepts the format 'gitlab.com/group_name/project_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
           },
           /** @deprecated projectID is passed as query parameters in the repoUrl */
           projectid: {

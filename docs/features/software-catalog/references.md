@@ -23,8 +23,7 @@ compound reference structure.
 
 ## String References
 
-This is the most common alternative, that should be used in almost all
-circumstances.
+This is the most common alternative, that is used in almost all circumstances.
 
 The string is on the form `[<kind>:][<namespace>/]<name>`, that is, it is
 composed of between one and three parts in this specific order, without any
@@ -75,30 +74,16 @@ essentially expand to `api:external-systems/petstore`,
 `api:internal/streetlights`, and `api:external-systems/hello-world`. We expect
 there to exist three API kind entities in the catalog matching those references.
 
+Note that the remarks above in regards to shortening (leaving out kind and/or
+namespace) _only_ apply for the entity input YAML data. In protocols, storage
+systems, or when referring to entities externally, the entity ref always
+consists of all three parts.
+
 ## Compound References
 
 This is a more verbose version of a reference, where each part of the
-kind-namespace-name triplet is expressed as a field in a structure. This format
-can be used where necessary, such as if either of the three elements contains
-colons or forward slashes. Avoid using it where possible, since it is harder to
-read and write for humans.
-
-```yaml
-# Example:
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: petstore
-  description: Petstore
-spec:
-  type: service
-  lifecycle: experimental
-  owner:
-    kind: Group
-    name: aegis-imports/pet-managers
-```
-
-In this example, the `spec.owner` has been broken apart since the name was
-complex. The kind happened to be written with an uppercase letter G, which also
-works. The namespace was left out just like in the string version above, which
-is handled identically.
+kind-namespace-name triplet is expressed as a field in an object. You may see
+this structure used in Backstage code, but it should normally not be used in any
+form of protocol or between plugins and/or external systems. For those cases,
+instead prefer to use the string form which has clearer semantics and can be
+transported more easily since it's just a string.

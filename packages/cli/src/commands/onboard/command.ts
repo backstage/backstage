@@ -19,11 +19,13 @@ import inquirer from 'inquirer';
 import { Task } from '../../lib/tasks';
 import { auth } from './auth';
 import { integrations } from './integrations';
+import { discover } from './discovery';
 
 export async function command(): Promise<void> {
   const answers = await inquirer.prompt<{
     shouldSetupAuth: boolean;
     shouldSetupScaffolder: boolean;
+    shouldDiscoverEntities: boolean;
   }>([
     {
       type: 'confirm',
@@ -37,9 +39,26 @@ export async function command(): Promise<void> {
       message: 'Do you want to use Software Templates in this project?',
       default: true,
     },
+    {
+      type: 'confirm',
+      name: 'shouldDiscoverEntities',
+      message:
+        'Do you want to discover entities and add them to the Software Catalog?',
+      default: true,
+    },
   ]);
 
-  const { shouldSetupAuth, shouldSetupScaffolder } = answers;
+  const { shouldSetupAuth, shouldSetupScaffolder, shouldDiscoverEntities } =
+    answers;
+
+  if (!shouldSetupAuth && !shouldSetupScaffolder && !shouldDiscoverEntities) {
+    Task.log(
+      chalk.yellow(
+        'If you change your mind, feel free to re-run this command.',
+      ),
+    );
+    return;
+  }
 
   let providerInfo;
   if (shouldSetupAuth) {
@@ -50,13 +69,8 @@ export async function command(): Promise<void> {
     await integrations(providerInfo);
   }
 
-  if (!shouldSetupAuth && !shouldSetupScaffolder) {
-    Task.log(
-      chalk.yellow(
-        'If you change your mind, feel free to re-run this command.',
-      ),
-    );
-    return;
+  if (shouldDiscoverEntities) {
+    await discover(providerInfo);
   }
 
   Task.log();

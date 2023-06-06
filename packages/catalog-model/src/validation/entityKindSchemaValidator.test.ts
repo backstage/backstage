@@ -51,7 +51,11 @@ describe('entityKindSchemaValidator', () => {
         owner: 'me',
       },
       relations: [
-        { type: 't', target: { kind: 'k', namespace: 'ns', name: 'n' } },
+        {
+          type: 't',
+          targetRef: 'someTargetRef',
+          target: { kind: 'k', namespace: 'ns', name: 'n' },
+        },
       ],
       status: {
         items: [

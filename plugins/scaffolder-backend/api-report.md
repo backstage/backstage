@@ -308,6 +308,16 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
+    repoVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
     requireCommitSigning?: boolean | undefined;
   },
   JsonObject
@@ -552,6 +562,16 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
+    repoVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
     requiredCommitSigning?: boolean | undefined;
   },
   JsonObject

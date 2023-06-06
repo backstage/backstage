@@ -52,7 +52,11 @@ describe('entitySchemaValidator', () => {
         owner: 'me',
       },
       relations: [
-        { type: 't', target: { kind: 'k', namespace: 'ns', name: 'n' } },
+        {
+          type: 't',
+          targetRef: 'someTargetRef',
+          target: { kind: 'k', namespace: 'ns', name: 'n' },
+        },
       ],
       status: {
         items: [
@@ -361,8 +365,13 @@ describe('entitySchemaValidator', () => {
     expect(() => validator(entity)).toThrow(/relations/);
   });
 
-  it('rejects missing relations.target', () => {
+  it('does reject missing relations.target', () => {
     delete entity.relations[0].target;
+    expect(() => validator(entity)).toThrow(/relations/);
+  });
+
+  it('does reject missing relations.targetRef', () => {
+    delete entity.relations[0].targetRef;
     expect(() => validator(entity)).toThrow(/relations/);
   });
 

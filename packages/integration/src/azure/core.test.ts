@@ -19,21 +19,85 @@ import {
   getAzureDownloadUrl,
   getAzureRequestOptions,
 } from './core';
+import {
+  AccessToken,
+  ClientSecretCredential,
+  ManagedIdentityCredential,
+} from '@azure/identity';
+
+const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
+  typeof ClientSecretCredential
+>;
+
+const MockedManagedIdentityCredential =
+  ManagedIdentityCredential as jest.MockedClass<
+    typeof ManagedIdentityCredential
+  >;
+
+jest.mock('@azure/identity');
+
+MockedClientSecretCredential.prototype.getToken.mockImplementation(() =>
+  Promise.resolve({ token: 'fake-client-secret-token' } as AccessToken),
+);
+MockedManagedIdentityCredential.prototype.getToken.mockImplementation(() =>
+  Promise.resolve({ token: 'fake-managed-identity-token' } as AccessToken),
+);
 
 describe('azure core', () => {
   describe('getAzureRequestOptions', () => {
-    it('fills in the token if necessary', () => {
-      expect(getAzureRequestOptions({ host: '', token: '0123456789' })).toEqual(
+    it('should not add authorization header when not using token or credential', async () => {
+      expect(await getAzureRequestOptions({ host: '' })).toEqual(
+        expect.objectContaining({
+          headers: expect.not.objectContaining({
+            Authorization: expect.anything(),
+          }),
+        }),
+      );
+    });
+
+    it('should add authorization header when using a personal access token', async () => {
+      expect(
+        await getAzureRequestOptions({ host: '', token: '0123456789' }),
+      ).toEqual(
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Basic OjAxMjM0NTY3ODk=',
           }),
         }),
       );
-      expect(getAzureRequestOptions({ host: '' })).toEqual(
+    });
+
+    it('should add authorization header when using a client secret', async () => {
+      expect(
+        await getAzureRequestOptions({
+          host: '',
+          credential: {
+            clientId: 'fake-id',
+            clientSecret: 'fake-secret',
+            tenantId: 'fake-tenant',
+          },
+        }),
+      ).toEqual(
         expect.objectContaining({
-          headers: expect.not.objectContaining({
-            Authorization: expect.anything(),
+          headers: expect.objectContaining({
+            Authorization: 'Bearer fake-client-secret-token',
+          }),
+        }),
+      );
+    });
+
+    it('should add authorization header when using a managed identity', async () => {
+      expect(
+        await getAzureRequestOptions({
+          host: '',
+          credential: {
+            clientId: 'fake-id',
+          },
+        }),
+      ).toEqual(
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer fake-managed-identity-token',
           }),
         }),
       );

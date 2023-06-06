@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.84-next.0",
+  "version": "0.2.84-next.1",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -15,6 +15,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-adr": "workspace:^",
     "@backstage/plugin-airbrake": "workspace:^",
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
@@ -25,6 +26,7 @@
     "@backstage/plugin-catalog-graph": "workspace:^",
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
     "@backstage/plugin-circleci": "workspace:^",
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
@@ -77,7 +79,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "@oriflame/backstage-plugin-score-card": "^0.6.0",
+    "@oriflame/backstage-plugin-score-card": "^0.7.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",

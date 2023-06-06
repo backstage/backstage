@@ -28,7 +28,7 @@ import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
  * @alpha
  */
 export const kubernetesPlugin = createBackendPlugin({
-  pluginId: 'kubernetes-backend',
+  pluginId: 'kubernetes',
   register(env) {
     env.registerInit({
       deps: {

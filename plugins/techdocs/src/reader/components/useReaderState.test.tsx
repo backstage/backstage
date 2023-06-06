@@ -26,7 +26,7 @@ import {
 } from './useReaderState';
 
 describe('useReaderState', () => {
-  let Wrapper: React.ComponentType;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   const techdocsStorageApi: jest.Mocked<typeof techdocsStorageApiRef.T> = {
     getApiOrigin: jest.fn(),

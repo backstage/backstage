@@ -21,6 +21,7 @@ import {
   NotAllowedError,
   NotFoundError,
   NotModifiedError,
+  ServiceUnavailableError,
 } from '@backstage/errors';
 import express from 'express';
 import createError from 'http-errors';
@@ -143,6 +144,9 @@ describe('MiddlewareFactory', () => {
       app.use('/ConflictError', () => {
         throw new ConflictError();
       });
+      app.use('/ServiceUnavailableError', () => {
+        throw new ServiceUnavailableError();
+      });
       app.use(middleware.error());
 
       const r = request(app);
@@ -164,6 +168,10 @@ describe('MiddlewareFactory', () => {
       expect((await r.get('/ConflictError')).status).toBe(409);
       expect((await r.get('/ConflictError')).body.error.name).toBe(
         'ConflictError',
+      );
+      expect((await r.get('/ServiceUnavailableError')).status).toBe(503);
+      expect((await r.get('/ServiceUnavailableError')).body.error.name).toBe(
+        'ServiceUnavailableError',
       );
     });
 

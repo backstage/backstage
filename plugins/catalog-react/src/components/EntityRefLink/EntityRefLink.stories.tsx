@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { entityRouteRef } from '../../routes';
@@ -26,7 +26,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /EntityRefLink',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(<Story />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,

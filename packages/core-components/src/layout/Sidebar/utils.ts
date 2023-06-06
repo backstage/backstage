@@ -18,7 +18,11 @@ import { Location, Path } from 'history';
 import { isEqual, isMatch } from 'lodash';
 import qs from 'qs';
 
-export function isLocationMatch(currentLocation: Location, toLocation: Path) {
+export function isLocationMatch(
+  currentLocation: Location,
+  toLocation: Path,
+  exact: boolean = false,
+) {
   const toDecodedSearch = new URLSearchParams(toLocation.search).toString();
   const toQueryParameters = qs.parse(toDecodedSearch);
 
@@ -27,9 +31,11 @@ export function isLocationMatch(currentLocation: Location, toLocation: Path) {
   ).toString();
   const currentQueryParameters = qs.parse(currentDecodedSearch);
 
+  const queryStringMatcher = exact ? isEqual : isMatch;
+
   const matching =
     isEqual(toLocation.pathname, currentLocation.pathname) &&
-    isMatch(currentQueryParameters, toQueryParameters);
+    queryStringMatcher(currentQueryParameters, toQueryParameters);
 
   return matching;
 }

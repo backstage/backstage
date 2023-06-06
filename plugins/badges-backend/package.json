@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-badges-backend",
   "description": "A Backstage backend plugin that generates README badges for your entities",
-  "version": "0.2.1-next.0",
+  "version": "0.2.1-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -59,6 +59,7 @@
     "cross-fetch": "^3.1.5"
   },
   "files": [
-    "dist"
+    "dist",
+    "migrations/**/*.{js,d.ts}"
   ]
 }

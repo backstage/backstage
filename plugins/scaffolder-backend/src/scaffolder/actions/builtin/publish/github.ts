@@ -104,6 +104,8 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string;
     topics?: string[];
+    repoVariables?: { [key: string]: string };
+    secrets?: { [key: string]: string };
     requiredCommitSigning?: boolean;
   }>({
     id: 'publish:github',
@@ -148,6 +150,8 @@ export function createPublishGithubAction(options: {
           hasIssues: inputProps.hasIssues,
           token: inputProps.token,
           topics: inputProps.topics,
+          repoVariables: inputProps.repoVariables,
+          secrets: inputProps.secrets,
           requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
@@ -193,6 +197,8 @@ export function createPublishGithubAction(options: {
         hasWiki = undefined,
         hasIssues = undefined,
         topics,
+        repoVariables,
+        secrets,
         token: providedToken,
         requiredCommitSigning = false,
       } = ctx.input;
@@ -231,6 +237,8 @@ export function createPublishGithubAction(options: {
         hasWiki,
         hasIssues,
         topics,
+        repoVariables,
+        secrets,
         ctx.logger,
       );
 

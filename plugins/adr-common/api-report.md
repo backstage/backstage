@@ -35,4 +35,15 @@ export const MADR_DATE_FORMAT = 'yyyy-MM-dd';
 
 // @public
 export const madrFilePathFilter: AdrFilePathFilterFn;
+
+// @public
+export interface ParsedMadr {
+  attributes: Record<string, unknown>;
+  content: string;
+  date?: string;
+  status?: string;
+}
+
+// @public
+export const parseMadrWithFrontmatter: (content: string) => ParsedMadr;
 ```

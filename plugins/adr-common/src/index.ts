@@ -20,6 +20,7 @@
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import frontMatter from 'front-matter';
 
 /**
  * ADR plugin annotation.
@@ -101,3 +102,43 @@ export interface AdrDocument extends IndexableDocument {
    */
   date?: string;
 }
+
+/**
+ * Parsed MADR document with front matter (if present) parsed and extracted from the main markdown content.
+ * @public
+ */
+export interface ParsedMadr {
+  /**
+   * Main body of ADR content (with any front matter removed)
+   */
+  content: string;
+  /**
+   * ADR status
+   */
+  status?: string;
+  /**
+   * ADR date
+   */
+  date?: string;
+  /**
+   * All attributes parsed from front matter
+   */
+  attributes: Record<string, unknown>;
+}
+
+/**
+ * Utility function to parse raw markdown content for an ADR and extract any metadata found as "front matter" at the top of the Markdown document.
+ * @param content - Raw markdown content which may (optionally) include front matter
+ * @public
+ */
+export const parseMadrWithFrontmatter = (content: string): ParsedMadr => {
+  const parsed = frontMatter<Record<string, unknown>>(content);
+  const status = parsed.attributes.status;
+  const date = parsed.attributes.date;
+  return {
+    content: parsed.body,
+    status: status ? String(status) : undefined,
+    date: date ? String(date) : undefined,
+    attributes: parsed.attributes,
+  };
+};

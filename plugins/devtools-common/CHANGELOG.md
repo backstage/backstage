@@ -1,5 +1,14 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 459331f657ec: Export the list of permissions
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/types@1.0.2
+
 ## 0.1.0
 
 ### Minor Changes

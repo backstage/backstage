@@ -136,3 +136,5 @@ integration:
   - `Issues`: `Read & write`
   - `Workflows`: `Read & write` (if templates include GitHub workflows)
   - `Commit statuses`: `Read-only`
+  - `Variables`: `Read & write` (if templates include GitHub Action Repository Variables)
+  - `Secrets`: `Read & write` (if templates include GitHub Action Repository Secrets)

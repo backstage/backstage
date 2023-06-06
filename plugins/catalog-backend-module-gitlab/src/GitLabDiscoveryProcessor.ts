@@ -42,10 +42,15 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly logger: Logger;
   private readonly cache: CacheClient;
   private readonly skipReposWithoutExactFileMatch: boolean;
+  private readonly skipForkedRepos: boolean;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; skipReposWithoutExactFileMatch?: boolean },
+    options: {
+      logger: Logger;
+      skipReposWithoutExactFileMatch?: boolean;
+      skipForkedRepos?: boolean;
+    },
   ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
@@ -63,12 +68,14 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     pluginCache: PluginCacheManager;
     logger: Logger;
     skipReposWithoutExactFileMatch?: boolean;
+    skipForkedRepos?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache.getClient();
     this.logger = options.logger;
     this.skipReposWithoutExactFileMatch =
       options.skipReposWithoutExactFileMatch || false;
+    this.skipForkedRepos = options.skipForkedRepos || false;
   }
 
   getProcessorName(): string {
@@ -138,6 +145,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
         if (!projectHasFile) {
           continue;
         }
+      }
+
+      if (
+        this.skipForkedRepos &&
+        project.hasOwnProperty('forked_from_project')
+      ) {
+        continue;
       }
 
       res.matches.push(project);

@@ -23,12 +23,13 @@ export type {
   PagerDutyUser,
 } from './types';
 
-export type { PagerDutyCardProps } from './PagerDutyCard';
+export type { EntityPagerDutyCardProps } from './EntityPagerDutyCard';
+export type { HomePagePagerDutyCardProps } from './HomePagePagerDutyCard';
 
 export {
   isPluginApplicableToEntity,
   isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from './PagerDutyCard';
+  EntityPagerDutyCard,
+} from './EntityPagerDutyCard';
 
 export { TriggerButton } from './TriggerButton';

@@ -106,6 +106,16 @@ directly be used with a URL. Some example usages -
   Catalog using the `search` method to find files for a location URL containing
   a glob pattern.
 
+Note that URL Readers which target git-based version control systems may, under
+the hood, leverage the ability to create tar archives based on a specific git
+commit-ish. A consequence of this is that files and directories configured with
+[the `export-ignore` attribute](https://git-scm.com/docs/gitattributes#_creating_an_archive)
+via `.gitattributes` will not be visible to the URL reader when using the
+`readTree` or `search` methods.
+
+Be aware of this limitation and ensure that end-users of your plugin are also
+aware via, for example, documentation.
+
 ## Writing a new URL Reader
 
 If the available URL Readers are not sufficient for your use case and you want

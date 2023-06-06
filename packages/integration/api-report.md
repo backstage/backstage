@@ -39,6 +39,9 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export type AzureCredential = ClientSecret | ManagedIdentity;
+
+// @public
 export class AzureIntegration implements ScmIntegration {
   constructor(integrationConfig: AzureIntegrationConfig);
   // (undocumented)
@@ -63,6 +66,7 @@ export class AzureIntegration implements ScmIntegration {
 export type AzureIntegrationConfig = {
   host: string;
   token?: string;
+  credential?: AzureCredential;
 };
 
 // @public
@@ -155,6 +159,13 @@ export type BitbucketServerIntegrationConfig = {
 };
 
 // @public
+export type ClientSecret = {
+  tenantId: string;
+  clientId: string;
+  clientSecret: string;
+};
+
+// @public
 export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
@@ -163,6 +174,18 @@ export class DefaultGithubCredentialsProvider
     integrations: ScmIntegrationRegistry,
   ): DefaultGithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
+}
+
+// @public
+export class DefaultGitlabCredentialsProvider
+  implements GitlabCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultGitlabCredentialsProvider;
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
 }
 
 // @public
@@ -216,9 +239,9 @@ export function getAzureFileFetchUrl(url: string): string;
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
+}>;
 
 // @public
 export function getBitbucketCloudDefaultBranch(
@@ -478,6 +501,20 @@ export type GithubIntegrationConfig = {
   apps?: GithubAppConfig[];
 };
 
+// @public (undocumented)
+export type GitlabCredentials = {
+  headers?: {
+    [name: string]: string;
+  };
+  token?: string;
+};
+
+// @public (undocumented)
+export interface GitlabCredentialsProvider {
+  // (undocumented)
+  getCredentials(opts: { url: string }): Promise<GitlabCredentials>;
+}
+
 // @public
 export class GitLabIntegration implements ScmIntegration {
   constructor(integrationConfig: GitLabIntegrationConfig);
@@ -534,6 +571,11 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
+
+// @public
+export type ManagedIdentity = {
+  clientId: string;
+};
 
 // @public
 export function parseGerritGitilesUrl(

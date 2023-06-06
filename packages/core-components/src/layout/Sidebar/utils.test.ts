@@ -95,4 +95,30 @@ describe('isLocationMatching', () => {
     toLocation = { pathname: '/catalog', search: '', hash: '' };
     expect(isLocationMatch(currentLocation, toLocation)).toBe(true);
   });
+
+  describe('exact matching', () => {
+    it('return false when target query parameters are subset of current location query parameters', async () => {
+      currentLocation = {
+        pathname: '/catalog',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '',
+        key: '',
+      };
+      toLocation = { pathname: '/catalog', search: '?x=foo', hash: '' };
+      expect(isLocationMatch(currentLocation, toLocation, true)).toBe(false);
+    });
+
+    it('return true when target query parameters are exact match with current location query parameters', async () => {
+      currentLocation = {
+        pathname: '/catalog',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '',
+        key: '',
+      };
+      toLocation = { pathname: '/catalog', search: '?y=bar&x=foo', hash: '' };
+      expect(isLocationMatch(currentLocation, toLocation, true)).toBe(true);
+    });
+  });
 });

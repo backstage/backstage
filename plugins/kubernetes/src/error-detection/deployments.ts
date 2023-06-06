@@ -28,7 +28,6 @@ const deploymentErrorMappers: ErrorMapper<Deployment>[] = [
           type: 'condition-message-present',
           message: c.message ?? '',
           severity: 6,
-          proposedFix: [], // TODO next PR
           sourceRef: {
             name: deployment.metadata?.name ?? 'unknown hpa',
             namespace: deployment.metadata?.namespace ?? 'unknown namespace',

@@ -30,6 +30,8 @@ import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from '../helpers';
 
+const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
+
 const mockOctokit = {
   rest: {
     users: {
@@ -44,6 +46,11 @@ const mockOctokit = {
     teams: {
       addOrUpdateRepoPermissionsInOrg: jest.fn(),
       getByName: jest.fn(),
+    },
+    actions: {
+      createRepoVariable: jest.fn(),
+      createOrUpdateRepoSecret: jest.fn(),
+      getRepoPublicKey: jest.fn(),
     },
   },
 };
@@ -91,6 +98,12 @@ describe('github:repo:create', () => {
       githubCredentialsProvider,
     });
     (entityRefToName as jest.Mock).mockImplementation((s: string) => s);
+    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+      data: {
+        key: publicKey,
+        key_id: 'keyid',
+      },
+    });
   });
 
   afterEach(jest.resetAllMocks);
@@ -568,6 +581,69 @@ describe('github:repo:create', () => {
       owner: 'owner',
       repo: 'repo',
       names: ['backstage'],
+    });
+  });
+
+  it('should add variables when provided', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoVariables: {
+          foo: 'bar',
+        },
+      },
+    });
+
+    expect(mockOctokit.rest.actions.createRepoVariable).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      name: 'foo',
+      value: 'bar',
+    });
+  });
+
+  it('should add secrets when provided', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        secrets: {
+          foo: 'bar',
+        },
+      },
+    });
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateRepoSecret,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      secret_name: 'foo',
+      key_id: 'keyid',
+      encrypted_value: expect.any(String),
     });
   });
 

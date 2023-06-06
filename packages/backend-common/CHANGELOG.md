@@ -1,5 +1,29 @@
 # @backstage/backend-common
 
+## 0.19.0-next.1
+
+### Minor Changes
+
+- c7f848bcea3c: Support authentication with a service principal or managed identity for Azure DevOps
+
+  Azure DevOps recently released support, in public preview, for authenticating with a service principal or managed identity instead of a personal access token (PAT): https://devblogs.microsoft.com/devops/introducing-service-principal-and-managed-identity-support-on-azure-devops/. With this change the Azure integration now supports service principals and managed identities for Azure AD backed Azure DevOps organizations. Service principal and managed identity authentication is not supported on Azure DevOps Server (on-premises) organizations.
+
+### Patch Changes
+
+- 4ef91ab46732: Updated the backend database connection configuration schema to set the password visibility to secret
+- 9f47a743632c: Fixed typo in HostDiscovery's JSDoc
+- Updated dependencies
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-app-api@0.4.4-next.1
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/config-loader@1.3.1-next.1
+  - @backstage/integration-aws-node@0.1.4-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
 ## 0.18.6-next.0
 
 ### Patch Changes

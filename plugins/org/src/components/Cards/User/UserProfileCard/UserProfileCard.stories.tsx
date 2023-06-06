@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { UserProfileCard } from './UserProfileCard';
 
 const dummyGroup = {
@@ -94,7 +94,7 @@ export default {
   title: 'Plugins/Org/User Profile Card',
   component: UserProfileCard,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(<Story />, {
         mountedRoutes: {
           '/a': entityRouteRef,

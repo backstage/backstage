@@ -22,16 +22,6 @@ import { TemplateCard } from '../TemplateCard';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('TemplateGroup', () => {
-  it('should return a message when no templates are passed in', async () => {
-    const { getByText } = render(
-      <TemplateGroup onSelected={jest.fn()} title="Test" templates={[]} />,
-    );
-
-    expect(
-      getByText(/No templates found that match your filter/),
-    ).toBeInTheDocument();
-  });
-
   it('should render a card for each template with the template being passed as a prop', () => {
     const mockOnSelected = jest.fn();
     const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
@@ -130,14 +120,6 @@ describe('TemplateGroup', () => {
       );
     }
   });
-
-  it('should render the title when no templates passed', () => {
-    const { getByText } = render(
-      <TemplateGroup onSelected={jest.fn()} title="Test" templates={[]} />,
-    );
-    expect(getByText('Test')).toBeInTheDocument();
-  });
-
   it('should render the title when there are templates in the list', () => {
     const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
@@ -163,10 +145,20 @@ describe('TemplateGroup', () => {
 
   it('should allow for passing through a user given title component', () => {
     const TitleComponent = <p>Im a custom header</p>;
+    const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
+      {
+        template: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'test' },
+          spec: { parameters: [], steps: [], type: 'website' },
+        },
+      },
+    ];
     const { getByText } = render(
       <TemplateGroup
         onSelected={jest.fn()}
-        templates={[]}
+        templates={mockTemplates}
         title={TitleComponent}
       />,
     );

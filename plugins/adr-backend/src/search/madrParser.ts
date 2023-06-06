@@ -16,7 +16,10 @@
 
 import { DateTime } from 'luxon';
 import { marked } from 'marked';
-import { MADR_DATE_FORMAT } from '@backstage/plugin-adr-common';
+import {
+  MADR_DATE_FORMAT,
+  parseMadrWithFrontmatter,
+} from '@backstage/plugin-adr-common';
 
 const getTitle = (tokens: marked.TokensList): string | undefined => {
   return (
@@ -26,22 +29,6 @@ const getTitle = (tokens: marked.TokensList): string | undefined => {
   )?.text;
 };
 
-const getStatusForV3Format = (tokens: marked.TokensList): string | undefined =>
-  (
-    tokens.find(
-      t =>
-        t.type === 'heading' &&
-        t.depth === 2 &&
-        t.text.toLowerCase().includes('status:'),
-    ) as marked.Tokens.Text
-  )?.text
-    .toLowerCase()
-    .split('\n')
-    .find(l => /^status:/.test(l))
-    ?.replace(/^status:/i, '')
-    .trim()
-    .toLocaleLowerCase('en-US');
-
 const getStatusForV2Format = (tokens: marked.TokensList): string | undefined =>
   (tokens.find(t => t.type === 'list') as marked.Tokens.List)?.items
     ?.find(t => /^status:/i.test(t.text))
@@ -49,71 +36,45 @@ const getStatusForV2Format = (tokens: marked.TokensList): string | undefined =>
     .trim()
     .toLocaleLowerCase('en-US');
 
-const getDateForV3Format = (
-  tokens: marked.TokensList,
-  dateFormat: string,
-): string | undefined => {
-  let adrDateTime: DateTime | undefined;
-  const dateLine = (
-    tokens.find(
-      t =>
-        t.type === 'heading' &&
-        t.depth === 2 &&
-        t.text.toLowerCase().includes('date:'),
-    ) as marked.Tokens.Text
-  )?.text
-    .toLowerCase()
-    .split('\n')
-    .find(l => /^date:/.test(l));
-
-  if (dateLine) {
-    adrDateTime = DateTime.fromFormat(
-      dateLine.replace(/^date:/i, '').trim(),
-      dateFormat,
-    );
-  }
-  return adrDateTime?.isValid
-    ? adrDateTime.toFormat(MADR_DATE_FORMAT)
-    : undefined;
-};
-
-const getDateForV2Format = (
-  tokens: marked.TokensList,
-  dateFormat: string,
-): string | undefined => {
+const getDateForV2Format = (tokens: marked.TokensList): string | undefined => {
   const listTokens = (tokens.find(t => t.type === 'list') as marked.Tokens.List)
     ?.items;
-  const adrDateTime = DateTime.fromFormat(
-    listTokens
-      ?.find(t => /^date:/i.test(t.text))
-      ?.text.replace(/^date:/i, '')
-      .trim() ?? '',
-    dateFormat,
-  );
-  return adrDateTime?.isValid
-    ? adrDateTime.toFormat(MADR_DATE_FORMAT)
-    : undefined;
+  const adrDateTime = listTokens
+    ?.find(t => /^date:/i.test(t.text))
+    ?.text.replace(/^date:/i, '')
+    .trim();
+  return adrDateTime;
 };
 
-const getStatus = (tokens: marked.TokensList): string | undefined => {
-  return getStatusForV3Format(tokens) ?? getStatusForV2Format(tokens);
+const getStatus = (
+  tokens: marked.TokensList,
+  frontMatterStatus?: string,
+): string | undefined => {
+  return frontMatterStatus ?? getStatusForV2Format(tokens);
 };
 const getDate = (
   tokens: marked.TokensList,
   dateFormat: string,
-): string | undefined =>
-  getDateForV3Format(tokens, dateFormat) ??
-  getDateForV2Format(tokens, dateFormat);
+  frontMatterDate?: string,
+): string | undefined => {
+  const dateString = frontMatterDate ?? getDateForV2Format(tokens);
+  if (!dateString) {
+    return undefined;
+  }
+  const date = DateTime.fromFormat(dateString, dateFormat);
+  return date?.isValid ? date.toFormat(MADR_DATE_FORMAT) : undefined;
+};
 
 export const madrParser = (content: string, dateFormat = MADR_DATE_FORMAT) => {
-  const tokens = marked.lexer(content);
+  const preparsed = parseMadrWithFrontmatter(content);
+  const tokens = marked.lexer(preparsed.content);
   if (!tokens.length) {
     throw new Error('ADR has no content');
   }
 
   return {
     title: getTitle(tokens),
-    status: getStatus(tokens),
-    date: getDate(tokens, dateFormat),
+    status: getStatus(tokens, preparsed.status),
+    date: getDate(tokens, dateFormat, preparsed.date),
   };
 };

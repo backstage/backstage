@@ -274,6 +274,9 @@ catalog:
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # Example component for ADRs
+    - type: file
+      target: ../../plugins/adr/examples/component/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml

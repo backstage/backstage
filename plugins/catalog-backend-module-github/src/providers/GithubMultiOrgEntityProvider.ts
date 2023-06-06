@@ -388,7 +388,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#membership
     if (params.topic.includes('membership')) {
-      this.onMembershipChangedInTeam(eventPayload as MembershipEvent, orgs);
+      await this.onMembershipChangedInTeam(
+        eventPayload as MembershipEvent,
+        orgs,
+      );
     }
 
     return;
@@ -838,6 +841,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       .map(install =>
         install.target_type === 'Organization' &&
         install.account &&
+        'login' in install.account &&
         install.account.login
           ? install.account.login
           : undefined,

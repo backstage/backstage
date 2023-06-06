@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CardExtensionProps } from '@backstage/plugin-home-react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -14,7 +15,24 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
 // @public (undocumented)
-export const EntityPagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
+export const EntityPagerDutyCard: (
+  props: EntityPagerDutyCardProps,
+) => JSX.Element;
+
+// @public (undocumented)
+export type EntityPagerDutyCardProps = {
+  readOnly?: boolean;
+};
+
+// @public (undocumented)
+export const HomePagePagerDutyCard: (
+  props: CardExtensionProps<HomePagePagerDutyCardProps>,
+) => JSX.Element;
+
+// @public (undocumented)
+export type HomePagePagerDutyCardProps = PagerDutyEntity & {
+  readOnly?: boolean;
+};
 
 // @public (undocumented)
 const isPluginApplicableToEntity: (entity: Entity) => boolean;
@@ -31,6 +49,9 @@ export interface PagerDutyApi {
   ): Promise<PagerDutyIncidentsResponse>;
   getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
   getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
+  getServiceByPagerDutyEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<PagerDutyServiceResponse>;
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }
 
@@ -44,13 +65,11 @@ export type PagerDutyAssignee = {
   html_url: string;
 };
 
-// @public (undocumented)
-export const PagerDutyCard: (props: PagerDutyCardProps) => JSX.Element;
+// @public @deprecated (undocumented)
+export const PagerDutyCard: (props: EntityPagerDutyCardProps) => JSX.Element;
 
-// @public (undocumented)
-export type PagerDutyCardProps = {
-  readOnly?: boolean;
-};
+// @public @deprecated (undocumented)
+export type PagerDutyCardProps = EntityPagerDutyCardProps;
 
 // @public (undocumented)
 export type PagerDutyChangeEvent = {
@@ -97,6 +116,10 @@ export class PagerDutyClient implements PagerDutyApi {
   getOnCallByPolicyId(policyId: string): Promise<PagerDutyOnCallsResponse>;
   // (undocumented)
   getServiceByEntity(entity: Entity): Promise<PagerDutyServiceResponse>;
+  // (undocumented)
+  getServiceByPagerDutyEntity(
+    pagerDutyEntity: PagerDutyEntity,
+  ): Promise<PagerDutyServiceResponse>;
   // (undocumented)
   triggerAlarm(request: PagerDutyTriggerAlarmRequest): Promise<Response>;
 }

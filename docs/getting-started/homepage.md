@@ -40,10 +40,10 @@ Inside your `packages/app` directory, create a new file where our new homepage c
 ```tsx
 import React from 'react';
 
-export const HomePage = () => {
+export const homePage = (
   /* We will shortly compose a pretty homepage here. */
-  return <h1>Welcome to Backstage!</h1>;
-};
+  <h1>Welcome to Backstage!</h1>
+);
 ```
 
 #### 3. Update router for the root `/` route
@@ -161,13 +161,11 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 
-export const HomePage = () => {
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={4}>
-        <HomePageCompanyLogo />
-      </Grid>
+export const homePage = (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <HomePageCompanyLogo />
     </Grid>
-  );
-};
+  </Grid>
+);
 ```
