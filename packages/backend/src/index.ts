@@ -26,19 +26,19 @@ import Router from 'express-promise-router';
 import {
   CacheManager,
   createServiceBuilder,
+  DatabaseManager,
   getRootLogger,
+  HostDiscovery,
   loadBackendConfig,
   notFoundHandler,
-  DatabaseManager,
-  HostDiscovery,
+  ServerTokenManager,
   UrlReaders,
   useHotMemoize,
-  ServerTokenManager,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
-import { metricsInit, metricsHandler } from './metrics';
+import { metricsHandler, metricsInit } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
@@ -65,6 +65,7 @@ import adr from './plugins/adr';
 import lighthouse from './plugins/lighthouse';
 import linguist from './plugins/linguist';
 import devTools from './plugins/devtools';
+import signalsService from './plugins/signals';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -72,6 +73,7 @@ import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
+import { DefaultSignalsClient } from '@backstage/plugin-signals-backend';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -106,6 +108,10 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
+    const signals = DefaultSignalsClient.forPlugin(plugin, {
+      logger,
+      eventBroker,
+    });
 
     return {
       logger,
@@ -119,6 +125,7 @@ function makeCreateEnv(config: Config) {
       permissions,
       scheduler,
       identity,
+      signals,
     };
   };
 }
@@ -172,6 +179,7 @@ async function main() {
   const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
   const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
+  const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -209,10 +217,15 @@ async function main() {
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
-  await service.start().catch(err => {
-    logger.error(err);
-    process.exit(1);
-  });
+  await service
+    .start()
+    .then(async server => {
+      await signalsService({ httpServer: server, ...signalsEnv });
+    })
+    .catch(err => {
+      logger.error(err);
+      process.exit(1);
+    });
 }
 
 module.hot?.accept();

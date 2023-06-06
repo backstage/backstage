@@ -9107,6 +9107,51 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-signals-backend@workspace:^, @backstage/plugin-signals-backend@workspace:plugins/signals-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals-backend@workspace:plugins/signals-backend"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    socket.io: ^4.6.2
+    socket.io-client: ^4.6.2
+    supertest: ^6.2.4
+    uuid: ^9.0.0
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-signals-react@workspace:^, @backstage/plugin-signals-react@workspace:plugins/signals-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals-react@workspace:plugins/signals-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@testing-library/jest-dom": ^5.10.1
+    "@testing-library/react": ^12.1.3
+    socket.io-client: ^4.6.2
+    uuid: ^9.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend"
@@ -15034,6 +15079,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@socket.io/component-emitter@npm:~3.1.0":
+  version: 3.1.0
+  resolution: "@socket.io/component-emitter@npm:3.1.0"
+  checksum: db069d95425b419de1514dffe945cc439795f6a8ef5b9465715acf5b8b50798e2c91b8719cbf5434b3fe7de179d6cdcd503c277b7871cb3dd03febb69bdd50fa
+  languageName: node
+  linkType: hard
+
 "@spotify/eslint-config-base@npm:^14.0.0":
   version: 14.0.1
   resolution: "@spotify/eslint-config-base@npm:14.0.1"
@@ -16279,7 +16331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cors@npm:^2.8.6":
+"@types/cors@npm:^2.8.12, @types/cors@npm:^2.8.6":
   version: 2.8.13
   resolution: "@types/cors@npm:2.8.13"
   dependencies:
@@ -17073,7 +17125,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
   version: 20.3.0
   resolution: "@types/node@npm:20.3.0"
   checksum: 613e878174febc0104dae210088645cbb5096a19ae5fdf57fbc06fa6ef71755b839858c2b313fb8c1df8b7c6660e1b5f7a64db2126af9d47d1d9238e2bc0a86d
@@ -19650,6 +19702,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base64id@npm:2.0.0, base64id@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "base64id@npm:2.0.0"
+  checksum: 581b1d37e6cf3738b7ccdd4d14fe2bfc5c238e696e2720ee6c44c183b838655842e22034e53ffd783f872a539915c51b0d4728a49c7cc678ac5a758e00d62168
+  languageName: node
+  linkType: hard
+
 "base64url@npm:3.x.x":
   version: 3.0.1
   resolution: "base64url@npm:3.0.1"
@@ -21506,7 +21565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.4.2, cookie@npm:^0.4.2":
+"cookie@npm:0.4.2, cookie@npm:^0.4.2, cookie@npm:~0.4.1":
   version: 0.4.2
   resolution: "cookie@npm:0.4.2"
   checksum: a00833c998bedf8e787b4c342defe5fa419abd96b32f4464f718b91022586b8f1bafbddd499288e75c037642493c83083da426c6a9080d309e3bd90fd11baa9b
@@ -21581,7 +21640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cors@npm:^2.8.5":
+"cors@npm:^2.8.5, cors@npm:~2.8.5":
   version: 2.8.5
   resolution: "cors@npm:2.8.5"
   dependencies:
@@ -22452,7 +22511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -23324,6 +23383,44 @@ __metadata:
   dependencies:
     once: ^1.4.0
   checksum: 530a5a5a1e517e962854a31693dbb5c0b2fc40b46dad2a56a2deec656ca040631124f4795823acc68238147805f8b021abbe221f4afed5ef3c8e8efc2024908b
+  languageName: node
+  linkType: hard
+
+"engine.io-client@npm:~6.4.0":
+  version: 6.4.0
+  resolution: "engine.io-client@npm:6.4.0"
+  dependencies:
+    "@socket.io/component-emitter": ~3.1.0
+    debug: ~4.3.1
+    engine.io-parser: ~5.0.3
+    ws: ~8.11.0
+    xmlhttprequest-ssl: ~2.0.0
+  checksum: f412a5d490d073bc6b1240002ea9d46c4813bfb7ad98edd54db3760d75cac1d7f73c2f802a7ce04827c1e304fa26f4d464785efdb003d6231cadedca649a7146
+  languageName: node
+  linkType: hard
+
+"engine.io-parser@npm:~5.0.3":
+  version: 5.0.7
+  resolution: "engine.io-parser@npm:5.0.7"
+  checksum: 70ce4e22429ad4afbba187a0f71f87eb1448dbc2e4ff611857e46ca5ad09951408afa97f216e5fda993be4a944815b6f8eaebd6f70a9de522b54c7b8262fafb4
+  languageName: node
+  linkType: hard
+
+"engine.io@npm:~6.4.2":
+  version: 6.4.2
+  resolution: "engine.io@npm:6.4.2"
+  dependencies:
+    "@types/cookie": ^0.4.1
+    "@types/cors": ^2.8.12
+    "@types/node": ">=10.0.0"
+    accepts: ~1.3.4
+    base64id: 2.0.0
+    cookie: ~0.4.1
+    cors: ~2.8.5
+    debug: ~4.3.1
+    engine.io-parser: ~5.0.3
+    ws: ~8.11.0
+  checksum: c4ca538c98d251ff00756ed955d924c3fd78e61af0a5825c9fa1d77ebb661ead7971598fb61daf079c2655c7be2d4a26094e446759e3c6786d8ac75ccffe36d5
   languageName: node
   linkType: hard
 
@@ -24542,6 +24639,7 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-sentry": "workspace:^"
     "@backstage/plugin-shortcuts": "workspace:^"
+    "@backstage/plugin-signals-react": "workspace:^"
     "@backstage/plugin-stack-overflow": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/plugin-tech-insights": "workspace:^"
@@ -24660,6 +24758,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-pg": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-tech-insights-backend": "workspace:^"
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
@@ -38001,6 +38100,51 @@ __metadata:
   languageName: node
   linkType: hard
 
+"socket.io-adapter@npm:~2.5.2":
+  version: 2.5.2
+  resolution: "socket.io-adapter@npm:2.5.2"
+  dependencies:
+    ws: ~8.11.0
+  checksum: 481251c3547221e57eb5cb247d0b1a3cde4d152a4c1c9051cc887345a7770e59f3b47f1011cac4499e833f01fcfc301ed13c4ec6e72f7dbb48a476375a6344cd
+  languageName: node
+  linkType: hard
+
+"socket.io-client@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "socket.io-client@npm:4.6.2"
+  dependencies:
+    "@socket.io/component-emitter": ~3.1.0
+    debug: ~4.3.2
+    engine.io-client: ~6.4.0
+    socket.io-parser: ~4.2.4
+  checksum: 2e0bb4518f0be0066f47fe89bdabb8169ad87f44c617d4b40aa196be04e6c0b1fd5daa9de322414f2d0b40757987f299168f916627120d9018ecf979d9a170f5
+  languageName: node
+  linkType: hard
+
+"socket.io-parser@npm:~4.2.4":
+  version: 4.2.4
+  resolution: "socket.io-parser@npm:4.2.4"
+  dependencies:
+    "@socket.io/component-emitter": ~3.1.0
+    debug: ~4.3.1
+  checksum: 61540ef99af33e6a562b9effe0fad769bcb7ec6a301aba5a64b3a8bccb611a0abdbe25f469933ab80072582006a78ca136bf0ad8adff9c77c9953581285e2263
+  languageName: node
+  linkType: hard
+
+"socket.io@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "socket.io@npm:4.6.2"
+  dependencies:
+    accepts: ~1.3.4
+    base64id: ~2.0.0
+    debug: ~4.3.2
+    engine.io: ~6.4.2
+    socket.io-adapter: ~2.5.2
+    socket.io-parser: ~4.2.4
+  checksum: 17f48c65627f6663384529072e33bff631eb496f6189a1325dd6775b2a50779b2acb36b6f57c9fc26f28e3ae109fb238d39167aebfbf96838a5fb7dd1b74c209
+  languageName: node
+  linkType: hard
+
 "sockjs@npm:^0.3.24":
   version: 0.3.24
   resolution: "sockjs@npm:0.3.24"
@@ -41553,7 +41697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.11.0":
+"ws@npm:8.11.0, ws@npm:~8.11.0":
   version: 8.11.0
   resolution: "ws@npm:8.11.0"
   peerDependencies:
@@ -41733,6 +41877,13 @@ __metadata:
   version: 2.0.4
   resolution: "xmlcreate@npm:2.0.4"
   checksum: b8dd52668b9aea77cd1408fa85538c14bb8dcc98b4e7bb51e76696c9c115d59eba7240298d0c4fd2caf8f1a8e283ab4e5c7b9a6bcfcf23a8b48f5068b677b748
+  languageName: node
+  linkType: hard
+
+"xmlhttprequest-ssl@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "xmlhttprequest-ssl@npm:2.0.0"
+  checksum: 1e98df67f004fec15754392a131343ea92e6ab5ac4d77e842378c5c4e4fd5b6a9134b169d96842cc19422d77b1606b8df84a5685562b3b698cb68441636f827e
   languageName: node
   linkType: hard
 

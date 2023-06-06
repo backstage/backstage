@@ -68,6 +68,7 @@
     "@backstage/plugin-search-backend-module-pg": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-tech-insights-backend": "workspace:^",
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "workspace:^",
     "@backstage/plugin-tech-insights-node": "workspace:^",

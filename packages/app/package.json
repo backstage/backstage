@@ -64,6 +64,7 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-sentry": "workspace:^",
     "@backstage/plugin-shortcuts": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
     "@backstage/plugin-stack-overflow": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@backstage/plugin-tech-insights": "workspace:^",

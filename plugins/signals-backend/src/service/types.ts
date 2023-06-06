@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Socket } from 'socket.io';
+import http from 'http';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-  UrlReader,
-} from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { SignalsApi } from '@backstage/plugin-signals-backend';
+import { Config } from '@backstage/config';
 
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-  permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
-  identity: IdentityApi;
+/**
+ * @internal
+ */
+export type SignalsSubscription = {
+  pluginId: string;
+  topic?: string;
+};
+
+/**
+ * @internal
+ */
+export type SignalsClientSubscribeCommand = {
+  pluginId: string;
+  topic?: string;
+};
+
+/**
+ * @internal
+ */
+export type SignalsConnection = {
+  ws: Socket;
+  ip?: string;
+  sub?: string;
+  ownershipEntityRefs?: string[];
+  subscriptions: Map<string, SignalsSubscription>;
+};
+
+/**
+ * @public
+ */
+export type ServiceOptions = {
+  httpServer: http.Server;
   eventBroker: EventBroker;
-  signals: SignalsApi;
+  config: Config;
+  logger: Logger;
+  identity: IdentityApi;
 };
