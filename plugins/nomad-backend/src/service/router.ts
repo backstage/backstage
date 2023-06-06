@@ -41,7 +41,7 @@ export async function createRouter(
     resp.json({ status: 'ok' });
   });
 
-  router.get('/v1/allocations', async (req, resp) => {
+  router.get('/v1/allocations', async (req, res) => {
     // Check namespace argument
     const namespace = (req.query.namespace as string) ?? '';
     if (!namespace || namespace === '') {
@@ -53,23 +53,29 @@ export async function createRouter(
     logger.debug(`request headers: namespace=${namespace} filter=${filter}`);
 
     // Issue the request
-    const allocationsResp = await fetch(
-      `${addr}/v1/allocations?namespace=${encodeURIComponent(
-        namespace,
-      )}&filter=${encodeURIComponent(filter)}`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'X-Nomad-Token': token || '',
-        },
+    const endpoint = `${addr}/v1/allocations?namespace=${encodeURIComponent(
+      namespace,
+    )}&filter=${encodeURIComponent(filter)}`;
+    const allocationsResp = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'X-Nomad-Token': token || '',
       },
-    );
+    });
+
+    // Check response
+    if (allocationsResp.status !== 200) {
+      const body = await allocationsResp.text();
+      logger.error(`failed to call /v1/allocations endpoint: ${body}`);
+      res.status(allocationsResp.status).send(body);
+      return;
+    }
 
     // Deserialize and return
     const allocationsBody = await allocationsResp.json();
     logger.debug(`/v1/allocations response: ${allocationsBody}`);
-    resp.json(allocationsBody);
+    res.json(allocationsBody);
   });
 
   router.get('/v1/job/:job_id/versions', async (req, resp) => {
@@ -82,8 +88,10 @@ export async function createRouter(
     // Get job ID
     const jobID = (req.params.job_id as string) ?? '';
 
+    logger.info(`token: ${token}`);
+
     // Issue the request
-    const versionsResp = await fetch(
+    const apiResp = await fetch(
       `${addr}/v1/job/${jobID}/versions?namespace=${encodeURIComponent(
         namespace,
       )}`,
@@ -96,8 +104,16 @@ export async function createRouter(
       },
     );
 
+    // Check response
+    if (apiResp.status !== 200) {
+      const body = await apiResp.text();
+      logger.error(`failed to call /v1/job/:job_id/versions endpoint: ${body}`);
+      resp.status(apiResp.status).send(body);
+      return;
+    }
+
     // Deserialize and return
-    const versionsBody = await versionsResp.json();
+    const versionsBody = await apiResp.json();
     logger.debug(`/v1/job/:job_id/versions response: ${versionsBody}`);
     resp.json(versionsBody);
   });

@@ -12,7 +12,7 @@ This plugin has a corresponding backend plugin required to call the Nomad cluste
 
 ### Features
 
-At the time of writing, this plugin provides two components:
+This plugin provides two components:
 
 - a table to view recent [job versions](https://developer.hashicorp.com/nomad/docs/commands/job/history)
 - a table to view [allocations for a job and/or group](https://developer.hashicorp.com/nomad/tutorials/manage-jobs/jobs-inspect)
@@ -25,7 +25,7 @@ You will need to have the backend Nomad plugin, `@backstage/plugin-nomad-backend
 
 You will need a running Nomad cluster with an API address that is reachable from the `@backstage/plugin-nomad/backend` plugin [running in the back end](https://backstage.io/docs/overview/architecture-overview/#third-party-backed-plugins). You can follow [this tutorial](https://developer.hashicorp.com/nomad/tutorials/enterprise/production-deployment-guide-vm-with-consul) to learn how to deploy one.
 
-If your Nomad cluster has ACLs enabled, you will need a `token` with at least [`list-jobs` and `read-jobs` capabilities](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-policies#namespace-rules). You can check [this tutorial](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-create-policy) for more info.
+If your Nomad cluster has ACLs enabled, you will need a `token` with at least the [`list-jobs`capability](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-policies#namespace-rules). You can check [this tutorial](https://developer.hashicorp.com/nomad/tutorials/access-control/access-control-create-policy) for more info or the minimal [example below](#example-policy).
 
 ### Installation
 
@@ -121,3 +121,47 @@ const serviceEntityPage = (
 #### Requirements
 
 - `nomad.io/job-id` and/or `nomad.io/group` annotations must be set
+
+## ACL Policy Example
+
+Because this plugin uses API endpoints that require the `list-jobs` capability, the token you provide to the plugin's [`nomad` configuration](#configuration) needs at least that.
+
+To create such a token you can create a policy like below. This policy applies to all namespaces:
+
+```hcl
+# backstage.policy.hcl
+namespace "*" {
+  policy = "read"
+}
+
+node {
+  policy = "read"
+}
+```
+
+And create a policy for it:
+
+```bash
+nomad acl policy apply backstage backstage.policy.hcl
+```
+
+Then create a client token for it:
+
+```bash
+nomad acl token create -name=backstage -policy=backstage
+Accessor ID  = 5e9fe97b-76c5-8803-21b8-083308dc6c11
+Secret ID    = 93e034ad-e504-42f9-129d-5d81be9f13d3
+Name         = backstage
+Type         = client
+Global       = false
+Create Time  = 2023-06-05 00:45:20.51905 +0000 UTC
+Expiry Time  = <none>
+Create Index = 54
+Modify Index = 54
+Policies     = [backstage]
+
+Roles
+<none>
+```
+
+In the example above, the `Secret ID` is the `token` to use in the [configuration](#configuration).
