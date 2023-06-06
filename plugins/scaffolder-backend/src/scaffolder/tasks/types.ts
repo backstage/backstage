@@ -137,7 +137,12 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
-  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+  list?(options?: {
+    createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
+  }): Promise<{ tasks: SerializedTask[] }>;
 }
 
 /**
@@ -215,7 +220,12 @@ export interface TaskStore {
     tasks: { taskId: string }[];
   }>;
 
-  list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+  list?(options: {
+    createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
+  }): Promise<{ tasks: SerializedTask[] }>;
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 

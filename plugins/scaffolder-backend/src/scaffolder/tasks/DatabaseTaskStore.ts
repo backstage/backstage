@@ -141,12 +141,30 @@ export class DatabaseTaskStore implements TaskStore {
 
   async list(options: {
     createdBy?: string;
+    lastHeartbeatAt?: number;
+    createdAt?: number;
+    status?: string;
   }): Promise<{ tasks: SerializedTask[] }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
     if (options.createdBy) {
       queryBuilder.where({
         created_by: options.createdBy,
+      });
+    }
+    if (options.lastHeartbeatAt) {
+      queryBuilder.whereRaw('last_heartbeat_at > ?', [
+        new Date(options.lastHeartbeatAt).toISOString(),
+      ]);
+    }
+    if (options.createdAt) {
+      queryBuilder.whereRaw('created_at > ?', [
+        new Date(options.createdAt).toISOString(),
+      ]);
+    }
+    if (options.status) {
+      queryBuilder.where({
+        status: options.status as TaskStatus,
       });
     }
 

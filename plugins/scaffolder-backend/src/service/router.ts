@@ -457,12 +457,39 @@ export async function createRouter(
     })
     .get('/v2/tasks', async (req, res) => {
       const [userEntityRef] = [req.query.createdBy].flat();
+      const [lastHeartBeatAt] = [req.query.lastHeartbeatAt].flat();
+      const [createdAt] = [req.query.createdAt].flat();
+      const [status] = [req.query.status].flat();
 
       if (
         typeof userEntityRef !== 'string' &&
         typeof userEntityRef !== 'undefined'
       ) {
         throw new InputError('createdBy query parameter must be a string');
+      }
+
+      if (
+        (typeof lastHeartBeatAt !== 'string' &&
+          typeof lastHeartBeatAt !== 'undefined') ||
+        (typeof lastHeartBeatAt === 'string' &&
+          !/^-?\d+$/.test(lastHeartBeatAt))
+      ) {
+        throw new InputError(
+          'lastHeartbeatAt query parameter must be a timestamp (numbers only)',
+        );
+      }
+
+      if (
+        (typeof createdAt !== 'string' && typeof createdAt !== 'undefined') ||
+        (typeof createdAt === 'string' && !/^-?\d+$/.test(createdAt))
+      ) {
+        throw new InputError(
+          'createdAt query parameter must be a timestamp (numbers only)',
+        );
+      }
+
+      if (typeof status !== 'string' && typeof status !== 'undefined') {
+        throw new InputError('status query parameter must be a string');
       }
 
       if (!taskBroker.list) {
@@ -473,6 +500,11 @@ export async function createRouter(
 
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
+        lastHeartbeatAt: lastHeartBeatAt
+          ? parseInt(lastHeartBeatAt, 10)
+          : undefined,
+        createdAt: createdAt ? parseInt(createdAt, 10) : undefined,
+        status: status,
       });
 
       res.status(200).json(tasks);
