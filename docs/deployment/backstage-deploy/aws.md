@@ -113,7 +113,7 @@ Then we need to execute the following commands, to set Pulumi up:
 
 :::tip
 
-Make sure to store your passphrase somewhere save as it is used to encrypt/decrypt your Pulumi config.
+Make sure to store your passphrase somewhere safe as it is used to encrypt/decrypt your Pulumi config.
 
 :::
 
