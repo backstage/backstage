@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -27,17 +31,14 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
-import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useDebouncedEffect } from '@react-hookz/web';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
-import { humanizeEntity } from '../EntityRefLink/humanize';
+import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
+import { useFetchEntities } from './useFetchEntities';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -54,56 +55,21 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+export type EntityOwnerPickerProps = {
+  mode?: 'owners-only' | 'all';
+};
+
 /** @public */
-export const EntityOwnerPicker = () => {
+export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const classes = useStyles();
+  const { mode = 'owners-only' } = props || {};
   const {
     updateFilters,
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
 
-  const catalogApi = useApi(catalogApiRef);
   const [text, setText] = useState('');
-
-  const [{ value, loading }, handleFetch] = useAsyncFn(
-    async (request: { text: string } | { cursor: string; prev: Entity[] }) => {
-      const initialRequest = request as { text: string };
-      const cursorRequest = request as { cursor: string; prev: Entity[] };
-      const limit = 20;
-
-      if (cursorRequest.cursor) {
-        const response = await catalogApi.queryEntities({
-          cursor: cursorRequest.cursor,
-          limit,
-        });
-        return {
-          ...response,
-          items: [...cursorRequest.prev, ...response.items],
-        };
-      }
-
-      return catalogApi.queryEntities({
-        fullTextFilter: {
-          term: initialRequest.text || '',
-          fields: [
-            'metadata.name',
-            'kind',
-            'spec.profile.displayname',
-            'metadata.title',
-          ],
-        },
-        filter: { kind: ['User', 'Group'] },
-        orderFields: [{ field: 'metadata.name', order: 'asc' }],
-        limit,
-      });
-    },
-    [text],
-  );
-
-  useDebouncedEffect(() => handleFetch({ text }), [text], 250);
-
-  const availableOwners = value?.items || [];
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
@@ -114,7 +80,14 @@ export const EntityOwnerPicker = () => {
     queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
   );
 
-  const { getEntity, setEntity } = useSelectedOwners(selectedOwners);
+  const [{ value, loading }, handleFetch, { getEntity, setEntity }] =
+    useFetchEntities({
+      mode,
+      initialSelectedOwnersRefs: selectedOwners,
+    });
+  useDebouncedEffect(() => handleFetch({ text }), [text, handleFetch], 250);
+
+  const availableOwners = value?.items || [];
 
   // Set selected owners on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
@@ -158,11 +131,15 @@ export const EntityOwnerPicker = () => {
             return o === v;
           }}
           getOptionLabel={o => {
-            const entity = typeof o === 'string' ? getEntity(o) || o : o;
-
-            return typeof entity === 'string'
-              ? entity
-              : humanizeEntity(entity, entity.metadata.name);
+            const entity =
+              typeof o === 'string'
+                ? getEntity(o) ||
+                  parseEntityRef(o, {
+                    defaultKind: 'group',
+                    defaultNamespace: 'default',
+                  })
+                : o;
+            return humanizeEntity(entity, humanizeEntityRef(entity));
           }}
           onChange={(_: object, owners) => {
             setText('');
@@ -181,7 +158,7 @@ export const EntityOwnerPicker = () => {
           }}
           filterOptions={x => x}
           renderOption={(entity, { selected }) => {
-            const isGroup = entity.kind === 'Group';
+            const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
 
             return (
               <FormControlLabel
@@ -201,7 +178,10 @@ export const EntityOwnerPicker = () => {
                       <PersonIcon fontSize="small" />
                     )}
                     &nbsp;
-                    {humanizeEntity(entity, entity.metadata.name)}
+                    {humanizeEntity(
+                      entity,
+                      humanizeEntityRef(entity, { defaultKind: entity.kind }),
+                    )}
                   </Box>
                 }
               />
@@ -229,11 +209,8 @@ export const EntityOwnerPicker = () => {
                     element.scrollTop,
                 ) < 1;
 
-              if (hasReachedEnd && value?.pageInfo.nextCursor) {
-                handleFetch({
-                  cursor: value.pageInfo.nextCursor,
-                  prev: value.items,
-                });
+              if (hasReachedEnd && value?.cursor) {
+                handleFetch({ items: value.items, cursor: value.cursor });
               }
             },
             'data-testid': 'owner-picker-listbox',
@@ -243,36 +220,3 @@ export const EntityOwnerPicker = () => {
     </Box>
   );
 };
-
-/**
- * Hook used for storing the full entity of the specified owners
- * in order to display users and group using the information contained on each entity.
- * When a component is rendered for the first time, it loads the content of the entities
- * specified by `initialSelectedOwnersRefs` and export the `getEntity` and `setEntity`
- * utilities, used to retrieve and modify the owners.
- */
-function useSelectedOwners(initialSelectedOwnersRefs: string[]) {
-  const allEntities = useRef<Record<string, Entity>>({});
-  const catalogApi = useApi(catalogApiRef);
-
-  useAsync(async () => {
-    if (initialSelectedOwnersRefs.length === 0) {
-      return;
-    }
-    const initialSelectedEntities = await catalogApi.getEntitiesByRefs({
-      entityRefs: initialSelectedOwnersRefs,
-    });
-    initialSelectedEntities.items.forEach(e => {
-      if (e) {
-        allEntities.current[stringifyEntityRef(e)] = e;
-      }
-    });
-  }, []);
-
-  return {
-    getEntity: (entityRef: string) => allEntities.current[entityRef],
-    setEntity: (entity: Entity) => {
-      allEntities.current[stringifyEntityRef(entity)] = entity;
-    },
-  };
-}
