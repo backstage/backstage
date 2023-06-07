@@ -71,6 +71,11 @@ export type ActionContext<
    * Implement the signal to make your custom step abortable https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal
    */
   signal?: AbortSignal;
+
+  /**
+   * Optional value of each invocation
+   */
+  each?: JsonObject;
 };
 
 /** @public */

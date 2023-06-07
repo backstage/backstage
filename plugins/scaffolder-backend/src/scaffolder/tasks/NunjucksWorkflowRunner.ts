@@ -76,6 +76,7 @@ type TemplateContext = {
     entity?: UserEntity;
     ref?: string;
   };
+  each?: JsonValue;
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -311,25 +312,56 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
 
-      await action.handler({
-        input,
-        secrets: task.secrets ?? {},
-        logger: taskLogger,
-        logStream: streamLogger,
-        workspacePath,
-        createTemporaryDirectory: async () => {
-          const tmpDir = await fs.mkdtemp(`${workspacePath}_step-${step.id}-`);
-          tmpDirs.push(tmpDir);
-          return tmpDir;
-        },
-        output(name: string, value: JsonValue) {
-          stepOutput[name] = value;
-        },
-        templateInfo: task.spec.templateInfo,
-        user: task.spec.user,
-        isDryRun: task.isDryRun,
-        signal: task.cancelSignal,
-      });
+      const iterations = new Array<JsonValue>();
+      if (step.each) {
+        const each = await this.render(step.each, context, renderTemplate);
+        iterations.push(...each);
+      } else {
+        iterations.push({});
+      }
+
+      let actionInput = input;
+      for (const iteration of iterations) {
+        if (step.each) {
+          taskLogger.info(`Running step each: ${iteration}`);
+          context.each = iteration;
+          // re-render input with the modified context that includes each
+          actionInput =
+            (step.input &&
+              this.render(
+                step.input,
+                { ...context, secrets: task.secrets ?? {} },
+                renderTemplate,
+              )) ??
+            {};
+        }
+        await action.handler({
+          input: actionInput,
+          secrets: task.secrets ?? {},
+          logger: taskLogger,
+          logStream: streamLogger,
+          workspacePath,
+          createTemporaryDirectory: async () => {
+            const tmpDir = await fs.mkdtemp(
+              `${workspacePath}_step-${step.id}-`,
+            );
+            tmpDirs.push(tmpDir);
+            return tmpDir;
+          },
+          output(name: string, value: JsonValue) {
+            if (step.each) {
+              stepOutput[name] = stepOutput[name] || [];
+              stepOutput[name].push(value);
+            } else {
+              stepOutput[name] = value;
+            }
+          },
+          templateInfo: task.spec.templateInfo,
+          user: task.spec.user,
+          isDryRun: task.isDryRun,
+          signal: task.cancelSignal,
+        });
+      }
 
       // Remove all temporary directories that were created when executing the action
       for (const tmpDir of tmpDirs) {

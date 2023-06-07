@@ -573,6 +573,39 @@ describe('DefaultWorkflowRunner', () => {
     });
   });
 
+  describe('each', () => {
+    it('should run a step repeatedly', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.colors}}',
+            action: 'jest-mock-action',
+            input: { color: '${{each}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          colors: ['blue', 'green', 'red'],
+        },
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { color: 'blue' } }),
+      );
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { color: 'green' } }),
+      );
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { color: 'red' } }),
+      );
+    });
+  });
+
   describe('secrets', () => {
     it('should pass through the secrets to the context', async () => {
       const task = createMockTaskWithSpec(
