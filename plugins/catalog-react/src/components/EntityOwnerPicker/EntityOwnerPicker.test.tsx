@@ -121,7 +121,7 @@ const mockCatalogApi: Partial<CatalogApi> = {
 
 const mockErrorApi = new MockErrorApi();
 
-describe('<EntityOwnerPicker/>', () => {
+describe('<EntityOwnerPicker mode="all" />', () => {
   const mockApis = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [errorApiRef, mockErrorApi],
@@ -154,7 +154,7 @@ describe('<EntityOwnerPicker/>', () => {
     await renderWithEffects(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{}}>
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -205,7 +205,7 @@ describe('<EntityOwnerPicker/>', () => {
             queryParameters,
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -243,7 +243,7 @@ describe('<EntityOwnerPicker/>', () => {
             queryParameters,
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -284,7 +284,7 @@ describe('<EntityOwnerPicker/>', () => {
             updateFilters,
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -312,7 +312,7 @@ describe('<EntityOwnerPicker/>', () => {
             filters: { owners: new EntityOwnerFilter(['some-owner']) },
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -344,7 +344,7 @@ describe('<EntityOwnerPicker/>', () => {
             queryParameters: { owners: ['team-a'] },
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
@@ -362,7 +362,7 @@ describe('<EntityOwnerPicker/>', () => {
             queryParameters: { owners: ['team-b'] },
           }}
         >
-          <EntityOwnerPicker />
+          <EntityOwnerPicker mode="all" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
