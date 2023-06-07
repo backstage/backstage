@@ -42,6 +42,7 @@ import {
 
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
+import { PodMetricsContext } from '../../hooks/usePodMetrics';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -111,19 +112,13 @@ type ClusterProps = {
 
 export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
-  const podNameToMetrics = clusterObjects.podMetrics
-    .flat()
-    .reduce((accum, next) => {
-      const name = next.pod.metadata?.name;
-      if (name !== undefined) {
-        accum.set(name, next);
-      }
-      return accum;
-    }, new Map<string, ClientPodStatus>());
+
+  const podMetricsMap = new Map<string, ClientPodStatus[]>();
+  podMetricsMap.set(clusterObjects.cluster.name, clusterObjects.podMetrics);
   return (
     <ClusterContext.Provider value={clusterObjects.cluster}>
       <GroupedResponsesContext.Provider value={groupedResponses}>
-        <PodNamesWithMetricsContext.Provider value={podNameToMetrics}>
+        <PodMetricsContext.Provider value={podMetricsMap}>
           <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -169,7 +164,7 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
               </AccordionDetails>
             </Accordion>
           </PodNamesWithErrorsContext.Provider>
-        </PodNamesWithMetricsContext.Provider>
+        </PodMetricsContext.Provider>
       </GroupedResponsesContext.Provider>
     </ClusterContext.Provider>
   );
