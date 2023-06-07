@@ -85,13 +85,15 @@
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
     "@roadiehq/backstage-plugin-travis-ci": "^2.0.5",
     "history": "^5.0.0",
+    "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4",
-    "zen-observable": "^0.10.0"
+    "zen-observable": "^0.10.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
