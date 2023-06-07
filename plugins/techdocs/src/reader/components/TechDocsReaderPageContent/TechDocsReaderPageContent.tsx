@@ -39,6 +39,9 @@ const useStyles = makeStyles({
       width: 'calc(100% - 34.4rem)',
       margin: '0 auto',
     },
+    '@media print': {
+      display: 'none',
+    },
   },
 });
 
