@@ -24,11 +24,11 @@ import {
   totalRestarts,
 } from '../../utils/pod';
 import { Table, TableColumn } from '@backstage/core-components';
-import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 import { ClusterContext } from '../../hooks/Cluster';
 import { useMatchingErrors } from '../../hooks/useMatchingErrors';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { V1Pod } from '@kubernetes/client-node';
+import { usePodMetrics } from '../../hooks/usePodMetrics';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
@@ -74,8 +74,28 @@ const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   );
 };
 
+const Cpu = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
+  const metrics = usePodMetrics(clusterName, pod);
+
+  if (!metrics) {
+    return <p>unknown</p>;
+  }
+
+  return <>{podStatusToCpuUtil(metrics)}</>;
+};
+
+const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
+  const metrics = usePodMetrics(clusterName, pod);
+
+  if (!metrics) {
+    return <p>unknown</p>;
+  }
+
+  return <>{podStatusToMemoryUtil(metrics)}</>;
+};
+
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
-  const podNamesWithMetrics = useContext(PodNamesWithMetricsContext);
+  const cluster = useContext(ClusterContext);
   const defaultColumns: TableColumn<Pod>[] = [
     {
       title: 'name',
@@ -104,26 +124,14 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       {
         title: 'CPU usage %',
         render: (pod: Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToCpuUtil(metrics);
+          return <Cpu clusterName={cluster.name} pod={pod} />;
         },
         width: 'auto',
       },
       {
         title: 'Memory usage %',
         render: (pod: Pod) => {
-          const metrics = podNamesWithMetrics.get(pod.metadata?.name ?? '');
-
-          if (!metrics) {
-            return 'unknown';
-          }
-
-          return podStatusToMemoryUtil(metrics);
+          return <Memory clusterName={cluster.name} pod={pod} />;
         },
         width: 'auto',
       },
