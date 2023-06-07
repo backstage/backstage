@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
@@ -114,9 +114,13 @@ const mockedQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> =
 const mockedGetEntitiesByRef: jest.MockedFn<CatalogApi['getEntitiesByRefs']> =
   jest.fn();
 
+const mockedGetEntityFacets: jest.MockedFn<CatalogApi['getEntityFacets']> =
+  jest.fn();
+
 const mockCatalogApi: Partial<CatalogApi> = {
   queryEntities: mockedQueryEntities,
   getEntitiesByRefs: mockedGetEntitiesByRef,
+  getEntityFacets: mockedGetEntityFacets,
 };
 
 const mockErrorApi = new MockErrorApi();
@@ -363,6 +367,179 @@ describe('<EntityOwnerPicker mode="all" />', () => {
           }}
         >
           <EntityOwnerPicker mode="all" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/team-b']),
+    });
+  });
+});
+
+describe('<EntityOwnerPicker mode="owners-only" />', () => {
+  const mockApis = TestApiRegistry.from(
+    [catalogApiRef, mockCatalogApi],
+    [errorApiRef, mockErrorApi],
+  );
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    mockedGetEntityFacets.mockResolvedValue({
+      facets: {
+        'relations.ownedBy': [
+          ...[...ownerEntitiesBatch1, ...ownerEntitiesBatch2].map(o => ({
+            count: 1,
+            value: stringifyEntityRef(o),
+          })),
+        ],
+      },
+    });
+  });
+
+  it('renders all users and groups', async () => {
+    await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(screen.getByText('Owner')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+
+    await waitFor(() =>
+      expect(screen.getByText('another-owner')).toBeInTheDocument(),
+    );
+
+    ['some-owner', 'some-owner-2', 'test-namespace/another-owner-2'].forEach(
+      owner => {
+        expect(screen.getByText(owner)).toBeInTheDocument();
+      },
+    );
+
+    expect(mockedGetEntityFacets).toHaveBeenCalledTimes(1);
+
+    fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
+
+    await waitFor(() =>
+      expect(screen.getByText('some-owner-batch-2')).toBeInTheDocument(),
+    );
+
+    [
+      'some-owner-batch-2',
+      'some-owner-2-batch-2',
+      'test-namespace/another-owner-2-batch-2',
+    ].forEach(owner => {
+      expect(screen.getByText(owner)).toBeInTheDocument();
+    });
+  });
+
+  it('respects the query parameter filter value', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { owners: ['another-owner'] };
+    await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/another-owner']),
+    });
+  });
+
+  it('adds owners to filters', async () => {
+    const updateFilters = jest.fn();
+    await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() => screen.getByText('some-owner'));
+
+    fireEvent.click(screen.getByText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
+    });
+  });
+
+  it('removes owners from filters', async () => {
+    const updateFilters = jest.fn();
+    await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { owners: new EntityOwnerFilter(['some-owner']) },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
+    });
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('some-owner')).toBeChecked(),
+    );
+
+    fireEvent.click(screen.getByLabelText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owner: undefined,
+    });
+  });
+
+  it('responds to external queryParameters changes', async () => {
+    const updateFilters = jest.fn();
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { owners: ['team-a'] },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/team-a']),
+    });
+    rendered.rerender(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { owners: ['team-b'] },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
