@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
@@ -40,6 +41,18 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           caFile: c.getOptionalString('caFile'),
           authProvider: authProvider,
         };
+
+        const customResources = c.getOptionalConfigArray('customResources');
+        if (customResources) {
+          clusterDetails.customResources = customResources.map(cr => {
+            return {
+              group: cr.getString('group'),
+              apiVersion: cr.getString('apiVersion'),
+              plural: cr.getString('plural'),
+            };
+          });
+        }
+
         const dashboardUrl = c.getOptionalString('dashboardUrl');
         if (dashboardUrl) {
           clusterDetails.dashboardUrl = dashboardUrl;
