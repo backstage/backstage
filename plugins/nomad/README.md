@@ -41,7 +41,7 @@ Add configuration to your [`app-config.yaml`](https://github.com/backstage/backs
 ```yaml
 nomad:
   addr: 'http://localhost:4646'
-  token: '70d707b6-3d45-472e-8639-6b15770c19b8'
+  token: '93e034ad-e504-42f9-129d-5d81be9f13d3'
 ```
 
 The `token` can be excluded if [ACLs are not enabled](https://developer.hashicorp.com/nomad/api-docs#authentication).
