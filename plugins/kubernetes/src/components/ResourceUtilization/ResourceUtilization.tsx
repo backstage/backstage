@@ -45,7 +45,7 @@ export const getProgressColor: GaugePropsGetColor = ({
   const actualMax = max ? max : 100;
   const actualValue = inverse ? actualMax - value : value;
 
-  if (actualValue > actualMax) {
+  if (actualValue >= actualMax) {
     return palette.status.error;
   } else if (actualValue > 90 || actualValue < 40) {
     return palette.status.warning;
@@ -77,7 +77,7 @@ export const ResourceUtilization = ({
       <Grid item xs={12}>
         <LinearGauge
           getColor={getProgressColor}
-          lineWidth={compressed ? 1 : 4}
+          width={compressed ? 'thin' : 'thick'}
           value={utilization / 100}
         />
         {!compressed && (
