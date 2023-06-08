@@ -22,7 +22,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Grid } from '@material-ui/core';
+import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
@@ -33,8 +33,20 @@ import { ImportStepper } from '../ImportStepper';
  * @public
  */
 export const DefaultImportPage = () => {
+  const theme = useTheme();
   const configApi = useApi(configApiRef);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
+
+  const contentItems = [
+    <Grid item xs={12} md={4} lg={6} xl={8}>
+      <ImportInfoCard />
+    </Grid>,
+
+    <Grid item xs={12} md={8} lg={6} xl={4}>
+      <ImportStepper />
+    </Grid>,
+  ];
 
   return (
     <Page themeId="home">
@@ -48,13 +60,7 @@ export const DefaultImportPage = () => {
         </ContentHeader>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} md={8} lg={6} xl={4}>
-            <ImportStepper />
-          </Grid>
-
-          <Grid item xs={12} md={4} lg={6} xl={8}>
-            <ImportInfoCard />
-          </Grid>
+          {isMobile ? contentItems : contentItems.reverse()}
         </Grid>
       </Content>
     </Page>

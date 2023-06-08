@@ -58,11 +58,22 @@ const useDrawerContentStyles = makeStyles((_theme: Theme) =>
 function getContainerSpecByName(pod: Pod, containerName: string) {
   return pod.spec?.containers.find(c => c.name === containerName);
 }
+
+/**
+ * Props for PodDrawer
+ *
+ * @public
+ */
 interface PodDrawerProps {
   open?: boolean;
   podAndErrors: PodAndErrors;
 }
 
+/**
+ * A Drawer for Kubernetes Pods
+ *
+ * @public
+ */
 export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
 

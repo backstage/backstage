@@ -92,6 +92,10 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: 'calc(100% - 10px)', // for pages without content header
       marginBottom: '10px',
+      breakInside: 'avoid-page',
+      '@media print': {
+        height: 'auto',
+      },
     },
   },
   cardContent: {

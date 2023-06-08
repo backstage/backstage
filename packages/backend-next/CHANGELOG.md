@@ -1,5 +1,13 @@
 # example-backend-next
 
+## 0.0.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.11.1-next.2
+  - @backstage/plugin-scaffolder-backend@1.15.0-next.2
+
 ## 0.0.12-next.1
 
 ### Patch Changes

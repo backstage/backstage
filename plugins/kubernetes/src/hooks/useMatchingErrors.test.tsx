@@ -26,15 +26,13 @@ const genericErrorWithRef = (resourceRef: ResourceRef): DetectedError => {
     message: 'some error message',
     occuranceCount: 1,
     sourceRef: resourceRef,
-    proposedFix: [
-      {
-        type: 'logs',
-        container: 'some-container',
-        errorType: 'some error type',
-        rootCauseExplanation: 'some root cause',
-        possibleFixes: ['fix1', 'fix2'],
-      },
-    ],
+    proposedFix: {
+      type: 'logs',
+      container: 'some-container',
+      errorType: 'some error type',
+      rootCauseExplanation: 'some root cause',
+      actions: ['fix1', 'fix2'],
+    },
   };
 };
 

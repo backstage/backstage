@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.13.2-next.2
+
+### Patch Changes
+
+- 66ae4d8ca380: Added `exact` prop to `SidebarSubmenuItem` which causes it to only highlight if the current location is an exact match.
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.2-next.0
+
 ## 0.13.2-next.1
 
 ### Patch Changes

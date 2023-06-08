@@ -69,7 +69,7 @@ describe('PodDrawer', () => {
                       container: 'some-container',
                       errorType: 'some error type',
                       rootCauseExplanation: 'some root cause',
-                      possibleFixes: ['fix1', 'fix2'],
+                      actions: ['fix1', 'fix2'],
                     },
                   ],
                 },
