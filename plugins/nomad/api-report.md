@@ -24,8 +24,6 @@ export const isNomadAllocationsAvailable: (entity: Entity) => boolean;
 // @public (undocumented)
 export const isNomadJobIDAvailable: (entity: Entity) => boolean;
 
-// Warning: (ae-missing-release-tag) "nomadPlugin" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const nomadPlugin: BackstagePlugin<
   {
