@@ -31,7 +31,7 @@ Install this module:
 yarn add --cwd packages/backend @backstage/plugin-events-backend-module-github
 ```
 
-Add the event router to the `EventsBackend`:
+Add the event router to the `EventsBackend` object in `packages/backend/src/plugins/events.ts`:
 
 ```diff
 +const githubEventRouter = new GithubEventRouter();
