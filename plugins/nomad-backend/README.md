@@ -1,6 +1,6 @@
 # @backstage/plugin-nomad-backend
 
-A backend for Nomad, this plugin exposes a service with routes that are used by the `@backstage/plugin-nomad` plugin to query Job and Group information from a Nomad API.
+A backend for [Nomad](https://www.nomadproject.io/), this plugin exposes a service with routes that are used by the `@backstage/plugin-nomad` plugin to query Job and Group information from a Nomad API.
 
 ## Set Up
 
