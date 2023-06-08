@@ -212,6 +212,50 @@ export function createGithubActionsDispatchAction(options: {
 >;
 
 // @public
+export function createGithubDeployKeyAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    publicKey: string;
+    privateKey: string;
+    deployKeyName: string;
+    privateKeySecretName?: string | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
+export function createGithubEnvironmentAction(options: {
+  integrations: ScmIntegrationRegistry;
+}): TemplateAction_2<
+  {
+    repoUrl: string;
+    name: string;
+    deploymentBranchPolicy?:
+      | {
+          protected_branches: boolean;
+          custom_branch_policies: boolean;
+        }
+      | undefined;
+    customBranchPolicyNames?: string[] | undefined;
+    environmentVariables?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    secrets?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;

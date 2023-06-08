@@ -98,7 +98,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   client: Octokit,
   repo: string,
   owner: string,
-  repoVisibility: 'private' | 'internal' | 'public',
+  repoVisibility: 'private' | 'internal' | 'public' | undefined,
   description: string | undefined,
   homepage: string | undefined,
   deleteBranchOnMerge: boolean,
@@ -149,7 +149,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           name: repo,
           org: owner,
           private: repoVisibility === 'private',
-          // @ts-ignore
+          // @ts-ignore https://github.com/octokit/types.ts/issues/522
           visibility: repoVisibility,
           description: description,
           delete_branch_on_merge: deleteBranchOnMerge,
