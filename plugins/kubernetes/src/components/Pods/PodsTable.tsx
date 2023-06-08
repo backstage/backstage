@@ -29,6 +29,7 @@ import { useMatchingErrors } from '../../hooks/useMatchingErrors';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { V1Pod } from '@kubernetes/client-node';
 import { usePodMetrics } from '../../hooks/usePodMetrics';
+import { Typography } from '@material-ui/core';
 
 export const READY_COLUMNS: PodColumns = 'READY';
 export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
@@ -78,7 +79,7 @@ const Cpu = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
   const metrics = usePodMetrics(clusterName, pod);
 
   if (!metrics) {
-    return <p>unknown</p>;
+    return <Typography>unknown</Typography>;
   }
 
   return <>{podStatusToCpuUtil(metrics)}</>;
@@ -88,7 +89,7 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
   const metrics = usePodMetrics(clusterName, pod);
 
   if (!metrics) {
-    return <p>unknown</p>;
+    return <Typography>unknown</Typography>;
   }
 
   return <>{podStatusToMemoryUtil(metrics)}</>;

@@ -41,7 +41,6 @@ import {
 } from '../../hooks';
 
 import { StatusError, StatusOK } from '@backstage/core-components';
-import { PodNamesWithMetricsContext } from '../../hooks/PodNamesWithMetrics';
 import { PodMetricsContext } from '../../hooks/usePodMetrics';
 
 type ClusterSummaryProps = {

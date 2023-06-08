@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
@@ -87,6 +88,8 @@ export const ContainerCard: React_2.FC<ContainerCardProps>;
 
 // @public
 export interface ContainerCardProps {
+  // (undocumented)
+  containerMetrics?: ClientContainerStatus;
   // (undocumented)
   containerSpec?: IContainer;
   // (undocumented)
