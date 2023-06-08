@@ -628,6 +628,7 @@ export const createPublishGithubPullRequestAction: (
   {
     title: string;
     branchName: string;
+    targetBranchName?: string | undefined;
     description: string;
     repoUrl: string;
     draft?: boolean | undefined;
@@ -670,6 +671,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     title: string;
     description: string;
     branchName: string;
+    targetBranchName?: string | undefined;
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
@@ -816,6 +818,9 @@ export type OctokitWithPullRequestPluginClient = Octokit & {
     data: {
       html_url: string;
       number: number;
+      base: {
+        ref: string;
+      };
     };
   } | null>;
 };
