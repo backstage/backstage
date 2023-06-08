@@ -61,6 +61,9 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '50px',
     margin: 'auto',
   },
+  searchBarOutline: {
+    borderStyle: 'none',
+  },
 }));
 
 export const CustomStyles = () => {
@@ -71,6 +74,7 @@ export const CustomStyles = () => {
       <Grid container item xs={12} alignItems="center" direction="row">
         <HomePageSearchBar
           classes={{ root: classes.searchBar }}
+          InputProps={{ classes: { notchedOutline: classes.searchBarOutline } }}
           placeholder="Search"
         />
       </Grid>

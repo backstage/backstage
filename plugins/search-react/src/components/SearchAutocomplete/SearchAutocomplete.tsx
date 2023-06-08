@@ -16,7 +16,7 @@
 
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, makeStyles } from '@material-ui/core';
 import {
   Autocomplete,
   AutocompleteProps,
@@ -27,6 +27,13 @@ import {
 
 import { SearchContextProvider, useSearch } from '../../context';
 import { SearchBar, SearchBarProps } from '../SearchBar';
+
+const useStyles = makeStyles(theme => ({
+  loading: {
+    right: theme.spacing(1),
+    position: 'absolute',
+  },
+}));
 
 /**
  * Props for {@link SearchAutocomplete}.
@@ -58,6 +65,18 @@ const withContext = (
     <SearchContextProvider inheritParentContextIfAvailable>
       <Component {...props} />
     </SearchContextProvider>
+  );
+};
+
+const SearchAutocompleteLoadingAdornment = () => {
+  const classes = useStyles();
+  return (
+    <CircularProgress
+      className={classes.loading}
+      data-testid="search-autocomplete-progressbar"
+      color="inherit"
+      size={20}
+    />
   );
 };
 
@@ -116,7 +135,7 @@ export const SearchAutocomplete = withContext(
 
     const renderInput = useCallback(
       ({
-        InputProps: { ref, endAdornment },
+        InputProps: { ref, className, endAdornment },
         InputLabelProps,
         ...params
       }: AutocompleteRenderInputParams) => (
@@ -128,16 +147,9 @@ export const SearchAutocomplete = withContext(
           placeholder={inputPlaceholder}
           debounceTime={inputDebounceTime}
           endAdornment={
-            loading ? (
-              <CircularProgress
-                data-testid="search-autocomplete-progressbar"
-                color="inherit"
-                size={20}
-              />
-            ) : (
-              endAdornment
-            )
+            loading ? <SearchAutocompleteLoadingAdornment /> : endAdornment
           }
+          InputProps={{ className }}
         />
       ),
       [loading, inputValue, inputPlaceholder, inputDebounceTime],
