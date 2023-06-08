@@ -1,12 +1,12 @@
 # @backstage/plugin-nomad
 
-This is a frontend plugin is for viewing Nomad [job versions](https://developer.hashicorp.com/nomad/docs/concepts/architecture#job) and [task group allocations](https://developer.hashicorp.com/nomad/docs/concepts/architecture#allocation).
+This is a frontend plugin is for viewing [Nomad](https://www.nomadproject.io/) [job versions](https://developer.hashicorp.com/nomad/docs/concepts/architecture#job) and [task group allocations](https://developer.hashicorp.com/nomad/docs/concepts/architecture#allocation).
 
 This plugin has a corresponding backend plugin required to call the Nomad cluster's API: ` @backstage/plugin-nomad-backend`.
 
 ## Introduction
 
-### Nomad
+### [Nomad](https://www.nomadproject.io/)
 
 > A simple and flexible scheduler and orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
 
