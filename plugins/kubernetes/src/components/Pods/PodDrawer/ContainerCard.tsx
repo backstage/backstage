@@ -30,7 +30,7 @@ import { DateTime } from 'luxon';
 import { PodScope, PodLogsDialog } from '../PodLogs';
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
-import { ResourceUtilization } from '../../ResourceUtilization/ResourceUtilization';
+import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMilicores } from '../../../utils/resources';
 
 const getContainerHealthChecks = (

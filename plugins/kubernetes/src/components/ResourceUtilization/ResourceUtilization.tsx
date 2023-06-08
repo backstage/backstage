@@ -19,6 +19,11 @@ import React from 'react';
 import { GaugePropsGetColor, LinearGauge } from '@backstage/core-components';
 import { currentToDeclaredResourceToPerc } from '../../utils/resources';
 
+/**
+ * Context for Pod Metrics
+ *
+ * @public
+ */
 export interface ResourceUtilizationProps {
   compressed?: boolean;
   title: string;
@@ -27,6 +32,7 @@ export interface ResourceUtilizationProps {
   totalFormated: string;
 }
 
+// Visible for testing
 export const getProgressColor: GaugePropsGetColor = ({
   palette,
   value,
@@ -48,6 +54,11 @@ export const getProgressColor: GaugePropsGetColor = ({
   return palette.status.ok;
 };
 
+/**
+ * Context for Pod Metrics
+ *
+ * @public
+ */
 export const ResourceUtilization = ({
   compressed = false,
   title,

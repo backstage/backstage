@@ -34,7 +34,7 @@ import { KubernetesDrawer } from '../../KubernetesDrawer';
 import { PendingPodContent } from './PendingPodContent';
 import { ErrorList } from '../ErrorList';
 import { usePodMetrics } from '../../../hooks/usePodMetrics';
-import { ResourceUtilization } from '../../ResourceUtilization/ResourceUtilization';
+import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMilicores } from '../../../utils/resources';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>

@@ -20,6 +20,7 @@ import { Event as Event_2 } from 'kubernetes-models/v1';
 import { IContainer } from 'kubernetes-models/v1';
 import { IContainerStatus } from 'kubernetes-models/v1';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
@@ -30,6 +31,7 @@ import { Pod } from 'kubernetes-models/v1/Pod';
 import { Pod as Pod_2 } from 'kubernetes-models/v1';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TypeMeta } from '@kubernetes-models/base';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
@@ -142,8 +144,6 @@ export interface DetectedError {
   proposedFix?: ProposedFix;
   // (undocumented)
   severity: ErrorSeverity;
-  // Warning: (ae-forgotten-export) The symbol "ResourceRef" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   sourceRef: ResourceRef;
   // (undocumented)
@@ -152,6 +152,9 @@ export interface DetectedError {
 
 // @public
 export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
+
+// @public
+export const DetectedErrorsContext: React_2.Context<DetectedError[]>;
 
 // @public
 export const detectErrors: (
@@ -178,6 +181,11 @@ export interface ErrorListProps {
   // (undocumented)
   podAndErrors: PodAndErrors[];
 }
+
+// @public (undocumented)
+export type ErrorMatcher = {
+  metadata?: IIoK8sApimachineryPkgApisMetaV1ObjectMeta;
+} & TypeMeta;
 
 // Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -645,6 +653,16 @@ export interface PodLogsProps {
   previous?: boolean;
 }
 
+// @public
+export const PodMetricsContext: React_2.Context<Map<string, ClientPodStatus[]>>;
+
+// Warning: (ae-missing-release-tag) "PodMetricsMatcher" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PodMetricsMatcher = {
+  metadata?: IObjectMeta;
+};
+
 // Warning: (ae-missing-release-tag) "PodNamesWithErrorsContext" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -675,6 +693,29 @@ export const PodsTable: ({
   pods,
   extraColumns,
 }: PodsTablesProps) => JSX.Element;
+
+// @public
+export interface ResourceRef {
+  // (undocumented)
+  apiGroup: string;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  namespace: string;
+}
+
+// Warning: (ae-forgotten-export) The symbol "ResourceUtilizationProps" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const ResourceUtilization: ({
+  compressed,
+  title,
+  usage,
+  total,
+  totalFormated,
+}: ResourceUtilizationProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -722,10 +763,19 @@ export const useKubernetesObjects: (
 ) => KubernetesObjects;
 
 // @public
+export const useMatchingErrors: (matcher: ErrorMatcher) => DetectedError[];
+
+// @public
 export const usePodLogs: ({
   containerScope,
   previous,
 }: PodLogsOptions) => AsyncState<{
   text: string;
 }>;
+
+// @public
+export const usePodMetrics: (
+  clusterName: string,
+  matcher: PodMetricsMatcher,
+) => ClientPodStatus | undefined;
 ```

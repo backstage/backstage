@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
-import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
+/**
+ * Context for Pod Metrics
+ *
+ * @public
+ */
 export const PodMetricsContext = React.createContext<
   Map<string, ClientPodStatus[]>
 >(new Map());
 
-type Matcher = {
-  metadata?: V1ObjectMeta;
+/*
+ * @alpha
+ */
+export type PodMetricsMatcher = {
+  metadata?: IObjectMeta;
 };
 
+/**
+ * Find metrics matching the provided pod
+ *
+ * @public
+ */
 export const usePodMetrics = (
   clusterName: string,
-  matcher: Matcher,
+  matcher: PodMetricsMatcher,
 ): ClientPodStatus | undefined => {
   const targetRef = {
     name: matcher.metadata?.name ?? '',
