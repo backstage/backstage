@@ -133,9 +133,9 @@ export class NomadHttpApi implements NomadApi {
     );
     if (!resp.ok) throw await FetchError.forResponse(resp);
 
-    return Promise.resolve({
+    return {
       allocations: await resp.json(),
-    });
+    };
   }
 
   // TODO: pagination
@@ -153,8 +153,8 @@ export class NomadHttpApi implements NomadApi {
 
     const respJson = await resp.json();
 
-    return Promise.resolve({
+    return {
       versions: respJson.Versions,
-    });
+    };
   }
 }
