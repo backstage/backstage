@@ -1,5 +1,24 @@
 # example-app
 
+## 0.2.85
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.1
+  - @backstage/plugin-search@1.3.1
+  - @backstage/plugin-techdocs@1.6.3
+  - @backstage/plugin-explore@0.4.4
+  - @backstage/plugin-playlist@0.1.10
+  - @backstage/plugin-stack-overflow@0.1.16
+  - @backstage/plugin-api-docs@0.9.4
+  - @internal/plugin-catalog-customized@0.0.11
+  - @backstage/plugin-catalog-graph@0.2.30
+  - @backstage/plugin-org@0.6.8
+  - @backstage/plugin-scaffolder@1.13.1
+  - @backstage/plugin-scaffolder-react@1.4.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.13
+
 ## 0.2.84
 
 ### Patch Changes
