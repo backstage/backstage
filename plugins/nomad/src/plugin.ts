@@ -30,6 +30,7 @@ export const entityContentRouteRef = createRouteRef({
   id: 'nomad:entity-content',
 });
 
+// @public
 export const nomadPlugin = createPlugin({
   id: 'nomad',
   apis: [
