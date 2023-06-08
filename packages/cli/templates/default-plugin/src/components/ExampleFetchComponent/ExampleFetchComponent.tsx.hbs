@@ -290,9 +290,8 @@ export const DenseTable = ({ users }: DenseTableProps) => {
 export const ExampleFetchComponent = () => {
 
   const { value, loading, error } = useAsync(async (): Promise<User[]> => {
-    const response = exampleUsers;
-    const data = response.results;
-    return data;
+    // Would use fetch in a real world example
+    return exampleUsers.results;
   }, []);
 
   if (loading) {
