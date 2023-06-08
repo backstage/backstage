@@ -25,7 +25,12 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      config: new ConfigReader({}),
+      config: new ConfigReader({
+        nomad: {
+          addr: 'http://localhost.com',
+          token: 'asdf',
+        },
+      }),
       logger: getVoidLogger(),
     });
     app = express().use(router);
