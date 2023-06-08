@@ -150,9 +150,9 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                       podAndErrors.pod,
                       containerStatus.name,
                     );
-                    const containerMetrics = podMetrics?.containers.find(
-                      c => c.container === containerStatus.name,
-                    );
+                    const containerMetrics = (
+                      podMetrics?.containers ?? []
+                    ).find(c => c.container === containerStatus.name);
                     return (
                       <ContainerCard
                         key={`container-card-${podAndErrors.pod.metadata?.name}-${i}`}
