@@ -37,7 +37,7 @@ jest.setTimeout(60_000);
 
 describe('StaticAssetsStore', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(
@@ -160,7 +160,11 @@ describe('StaticAssetsStore', () => {
         .update({
           last_modified_at: knex.client.config.client.includes('sqlite3')
             ? knex.raw(`datetime('now', '-3600 seconds')`)
-            : knex.raw(`now() + interval '-3600 seconds'`),
+            : (
+              knex.client.config.client.includes('mysql') 
+                ? knex.raw(`date_sub(now(), interval 3600 second)`) 
+                : knex.raw(`now() + interval '-3600 seconds'`)
+            ),
         });
       expect(updated).toBe(1);
 

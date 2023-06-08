@@ -138,6 +138,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         type,
       }),
     );
+
     await tx.batchInsert(
       'relations',
       this.deduplicateRelations(relationRows),

@@ -144,7 +144,10 @@ export class StaticAssetsStore implements StaticAssetProvider {
         '<=',
         this.#db.client.config.client.includes('sqlite3')
           ? this.#db.raw(`datetime('now', ?)`, [`-${maxAgeSeconds} seconds`])
-          : this.#db.raw(`now() + interval '${-maxAgeSeconds} seconds'`),
+          : (this.#db.client.config.client.includes('mysql') 
+            ? this.#db.raw(`date_sub(now(), interval ${maxAgeSeconds} second)`)
+            : this.#db.raw(`now() + interval '${-maxAgeSeconds} seconds'`)
+          ),
       )
       .delete();
   }
