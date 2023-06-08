@@ -1,25 +1,19 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ExampleFetchComponent } from './ExampleFetchComponent';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
 
 describe('ExampleFetchComponent', () => {
-  const server = setupServer();
-  // Enable sane handlers for network requests
-  setupRequestMockHandlers(server);
+  it('renders the user table', async () => {
+    render(<ExampleFetchComponent />);
 
-  // setup mock response
-  beforeEach(() => {
-    server.use(
-      rest.get('https://tinyurl.com/fake-data', (_, res, ctx) =>
-        res(ctx.status(200), ctx.delay(2000), ctx.json({})),
-      ),
-    );
-  });
-  it('should render', async () => {
-    await render(<ExampleFetchComponent />);
-    expect(await screen.findByTestId('progress')).toBeInTheDocument();
+    // Wait for the table to render
+    const table = await screen.findByRole('table');
+    const nationality = screen.getAllByText("GB")
+    // Assert that the table contains the expected user data
+    expect(table).toBeInTheDocument();
+    expect(screen.getByAltText('Carolyn')).toBeInTheDocument();
+    expect(screen.getByText('Carolyn Moore')).toBeInTheDocument();
+    expect(screen.getByText('carolyn.moore@example.com')).toBeInTheDocument();
+    expect(nationality[0]).toBeInTheDocument();
   });
 });
