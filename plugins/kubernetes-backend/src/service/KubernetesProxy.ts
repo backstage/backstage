@@ -17,7 +17,6 @@
 import {
   ErrorResponseBody,
   ForwardedError,
-  InputError,
   NotAllowedError,
   NotFoundError,
   serializeError,
@@ -175,13 +174,23 @@ export class KubernetesProxy {
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
     const clusterName = req.header(HEADER_KUBERNETES_CLUSTER);
-    if (!clusterName) {
-      throw new InputError(`Missing '${HEADER_KUBERNETES_CLUSTER}' header.`);
+    const clusters = await this.clusterSupplier.getClusters();
+
+    if (!clusters || clusters.length <= 0) {
+      throw new NotFoundError(`No Clusters configured`);
     }
 
-    const cluster = await this.clusterSupplier
-      .getClusters()
-      .then(clusters => clusters.find(c => c.name === clusterName));
+    const hasClusterNameHeader =
+      typeof clusterName === 'string' && clusterName.length > 0;
+
+    let cluster: ClusterDetails | undefined;
+
+    if (hasClusterNameHeader) {
+      cluster = clusters.find(c => c.name === clusterName);
+    } else if (clusters.length === 1) {
+      cluster = clusters.at(0);
+    }
+
     if (!cluster) {
       throw new NotFoundError(`Cluster '${clusterName}' not found`);
     }
