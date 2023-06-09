@@ -192,14 +192,19 @@ function createExtensionPointRef<T>(
 //   point: 'bottom'
 // })
 
-const SplitLayout = container.createExtension({
+const gridItemExtensionPointTypeRef = createExtensionPointTypeRef<{
+  title: string;
+  Component: ComponentType;
+}>();
+
+const SplitGridLayout = container.createExtension({
   points: {
     top: {
-      typeRef: coreExtensionPointTypes.component,
+      typeRef: gridItemExtensionPointTypeRef,
       configSchema: z.object({}),
     },
     bottom: {
-      typeRef: coreExtensionPointTypes.component,
+      typeRef: gridItemExtensionPointTypeRef,
       configSchema: z.object({}),
     },
   },
@@ -207,6 +212,8 @@ const SplitLayout = container.createExtension({
   factory:
     ({ id, points }) =>
     () => {
+      const topCards = useExtensionInstanceChildren(id, points.top);
+      const bottomCards = useExtensionInstanceChildren(id, points.bottom);
       return (
         <div
           style={{
@@ -220,17 +227,27 @@ const SplitLayout = container.createExtension({
           }}
         >
           <div style={{ flex: '1 0 0px', border: '1px solid blue' }}>
-            <ExtensionInstanceChildren id={id} point={points.top} />
+            {topCards.map(card => (
+              <>
+                <h4>{card.title}</h4>
+                <card.Component />
+              </>
+            ))}
           </div>
           <div style={{ flex: '1 0 0px', border: '1px solid orange' }}>
-            <ExtensionInstanceChildren id={id} point={points.bottom} />
+            {bottomCards.map(card => (
+              <>
+                <h4>{card.title}</h4>
+                <card.Component />
+              </>
+            ))}
           </div>
         </div>
       );
     },
 });
 
-// const SnazzySplitLayout = container.replaceExtension(SplitLayout, {
+// const SnazzySplitLayout = container.replaceExtension(SplitGridLayout, {
 //   factory: ({ id, points }) => {
 //     ...
 //   }
@@ -238,9 +255,9 @@ const SplitLayout = container.createExtension({
 
 const Box = container.createExtension({
   points: {},
-  mountTypeRef: coreExtensionPointTypes.component,
-  factory: ({ config }: { config: { color: string } }) => {
-    return () => (
+  mountTypeRef: gridItemExtensionPointTypeRef,
+  factory: ({ config }: { config: { color: string; title?: string } }) => {
+    const Component = () => (
       /**
        * If I need stuff, I have to get it from context.
        */
@@ -248,6 +265,9 @@ const Box = container.createExtension({
         {config.color}
       </div>
     );
+    // registerOutput(gridItemExtensionPointTypeRef, {title: config.title ?? '<none>'})
+    // registerOutput(coreExtensionPointTypes.component, Component)
+    return { Component, title: config.title ?? '<none>' };
   },
 });
 
@@ -258,13 +278,14 @@ const StyledBox = container.createExtension({
       configSchema: z.object({}),
     },
   },
-  mountTypeRef: coreExtensionPointTypes.component,
+  mountTypeRef: gridItemExtensionPointTypeRef,
   factory: ({ id, points }) => {
-    return () => {
+    const Component = () => {
       const [style] = useExtensionInstanceChildren(id, points.style);
 
       return <div style={style}>Styled box</div>;
     };
+    return { Component, title: 'derp' };
   },
 });
 
@@ -318,24 +339,24 @@ export function Experiment1() {
       id: 'layout',
       mount: 'root/default', // Maybe can omit /default here?
       config: {},
-      extension: SplitLayout,
+      extension: SplitGridLayout,
     },
     {
       id: 'red',
       mount: 'layout/top',
-      config: { color: 'red' },
+      config: { color: 'red', title: 'RED' },
       extension: Box,
     },
     {
       id: 'green',
       mount: 'layout/top',
-      config: { color: 'green' },
+      config: { color: 'green', title: 'GREEN' },
       extension: Box,
     },
     {
       id: 'blue',
       mount: 'layout/bottom',
-      config: { color: 'blue' },
+      config: { color: 'blue', title: 'BLUE' },
       extension: Box,
     },
     {
@@ -350,6 +371,12 @@ export function Experiment1() {
       config: { color: 'purple' },
       extension: BoxStyle,
     },
+    // {
+    //   id: 'catalogPage',
+    //   mount: 'core/routes',
+    //   config: { path: '/catalog' },
+    //   extension: Route,
+    // },
   ]);
 
   return (
@@ -367,6 +394,17 @@ export function Experiment1() {
     </BackstageAppContext.Provider>
   );
 }
+
+/**
+ * Continued exploration:
+ *
+ * - routing
+ * - dynamic extension points
+ * - mount point config
+ * - declarative mixed with code, e.g. <SplitGridLayout.Top config={{}}>
+ * - lazy loading
+ * - defaults
+ */
 
 /*
 // graphiql-plugin
