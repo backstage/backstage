@@ -23,9 +23,10 @@ import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
+import userEvent from '@testing-library/user-event';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
-  apiVersion: 'scaffolder.backstage.io/v1beta3',
+  apiVersion: 'backstage.io/v1beta1',
   kind,
   metadata: { namespace, name },
 });
@@ -41,14 +42,9 @@ describe('<EntityPicker />', () => {
 
   let props: FieldProps;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+  const catalogApi = {
     getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  } as Partial<CatalogApi> as jest.Mocked<CatalogApi>;
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
@@ -76,7 +72,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -117,7 +113,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -160,7 +156,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -260,7 +256,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -297,7 +293,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -356,7 +352,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -453,7 +449,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -551,7 +547,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -649,7 +645,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -720,6 +716,59 @@ describe('<EntityPicker />', () => {
 
       // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('with nameTemplate', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowArbitraryValues: false,
+          nameTemplate:
+            'XXX ${{entity.metadata.name}} ${{entity.metadata.namespace}}',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('names should be resolved', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+      await userEvent.click(input);
+
+      expect(screen.getByText('XXX team-a default')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByText('XXX squad-b default'));
+      expect(onChange).toHaveBeenCalledWith('group:default/squad-b');
+    });
+
+    it('do not update if there is not an exact match', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalledWith();
     });
   });
 });

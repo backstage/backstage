@@ -98,6 +98,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
             }
         >[]
       | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 
@@ -127,6 +128,7 @@ export const EntityPickerFieldSchema: FieldSchema<
             }
         >[]
       | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 
@@ -215,6 +217,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 
@@ -226,6 +229,7 @@ export const OwnedEntityPickerFieldSchema: FieldSchema<
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 
@@ -258,6 +262,7 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
             }
         >[]
       | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 
@@ -286,6 +291,7 @@ export const OwnerPickerFieldSchema: FieldSchema<
             }
         >[]
       | undefined;
+    nameTemplate?: string | undefined;
   }
 >;
 

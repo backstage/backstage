@@ -35,6 +35,7 @@ export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
       ),
     allowArbitraryValues: z
       .boolean()
+      .default(true)
       .optional()
       .describe('Whether to allow arbitrary user input. Defaults to true'),
     defaultNamespace: z
@@ -48,6 +49,12 @@ export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
       .or(entityQueryFilterExpressionSchema)
       .optional()
       .describe('List of key-value filter expression for entities'),
+    nameTemplate: z
+      .string()
+      .optional()
+      .describe(
+        'A JavaScript-Template string where `entity` is provided as context object. To display the title of the entity you can use the following nameTemplate: ${{entity.metadata.title}}. To use this feature, allowArbitraryValues must be set to false.',
+      ),
   }),
 );
 

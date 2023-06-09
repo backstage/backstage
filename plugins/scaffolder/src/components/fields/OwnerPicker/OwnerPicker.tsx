@@ -16,6 +16,7 @@
 import React from 'react';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 import { OwnerPickerProps } from './schema';
+import { EntityPickerUiOptions } from '../EntityPicker';
 
 export { OwnerPickerSchema } from './schema';
 
@@ -32,29 +33,28 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
     ...restProps
   } = props;
 
-  const defaultNamespace = uiSchema['ui:options']?.defaultNamespace;
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const uiOptions = uiSchema['ui:options'];
+  const allowedKinds = uiOptions?.allowedKinds;
 
-  const catalogFilter = uiSchema['ui:options']?.catalogFilter || {
+  const catalogFilter = uiOptions?.catalogFilter || {
     kind: allowedKinds || ['Group', 'User'],
   };
 
-  const ownerUiSchema = {
-    ...uiSchema,
-    'ui:options': {
-      catalogFilter,
-      defaultKind: 'Group',
-      allowArbitraryValues:
-        uiSchema['ui:options']?.allowArbitraryValues ?? true,
-      ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
-    },
+  const passedUiOptions: EntityPickerUiOptions = {
+    ...uiOptions,
+    catalogFilter,
+    defaultKind: 'Group',
   };
+  delete passedUiOptions.allowedKinds;
 
   return (
     <EntityPicker
       {...restProps}
       schema={{ title, description }}
-      uiSchema={ownerUiSchema}
+      uiSchema={{
+        ...uiSchema,
+        'ui:options': passedUiOptions,
+      }}
     />
   );
 };

@@ -16,13 +16,18 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  BackstageUserIdentity,
+  IdentityApi,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
 import React from 'react';
-import { OwnerPicker } from './OwnerPicker';
+import { OwnedEntityPicker } from './OwnedEntityPicker';
 import userEvent from '@testing-library/user-event';
 import { fireEvent, screen } from '@testing-library/react';
-import { OwnerPickerUiOptions } from './schema';
+import { OwnedEntityPickerUiOptions } from './schema';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -30,32 +35,48 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   metadata: { namespace, name },
 });
 
-describe('<OwnerPicker />', () => {
+describe('<OwnedEntityPicker />', () => {
+  let identity: BackstageUserIdentity;
   let entities: Entity[];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
   let uiSchema: {
-    'ui:options': OwnerPickerUiOptions;
+    'ui:options': OwnedEntityPickerUiOptions;
   };
   const rawErrors: string[] = [];
   const formData = undefined;
 
   let props: FieldProps;
 
+  const identityApi = {
+    getBackstageIdentity: jest.fn(async () => identity),
+  } as Partial<IdentityApi> as jest.Mocked<IdentityApi>;
+
   const catalogApi = {
     getEntities: jest.fn(async () => ({ items: entities })),
   } as Partial<CatalogApi> as jest.Mocked<CatalogApi>;
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+
+  let Wrapper: React.ComponentType;
 
   beforeEach(() => {
+    identity = {
+      type: 'user',
+      userEntityRef: 'User:default/max',
+      ownershipEntityRefs: ['User:default/max'],
+    };
     entities = [
       makeEntity('Group', 'default', 'team-a'),
       makeEntity('Group', 'default', 'squad-b'),
     ];
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [identityApiRef, identityApi],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
         {children}
       </TestApiProvider>
     );
@@ -63,7 +84,7 @@ describe('<OwnerPicker />', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  describe('without catalogFilter and allowedKinds', () => {
+  describe('without allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
       props = {
@@ -75,19 +96,20 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps;
 
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for users and groups', async () => {
       await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <OwnedEntityPicker {...props} />
         </Wrapper>,
       );
 
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
         filter: {
-          kind: ['Group', 'User'],
+          'relations.ownedBy': ['User:default/max'],
         },
       });
     });
@@ -105,109 +127,21 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps;
 
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for users', async () => {
       await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <OwnedEntityPicker {...props} />
         </Wrapper>,
       );
-
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
         filter: {
           kind: ['User'],
+          'relations.ownedBy': ['User:default/max'],
         },
-      });
-    });
-  });
-
-  describe('with catalogFilter', () => {
-    beforeEach(() => {
-      uiSchema = {
-        'ui:options': {
-          catalogFilter: [
-            {
-              kind: ['Group'],
-              'spec.type': 'team',
-            },
-          ],
-        },
-      };
-      props = {
-        onChange,
-        schema,
-        required,
-        uiSchema,
-        rawErrors,
-        formData,
-      } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
-    });
-
-    it('searches for group entities of type team', async () => {
-      await renderInTestApp(
-        <Wrapper>
-          <OwnerPicker {...props} />
-        </Wrapper>,
-      );
-
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group'],
-            'spec.type': 'team',
-          },
-        ],
-      });
-    });
-  });
-
-  describe('catalogFilter should take precedence over allowedKinds', () => {
-    beforeEach(() => {
-      uiSchema = {
-        'ui:options': {
-          allowedKinds: ['User'],
-          catalogFilter: [
-            {
-              kind: ['Group', 'User'],
-            },
-            {
-              'spec.type': ['team', 'business-unit'],
-            },
-          ],
-        },
-      };
-      props = {
-        onChange,
-        schema,
-        required,
-        uiSchema,
-        rawErrors,
-        formData,
-      } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
-    });
-
-    it('searches for users and groups or teams and business units', async () => {
-      await renderInTestApp(
-        <Wrapper>
-          <OwnerPicker {...props} />
-        </Wrapper>,
-      );
-
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group', 'User'],
-          },
-          {
-            'spec.type': ['team', 'business-unit'],
-          },
-        ],
       });
     });
   });
@@ -229,13 +163,14 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps;
 
+      identityApi.getBackstageIdentity.mockResolvedValue(identity);
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('names should be resolved', async () => {
       const { getByRole } = await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <OwnedEntityPicker {...props} />
         </Wrapper>,
       );
 
@@ -251,7 +186,7 @@ describe('<OwnerPicker />', () => {
     it('do not update if there is not an exact match', async () => {
       const { getByRole } = await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <OwnedEntityPicker {...props} />
         </Wrapper>,
       );
 

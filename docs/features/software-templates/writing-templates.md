@@ -46,6 +46,18 @@ spec:
           ui:options:
             catalogFilter:
               kind: Group
+        user:
+          title: User
+          type: string
+          description: Owner of the component
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            nameTemplate: ${{entity.spec.profile.displayName}} (${{entity.spec.profile.email}})
+            defaultKind: User
+            defaultNamespace: default
+            catalogFilter:
+              kind: User
     - title: Choose a location
       required:
         - repoUrl
@@ -68,6 +80,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
+          user: ${{ parameters.user }}
 
     - id: fetch-docs
       name: Fetch Docs

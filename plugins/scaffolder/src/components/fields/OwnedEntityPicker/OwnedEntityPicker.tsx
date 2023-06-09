@@ -22,6 +22,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 
 import { OwnedEntityPickerProps } from './schema';
+import { EntityPickerUiOptions } from '../EntityPicker';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -42,9 +43,8 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   const { loading, value: identityRefs } = useAsync(async () => {
     const identity = await identityApi.getBackstageIdentity();
     return identity.ownershipEntityRefs;
-  });
+  }, [identityApi]);
 
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
   if (loading)
     return (
       <Autocomplete
@@ -65,25 +65,24 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
       />
     );
 
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const uiOptions: EntityPickerUiOptions = {
+    ...uiSchema['ui:options'],
+    catalogFilter: {
+      ...(allowedKinds ? { kind: allowedKinds } : {}),
+      [`relations.${RELATION_OWNED_BY}`]: identityRefs ?? [],
+    },
+  };
+  delete uiOptions.allowedKinds;
+
   return (
     <EntityPicker
       {...props}
       schema={{ title, description }}
-      allowedKinds={allowedKinds}
-      catalogFilter={
-        allowedKinds
-          ? {
-              filter: {
-                kind: allowedKinds,
-                [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-              },
-            }
-          : {
-              filter: {
-                [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-              },
-            }
-      }
+      uiSchema={{
+        ...uiSchema,
+        'ui:options': uiOptions,
+      }}
     />
   );
 };

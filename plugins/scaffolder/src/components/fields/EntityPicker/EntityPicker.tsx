@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
+  type EntityFilterQuery,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -32,16 +32,33 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
+  EntityPickerFilterQuery,
   EntityPickerFilterQueryValue,
   EntityPickerProps,
   EntityPickerUiOptions,
-  EntityPickerFilterQuery,
 } from './schema';
 
 export { EntityPickerSchema } from './schema';
+
+/**
+ * @param string the string to interpolate
+ * @param params values to used as replacements
+ */
+const interpolate = (string: string, params: object): string => {
+  return string.replace(/\$\{\{([^}]+)}}/g, (_, param) => {
+    let obj: unknown = params;
+    for (let i = 0, path = param.split('.'), len = path.length; i < len; i++) {
+      if (typeof obj !== 'object' || obj === null) {
+        return '';
+      }
+      obj = (obj as Record<string, unknown>)[path[i]];
+    }
+    return typeof obj === 'string' ? obj : '';
+  });
+};
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -59,41 +76,49 @@ export const EntityPicker = (props: EntityPickerProps) => {
     formData,
     idSchema,
   } = props;
-  const catalogFilter = buildCatalogFilter(uiSchema);
-  const defaultKind = uiSchema['ui:options']?.defaultKind;
-  const defaultNamespace =
-    uiSchema['ui:options']?.defaultNamespace || undefined;
+  const catalogFilter = useMemo(() => buildCatalogFilter(uiSchema), [uiSchema]);
+  const uiOptions = uiSchema['ui:options'];
+  const defaultKind = uiOptions?.defaultKind;
+  const defaultNamespace = uiOptions?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
 
-  const { value: entities, loading } = useAsync(async () => {
-    const { items } = await catalogApi.getEntities(
-      catalogFilter ? { filter: catalogFilter } : undefined,
-    );
-    return items;
-  });
-  const allowArbitraryValues =
-    uiSchema['ui:options']?.allowArbitraryValues ?? true;
+  const allowArbitraryValues = uiOptions?.allowArbitraryValues ?? true;
+  const nameTemplate = allowArbitraryValues
+    ? undefined
+    : uiOptions?.nameTemplate;
 
   const getLabel = useCallback(
-    (ref: string) => {
+    (refOrEntity: string | Entity) => {
+      if (typeof refOrEntity !== 'string') {
+        return nameTemplate
+          ? interpolate(nameTemplate, { entity: refOrEntity })
+          : humanizeEntityRef(refOrEntity, { defaultKind, defaultNamespace });
+      }
       try {
         return humanizeEntityRef(
-          parseEntityRef(ref, { defaultKind, defaultNamespace }),
+          parseEntityRef(refOrEntity, { defaultKind, defaultNamespace }),
           {
             defaultKind,
             defaultNamespace,
           },
         );
       } catch (err) {
-        return ref;
+        return refOrEntity;
       }
     },
-    [defaultKind, defaultNamespace],
+    [nameTemplate, defaultKind, defaultNamespace],
   );
 
+  const { value: entities, loading } = useAsync(async () => {
+    const { items } = await catalogApi.getEntities(
+      catalogFilter ? { filter: catalogFilter } : undefined,
+    );
+    return items?.sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
+  }, [catalogApi, catalogFilter, getLabel]);
+
   const onSelect = useCallback(
-    (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
+    (_, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         // if ref does not exist: pass 'undefined' to trigger validation for required value
@@ -128,7 +153,18 @@ export const EntityPicker = (props: EntityPickerProps) => {
       onChange(stringifyEntityRef(entities[0]));
     }
   }, [entities, onChange]);
-
+  // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
+  //  back to the given value.
+  let value: Entity | string | null | undefined = entities?.find(
+    e => stringifyEntityRef(e) === formData,
+  );
+  if (value === undefined) {
+    if (allowArbitraryValues) {
+      value = formData ? getLabel(formData) : '';
+    } else {
+      value = null;
+    }
+  }
   return (
     <FormControl
       margin="normal"
@@ -138,20 +174,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
       <Autocomplete
         disabled={entities?.length === 1}
         id={idSchema?.$id}
-        value={
-          // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
-          //  back to the given value.
-          entities?.find(e => stringifyEntityRef(e) === formData) ??
-          (allowArbitraryValues && formData ? getLabel(formData) : '')
-        }
+        value={value}
         loading={loading}
         onChange={onSelect}
         options={entities || []}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
-          typeof option === 'string'
-            ? option
-            : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
+          typeof option === 'string' ? option : getLabel(option)
         }
         autoSelect
         freeSolo={allowArbitraryValues}
