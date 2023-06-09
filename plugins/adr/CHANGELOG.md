@@ -1,5 +1,12 @@
 # @backstage/plugin-adr
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.1
+
 ## 0.6.0
 
 ### Minor Changes

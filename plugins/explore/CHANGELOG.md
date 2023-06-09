@@ -1,5 +1,12 @@
 # @backstage/plugin-explore
 
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.6.1
+
 ## 0.4.3
 
 ### Patch Changes
