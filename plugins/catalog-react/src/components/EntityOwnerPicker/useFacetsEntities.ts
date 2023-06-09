@@ -32,42 +32,41 @@ type FacetsEntitiesResponse = {
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
 
-  const [facetsPromise] = useState(() =>
-    Promise.resolve().then(() => {
-      if (!enabled) {
-        return [];
-      }
-      const facet = 'relations.ownedBy';
-      return catalogApi.getEntityFacets({ facets: [facet] }).then(response =>
-        response.facets[facet]
-          .map(e => e.value)
-          .map<Entity>(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              (a.metadata.namespace || '').localeCompare(
-                b.metadata.namespace || '',
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US') ||
-              a.kind.localeCompare(b.kind, 'en-US'),
-          ),
-      );
-    }),
-  );
+  const [facetsPromise] = useState(async () => {
+    if (!enabled) {
+      return [];
+    }
+    const facet = 'relations.ownedBy';
+    return catalogApi.getEntityFacets({ facets: [facet] }).then(response =>
+      response.facets[facet]
+        .map(e => e.value)
+        .map<Entity>(ref => {
+          const { kind, name, namespace } = parseEntityRef(ref);
+          return {
+            apiVersion: 'backstage.io/v1beta1',
+            kind,
+            metadata: { name, namespace },
+          };
+        })
+        .sort(
+          (a, b) =>
+            (a.metadata.namespace || '').localeCompare(
+              b.metadata.namespace || '',
+              'en-US',
+            ) ||
+            a.metadata.name.localeCompare(b.metadata.name, 'en-US') ||
+            a.kind.localeCompare(b.kind, 'en-US'),
+        ),
+    );
+  });
 
   return useAsyncFn<
     (
       request: { text: string } | FacetsEntitiesResponse,
+      options?: { limit?: number },
     ) => Promise<FacetsEntitiesResponse>
   >(
-    async request => {
+    async (request, options) => {
       const facets = await facetsPromise;
 
       if (!facets) {
@@ -78,12 +77,10 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
       const initialRequest = request as { text: string };
       const cursorRequest = request as FacetsEntitiesResponse;
 
-      const limit = 20;
+      const limit = options?.limit ?? 20;
 
       if (cursorRequest.cursor) {
-        const { start, text } = JSON.parse(
-          atob(cursorRequest.cursor),
-        ) as FacetsCursor;
+        const { start, text } = decodeCursor(cursorRequest.cursor);
         const filteredRefs = facets.filter(e => filterEntity(text, e));
         if (start === undefined) {
           return request as FacetsEntitiesResponse;
@@ -92,27 +89,53 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
 
         return {
           items: filteredRefs.slice(0, end),
-          cursor: btoa(
-            JSON.stringify({
+          ...encodeCursor({
+            entities: filteredRefs,
+            limit: end,
+            payload: {
               text,
-              ...(end < filteredRefs.length && { start: end }),
-            }),
-          ),
+              start: end,
+            },
+          }),
         };
       }
 
+      const filteredRefs = facets.filter(e =>
+        filterEntity(initialRequest.text, e),
+      );
+
       return {
-        items: facets
-          .filter(e => filterEntity(initialRequest.text, e))
-          .slice(0, limit),
-        cursor: btoa(
-          JSON.stringify({ text: initialRequest.text, start: limit }),
-        ),
+        items: filteredRefs.slice(0, limit),
+
+        ...encodeCursor({
+          entities: filteredRefs,
+          limit,
+          payload: { text: initialRequest.text, start: limit },
+        }),
       };
     },
     [],
-    { loading: true },
+    { loading: true, value: { items: [] } },
   );
+}
+
+function decodeCursor(cursor: string): FacetsCursor {
+  return JSON.parse(atob(cursor));
+}
+
+function encodeCursor({
+  entities,
+  limit,
+  payload,
+}: {
+  entities: Entity[];
+  limit: number;
+  payload: { text: string; start: number };
+}) {
+  if (entities.length > limit) {
+    return { cursor: btoa(JSON.stringify(payload)) };
+  }
+  return {};
 }
 
 function filterEntity(text: string, entity: Entity) {
