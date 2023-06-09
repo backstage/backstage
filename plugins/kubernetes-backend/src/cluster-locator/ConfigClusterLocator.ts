@@ -16,7 +16,6 @@
 
 import { Config } from '@backstage/config';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
