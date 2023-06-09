@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { OpenCostFetchComponent } from './OpenCostFetchComponent';
+
+export interface Config {
+  /** Configurations for the OpenCost plugin */
+  openCost: {
+    /**
+     * The base URL for the OpenCost  installation.
+     * @visibility frontend
+     */
+    baseUrl: string;
+  };
+}

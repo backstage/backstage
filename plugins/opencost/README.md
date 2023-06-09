@@ -2,34 +2,24 @@
 
 Welcome to the OpenCost plugin!
 
-_This plugin was created through the Backstage CLI_
+Currently this is a port of the [OpenCost UI](https://github.com/opencost/opencost/tree/develop/ui), but we will continue to expand it to expose any relevant data or pre-configured views that may be preferred.
 
-## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/opencost](http://localhost:3000/opencost).
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+## Installation
 
-## IDEAS
+## Configuration
 
-opencost logo on side
+## TODO
 
-### variables for:
+* Document installation and configuration
+* More testing
+* Use the OpenCost mascot for the sidebar logo
+* Use the Backstage proxy to communicate with the OpenCost API
+* Convert AllocationReport.js to use the [Backstage Table](https://backstage.io/storybook/?path=/story/data-display-table--default-table)
+* Allow for user-provided default reports and/or disabling controls
+* Support multiple hard-coded reports
+* Fork(?) to support Kubecost, which could provide Alerts and Recommendations, similar to the Cost Explorer plugin
+* clean up deprecation warnings and upgrade to all the latest React components
 
-    opencost URL
-    days of data (14d default)
-    costs warning lines
-
-top graph:
-pick with specific query pattern
-dates adjustable
-
-table underneath
-
-TrendLines
-
-Tabs on different namespaces/etc.?
-
-get currencies from cost-insights
+![Screenshot](screenshot.png)

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
   Content,
   ContentHeader,
 } from '@backstage/core-components';
-import { OpenCostFetchComponent } from '../OpenCostFetchComponent';
+import { OpenCostReport } from '../OpenCostReport';
 
 export const OpenCostPage = () => (
   <Page themeId="tool">
@@ -38,11 +38,10 @@ export const OpenCostPage = () => (
         />
       </a>
     </Header>
-    <Content>
-      <ContentHeader title="Namespaces " />
+        <Content>
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <OpenCostFetchComponent />
+        <OpenCostReport />
         </Grid>
       </Grid>
     </Content>
