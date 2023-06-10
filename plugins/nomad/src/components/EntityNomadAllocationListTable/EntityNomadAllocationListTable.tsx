@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { DateTime } from 'luxon';
 import {
   Link,
   MissingAnnotationEmptyState,
@@ -64,7 +65,10 @@ const columns: TableColumn<rowType>[] = [
   {
     title: 'Created',
     field: 'CreateTime',
-    render: row => new Date(row.CreateTime / 1000000).toLocaleString(),
+    render: row =>
+      DateTime.fromMillis(row.CreateTime / 1000000).toLocaleString(
+        DateTime.DATETIME_MED_WITH_SECONDS,
+      ),
   },
   {
     title: 'Status',
