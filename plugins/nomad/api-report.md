@@ -13,7 +13,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const EntityNomadAllocationListTable: () => JSX.Element;
 
 // @public
-export const EntityNomadJobVersionListCard: () => JSX.Element;
+export const EntityNomadJobVersionListCard: () => JSX.Element | null;
 
 // @public (undocumented)
 export const isNomadAllocationsAvailable: (entity: Entity) => boolean;
